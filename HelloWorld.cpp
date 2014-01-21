@@ -10,6 +10,13 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
+// Define some values that we'll use to identify individual GUI controls.
+enum
+{
+	GUI_ID_HEADING_SCROLL_BAR = 101,
+	GUI_ID_SPEED_SCROLL_BAR
+};
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
@@ -18,7 +25,23 @@ public:
         // Remember whether each key is down or up
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 			KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
+        
+        if (event.EventType == EET_GUI_EVENT)
+		{
+			s32 id = event.GUIEvent.Caller->getID();
+            if (event.GUIEvent.EventType==EGET_SCROLL_BAR_CHANGED) 
+            {
+               
+               if (id == GUI_ID_HEADING_SCROLL_BAR) 
+                  scrollBarPosHeading = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                  
+              if (id == GUI_ID_SPEED_SCROLL_BAR) 
+                  scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();    
+            }
+        }
+        
         return false;
+           
     }
     
     // This is used to check whether a key is being held down
@@ -27,15 +50,28 @@ public:
 		return KeyIsDown[keyCode];
 	}
 	
-	MyEventReceiver()
+	virtual s32 GetScrollBarPosSpeed() const
+	{
+		return scrollBarPosSpeed;
+	}
+	
+	virtual s32 GetScrollBarPosHeading() const
+	{
+		return scrollBarPosHeading;
+	}
+	
+	MyEventReceiver() //Constructor?
 	{
 		for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
 			KeyIsDown[i] = false;
+		scrollBarPosSpeed = 0;
+		scrollBarPosHeading = 0;
 	}
 
 private:
 	// We use this array to store the current state of each key
 	bool KeyIsDown[KEY_KEY_CODES_COUNT];
+	s32 scrollBarPosSpeed, scrollBarPosHeading;
 };
 
 
@@ -54,6 +90,13 @@ int main()
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();
     IGUIEnvironment* guienv = device->getGUIEnvironment();
+    
+    //gui
+    IGUIScrollBar* hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
+    hdgScrollbar->setMax(360);
+    
+    IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
+    spdScrollbar->setMax(100);
     
     //Load a ship model
     IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
@@ -105,12 +148,13 @@ int main()
     irr::f32 xPos = 0;
     irr::f32 yPos = 0; 
     irr::f32 zPos = 0; 
-    irr::f32 speed = 0.5; //Need to make FPS independent
+    irr::f32 speed = 0.1; //Need to make FPS independent
 
     //main loop
     while(device->run())
     {
         //check for keys
+        /*
         if(receiver.IsKeyDown(irr::KEY_LEFT))
                                heading--;             
                                
@@ -122,6 +166,10 @@ int main()
                                
         if(receiver.IsKeyDown(irr::KEY_DOWN))
                                speed+=-0.01f;
+        */
+        
+        heading = receiver.GetScrollBarPosHeading(); //Should probably work the other way, ie event receiver calls setSomething() on model
+        speed = receiver.GetScrollBarPosSpeed()/100.f;
         
         //move
         xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed;
