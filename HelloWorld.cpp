@@ -74,7 +74,34 @@ private:
 	s32 scrollBarPosSpeed, scrollBarPosHeading;
 };
 
-
+class SimulationModel //Start of the 'Model' part of MVC
+{
+private:
+        IMeshSceneNode* ownShipNode;      
+      
+public:
+    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
+    {
+         ownShipNode->setPosition(vector3df(x,y,z));
+    }
+    
+    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz)
+    {
+         ownShipNode->setRotation(vector3df(rx,ry,rz));
+    }
+    
+    void updateModel()
+    {
+         
+    }
+    
+    SimulationModel(IMeshSceneNode* osn) //constructor, including own ship model
+    {
+        ownShipNode = osn;
+    }
+       
+};
+      
 
 int main()
 {
@@ -102,6 +129,9 @@ int main()
     IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
     IMeshSceneNode* shipNode = smgr->addMeshSceneNode(shipMesh);
     if (shipNode) {shipNode->setMaterialFlag(EMF_LIGHTING, false);}
+    
+    //Create simulation model 
+    SimulationModel model (shipNode);
     
     //make a camera, child of ship model
     //ICameraSceneNode* camera = smgr->addCameraSceneNode(shipNode, vector3df(0,0.9,0.6), vector3df(0,0.9,1));    
@@ -131,8 +161,8 @@ int main()
         core::dimension2d<f32>(10,10));
 
     scene::ISceneNode* waterNode = 0;
-    waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 1.0f, 300.0f, 10.0f);
-    waterNode->setPosition(core::vector3df(0,-1.0f,0));
+    waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.5f, 300.0f, 10.0f);
+    waterNode->setPosition(core::vector3df(0,-2*0.5f,0));
 
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
     waterNode->setMaterialFlag(EMF_LIGHTING, false);
@@ -176,8 +206,9 @@ int main()
         zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed;
         
         //Set position
-        shipNode->setPosition(vector3df(xPos,yPos,zPos));
-        shipNode->setRotation(vector3df(0, heading, 0)); //Global vectors
+        //shipNode->setPosition(vector3df(xPos,yPos,zPos));
+        model.setPosition(xPos,yPos,zPos); //Now calls 'Model' to set these (to be replaced with setSpeed, setHeading, and updateModel())
+        model.setRotation(0, heading, 0); //Global vectors
         
         //link camera rotation to shipNode
         // get transformation matrix of node
