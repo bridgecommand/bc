@@ -77,9 +77,17 @@ private:
 class SimulationModel //Start of the 'Model' part of MVC
 {
 private:
-        IMeshSceneNode* ownShipNode;      
-      
-public:
+        IMeshSceneNode* ownShipNode;
+        IVideoDriver* driver;
+        ISceneManager* smgr;
+        ICameraSceneNode* camera;
+        //Ship movement
+        irr::f32 heading;
+        irr::f32 xPos;
+        irr::f32 yPos; 
+        irr::f32 zPos; 
+        irr::f32 speed; //Need to make FPS independent 
+    
     void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
     {
          ownShipNode->setPosition(vector3df(x,y,z));
@@ -89,16 +97,115 @@ public:
     {
          ownShipNode->setRotation(vector3df(rx,ry,rz));
     }
+      
+public:
+    
+    void setSpeed(irr::f32 spd)
+    {
+         speed = spd;
+    }
+    
+    void setHeading(irr::f32 hdg)
+    {
+         heading = hdg;
+    }
     
     void updateModel()
     {
-         
+        //heading = 60;//receiver.GetScrollBarPosHeading(); //Should probably work the other way, ie event receiver calls setSomething() on model
+        //speed = 0.5;//receiver.GetScrollBarPosSpeed()/100.f;
+        
+        //move, according to heading and speed
+        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed;
+        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed;
+        
+        //Set position
+        //shipNode->setPosition(vector3df(xPos,yPos,zPos));
+        setPosition(xPos,yPos,zPos); //Now calls 'Model' to set these (to be replaced with setSpeed, setHeading, and updateModel())
+        setRotation(0, heading, 0); //Global vectors
+        
+         //link camera rotation to shipNode
+        // get transformation matrix of node
+        irr::core::matrix4 m;
+        m.setRotationDegrees(ownShipNode->getRotation());
+        
+        // transform forward vector of camera
+        irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
+        m.transformVect(frv);
+        
+        // transform upvector of camera
+        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
+        m.transformVect(upv);
+        
+        // transform camera offset (thanks to Zeuss for finding it was missing)
+        irr::core::vector3df offset(0.0f,0.9f,0.6f);
+        m.transformVect(offset);
+        
+        //move camera and angle
+        camera->setPosition(ownShipNode->getPosition() + offset); //position camera behind the ship
+        camera->setUpVector(upv); //set up vector of camera
+        camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
+        camera->updateAbsolutePosition();
     }
     
-    SimulationModel(IMeshSceneNode* osn) //constructor, including own ship model
+    SimulationModel(IVideoDriver* drv, ISceneManager* scene) //constructor, including own ship model
     {
-        ownShipNode = osn;
-    }
+        //get reference to scene manager
+        driver = drv;
+        smgr = scene;
+        
+        //initialise variables
+        heading = 60;
+        xPos = 0;
+        yPos = 0; 
+        zPos = 0; 
+        speed = 0.5; //Need to make FPS independent 
+        
+        //Load a ship model
+        IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
+        ownShipNode = smgr->addMeshSceneNode(shipMesh);
+        if (ownShipNode) {ownShipNode->setMaterialFlag(EMF_LIGHTING, false);}
+        
+        //make a camera
+        camera = smgr->addCameraSceneNode(0, vector3df(0,0,0), vector3df(0,0,1));    
+    
+        //Add terrain
+        ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+                       "World/SimpleEstuary/height.bmp",
+                       0,					// parent node
+                       -1,					// node id
+		               core::vector3df(0.f, -44.07f, 0.f),		// position
+		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation)
+		               core::vector3df(6.97705f, 0.56498f, 8.6871f),	// scale
+		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
+		               5,					// maxLOD
+		               scene::ETPS_17,		// patchSize
+		               4					// smoothFactor
+                       );
+        terrain->setMaterialFlag(video::EMF_LIGHTING, false);
+        terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
+    
+        //add some water (from demo 8)
+        scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
+                              core::dimension2d<f32>(50,50),
+                              core::dimension2d<u32>(100,100), 0, 0,
+                              core::dimension2d<f32>(0,0),
+                              core::dimension2d<f32>(10,10));
+
+        scene::ISceneNode* waterNode = 0;
+        waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.5f, 300.0f, 10.0f);
+        waterNode->setPosition(core::vector3df(0,-2*0.5f,0));
+
+        waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+        waterNode->setMaterialFlag(EMF_LIGHTING, false);
+    
+        //sky box/dome
+        // create skydome
+	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+        scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("media/sky.bmp"),16,8,0.95f,2.0f);
+	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+
+    } //end of SimulationModel constructor
        
 };
       
@@ -125,60 +232,8 @@ int main()
     IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
     spdScrollbar->setMax(100);
     
-    //Load a ship model
-    IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
-    IMeshSceneNode* shipNode = smgr->addMeshSceneNode(shipMesh);
-    if (shipNode) {shipNode->setMaterialFlag(EMF_LIGHTING, false);}
-    
     //Create simulation model 
-    SimulationModel model (shipNode);
-    
-    //make a camera, child of ship model
-    //ICameraSceneNode* camera = smgr->addCameraSceneNode(shipNode, vector3df(0,0.9,0.6), vector3df(0,0.9,1));    
-    ICameraSceneNode* camera = smgr->addCameraSceneNode(0, vector3df(0,0,0), vector3df(0,0,1));    
-    
-    //Add terrain
-    ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-                       "World/SimpleEstuary/height.bmp",
-                       0,					// parent node
-                       -1,					// node id
-		               core::vector3df(0.f, -44.07f, 0.f),		// position
-		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation)
-		               core::vector3df(6.97705f, 0.56498f, 8.6871f),	// scale
-		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
-		               5,					// maxLOD
-		               scene::ETPS_17,		// patchSize
-		               4					// smoothFactor
-                       );
-    terrain->setMaterialFlag(video::EMF_LIGHTING, false);
-    terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
-    
-    //add some water (from demo 8)
-    scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-        core::dimension2d<f32>(50,50),
-        core::dimension2d<u32>(100,100), 0, 0,
-        core::dimension2d<f32>(0,0),
-        core::dimension2d<f32>(10,10));
-
-    scene::ISceneNode* waterNode = 0;
-    waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.5f, 300.0f, 10.0f);
-    waterNode->setPosition(core::vector3df(0,-2*0.5f,0));
-
-    waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    waterNode->setMaterialFlag(EMF_LIGHTING, false);
-    
-    //sky box/dome
-    // create skydome
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-    scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("media/sky.bmp"),16,8,0.95f,2.0f);
-	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-    
-    //Ship movement
-    irr::f32 heading = 70;
-    irr::f32 xPos = 0;
-    irr::f32 yPos = 0; 
-    irr::f32 zPos = 0; 
-    irr::f32 speed = 0.1; //Need to make FPS independent
+    SimulationModel model (driver, smgr);
 
     //main loop
     while(device->run())
@@ -198,40 +253,10 @@ int main()
                                speed+=-0.01f;
         */
         
-        heading = receiver.GetScrollBarPosHeading(); //Should probably work the other way, ie event receiver calls setSomething() on model
-        speed = receiver.GetScrollBarPosSpeed()/100.f;
+        model.setSpeed(0.6); //- This should be called by the event receiver
+        model.setHeading(100);
         
-        //move
-        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed;
-        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed;
-        
-        //Set position
-        //shipNode->setPosition(vector3df(xPos,yPos,zPos));
-        model.setPosition(xPos,yPos,zPos); //Now calls 'Model' to set these (to be replaced with setSpeed, setHeading, and updateModel())
-        model.setRotation(0, heading, 0); //Global vectors
-        
-        //link camera rotation to shipNode
-        // get transformation matrix of node
-        irr::core::matrix4 m;
-        m.setRotationDegrees(shipNode->getRotation());
-        
-        // transform forward vector of camera
-        irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
-        m.transformVect(frv);
-        
-        // transform upvector of camera
-        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
-        m.transformVect(upv);
-        
-        // transform camera offset (thanks to Zeuss for finding it was missing)
-        irr::core::vector3df offset(0.0f,0.9f,0.6f);
-        m.transformVect(offset);
-        
-        //move camera and angle
-        camera->setPosition(shipNode->getPosition() + offset); //position camera behind the ship
-        camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(shipNode->getPosition() + offset + frv); //set target of camera (look at point)
-        camera->updateAbsolutePosition();
+        model.updateModel();
         
         //Render
         driver->beginScene(true,true,SColor(255,100,101,140));
