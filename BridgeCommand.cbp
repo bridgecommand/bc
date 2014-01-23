@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Test1" />
+		<Option title="BridgeCommand" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="default">
-				<Option output="Test1" prefix_auto="1" extension_auto="1" />
+				<Option output="BridgeCommand" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 			</Target>
@@ -18,7 +18,7 @@
 		<Linker>
 			<Add option="../../../../../../irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 		</Linker>
-		<Unit filename="HelloWorld.cpp" />
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -1,4 +1,4 @@
-// HelloWorld.cpp
+// main.cpp
 // Include the Irrlicht header
 #include "irrlicht.h"
 
