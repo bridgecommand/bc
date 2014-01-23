@@ -21,6 +21,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 {
 private:
         IMeshSceneNode* ownShipNode;
+        IrrlichtDevice* device;
         IVideoDriver* driver;
         ISceneManager* smgr;
         ICameraSceneNode* camera;
@@ -29,7 +30,11 @@ private:
         irr::f32 xPos;
         irr::f32 yPos;
         irr::f32 zPos;
-        irr::f32 speed; //Need to make FPS independent
+        irr::f32 speed;
+
+        irr::u32 currentTime;
+        irr::u32 previousTime;
+        irr::f32 deltaTime;
 
     void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
     {
@@ -56,9 +61,14 @@ public:
     void updateModel()
     {
 
+        //get delta time
+        currentTime = device->getTimer()->getTime();
+        deltaTime = (currentTime - previousTime)/1000.f; //Time in seconds
+        previousTime = currentTime;
+
         //move, according to heading and speed
-        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed;
-        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed;
+        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed*deltaTime;
+        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed*deltaTime;
 
         //Set position & speed by calling our private methods
         setPosition(xPos,yPos,zPos);
@@ -88,18 +98,22 @@ public:
         camera->updateAbsolutePosition();
     }
 
-    SimulationModel(IVideoDriver* drv, ISceneManager* scene) //constructor, including own ship model
+    SimulationModel(IrrlichtDevice* dev, IVideoDriver* drv, ISceneManager* scene) //constructor, including own ship model
     {
         //get reference to scene manager
+        device = dev;
         driver = drv;
         smgr = scene;
 
-        //initialise variables
+        //initialise variables - Start with a hardcoded initial position
         heading = 0;
-        xPos = 0;
+        xPos = 864.34f;
         yPos = 0;
-        zPos = 0;
+        zPos = 619.317f;
         speed = 0; //Need to make FPS independent
+
+        //store time
+        previousTime = device->getTimer()->getTime();
 
         //Load a ship model
         IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
@@ -114,7 +128,7 @@ public:
                        "World/SimpleEstuary/height.bmp",
                        0,					// parent node
                        -1,					// node id
-		               core::vector3df(0.f, -44.07f, 0.f),		// position
+		               core::vector3df(0.f, -44.07f-3.08f, 0.f),		// position
 		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation)
 		               core::vector3df(6.97705f, 0.56498f, 8.6871f),	// scale
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
@@ -149,6 +163,32 @@ public:
 
 };
 
+class GUIMain //Create, build and update GUI
+{
+public:
+    GUIMain(IrrlichtDevice* dev)
+    {
+        device = dev;
+        guienv = device->getGUIEnvironment();
+
+        //gui - Replace this with the constructor of a GUI class
+        IGUIScrollBar* hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
+        hdgScrollbar->setMax(360);
+
+        IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
+        spdScrollbar->setMax(100);
+    }
+
+    void drawGUI()
+    {
+        guienv->drawAll();
+    }
+
+private:
+    IrrlichtDevice* device;
+    IGUIEnvironment* guienv;
+};
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
@@ -178,7 +218,7 @@ public:
               if (id == GUI_ID_SPEED_SCROLL_BAR)
                   {
                         scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-                        model->setSpeed(scrollBarPosSpeed/100.0);
+                        model->setSpeed(scrollBarPosSpeed/10.0);
                   }
             }
         }
@@ -214,17 +254,12 @@ int main()
 
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();
-    IGUIEnvironment* guienv = device->getGUIEnvironment();
 
-    //gui - Replace this with the constructor of a GUI class
-    IGUIScrollBar* hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
-    hdgScrollbar->setMax(360);
-
-    IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
-    spdScrollbar->setMax(100);
+    //create GUI
+    GUIMain guiMain(device);
 
     //Create simulation model
-    SimulationModel model (driver, smgr);
+    SimulationModel model (device, driver, smgr);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(&model);
@@ -239,7 +274,7 @@ int main()
         //Render
         driver->beginScene(true,true,SColor(255,100,101,140));
         smgr->drawAll();
-        guienv->drawAll();
+        guiMain.drawGUI();
         driver->endScene();
     }
 
