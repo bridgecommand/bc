@@ -1,4 +1,4 @@
-// HelloUniverse.cpp
+// HelloWorld.cpp
 // Include the Irrlicht header
 #include "irrlicht.h"
 
@@ -17,63 +17,6 @@ enum
 	GUI_ID_SPEED_SCROLL_BAR
 };
 
-class MyEventReceiver : public IEventReceiver
-{
-public:
-	virtual bool OnEvent(const SEvent& event)
-	{ 
-        // Remember whether each key is down or up
-		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
-			KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
-        
-        if (event.EventType == EET_GUI_EVENT)
-		{
-			s32 id = event.GUIEvent.Caller->getID();
-            if (event.GUIEvent.EventType==EGET_SCROLL_BAR_CHANGED) 
-            {
-               
-               if (id == GUI_ID_HEADING_SCROLL_BAR) 
-                  scrollBarPosHeading = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-                  
-              if (id == GUI_ID_SPEED_SCROLL_BAR) 
-                  scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();    
-            }
-        }
-        
-        return false;
-           
-    }
-    
-    // This is used to check whether a key is being held down
-	virtual bool IsKeyDown(EKEY_CODE keyCode) const
-	{
-		return KeyIsDown[keyCode];
-	}
-	
-	virtual s32 GetScrollBarPosSpeed() const
-	{
-		return scrollBarPosSpeed;
-	}
-	
-	virtual s32 GetScrollBarPosHeading() const
-	{
-		return scrollBarPosHeading;
-	}
-	
-	MyEventReceiver() //Constructor?
-	{
-		for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
-			KeyIsDown[i] = false;
-		scrollBarPosSpeed = 0;
-		scrollBarPosHeading = 0;
-	}
-
-private:
-	// We use this array to store the current state of each key
-	bool KeyIsDown[KEY_KEY_CODES_COUNT];
-	s32 scrollBarPosSpeed, scrollBarPosHeading;
-};
-
 class SimulationModel //Start of the 'Model' part of MVC
 {
 private:
@@ -84,91 +27,88 @@ private:
         //Ship movement
         irr::f32 heading;
         irr::f32 xPos;
-        irr::f32 yPos; 
-        irr::f32 zPos; 
-        irr::f32 speed; //Need to make FPS independent 
-    
+        irr::f32 yPos;
+        irr::f32 zPos;
+        irr::f32 speed; //Need to make FPS independent
+
     void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
     {
          ownShipNode->setPosition(vector3df(x,y,z));
     }
-    
+
     void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz)
     {
          ownShipNode->setRotation(vector3df(rx,ry,rz));
     }
-      
+
 public:
-    
+
     void setSpeed(irr::f32 spd)
     {
          speed = spd;
     }
-    
+
     void setHeading(irr::f32 hdg)
     {
          heading = hdg;
     }
-    
+
     void updateModel()
     {
-        //heading = 60;//receiver.GetScrollBarPosHeading(); //Should probably work the other way, ie event receiver calls setSomething() on model
-        //speed = 0.5;//receiver.GetScrollBarPosSpeed()/100.f;
-        
+
         //move, according to heading and speed
         xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed;
         zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed;
-        
-        //Set position
-        //shipNode->setPosition(vector3df(xPos,yPos,zPos));
-        setPosition(xPos,yPos,zPos); //Now calls 'Model' to set these (to be replaced with setSpeed, setHeading, and updateModel())
+
+        //Set position & speed by calling our private methods
+        setPosition(xPos,yPos,zPos);
         setRotation(0, heading, 0); //Global vectors
-        
+
          //link camera rotation to shipNode
         // get transformation matrix of node
         irr::core::matrix4 m;
         m.setRotationDegrees(ownShipNode->getRotation());
-        
+
         // transform forward vector of camera
         irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
         m.transformVect(frv);
-        
+
         // transform upvector of camera
         irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
         m.transformVect(upv);
-        
+
         // transform camera offset (thanks to Zeuss for finding it was missing)
         irr::core::vector3df offset(0.0f,0.9f,0.6f);
         m.transformVect(offset);
-        
+
         //move camera and angle
         camera->setPosition(ownShipNode->getPosition() + offset); //position camera behind the ship
         camera->setUpVector(upv); //set up vector of camera
         camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
     }
-    
+
     SimulationModel(IVideoDriver* drv, ISceneManager* scene) //constructor, including own ship model
     {
         //get reference to scene manager
         driver = drv;
         smgr = scene;
-        
+
         //initialise variables
-        heading = 60;
+        heading = 0;
         xPos = 0;
-        yPos = 0; 
-        zPos = 0; 
-        speed = 0.5; //Need to make FPS independent 
-        
+        yPos = 0;
+        zPos = 0;
+        speed = 0; //Need to make FPS independent
+
         //Load a ship model
         IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
         ownShipNode = smgr->addMeshSceneNode(shipMesh);
         if (ownShipNode) {ownShipNode->setMaterialFlag(EMF_LIGHTING, false);}
-        
+
         //make a camera
-        camera = smgr->addCameraSceneNode(0, vector3df(0,0,0), vector3df(0,0,1));    
-    
+        camera = smgr->addCameraSceneNode(0, vector3df(0,0,0), vector3df(0,0,1));
+
         //Add terrain
         ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
                        "World/SimpleEstuary/height.bmp",
@@ -184,7 +124,7 @@ public:
                        );
         terrain->setMaterialFlag(video::EMF_LIGHTING, false);
         terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
-    
+
         //add some water (from demo 8)
         scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
                               core::dimension2d<f32>(50,50),
@@ -198,7 +138,7 @@ public:
 
         waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
         waterNode->setMaterialFlag(EMF_LIGHTING, false);
-    
+
         //sky box/dome
         // create skydome
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -206,66 +146,104 @@ public:
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
     } //end of SimulationModel constructor
-       
+
 };
-      
+
+class MyEventReceiver : public IEventReceiver
+{
+public:
+
+    MyEventReceiver(SimulationModel* mdl) //Constructor
+	{
+		model = mdl; //Link to the model
+		scrollBarPosSpeed = 0;
+		scrollBarPosHeading = 0;
+	}
+
+    virtual bool OnEvent(const SEvent& event)
+	{
+
+        if (event.EventType == EET_GUI_EVENT)
+		{
+			s32 id = event.GUIEvent.Caller->getID();
+            if (event.GUIEvent.EventType==EGET_SCROLL_BAR_CHANGED)
+            {
+
+               if (id == GUI_ID_HEADING_SCROLL_BAR)
+                  {
+                      scrollBarPosHeading = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                      model->setHeading(scrollBarPosHeading);
+                  }
+
+              if (id == GUI_ID_SPEED_SCROLL_BAR)
+                  {
+                        scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                        model->setSpeed(scrollBarPosSpeed/100.0);
+                  }
+            }
+        }
+
+        return false;
+
+    }
+
+
+	virtual s32 GetScrollBarPosSpeed() const
+	{
+		return scrollBarPosSpeed;
+	}
+
+	virtual s32 GetScrollBarPosHeading() const
+	{
+		return scrollBarPosHeading;
+	}
+
+private:
+
+	s32 scrollBarPosSpeed, scrollBarPosHeading;
+	SimulationModel* model; //Link to model so we can set model options
+};
 
 int main()
 {
-    
-    //create event receiver
-    MyEventReceiver receiver;
-    
-    //create device
-    IrrlichtDevice* device = createDevice(EDT_OPENGL, dimension2d<s32>(640,480),32,false,false,false,&receiver);
 
-    device->setWindowCaption(L"Irrlicht test example");
-    
+    //create device
+    IrrlichtDevice* device = createDevice(EDT_OPENGL, dimension2d<u32>(640,480),32,false,false,false,0);
+
+    device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
+
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();
     IGUIEnvironment* guienv = device->getGUIEnvironment();
-    
-    //gui
+
+    //gui - Replace this with the constructor of a GUI class
     IGUIScrollBar* hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
     hdgScrollbar->setMax(360);
-    
+
     IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
     spdScrollbar->setMax(100);
-    
-    //Create simulation model 
+
+    //Create simulation model
     SimulationModel model (driver, smgr);
+
+    //create event receiver, linked to model
+    MyEventReceiver receiver(&model);
+    device->setEventReceiver(&receiver);
 
     //main loop
     while(device->run())
     {
-        //check for keys
-        /*
-        if(receiver.IsKeyDown(irr::KEY_LEFT))
-                               heading--;             
-                               
-        if(receiver.IsKeyDown(irr::KEY_RIGHT))
-                               heading++;
-        
-        if(receiver.IsKeyDown(irr::KEY_UP))
-                               speed+=0.01f;             
-                               
-        if(receiver.IsKeyDown(irr::KEY_DOWN))
-                               speed+=-0.01f;
-        */
-        
-        model.setSpeed(0.6); //- This should be called by the event receiver
-        model.setHeading(100);
-        
+
         model.updateModel();
-        
+
         //Render
         driver->beginScene(true,true,SColor(255,100,101,140));
         smgr->drawAll();
         guienv->drawAll();
         driver->endScene();
     }
-           
-    device->drop();    
-    
+
+    device->drop();
+
     return(0);
 }
