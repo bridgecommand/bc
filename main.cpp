@@ -10,11 +10,61 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
+//forward declaration of all classes (should these be in .h files?)
+class SimulationModel;
+class GUIMain;
+class MyEventReceiver;
+
 // Define some values that we'll use to identify individual GUI controls.
 enum
 {
 	GUI_ID_HEADING_SCROLL_BAR = 101,
 	GUI_ID_SPEED_SCROLL_BAR
+};
+
+class GUIMain //Create, build and update GUI
+{
+public:
+    GUIMain(IrrlichtDevice* dev)
+    {
+        device = dev;
+        guienv = device->getGUIEnvironment();
+
+        //gui - add scroll bars
+        hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
+        hdgScrollbar->setMax(360);
+
+        spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
+        spdScrollbar->setMax(100);
+
+        //add heading indicator:
+        hdgDisplay = guienv->addStaticText(L"Heading:", rect<s32>(20,20,120,40), true);
+        guiHeading = 0;
+    }
+
+    void updateGuiHeading(irr::f32 hdg)
+    {
+        guiHeading = hdg;
+    }
+
+    void drawGUI()
+    {
+        //update heading display element
+        hdgDisplay->setText(core::stringw(guiHeading).c_str());
+
+        guienv->drawAll();
+    }
+
+private:
+    IrrlichtDevice* device;
+    IGUIEnvironment* guienv;
+
+    IGUIScrollBar* spdScrollbar;
+    IGUIScrollBar* hdgScrollbar;
+    IGUIStaticText* hdgDisplay;
+
+    irr::f32 guiHeading;
+
 };
 
 class SimulationModel //Start of the 'Model' part of MVC
@@ -25,6 +75,8 @@ private:
         IVideoDriver* driver;
         ISceneManager* smgr;
         ICameraSceneNode* camera;
+        GUIMain* guiMain;
+
         //Ship movement
         irr::f32 heading;
         irr::f32 xPos;
@@ -96,14 +148,18 @@ public:
         camera->setUpVector(upv); //set up vector of camera
         camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
+
+        //send data to gui
+        guiMain->updateGuiHeading(heading);
     }
 
-    SimulationModel(IrrlichtDevice* dev, IVideoDriver* drv, ISceneManager* scene) //constructor, including own ship model
+    SimulationModel(IrrlichtDevice* dev, IVideoDriver* drv, ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
         driver = drv;
         smgr = scene;
+        guiMain = gui;
 
         //initialise variables - Start with a hardcoded initial position
         heading = 0;
@@ -128,7 +184,7 @@ public:
                        "World/SimpleEstuary/height.bmp",
                        0,					// parent node
                        -1,					// node id
-		               core::vector3df(0.f, -44.07f-3.08f, 0.f),		// position
+		               core::vector3df(0.f, -44.07f, 0.f),		// position
 		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation)
 		               core::vector3df(6.97705f, 0.56498f, 8.6871f),	// scale
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
@@ -141,10 +197,10 @@ public:
 
         //add some water (from demo 8)
         scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-                              core::dimension2d<f32>(50,50),
-                              core::dimension2d<u32>(100,100), 0, 0,
-                              core::dimension2d<f32>(0,0),
-                              core::dimension2d<f32>(10,10));
+                       core::dimension2d<f32>(50,50),
+                       core::dimension2d<u32>(100,100), 0, 0,
+                       core::dimension2d<f32>(0,0),
+                       core::dimension2d<f32>(10,10));
 
         scene::ISceneNode* waterNode = 0;
         waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.5f, 300.0f, 10.0f);
@@ -163,39 +219,14 @@ public:
 
 };
 
-class GUIMain //Create, build and update GUI
-{
-public:
-    GUIMain(IrrlichtDevice* dev)
-    {
-        device = dev;
-        guienv = device->getGUIEnvironment();
-
-        //gui - Replace this with the constructor of a GUI class
-        IGUIScrollBar* hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
-        hdgScrollbar->setMax(360);
-
-        IGUIScrollBar* spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
-        spdScrollbar->setMax(100);
-    }
-
-    void drawGUI()
-    {
-        guienv->drawAll();
-    }
-
-private:
-    IrrlichtDevice* device;
-    IGUIEnvironment* guienv;
-};
-
 class MyEventReceiver : public IEventReceiver
 {
 public:
 
-    MyEventReceiver(SimulationModel* mdl) //Constructor
+    MyEventReceiver(SimulationModel* mdl, GUIMain* gui) //Constructor
 	{
 		model = mdl; //Link to the model
+		guiMain = gui; //Link to GUI (Not currently used!)
 		scrollBarPosSpeed = 0;
 		scrollBarPosHeading = 0;
 	}
@@ -242,13 +273,14 @@ private:
 
 	s32 scrollBarPosSpeed, scrollBarPosHeading;
 	SimulationModel* model; //Link to model so we can set model options
+	GUIMain* guiMain;
 };
 
 int main()
 {
 
     //create device
-    IrrlichtDevice* device = createDevice(EDT_OPENGL, dimension2d<u32>(640,480),32,false,false,false,0);
+    IrrlichtDevice* device = createDevice(EDT_OPENGL, dimension2d<u32>(700,525),32,false,false,false,0);
 
     device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
 
@@ -259,10 +291,10 @@ int main()
     GUIMain guiMain(device);
 
     //Create simulation model
-    SimulationModel model (device, driver, smgr);
+    SimulationModel model (device, driver, smgr, &guiMain); //Add link to gui
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(&model);
+    MyEventReceiver receiver(&model, &guiMain);
     device->setEventReceiver(&receiver);
 
     //main loop
