@@ -11,9 +11,9 @@ using namespace io;
 using namespace gui;
 
 //forward declaration of all classes (should these be in .h files?)
-class SimulationModel;
+/*class SimulationModel;
 class GUIMain;
-class MyEventReceiver;
+class MyEventReceiver;*/
 
 // Define some values that we'll use to identify individual GUI controls.
 enum
