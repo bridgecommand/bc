@@ -50,7 +50,9 @@ public:
     void drawGUI()
     {
         //update heading display element
-        hdgDisplay->setText(core::stringw(guiHeading).c_str());
+        core::stringw hdgText = L"Heading: "; //Do we need to destroy this when done?
+        hdgText.append(core::stringw(guiHeading));
+        hdgDisplay->setText(hdgText.c_str());
 
         guienv->drawAll();
     }
@@ -69,89 +71,8 @@ private:
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
-private:
-        IMeshSceneNode* ownShipNode;
-        IrrlichtDevice* device;
-        IVideoDriver* driver;
-        ISceneManager* smgr;
-        ICameraSceneNode* camera;
-        GUIMain* guiMain;
-
-        //Ship movement
-        irr::f32 heading;
-        irr::f32 xPos;
-        irr::f32 yPos;
-        irr::f32 zPos;
-        irr::f32 speed;
-
-        irr::u32 currentTime;
-        irr::u32 previousTime;
-        irr::f32 deltaTime;
-
-    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
-    {
-         ownShipNode->setPosition(vector3df(x,y,z));
-    }
-
-    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz)
-    {
-         ownShipNode->setRotation(vector3df(rx,ry,rz));
-    }
 
 public:
-
-    void setSpeed(irr::f32 spd)
-    {
-         speed = spd;
-    }
-
-    void setHeading(irr::f32 hdg)
-    {
-         heading = hdg;
-    }
-
-    void updateModel()
-    {
-
-        //get delta time
-        currentTime = device->getTimer()->getTime();
-        deltaTime = (currentTime - previousTime)/1000.f; //Time in seconds
-        previousTime = currentTime;
-
-        //move, according to heading and speed
-        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed*deltaTime;
-        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed*deltaTime;
-
-        //Set position & speed by calling our private methods
-        setPosition(xPos,yPos,zPos);
-        setRotation(0, heading, 0); //Global vectors
-
-         //link camera rotation to shipNode
-        // get transformation matrix of node
-        irr::core::matrix4 m;
-        m.setRotationDegrees(ownShipNode->getRotation());
-
-        // transform forward vector of camera
-        irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
-        m.transformVect(frv);
-
-        // transform upvector of camera
-        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
-        m.transformVect(upv);
-
-        // transform camera offset (thanks to Zeuss for finding it was missing)
-        irr::core::vector3df offset(0.0f,0.9f,0.6f);
-        m.transformVect(offset);
-
-        //move camera and angle
-        camera->setPosition(ownShipNode->getPosition() + offset); //position camera behind the ship
-        camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
-        camera->updateAbsolutePosition();
-
-        //send data to gui
-        guiMain->updateGuiHeading(heading);
-    }
 
     SimulationModel(IrrlichtDevice* dev, IVideoDriver* drv, ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
@@ -216,6 +137,89 @@ public:
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
     } //end of SimulationModel constructor
+
+    void setSpeed(irr::f32 spd)
+    {
+         speed = spd;
+    }
+
+    void setHeading(irr::f32 hdg)
+    {
+         heading = hdg;
+    }
+
+    void updateModel()
+    {
+
+        //get delta time
+        currentTime = device->getTimer()->getTime();
+        deltaTime = (currentTime - previousTime)/1000.f; //Time in seconds
+        previousTime = currentTime;
+
+        //move, according to heading and speed
+        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed*deltaTime;
+        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed*deltaTime;
+
+        //Set position & speed by calling our private methods
+        setPosition(xPos,yPos,zPos);
+        setRotation(0, heading, 0); //Global vectors
+
+         //link camera rotation to shipNode
+        // get transformation matrix of node
+        irr::core::matrix4 m;
+        m.setRotationDegrees(ownShipNode->getRotation());
+
+        // transform forward vector of camera
+        irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
+        m.transformVect(frv);
+
+        // transform upvector of camera
+        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
+        m.transformVect(upv);
+
+        // transform camera offset (thanks to Zeuss for finding it was missing)
+        irr::core::vector3df offset(0.0f,0.9f,0.6f);
+        m.transformVect(offset);
+
+        //move camera and angle
+        camera->setPosition(ownShipNode->getPosition() + offset); //position camera behind the ship
+        camera->setUpVector(upv); //set up vector of camera
+        camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
+        camera->updateAbsolutePosition();
+
+        //send data to gui
+        guiMain->updateGuiHeading(heading);
+    }
+
+
+private:
+        IMeshSceneNode* ownShipNode;
+        IrrlichtDevice* device;
+        IVideoDriver* driver;
+        ISceneManager* smgr;
+        ICameraSceneNode* camera;
+        GUIMain* guiMain;
+
+        //Ship movement
+        irr::f32 heading;
+        irr::f32 xPos;
+        irr::f32 yPos;
+        irr::f32 zPos;
+        irr::f32 speed;
+
+        irr::u32 currentTime;
+        irr::u32 previousTime;
+        irr::f32 deltaTime;
+
+    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
+    {
+         ownShipNode->setPosition(vector3df(x,y,z));
+    }
+
+    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz)
+    {
+         ownShipNode->setRotation(vector3df(rx,ry,rz));
+    }
 
 };
 
