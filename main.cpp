@@ -35,24 +35,28 @@ public:
         hdgScrollbar->setMax(360);
 
         spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
-        spdScrollbar->setMax(100);
+        spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
 
         //add heading indicator:
-        hdgDisplay = guienv->addStaticText(L"Heading:", rect<s32>(20,20,120,40), true);
+        dataDisplay = guienv->addStaticText(L"", rect<s32>(20,20,120,40), true); //Actual text set later
         guiHeading = 0;
+        guiSpeed = 0;
     }
 
-    void updateGuiHeading(irr::f32 hdg)
+    void updateGuiData(irr::f32 hdg, irr::f32 spd)
     {
-        guiHeading = hdg;
+        guiHeading = hdg; //Heading in degrees
+        guiSpeed = spd; //Speed in knots
     }
 
     void drawGUI()
     {
         //update heading display element
-        core::stringw hdgText = L"Heading: "; //Do we need to destroy this when done?
-        hdgText.append(core::stringw(guiHeading));
-        hdgDisplay->setText(hdgText.c_str());
+        core::stringw displayText = L"Heading: "; //Do we need to destroy this when done?
+        displayText.append(core::stringw(guiHeading));
+        displayText.append(L"\nSpeed: ");
+        displayText.append(core::stringw(guiSpeed));
+        dataDisplay->setText(displayText.c_str());
 
         guienv->drawAll();
     }
@@ -63,9 +67,10 @@ private:
 
     IGUIScrollBar* spdScrollbar;
     IGUIScrollBar* hdgScrollbar;
-    IGUIStaticText* hdgDisplay;
+    IGUIStaticText* dataDisplay;
 
     irr::f32 guiHeading;
+    irr::f32 guiSpeed;
 
 };
 
@@ -136,6 +141,12 @@ public:
         scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("media/sky.bmp"),16,8,0.95f,2.0f);
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
+        //make fog
+        driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, true);
+        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        skydome->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
     } //end of SimulationModel constructor
 
     void setSpeed(irr::f32 spd)
@@ -188,7 +199,7 @@ public:
         camera->updateAbsolutePosition();
 
         //send data to gui
-        guiMain->updateGuiHeading(heading);
+        guiMain->updateGuiData(heading, speed*3600.f/1852.f); //Set GUI heading in degrees and speed in knots
     }
 
 
@@ -253,7 +264,7 @@ public:
               if (id == GUI_ID_SPEED_SCROLL_BAR)
                   {
                         scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-                        model->setSpeed(scrollBarPosSpeed/10.0);
+                        model->setSpeed(scrollBarPosSpeed);
                   }
             }
         }
