@@ -4,16 +4,6 @@
 
 // Irrlicht Namespaces
 using namespace irr;
-using namespace core;
-using namespace scene;
-using namespace video;
-using namespace io;
-using namespace gui;
-
-//forward declaration of all classes (should these be in .h files?)
-/*class SimulationModel;
-class GUIMain;
-class MyEventReceiver;*/
 
 // Define some values that we'll use to identify individual GUI controls.
 enum
@@ -31,19 +21,19 @@ public:
         guienv = device->getGUIEnvironment();
 
         //gui - add scroll bars
-        hdgScrollbar = guienv->addScrollBar(false,rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
+        hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(10, 240, 30, 470), 0, GUI_ID_HEADING_SCROLL_BAR);
         hdgScrollbar->setMax(360);
 
-        spdScrollbar = guienv->addScrollBar(false,rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
+        spdScrollbar = guienv->addScrollBar(false,core::rect<s32>(40, 240, 60, 470), 0, GUI_ID_SPEED_SCROLL_BAR);
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
 
         //add heading indicator:
-        dataDisplay = guienv->addStaticText(L"", rect<s32>(20,20,120,40), true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(20,20,120,40), true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
     }
 
-    void updateGuiData(irr::f32 hdg, irr::f32 spd)
+    void updateGuiData(f32 hdg, f32 spd)
     {
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd; //Speed in knots
@@ -63,14 +53,14 @@ public:
 
 private:
     IrrlichtDevice* device;
-    IGUIEnvironment* guienv;
+    gui::IGUIEnvironment* guienv;
 
-    IGUIScrollBar* spdScrollbar;
-    IGUIScrollBar* hdgScrollbar;
-    IGUIStaticText* dataDisplay;
+    gui::IGUIScrollBar* spdScrollbar;
+    gui::IGUIScrollBar* hdgScrollbar;
+    gui::IGUIStaticText* dataDisplay;
 
-    irr::f32 guiHeading;
-    irr::f32 guiSpeed;
+    f32 guiHeading;
+    f32 guiSpeed;
 
 };
 
@@ -79,7 +69,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(IrrlichtDevice* dev, IVideoDriver* drv, ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
+    SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -98,15 +88,15 @@ public:
         previousTime = device->getTimer()->getTime();
 
         //Load a ship model
-        IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
+        scene::IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
         ownShipNode = smgr->addMeshSceneNode(shipMesh);
-        if (ownShipNode) {ownShipNode->setMaterialFlag(EMF_LIGHTING, false);}
+        if (ownShipNode) {ownShipNode->setMaterialFlag(video::EMF_LIGHTING, false);}
 
         //make a camera
-        camera = smgr->addCameraSceneNode(0, vector3df(0,0,0), vector3df(0,0,1));
+        camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
 
         //Add terrain
-        ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+        scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
                        "World/SimpleEstuary/height.bmp",
                        0,					// parent node
                        -1,					// node id
@@ -116,7 +106,7 @@ public:
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
 		               5,					// maxLOD
 		               scene::ETPS_17,		// patchSize
-		               4					// smoothFactor
+		               4					// smoothFactoespr
                        );
         terrain->setMaterialFlag(video::EMF_LIGHTING, false);
         terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
@@ -133,7 +123,7 @@ public:
         waterNode->setPosition(core::vector3df(0,-2*0.5f,0));
 
         waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-        waterNode->setMaterialFlag(EMF_LIGHTING, false);
+        waterNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
         //sky box/dome
         // create skydome
@@ -149,12 +139,12 @@ public:
 
     } //end of SimulationModel constructor
 
-    void setSpeed(irr::f32 spd)
+    void setSpeed(f32 spd)
     {
          speed = spd;
     }
 
-    void setHeading(irr::f32 hdg)
+    void setHeading(f32 hdg)
     {
          heading = hdg;
     }
@@ -168,8 +158,8 @@ public:
         previousTime = currentTime;
 
         //move, according to heading and speed
-        xPos = xPos + sin(heading*irr::core::DEGTORAD)*speed*deltaTime;
-        zPos = zPos + cos(heading*irr::core::DEGTORAD)*speed*deltaTime;
+        xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
+        zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
 
         //Set position & speed by calling our private methods
         setPosition(xPos,yPos,zPos);
@@ -177,19 +167,19 @@ public:
 
          //link camera rotation to shipNode
         // get transformation matrix of node
-        irr::core::matrix4 m;
+        core::matrix4 m;
         m.setRotationDegrees(ownShipNode->getRotation());
 
         // transform forward vector of camera
-        irr::core::vector3df frv(0.0f, 0.0f, 1.0f);
+        core::vector3df frv(0.0f, 0.0f, 1.0f);
         m.transformVect(frv);
 
         // transform upvector of camera
-        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
+        core::vector3df upv(0.0f, 1.0f, 0.0f);
         m.transformVect(upv);
 
         // transform camera offset (thanks to Zeuss for finding it was missing)
-        irr::core::vector3df offset(0.0f,0.9f,0.6f);
+        core::vector3df offset(0.0f,0.9f,0.6f);
         m.transformVect(offset);
 
         //move camera and angle
@@ -204,32 +194,32 @@ public:
 
 
 private:
-        IMeshSceneNode* ownShipNode;
         IrrlichtDevice* device;
-        IVideoDriver* driver;
-        ISceneManager* smgr;
-        ICameraSceneNode* camera;
+        scene::IMeshSceneNode* ownShipNode;
+        video::IVideoDriver* driver;
+        scene::ISceneManager* smgr;
+        scene::ICameraSceneNode* camera;
         GUIMain* guiMain;
 
         //Ship movement
-        irr::f32 heading;
-        irr::f32 xPos;
-        irr::f32 yPos;
-        irr::f32 zPos;
-        irr::f32 speed;
+        f32 heading;
+        f32 xPos;
+        f32 yPos;
+        f32 zPos;
+        f32 speed;
 
-        irr::u32 currentTime;
-        irr::u32 previousTime;
-        irr::f32 deltaTime;
+        u32 currentTime;
+        u32 previousTime;
+        f32 deltaTime;
 
-    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z)
+    void setPosition(f32 x, f32 y, f32 z)
     {
-         ownShipNode->setPosition(vector3df(x,y,z));
+         ownShipNode->setPosition(core::vector3df(x,y,z));
     }
 
-    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz)
+    void setRotation(f32 rx, f32 ry, f32 rz)
     {
-         ownShipNode->setRotation(vector3df(rx,ry,rz));
+         ownShipNode->setRotation(core::vector3df(rx,ry,rz));
     }
 
 };
@@ -252,18 +242,18 @@ public:
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
-            if (event.GUIEvent.EventType==EGET_SCROLL_BAR_CHANGED)
+            if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED)
             {
 
                if (id == GUI_ID_HEADING_SCROLL_BAR)
                   {
-                      scrollBarPosHeading = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                      scrollBarPosHeading = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                       model->setHeading(scrollBarPosHeading);
                   }
 
               if (id == GUI_ID_SPEED_SCROLL_BAR)
                   {
-                        scrollBarPosSpeed = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                        scrollBarPosSpeed = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                         model->setSpeed(scrollBarPosSpeed);
                   }
             }
@@ -295,12 +285,12 @@ int main()
 {
 
     //create device
-    IrrlichtDevice* device = createDevice(EDT_OPENGL, dimension2d<u32>(700,525),32,false,false,false,0);
+    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(700,525),32,false,false,false,0);
 
     device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
 
-    IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = device->getSceneManager();
+    video::IVideoDriver* driver = device->getVideoDriver();
+    scene::ISceneManager* smgr = device->getSceneManager();
 
     //create GUI
     GUIMain guiMain(device);
@@ -319,7 +309,7 @@ int main()
         model.updateModel();
 
         //Render
-        driver->beginScene(true,true,SColor(255,100,101,140));
+        driver->beginScene(true,true,video::SColor(255,100,101,140));
         smgr->drawAll();
         guiMain.drawGUI();
         driver->endScene();
