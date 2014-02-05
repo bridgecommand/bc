@@ -5,40 +5,38 @@
 
 #include "GUIMain.hpp"
 
-using namespace irr;
-
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
 
-    SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, scene::ISceneManager* scene, GUIMain* gui);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::video::IVideoDriver* drv, irr::scene::ISceneManager* scene, GUIMain* gui);
 
-    void setSpeed(f32 spd);
-    void setHeading(f32 hdg);
+    void setSpeed(irr::f32 spd);
+    void setHeading(irr::f32 hdg);
     void updateModel();
 
 private:
-    IrrlichtDevice* device;
-    scene::IMeshSceneNode* ownShipNode;
-    video::IVideoDriver* driver;
-    scene::ISceneManager* smgr;
-    scene::ICameraSceneNode* camera;
+    irr::IrrlichtDevice* device;
+    irr::scene::IMeshSceneNode* ownShipNode;
+    irr::video::IVideoDriver* driver;
+    irr::scene::ISceneManager* smgr;
+    irr::scene::ICameraSceneNode* camera;
     GUIMain* guiMain;
 
     //Ship movement
-    f32 heading;
-    f32 xPos;
-    f32 yPos;
-    f32 zPos;
-    f32 speed;
-    u32 currentTime;
-    u32 previousTime;
-    f32 deltaTime;
+    irr::f32 heading;
+    irr::f32 xPos;
+    irr::f32 yPos;
+    irr::f32 zPos;
+    irr::f32 speed;
+    irr::u32 currentTime;
+    irr::u32 previousTime;
+    irr::f32 deltaTime;
 
-    void setPosition(f32 x, f32 y, f32 z);
+    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z);
 
-    void setRotation(f32 rx, f32 ry, f32 rz);
+    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz);
 
 };
 #endif

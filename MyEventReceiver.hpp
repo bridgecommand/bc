@@ -6,24 +6,22 @@
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
 
-using namespace irr;
-
-class MyEventReceiver : public IEventReceiver
+class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
     MyEventReceiver(SimulationModel* mdl, GUIMain* gui);
 
-    virtual bool OnEvent(const SEvent& event);
-    virtual s32 GetScrollBarPosSpeed() const;
-    virtual s32 GetScrollBarPosHeading() const;
+    virtual bool OnEvent(const irr::SEvent& event);
+    virtual irr::s32 GetScrollBarPosSpeed() const;
+    virtual irr::s32 GetScrollBarPosHeading() const;
 
 private:
 
     SimulationModel* model;
     GUIMain* guiMain;
-    s32 scrollBarPosSpeed;
-    s32 scrollBarPosHeading;
+    irr::s32 scrollBarPosSpeed;
+    irr::s32 scrollBarPosHeading;
 
 };
 

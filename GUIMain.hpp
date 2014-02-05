@@ -3,14 +3,12 @@
 
 #include "irrlicht.h"
 
-using namespace irr;
-
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(IrrlichtDevice* dev);
+    GUIMain(irr::IrrlichtDevice* dev);
 
-    void updateGuiData(f32 hdg, f32 spd);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd);
 
     void drawGUI();
 
@@ -21,15 +19,15 @@ public:
     };
 
 private:
-    IrrlichtDevice* device;
-    gui::IGUIEnvironment* guienv;
+    irr::IrrlichtDevice* device;
+    irr::gui::IGUIEnvironment* guienv;
 
-    gui::IGUIScrollBar* spdScrollbar;
-    gui::IGUIScrollBar* hdgScrollbar;
-    gui::IGUIStaticText* dataDisplay;
+    irr::gui::IGUIScrollBar* spdScrollbar;
+    irr::gui::IGUIScrollBar* hdgScrollbar;
+    irr::gui::IGUIStaticText* dataDisplay;
 
-    f32 guiHeading;
-    f32 guiSpeed;
+    irr::f32 guiHeading;
+    irr::f32 guiSpeed;
 
 };
 
