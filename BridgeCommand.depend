@@ -1,6 +1,9 @@
 # depslib dependency file v1.0
-1391415228 source:c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\main.cpp
+1391624059 source:c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\main.cpp
 	"irrlicht.h"
+	"GUIMain.hpp"
+	"SimulationModel.hpp"
+	"MyEventReceiver.hpp"
 
 1352128454 c:\irrlicht-1.8.1\include\irrlicht.h
 	"IrrCompileConfig.h"
@@ -989,4 +992,24 @@
 	"aabbox3d.h"
 	"matrix4.h"
 	"IVideoDriver.h"
+
+1391588952 source:c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\guimain.cpp
+	"irrlicht.h"
+	"GUIMain.hpp"
+
+1391623911 c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\guimain.hpp
+	"irrlicht.h"
+
+1391589115 c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\simulationmodel.hpp
+	"irrlicht.h"
+	"GUIMain.hpp"
+
+1391589019 source:c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\simulationmodel.cpp
+	"irrlicht.h"
+	"SimulationModel.hpp"
+
+1391624401 c:\documents and settings\james\my documents\bridge command\irrlichttesting\test1\myeventreceiver.hpp
+	"irrlicht.h"
+	"GUIMain.hpp"
+	"SimulationModel.hpp"
 

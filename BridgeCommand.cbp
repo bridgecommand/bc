@@ -18,6 +18,10 @@
 		<Linker>
 			<Add option="../../../../../../irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 		</Linker>
+		<Unit filename="GUIMain.cpp" />
+		<Unit filename="GUIMain.hpp" />
+		<Unit filename="SimulationModel.cpp" />
+		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
