@@ -20,6 +20,8 @@
 		</Linker>
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
+		<Unit filename="MyEventReceiver.cpp" />
+		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="SimulationModel.cpp" />
 		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="main.cpp" />
