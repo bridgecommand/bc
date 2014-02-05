@@ -4,13 +4,6 @@
 
 using namespace irr;
 
-// Define some values that we'll use to identify individual GUI controls.
-enum //FIXME: This is now defined twice
-{
-	GUI_ID_HEADING_SCROLL_BAR = 101,
-	GUI_ID_SPEED_SCROLL_BAR
-};
-
     MyEventReceiver::MyEventReceiver(SimulationModel* mdl, GUIMain* gui) //Constructor
 	{
 		model = mdl; //Link to the model
@@ -28,13 +21,13 @@ enum //FIXME: This is now defined twice
             if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED)
             {
 
-               if (id == GUI_ID_HEADING_SCROLL_BAR)
+               if (id == GUIMain::GUI_ID_HEADING_SCROLL_BAR)
                   {
                       scrollBarPosHeading = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                       model->setHeading(scrollBarPosHeading);
                   }
 
-              if (id == GUI_ID_SPEED_SCROLL_BAR)
+              if (id == GUIMain::GUI_ID_SPEED_SCROLL_BAR)
                   {
                         scrollBarPosSpeed = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                         model->setSpeed(scrollBarPosSpeed);

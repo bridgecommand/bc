@@ -14,6 +14,12 @@ public:
 
     void drawGUI();
 
+    enum // Define some values that we'll use to identify individual GUI controls.
+    {
+        GUI_ID_HEADING_SCROLL_BAR = 101,
+        GUI_ID_SPEED_SCROLL_BAR
+    };
+
 private:
     IrrlichtDevice* device;
     gui::IGUIEnvironment* guienv;

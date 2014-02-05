@@ -4,12 +4,6 @@
 
 using namespace irr;
 
-enum //FIXME: This is now defined twice
-{
-	GUI_ID_HEADING_SCROLL_BAR = 101,
-	GUI_ID_SPEED_SCROLL_BAR
-};
-
 GUIMain::GUIMain(IrrlichtDevice* dev)
     {
         device = dev;
