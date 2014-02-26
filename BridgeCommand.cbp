@@ -13,10 +13,10 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add directory="C:/irrlicht-1.8.1/include" />
+			<Add directory="C:/Users/James/Documents/Programming/Irrlicht/irrlicht-1.8.1/include" />
 		</Compiler>
 		<Linker>
-			<Add option="../../../../../../irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
+			<Add option="C:/Users/James/Documents/Programming/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 		</Linker>
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
