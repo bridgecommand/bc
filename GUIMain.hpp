@@ -18,11 +18,14 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
+    //fixme: Temporarily moved to public
+    irr::gui::IGUIScrollBar* spdScrollbar;
+
 private:
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
 
-    irr::gui::IGUIScrollBar* spdScrollbar;
+
     irr::gui::IGUIScrollBar* hdgScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
 

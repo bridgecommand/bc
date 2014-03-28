@@ -14,6 +14,8 @@ public:
 
     void setSpeed(irr::f32 spd);
     void setHeading(irr::f32 hdg);
+    irr::f32 getSpeed();
+    irr::f32 getHeading();
     void updateModel();
 
 private:

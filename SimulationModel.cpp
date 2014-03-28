@@ -79,9 +79,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
          speed = spd;
     }
 
+    irr::f32 SimulationModel::getSpeed()
+    {
+        return(speed);
+    }
+
     void SimulationModel::setHeading(f32 hdg)
     {
          heading = hdg;
+    }
+
+    irr::f32 SimulationModel::getHeading()
+    {
+        return(heading);
     }
 
     void SimulationModel::updateModel()
@@ -124,7 +134,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         camera->updateAbsolutePosition();
 
         //send data to gui
-        guiMain->updateGuiData(heading, speed*3600.f/1852.f); //Set GUI heading in degrees and speed in knots
+        guiMain->updateGuiData(heading, speed); //Set GUI heading in degrees and speed (in m/s)
     }
 
 

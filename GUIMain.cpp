@@ -24,8 +24,12 @@ GUIMain::GUIMain(IrrlichtDevice* dev)
 
     void GUIMain::updateGuiData(f32 hdg, f32 spd)
     {
+        //Update scroll bars
+        hdgScrollbar->setPos(hdg);
+        spdScrollbar->setPos(spd);
+        //Update text display data
         guiHeading = hdg; //Heading in degrees
-        guiSpeed = spd; //Speed in knots
+        guiSpeed = spd*3600.f/1852.f; //Speed in knots
     }
 
     void GUIMain::drawGUI()

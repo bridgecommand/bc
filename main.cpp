@@ -5,6 +5,9 @@
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
 #include "MyEventReceiver.hpp"
+#include "Network.hpp"
+
+#include <iostream>
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -30,10 +33,15 @@ int main()
     MyEventReceiver receiver(&model, &guiMain);
     device->setEventReceiver(&receiver);
 
+    //Create networking, linked to model
+    Network network(&model);
+    network.connectToServer();
+
     //main loop
     while(device->run())
     {
 
+        network.updateNetwork();
         model.updateModel();
 
         //Render
@@ -41,9 +49,12 @@ int main()
         smgr->drawAll();
         guiMain.drawGUI();
         driver->endScene();
+
     }
 
     device->drop();
+    //networking should be stopped (presumably with destructor when it goes out of scope?)
+
 
     return(0);
 }
