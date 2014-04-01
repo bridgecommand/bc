@@ -79,7 +79,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
          speed = spd;
     }
 
-    irr::f32 SimulationModel::getSpeed()
+    const irr::f32 SimulationModel::getSpeed()
     {
         return(speed);
     }
@@ -89,7 +89,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
          heading = hdg;
     }
 
-    irr::f32 SimulationModel::getHeading()
+    const irr::f32 SimulationModel::getHeading()
     {
         return(heading);
     }

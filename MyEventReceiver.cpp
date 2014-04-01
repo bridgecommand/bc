@@ -40,12 +40,12 @@ using namespace irr;
     }
 
 
-	s32 MyEventReceiver::GetScrollBarPosSpeed() const
+	const s32 MyEventReceiver::GetScrollBarPosSpeed()
 	{
 		return scrollBarPosSpeed;
 	}
 
-	s32 MyEventReceiver::GetScrollBarPosHeading() const
+	const s32 MyEventReceiver::GetScrollBarPosHeading()
 	{
 		return scrollBarPosHeading;
 	}

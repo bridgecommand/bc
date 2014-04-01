@@ -8,25 +8,25 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain(irr::IrrlichtDevice* dev);
 
-    void updateGuiData(irr::f32 hdg, irr::f32 spd);
-
-    void drawGUI();
-
-    enum // Define some values that we'll use to identify individual GUI controls.
+    enum SCROLL_BARS// Define some values that we'll use to identify individual GUI controls.
     {
         GUI_ID_HEADING_SCROLL_BAR = 101,
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    //fixme: Temporarily moved to public
-    irr::gui::IGUIScrollBar* spdScrollbar;
+    void updateGuiData(irr::f32 hdg, irr::f32 spd);
+
+    void drawGUI();
+
 
 private:
+
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
 
 
     irr::gui::IGUIScrollBar* hdgScrollbar;
+    irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
 
     irr::f32 guiHeading;
