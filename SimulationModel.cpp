@@ -15,9 +15,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //initialise variables - Start with a hardcoded initial position
         heading = 0;
         xPos = 864.34f;
-        yPos = 0;
+        yPos = 0.0f;
         zPos = 619.317f;
-        speed = 0; //Need to make FPS independent
+        speed = 0.0f;
 
         //store time
         previousTime = device->getTimer()->getTime();
@@ -45,6 +45,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
                        );
         terrain->setMaterialFlag(video::EMF_LIGHTING, false);
         terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
+
+        //load buoys (In due course, move these into their own object, which can go into a vector, including scene node pointer and light characteristics etc)
+        scene::IMesh* buoyMesh = smgr->getMesh("Models/Buoy/Safe/buoy.x");
+        scene::IMeshSceneNode* buoy = smgr->addMeshSceneNode(buoyMesh,0,-1,core::vector3df(894.34f,0.0f,619.317f)); //Hardcoded position
+        buoy->setMaterialFlag(video::EMF_LIGHTING, false);
 
         //add some water (from demo 8)
         scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
