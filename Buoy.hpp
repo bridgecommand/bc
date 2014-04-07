@@ -10,6 +10,7 @@ class Buoy
         virtual ~Buoy();
     protected:
     private:
+        irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
 };
 
 #endif // __BUOY_HPP_INCLUDED__
