@@ -4,6 +4,7 @@
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
+#include "Buoy.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {

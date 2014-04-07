@@ -47,9 +47,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
 
         //load buoys (In due course, move these into their own object, which can go into a vector, including scene node pointer and light characteristics etc)
-        scene::IMesh* buoyMesh = smgr->getMesh("Models/Buoy/Safe/buoy.x");
-        scene::IMeshSceneNode* buoy = smgr->addMeshSceneNode(buoyMesh,0,-1,core::vector3df(894.34f,0.0f,619.317f)); //Hardcoded position
-        buoy->setMaterialFlag(video::EMF_LIGHTING, false);
+        Buoy safeWaterBuoy ("Models/Buoy/South/buoy.x",core::vector3df(894.34f,0.0f,619.317f),smgr);
 
         //add some water (from demo 8)
         scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
