@@ -1,6 +1,8 @@
 #ifndef __SIMULATIONMODEL_HPP_INCLUDED__
 #define __SIMULATIONMODEL_HPP_INCLUDED__
 
+#include <vector>
+
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
@@ -22,6 +24,7 @@ public:
 private:
     irr::IrrlichtDevice* device;
     irr::scene::IMeshSceneNode* ownShipNode;
+    std::vector<Buoy> buoys;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     irr::scene::ICameraSceneNode* camera;
