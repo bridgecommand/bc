@@ -7,6 +7,7 @@
 
 #include "GUIMain.hpp"
 #include "Buoy.hpp"
+#include "OwnShip.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
@@ -23,7 +24,8 @@ public:
 
 private:
     irr::IrrlichtDevice* device;
-    irr::scene::IMeshSceneNode* ownShipNode;
+    //irr::scene::IMeshSceneNode* ownShipNode;
+    OwnShip ownShip;
     std::vector<Buoy> buoys;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
@@ -39,10 +41,6 @@ private:
     irr::u32 currentTime;
     irr::u32 previousTime;
     irr::f32 deltaTime;
-
-    void setPosition(irr::f32 x, irr::f32 y, irr::f32 z);
-
-    void setRotation(irr::f32 rx, irr::f32 ry, irr::f32 rz);
 
 };
 #endif

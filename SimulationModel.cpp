@@ -23,9 +23,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         previousTime = device->getTimer()->getTime();
 
         //Load a ship model
-        scene::IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
-        ownShipNode = smgr->addMeshSceneNode(shipMesh);
-        if (ownShipNode) {ownShipNode->setMaterialFlag(video::EMF_LIGHTING, false);}
+        //scene::IMesh* shipMesh = smgr->getMesh("Models/Ownship/Atlantic85/Hull.3ds");
+        //ownShipNode = smgr->addMeshSceneNode(shipMesh);
+        ownShip.loadModel("Models/Ownship/Atlantic85/Hull.3ds",core::vector3df(0,0,0),smgr);
+        //ownShipNode = ownShip.getSceneNode();
+        //if (ownShipNode) {ownShipNode->setMaterialFlag(video::EMF_LIGHTING, false);}
 
         //make a camera
         camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
@@ -109,14 +111,14 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
         zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
 
-        //Set position & speed by calling our private methods
-        setPosition(xPos,yPos,zPos);
-        setRotation(0, heading, 0); //Global vectors
+        //Set position & speed by calling own ship methods
+        ownShip.setPosition(xPos,yPos,zPos);
+        ownShip.setRotation(0, heading, 0); //Global vectors
 
          //link camera rotation to shipNode
         // get transformation matrix of node
         core::matrix4 m;
-        m.setRotationDegrees(ownShipNode->getRotation());
+        m.setRotationDegrees(ownShip.getRotation());
 
         // transform forward vector of camera
         core::vector3df frv(0.0f, 0.0f, 1.0f);
@@ -131,22 +133,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         m.transformVect(offset);
 
         //move camera and angle
-        camera->setPosition(ownShipNode->getPosition() + offset); //position camera behind the ship
+        camera->setPosition(ownShip.getPosition() + offset); //position camera behind the ship
         camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(ownShipNode->getPosition() + offset + frv); //set target of camera (look at point)
+        camera->setTarget(ownShip.getPosition() + offset + frv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
 
         //send data to gui
         guiMain->updateGuiData(heading, speed); //Set GUI heading in degrees and speed (in m/s)
     }
 
-
-    void SimulationModel::setPosition(f32 x, f32 y, f32 z)
-    {
-         ownShipNode->setPosition(core::vector3df(x,y,z));
-    }
-
-    void SimulationModel::setRotation(f32 rx, f32 ry, f32 rz)
-    {
-         ownShipNode->setRotation(core::vector3df(rx,ry,rz));
-    }
