@@ -26,14 +26,14 @@ irr::scene::IMeshSceneNode* OwnShip::getSceneNode()
     return ownShip;
 }
 
-void OwnShip::setPosition(f32 x, f32 y, f32 z)
+void OwnShip::setPosition(irr::core::vector3df position)
 {
-    ownShip->setPosition(core::vector3df(x,y,z));
+     ownShip->setPosition(position);
 }
 
-void OwnShip::setRotation(f32 rx, f32 ry, f32 rz)
+void OwnShip::setRotation(irr::core::vector3df rotation)
 {
-    ownShip->setRotation(core::vector3df(rx,ry,rz));
+    ownShip->setRotation(rotation);
 }
 
 irr::core::vector3df OwnShip::getRotation()

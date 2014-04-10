@@ -26,7 +26,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.loadModel("Models/Ownship/Atlantic85/Hull.3ds",core::vector3df(0,0,0),smgr);
 
         //make a camera
-        //camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1)); //Can we bind this to the own ship so we don't manually need to link camera and ship pos?
         camera.loadCamera(smgr);
 
         //Add terrain
@@ -109,8 +108,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
 
         //Set position & speed by calling own ship methods
-        ownShip.setPosition(xPos,yPos,zPos);
-        ownShip.setRotation(0, heading, 0); //Global vectors
+        ownShip.setPosition(core::vector3df(xPos,yPos,zPos));
+        ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
 
          //link camera rotation to shipNode
         // get transformation matrix of node
@@ -130,12 +129,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         m.transformVect(offset);
 
         //move camera and angle
-        /*
-        camera->setPosition(ownShip.getPosition() + offset); //position camera behind the ship
-        camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(ownShip.getPosition() + offset + frv); //set target of camera (look at point)
-        camera->updateAbsolutePosition();
-        */
         camera.updateCamera(ownShip.getPosition() + offset, upv, ownShip.getPosition() + offset + frv);
 
         //send data to gui
