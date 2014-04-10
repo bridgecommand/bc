@@ -1009,12 +1009,13 @@
 	"Network.hpp"
 	<iostream>
 
-1397031923 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1397116103 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	<vector>
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"Buoy.hpp"
 	"OwnShip.hpp"
+	"Camera.hpp"
 
 1397066552 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
@@ -4499,11 +4500,18 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397031923 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397066586 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
 	"OwnShip.hpp"
 
-1397032223 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397116489 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	"SimulationModel.hpp"
+
+1397116445 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
+	"irrlicht.h"
+
+1397116434 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
+	"irrlicht.h"
+	"Camera.hpp"
 

@@ -8,6 +8,7 @@
 #include "GUIMain.hpp"
 #include "Buoy.hpp"
 #include "OwnShip.hpp"
+#include "Camera.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
@@ -29,7 +30,8 @@ private:
     std::vector<Buoy> buoys;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
-    irr::scene::ICameraSceneNode* camera;
+    //irr::scene::ICameraSceneNode* camera;
+    Camera camera;
     GUIMain* guiMain;
 
     //Ship movement
