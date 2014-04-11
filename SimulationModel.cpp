@@ -34,27 +34,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //load example buoy object and put in the buoys array
         buoys.push_back(Buoy ("Models/Buoy/Safe/buoy.x",core::vector3df(894.34f,0.0f,619.317f),smgr));
 
-        //add some water (from demo 8)
-        scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-                       core::dimension2d<f32>(50,50),
-                       core::dimension2d<u32>(100,100), 0, 0,
-                       core::dimension2d<f32>(0,0),
-                       core::dimension2d<f32>(10,10));
-
-        scene::ISceneNode* waterNode = 0;
-        waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.5f, 300.0f, 10.0f);
-        waterNode->setPosition(core::vector3df(0,-2*0.5f,0));
-
-        waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-        waterNode->setMaterialFlag(video::EMF_LIGHTING, false);
-        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        //add water
+        Water water (smgr, driver);
 
         //sky box/dome
-        // create skydome
-	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-        scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("media/sky.bmp"),16,8,0.95f,2.0f);
-	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-	    skydome->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        Sky sky (smgr, driver);
 
         //make fog
         driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, true);

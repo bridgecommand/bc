@@ -7,6 +7,8 @@
 
 #include "GUIMain.hpp"
 #include "Terrain.hpp"
+#include "Water.hpp"
+#include "Sky.hpp"
 #include "Buoy.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"

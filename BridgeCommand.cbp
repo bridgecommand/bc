@@ -35,8 +35,12 @@
 		<Unit filename="OwnShip.hpp" />
 		<Unit filename="SimulationModel.cpp" />
 		<Unit filename="SimulationModel.hpp" />
+		<Unit filename="Sky.cpp" />
+		<Unit filename="Sky.hpp" />
 		<Unit filename="Terrain.cpp" />
 		<Unit filename="Terrain.hpp" />
+		<Unit filename="Water.cpp" />
+		<Unit filename="Water.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

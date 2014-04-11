@@ -1009,11 +1009,13 @@
 	"Network.hpp"
 	<iostream>
 
-1397233914 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1397235031 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	<vector>
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"Terrain.hpp"
+	"Water.hpp"
+	"Sky.hpp"
 	"Buoy.hpp"
 	"OwnShip.hpp"
 	"Camera.hpp"
@@ -4505,7 +4507,7 @@
 	"irrlicht.h"
 	"OwnShip.hpp"
 
-1397202887 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397235354 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	"SimulationModel.hpp"
 
@@ -4522,4 +4524,14 @@
 1397233759 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
 	"irrlicht.h"
 	"Terrain.hpp"
+
+1397234846 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.cpp
+	"irrlicht.h"
+	"Water.hpp"
+
+1397234669 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.hpp
+	"irrlicht.h"
+
+1397235230 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\sky.hpp
+	"irrlicht.h"
 
