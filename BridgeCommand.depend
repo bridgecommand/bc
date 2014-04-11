@@ -991,7 +991,7 @@
 	"matrix4.h"
 	"IVideoDriver.h"
 
-1396894969 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.hpp
+1397155318 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.hpp
 	"irrlicht.h"
 
 1395949113 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\guimain.cpp
@@ -1009,15 +1009,16 @@
 	"Network.hpp"
 	<iostream>
 
-1397116103 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1397233914 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	<vector>
 	"irrlicht.h"
 	"GUIMain.hpp"
+	"Terrain.hpp"
 	"Buoy.hpp"
 	"OwnShip.hpp"
 	"Camera.hpp"
 
-1397155055 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1397155319 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1396252280 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.hpp
@@ -4500,18 +4501,25 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397066586 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397155054 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
 	"OwnShip.hpp"
 
-1397154990 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397202887 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	"SimulationModel.hpp"
 
-1397116445 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
+1397226451 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
 	"irrlicht.h"
 
-1397116434 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
+1397202586 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
 	"irrlicht.h"
 	"Camera.hpp"
+
+1397233759 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.hpp
+	"irrlicht.h"
+
+1397233759 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
+	"irrlicht.h"
+	"Terrain.hpp"
 

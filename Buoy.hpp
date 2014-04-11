@@ -6,7 +6,7 @@
 class Buoy
 {
     public:
-        Buoy(const irr::io::path&, const irr::core::vector3df&, irr::scene::ISceneManager*);
+        Buoy(const irr::io::path& filename, const irr::core::vector3df& location, irr::scene::ISceneManager* smgr);
         virtual ~Buoy();
     protected:
     private:

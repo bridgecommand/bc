@@ -25,24 +25,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //Load a ship model
         ownShip.loadModel("Models/Ownship/Atlantic85/Hull.3ds",core::vector3df(0,0,0),smgr);
 
-        //make a camera
-        camera.loadCamera(smgr);
+        //make a camera, setting parent and offset
+        camera.loadCamera(smgr,ownShip.getSceneNode(),core::vector3df(0.0f,0.9f,0.6f));
 
         //Add terrain
-        scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
-                       "World/SimpleEstuary/height.bmp",
-                       0,					// parent node
-                       -1,					// node id
-		               core::vector3df(0.f, -44.07f, 0.f),		// position
-		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation)
-		               core::vector3df(6.97705f, 0.56498f, 8.6871f),	// scale
-		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
-		               5,					// maxLOD
-		               scene::ETPS_17,		// patchSize
-		               4					// smoothFactoespr
-                       );
-        terrain->setMaterialFlag(video::EMF_LIGHTING, false);
-        terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
+        Terrain terrain (smgr, driver);
 
         //load example buoy object and put in the buoys array
         buoys.push_back(Buoy ("Models/Buoy/Safe/buoy.x",core::vector3df(894.34f,0.0f,619.317f),smgr));
@@ -60,18 +47,18 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
         waterNode->setMaterialFlag(video::EMF_LIGHTING, false);
+        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 
         //sky box/dome
         // create skydome
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
         scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("media/sky.bmp"),16,8,0.95f,2.0f);
 	    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+	    skydome->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 
         //make fog
         driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, true);
-        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-        terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-        skydome->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
 
     } //end of SimulationModel constructor
 
@@ -111,25 +98,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.setPosition(core::vector3df(xPos,yPos,zPos));
         ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
 
-         //link camera rotation to shipNode
-        // get transformation matrix of node
-        core::matrix4 m;
-        m.setRotationDegrees(ownShip.getRotation());
-
-        // transform forward vector of camera
-        core::vector3df frv(0.0f, 0.0f, 1.0f);
-        m.transformVect(frv);
-
-        // transform upvector of camera
-        core::vector3df upv(0.0f, 1.0f, 0.0f);
-        m.transformVect(upv);
-
-        // transform camera offset (thanks to Zeuss for finding it was missing)
-        core::vector3df offset(0.0f,0.9f,0.6f);
-        m.transformVect(offset);
-
-        //move camera and angle
-        camera.updateCamera(ownShip.getPosition() + offset, upv, ownShip.getPosition() + offset + frv);
+        camera.updateCamera();
 
         //send data to gui
         guiMain->updateGuiData(heading, speed); //Set GUI heading in degrees and speed (in m/s)

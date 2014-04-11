@@ -6,6 +6,7 @@
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
+#include "Terrain.hpp"
 #include "Buoy.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"
