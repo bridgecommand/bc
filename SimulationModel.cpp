@@ -1,8 +1,14 @@
 #include "irrlicht.h"
 
+#include <iostream> //For debugging
+#include <boost/lexical_cast.hpp> //For buoy loading
+
+#include "main.hpp" //For ini file handling (buoy)
+
 #include "SimulationModel.hpp"
 
 using namespace irr;
+using boost::lexical_cast; //For buoy loading
 
 SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
@@ -32,7 +38,38 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         Terrain terrain (smgr, driver);
 
         //load example buoy object and put in the buoys array
+        //Start: Will be moved into a Buoys object
+        //load info from buoy.ini file
+
+        //find number=x line, and get this value
+        u32 numberOfBuoys;
+        numberOfBuoys = IniFile::iniFileToul("Buoy.ini","Number");
+        std::cout << "Buoys to load: " << numberOfBuoys << std::endl;
+
+
+        if (numberOfBuoys > 0)
+        {
+                for(u32 i=1;i<=numberOfBuoys;i++)
+                {
+                    //Build up the 'Type(#)' string
+                    std::string buoyTypeCommand = "Type(";
+                    buoyTypeCommand.append(lexical_cast<std::string>(i));
+                    buoyTypeCommand.append(")");
+                    //Print out the 'type'
+                    std::cout << IniFile::iniFileToString("Buoy.ini",buoyTypeCommand) <<std::endl;
+                }
+        }
+
+        //find Long(#) and Lat(#)
+
+        //Convert to position in metres
+
+        //load and add to vector
+
+        //close file
+
         buoys.push_back(Buoy ("Models/Buoy/Safe/buoy.x",core::vector3df(894.34f,0.0f,619.317f),smgr));
+        //End: Will be moved into a Buoys object
 
         //add water
         Water water (smgr, driver);

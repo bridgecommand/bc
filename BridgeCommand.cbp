@@ -42,6 +42,7 @@
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="main.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
