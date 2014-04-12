@@ -8,9 +8,57 @@
 #include "Network.hpp"
 
 #include <iostream>
+#include <fstream> //for ini loading
+#include <string> //for ini loading
+#include <boost/algorithm/string.hpp> //for ini loading
 
 // Irrlicht Namespaces
 using namespace irr;
+
+//Utility functions
+namespace IniFile
+{
+    std::string iniFileToString(std::string fileName, std::string command)
+    {
+        std::ifstream file (fileName.c_str());
+        std::string valuePart = "";
+        if (file.is_open())
+        {
+            std::string line;
+            while ( std::getline (file,line) )
+            {
+                boost::to_lower(command);
+                boost::to_lower(line); //Make lowercase //FIXME - Probably don't want to do this
+                std::size_t commandFound = line.find(command); //Check if the 'command' is found (returns std::string::npos if not)
+                std::size_t equalsFound = line.find("="); //Check if the '=' is found
+                if (commandFound!=std::string::npos && equalsFound!=std::string::npos && equalsFound>commandFound)
+                {
+                    //get the value
+                    try {
+                        valuePart = line.substr(equalsFound+1,std::string::npos);//from equals to end, not including the equals
+                    }
+                    catch (const std::out_of_range& oor) {
+                        std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
+                    }
+                }
+
+            }
+            file.close();
+        }
+        else std::cout << "Unable to open file " << fileName << std::endl;
+
+        return valuePart;
+    }
+
+    //Load unsigned integer from an ini file
+    u32 iniFileToul(std::string fileName, std::string command)
+    {
+        u32 result = 0;
+        std::string valueString = iniFileToString(fileName, command); //Get the value as a string
+        result = core::strtoul10(valueString.c_str()); //Convert this into an unsigned int
+        return result;
+    }
+}
 
 int main()
 {
