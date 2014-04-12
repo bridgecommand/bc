@@ -24,6 +24,8 @@ public:
     void setHeading(irr::f32 hdg);
     const irr::f32 getSpeed();
     const irr::f32 getHeading();
+    const irr::f32 longToX(irr::f32 longitude);
+    const irr::f32 latToZ(irr::f32 latitude);
     void updateModel();
 
 private:

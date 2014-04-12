@@ -1001,7 +1001,7 @@
 1396289326 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\guimain.hpp
 	"irrlicht.h"
 
-1397323559 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\main.cpp
+1397338805 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\main.cpp
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"SimulationModel.hpp"
@@ -1011,8 +1011,9 @@
 	<fstream>
 	<string>
 	<boost/algorithm/string.hpp>
+	<boost/lexical_cast.hpp>
 
-1397235031 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1397338314 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	<vector>
 	"irrlicht.h"
 	"GUIMain.hpp"
@@ -4510,7 +4511,7 @@
 	"irrlicht.h"
 	"OwnShip.hpp"
 
-1397323339 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397338558 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"main.hpp"
@@ -5200,7 +5201,7 @@
 	<boost/algorithm/string/finder.hpp>
 	<boost/algorithm/string/formatter.hpp>
 
-1397323187 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\main.hpp
+1397338513 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\main.hpp
 	"irrlicht.h"
 	<string>
 

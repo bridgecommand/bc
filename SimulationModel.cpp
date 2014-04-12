@@ -1,14 +1,11 @@
 #include "irrlicht.h"
 
 #include <iostream> //For debugging
-#include <boost/lexical_cast.hpp> //For buoy loading
 
 #include "main.hpp" //For ini file handling (buoy)
-
 #include "SimulationModel.hpp"
 
 using namespace irr;
-using boost::lexical_cast; //For buoy loading
 
 SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
@@ -37,39 +34,29 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //Add terrain
         Terrain terrain (smgr, driver);
 
-        //load example buoy object and put in the buoys array
-        //Start: Will be moved into a Buoys object
-        //load info from buoy.ini file
-
-        //find number=x line, and get this value
+        //Load buoys
+        //Start: Will be moved into a Buoys object (?)
+        //load info from buoy.ini file FIXME: The buoy.ini location is currently hard-coded in the program root directory, and paths aren't properly handled
+        //The Buoy constructor should probably take the location of the individual buoy's folder, and itself look in the local buoy.ini file for the filename and scaling etc
+        //Find number of buoys
         u32 numberOfBuoys;
-        numberOfBuoys = IniFile::iniFileToul("Buoy.ini","Number");
-        std::cout << "Buoys to load: " << numberOfBuoys << std::endl;
-
-
+        numberOfBuoys = IniFile::iniFileTou32("Buoy.ini","Number");
         if (numberOfBuoys > 0)
         {
-                for(u32 i=1;i<=numberOfBuoys;i++)
-                {
-                    //Build up the 'Type(#)' string
-                    std::string buoyTypeCommand = "Type(";
-                    buoyTypeCommand.append(lexical_cast<std::string>(i));
-                    buoyTypeCommand.append(")");
-                    //Print out the 'type'
-                    std::cout << IniFile::iniFileToString("Buoy.ini",buoyTypeCommand) <<std::endl;
-                }
+            for(u32 i=1;i<=numberOfBuoys;i++)
+            {
+                //Get buoy type and construct filename (FIXME: In due course, the buoy constructor should be given the path to the buoy folder, and use this to look in the local buoy.ini file for the model filename and scaling.
+                std::string buoyFilename = "Models/Buoy/"; //FIXME: Use proper path handling
+                buoyFilename.append(IniFile::iniFileToString("Buoy.ini",IniFile::enumerate1("Type",i)));
+                buoyFilename.append("/buoy.x");
+                //Get buoy position
+                f32 buoyX = longToX(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Long",i)));
+                f32 buoyZ = latToZ(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Lat",i)));
+                //Create buoy and load into vector
+                buoys.push_back(Buoy (buoyFilename.c_str(),core::vector3df(buoyX,0.0f,buoyZ),smgr));
+            }
         }
-
-        //find Long(#) and Lat(#)
-
-        //Convert to position in metres
-
-        //load and add to vector
-
-        //close file
-
-        buoys.push_back(Buoy ("Models/Buoy/Safe/buoy.x",core::vector3df(894.34f,0.0f,619.317f),smgr));
-        //End: Will be moved into a Buoys object
+        //End: Will be moved into a Buoys object(?)
 
         //add water
         Water water (smgr, driver);
@@ -101,6 +88,22 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
     const irr::f32 SimulationModel::getHeading()
     {
         return(heading);
+    }
+
+    const irr::f32 SimulationModel::longToX(irr::f32 longitude)
+    {
+        f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+        f32 terrainXWidth = 3572.25;
+        f32 terrainLongExtent = 0.05;
+        return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+    }
+
+    const irr::f32 SimulationModel::latToZ(irr::f32 latitude)
+    {
+        f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+        f32 terrainZWidth = 4447.8;
+        f32 terrainLatExtent = 0.04;
+        return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
     }
 
     void SimulationModel::updateModel()
