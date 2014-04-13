@@ -1,3 +1,6 @@
+#ifndef __INIFILE_HPP_INCLUDED__
+#define __INIFILE_HPP_INCLUDED__
+
 #include "irrlicht.h"
 #include <string>
 
@@ -10,4 +13,4 @@ namespace IniFile
     irr::f32 iniFileTof32(std::string fileName, std::string command);
 }
 
-int main();
+#endif

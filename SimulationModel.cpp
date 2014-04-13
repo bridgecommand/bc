@@ -2,7 +2,7 @@
 
 #include <iostream> //For debugging
 
-#include "main.hpp" //For ini file handling (buoy)
+#include "IniFile.hpp" //For ini file handling (buoy)
 #include "SimulationModel.hpp"
 
 using namespace irr;
