@@ -1,15 +1,13 @@
 #ifndef __SIMULATIONMODEL_HPP_INCLUDED__
 #define __SIMULATIONMODEL_HPP_INCLUDED__
 
-#include <vector>
-
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
 #include "Terrain.hpp"
 #include "Water.hpp"
 #include "Sky.hpp"
-#include "Buoy.hpp"
+#include "Buoys.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"
 
@@ -24,18 +22,14 @@ public:
     void setHeading(irr::f32 hdg);
     const irr::f32 getSpeed();
     const irr::f32 getHeading();
-    const irr::f32 longToX(irr::f32 longitude);
-    const irr::f32 latToZ(irr::f32 latitude);
     void updateModel();
 
 private:
     irr::IrrlichtDevice* device;
-    //irr::scene::IMeshSceneNode* ownShipNode;
-    OwnShip ownShip;
-    std::vector<Buoy> buoys;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
-    //irr::scene::ICameraSceneNode* camera;
+    OwnShip ownShip;
+    Buoys buoys;
     Camera camera;
     GUIMain* guiMain;
 

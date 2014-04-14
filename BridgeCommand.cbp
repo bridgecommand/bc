@@ -23,6 +23,8 @@
 		</Linker>
 		<Unit filename="Buoy.cpp" />
 		<Unit filename="Buoy.hpp" />
+		<Unit filename="Buoys.cpp" />
+		<Unit filename="Buoys.hpp" />
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
 		<Unit filename="GUIMain.cpp" />
