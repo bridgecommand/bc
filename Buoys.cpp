@@ -1,7 +1,10 @@
 #include "irrlicht.h"
 
 #include "Buoys.hpp"
+
+#include "Buoy.hpp"
 #include "IniFile.hpp"
+#include "SimulationModel.hpp"
 
 using namespace irr;
 
@@ -15,7 +18,7 @@ Buoys::~Buoys()
     //dtor
 }
 
-void Buoys::loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISceneManager* smgr)
+void Buoys::loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
     //Fixme: Doesn't use scenarioBuoyFilename, instead currently hardcoded to "buoy.ini"
     //Start: Will be moved into a Buoys object (?)
@@ -53,27 +56,10 @@ void Buoys::loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISc
                 buoyFullPath.append(buoyFileName);
 
                 //Get buoy position
-                f32 buoyX = longToX(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Long",i)));
-                f32 buoyZ = latToZ(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Lat",i)));
+                f32 buoyX = model->longToX(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Long",i)));
+                f32 buoyZ = model->latToZ(IniFile::iniFileTof32("Buoy.ini",IniFile::enumerate1("Lat",i)));
                 //Create buoy and load into vector
                 buoys.push_back(Buoy (buoyFullPath.c_str(),core::vector3df(buoyX,0.0f,buoyZ),buoyScale,smgr));
             }
         }
 }
-
-const irr::f32 Buoys::longToX(irr::f32 longitude) //Fixme - Should be in simulation model or terrain
-    {
-        f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-        f32 terrainXWidth = 3572.25;
-        f32 terrainLongExtent = 0.05;
-        return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
-    }
-
-    const irr::f32 Buoys::latToZ(irr::f32 latitude) //Fixme - Should be in simulation model or terrain
-    {
-        f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-        f32 terrainZWidth = 4447.8;
-        f32 terrainLatExtent = 0.04;
-        return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
-    }
-

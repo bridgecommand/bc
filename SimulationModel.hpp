@@ -18,6 +18,8 @@ public:
 
     SimulationModel(irr::IrrlichtDevice* dev, irr::video::IVideoDriver* drv, irr::scene::ISceneManager* scene, GUIMain* gui);
 
+    const irr::f32 longToX(irr::f32 longitude);
+    const irr::f32 latToZ(irr::f32 latitude);
     void setSpeed(irr::f32 spd);
     void setHeading(irr::f32 hdg);
     const irr::f32 getSpeed();

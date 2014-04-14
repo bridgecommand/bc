@@ -3,7 +3,8 @@
 
 #include <enet/enet.h>
 
-#include "SimulationModel.hpp"
+//Forward declarations
+class SimulationModel;
 
 class Network
 {

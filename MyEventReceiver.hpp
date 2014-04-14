@@ -3,8 +3,9 @@
 
 #include "irrlicht.h"
 
-#include "GUIMain.hpp"
-#include "SimulationModel.hpp"
+//forward declarations
+class GUIMain;
+class SimulationModel;
 
 class MyEventReceiver : public irr::IEventReceiver
 {

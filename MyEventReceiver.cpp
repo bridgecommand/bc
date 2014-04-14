@@ -2,6 +2,9 @@
 
 #include "MyEventReceiver.hpp"
 
+#include "GUIMain.hpp"
+#include "SimulationModel.hpp"
+
 using namespace irr;
 
     MyEventReceiver::MyEventReceiver(SimulationModel* mdl, GUIMain* gui) //Constructor

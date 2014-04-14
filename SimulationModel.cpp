@@ -35,7 +35,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         Terrain terrain (smgr, driver);
 
         //Load buoys
-        buoys.loadBuoys("buoy.ini", smgr);
+        //buoys.loadBuoys("buoy.ini", smgr, this);
+        buoys.loadBuoys("buoy.ini", smgr, this);
         //End: Will be moved into a Buoys object(?)
 
         //add water
@@ -49,6 +50,22 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
 
     } //end of SimulationModel constructor
+
+    const irr::f32 SimulationModel::longToX(irr::f32 longitude)
+    {
+        f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+        f32 terrainXWidth = 3572.25;
+        f32 terrainLongExtent = 0.05;
+        return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+    }
+
+    const irr::f32 SimulationModel::latToZ(irr::f32 latitude)
+    {
+        f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+        f32 terrainZWidth = 4447.8;
+        f32 terrainLatExtent = 0.04;
+        return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+    }
 
     void SimulationModel::setSpeed(f32 spd)
     {

@@ -1,4 +1,6 @@
 #include "Network.hpp"
+
+#include "SimulationModel.hpp"
 #include <iostream>
 #include <cstdio>
 #include <boost/lexical_cast.hpp>

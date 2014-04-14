@@ -5,19 +5,19 @@
 
 #include <vector>
 
-#include "Buoy.hpp"
+//Forward declarations
+class SimulationModel;
+class Buoy;
 
 class Buoys
 {
     public:
         Buoys();
         virtual ~Buoys();
-        void loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISceneManager* smgr);
+        void loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
 
     private:
         std::vector<Buoy> buoys;
-        const irr::f32 longToX(irr::f32 longitude);
-        const irr::f32 latToZ(irr::f32 latitude);
 };
 
 #endif
