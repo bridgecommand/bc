@@ -1,0 +1,15 @@
+Alice Upjohn
+Important!!! This file will not work if you do not follow the following instructions.
+The zip file contains 2 boat.x files, one named boat1.x and one boat2.x You must rename one of them to boat.x to enable the boat.
+
+The boat1 is a lifeboat with standard interior while the boat2 gives a rebuilt lifeboat with a more homey interior.
+
+This boat is the former Dungeness lifeboat now in service at Sumner in New Zealand.
+
+Creator : Juergen Klemp
+Vessel size: 42
+
+Rating: (5/5)
+Votes: 2 | Hits: 1394 | Filesize: 2548692 bytes
+Rate | Report | E-mail (http://www.virtual-sailor.net/links/email.php?id=374) | View Comments (0)
+Submitted June 15th, 2004
