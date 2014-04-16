@@ -26,10 +26,13 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         previousTime = device->getTimer()->getTime();
 
         //Load a ship model
-        ownShip.loadModel("Models/Ownship/Atlantic85/Hull.3ds",core::vector3df(0,0,0),smgr);
+        ownShip.loadModel(core::vector3df(0,0,0),smgr, this);
 
         //make a camera, setting parent and offset
-        camera.loadCamera(smgr,ownShip.getSceneNode(),core::vector3df(0.0f,0.9f,0.6f));
+        //core::vector3df offset (0.0f,1.2f,0.6f); //Fixme: hardcoding offset - should come from ownShip
+        //core::vector3df offset (-0.09f,3.822f,-1.8f); //Fixme: hardcoding offset - should come from ownShip
+        core::vector3df offset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
+        camera.loadCamera(smgr,ownShip.getSceneNode(),offset);
 
         //Add terrain
         Terrain terrain (smgr, driver);

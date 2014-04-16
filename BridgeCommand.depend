@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1397499422 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.cpp
+1397548196 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.cpp
 	"irrlicht.h"
 	"Buoy.hpp"
 
@@ -991,7 +991,7 @@
 	"matrix4.h"
 	"IVideoDriver.h"
 
-1397424030 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.hpp
+1397548196 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.hpp
 	"irrlicht.h"
 
 1395949113 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\guimain.cpp
@@ -1018,7 +1018,7 @@
 	"OwnShip.hpp"
 	"Camera.hpp"
 
-1397155319 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1397633862 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1397507755 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.hpp
@@ -4501,11 +4501,15 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397343195 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397634155 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
+	<string>
+	<iostream>
 	"OwnShip.hpp"
+	"SimulationModel.hpp"
+	"IniFile.hpp"
 
-1397507482 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397634155 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
