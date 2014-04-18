@@ -35,6 +35,10 @@
 		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="OtherShip.cpp" />
+		<Unit filename="OtherShip.hpp" />
+		<Unit filename="OtherShips.cpp" />
+		<Unit filename="OtherShips.hpp" />
 		<Unit filename="OwnShip.cpp" />
 		<Unit filename="OwnShip.hpp" />
 		<Unit filename="SimulationModel.cpp" />

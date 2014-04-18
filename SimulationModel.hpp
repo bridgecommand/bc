@@ -8,6 +8,7 @@
 #include "Water.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
+#include "OtherShips.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"
 
@@ -31,6 +32,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     OwnShip ownShip;
+    OtherShips otherShips;
     Buoys buoys;
     Camera camera;
     GUIMain* guiMain;

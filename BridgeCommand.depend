@@ -1008,17 +1008,18 @@
 	"MyEventReceiver.hpp"
 	"Network.hpp"
 
-1397500034 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1397809686 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"Terrain.hpp"
 	"Water.hpp"
 	"Sky.hpp"
 	"Buoys.hpp"
+	"OtherShips.hpp"
 	"OwnShip.hpp"
 	"Camera.hpp"
 
-1397633862 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1397812267 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1397507755 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.hpp
@@ -4501,7 +4502,7 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397634155 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397812267 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
 	<string>
 	<iostream>
@@ -4509,7 +4510,7 @@
 	"SimulationModel.hpp"
 	"IniFile.hpp"
 
-1397634155 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397812413 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
@@ -5214,14 +5215,34 @@
 	"irrlicht.h"
 	<string>
 
-1397507755 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.hpp
+1397811658 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.hpp
 	"irrlicht.h"
 	<vector>
+	<string>
 
-1397507755 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.cpp
+1397812751 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.cpp
 	"irrlicht.h"
 	"Buoys.hpp"
 	"Buoy.hpp"
+	"IniFile.hpp"
+	"SimulationModel.hpp"
+
+1397811768 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.hpp
+	"irrlicht.h"
+	<vector>
+	<string>
+
+1397809478 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.cpp
+	"irrlicht.h"
+	"OtherShip.hpp"
+
+1397811855 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.hpp
+	"irrlicht.h"
+
+1397811734 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
+	"irrlicht.h"
+	"OtherShips.hpp"
+	"OtherShip.hpp"
 	"IniFile.hpp"
 	"SimulationModel.hpp"
 

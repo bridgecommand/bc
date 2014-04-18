@@ -4,6 +4,7 @@
 #include "irrlicht.h"
 
 #include <vector>
+#include <string>
 
 //Forward declarations
 class SimulationModel;
@@ -14,7 +15,7 @@ class Buoys
     public:
         Buoys();
         virtual ~Buoys();
-        void loadBuoys(const irr::io::path& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void loadBuoys(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
 
     private:
         std::vector<Buoy> buoys;

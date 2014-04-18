@@ -15,32 +15,30 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         smgr = scene;
         guiMain = gui;
 
-        //initialise variables - Start with a hardcoded initial position
+        //store time
+        previousTime = device->getTimer()->getTime();
+
+        //Load a ship model
+        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",core::vector3df(0,0,0),smgr, this); //Fixme: Hardcoding of scenario
+        //initialise variables - Fixme: Start with a hardcoded initial position
         heading = 0;
         xPos = 864.34f;
         yPos = 0.0f;
         zPos = 619.317f;
         speed = 0.0f;
 
-        //store time
-        previousTime = device->getTimer()->getTime();
-
-        //Load a ship model
-        ownShip.loadModel(core::vector3df(0,0,0),smgr, this);
-
         //make a camera, setting parent and offset
-        //core::vector3df offset (0.0f,1.2f,0.6f); //Fixme: hardcoding offset - should come from ownShip
-        //core::vector3df offset (-0.09f,3.822f,-1.8f); //Fixme: hardcoding offset - should come from ownShip
         core::vector3df offset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
         camera.loadCamera(smgr,ownShip.getSceneNode(),offset);
 
         //Add terrain
         Terrain terrain (smgr, driver);
 
+        //Load other ships
+        otherShips.loadOtherShips("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
+
         //Load buoys
-        //buoys.loadBuoys("buoy.ini", smgr, this);
-        buoys.loadBuoys("buoy.ini", smgr, this);
-        //End: Will be moved into a Buoys object(?)
+        buoys.loadBuoys("World/SimpleEstuary/buoy.ini", smgr, this); //Fixme: Hardcoding of world model
 
         //add water
         Water water (smgr, driver);
@@ -50,7 +48,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //make fog
         driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, true);
-
 
     } //end of SimulationModel constructor
 
