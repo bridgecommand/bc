@@ -1019,7 +1019,7 @@
 	"OwnShip.hpp"
 	"Camera.hpp"
 
-1397812267 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1397815141 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1397507755 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.hpp
@@ -4502,7 +4502,7 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397812267 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397815339 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
 	<string>
 	<iostream>
@@ -4510,7 +4510,7 @@
 	"SimulationModel.hpp"
 	"IniFile.hpp"
 
-1397812413 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397815186 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
@@ -5239,7 +5239,7 @@
 1397811855 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.hpp
 	"irrlicht.h"
 
-1397811734 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
+1397813849 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
 	"irrlicht.h"
 	"OtherShips.hpp"
 	"OtherShip.hpp"

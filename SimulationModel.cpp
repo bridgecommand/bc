@@ -19,13 +19,15 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         previousTime = device->getTimer()->getTime();
 
         //Load a ship model
-        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",core::vector3df(0,0,0),smgr, this); //Fixme: Hardcoding of scenario
-        //initialise variables - Fixme: Start with a hardcoded initial position
         heading = 0;
-        xPos = 864.34f;
+        xPos = 0.0f;//864.34f;
         yPos = 0.0f;
-        zPos = 619.317f;
+        zPos = 0.0f;//619.317f;
         speed = 0.0f;
+        //Load own ship model. This also sets heading and position
+        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos ,smgr, this); //Fixme: Hardcoding of scenario
+        //initialise variables - Fixme: Start with a hardcoded initial position
+
 
         //make a camera, setting parent and offset
         core::vector3df offset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model

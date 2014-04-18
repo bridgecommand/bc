@@ -19,12 +19,17 @@ OwnShip::~OwnShip()
     //dtor
 }
 
-void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //Load from ownShip.ini file
+    std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
+    //Get initial position and heading, and set these
+    xPos = model->longToX(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong"));
+    yPos = 0;
+    zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
 
-     std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
+    //Fixme: also load initial speed and heading here.
 
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";
@@ -66,7 +71,7 @@ void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, const irr::c
                         shipMesh,
                         0,
                         -1,
-                        location);
+                        core::vector3df(0,0,0));
     ownShip->setMaterialFlag(video::EMF_LIGHTING, false);
 
     //Set position (x,y initial position)
