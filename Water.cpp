@@ -8,7 +8,7 @@ Water::Water(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
 {
     //some water (from demo 8)
     scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-                       core::dimension2d<f32>(50,50),
+                       core::dimension2d<f32>(500,500),
                        core::dimension2d<u32>(100,100), 0, 0,
                        core::dimension2d<f32>(0,0),
                        core::dimension2d<f32>(10,10));

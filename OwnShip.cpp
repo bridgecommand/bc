@@ -19,7 +19,7 @@ OwnShip::~OwnShip()
     //dtor
 }
 
-void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //Load from ownShip.ini file
@@ -28,16 +28,14 @@ void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xP
     xPos = model->longToX(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong"));
     yPos = 0;
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
+    heading = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
-    //Fixme: also load initial speed and heading here.
+    //Fixme: also load initial speed here
 
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";
     shipIniFilename.append(ownShipName);
     shipIniFilename.append("/boat.ini");
-
-    //Do stuff with the boat.ini information here
-    std::cout <<shipIniFilename <<std::endl;
 
     //get the model file
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
@@ -73,10 +71,6 @@ void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xP
                         -1,
                         core::vector3df(0,0,0));
     ownShip->setMaterialFlag(video::EMF_LIGHTING, false);
-
-    //Set position (x,y initial position)
-
-    //set view positions, and send to model (so they can be used by the camera)
 
 }
 

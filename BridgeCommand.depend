@@ -1019,7 +1019,7 @@
 	"OwnShip.hpp"
 	"Camera.hpp"
 
-1397815141 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1397833284 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1397507755 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.hpp
@@ -4502,7 +4502,7 @@
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 
-1397815339 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1397833326 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
 	<string>
 	<iostream>
@@ -4510,7 +4510,7 @@
 	"SimulationModel.hpp"
 	"IniFile.hpp"
 
-1397815186 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1397833456 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
@@ -4530,7 +4530,7 @@
 	"irrlicht.h"
 	"Terrain.hpp"
 
-1397234846 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.cpp
+1397815773 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.cpp
 	"irrlicht.h"
 	"Water.hpp"
 
@@ -5232,14 +5232,14 @@
 	<vector>
 	<string>
 
-1397809478 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.cpp
+1397833788 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.cpp
 	"irrlicht.h"
 	"OtherShip.hpp"
 
-1397811855 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.hpp
+1397833788 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.hpp
 	"irrlicht.h"
 
-1397813849 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
+1397834298 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
 	"irrlicht.h"
 	"OtherShips.hpp"
 	"OtherShip.hpp"

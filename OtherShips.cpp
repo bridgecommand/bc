@@ -50,6 +50,8 @@ void OtherShips::loadOtherShips(const std::string& scenarioOtherShipsFilename, i
                     shipScale = 1.0; //Default if not set
                 }
 
+                f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
+
                 //Fixme: also load y offset etc information, and handle like own ships
 
                 std::string shipFullPath = "Models/Othership/"; //FIXME: Use proper path handling
@@ -58,7 +60,7 @@ void OtherShips::loadOtherShips(const std::string& scenarioOtherShipsFilename, i
                 shipFullPath.append(shipFileName);
 
                 //Create otherShip and load into vector
-                otherShips.push_back(OtherShip (shipFullPath.c_str(),core::vector3df(shipX,0.0f,shipZ),shipScale,smgr));
+                otherShips.push_back(OtherShip (shipFullPath.c_str(),core::vector3df(shipX,0.0f,shipZ),shipScale,yCorrection,smgr));
             }
         }
 }

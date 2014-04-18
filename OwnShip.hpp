@@ -12,7 +12,7 @@ class OwnShip
         OwnShip();
         virtual ~OwnShip();
 
-        void loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model);
         irr::scene::IMeshSceneNode* getSceneNode();
 
         void setPosition(irr::core::vector3df position);

@@ -25,7 +25,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         zPos = 0.0f;//619.317f;
         speed = 0.0f;
         //Load own ship model. This also sets heading and position
-        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos ,smgr, this); //Fixme: Hardcoding of scenario
+        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos, heading, smgr, this); //Fixme: Hardcoding of scenario
         //initialise variables - Fixme: Start with a hardcoded initial position
 
 
@@ -49,7 +49,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         Sky sky (smgr, driver);
 
         //make fog
-        driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, true);
+        driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
     } //end of SimulationModel constructor
 

@@ -6,7 +6,7 @@
 class OtherShip
 {
     public:
-        OtherShip(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scale, irr::scene::ISceneManager* smgr);
+        OtherShip(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scaleFactor, const irr::f32 yCorrection, irr::scene::ISceneManager* smgr);
         virtual ~OtherShip();
     protected:
     private:
