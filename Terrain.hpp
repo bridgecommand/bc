@@ -6,8 +6,9 @@
 class Terrain
 {
     public:
-        Terrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
+        Terrain();
         virtual ~Terrain();
+        void loadTerrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
 
     private:
         irr::scene::ITerrainSceneNode* terrain;

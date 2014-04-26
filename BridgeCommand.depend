@@ -1010,7 +1010,7 @@
 	"irrlicht.h"
 	<string>
 
-1398515705 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1398529497 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"Terrain.hpp"
@@ -1025,7 +1025,7 @@
 1396289326 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\guimain.hpp
 	"irrlicht.h"
 
-1397233759 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.hpp
+1398529497 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.hpp
 	"irrlicht.h"
 
 1397234669 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.hpp
@@ -1039,7 +1039,7 @@
 	<vector>
 	<string>
 
-1398515330 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1398529104 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
 1398515107 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
@@ -5229,7 +5229,7 @@
 	"irrlicht.h"
 	"Sky.hpp"
 
-1397233759 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
+1398529528 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
 	"irrlicht.h"
 	"Terrain.hpp"
 
@@ -5237,13 +5237,13 @@
 	"irrlicht.h"
 	"Water.hpp"
 
-1398528435 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1398529497 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
 	"SimulationModel.hpp"
 
-1398527334 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.cpp
+1398528680 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.cpp
 	"irrlicht.h"
 	"RadarScreen.hpp"
 	<iostream>

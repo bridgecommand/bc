@@ -4,7 +4,17 @@
 
 using namespace irr;
 
-Terrain::Terrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
+Terrain::Terrain()
+{
+
+}
+
+Terrain::~Terrain()
+{
+    //dtor
+}
+
+void Terrain::loadTerrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
 {
     terrain = smgr->addTerrainSceneNode(
                        "World/SimpleEstuary/height.bmp",
@@ -21,9 +31,4 @@ Terrain::Terrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driv
     terrain->setMaterialFlag(video::EMF_LIGHTING, false);
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/texture.bmp"));
-}
-
-Terrain::~Terrain()
-{
-    //dtor
 }

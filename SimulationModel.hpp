@@ -32,6 +32,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
+    Terrain terrain;
     OwnShip ownShip;
     OtherShips otherShips;
     Buoys buoys;

@@ -32,12 +32,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
         camera.loadCamera(smgr,ownShip.getSceneNode(),camOffset);
 
-        //make a radar screen, setting parent and offset
-        core::vector3df radarOffset = core::vector3df(0+ 0.4,1.2 -0.25,0.6 +0.75); //FIXME: hardcoded offset - should be read from the own ship model
-        radarScreen.loadRadarScreen(driver,smgr,ownShip.getSceneNode(),radarOffset);
-
         //Add terrain
-        Terrain terrain (smgr, driver);
+        terrain.loadTerrain(smgr, driver);
 
         //Load other ships
         otherShips.loadOtherShips("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
@@ -47,6 +43,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //add water
         Water water (smgr, driver);
+
+        //make a radar screen, setting parent and offset
+        core::vector3df radarOffset = core::vector3df(0+ 0.4,1.2 -0.25,0.6 +0.75); //FIXME: hardcoded offset - should be read from the own ship model
+        radarScreen.loadRadarScreen(driver,smgr,ownShip.getSceneNode(),radarOffset);
 
         //sky box/dome
         Sky sky (smgr, driver);
