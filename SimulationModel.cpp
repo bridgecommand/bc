@@ -98,7 +98,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //get delta time
         currentTime = device->getTimer()->getTime();
-        deltaTime = 10.0*(currentTime - previousTime)/1000.f; //Time in seconds //FIXME: Bodged accelerator
+        deltaTime = (currentTime - previousTime)/1000.f; //Time in seconds //FIXME: Bodged accelerator
         previousTime = currentTime;
 
         //move, according to heading and speed
@@ -109,22 +109,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.setPosition(core::vector3df(xPos,yPos,zPos));
         ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
 
-        //set radar screen position, and update it with a (currently dummy) image
-        //Start temporary bit to create a dummy image. We should have a RadarCalculation model which has an update method that returns an IImage that we can use here
-        video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(64, 64));
-        radarImage->fill(video::SColor(255, 0, 0, 255));
-        std::cout << terrain.getHeight(xPos,zPos) << std::endl;
-        for(int i = 0;i<64;i++) {
-            for(int j=0;j<64;j++) {
-                f32 localPosX = (i-32)*30.0 + xPos;
-                f32 localPosZ = (32-j)*30.0 + zPos;
-                u32 pixelColour = terrain.getHeight(localPosX,localPosZ);
-                if (pixelColour > 255) {pixelColour = 255;}
-                radarImage->setPixel(i,j,video::SColor(255,pixelColour,pixelColour,pixelColour));
-            }
-        }
-        radarImage->setPixel(32,32,video::SColor(255,255,255,0));
-        //end of dummy image code
+        //set radar screen position, and update it with a radar image from the radar calculation
+        video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(64, 64)); //Create image for radar calculation to work on
+        radarCalculation.updateRadarCalculation(radarImage,terrain,xPos,zPos);
         radarScreen.updateRadarScreen(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 

@@ -1010,7 +1010,7 @@
 	"irrlicht.h"
 	<string>
 
-1398529497 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
+1398542639 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.hpp
 	"irrlicht.h"
 	"GUIMain.hpp"
 	"Terrain.hpp"
@@ -1020,12 +1020,13 @@
 	"OtherShips.hpp"
 	"OwnShip.hpp"
 	"Camera.hpp"
+	"RadarCalculation.hpp"
 	"RadarScreen.hpp"
 
 1396289326 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\guimain.hpp
 	"irrlicht.h"
 
-1398530924 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.hpp
+1398542559 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.hpp
 	"irrlicht.h"
 
 1397234669 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\water.hpp
@@ -5229,7 +5230,7 @@
 	"irrlicht.h"
 	"Sky.hpp"
 
-1398534164 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
+1398542559 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\terrain.cpp
 	"irrlicht.h"
 	"Terrain.hpp"
 
@@ -5237,7 +5238,7 @@
 	"irrlicht.h"
 	"Water.hpp"
 
-1398532191 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1398543518 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
@@ -5250,4 +5251,12 @@
 
 1398528214 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.hpp
 	"irrlicht.h"
+
+1398542874 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.hpp
+	"irrlicht.h"
+
+1398543441 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.cpp
+	"irrlicht.h"
+	"RadarCalculation.hpp"
+	"Terrain.hpp"
 

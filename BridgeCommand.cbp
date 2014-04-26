@@ -41,6 +41,8 @@
 		<Unit filename="OtherShips.hpp" />
 		<Unit filename="OwnShip.cpp" />
 		<Unit filename="OwnShip.hpp" />
+		<Unit filename="RadarCalculation.cpp" />
+		<Unit filename="RadarCalculation.hpp" />
 		<Unit filename="RadarScreen.cpp" />
 		<Unit filename="RadarScreen.hpp" />
 		<Unit filename="SimulationModel.cpp" />
