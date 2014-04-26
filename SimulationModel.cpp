@@ -116,8 +116,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         std::cout << terrain.getHeight(xPos,zPos) << std::endl;
         for(int i = 0;i<64;i++) {
             for(int j=0;j<64;j++) {
-                f32 localPosX = (i-32)*20.0 + xPos;
-                f32 localPosZ = (32-j)*20.0 + zPos;
+                f32 localPosX = (i-32)*30.0 + xPos;
+                f32 localPosZ = (32-j)*30.0 + zPos;
                 u32 pixelColour = terrain.getHeight(localPosX,localPosZ);
                 if (pixelColour > 255) {pixelColour = 255;}
                 radarImage->setPixel(i,j,video::SColor(255,pixelColour,pixelColour,pixelColour));
