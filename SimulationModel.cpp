@@ -28,10 +28,13 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos, heading, smgr, this); //Fixme: Hardcoding of scenario
         //initialise variables - Fixme: Start with a hardcoded initial position
 
-
         //make a camera, setting parent and offset
-        core::vector3df offset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
-        camera.loadCamera(smgr,ownShip.getSceneNode(),offset);
+        core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
+        camera.loadCamera(smgr,ownShip.getSceneNode(),camOffset);
+
+        //make a radar screen, setting parent and offset
+        core::vector3df radarOffset = core::vector3df(0+ 0.4,1.2 -0.25,0.6 +0.75); //FIXME: hardcoded offset - should be read from the own ship model
+        radarScreen.loadRadarScreen(driver,smgr,ownShip.getSceneNode(),radarOffset);
 
         //Add terrain
         Terrain terrain (smgr, driver);
@@ -106,6 +109,16 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.setPosition(core::vector3df(xPos,yPos,zPos));
         ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
 
+        //set radar screen position, and update it with a (currently dummy) image
+        //Start temporary bit to create a dummy image. We should have a RadarCalculation model which has an update method that returns an IImage that we can use here
+        video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(64, 64));
+        radarImage->fill(video::SColor(255, 0, 0, 255));
+        radarImage->setPixel(32,32,video::SColor(255,255,255,0));
+        //end of dummy image code
+        radarScreen.updateRadarScreen(radarImage);
+        radarImage->drop(); //We created this with 'create', so drop it when we're finished
+
+        //update the camera position
         camera.updateCamera();
 
         //send data to gui

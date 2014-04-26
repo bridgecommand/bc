@@ -11,6 +11,7 @@
 #include "OtherShips.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"
+#include "RadarScreen.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
@@ -35,6 +36,7 @@ private:
     OtherShips otherShips;
     Buoys buoys;
     Camera camera;
+    RadarScreen radarScreen;
     GUIMain* guiMain;
 
     //Ship movement
