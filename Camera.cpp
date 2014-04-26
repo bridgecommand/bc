@@ -49,13 +49,3 @@ void Camera::updateCamera()
         camera->updateAbsolutePosition();
 
 }
-
-void Camera::setPosition(irr::core::vector3df position)
-{
-
-}
-
-void Camera::setRotation(irr::core::vector3df rotation)
-{
-
-}
