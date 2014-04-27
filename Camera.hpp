@@ -10,6 +10,7 @@ class Camera
         virtual ~Camera();
 
         void loadCamera(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* par, irr::core::vector3df off);
+        irr::scene::ISceneNode* getSceneNode();
         void updateCamera();
 
     private:

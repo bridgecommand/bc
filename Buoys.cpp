@@ -27,7 +27,7 @@ void Buoys::loadBuoys(const std::string& scenarioBuoyFilename, irr::scene::IScen
         {
             for(u32 i=1;i<=numberOfBuoys;i++)
             {
-                //Get buoy type and construct filename (FIXME: In due course, the buoy constructor should be given the path to the buoy folder, and use this to look in the local buoy.ini file for the model filename and scaling.
+                //Get buoy type and construct filename
                 std::string buoyName = IniFile::iniFileToString(scenarioBuoyFilename,IniFile::enumerate1("Type",i));
                 //Get buoy position
                 f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",i)));

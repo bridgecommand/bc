@@ -28,7 +28,7 @@ void OtherShips::loadOtherShips(const std::string& scenarioOtherShipsFilename, i
         {
             for(u32 i=1;i<=numberOfOtherShips;i++)
             {
-                //Get ship type and construct filename (FIXME: In due course, the other ship constructor should be given the path to the otherShip folder, and use this to look in the local boat.ini file for the model filename and scaling.
+                //Get ship type and construct filename
                 std::string otherShipName = IniFile::iniFileToString(scenarioOtherShipsFilename,IniFile::enumerate1("Type",i));
                 //Get initial position
                 f32 shipX = model->longToX(IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLong",i)));
@@ -51,8 +51,6 @@ void OtherShips::loadOtherShips(const std::string& scenarioOtherShipsFilename, i
                 }
 
                 f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
-
-                //Fixme: also load y offset etc information, and handle like own ships
 
                 std::string shipFullPath = "Models/Othership/"; //FIXME: Use proper path handling
                 shipFullPath.append(otherShipName);

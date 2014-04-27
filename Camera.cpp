@@ -22,6 +22,11 @@ void Camera::loadCamera(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneN
     offset = off;
 }
 
+irr::scene::ISceneNode* Camera::getSceneNode()
+{
+    return camera;
+}
+
 void Camera::updateCamera()
 {
      //link camera rotation to shipNode
@@ -47,5 +52,8 @@ void Camera::updateCamera()
         camera->setUpVector(upv); //set up vector of camera
         camera->setTarget(parent->getPosition() + offsetTransformed + frv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
+
+        //also set rotation, so we can get camera's direction
+        camera->setRotation(parent->getRotation());
 
 }

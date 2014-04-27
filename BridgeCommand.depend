@@ -994,7 +994,7 @@
 1397548196 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoy.hpp
 	"irrlicht.h"
 
-1397812751 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.cpp
+1398577204 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\buoys.cpp
 	"irrlicht.h"
 	"Buoys.hpp"
 	"Buoy.hpp"
@@ -1043,10 +1043,10 @@
 1398529104 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
 
-1398515107 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
+1398578482 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
 	"irrlicht.h"
 
-1398515110 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
+1398578715 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
 	"irrlicht.h"
 	"Camera.hpp"
 
@@ -5211,7 +5211,7 @@
 1397833788 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\othership.hpp
 	"irrlicht.h"
 
-1397834298 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
+1398577204 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\otherships.cpp
 	"irrlicht.h"
 	"OtherShips.hpp"
 	"OtherShip.hpp"
@@ -5238,24 +5238,24 @@
 	"irrlicht.h"
 	"Water.hpp"
 
-1398543518 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1398578482 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
 	"SimulationModel.hpp"
 
-1398528680 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.cpp
+1398578482 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.cpp
 	"irrlicht.h"
 	"RadarScreen.hpp"
 	<iostream>
 
-1398528214 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.hpp
+1398578516 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.hpp
 	"irrlicht.h"
 
 1398542874 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.hpp
 	"irrlicht.h"
 
-1398543441 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.cpp
+1398544410 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.cpp
 	"irrlicht.h"
 	"RadarCalculation.hpp"
 	"Terrain.hpp"
