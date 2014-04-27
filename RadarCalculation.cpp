@@ -23,7 +23,7 @@ void RadarCalculation::loadRadarCalculation()
 }
 */
 
-void RadarCalculation::updateRadarCalculation(irr::video::IImage * radarImage, Terrain& terrain, irr::f32 x, irr::f32 z)//FIXME: Should be const Terrain& to ensure we don't change terrain
+void RadarCalculation::updateRadarCalculation(irr::video::IImage * radarImage, const Terrain& terrain, irr::f32 x, irr::f32 z)
 {
     radarImage->fill(video::SColor(255, 0, 0, 255));
     for(int i = 0;i<64;i++) { //FIXME: Hardcoded to work with 64px, should check size of the radarImage

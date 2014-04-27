@@ -33,7 +33,7 @@ void Terrain::loadTerrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDri
     terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/textureRotated.bmp")); //FIXME: Texture image manually rotated
 }
 
-irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) //Get height from global coordinates
+irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
 {
     return terrain->getHeight(x,z); //To do: Account for 180 degree rotation required in terrain
 }

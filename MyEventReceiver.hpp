@@ -13,9 +13,9 @@ public:
 
     MyEventReceiver(SimulationModel* mdl, GUIMain* gui);
 
-    virtual bool OnEvent(const irr::SEvent& event);
-    virtual const irr::s32 GetScrollBarPosSpeed();
-    virtual const irr::s32 GetScrollBarPosHeading();
+    bool OnEvent(const irr::SEvent& event);
+    irr::s32 GetScrollBarPosSpeed() const;
+    irr::s32 GetScrollBarPosHeading() const;
 
 private:
 

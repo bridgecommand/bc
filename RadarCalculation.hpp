@@ -11,7 +11,7 @@ class RadarCalculation
         RadarCalculation();
         virtual ~RadarCalculation();
         //void loadRadarCalculation();
-        void updateRadarCalculation(irr::video::IImage * radarImage, Terrain& terrain, irr::f32 x, irr::f32 z);
+        void updateRadarCalculation(irr::video::IImage * radarImage, const Terrain& terrain, irr::f32 x, irr::f32 z);
 
     private:
 
