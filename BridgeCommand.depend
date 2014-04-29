@@ -1040,10 +1040,11 @@
 	<vector>
 	<string>
 
-1398529104 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
+1398757707 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.hpp
 	"irrlicht.h"
+	<string>
 
-1398578482 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
+1398757981 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.hpp
 	"irrlicht.h"
 
 1398578715 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\camera.cpp
@@ -5191,7 +5192,7 @@
 1388069580 c:\users\james\documents\programming\enet\enet-1.3.11\include\enet\callbacks.h
 	<stdlib.h>
 
-1398582776 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.cpp
+1398582995 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\myeventreceiver.cpp
 	"irrlicht.h"
 	"MyEventReceiver.hpp"
 	"GUIMain.hpp"
@@ -5218,10 +5219,8 @@
 	"IniFile.hpp"
 	"SimulationModel.hpp"
 
-1398515404 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
+1398757749 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\ownship.cpp
 	"irrlicht.h"
-	<string>
-	<iostream>
 	"OwnShip.hpp"
 	"SimulationModel.hpp"
 	"IniFile.hpp"
@@ -5238,7 +5237,7 @@
 	"irrlicht.h"
 	"Water.hpp"
 
-1398578846 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
+1398757473 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\simulationmodel.cpp
 	"irrlicht.h"
 	<iostream>
 	"IniFile.hpp"
@@ -5252,11 +5251,12 @@
 1398578516 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarscreen.hpp
 	"irrlicht.h"
 
-1398582174 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.hpp
+1398757529 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.hpp
 	"irrlicht.h"
 
-1398582776 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.cpp
+1398757529 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\radarcalculation.cpp
 	"irrlicht.h"
 	"RadarCalculation.hpp"
 	"Terrain.hpp"
+	"OwnShip.hpp"
 

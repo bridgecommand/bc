@@ -108,7 +108,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //set radar screen position, and update it with a radar image from the radar calculation
         video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(64, 64)); //Create image for radar calculation to work on
-        radarCalculation.updateRadarCalculation(radarImage,terrain,xPos,zPos);
+        radarCalculation.updateRadarCalculation(radarImage,terrain,ownShip);
         radarScreen.updateRadarScreen(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 

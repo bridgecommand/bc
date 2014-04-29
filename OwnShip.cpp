@@ -1,6 +1,4 @@
 #include "irrlicht.h"
-#include <string>
-#include <iostream>
 
 #include "OwnShip.hpp"
 
@@ -74,7 +72,7 @@ void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xP
 
 }
 
-irr::scene::IMeshSceneNode* OwnShip::getSceneNode()
+irr::scene::IMeshSceneNode* OwnShip::getSceneNode() const
 {
     return ownShip;
 }
@@ -89,17 +87,17 @@ void OwnShip::setRotation(irr::core::vector3df rotation)
     ownShip->setRotation(rotation);
 }
 
-irr::core::vector3df OwnShip::getRotation()
+irr::core::vector3df OwnShip::getRotation() const
 {
     return ownShip->getRotation();
 }
 
-irr::core::vector3df OwnShip::getPosition()
+irr::core::vector3df OwnShip::getPosition() const
 {
     return ownShip->getPosition();
 }
 
-irr::core::vector3df OwnShip::getCameraOffset()
+irr::core::vector3df OwnShip::getCameraOffset() const
 {
     return cameraOffset;
 }

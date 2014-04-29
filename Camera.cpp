@@ -22,7 +22,7 @@ void Camera::loadCamera(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneN
     offset = off;
 }
 
-irr::scene::ISceneNode* Camera::getSceneNode()
+irr::scene::ISceneNode* Camera::getSceneNode() const
 {
     return camera;
 }

@@ -2,6 +2,7 @@
 #define __OWNSHIP_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include <string>
 
 //Forward declarations
 class SimulationModel;
@@ -13,13 +14,13 @@ class OwnShip
         virtual ~OwnShip();
 
         void loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model);
-        irr::scene::IMeshSceneNode* getSceneNode();
+        irr::scene::IMeshSceneNode* getSceneNode() const;
 
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
-        irr::core::vector3df getRotation();
-        irr::core::vector3df getPosition();
-        irr::core::vector3df getCameraOffset();
+        irr::core::vector3df getRotation() const;
+        irr::core::vector3df getPosition() const;
+        irr::core::vector3df getCameraOffset() const;
 
     protected:
     private:
