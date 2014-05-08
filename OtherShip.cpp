@@ -17,7 +17,13 @@ OtherShip::OtherShip(const irr::io::path& filename, const irr::core::vector3df& 
 
     //add to scene node
 	otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1, location );
-    otherShip->setMaterialFlag(video::EMF_LIGHTING, false);
+
+    //Set Ambient colour to match diffuse, so lighting works: Fixme: This should work by setting the lighting to use ECM_DIFFUSE_AND_AMBIENT?
+	if(otherShip->getMaterialCount()>0) {
+        for(int mat=0;mat<otherShip->getMaterialCount();mat++) {
+            otherShip->getMaterial(mat).AmbientColor.set(otherShip->getMaterial(mat).DiffuseColor.color);
+        }
+    }
 }
 
 OtherShip::~OtherShip()

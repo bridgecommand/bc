@@ -38,6 +38,14 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //add water
         Water water (smgr, driver);
 
+        //FIXME: What's going on with models and lighting??
+
+        //make ambient light
+        smgr->setAmbientLight(video::SColorf(1.0,1.0,1.0,1));
+        //add a directional light
+        //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
+
+
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.4,-0.25,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.loadRadarScreen(driver,smgr,camera.getSceneNode(),radarOffset);

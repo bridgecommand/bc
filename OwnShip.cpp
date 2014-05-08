@@ -68,7 +68,13 @@ void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xP
                         0,
                         -1,
                         core::vector3df(0,0,0));
-    ownShip->setMaterialFlag(video::EMF_LIGHTING, false);
+
+    //Set Ambient colour to match diffuse, so lighting works: Fixme: This should work by setting the lighting to use ECM_DIFFUSE_AND_AMBIENT?
+	if(ownShip->getMaterialCount()>0) {
+        for(int mat=0;mat<ownShip->getMaterialCount();mat++) {
+            ownShip->getMaterial(mat).AmbientColor.set(ownShip->getMaterial(mat).DiffuseColor.color);
+        }
+    }
 
 }
 

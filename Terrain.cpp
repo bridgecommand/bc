@@ -28,7 +28,6 @@ void Terrain::loadTerrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDri
 		               scene::ETPS_17,		// patchSize
 		               4					// smoothFactoespr
                        );
-    terrain->setMaterialFlag(video::EMF_LIGHTING, false);
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/textureRotated.bmp")); //FIXME: Texture image manually rotated
 }
