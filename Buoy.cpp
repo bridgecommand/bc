@@ -9,10 +9,10 @@ Buoy::Buoy(const irr::io::path& filename, const irr::core::vector3df& location, 
     scene::IMesh* buoyMesh = smgr->getMesh(filename);
 	buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );
 
-	//Set Ambient colour to match diffuse, so lighting works: Fixme: This should work by setting the lighting to use ECM_DIFFUSE_AND_AMBIENT?
+    //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
         for(int mat=0;mat<buoy->getMaterialCount();mat++) {
-            buoy->getMaterial(mat).AmbientColor.set(buoy->getMaterial(mat).DiffuseColor.color);
+            buoy->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
