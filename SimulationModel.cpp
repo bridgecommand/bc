@@ -44,6 +44,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         smgr->setAmbientLight(video::SColorf(1.0,1.0,1.0,1));
         //add a directional light
         //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
+        //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
 
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.4,-0.25,0.75); //FIXME: hardcoded offset - should be read from the own ship model
@@ -54,6 +55,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //make fog
         driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
+        //This colour should change with the light colour, so the fog isn't brighter than the background
 
     } //end of SimulationModel constructor
 
