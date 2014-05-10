@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include "Leg.hpp"
+
 //Forward declarations
 class SimulationModel;
 class OtherShip;

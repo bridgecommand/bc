@@ -35,6 +35,18 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
             f32 shipZ = model->latToZ(IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLat",i)));
 
             //Fixme: also load leg information and decide how to handle this
+            //in ini file, the format is (for each leg): Bearing (deg), Speed (kts), distance (nm)
+            std::vector<Leg> legs;
+            irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
+            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                //go through each leg (if any), and load
+                Leg currentLeg;
+                currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                currentLeg.distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                currentLeg.startTime = 0; //Fixme: Work out when this leg should start.
+                legs.push_back(currentLeg);
+            }
 
             //Load from individual boat.ini file
             std::string shipIniFilename = "Models/Othership/";
@@ -58,12 +70,15 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
             shipFullPath.append(shipFileName);
 
             //Create otherShip and load into vector
-            otherShips.push_back(OtherShip (shipFullPath.c_str(),core::vector3df(shipX,0.0f,shipZ),shipScale,yCorrection,smgr));
+            otherShips.push_back(OtherShip (shipFullPath.c_str(),core::vector3df(shipX,0.0f,shipZ),shipScale,yCorrection,legs,smgr));
         }
     }
 }
 
 void OtherShips::update()
 {
-
+    for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        it->update();
+    }
 }
+
