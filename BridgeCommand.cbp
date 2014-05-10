@@ -27,10 +27,12 @@
 		<Unit filename="Buoys.hpp" />
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
+		<Unit filename="Constants.hpp" />
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
 		<Unit filename="IniFile.cpp" />
 		<Unit filename="IniFile.hpp" />
+		<Unit filename="Leg.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />
 		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="Network.cpp" />

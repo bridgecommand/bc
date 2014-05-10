@@ -81,10 +81,10 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
     }
 }
 
-void OtherShips::update()
+void OtherShips::update(irr::f32 deltaTime)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        it->update();
+        it->update(deltaTime);
     }
 }
 

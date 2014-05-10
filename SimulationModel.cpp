@@ -105,7 +105,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         previousTime = currentTime;
 
         //update other ship positions etc
-        otherShips.update();
+        otherShips.update(deltaTime);
 
         //update own ship
         ownShip.update(deltaTime);

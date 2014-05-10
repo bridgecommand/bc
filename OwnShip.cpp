@@ -2,6 +2,7 @@
 
 #include "OwnShip.hpp"
 
+#include "Constants.hpp"
 #include "SimulationModel.hpp"
 #include "IniFile.hpp"
 
@@ -23,12 +24,11 @@ void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::scene::IScen
     //Load from ownShip.ini file
     std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
     //Get initial position and heading, and set these
+    speed = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed")*KTS_TO_MPS;
     xPos = model->longToX(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong"));
     yPos = 0;
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
     heading = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
-
-    //Fixme: also load initial speed here
 
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";

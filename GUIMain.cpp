@@ -2,6 +2,8 @@
 
 #include "GUIMain.hpp"
 
+#include "Constants.hpp"
+
 using namespace irr;
 
 GUIMain::GUIMain(IrrlichtDevice* dev)
@@ -29,7 +31,7 @@ GUIMain::GUIMain(IrrlichtDevice* dev)
         spdScrollbar->setPos(spd);
         //Update text display data
         guiHeading = hdg; //Heading in degrees
-        guiSpeed = spd*3600.f/1852.f; //Speed in knots
+        guiSpeed = spd*MPS_TO_KTS; //Speed in knots
     }
 
     void GUIMain::drawGUI()

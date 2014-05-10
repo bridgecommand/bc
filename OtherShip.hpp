@@ -12,11 +12,22 @@ class OtherShip
     public:
         OtherShip(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scaleFactor, const irr::f32 yCorrection, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr);
         virtual ~OtherShip();
-        void update();
+        void setHeading(irr::f32 hdg);
+        void setSpeed(irr::f32 spd);
+        irr::f32 getHeading() const;
+        irr::f32 getSpeed() const;
+        void update(irr::f32 deltaTime);
+        void setPosition(irr::core::vector3df position);
+        void setRotation(irr::core::vector3df rotation);
     protected:
     private:
         irr::scene::IMeshSceneNode* otherShip; //The scene node for the other ship.
         std::vector<Leg> legs;
+        irr::f32 heading;
+        irr::f32 xPos;
+        irr::f32 yPos;
+        irr::f32 zPos;
+        irr::f32 speed;
 };
 
 #endif
