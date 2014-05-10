@@ -18,9 +18,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //store time
         previousTime = device->getTimer()->getTime();
 
-        //Load own ship model. This also sets heading and position (should also initialise speed)
-        speed = 0.0f;
-        ownShip.load("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos, heading, smgr, this); //Fixme: Hardcoding of scenario
+        //Load own ship model. (should also initialise speed)
+        //speed = 0.0f;
+        ownShip.load("Scenarios/a) Buoyage/ownship.ini", smgr, this); //Fixme: Hardcoding of scenario
 
         //make a camera, setting parent and offset
         core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
@@ -77,22 +77,22 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
     void SimulationModel::setSpeed(f32 spd)
     {
-         speed = spd;
+         ownShip.setSpeed(spd);
     }
 
     const irr::f32 SimulationModel::getSpeed()
     {
-        return(speed);
+        return(ownShip.getSpeed());
     }
 
     void SimulationModel::setHeading(f32 hdg)
     {
-         heading = hdg;
+         ownShip.setHeading(hdg);
     }
 
     const irr::f32 SimulationModel::getHeading()
     {
-        return(heading);
+        return(ownShip.getHeading());
     }
 
 
@@ -107,13 +107,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //update other ship positions etc
         otherShips.update();
 
-        //move, according to heading and speed
-        xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
-        zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
-
-        //Set position & speed by calling own ship methods
-        ownShip.setPosition(core::vector3df(xPos,yPos,zPos));
-        ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
+        //update own ship
+        ownShip.update(deltaTime);
 
         //update the camera position
         camera.update();
@@ -125,6 +120,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
-        guiMain->updateGuiData(heading, speed); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed()); //Set GUI heading in degrees and speed (in m/s)
     }
 

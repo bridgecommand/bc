@@ -23,10 +23,10 @@ public:
 
     const irr::f32 longToX(irr::f32 longitude);
     const irr::f32 latToZ(irr::f32 latitude);
-    void setSpeed(irr::f32 spd);
-    void setHeading(irr::f32 hdg);
-    const irr::f32 getSpeed();
-    const irr::f32 getHeading();
+    void setSpeed(irr::f32 spd); //Sets the own ship's speed
+    void setHeading(irr::f32 hdg); //Sets the own ship's heading
+    const irr::f32 getSpeed(); //Gets the own ship's speed
+    const irr::f32 getHeading(); //Gets the own ship's heading
     void update();
 
 private:
@@ -42,12 +42,7 @@ private:
     RadarScreen radarScreen;
     GUIMain* guiMain;
 
-    //Ship movement
-    irr::f32 heading;
-    irr::f32 xPos;
-    irr::f32 yPos;
-    irr::f32 zPos;
-    irr::f32 speed;
+    //Simulation time handling
     irr::u32 currentTime;
     irr::u32 previousTime;
     irr::f32 deltaTime;

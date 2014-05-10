@@ -17,7 +17,7 @@ OwnShip::~OwnShip()
     //dtor
 }
 
-void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //Load from ownShip.ini file
@@ -78,6 +78,17 @@ void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::f32& xPos, i
 
 }
 
+void OwnShip::update(irr::f32 deltaTime)
+{
+    //move, according to heading and speed
+    xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
+    zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
+
+    //Set position & speed by calling own ship methods
+    setPosition(core::vector3df(xPos,yPos,zPos));
+    setRotation(core::vector3df(0, heading, 0)); //Global vectors
+}
+
 irr::scene::IMeshSceneNode* OwnShip::getSceneNode() const
 {
     return ownShip;
@@ -106,4 +117,24 @@ irr::core::vector3df OwnShip::getPosition() const
 irr::core::vector3df OwnShip::getCameraOffset() const
 {
     return cameraOffset;
+}
+
+void OwnShip::setHeading(irr::f32 hdg)
+{
+    heading = hdg;
+}
+
+void OwnShip::setSpeed(irr::f32 spd)
+{
+    speed = spd;
+}
+
+irr::f32 OwnShip::getHeading() const
+{
+    return heading;
+}
+
+irr::f32 OwnShip::getSpeed() const
+{
+    return speed;
 }

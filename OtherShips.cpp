@@ -2,6 +2,7 @@
 
 #include "OtherShips.hpp"
 
+#include "Constants.hpp"
 #include "OtherShip.hpp"
 #include "IniFile.hpp"
 #include "SimulationModel.hpp"
@@ -38,14 +39,19 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
             //in ini file, the format is (for each leg): Bearing (deg), Speed (kts), distance (nm)
             std::vector<Leg> legs;
             irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
+            irr::f32 legStartTime = 0;
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
                 Leg currentLeg;
                 currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
                 currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
                 currentLeg.distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
-                currentLeg.startTime = 0; //Fixme: Work out when this leg should start.
+                currentLeg.startTime = legStartTime;
                 legs.push_back(currentLeg);
+
+                //find the start time for the next leg
+                legStartTime = legStartTime + SECONDS_IN_HOUR*(currentLeg.distance/currentLeg.speed); // nm/kts -> hours, so convert to seconds
+
             }
 
             //Load from individual boat.ini file
