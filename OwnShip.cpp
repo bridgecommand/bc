@@ -17,7 +17,7 @@ OwnShip::~OwnShip()
     //dtor
 }
 
-void OwnShip::loadModel(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::f32& xPos, irr::f32& yPos, irr::f32& zPos, irr::f32& heading, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //Load from ownShip.ini file

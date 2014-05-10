@@ -13,7 +13,7 @@ public:
     ~Network();
 
     void connectToServer();
-    void updateNetwork();
+    void update();
 
 private:
     SimulationModel* model;

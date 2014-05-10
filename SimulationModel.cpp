@@ -20,20 +20,20 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //Load own ship model. This also sets heading and position (should also initialise speed)
         speed = 0.0f;
-        ownShip.loadModel("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos, heading, smgr, this); //Fixme: Hardcoding of scenario
+        ownShip.load("Scenarios/a) Buoyage/ownship.ini",xPos, yPos, zPos, heading, smgr, this); //Fixme: Hardcoding of scenario
 
         //make a camera, setting parent and offset
         core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
-        camera.loadCamera(smgr,ownShip.getSceneNode(),camOffset);
+        camera.load(smgr,ownShip.getSceneNode(),camOffset);
 
         //Add terrain
-        terrain.loadTerrain(smgr, driver);
+        terrain.load(smgr, driver);
 
         //Load other ships
-        otherShips.loadOtherShips("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
+        otherShips.load("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
 
         //Load buoys
-        buoys.loadBuoys("World/SimpleEstuary/buoy.ini", smgr, this); //Fixme: Hardcoding of world model
+        buoys.load("World/SimpleEstuary/buoy.ini", smgr, this); //Fixme: Hardcoding of world model
 
         //add water
         Water water (smgr, driver);
@@ -48,7 +48,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.4,-0.25,0.75); //FIXME: hardcoded offset - should be read from the own ship model
-        radarScreen.loadRadarScreen(driver,smgr,camera.getSceneNode(),radarOffset);
+        radarScreen.load(driver,smgr,camera.getSceneNode(),radarOffset);
 
         //sky box/dome
         Sky sky (smgr, driver);
@@ -96,13 +96,16 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
     }
 
 
-    void SimulationModel::updateModel()
+    void SimulationModel::update()
     {
 
         //get delta time
         currentTime = device->getTimer()->getTime();
         deltaTime = (currentTime - previousTime)/1000.f;
         previousTime = currentTime;
+
+        //update other ship positions etc
+        otherShips.update();
 
         //move, according to heading and speed
         xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
@@ -113,12 +116,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         ownShip.setRotation(core::vector3df(0, heading, 0)); //Global vectors
 
         //update the camera position
-        camera.updateCamera();
+        camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
         video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(128, 128)); //Create image for radar calculation to work on
-        radarCalculation.updateRadarCalculation(radarImage,terrain,ownShip);
-        radarScreen.updateRadarScreen(radarImage);
+        radarCalculation.update(radarImage,terrain,ownShip);
+        radarScreen.update(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui

@@ -16,7 +16,7 @@ RadarScreen::~RadarScreen()
 }
 
 
-void RadarScreen::loadRadarScreen(irr::video::IVideoDriver* drv, irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* par, irr::core::vector3df off)
+void RadarScreen::load(irr::video::IVideoDriver* drv, irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* par, irr::core::vector3df off)
 {
     driver = drv; //store video driver so we can work with textures
     radarScreen = smgr->addBillboardSceneNode();
@@ -26,7 +26,7 @@ void RadarScreen::loadRadarScreen(irr::video::IVideoDriver* drv, irr::scene::ISc
     offset = off;
 }
 
-void RadarScreen::updateRadarScreen(video::IImage* radarImage)
+void RadarScreen::update(video::IImage* radarImage)
 {
      //link camera rotation to shipNode
     // get transformation matrix of node

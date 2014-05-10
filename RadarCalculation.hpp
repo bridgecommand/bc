@@ -14,7 +14,7 @@ class RadarCalculation
         RadarCalculation();
         virtual ~RadarCalculation();
         //void loadRadarCalculation();
-        void updateRadarCalculation(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip);
+        void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip);
 
     private:
         std::vector<std::vector<irr::f32> > scanArray;

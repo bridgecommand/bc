@@ -18,7 +18,7 @@ Buoys::~Buoys()
     //dtor
 }
 
-void Buoys::loadBuoys(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void Buoys::load(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
         //Find number of buoys
         u32 numberOfBuoys;

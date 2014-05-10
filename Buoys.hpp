@@ -15,7 +15,7 @@ class Buoys
     public:
         Buoys();
         virtual ~Buoys();
-        void loadBuoys(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void load(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
 
     private:
         std::vector<Buoy> buoys;

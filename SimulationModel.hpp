@@ -27,7 +27,7 @@ public:
     void setHeading(irr::f32 hdg);
     const irr::f32 getSpeed();
     const irr::f32 getHeading();
-    void updateModel();
+    void update();
 
 private:
     irr::IrrlichtDevice* device;

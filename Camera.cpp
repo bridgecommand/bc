@@ -15,7 +15,7 @@ Camera::~Camera()
 }
 
 
-void Camera::loadCamera(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* par, irr::core::vector3df off)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* par, irr::core::vector3df off)
 {
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
     parent = par;
@@ -27,7 +27,7 @@ irr::scene::ISceneNode* Camera::getSceneNode() const
     return camera;
 }
 
-void Camera::updateCamera()
+void Camera::update()
 {
      //link camera rotation to shipNode
         // get transformation matrix of node

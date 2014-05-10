@@ -39,8 +39,8 @@ int main()
     while(device->run())
     {
 
-        network.updateNetwork();
-        model.updateModel();
+        network.update();
+        model.update();
 
         //Render
         driver->beginScene(true,true,video::SColor(255,100,101,140));

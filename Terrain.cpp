@@ -14,7 +14,7 @@ Terrain::~Terrain()
     //dtor
 }
 
-void Terrain::loadTerrain(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
+void Terrain::load(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
 {
     terrain = smgr->addTerrainSceneNode(
                        "World/SimpleEstuary/heightRotated.bmp", //FIXME: Heightmap image manually rotated

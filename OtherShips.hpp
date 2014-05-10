@@ -15,7 +15,8 @@ class OtherShips
     public:
         OtherShips();
         virtual ~OtherShips();
-        void loadOtherShips(const std::string& scenarioOtherShipsFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void load(const std::string& scenarioOtherShipsFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void update();
 
     private:
         std::vector<OtherShip> otherShips;

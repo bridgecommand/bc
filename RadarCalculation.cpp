@@ -29,7 +29,7 @@ void RadarCalculation::loadRadarCalculation()
 }
 */
 
-void RadarCalculation::updateRadarCalculation(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip)
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip)
 {
 
     //scan into array, accessed as  scanArray[row (angle)][column (step)]

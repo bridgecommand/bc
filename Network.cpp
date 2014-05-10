@@ -71,7 +71,7 @@ void Network::connectToServer()
     }
 }
 
-void Network::updateNetwork()
+void Network::update()
 {
     receiveNetwork();
     sendNetwork();
