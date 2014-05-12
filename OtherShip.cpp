@@ -44,7 +44,7 @@ OtherShip::~OtherShip()
     //dtor
 }
 
-void OtherShip::update(irr::f32 deltaTime)
+void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime)
 {
 
     //move according to leg information
@@ -52,17 +52,21 @@ void OtherShip::update(irr::f32 deltaTime)
         speed = 0;
         heading = 0;
     } else {
-        //Fixme: currently hardcoded to use just the initial leg. Iterate to find correct leg using the Leg.startTime member.
-        speed = legs[0].speed*KTS_TO_MPS;
-        heading = legs[0].bearing;
+        //Work out which leg we're on
+        int currentLeg; //Fixme,should probably be a size_type
+        for(currentLeg = 0; currentLeg<legs.size()-1; currentLeg++) {
+            if (legs[currentLeg].startTime <=scenarioTime && legs[currentLeg+1].startTime > scenarioTime ) {
+                break;
+            }
+        }
+        speed = legs[currentLeg].speed*KTS_TO_MPS;
+        heading = legs[currentLeg].bearing;
     }
-    //Fixme:
-    //move according to what's in the 'legs' information
-    //move, according to heading and speed
+
     xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
     zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
 
-    //Set position & speed by calling own ship methods
+    //Set position & speed by calling ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
     setRotation(core::vector3df(0, heading, 0)); //Global vectors
 }

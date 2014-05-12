@@ -51,8 +51,14 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
 
                 //find the start time for the next leg
                 legStartTime = legStartTime + SECONDS_IN_HOUR*(currentLeg.distance/currentLeg.speed); // nm/kts -> hours, so convert to seconds
-
             }
+            //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+            Leg stopLeg;
+            stopLeg.bearing=0;
+            stopLeg.speed=0;
+            stopLeg.distance=0;
+            stopLeg.startTime = legStartTime;
+            legs.push_back(stopLeg);
 
             //Load from individual boat.ini file
             std::string shipIniFilename = "Models/Othership/";
@@ -81,10 +87,10 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
     }
 }
 
-void OtherShips::update(irr::f32 deltaTime)
+void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        it->update(deltaTime);
+        it->update(deltaTime, scenarioTime);
     }
 }
 

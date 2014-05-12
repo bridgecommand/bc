@@ -18,6 +18,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //store time
         previousTime = device->getTimer()->getTime();
 
+        //set internal scenario time to start as zero
+        scenarioTime = 0;
+
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
         ownShip.load("Scenarios/a) Buoyage/ownship.ini", smgr, this); //Fixme: Hardcoding of scenario
@@ -104,8 +107,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         deltaTime = (currentTime - previousTime)/1000.f;
         previousTime = currentTime;
 
+        //add this to the scenario time
+        scenarioTime += deltaTime;
+
         //update other ship positions etc
-        otherShips.update(deltaTime);
+        otherShips.update(deltaTime,scenarioTime);
 
         //update own ship
         ownShip.update(deltaTime);

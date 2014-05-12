@@ -43,9 +43,10 @@ private:
     GUIMain* guiMain;
 
     //Simulation time handling
-    irr::u32 currentTime;
-    irr::u32 previousTime;
+    irr::u32 currentTime; //Computer clock time
+    irr::u32 previousTime; //Computer clock time
     irr::f32 deltaTime;
+    irr::f32 scenarioTime; //Simulation internal time, starting at zero at start of simulation
 
 };
 #endif
