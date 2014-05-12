@@ -2,16 +2,40 @@
 
 #include "irrlicht.h"
 
+#include "IniFile.hpp"
 #include "Constants.hpp"
-
 #include "OtherShip.hpp"
 
 using namespace irr;
 
-OtherShip::OtherShip(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scaleFactor, const irr::f32 yCorrection, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
+OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
 {
-    //FIXME: Use similar code for ownship loading (could extend from this?)
-    scene::IMesh* shipMesh = smgr->getMesh(filename);
+
+    //Load from individual boat.ini file
+    std::string iniFilename = "Models/Othership/";
+    iniFilename.append(name);
+    iniFilename.append("/boat.ini");
+
+    //load information about this model from its ini file
+    std::string shipFileName = IniFile::iniFileToString(iniFilename,"FileName");
+
+    //get scale factor from ini file (or zero if not set - assume 1)
+    f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor");
+    if (scaleFactor==0.0) {
+        scaleFactor = 1.0; //Default if not set
+    }
+
+    f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
+
+    std::string shipFullPath = "Models/Othership/"; //FIXME: Use proper path handling
+    shipFullPath.append(name);
+    shipFullPath.append("/");
+    shipFullPath.append(shipFileName);
+
+    //get light locations:
+
+    //load mesh
+    scene::IMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
     //scale and translate
     core::matrix4 transformMatrix;
@@ -34,6 +58,15 @@ OtherShip::OtherShip(const irr::io::path& filename, const irr::core::vector3df& 
             otherShip->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
+
+    //FIXME: Load lights here
+    //experiment: add a billboard scene node as a child:
+    /*
+    scene::IBillboardSceneNode* lightNode = smgr->addBillboardSceneNode(parent, core::dimension2d<f32>(5, 5), core::vector3df(0,1,10));
+    lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
+    lightNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+    lightNode->setMaterialTexture(0, driver->getTexture("/media/particlewhite.bmp"));
+    */
 
     //store leg information
     legs=legsLoaded;

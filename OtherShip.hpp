@@ -6,11 +6,12 @@
 #include "Leg.hpp"
 
 #include <vector>
+#include <string>
 
 class OtherShip
 {
     public:
-        OtherShip(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scaleFactor, const irr::f32 yCorrection, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr);
+        OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr);
         virtual ~OtherShip();
         void setHeading(irr::f32 hdg);
         void setSpeed(irr::f32 spd);

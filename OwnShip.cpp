@@ -75,7 +75,6 @@ void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::scene::IScen
             ownShip->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
-
 }
 
 void OwnShip::update(irr::f32 deltaTime)

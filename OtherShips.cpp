@@ -60,29 +60,8 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
             stopLeg.startTime = legStartTime;
             legs.push_back(stopLeg);
 
-            //Load from individual boat.ini file
-            std::string shipIniFilename = "Models/Othership/";
-            shipIniFilename.append(otherShipName);
-            shipIniFilename.append("/boat.ini");
-
-            //get filename from ini file
-            std::string shipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
-
-            //get scale factor from ini file (or zero if not set - assume 1)
-            f32 shipScale = IniFile::iniFileTof32(shipIniFilename,"Scalefactor");
-            if (shipScale==0.0) {
-                shipScale = 1.0; //Default if not set
-            }
-
-            f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
-
-            std::string shipFullPath = "Models/Othership/"; //FIXME: Use proper path handling
-            shipFullPath.append(otherShipName);
-            shipFullPath.append("/");
-            shipFullPath.append(shipFileName);
-
             //Create otherShip and load into vector
-            otherShips.push_back(OtherShip (shipFullPath.c_str(),core::vector3df(shipX,0.0f,shipZ),shipScale,yCorrection,legs,smgr));
+            otherShips.push_back(OtherShip (otherShipName,core::vector3df(shipX,0.0f,shipZ),legs,smgr));
         }
     }
 }
