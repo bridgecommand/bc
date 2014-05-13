@@ -5,6 +5,7 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "OtherShip.hpp"
+#include "NavLight.hpp"
 
 using namespace irr;
 
@@ -77,11 +78,13 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             lightY = (lightY+yCorrection)*scaleFactor;
             lightZ *= scaleFactor;
 
-            scene::IBillboardSceneNode* lightNode = smgr->addBillboardSceneNode(otherShip, core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ));
+            NavLight navLight (otherShip,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB));
+
+            /*scene::IBillboardSceneNode* lightNode = smgr->addBillboardSceneNode(otherShip, core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ));
             lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
             //lightNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
             lightNode->setColor(video::SColor(255,lightR,lightG,lightB));
-            //lightNode->setMaterialTexture(0, driver->getTexture("/media/particlewhite.bmp"));
+            //lightNode->setMaterialTexture(0, driver->getTexture("/media/particlewhite.bmp"));*/
         }
     }
 

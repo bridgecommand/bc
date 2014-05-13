@@ -35,6 +35,8 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />
 		<Unit filename="MyEventReceiver.hpp" />
+		<Unit filename="NavLight.cpp" />
+		<Unit filename="NavLight.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
 		<Unit filename="OtherShip.cpp" />
