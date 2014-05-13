@@ -14,7 +14,7 @@ int main()
 {
 
     //create device
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(700,525),32,false,false,false,0);
+    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0);
 
     device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
 
