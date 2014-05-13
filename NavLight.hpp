@@ -6,7 +6,7 @@
 class NavLight {
 
     public:
-        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour);
+        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::u32 lightStartAngle, irr::u32 lightEndAngle, irr::u32 lightRange);
         ~NavLight();
         void Update();
 

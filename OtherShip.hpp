@@ -3,6 +3,7 @@
 
 #include "irrlicht.h"
 
+#include "NavLight.hpp"
 #include "Leg.hpp"
 
 #include <vector>
@@ -24,6 +25,7 @@ class OtherShip
     private:
         irr::scene::IMeshSceneNode* otherShip; //The scene node for the other ship.
         std::vector<Leg> legs;
+        std::vector<NavLight> navLights;
         irr::f32 heading;
         irr::f32 xPos;
         irr::f32 yPos;

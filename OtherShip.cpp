@@ -5,7 +5,6 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "OtherShip.hpp"
-#include "NavLight.hpp"
 
 using namespace irr;
 
@@ -73,18 +72,18 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
             u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
 
+            u32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
+            u32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
+            u32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
+
             //correct to local scaled coordinates
             lightX *= scaleFactor;
             lightY = (lightY+yCorrection)*scaleFactor;
             lightZ *= scaleFactor;
 
-            NavLight navLight (otherShip,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB));
+            //add this Nav light into array
+            navLights.push_back(NavLight (otherShip,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
 
-            /*scene::IBillboardSceneNode* lightNode = smgr->addBillboardSceneNode(otherShip, core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ));
-            lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
-            //lightNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-            lightNode->setColor(video::SColor(255,lightR,lightG,lightB));
-            //lightNode->setMaterialTexture(0, driver->getTexture("/media/particlewhite.bmp"));*/
         }
     }
 
