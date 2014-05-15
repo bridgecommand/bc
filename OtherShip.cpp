@@ -96,7 +96,7 @@ OtherShip::~OtherShip()
     //dtor
 }
 
-void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime)
+void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition)
 {
 
     //move according to leg information
@@ -121,6 +121,12 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime)
     //Set position & speed by calling ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
     setRotation(core::vector3df(0, heading, 0)); //Global vectors
+
+    //for each light, find range and angle
+    for(int currentLight = 0; currentLight<navLights.size(); currentLight++) {
+        navLights[currentLight].update(scenarioTime,viewPosition);
+    }
+
 }
 
 void OtherShip::setHeading(irr::f32 hdg)

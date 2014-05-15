@@ -27,6 +27,11 @@ irr::scene::ISceneNode* Camera::getSceneNode() const
     return camera;
 }
 
+irr::core::vector3df Camera::getPosition() const
+{
+    return camera->getAbsolutePosition();
+}
+
 void Camera::update()
 {
      //link camera rotation to shipNode

@@ -18,7 +18,7 @@ class OtherShip
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
         irr::f32 getSpeed() const;
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
     protected:

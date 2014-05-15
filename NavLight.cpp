@@ -19,6 +19,10 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 NavLight::~NavLight() {
 }
 
-void NavLight::Update() {
+void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) {
     //Need to add handling for startAngle, endAngle and range.
+
+    f32 lightDistance=lightNode->getAbsolutePosition().getDistanceFrom(viewPosition);
+    lightNode->setSize(core::dimension2df(lightDistance*0.01,lightDistance*0.01));
+
 }

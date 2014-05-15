@@ -41,10 +41,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //add water
         Water water (smgr, driver);
 
-        //FIXME: What's going on with models and lighting??
-
         //make ambient light
-        smgr->setAmbientLight(video::SColorf(1.0,1.0,1.0,1));
+        smgr->setAmbientLight(video::SColor(255,64,64,64));
         //add a directional light
         //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
         //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
@@ -57,8 +55,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         Sky sky (smgr, driver);
 
         //make fog
-        driver->setFog(video::SColor(128,128,128,128), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
-        //This colour should change with the light colour, so the fog isn't brighter than the background
+        driver->setFog(smgr->getAmbientLight().toSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
     } //end of SimulationModel constructor
 
@@ -111,7 +108,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         scenarioTime += deltaTime;
 
         //update other ship positions etc
-        otherShips.update(deltaTime,scenarioTime);
+        otherShips.update(deltaTime,scenarioTime,camera.getPosition()); //Update other ship motion (based on leg information), and light visibility.
 
         //update own ship
         ownShip.update(deltaTime);

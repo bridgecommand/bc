@@ -11,6 +11,7 @@ class Camera
 
         void load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* par, irr::core::vector3df off);
         irr::scene::ISceneNode* getSceneNode() const;
+        irr::core::vector3df getPosition() const;
         void update();
 
     private:
