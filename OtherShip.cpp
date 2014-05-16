@@ -59,8 +59,6 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
         }
     }
 
-    //FIXME: Load lights here: Need to add range, colour and angle handling
-    //count number of lights
     u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
     if (numberOfLights>0) {
         for (u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {
@@ -72,9 +70,10 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
             u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
 
-            u32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
-            u32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
-            u32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
+            f32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
+            f32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
+            f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
+            lightRange = lightRange * M_IN_NM; //Convert to metres
 
             //correct to local scaled coordinates
             lightX *= scaleFactor;
@@ -83,7 +82,6 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
             //add this Nav light into array
             navLights.push_back(NavLight (otherShip,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
-
         }
     }
 
