@@ -35,8 +35,7 @@ void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene:
             f32 shipX = model->longToX(IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLong",i)));
             f32 shipZ = model->latToZ(IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLat",i)));
 
-            //Fixme: also load leg information and decide how to handle this
-            //in ini file, the format is (for each leg): Bearing (deg), Speed (kts), distance (nm)
+            //Load leg information
             std::vector<Leg> legs;
             irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
             irr::f32 legStartTime = 0;

@@ -103,7 +103,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vec
         heading = 0;
     } else {
         //Work out which leg we're on
-        int currentLeg; //Fixme,should probably be a size_type
+        std::vector<Leg>::size_type currentLeg;
         for(currentLeg = 0; currentLeg<legs.size()-1; currentLeg++) {
             if (legs[currentLeg].startTime <=scenarioTime && legs[currentLeg+1].startTime > scenarioTime ) {
                 break;
@@ -147,12 +147,12 @@ irr::f32 OtherShip::getSpeed() const
     return speed;
 }
 
-void OtherShip::setPosition(irr::core::vector3df position) //FIXME: Are these needed at all
+void OtherShip::setPosition(irr::core::vector3df position) //Not currently used, but may be needed to relocate
 {
      otherShip->setPosition(position);
 }
 
-void OtherShip::setRotation(irr::core::vector3df rotation) //FIXME: Are these needed at all
+void OtherShip::setRotation(irr::core::vector3df rotation) //Not currently used, but may be needed to relocate
 {
     otherShip->setRotation(rotation);
 }

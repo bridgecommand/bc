@@ -32,7 +32,7 @@ NavLight::~NavLight() {
 void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) {
 
     //find light position
-    lightNode->updateAbsolutePosition();//Fixme: This is needed, but seems odd that it's required
+    lightNode->updateAbsolutePosition(); //ToDo: This is needed, but seems odd that it's required
     core::vector3df lightPosition = lightNode->getAbsolutePosition();
 
     //std::cout << "Light pos: " << lightPosition.X << "," << lightPosition.Y << "," << lightPosition.Z << std::endl;
@@ -60,7 +60,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) 
 
     //set light visibility depending on light sequence
     //find length of sequence
-    int sequenceLength = sequence.length();// FIXME: Should be size type
+    std::string::size_type sequenceLength = sequence.length();
     if (sequenceLength > 0) {
         f32 charTime = 0.25; //where each character represents 0.25s of time
         f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);

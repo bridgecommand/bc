@@ -43,7 +43,7 @@ using namespace irr;
     }
 
 
-	s32 MyEventReceiver::GetScrollBarPosSpeed() const //FIXME: Check use of const here - is it doing what it should be (ie ensuring this method doesn't change anything?)
+	s32 MyEventReceiver::GetScrollBarPosSpeed() const
 	{
 		return scrollBarPosSpeed;
 	}

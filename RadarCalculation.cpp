@@ -80,5 +80,4 @@ void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& te
             }
         }
     }
-    //radarImage->setPixel(bitmapWidth/2,bitmapWidth/2,video::SColor(255,255,0,0)); //'centre' point //Fixme: Remove this from final, as it isn't exactly in centre
 }

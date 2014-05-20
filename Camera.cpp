@@ -29,7 +29,7 @@ irr::scene::ISceneNode* Camera::getSceneNode() const
 
 irr::core::vector3df Camera::getPosition() const
 {
-    camera->updateAbsolutePosition();//Fixme: This may be needed, but seems odd that it's required
+    camera->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
     return camera->getAbsolutePosition();
 }
 
