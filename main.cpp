@@ -7,11 +7,16 @@
 #include "MyEventReceiver.hpp"
 #include "Network.hpp"
 
+#include <cstdlib> //For rand(), srand()
+
 // Irrlicht Namespaces
 using namespace irr;
 
 int main()
 {
+
+    //seed random number generator
+    std::srand(0);
 
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0);

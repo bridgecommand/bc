@@ -2,7 +2,7 @@
 
 using namespace irr;
 
-NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange) {
+NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence) {
 
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
     lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
@@ -20,14 +20,18 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     startAngle = lightStartAngle;
     endAngle = lightEndAngle;
     range = lightRange;
+
+    //initialise light sequence information
+    sequence = lightSequence;
+    timeOffset=60.0*((irr::f32)std::rand()/RAND_MAX); //Random, 0-60s
 }
 
 NavLight::~NavLight() {
 }
 
 void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) {
-    //Need to add handling for startAngle, endAngle and range.
 
+    //find light position
     lightNode->updateAbsolutePosition();//Fixme: This is needed, but seems odd that it's required
     core::vector3df lightPosition = lightNode->getAbsolutePosition();
 
@@ -55,7 +59,17 @@ void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) 
     }
 
     //set light visibility depending on light sequence
-
+    //find length of sequence
+    int sequenceLength = sequence.length();// FIXME: Should be size type
+    if (sequenceLength > 0) {
+        f32 charTime = 0.25; //where each character represents 0.25s of time
+        f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
+        u32 positionInSequence = timeInSequence;
+        if (positionInSequence>=sequenceLength) {positionInSequence = sequenceLength-1;} //Should not be required, but double check we're not off the end of the sequence
+        if (sequence[positionInSequence] == 'D') {
+            lightNode->setVisible(false);
+        }
+    }
 }
 
 bool NavLight::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
