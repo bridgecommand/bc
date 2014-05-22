@@ -32,8 +32,6 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     shipFullPath.append("/");
     shipFullPath.append(shipFileName);
 
-    //get light locations:
-
     //load mesh
     scene::IMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
@@ -59,6 +57,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
         }
     }
 
+    //get light locations:
     u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
     if (numberOfLights>0) {
         for (u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {

@@ -9,16 +9,19 @@
 //Forward declarations
 class SimulationModel;
 class Buoy;
+class NavLight;
 
 class Buoys
 {
     public:
         Buoys();
         virtual ~Buoys();
-        void load(const std::string& scenarioBuoyFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
 
     private:
         std::vector<Buoy> buoys;
+        std::vector<NavLight> buoysLights;
 };
 
 #endif

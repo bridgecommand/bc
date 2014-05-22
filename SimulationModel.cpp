@@ -36,7 +36,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         otherShips.load("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
 
         //Load buoys
-        buoys.load("World/SimpleEstuary/buoy.ini", smgr, this); //Fixme: Hardcoding of world model
+        buoys.load("World/SimpleEstuary", smgr, this); //Fixme: Hardcoding of world model
 
         //add water
         Water water (smgr, driver);
@@ -109,6 +109,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,camera.getPosition()); //Update other ship motion (based on leg information), and light visibility.
+
+        //update buoys (for lights)
+        buoys.update(deltaTime,scenarioTime,camera.getPosition());
 
         //update own ship
         ownShip.update(deltaTime);
