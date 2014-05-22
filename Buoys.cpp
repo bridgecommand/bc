@@ -43,33 +43,8 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                 f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
                 f32 buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
 
-                //FIXME: This section should be re-factored into the Buoy object
-
-                //Load from individual buoy.ini file if it exists
-                std::string buoyIniFilename = "Models/Buoy/";
-                buoyIniFilename.append(buoyName);
-                buoyIniFilename.append("/buoy.ini");
-
-                //get filename from ini file (or empty string if file doesn't exist)
-                std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName");
-                if (buoyFileName=="") {
-                    buoyFileName = "buoy.x"; //Default if not set
-                }
-                //get scale factor from ini file (or zero if not set - assume 1)
-                f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor");
-                if (buoyScale==0.0) {
-                    buoyScale = 1.0; //Default if not set
-                }
-
-                std::string buoyFullPath = "Models/Buoy/"; //FIXME: Use proper path handling
-                buoyFullPath.append(buoyName);
-                buoyFullPath.append("/");
-                buoyFullPath.append(buoyFileName);
-
-                //End of refactor required
-
                 //Create buoy and load into vector
-                buoys.push_back(Buoy (buoyFullPath.c_str(),core::vector3df(buoyX,0.0f,buoyZ),buoyScale,smgr));
+                buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),smgr));
 
                 //Load buoy light information from light.ini file if available
 

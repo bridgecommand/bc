@@ -3,10 +3,12 @@
 
 #include "irrlicht.h"
 
+#include <string>
+
 class Buoy
 {
     public:
-        Buoy(const irr::io::path& filename, const irr::core::vector3df& location, const irr::f32 scale, irr::scene::ISceneManager* smgr);
+        Buoy(const std::string& name, const irr::core::vector3df& location, irr::scene::ISceneManager* smgr);
         virtual ~Buoy();
     protected:
     private:
