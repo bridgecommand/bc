@@ -9,8 +9,8 @@ class Terrain
         Terrain();
         virtual ~Terrain();
         void load(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
-        const irr::f32 longToX(irr::f32 longitude);
-        const irr::f32 latToZ(irr::f32 latitude);
+        irr::f32 longToX(irr::f32 longitude) const;
+        irr::f32 latToZ(irr::f32 latitude) const;
         irr::f32 getHeight(irr::f32 x, irr::f32 z) const;
 
     private:

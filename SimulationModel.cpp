@@ -68,12 +68,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
     } //end of SimulationModel constructor
 
-    const irr::f32 SimulationModel::longToX(irr::f32 longitude)
+    irr::f32 SimulationModel::longToX(irr::f32 longitude) const
     {
         return terrain.longToX(longitude); //Cascade to terrain
     }
 
-    const irr::f32 SimulationModel::latToZ(irr::f32 latitude)
+    irr::f32 SimulationModel::latToZ(irr::f32 latitude) const
     {
         return terrain.latToZ(latitude); //Cascade to terrain
     }
@@ -83,7 +83,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
          ownShip.setSpeed(spd);
     }
 
-    const irr::f32 SimulationModel::getSpeed()
+    irr::f32 SimulationModel::getSpeed() const
     {
         return(ownShip.getSpeed());
     }
@@ -93,7 +93,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
          ownShip.setHeading(hdg);
     }
 
-    const irr::f32 SimulationModel::getHeading()
+    irr::f32 SimulationModel::getHeading() const
     {
         return(ownShip.getHeading());
     }

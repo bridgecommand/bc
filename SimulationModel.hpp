@@ -25,12 +25,12 @@ public:
 
     SimulationModel(irr::IrrlichtDevice* dev, irr::video::IVideoDriver* drv, irr::scene::ISceneManager* scene, GUIMain* gui);
 
-    const irr::f32 longToX(irr::f32 longitude);
-    const irr::f32 latToZ(irr::f32 latitude);
+    irr::f32 longToX(irr::f32 longitude) const ;
+    irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
-    const irr::f32 getSpeed(); //Gets the own ship's speed
-    const irr::f32 getHeading(); //Gets the own ship's heading
+    irr::f32 getSpeed() const; //Gets the own ship's speed
+    irr::f32 getHeading() const; //Gets the own ship's heading
     void update();
 
 private:
