@@ -1,8 +1,5 @@
 #include "irrlicht.h"
 
-#include <iostream> //For debugging
-
-#include "IniFile.hpp" //For ini file handling (buoy)
 #include "SimulationModel.hpp"
 
 using namespace irr;
@@ -15,15 +12,24 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         smgr = scene;
         guiMain = gui;
 
-        //store time
-        previousTime = device->getTimer()->getTime();
-
         //set internal scenario time to start as zero
         scenarioTime = 0;
 
+        //set scenario to load (will be read in from user) //fixme hardcoded
+        std::string scenarioName = "b) Buoyage by night";
+        std::string worldName = "SimpleEstuary";
+
+        //construct path to scenario
+        std::string scenarioPath = "Scenarios/"; //Fixme: Think about proper path handling?
+        scenarioPath.append(scenarioName);
+
+        //construct path to world model
+        std::string worldPath = "World/";
+        worldPath.append(worldName);
+
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
-        ownShip.load("Scenarios/a) Buoyage/ownship.ini", smgr, this); //Fixme: Hardcoding of scenario
+        ownShip.load(scenarioPath, smgr, this);
 
         //make a camera, setting parent and offset
         core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
@@ -33,10 +39,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         terrain.load(smgr, driver);
 
         //Load other ships
-        otherShips.load("Scenarios/a) Buoyage/othership.ini",smgr,this); //Fixme: Hardcoding of scenario
+        otherShips.load(scenarioPath,smgr,this);
 
         //Load buoys
-        buoys.load("World/SimpleEstuary", smgr, this); //Fixme: Hardcoding of world model
+        buoys.load(worldPath, smgr, this);
 
         //add water
         Water water (smgr, driver);
@@ -57,22 +63,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         //make fog
         driver->setFog(smgr->getAmbientLight().toSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
+        //store time
+        previousTime = device->getTimer()->getTime();
+
     } //end of SimulationModel constructor
 
     const irr::f32 SimulationModel::longToX(irr::f32 longitude)
     {
-        f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-        f32 terrainXWidth = 3572.25;
-        f32 terrainLongExtent = 0.05;
-        return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+        return terrain.longToX(longitude); //Cascade to terrain
     }
 
     const irr::f32 SimulationModel::latToZ(irr::f32 latitude)
     {
-        f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-        f32 terrainZWidth = 4447.8;
-        f32 terrainLatExtent = 0.04;
-        return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+        return terrain.latToZ(latitude); //Cascade to terrain
     }
 
     void SimulationModel::setSpeed(f32 spd)

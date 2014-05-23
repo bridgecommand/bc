@@ -13,7 +13,7 @@ class OwnShip
         OwnShip();
         virtual ~OwnShip();
 
-        void load(const std::string& scenarioOwnShipFilename, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model);
         irr::scene::IMeshSceneNode* getSceneNode() const;
         void update(irr::f32 deltaTime);
 

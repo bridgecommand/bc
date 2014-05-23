@@ -15,12 +15,8 @@ using namespace irr;
 int main()
 {
 
-    //seed random number generator
-    std::srand(0);
-
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0);
-
     device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
 
     video::IVideoDriver* driver = device->getVideoDriver();
@@ -28,6 +24,9 @@ int main()
 
     //create GUI
     GUIMain guiMain(device);
+
+    //seed random number generator
+    std::srand(device->getTimer()->getTime());
 
     //Create simulation model
     SimulationModel model (device, driver, smgr, &guiMain); //Add link to gui

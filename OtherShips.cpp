@@ -19,8 +19,12 @@ OtherShips::~OtherShips()
     //dtor
 }
 
-void OtherShips::load(const std::string& scenarioOtherShipsFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OtherShips::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
+
+    //construct path
+    std::string scenarioOtherShipsFilename = scenarioName;
+    scenarioOtherShipsFilename.append("/othership.ini");
 
     //Find number of other ships
     u32 numberOfOtherShips;

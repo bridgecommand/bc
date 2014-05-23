@@ -36,3 +36,19 @@ irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from glob
 {
     return terrain->getHeight(x,z); //To do: Account for 180 degree rotation required in terrain
 }
+
+const irr::f32 Terrain::longToX(irr::f32 longitude) //Fixme. Check where the 'const' should be
+{
+    f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+    f32 terrainXWidth = 3572.25;
+    f32 terrainLongExtent = 0.05;
+    return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+}
+
+const irr::f32 Terrain::latToZ(irr::f32 latitude) //Fixme. Check where the 'const' should be
+{
+    f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+    f32 terrainZWidth = 4447.8;
+    f32 terrainLatExtent = 0.04;
+    return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+}

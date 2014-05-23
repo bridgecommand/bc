@@ -1,6 +1,9 @@
 #ifndef __SIMULATIONMODEL_HPP_INCLUDED__
 #define __SIMULATIONMODEL_HPP_INCLUDED__
 
+#include <iostream> //For debugging
+#include <string>
+
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
@@ -13,6 +16,7 @@
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
+#include "IniFile.hpp" //For ini handling: confirm if this is needed
 
 class SimulationModel //Start of the 'Model' part of MVC
 {

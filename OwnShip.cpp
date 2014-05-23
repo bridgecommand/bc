@@ -18,8 +18,12 @@ OwnShip::~OwnShip()
     //dtor
 }
 
-void OwnShip::load(const std::string& scenarioOwnShipFilename, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
+
+    //construct scenario ownship.ini filename
+    std::string scenarioOwnShipFilename = scenarioName;
+    scenarioOwnShipFilename.append("/ownship.ini");
 
     //Load from ownShip.ini file
     std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
