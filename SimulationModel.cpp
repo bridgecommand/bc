@@ -27,6 +27,24 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         std::string worldPath = "World/";
         worldPath.append(worldName);
 
+        //Add terrain: Needs to happen first, so the terrain parameters are available
+        terrain.load(smgr, driver);
+
+        //add water
+        Water water (smgr, driver);
+
+        //sky box/dome
+        Sky sky (smgr, driver);
+
+        //make ambient light
+        smgr->setAmbientLight(video::SColor(255,64,64,64));
+        //add a directional light
+        //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
+        //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
+
+        //make fog
+        driver->setFog(smgr->getAmbientLight().toSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
+
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
         ownShip.load(scenarioPath, smgr, this);
@@ -35,33 +53,15 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
         camera.load(smgr,ownShip.getSceneNode(),camOffset);
 
-        //Add terrain
-        terrain.load(smgr, driver);
-
         //Load other ships
         otherShips.load(scenarioPath,smgr,this);
 
         //Load buoys
         buoys.load(worldPath, smgr, this);
 
-        //add water
-        Water water (smgr, driver);
-
-        //make ambient light
-        smgr->setAmbientLight(video::SColor(255,64,64,64));
-        //add a directional light
-        //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
-        //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
-
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.4,-0.25,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(driver,smgr,camera.getSceneNode(),radarOffset);
-
-        //sky box/dome
-        Sky sky (smgr, driver);
-
-        //make fog
-        driver->setFog(smgr->getAmbientLight().toSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
         //store time
         previousTime = device->getTimer()->getTime();

@@ -15,6 +15,12 @@ class Terrain
 
     private:
         irr::scene::ITerrainSceneNode* terrain;
+        irr::f32 terrainLong;
+        irr::f32 terrainXWidth;
+        irr::f32 terrainLongExtent;
+        irr::f32 terrainLat;
+        irr::f32 terrainZWidth;
+        irr::f32 terrainLatExtent;
 };
 
 #endif

@@ -16,6 +16,15 @@ Terrain::~Terrain()
 
 void Terrain::load(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
 {
+
+    //set parameters: Fixme: SHould be loaded from file
+    terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+    terrainXWidth = 3572.25;
+    terrainLongExtent = 0.05;
+    terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
+    terrainZWidth = 4447.8;
+    terrainLatExtent = 0.04;
+
     terrain = smgr->addTerrainSceneNode(
                        "World/SimpleEstuary/heightRotated.bmp", //FIXME: Heightmap image manually rotated
                        0,					// parent node
@@ -39,16 +48,10 @@ irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from glob
 
 irr::f32 Terrain::longToX(irr::f32 longitude) const
 {
-    f32 terrainLong = -10.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-    f32 terrainXWidth = 3572.25;
-    f32 terrainLongExtent = 0.05;
     return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
 }
 
 irr::f32 Terrain::latToZ(irr::f32 latitude) const
 {
-    f32 terrainLat = 50.0; //FIXME: Hardcoding - these should all be member variables, set on terrain load
-    f32 terrainZWidth = 4447.8;
-    f32 terrainLatExtent = 0.04;
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
