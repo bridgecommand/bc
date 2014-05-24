@@ -53,6 +53,10 @@ void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& te
                 scanArray[scanAngle][currentStep] = 0.0;
             }
 
+            //Debugging simple version (for checking terrain height calc)
+            //if (terrain.getHeight(localPosX,localPosZ)>0) { scanArray[scanAngle][currentStep] = 1.0;} else {scanArray[scanAngle][currentStep] = 0.0;}
+
+
         }
     }
 
