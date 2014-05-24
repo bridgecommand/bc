@@ -8,7 +8,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
     //lightNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
     lightNode->setColor(colour);
-    //lightNode->setMaterialTexture(0, driver->getTexture("/media/particlewhite.bmp"));
+    lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.bmp"));
 
     //Fix angles if start is negative
     while (lightStartAngle < 0) {
