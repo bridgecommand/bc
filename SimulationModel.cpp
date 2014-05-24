@@ -28,7 +28,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         worldPath.append(worldName);
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(smgr, driver);
+        terrain.load(worldPath, smgr, driver);
 
         //add water
         Water water (smgr, driver);
