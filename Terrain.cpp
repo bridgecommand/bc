@@ -36,6 +36,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     irr::f32 seaMaxDepth=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("SeaMaxDepth",1));
     irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",1));
 
+    std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",1));
+    std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",1));
+
     //Terrain dimensions in metres
     terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
     terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
@@ -46,16 +49,22 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize-1);//Fixme: Check this for new 2^n+1 terrains
     irr::f32 terrainY = -1*seaMaxDepth;
 
-    //Fixme: Need to use path names for terrain height and texture maps, and
-    //work out how to fix their rotation: Do we manually rotate files each time,
-    //and save in temp location. Could also use this to ensure that file is 2^n + 1 square.
+    //Full paths
+    std::string heightMapPath = worldPath;
+    heightMapPath.append("/");
+    heightMapPath.append(heightMapName);
+    std::string textureMapPath = worldPath;
+    textureMapPath.append("/");
+    textureMapPath.append(textureMapName);
+
+    //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
 
     terrain = smgr->addTerrainSceneNode(
-                       "World/SimpleEstuary/heightRotated.bmp", //FIXME: Heightmap image manually rotated
+                       heightMapPath.c_str(), //FIXME: Load from specified file
                        0,					// parent node
                        -1,					// node id
 		               core::vector3df(0.f, terrainY, 0.f),		// position
-		               core::vector3df(0.f, 0*180.f, 0.f),		// rotation (NOTE 180 deg rotation) (FIXME:Disabled for now)
+		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation required for irrlicht terrain loading)
 		               core::vector3df(scaleX,scaleY,scaleZ),	// scale
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
 		               5,					// maxLOD
@@ -64,13 +73,15 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
                        );
 
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    terrain->setMaterialTexture(0, driver->getTexture("World/SimpleEstuary/textureRotated.bmp")); //FIXME: Texture image manually rotated
+    terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str())); //FIXME: Load from specified file
 
 }
 
 irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
 {
-    return terrain->getHeight(x,z); //To do: Account for 180 degree rotation required in terrain
+    irr::f32 localX = x-terrainXWidth; //Needed due to 180 degree rotation of the terrain
+    irr::f32 localZ = z-terrainZWidth; //Needed due to 180 degree rotation of the terrain
+    return terrain->getHeight(localX,localZ);
 }
 
 irr::f32 Terrain::longToX(irr::f32 longitude) const
