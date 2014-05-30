@@ -48,3 +48,9 @@ Buoy::~Buoy()
 {
     //dtor
 }
+
+irr::core::vector3df Buoy::getPosition() const
+{
+    buoy->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
+    return buoy->getAbsolutePosition();
+}

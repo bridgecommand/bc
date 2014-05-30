@@ -7,6 +7,8 @@
 
 class Terrain;
 class OwnShip;
+class Buoys;
+class OtherShips;
 
 class RadarCalculation
 {
@@ -14,7 +16,7 @@ class RadarCalculation
         RadarCalculation();
         virtual ~RadarCalculation();
         //void loadRadarCalculation();
-        void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip);
+        void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips);
 
     private:
         std::vector<std::vector<irr::f32> > scanArray;

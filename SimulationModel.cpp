@@ -16,12 +16,17 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         scenarioTime = 0;
 
         //set scenario to load (will be read in from user) //fixme hardcoded
-        std::string scenarioName = "b) Buoyage by night";
-        std::string worldName = "SimpleEstuary";
+        std::string scenarioName = "a) Buoyage";
+        //std::string worldName = "SimpleEstuary";
 
         //construct path to scenario
         std::string scenarioPath = "Scenarios/"; //Fixme: Think about proper path handling?
         scenarioPath.append(scenarioName);
+
+        //Read world file name from scenario:
+        std::string environmentIniFilename = scenarioPath;
+        environmentIniFilename.append("/environment.ini");
+        std::string worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
 
         //construct path to world model
         std::string worldPath = "World/";
@@ -124,7 +129,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //set radar screen position, and update it with a radar image from the radar calculation
         video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(128, 128)); //Create image for radar calculation to work on
-        radarCalculation.update(radarImage,terrain,ownShip);
+        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips);
         radarScreen.update(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 

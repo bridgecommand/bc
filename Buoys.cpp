@@ -6,6 +6,7 @@
 #include "NavLight.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
+#include "RadarData.hpp"
 #include "SimulationModel.hpp"
 
 using namespace irr;
@@ -75,4 +76,33 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3
     for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
         it->update(scenarioTime, viewPosition);
     }
+}
+
+RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
+//Get data for OtherShip (number) relative to scannerPosition
+//Fixme: Shares a lot of code with OtherShips::getRadarData. Can these be inherited from a common parent?
+{
+    RadarData radarData;
+
+    if (number<=buoys.size()) {
+        //Get information about this buoy, and return a RadarData struct containing info
+        irr::core::vector3df contactPosition = buoys[number-1].getPosition();
+        irr::core::vector3df relativePosition = contactPosition-scannerPosition;
+
+        radarData.relX = relativePosition.X;
+        radarData.relZ = relativePosition.Z;
+
+        radarData.angle = relativePosition.getHorizontalAngle().Y;
+        radarData.range = relativePosition.getLength();
+
+        //Fixme: Complete implementation to include all radarData fields>
+
+    }
+
+    return radarData;
+}
+
+irr::u32 Buoys::getNumber() const
+{
+    return buoys.size();
 }

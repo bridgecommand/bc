@@ -10,6 +10,7 @@
 class SimulationModel;
 class Buoy;
 class NavLight;
+class RadarData;
 
 class Buoys
 {
@@ -18,6 +19,8 @@ class Buoys
         virtual ~Buoys();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
+        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
+        irr::u32 getNumber() const;
 
     private:
         std::vector<Buoy> buoys;

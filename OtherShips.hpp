@@ -11,6 +11,7 @@
 //Forward declarations
 class SimulationModel;
 class OtherShip;
+class RadarData;
 
 class OtherShips
 {
@@ -19,6 +20,8 @@ class OtherShips
         virtual ~OtherShips();
         void load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
+        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
+        irr::u32 getNumber() const;
 
     private:
         std::vector<OtherShip> otherShips;

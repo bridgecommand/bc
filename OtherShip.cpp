@@ -44,6 +44,11 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //add to scene node
 	otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1);
 
+    //store length and RCS information for radar etc
+    length = 0;
+    otherShip->getBoundingBox().getExtent().Z;
+    rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+
     //store initial x,y,z positions
     xPos = location.X;
     yPos = location.Y;
@@ -144,6 +149,22 @@ irr::f32 OtherShip::getHeading() const
 irr::f32 OtherShip::getSpeed() const
 {
     return speed;
+}
+
+irr::core::vector3df OtherShip::getPosition() const
+{
+    otherShip->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
+    return otherShip->getAbsolutePosition();
+}
+
+irr::f32 OtherShip::getLength() const
+{
+    return length;
+}
+
+irr::f32 OtherShip::getRCS() const
+{
+    return rcs;
 }
 
 void OtherShip::setPosition(irr::core::vector3df position) //Not currently used, but may be needed to relocate

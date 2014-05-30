@@ -5,7 +5,10 @@
 #include "Constants.hpp"
 #include "OtherShip.hpp"
 #include "IniFile.hpp"
+#include "RadarData.hpp"
 #include "SimulationModel.hpp"
+
+#include <iostream> //debugging
 
 using namespace irr;
 
@@ -76,3 +79,46 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::ve
     }
 }
 
+RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
+//Get data for OtherShip (number) relative to scannerPosition
+{
+    //Fixme: Implementation should probably just call otherShips[number-1].getRadarData
+
+    RadarData radarData;
+
+    if (number<=otherShips.size()) {
+    //Get information about this otherShip, and return a RadarData struct containing info
+        irr::core::vector3df contactPosition = otherShips[number-1].getPosition();
+        irr::core::vector3df relativePosition = contactPosition-scannerPosition;
+
+        radarData.relX = relativePosition.X;
+        radarData.relZ = relativePosition.Z;
+        radarData.angle = relativePosition.getHorizontalAngle().Y;
+        radarData.range = relativePosition.getLength();
+        radarData.heading = otherShips[number-1].getHeading();
+
+        //Fixme: Complete implementation to include all radarData fields
+        radarData.height;
+        radarData.solidHeight;
+        radarData.radarHorizon; //Only used for tracking contacts outside current radar visibility range
+        radarData.length=otherShips[number-1].getLength();
+        radarData.rcs=otherShips[number-1].getRCS();
+
+        radarData.minRange;
+        radarData.maxRange;
+        radarData.minAngle;
+        radarData.maxAngle;
+
+        //Initial defaults: Will need changing with full implementation
+        radarData.hidden=false;
+        radarData.racon=""; //Racon code if set
+        radarData.raconOffsetTime=0.0;
+        radarData.SART=false;
+    }
+    return radarData;
+}
+
+irr::u32 OtherShips::getNumber() const
+{
+    return otherShips.size();
+}
