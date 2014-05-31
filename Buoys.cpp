@@ -5,6 +5,7 @@
 #include "Buoy.hpp"
 #include "NavLight.hpp"
 #include "IniFile.hpp"
+#include "Angles.hpp"
 #include "Constants.hpp"
 #include "RadarData.hpp"
 #include "SimulationModel.hpp"
@@ -107,10 +108,15 @@ RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosit
         radarData.length=buoys[number-1].getLength();
         radarData.rcs=buoys[number-1].getRCS();
 
-        radarData.minRange;
-        radarData.maxRange;
-        radarData.minAngle;
-        radarData.maxAngle;
+        //Calculate angles and ranges to each end of the contact
+        irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+        irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+		irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+        irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+        radarData.minRange=std::min(range1,range2);
+        radarData.maxRange=std::max(range1,range2);
+        radarData.minAngle=std::min(relAngle1,relAngle2);
+        radarData.maxAngle=std::max(relAngle1,relAngle2);
 
         //Initial defaults: Will need changing with full implementation
         radarData.hidden=false;
