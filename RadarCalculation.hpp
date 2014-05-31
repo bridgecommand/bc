@@ -20,6 +20,7 @@ class RadarCalculation
 
     private:
         std::vector<std::vector<irr::f32> > scanArray;
+        irr::s32 currentScanAngle;
 
 
 };

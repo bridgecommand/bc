@@ -19,6 +19,8 @@ RadarCalculation::RadarCalculation()
     u32 rows = 360;
     u32 columns = 64; //Fixme: Hardcoding
     scanArray.resize(rows,std::vector<f32>(columns,0.0));
+
+    currentScanAngle=0;
 }
 
 RadarCalculation::~RadarCalculation()
@@ -49,14 +51,15 @@ void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& te
         radarData.push_back(buoys.getRadarData(contactID,position));
     }
 
-    //scan into array, accessed as  scanArray[row (angle)][column (step)]
-    for (int scanAngle = 0; scanAngle <360; scanAngle+=1) {
+    irr::u32 scansPerLoop = 3; //Fixme: Change this to get a constant configurable scan rate (within reason)
+    for(int i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
         f32 scanSlope = 0.0; //Slope at start of scan
         f32 cellLength = 25; //Fixme: This needs to change with radar range
         for (int currentStep = 1; currentStep<64; currentStep++) { //Fixme: hardcoding
+            //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
-            f32 relX = cellLength*currentStep*sin(scanAngle*core::DEGTORAD); //Distance from ship
-            f32 relZ = cellLength*currentStep*cos(scanAngle*core::DEGTORAD);
+            f32 relX = cellLength*currentStep*sin(currentScanAngle*core::DEGTORAD); //Distance from ship
+            f32 relZ = cellLength*currentStep*cos(currentScanAngle*core::DEGTORAD);
             f32 localX = position.X + relX;
             f32 localZ = position.Z + relZ;
 
@@ -69,24 +72,31 @@ void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& te
 
             if (slopeChange>0) {
                 scanSlope = localSlope; //Highest so far on scan
-                scanArray[scanAngle][currentStep] = 1.0;
+                scanArray[currentScanAngle][currentStep] = 1.0;
             } else {
-                scanArray[scanAngle][currentStep] = 0.0;
+                scanArray[currentScanAngle][currentStep] = 0.0;
             }
 
             //Fixme: trial implementation
             for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
-                if( std::abs(it->relX-relX)<50.0 && std::abs(it->relZ-relZ)<50.0 ) {scanArray[scanAngle][currentStep] = 1.0;}
+                if( std::abs(it->relX-relX)<50.0 && std::abs(it->relZ-relZ)<50.0 ) {scanArray[currentScanAngle][currentStep] = 1.0;}
             }
 
             //Debugging simple version (for checking terrain height calc)
-            //if (terrain.getHeight(localPosX,localPosZ)>0) { scanArray[scanAngle][currentStep] = 1.0;} else {scanArray[scanAngle][currentStep] = 0.0;}
+            //if (terrain.getHeight(localPosX,localPosZ)>0) { scanArray[currentScanAngle][currentStep] = 1.0;} else {scanArray[currentScanAngle][currentStep] = 0.0;}
+        } //End of for loop scanning out
 
-
+        //Increment scan angle for next time
+        currentScanAngle += 1; //Fixme: Hardcoding for scan angle
+        if (currentScanAngle >=360) {
+            currentScanAngle -= 360;
         }
-    }
+    } //End of repeatable scan section
 
+    //*************************
     //generate image from array
+    //*************************
+
     //Fill with background colour
     radarImage->fill(video::SColor(255, 0, 0, 255));
 
