@@ -21,6 +21,8 @@ class RadarCalculation
     private:
         std::vector<std::vector<irr::f32> > scanArray;
         irr::s32 currentScanAngle;
+        irr::u32 scanAngleStep;
+        irr::u32 rangeResolution;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips);
         void render(irr::video::IImage * radarImage);
 

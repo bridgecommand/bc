@@ -15,12 +15,12 @@ using namespace irr;
 
 RadarCalculation::RadarCalculation()
 {
-    //initialise scanArray size (360x64 points per scan)
-    u32 rows = 360;
-    u32 columns = 64; //Fixme: Hardcoding
-    scanArray.resize(rows,std::vector<f32>(columns,0.0));
+    //initialise scanArray size (360 x rangeResolution points per scan)
+    rangeResolution = 64;
+    scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
 
     currentScanAngle=0;
+    scanAngleStep=3;
 }
 
 RadarCalculation::~RadarCalculation()
@@ -53,7 +53,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     for(int i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
         f32 scanSlope = 0.0; //Slope at start of scan
         f32 cellLength = 25; //Fixme: This needs to change with radar range
-        for (int currentStep = 1; currentStep<64; currentStep++) { //Fixme: hardcoding
+        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) { //Fixme: hardcoding
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             f32 relX = cellLength*currentStep*sin(currentScanAngle*core::DEGTORAD); //Distance from ship
@@ -85,9 +85,9 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
         } //End of for loop scanning out
 
         //Increment scan angle for next time
-        currentScanAngle += 1; //Fixme: Hardcoding for scan angle
-        if (currentScanAngle >=360) {
-            currentScanAngle -= 360;
+        currentScanAngle += scanAngleStep; //Fixme: Hardcoding for scan angle
+        if (currentScanAngle>=360) {
+            currentScanAngle=0;
         }
     } //End of repeatable scan section
 }
@@ -107,18 +107,25 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
         {return;} //Check image is square, and return without action if not
 
     //draw from array to image
-    for (int scanAngle = 0; scanAngle <360; scanAngle+=1) {
-        for (int currentStep = 1; currentStep<64; currentStep++) { //Fixme: hardcoding
+    f32 centrePixel = ((float)bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
+    for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
+        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
-            s32 pixelX = (float)(bitmapWidth)/2.0 + currentStep*sin(scanAngle*core::DEGTORAD); //Fixme: This isn't exactly correct - think about centre location.
-            s32 pixelY = (float)(bitmapWidth)/2.0 - currentStep*cos(scanAngle*core::DEGTORAD); //Fixme: This isn't exactly correct
+            s32 pixelX = centrePixel + (currentStep*((float)bitmapWidth*0.5/(float)rangeResolution))*sin(scanAngle*core::DEGTORAD); //Fixme: Check rounding!
+            s32 pixelY = centrePixel - (currentStep*((float)bitmapWidth*0.5/(float)rangeResolution))*cos(scanAngle*core::DEGTORAD); //Fixme: Check rounding!
 
-            if (pixelX >= 0 && pixelX < bitmapWidth && pixelY >= 0 && pixelY < bitmapWidth ) {
+            u32 pixelColour=255*scanArray[scanAngle][currentStep];
+            if (pixelColour>255) {pixelColour = 255;}
 
-                s32 pixelColour=255*scanArray[scanAngle][currentStep];
-
-                radarImage->setPixel(pixelX,pixelY,video::SColor(255,pixelColour,pixelColour,0));
-            }
+            radarImage->setPixel(pixelX,pixelY,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX+1,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX+1,pixelY,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX+1,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX-1,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX-1,pixelY,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX-1,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
+            radarImage->setPixel(pixelX,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
         }
     }
 }
