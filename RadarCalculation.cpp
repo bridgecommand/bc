@@ -28,16 +28,14 @@ RadarCalculation::~RadarCalculation()
     //dtor
 }
 
-/*
-void RadarCalculation::loadRadarCalculation()
-{
-
-}
-*/
-
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips)
 {
+    scan(terrain, ownShip, buoys, otherShips); // scan into scanArray[row (angle)][column (step)]
+    render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage
+}
 
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips)
+{
     core::vector3df position = ownShip.getPosition();
 
     //Load radar data for other contacts
@@ -92,7 +90,10 @@ void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& te
             currentScanAngle -= 360;
         }
     } //End of repeatable scan section
+}
 
+void RadarCalculation::render(irr::video::IImage * radarImage)
+{
     //*************************
     //generate image from array
     //*************************
