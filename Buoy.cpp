@@ -5,7 +5,7 @@
 
 using namespace irr;
 
-Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::scene::ISceneManager* smgr)
+Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr)
 {
 
     //Load from individual buoy.ini file if it exists
@@ -42,6 +42,15 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::s
     }
 
     buoy->setScale(core::vector3df(buoyScale,buoyScale,buoyScale));
+
+    //store length and RCS information for radar etc
+    length = buoy->getBoundingBox().getExtent().Z;
+
+    rcs = radarCrossSection; //Value given to constructor by Buoys.
+    if (rcs == 0.0) {
+        rcs = 0.005*std::pow(length,3); //Default RCS if not set, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    }
+
 }
 
 Buoy::~Buoy()
@@ -53,4 +62,14 @@ irr::core::vector3df Buoy::getPosition() const
 {
     buoy->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
     return buoy->getAbsolutePosition();
+}
+
+irr::f32 Buoy::getLength() const
+{
+    return length;
+}
+
+irr::f32 Buoy::getRCS() const
+{
+    return rcs;
 }

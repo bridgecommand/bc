@@ -98,16 +98,24 @@ RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scanner
         radarData.heading = otherShips[number-1].getHeading();
 
         //Fixme: Complete implementation to include all radarData fields
-        radarData.height;
-        radarData.solidHeight;
-        radarData.radarHorizon; //Only used for tracking contacts outside current radar visibility range
+        radarData.height=999; //Fixme: Set these properly!
+        radarData.solidHeight=9; //Fixme: Set these properly!
+        radarData.radarHorizon=99999; //Fixme: Set these properly! //Only used for tracking contacts outside current radar visibility range
         radarData.length=otherShips[number-1].getLength();
         radarData.rcs=otherShips[number-1].getRCS();
 
-        radarData.minRange;
-        radarData.maxRange;
-        radarData.minAngle;
-        radarData.maxAngle;
+        //Fixme: correct cos/sin for radians
+        /*
+        irr::f32 relAngle1 = ZeroToThreeSixty(ATan2( radarData.relX + 0.5*radarData.length*Sin(radarData.heading), radarData.relZ + 0.5*radarData.length*Cos(radarData.heading) ));
+        irr::f32 relAngle2 = ZeroToThreeSixty(ATan2( radarData.relX - 0.5*radarData.length*Sin(radarData.heading), radarData.relZ - 0.5*radarData.length*Cos(radarData.heading) ));
+		irr::f32 range1 = Sqr((radarData.relX + 0.5*radarData.length*Sin(radarData.heading))^2 + (radarData.relZ + 0.5*radarData.length*Cos(radarData.heading))^2);
+        irr::f32 range2 = Sqr((radarData.relX - 0.5*radarData.length*Sin(radarData.heading))^2 + (radarData.relZ - 0.5*radarData.length*Cos(radarData.heading))^2);
+
+        radarData.minRange=std::min(range1,range2);
+        radarData.maxRange=std::max(range1,range2);
+        radarData.minAngle=std::min(relAngle1,relAngle2);
+        radarData.maxAngle=std::max(relAngle1,relAngle2);
+        */
 
         //Initial defaults: Will need changing with full implementation
         radarData.hidden=false;

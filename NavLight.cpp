@@ -1,4 +1,5 @@
 #include "NavLight.hpp"
+#include "Angles.hpp"
 
 using namespace irr;
 
@@ -54,7 +55,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) 
     f32 parentAngleDeg = lightNode->getParent()->getRotation().Y;
     f32 localRelativeAngleDeg = relativeAngleDeg-parentAngleDeg; //Angle from light to viewpoint, relative to light's parent coordinate system.
     //std::cout << relativeAngleDeg << " " <<  parentAngleDeg << " " << localRelativeAngleDeg <<std::endl;
-    if (!isAngleBetween(localRelativeAngleDeg,startAngle,endAngle)) {
+    if (!Angles::isAngleBetween(localRelativeAngleDeg,startAngle,endAngle)) {
         lightNode->setVisible(false);
     }
 
@@ -70,33 +71,4 @@ void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition) 
             lightNode->setVisible(false);
         }
     }
-}
-
-bool NavLight::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
-    if(startAng < 0 || startAng > 360 || endAng < 0 || endAng > 720) {//Invalid angles
-        return false;
-    }
-
-    //normalise angle
-    angle = normaliseAngle(angle);
-
-    //std::cout << angle << " " << startAng << " " << endAng << std::endl;
-
-    if(endAngle <= 360) { //Simple case
-        return (angle >= startAng && angle <=endAng);
-    } else { //End angle > 360
-        return (angle >= startAng || angle <= normaliseAngle(endAng));
-    }
-}
-
-irr::f32 NavLight::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
-    while (angle < 0) {
-        angle+=360;
-    }
-
-    while (angle >= 360) {
-        angle-=360;
-    }
-
-    return angle;
 }

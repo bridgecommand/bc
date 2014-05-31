@@ -6,6 +6,7 @@
 #include "NavLight.hpp"
 #include "Leg.hpp"
 
+#include <cmath>
 #include <vector>
 #include <string>
 

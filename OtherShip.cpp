@@ -45,8 +45,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 	otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1);
 
     //store length and RCS information for radar etc
-    length = 0;
-    otherShip->getBoundingBox().getExtent().Z;
+    length = otherShip->getBoundingBox().getExtent().Z;
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
 
     //store initial x,y,z positions

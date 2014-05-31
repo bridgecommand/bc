@@ -21,6 +21,8 @@
 			<Add option="C:/Users/James/Documents/Programming/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 			<Add library="C:\Users\James\Documents\Programming\enet\enet-1.3.11\bin\Release\libenet.a" />
 		</Linker>
+		<Unit filename="Angles.cpp" />
+		<Unit filename="Angles.hpp" />
 		<Unit filename="Buoy.cpp" />
 		<Unit filename="Buoy.hpp" />
 		<Unit filename="Buoys.cpp" />
@@ -47,6 +49,7 @@
 		<Unit filename="OwnShip.hpp" />
 		<Unit filename="RadarCalculation.cpp" />
 		<Unit filename="RadarCalculation.hpp" />
+		<Unit filename="RadarData.hpp" />
 		<Unit filename="RadarScreen.cpp" />
 		<Unit filename="RadarScreen.hpp" />
 		<Unit filename="SimulationModel.cpp" />
@@ -58,7 +61,6 @@
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="RadarData.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

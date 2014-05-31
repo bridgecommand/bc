@@ -21,9 +21,6 @@ class NavLight {
         irr::f32 range;
         std::string sequence;
         irr::f32 timeOffset;
-
-        bool isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng);
-        irr::f32 normaliseAngle(irr::f32 angle);
 };
 
 #endif

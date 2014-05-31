@@ -42,8 +42,11 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
         f32 buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
 
+        //get buoy RCS if set
+        f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
+
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),smgr));
+        buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),rcs,smgr));
 
         //Load buoy light information from light.ini file if available
 
@@ -95,7 +98,25 @@ RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosit
         radarData.angle = relativePosition.getHorizontalAngle().Y;
         radarData.range = relativePosition.getLength();
 
-        //Fixme: Complete implementation to include all radarData fields>
+        radarData.heading = 0.0;
+
+        //Fixme: Complete implementation to include all radarData fields
+        radarData.height=999; //Fixme: Set these properly!
+        radarData.solidHeight=9; //Fixme: Set these properly!
+        radarData.radarHorizon=99999; //Fixme: Set these properly! //Only used for tracking contacts outside current radar visibility range
+        radarData.length=buoys[number-1].getLength();
+        radarData.rcs=buoys[number-1].getRCS();
+
+        radarData.minRange;
+        radarData.maxRange;
+        radarData.minAngle;
+        radarData.maxAngle;
+
+        //Initial defaults: Will need changing with full implementation
+        radarData.hidden=false;
+        radarData.racon=""; //Racon code if set
+        radarData.raconOffsetTime=0.0;
+        radarData.SART=false;
 
     }
 
