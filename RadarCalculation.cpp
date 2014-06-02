@@ -7,6 +7,7 @@
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
 #include "RadarData.hpp"
+#include "Angles.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -85,7 +86,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
         } //End of for loop scanning out
 
         //Increment scan angle for next time
-        currentScanAngle += scanAngleStep; //Fixme: Hardcoding for scan angle
+        currentScanAngle += scanAngleStep;
         if (currentScanAngle>=360) {
             currentScanAngle=0;
         }
@@ -111,21 +112,66 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
     for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
         for (int currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
-            s32 pixelX = centrePixel + (currentStep*((float)bitmapWidth*0.5/(float)rangeResolution))*sin(scanAngle*core::DEGTORAD); //Fixme: Check rounding!
-            s32 pixelY = centrePixel - (currentStep*((float)bitmapWidth*0.5/(float)rangeResolution))*cos(scanAngle*core::DEGTORAD); //Fixme: Check rounding!
+            irr::f32 cellMinAngle = scanAngle - (float)scanAngleStep/2.0;
+            irr::f32 cellMaxAngle = scanAngle + (float)scanAngleStep/2.0;
+            irr::f32 cellMinRange = (((float)currentStep-0.5)*((float)bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
+            irr::f32 cellMaxRange = (((float)currentStep+0.5)*((float)bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
 
             u32 pixelColour=255*scanArray[scanAngle][currentStep];
             if (pixelColour>255) {pixelColour = 255;}
 
-            radarImage->setPixel(pixelX,pixelY,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX+1,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX+1,pixelY,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX+1,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX-1,pixelY-1,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX-1,pixelY,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX-1,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
-            radarImage->setPixel(pixelX,pixelY+1,video::SColor(255,pixelColour,pixelColour,0));
+            drawSector(radarImage,centrePixel,centrePixel,cellMinRange,cellMaxRange,cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
+
         }
     }
+}
+
+void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)
+//draw a bounded sector
+{
+    //find the corner points (Fixme: Not quite right when the extreme point is on the outer curve)
+    irr::f32 point1X = centreX + std::sin(irr::core::DEGTORAD*startAngle)*innerRadius;
+    irr::f32 point1Y = centreY - std::cos(irr::core::DEGTORAD*startAngle)*innerRadius;
+    irr::f32 point2X = centreX + std::sin(irr::core::DEGTORAD*startAngle)*outerRadius;
+    irr::f32 point2Y = centreY - std::cos(irr::core::DEGTORAD*startAngle)*outerRadius;
+    irr::f32 point3X = centreX + std::sin(irr::core::DEGTORAD*endAngle)*outerRadius;
+    irr::f32 point3Y = centreY - std::cos(irr::core::DEGTORAD*endAngle)*outerRadius;
+
+    irr::f32 point4X = centreX + std::sin(irr::core::DEGTORAD*endAngle)*innerRadius;
+    irr::f32 point4Y = centreY - std::cos(irr::core::DEGTORAD*endAngle)*innerRadius;
+
+    //find the 'bounding box'
+    irr::f32 minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
+    irr::f32 maxX = std::max(std::max(point1X,point2X),std::max(point3X,point4X));
+    irr::f32 minY = std::min(std::min(point1Y,point2Y),std::min(point3Y,point4Y));
+    irr::f32 maxY = std::max(std::max(point1Y,point2Y),std::max(point3Y,point4Y));
+
+    irr::f32 innerRadiusSqr = std::pow(innerRadius,2);
+    irr::f32 outerRadiusSqr = std::pow(outerRadius,2);
+
+    //draw the points
+    for (int i = minX;i<=maxX;i++) {
+        for (int j = minY;j<=maxY;j++) {
+
+            irr::f32 localX = i - centreX; //position referred to centre
+            irr::f32 localY = j - centreY; //position referred to centre
+
+            irr::f32 localRadiusSqr = std::pow(localX,2) + std::pow(localY,2); //check radius of points
+            irr::f32 localAngle = irr::core::RADTODEG*std::atan2(localX,-1*localY); //check angle of point
+
+            //if the point is within the limits, plot it
+            if (localRadiusSqr >= innerRadiusSqr && localRadiusSqr <= outerRadiusSqr) {
+                if (Angles::isAngleBetween(localAngle,startAngle,endAngle)) {
+                    //Plot i,j
+                    radarImage->setPixel(i,j,video::SColor(alpha,red,green,blue));
+                }
+            }
+        }
+    }
+}
+
+irr::s32 RadarCalculation::round(irr::f32 numberIn)
+{
+    irr::s32 result = numberIn + 0.5; //Fixme: Check for negative numbers!
+    return result;
 }
