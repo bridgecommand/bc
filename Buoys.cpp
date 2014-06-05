@@ -102,8 +102,8 @@ RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosit
         radarData.heading = 0.0;
 
         //Fixme: Complete implementation to include all radarData fields
-        radarData.height=999; //Fixme: Set these properly!
-        radarData.solidHeight=9; //Fixme: Set these properly!
+        radarData.height=20; //Fixme: Set these properly!
+        radarData.solidHeight=1; //Fixme: Set these properly!
         radarData.radarHorizon=99999; //Fixme: Set these properly! //Only used for tracking contacts outside current radar visibility range
         radarData.length=buoys[number-1].getLength();
         radarData.rcs=buoys[number-1].getRCS();

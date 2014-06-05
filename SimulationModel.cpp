@@ -65,7 +65,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         buoys.load(worldPath, smgr, this);
 
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
-        core::vector3df radarOffset = core::vector3df(0.4,-0.25,0.75); //FIXME: hardcoded offset - should be read from the own ship model
+        core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(driver,smgr,camera.getSceneNode(),radarOffset);
 
         //store time
