@@ -21,7 +21,7 @@ struct RadarData {
     irr::f32 rcs;
     irr::f32 solidHeight;
 
-    irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
+    //irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
 
     bool hidden;
     std::string racon; //Racon code if set

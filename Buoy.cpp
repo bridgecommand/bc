@@ -45,6 +45,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //store length and RCS information for radar etc
     length = buoy->getBoundingBox().getExtent().Z;
+    height = buoy->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
 
     rcs = radarCrossSection; //Value given to constructor by Buoys.
     if (rcs == 0.0) {
@@ -67,6 +68,11 @@ irr::core::vector3df Buoy::getPosition() const
 irr::f32 Buoy::getLength() const
 {
     return length;
+}
+
+irr::f32 Buoy::getHeight() const
+{
+    return height;
 }
 
 irr::f32 Buoy::getRCS() const

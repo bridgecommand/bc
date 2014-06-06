@@ -46,6 +46,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     //store length and RCS information for radar etc
     length = otherShip->getBoundingBox().getExtent().Z;
+    height = otherShip->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
 
     //store initial x,y,z positions
@@ -159,6 +160,11 @@ irr::core::vector3df OtherShip::getPosition() const
 irr::f32 OtherShip::getLength() const
 {
     return length;
+}
+
+irr::f32 OtherShip::getHeight() const
+{
+    return height;
 }
 
 irr::f32 OtherShip::getRCS() const

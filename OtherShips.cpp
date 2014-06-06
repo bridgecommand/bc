@@ -98,9 +98,9 @@ RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scanner
         radarData.range = relativePosition.getLength();
         radarData.heading = otherShips[number-1].getHeading();
 
-        radarData.height=20; //Fixme: Set these properly!
-        radarData.solidHeight=1; //Fixme: Set these properly!
-        radarData.radarHorizon=99999; //Fixme: Set these properly! //Only used for tracking contacts outside current radar visibility range
+        radarData.height=otherShips[number-1].getHeight();
+        radarData.solidHeight=0.5*radarData.height; //Fixme: Allow this to be set as a parameter.
+        //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
         radarData.length=otherShips[number-1].getLength();
         radarData.rcs=otherShips[number-1].getRCS();
 

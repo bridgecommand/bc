@@ -24,7 +24,7 @@ RadarCalculation::RadarCalculation()
     currentScanAngle=0;
 
     cellLength = 20; //Fixme: This needs to change with radar range
-    scanAngleStep=3;
+    scanAngleStep=2;
 }
 
 RadarCalculation::~RadarCalculation()

@@ -13,11 +13,13 @@ class Buoy
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         irr::f32 getLength() const;
+        irr::f32 getHeight() const;
         irr::f32 getRCS() const;
     protected:
     private:
         irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
         irr::f32 length; //For radar calculation
+        irr::f32 height; //For radar calculation
         irr::f32 rcs;
 };
 

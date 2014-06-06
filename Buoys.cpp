@@ -85,6 +85,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3
 RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Fixme: Shares a lot of code with OtherShips::getRadarData. Can these be inherited from a common parent?
+//Or does radarData get created as a member of each buoy.
 {
     RadarData radarData;
 
@@ -101,10 +102,9 @@ RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosit
 
         radarData.heading = 0.0;
 
-        //Fixme: Complete implementation to include all radarData fields
-        radarData.height=20; //Fixme: Set these properly!
-        radarData.solidHeight=1; //Fixme: Set these properly!
-        radarData.radarHorizon=99999; //Fixme: Set these properly! //Only used for tracking contacts outside current radar visibility range
+        radarData.height=buoys[number-1].getHeight();
+        radarData.solidHeight=0; //Assume buoy never blocks radar
+        //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
         radarData.length=buoys[number-1].getLength();
         radarData.rcs=buoys[number-1].getRCS();
 

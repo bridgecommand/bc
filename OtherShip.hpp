@@ -21,6 +21,7 @@ class OtherShip
         irr::f32 getSpeed() const;
         irr::core::vector3df getPosition() const;
         irr::f32 getLength() const;
+        irr::f32 getHeight() const;
         irr::f32 getRCS() const;
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
         void setPosition(irr::core::vector3df position);
@@ -36,6 +37,7 @@ class OtherShip
         irr::f32 zPos;
         irr::f32 speed;
         irr::f32 length; //For radar calculation
+        irr::f32 height; //For radar
         irr::f32 rcs;
 };
 
