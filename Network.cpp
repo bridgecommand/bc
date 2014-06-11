@@ -3,9 +3,7 @@
 #include "SimulationModel.hpp"
 #include <iostream>
 #include <cstdio>
-#include <boost/lexical_cast.hpp>
-
-using boost::lexical_cast;
+#include "lexical_cast.hpp"
 
 Network::Network(SimulationModel* mdl) //Constructor
 {

@@ -15,7 +15,6 @@
 		<Compiler>
 			<Add directory="C:/Users/James/Documents/Programming/Irrlicht/irrlicht-1.8.1/include" />
 			<Add directory="C:/Users/James/Documents/Programming/enet/enet-1.3.11/include" />
-			<Add directory="C:/Users/James/Documents/Programming/Boost/boost_1_55_0" />
 		</Compiler>
 		<Linker>
 			<Add option="C:/Users/James/Documents/Programming/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
@@ -56,10 +55,13 @@
 		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="Sky.cpp" />
 		<Unit filename="Sky.hpp" />
+		<Unit filename="StringUtilities.cpp" />
+		<Unit filename="StringUtilities.hpp" />
 		<Unit filename="Terrain.cpp" />
 		<Unit filename="Terrain.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
+		<Unit filename="lexical_cast.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

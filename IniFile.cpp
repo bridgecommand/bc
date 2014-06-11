@@ -2,8 +2,8 @@
 
 #include <fstream> //for ini loading
 #include <string> //for ini loading
-#include <boost/algorithm/string.hpp> //for ini loading
-#include <boost/lexical_cast.hpp> //for ini loading
+#include "StringUtilities.hpp" //for ini loading
+#include "lexical_cast.hpp" //for ini loading
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -16,7 +16,7 @@ namespace IniFile
     {
         std::string ans = commandName;
         ans.append("(");
-        ans.append(boost::lexical_cast<std::string>(number));
+        ans.append(lexical_cast<std::string>(number));
         ans.append(")");
 
         return ans;
@@ -27,9 +27,9 @@ namespace IniFile
     {
         std::string ans = commandName;
         ans.append("(");
-        ans.append(boost::lexical_cast<std::string>(number1));
+        ans.append(lexical_cast<std::string>(number1));
         ans.append(",");
-        ans.append(boost::lexical_cast<std::string>(number2));
+        ans.append(lexical_cast<std::string>(number2));
         ans.append(")");
 
         return ans;
@@ -56,8 +56,8 @@ namespace IniFile
             while ( std::getline (file,line) )
             {
                 std::string lowerLine(line); //Duplicate the line so we can make it lowercase, without affecting the result
-                boost::to_lower(lowerLine);
-                boost::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
+                StringUtilities::to_lower(lowerLine);
+                StringUtilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
 
                 //Look for the command and the '=' sign in the line
                 std::size_t commandFound = lowerLine.find(command);
@@ -70,19 +70,19 @@ namespace IniFile
                     if (trim(lowerLine.substr(0,equalsFound))==trim(command))
                     {
                         //get the value
-                        try {
+                        //try {
                             valuePart = line.substr(equalsFound+1,std::string::npos);//from equals to end, not including the equals
-                        }
-                        catch (const std::out_of_range& oor) {
-                            std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
-                        }
+                        //}
+                        //catch (const std::out_of_range& oor) {
+                        //    std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
+                        //}
                     }
                 }
 
             }
             file.close();
         }
-        else std::cout << "Unable to open file " << fileName << std::endl;
+        else ;//std::cout << "Unable to open file " << fileName << std::endl;
 
         //trim whitespace and " characters if present
         valuePart = trim(valuePart);
