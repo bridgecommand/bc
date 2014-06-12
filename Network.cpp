@@ -1,9 +1,9 @@
 #include "Network.hpp"
 
 #include "SimulationModel.hpp"
+#include "Utilities.hpp"
 #include <iostream>
 #include <cstdio>
-#include "lexical_cast.hpp"
 
 Network::Network(SimulationModel* mdl) //Constructor
 {
@@ -85,7 +85,7 @@ void Network::receiveNetwork()
             std::string readSpeedString ((char*)event.packet -> data);
 
             /*Set this speed in the model */
-            float readSpeed = lexical_cast<float>(readSpeedString);
+            float readSpeed = Utilities::lexical_cast<float>(readSpeedString);
             model->setSpeed(readSpeed);
 
             enet_packet_destroy (event.packet);
@@ -97,7 +97,7 @@ void Network::sendNetwork()
 {
 
     /* Get data from model */
-    std::string stringToSend = lexical_cast<std::string>(model->getHeading());
+    std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
 
     /* Create a packet */
     ENetPacket * packet = enet_packet_create (stringToSend.c_str(),

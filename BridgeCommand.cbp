@@ -55,13 +55,12 @@
 		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="Sky.cpp" />
 		<Unit filename="Sky.hpp" />
-		<Unit filename="StringUtilities.cpp" />
-		<Unit filename="StringUtilities.hpp" />
 		<Unit filename="Terrain.cpp" />
 		<Unit filename="Terrain.hpp" />
+		<Unit filename="Utilities.cpp" />
+		<Unit filename="Utilities.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
-		<Unit filename="lexical_cast.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

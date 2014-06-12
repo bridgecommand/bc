@@ -1,13 +1,13 @@
-#include "StringUtilities.hpp"
+#include "Utilities.hpp"
 
 #include <algorithm>
 #include <locale>
 
-namespace StringUtilities
+namespace Utilities
 {
     void to_lower(std::string& toConvert) {
         //A simple version of boost::to_lower.
-        //To do: Test effect on internationalisation
+        //ToDo: Test effect on internationalisation
 
         //convert to lower case
         //std::transform(toConvert.begin(), toConvert.end(), toConvert.begin(),
@@ -17,3 +17,4 @@ namespace StringUtilities
 
     }
 }
+

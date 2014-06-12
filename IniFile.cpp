@@ -2,8 +2,7 @@
 
 #include <fstream> //for ini loading
 #include <string> //for ini loading
-#include "StringUtilities.hpp" //for ini loading
-#include "lexical_cast.hpp" //for ini loading
+#include "Utilities.hpp" //for ini loading
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -16,7 +15,7 @@ namespace IniFile
     {
         std::string ans = commandName;
         ans.append("(");
-        ans.append(lexical_cast<std::string>(number));
+        ans.append(Utilities::lexical_cast<std::string>(number));
         ans.append(")");
 
         return ans;
@@ -27,9 +26,9 @@ namespace IniFile
     {
         std::string ans = commandName;
         ans.append("(");
-        ans.append(lexical_cast<std::string>(number1));
+        ans.append(Utilities::lexical_cast<std::string>(number1));
         ans.append(",");
-        ans.append(lexical_cast<std::string>(number2));
+        ans.append(Utilities::lexical_cast<std::string>(number2));
         ans.append(")");
 
         return ans;
@@ -56,8 +55,8 @@ namespace IniFile
             while ( std::getline (file,line) )
             {
                 std::string lowerLine(line); //Duplicate the line so we can make it lowercase, without affecting the result
-                StringUtilities::to_lower(lowerLine);
-                StringUtilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
+                Utilities::to_lower(lowerLine);
+                Utilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
 
                 //Look for the command and the '=' sign in the line
                 std::size_t commandFound = lowerLine.find(command);
