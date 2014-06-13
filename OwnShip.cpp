@@ -67,11 +67,18 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
 
     //Make mesh scene node
-    ownShip = smgr->addMeshSceneNode(
+    if (shipMesh==0) {
+        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        ownShip = smgr->addCubeSceneNode(0.1);
+    } else {
+        ownShip = smgr->addMeshSceneNode(
                         shipMesh,
                         0,
                         -1,
                         core::vector3df(0,0,0));
+    }
+
+    ownShip->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ownShip->getMaterialCount()>0) {

@@ -32,7 +32,13 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //Load the mesh
     scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
-	buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );
+	//add to scene node
+	if (buoyMesh==0) {
+        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        buoy = smgr->addCubeSceneNode(0.1);
+    } else {
+        buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );
+    }
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
@@ -42,6 +48,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     }
 
     buoy->setScale(core::vector3df(buoyScale,buoyScale,buoyScale));
+    buoy->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
     length = buoy->getBoundingBox().getExtent().Z;

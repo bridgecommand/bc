@@ -42,7 +42,14 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
 
     //add to scene node
-	otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1);
+	if (shipMesh==0) {
+        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        otherShip = smgr->addCubeSceneNode(0.1);
+    } else {
+        otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1);
+    }
+
+	otherShip->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
     length = otherShip->getBoundingBox().getExtent().Z;
