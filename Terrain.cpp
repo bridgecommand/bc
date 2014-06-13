@@ -72,6 +72,12 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 		               4					// smoothFactoespr
                        );
 
+    if (terrain==0) {
+        //Could not load terrain
+        //ToDo: Tell user that terrain couldn't be loaded
+        exit(EXIT_FAILURE);
+    }
+
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
     terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str())); //FIXME: Load from specified file

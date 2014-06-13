@@ -28,6 +28,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         environmentIniFilename.append("/environment.ini");
         std::string worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
 
+        if (worldName == "") {
+            //Could not load world name from scenario, so end here
+            //ToDo: Tell user problem
+            exit(EXIT_FAILURE);
+        }
+
         //construct path to world model
         std::string worldPath = "World/";
         worldPath.append(worldName);
