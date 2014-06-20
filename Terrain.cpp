@@ -19,8 +19,10 @@ Terrain::~Terrain()
     //dtor
 }
 
-void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
+void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr)
 {
+
+    irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
     //Get full path to the main Terrain.ini file
     std::string worldTerrainFile = worldPath;

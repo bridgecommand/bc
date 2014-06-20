@@ -6,7 +6,7 @@
 class Sky
 {
     public:
-        Sky(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
+        Sky(irr::scene::ISceneManager* smgr);
         virtual ~Sky();
 
     private:

@@ -4,8 +4,10 @@
 
 using namespace irr;
 
-Water::Water(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver)
+Water::Water(irr::scene::ISceneManager* smgr)
 {
+    irr::video::IVideoDriver* driver = smgr->getVideoDriver();
+
     //some water (from demo 8)
     scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
                        core::dimension2d<f32>(500,500),

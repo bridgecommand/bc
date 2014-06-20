@@ -29,7 +29,7 @@ int main()
     std::srand(device->getTimer()->getTime());
 
     //Create simulation model
-    SimulationModel model (device, driver, smgr, &guiMain); //Add link to gui
+    SimulationModel model (device, smgr, &guiMain); //Add link to gui
 
     //create event receiver, linked to model
     MyEventReceiver receiver(&model, &guiMain);

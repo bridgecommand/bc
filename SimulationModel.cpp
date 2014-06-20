@@ -4,12 +4,12 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
-        driver = drv;
         smgr = scene;
+        driver = scene->getVideoDriver();
         guiMain = gui;
 
         //set internal scenario time to start as zero
@@ -39,13 +39,13 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
         worldPath.append(worldName);
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(worldPath, smgr, driver);
+        terrain.load(worldPath, smgr);
 
         //add water
-        Water water (smgr, driver);
+        Water water (smgr);
 
         //sky box/dome
-        Sky sky (smgr, driver);
+        Sky sky (smgr);
 
         //make ambient light
         smgr->setAmbientLight(video::SColor(255,64,64,64));
@@ -72,7 +72,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, video::IVideoDriver* drv, 
 
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
-        radarScreen.load(driver,smgr,camera.getSceneNode(),radarOffset);
+        radarScreen.load(smgr,camera.getSceneNode(),radarOffset);
 
         //store time
         previousTime = device->getTimer()->getTime();

@@ -6,7 +6,7 @@
 class Water
 {
     public:
-        Water(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
+        Water(irr::scene::ISceneManager* smgr);
         virtual ~Water();
 
     private:
