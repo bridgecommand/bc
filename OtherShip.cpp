@@ -179,12 +179,16 @@ irr::f32 OtherShip::getRCS() const
     return rcs;
 }
 
-void OtherShip::setPosition(irr::core::vector3df position) //Not currently used, but may be needed to relocate
+//////////////////////////
+//Private member functions
+//////////////////////////
+
+void OtherShip::setPosition(irr::core::vector3df position)
 {
      otherShip->setPosition(position);
 }
 
-void OtherShip::setRotation(irr::core::vector3df rotation) //Not currently used, but may be needed to relocate
+void OtherShip::setRotation(irr::core::vector3df rotation)
 {
     otherShip->setRotation(rotation);
 }

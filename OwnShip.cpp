@@ -104,16 +104,6 @@ irr::scene::IMeshSceneNode* OwnShip::getSceneNode() const
     return ownShip;
 }
 
-void OwnShip::setPosition(irr::core::vector3df position)
-{
-     ownShip->setPosition(position);
-}
-
-void OwnShip::setRotation(irr::core::vector3df rotation)
-{
-    ownShip->setRotation(rotation);
-}
-
 irr::core::vector3df OwnShip::getRotation() const
 {
     return ownShip->getRotation();
@@ -147,4 +137,18 @@ irr::f32 OwnShip::getHeading() const
 irr::f32 OwnShip::getSpeed() const
 {
     return speed;
+}
+
+//////////////////////////
+//Private member functions
+//////////////////////////
+
+void OwnShip::setPosition(irr::core::vector3df position)
+{
+     ownShip->setPosition(position);
+}
+
+void OwnShip::setRotation(irr::core::vector3df rotation)
+{
+    ownShip->setRotation(rotation);
 }

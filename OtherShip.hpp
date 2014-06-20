@@ -24,10 +24,13 @@ class OtherShip
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
-        void setPosition(irr::core::vector3df position);
-        void setRotation(irr::core::vector3df rotation);
+
     protected:
     private:
+
+        void setPosition(irr::core::vector3df position);
+        void setRotation(irr::core::vector3df rotation);
+
         irr::scene::IMeshSceneNode* otherShip; //The scene node for the other ship.
         std::vector<Leg> legs;
         std::vector<NavLight> navLights;

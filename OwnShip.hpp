@@ -16,9 +16,6 @@ class OwnShip
         void load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model);
         irr::scene::IMeshSceneNode* getSceneNode() const;
         void update(irr::f32 deltaTime);
-
-        void setPosition(irr::core::vector3df position);
-        void setRotation(irr::core::vector3df rotation);
         irr::core::vector3df getRotation() const;
         irr::core::vector3df getPosition() const;
         irr::core::vector3df getCameraOffset() const;
@@ -29,6 +26,10 @@ class OwnShip
 
     protected:
     private:
+
+        void setPosition(irr::core::vector3df position);
+        void setRotation(irr::core::vector3df rotation);
+
         irr::scene::IMeshSceneNode* ownShip; //The scene node for the own ship.
         irr::core::vector3df cameraOffset; //The offset of the camera origin from the own ship origin
         irr::f32 heading;
