@@ -1,3 +1,5 @@
+//Extends from the general 'Ship' class
+
 #include "irrlicht.h"
 
 #include "OwnShip.hpp"
@@ -7,16 +9,6 @@
 #include "IniFile.hpp"
 
 using namespace irr;
-
-OwnShip::OwnShip()
-{
-
-}
-
-OwnShip::~OwnShip()
-{
-    //dtor
-}
 
 void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
@@ -69,21 +61,21 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     //Make mesh scene node
     if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
-        ownShip = smgr->addCubeSceneNode(0.1);
+        ship = smgr->addCubeSceneNode(0.1);
     } else {
-        ownShip = smgr->addMeshSceneNode(
+        ship = smgr->addMeshSceneNode(
                         shipMesh,
                         0,
                         -1,
                         core::vector3df(0,0,0));
     }
 
-    ownShip->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(ownShip->getMaterialCount()>0) {
-        for(int mat=0;mat<ownShip->getMaterialCount();mat++) {
-            ownShip->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+	if(ship->getMaterialCount()>0) {
+        for(int mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 }
@@ -99,56 +91,7 @@ void OwnShip::update(irr::f32 deltaTime)
     setRotation(core::vector3df(0, heading, 0)); //Global vectors
 }
 
-irr::scene::IMeshSceneNode* OwnShip::getSceneNode() const
-{
-    return ownShip;
-}
-
-irr::core::vector3df OwnShip::getRotation() const
-{
-    return ownShip->getRotation();
-}
-
-irr::core::vector3df OwnShip::getPosition() const
-{
-    return ownShip->getPosition();
-}
-
 irr::core::vector3df OwnShip::getCameraOffset() const
 {
     return cameraOffset;
-}
-
-void OwnShip::setHeading(irr::f32 hdg)
-{
-    heading = hdg;
-}
-
-void OwnShip::setSpeed(irr::f32 spd)
-{
-    speed = spd;
-}
-
-irr::f32 OwnShip::getHeading() const
-{
-    return heading;
-}
-
-irr::f32 OwnShip::getSpeed() const
-{
-    return speed;
-}
-
-//////////////////////////
-//Private member functions
-//////////////////////////
-
-void OwnShip::setPosition(irr::core::vector3df position)
-{
-     ownShip->setPosition(position);
-}
-
-void OwnShip::setRotation(irr::core::vector3df rotation)
-{
-    ownShip->setRotation(rotation);
 }

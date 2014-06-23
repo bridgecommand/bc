@@ -1,4 +1,4 @@
-//FIXME: Lots of duplication between OwnShip and OtherShip -> should extend from a single base class
+//Extends from the general 'Ship' class
 
 #include "irrlicht.h"
 
@@ -44,16 +44,16 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //add to scene node
 	if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
-        otherShip = smgr->addCubeSceneNode(0.1);
+        ship = smgr->addCubeSceneNode(0.1);
     } else {
-        otherShip = smgr->addMeshSceneNode( shipMesh, 0, -1);
+        ship = smgr->addMeshSceneNode( shipMesh, 0, -1);
     }
 
-	otherShip->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+	ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
-    length = otherShip->getBoundingBox().getExtent().Z;
-    height = otherShip->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    length = ship->getBoundingBox().getExtent().Z;
+    height = ship->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
 
     //store initial x,y,z positions
@@ -63,9 +63,9 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //speed and heading will come from leg data
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(otherShip->getMaterialCount()>0) {
-        for(int mat=0;mat<otherShip->getMaterialCount();mat++) {
-            otherShip->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+	if(ship->getMaterialCount()>0) {
+        for(int mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
@@ -92,17 +92,12 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             lightZ *= scaleFactor;
 
             //add this Nav light into array
-            navLights.push_back(NavLight (otherShip,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(NavLight (ship,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
         }
     }
 
     //store leg information
     legs=legsLoaded;
-}
-
-OtherShip::~OtherShip()
-{
-    //dtor
 }
 
 void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition)
@@ -138,32 +133,6 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vec
 
 }
 
-void OtherShip::setHeading(irr::f32 hdg)
-{
-    heading = hdg;
-}
-
-void OtherShip::setSpeed(irr::f32 spd)
-{
-    speed = spd;
-}
-
-irr::f32 OtherShip::getHeading() const
-{
-    return heading;
-}
-
-irr::f32 OtherShip::getSpeed() const
-{
-    return speed;
-}
-
-irr::core::vector3df OtherShip::getPosition() const
-{
-    otherShip->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return otherShip->getAbsolutePosition();
-}
-
 irr::f32 OtherShip::getLength() const
 {
     return length;
@@ -177,18 +146,4 @@ irr::f32 OtherShip::getHeight() const
 irr::f32 OtherShip::getRCS() const
 {
     return rcs;
-}
-
-//////////////////////////
-//Private member functions
-//////////////////////////
-
-void OtherShip::setPosition(irr::core::vector3df position)
-{
-     otherShip->setPosition(position);
-}
-
-void OtherShip::setRotation(irr::core::vector3df rotation)
-{
-    otherShip->setRotation(rotation);
 }
