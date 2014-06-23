@@ -1,6 +1,8 @@
 #include "irrlicht.h"
 
 #include "Buoy.hpp"
+#include "RadarData.hpp"
+#include "Angles.hpp"
 #include "IniFile.hpp"
 
 using namespace irr;
@@ -85,4 +87,47 @@ irr::f32 Buoy::getHeight() const
 irr::f32 Buoy::getRCS() const
 {
     return rcs;
+}
+
+RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
+//Get data relative to scannerPosition
+//Similar code in OtherShip.cpp
+{
+    RadarData radarData;
+
+    //Get information about this buoy, and return a RadarData struct containing info
+    irr::core::vector3df contactPosition = getPosition();
+    irr::core::vector3df relativePosition = contactPosition-scannerPosition;
+
+    radarData.relX = relativePosition.X;
+    radarData.relZ = relativePosition.Z;
+
+    radarData.angle = relativePosition.getHorizontalAngle().Y;
+    radarData.range = relativePosition.getLength();
+
+    radarData.heading = 0.0;
+
+    radarData.height=getHeight();
+    radarData.solidHeight=0; //Assume buoy never blocks radar
+    //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
+    radarData.length=getLength();
+    radarData.rcs=getRCS();
+
+    //Calculate angles and ranges to each end of the contact
+    irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    radarData.minRange=std::min(range1,range2);
+    radarData.maxRange=std::max(range1,range2);
+    radarData.minAngle=std::min(relAngle1,relAngle2);
+    radarData.maxAngle=std::max(relAngle1,relAngle2);
+
+    //Initial defaults: Will need changing with full implementation
+    radarData.hidden=false;
+    radarData.racon=""; //Racon code if set
+    radarData.raconOffsetTime=0.0;
+    radarData.SART=false;
+
+    return radarData;
 }

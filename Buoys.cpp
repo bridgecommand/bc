@@ -5,7 +5,6 @@
 #include "Buoy.hpp"
 #include "NavLight.hpp"
 #include "IniFile.hpp"
-#include "Angles.hpp"
 #include "Constants.hpp"
 #include "RadarData.hpp"
 #include "SimulationModel.hpp"
@@ -83,47 +82,12 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3
 }
 
 RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
-//Get data for OtherShip (number) relative to scannerPosition
-//Fixme: Shares a lot of code with OtherShips::getRadarData. Can these be inherited from a common parent?
-//Or does radarData get created as a member of each buoy.
+//Get data for Buoy (number) relative to scannerPosition
 {
     RadarData radarData;
 
     if (number<=buoys.size()) {
-        //Get information about this buoy, and return a RadarData struct containing info
-        irr::core::vector3df contactPosition = buoys[number-1].getPosition();
-        irr::core::vector3df relativePosition = contactPosition-scannerPosition;
-
-        radarData.relX = relativePosition.X;
-        radarData.relZ = relativePosition.Z;
-
-        radarData.angle = relativePosition.getHorizontalAngle().Y;
-        radarData.range = relativePosition.getLength();
-
-        radarData.heading = 0.0;
-
-        radarData.height=buoys[number-1].getHeight();
-        radarData.solidHeight=0; //Assume buoy never blocks radar
-        //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
-        radarData.length=buoys[number-1].getLength();
-        radarData.rcs=buoys[number-1].getRCS();
-
-        //Calculate angles and ranges to each end of the contact
-        irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-        irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-		irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
-        irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
-        radarData.minRange=std::min(range1,range2);
-        radarData.maxRange=std::max(range1,range2);
-        radarData.minAngle=std::min(relAngle1,relAngle2);
-        radarData.maxAngle=std::max(relAngle1,relAngle2);
-
-        //Initial defaults: Will need changing with full implementation
-        radarData.hidden=false;
-        radarData.racon=""; //Racon code if set
-        radarData.raconOffsetTime=0.0;
-        radarData.SART=false;
-
+        radarData = buoys[number-1].getRadarData(scannerPosition);
     }
 
     return radarData;

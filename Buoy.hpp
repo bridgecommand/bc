@@ -6,6 +6,8 @@
 #include <string>
 #include <cmath>
 
+class RadarData;
+
 class Buoy
 {
     public:
@@ -15,6 +17,7 @@ class Buoy
         irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
+        RadarData getRadarData(irr::core::vector3df scannerPosition) const;
     protected:
     private:
         irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
