@@ -34,6 +34,8 @@
 		<Unit filename="IniFile.cpp" />
 		<Unit filename="IniFile.hpp" />
 		<Unit filename="Leg.hpp" />
+		<Unit filename="Light.cpp" />
+		<Unit filename="Light.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />
 		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="NavLight.cpp" />

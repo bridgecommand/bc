@@ -8,6 +8,7 @@
 
 #include "GUIMain.hpp"
 #include "Terrain.hpp"
+#include "Light.hpp"
 #include "Water.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
@@ -38,6 +39,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     Terrain terrain;
+    Light light;
     OwnShip ownShip;
     OtherShips otherShips;
     Buoys buoys;

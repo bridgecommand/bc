@@ -48,13 +48,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         Sky sky (smgr);
 
         //make ambient light
-        smgr->setAmbientLight(video::SColor(255,64,64,64));
-        //add a directional light
-        //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
-        //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
+        light.load(smgr);
 
         //make fog
-        driver->setFog(smgr->getAmbientLight().toSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
@@ -120,6 +117,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //add this to the scenario time
         scenarioTime += deltaTime;
+
+        //update ambient lighting
+        light.update();
 
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,camera.getPosition()); //Update other ship motion (based on leg information), and light visibility.
