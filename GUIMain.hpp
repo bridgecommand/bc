@@ -6,7 +6,7 @@
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* dev);
+    GUIMain(irr::IrrlichtDevice* device);
 
     enum SCROLL_BARS// Define some values that we'll use to identify individual GUI controls.
     {

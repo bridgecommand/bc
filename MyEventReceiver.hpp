@@ -11,7 +11,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(SimulationModel* mdl, GUIMain* gui);
+    MyEventReceiver(SimulationModel* model, GUIMain* gui);
 
     bool OnEvent(const irr::SEvent& event);
     irr::s32 GetScrollBarPosSpeed() const;
@@ -20,7 +20,7 @@ public:
 private:
 
     SimulationModel* model;
-    GUIMain* guiMain;
+    GUIMain* gui;
     irr::s32 scrollBarPosSpeed;
     irr::s32 scrollBarPosHeading;
 

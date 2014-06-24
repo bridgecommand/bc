@@ -9,7 +9,7 @@ class SimulationModel;
 class Network
 {
 public:
-    Network(SimulationModel* mdl);
+    Network(SimulationModel* model);
     ~Network();
 
     void connectToServer();

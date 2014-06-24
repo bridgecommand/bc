@@ -38,22 +38,22 @@ irr::core::vector3df Ship::getPosition() const
 
 void Ship::setHeading(irr::f32 hdg)
 {
-    heading = hdg;
+    this->hdg = hdg;
 }
 
 void Ship::setSpeed(irr::f32 spd)
 {
-    speed = spd;
+    this->spd = spd;
 }
 
 irr::f32 Ship::getHeading() const
 {
-    return heading;
+    return hdg;
 }
 
 irr::f32 Ship::getSpeed() const
 {
-    return speed;
+    return spd;
 }
 
 //////////////////////////

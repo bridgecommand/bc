@@ -6,9 +6,9 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* dev)
+GUIMain::GUIMain(IrrlichtDevice* device)
     {
-        device = dev;
+        this->device = device;
         guienv = device->getGUIEnvironment();
 
         //gui - add scroll bars

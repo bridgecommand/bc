@@ -29,11 +29,11 @@ class Ship
         void setRotation(irr::core::vector3df rotation);
 
         irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
-        irr::f32 heading;
+        irr::f32 hdg;
         irr::f32 xPos;
         irr::f32 yPos;
         irr::f32 zPos;
-        irr::f32 speed;
+        irr::f32 spd;
 };
 
 #endif // __SHIP_HPP_INCLUDED__

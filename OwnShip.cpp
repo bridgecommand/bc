@@ -20,11 +20,11 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     //Load from ownShip.ini file
     std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
     //Get initial position and heading, and set these
-    speed = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed")*KTS_TO_MPS;
+    spd = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed")*KTS_TO_MPS;
     xPos = model->longToX(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong"));
     yPos = 0;
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
-    heading = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
+    hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";
@@ -83,12 +83,12 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
 void OwnShip::update(irr::f32 deltaTime)
 {
     //move, according to heading and speed
-    xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
-    zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
+    xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;
+    zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
 
     //Set position & speed by calling own ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
-    setRotation(core::vector3df(0, heading, 0)); //Global vectors
+    setRotation(core::vector3df(0, hdg, 0)); //Global vectors
 }
 
 irr::core::vector3df OwnShip::getCameraOffset() const

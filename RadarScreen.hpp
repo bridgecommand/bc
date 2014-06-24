@@ -9,7 +9,7 @@ class RadarScreen
         RadarScreen();
         virtual ~RadarScreen();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* par, irr::core::vector3df off);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset);
         void update(irr::video::IImage* radarImage);
 
 

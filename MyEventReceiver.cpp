@@ -7,10 +7,10 @@
 
 using namespace irr;
 
-    MyEventReceiver::MyEventReceiver(SimulationModel* mdl, GUIMain* gui) //Constructor
+    MyEventReceiver::MyEventReceiver(SimulationModel* model, GUIMain* gui) //Constructor
 	{
-		model = mdl; //Link to the model
-		guiMain = gui; //Link to GUI (Not currently used!)
+		this->model = model; //Link to the model
+		this->gui = gui; //Link to GUI (Not currently used!)
 		scrollBarPosSpeed = 0;
 		scrollBarPosHeading = 0;
 	}

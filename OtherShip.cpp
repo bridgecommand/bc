@@ -107,8 +107,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vec
 
     //move according to leg information
     if (legs.empty()) {
-        speed = 0;
-        heading = 0;
+        spd = 0;
+        hdg = 0;
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg;
@@ -117,16 +117,16 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vec
                 break;
             }
         }
-        speed = legs[currentLeg].speed*KTS_TO_MPS;
-        heading = legs[currentLeg].bearing;
+        spd = legs[currentLeg].speed*KTS_TO_MPS;
+        hdg = legs[currentLeg].bearing;
     }
 
-    xPos = xPos + sin(heading*core::DEGTORAD)*speed*deltaTime;
-    zPos = zPos + cos(heading*core::DEGTORAD)*speed*deltaTime;
+    xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;
+    zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
 
     //Set position & speed by calling ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
-    setRotation(core::vector3df(0, heading, 0)); //Global vectors
+    setRotation(core::vector3df(0, hdg, 0)); //Global vectors
 
     //for each light, find range and angle
     for(int currentLight = 0; currentLight<navLights.size(); currentLight++) {

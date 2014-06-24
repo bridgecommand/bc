@@ -14,7 +14,7 @@ class Light
 
     private:
         irr::video::SColor ambientColor;
-        irr::scene::ISceneManager* scene;
+        irr::scene::ISceneManager* smgr;
 };
 
 #endif // __LIGHT_HPP_INCLUDED__

@@ -5,10 +5,10 @@
 #include <iostream>
 #include <cstdio>
 
-Network::Network(SimulationModel* mdl) //Constructor
+Network::Network(SimulationModel* model) //Constructor
 {
     //link to model so network can interact with model
-    model = mdl; //Link to the model
+    this->model = model; //Link to the model
 
     //start networking
     if (enet_initialize () != 0) {
