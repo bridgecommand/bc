@@ -22,7 +22,7 @@ OtherShips::~OtherShips()
     //dtor
 }
 
-void OtherShips::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTime, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //construct path
@@ -45,7 +45,7 @@ void OtherShips::load(const std::string& scenarioName, irr::scene::ISceneManager
             //Load leg information
             std::vector<Leg> legs;
             irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
-            irr::f32 legStartTime = 0;
+            irr::f32 legStartTime = scenarioStartTime;
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
                 Leg currentLeg;

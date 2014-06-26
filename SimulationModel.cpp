@@ -28,6 +28,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         irr::f32 startTime = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
         //set internal scenario time to start
         scenarioTime = startTime * SECONDS_IN_HOUR;
+        accelerator = 1.0;
 
         if (worldName == "") {
             //Could not load world name from scenario, so end here
@@ -60,7 +61,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.load(smgr,ownShip.getSceneNode(),camOffset);
 
         //Load other ships
-        otherShips.load(scenarioPath,smgr,this);
+        otherShips.load(scenarioPath,scenarioTime,smgr,this);
 
         //Load buoys
         buoys.load(worldPath, smgr, this);
@@ -104,13 +105,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         return(ownShip.getHeading());
     }
 
+    void SimulationModel::setAccelerator(irr::f32 accelerator)
+    {
+        this->accelerator = accelerator;
+    }
+
 
     void SimulationModel::update()
     {
 
         //get delta time
         currentTime = device->getTimer()->getTime();
-        deltaTime = (currentTime - previousTime)/1000.f;
+        deltaTime = accelerator*(currentTime - previousTime)/1000.f;
+        //deltaTime = (currentTime - previousTime)/1000.f;
         previousTime = currentTime;
 
         //add this to the scenario time

@@ -30,6 +30,7 @@ public:
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
+    void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
     void update();
@@ -38,6 +39,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
+    irr::f32 accelerator;
     Terrain terrain;
     Light light;
     OwnShip ownShip;
