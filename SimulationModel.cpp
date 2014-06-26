@@ -1,6 +1,7 @@
 #include "irrlicht.h"
 
 #include "SimulationModel.hpp"
+#include "Constants.hpp"
 
 using namespace irr;
 
@@ -11,9 +12,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         smgr = scene;
         driver = scene->getVideoDriver();
         guiMain = gui;
-
-        //set internal scenario time to start as zero
-        scenarioTime = 0;
 
         //set scenario to load (will be read in from user) //fixme hardcoded
         std::string scenarioName = "a) Buoyage";
@@ -27,6 +25,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         std::string environmentIniFilename = scenarioPath;
         environmentIniFilename.append("/environment.ini");
         std::string worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
+        irr::f32 startTime = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
+        //set internal scenario time to start
+        scenarioTime = startTime * SECONDS_IN_HOUR;
 
         if (worldName == "") {
             //Could not load world name from scenario, so end here
@@ -49,9 +50,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make ambient light
         light.load(smgr);
-
-        //make fog
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
@@ -119,7 +117,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         scenarioTime += deltaTime;
 
         //update ambient lighting
-        light.update();
+        light.update(scenarioTime);
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
 
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,camera.getPosition()); //Update other ship motion (based on leg information), and light visibility.

@@ -1,5 +1,8 @@
 #include "Light.hpp"
 
+#include <cmath> //For fmod
+#include "Constants.hpp"
+
 using namespace irr;
 
 Light::Light()
@@ -25,10 +28,31 @@ void Light::load(irr::scene::ISceneManager* smgr)
     //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
 }
 
-void Light::update()
+void Light::update(irr::f32 scenarioTime)
 {
+    //convert scenario time (in seconds) into hours
+    irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
+
+    //Light parameters
+    irr::f32 sunRise = 6; //FIXME: Hardcoded
+	irr::f32 sunSet = 18; //FIXME: Hardcoded
+    irr::u32 lightLow=50;
+	irr::u32 lightHigh=205;
+	irr::u32 lightCos=45;
+
+    irr::u32 lightLevel=0;
+
+    if (hourTime >= 0 && hourTime < (sunRise - 0.5)) {lightLevel = lightLow;}
+	if (hourTime >= (sunRise - 0.5) && hourTime < (sunRise + 0.5)) {lightLevel = (lightHigh - lightLow) * (hourTime - (sunRise - 0.5)) + lightLow;}
+	if (hourTime >= (sunRise + 0.5) && hourTime < (sunSet - 0.5)) {lightLevel = lightHigh;}
+	if (hourTime >= (sunSet - 0.5) && hourTime < (sunSet + 0.5)) {lightLevel = (lightLow-lightHigh) * (hourTime - (sunSet - 0.5)) + lightHigh;}
+	if (hourTime >= (sunSet + 0.5) && hourTime <= 24) {lightLevel = lightLow;}
+
+	//		;sinusoidal component
+	//	light_level# = light_level# + LightCos*Cos((360/24)* (HourTime - 12)) ;40 is 10 less than minimum basic light level, so we get a full minimum of 10, and max of 245
+
     //do something with ambient colour
-    ambientColor=ambientColor;
+    ambientColor=video::SColor(255,lightLevel,lightLevel,lightLevel);
     //update ambient light
     smgr->setAmbientLight(ambientColor);
 }

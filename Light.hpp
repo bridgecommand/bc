@@ -9,7 +9,7 @@ class Light
         Light();
         virtual ~Light();
         void load(irr::scene::ISceneManager* smgr);
-        void update();
+        void update(irr::f32 scenarioTime);
         irr::video::SColor getLightSColor();
 
     private:
