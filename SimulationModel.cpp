@@ -110,6 +110,36 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         this->accelerator = accelerator;
     }
 
+    void SimulationModel::lookLeft()
+    {
+        camera.lookLeft();
+    }
+
+    void SimulationModel::lookRight()
+    {
+        camera.lookRight();
+    }
+
+    void SimulationModel::lookAhead()
+    {
+        camera.lookAhead();
+    }
+
+    void SimulationModel::lookAstern()
+    {
+        camera.lookAstern();
+    }
+
+    void SimulationModel::lookPort()
+    {
+        camera.lookPort();
+    }
+
+    void SimulationModel::lookStbd()
+    {
+        camera.lookStbd();
+    }
+
 
     void SimulationModel::update()
     {

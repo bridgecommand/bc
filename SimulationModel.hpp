@@ -33,6 +33,12 @@ public:
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
+    void lookLeft();
+    void lookRight();
+    void lookAhead();
+    void lookAstern();
+    void lookPort();
+    void lookStbd();
     void update();
 
 private:

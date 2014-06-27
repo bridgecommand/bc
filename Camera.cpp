@@ -2,6 +2,8 @@
 
 #include "Camera.hpp"
 
+#include <cmath>
+
 using namespace irr;
 
 Camera::Camera()
@@ -20,6 +22,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* p
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
     this->parent = parent;
     this->offset = offset;
+    lookAngle = 0;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -33,6 +36,44 @@ irr::core::vector3df Camera::getPosition() const
     return camera->getAbsolutePosition();
 }
 
+void Camera::lookLeft()
+{
+    lookAngle--;
+    if (lookAngle<0)
+    {
+        lookAngle+=360;
+    }
+}
+
+void Camera::lookRight()
+{
+    lookAngle++;
+    if (lookAngle>=360)
+    {
+        lookAngle-=360;
+    }
+}
+
+void Camera::lookAhead()
+{
+    lookAngle = 0;
+}
+
+void Camera::lookAstern()
+{
+    lookAngle = 180;
+}
+
+void Camera::lookPort()
+{
+    lookAngle = 270;
+}
+
+void Camera::lookStbd()
+{
+    lookAngle = 90;
+}
+
 void Camera::update()
 {
      //link camera rotation to shipNode
@@ -41,7 +82,7 @@ void Camera::update()
         m.setRotationDegrees(parent->getRotation());
 
         // transform forward vector of camera
-        core::vector3df frv(0.0f, 0.0f, 1.0f);
+        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*lookAngle), 0.0f, 1.0f*std::cos(irr::core::DEGTORAD*lookAngle));
         m.transformVect(frv);
 
         // transform upvector of camera

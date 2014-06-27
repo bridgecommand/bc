@@ -40,36 +40,72 @@ using namespace irr;
             }
         }
 
-        //key events
+        //From keyboard
         if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 		{
-            //Accelerator from keyboard
-            switch(event.KeyInput.Key)
-            {
-                case KEY_KEY_0:
-                    model->setAccelerator(0.0);
-                    break;
-                case KEY_RETURN:
-                    model->setAccelerator(1.0);
-                    break;
-                case KEY_KEY_1:
-                    model->setAccelerator(1.0);
-                    break;
-                case KEY_KEY_2:
-                    model->setAccelerator(2.0);
-                    break;
-                case KEY_KEY_3:
-                    model->setAccelerator(5.0);
-                    break;
-                case KEY_KEY_4:
-                    model->setAccelerator(15.0);
-                    break;
-                case KEY_KEY_5:
-                    model->setAccelerator(30.0);
-                    break;
-                case KEY_KEY_6:
-                    model->setAccelerator(60.0);
-                    break;
+
+            if (event.KeyInput.Shift) {
+                //Shift down
+
+            } else if (event.KeyInput.Control) {
+                //Ctrl down
+
+                switch(event.KeyInput.Key)
+                {
+                    //Camera look
+                    case KEY_UP:
+                        model->lookAhead();
+                        break;
+                    case KEY_DOWN:
+                        model->lookAstern();
+                        break;
+                    case KEY_LEFT:
+                        model->lookPort();
+                        break;
+                    case KEY_RIGHT:
+                        model->lookStbd();
+                        break;
+                }
+
+            } else {
+                //Shift and Ctrl not down
+
+                switch(event.KeyInput.Key)
+                {
+                    //Accelerator
+                    case KEY_KEY_0:
+                        model->setAccelerator(0.0);
+                        break;
+                    case KEY_RETURN:
+                        model->setAccelerator(1.0);
+                        break;
+                    case KEY_KEY_1:
+                        model->setAccelerator(1.0);
+                        break;
+                    case KEY_KEY_2:
+                        model->setAccelerator(2.0);
+                        break;
+                    case KEY_KEY_3:
+                        model->setAccelerator(5.0);
+                        break;
+                    case KEY_KEY_4:
+                        model->setAccelerator(15.0);
+                        break;
+                    case KEY_KEY_5:
+                        model->setAccelerator(30.0);
+                        break;
+                    case KEY_KEY_6:
+                        model->setAccelerator(60.0);
+                        break;
+
+                    //Camera look
+                    case KEY_LEFT:
+                        model->lookLeft();
+                        break;
+                    case KEY_RIGHT:
+                        model->lookRight();
+                        break;
+                }
             }
 		}
 
