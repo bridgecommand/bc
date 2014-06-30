@@ -105,6 +105,9 @@ using namespace irr;
                     case KEY_RIGHT:
                         model->lookRight();
                         break;
+                    case KEY_SPACE:
+                        model->changeView();
+                        break;
                 }
             }
 		}

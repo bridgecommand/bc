@@ -3,13 +3,15 @@
 
 #include "irrlicht.h"
 
+#include <vector>
+
 class Camera
 {
     public:
         Camera();
         virtual ~Camera();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* parent, irr::core::vector3df offset);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* parent, std::vector<irr::core::vector3df> views);
         irr::scene::ISceneNode* getSceneNode() const;
         irr::core::vector3df getPosition() const;
         void lookLeft();
@@ -18,12 +20,14 @@ class Camera
         void lookAstern();
         void lookPort();
         void lookStbd();
+        void changeView();
         void update();
 
     private:
         irr::scene::ICameraSceneNode* camera;
         irr::scene::IMeshSceneNode* parent;
-        irr::core::vector3df offset;
+        irr::u32 currentView;
+        std::vector<irr::core::vector3df> views;
         irr::f32 lookAngle;
 };
 

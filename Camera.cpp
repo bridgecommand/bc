@@ -17,11 +17,12 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* parent, irr::core::vector3df offset)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* parent, std::vector<irr::core::vector3df> views)
 {
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
     this->parent = parent;
-    this->offset = offset;
+    this->views = views;
+    currentView = 0;
     lookAngle = 0;
 }
 
@@ -74,6 +75,14 @@ void Camera::lookStbd()
     lookAngle = 90;
 }
 
+void Camera::changeView()
+{
+    currentView++;
+    if (currentView==views.size()) {
+        currentView = 0;
+    }
+}
+
 void Camera::update()
 {
      //link camera rotation to shipNode
@@ -92,7 +101,7 @@ void Camera::update()
         // transform camera offset ('offset' is relative to the local ship coordinates, and stays the same.)
         //'offsetTransformed' is transformed into the global coordinates
         core::vector3df offsetTransformed;
-        m.transformVect(offsetTransformed,offset);
+        m.transformVect(offsetTransformed,views[currentView]);
 
         //move camera and angle
         camera->setPosition(parent->getPosition() + offsetTransformed);

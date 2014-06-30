@@ -57,8 +57,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         ownShip.load(scenarioPath, smgr, this);
 
         //make a camera, setting parent and offset
-        core::vector3df camOffset = ownShip.getCameraOffset(); //Get the initial camera offset from the own ship model
-        camera.load(smgr,ownShip.getSceneNode(),camOffset);
+        std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
+        camera.load(smgr,ownShip.getSceneNode(),views);
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,smgr,this);
@@ -140,6 +140,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.lookStbd();
     }
 
+    void SimulationModel::changeView()
+    {
+        camera.changeView();
+    }
 
     void SimulationModel::update()
     {

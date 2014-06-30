@@ -43,11 +43,17 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
 
     //camera offset (in unscaled and uncorrected ship coords)
-    f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,"ViewX(1)"); //FIXME: Hardcoding for initial view only
-    f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,"ViewY(1)");
-    f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,"ViewZ(1)");
-    //camera offset in scaled and corrected coords
-    cameraOffset = core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+yCorrection),scaleFactor*camOffsetZ);
+    irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
+    if (numberOfViews==0) {
+        //ToDo: Tell user that view positions couldn't be loaded
+        exit(EXIT_FAILURE);
+    }
+    for(int i=1;i<=numberOfViews;i++) {
+        f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
+        f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
+        f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
+        views.push_back(core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+yCorrection),scaleFactor*camOffsetZ));
+    }
 
     //Load the model
     scene::IMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
@@ -91,7 +97,7 @@ void OwnShip::update(irr::f32 deltaTime)
     setRotation(core::vector3df(0, hdg, 0)); //Global vectors
 }
 
-irr::core::vector3df OwnShip::getCameraOffset() const
+std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {
-    return cameraOffset;
+    return views;
 }

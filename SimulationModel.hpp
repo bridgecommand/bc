@@ -39,6 +39,7 @@ public:
     void lookAstern();
     void lookPort();
     void lookStbd();
+    void changeView();
     void update();
 
 private:
