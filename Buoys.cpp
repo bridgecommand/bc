@@ -74,10 +74,10 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition)
+void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel)
 {
     for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
-        it->update(scenarioTime, viewPosition);
+        it->update(scenarioTime, viewPosition, lightLevel);
     }
 }
 

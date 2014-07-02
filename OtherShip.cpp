@@ -102,7 +102,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     legs=legsLoaded;
 }
 
-void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition)
+void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel)
 {
 
     //move according to leg information
@@ -130,7 +130,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vec
 
     //for each light, find range and angle
     for(int currentLight = 0; currentLight<navLights.size(); currentLight++) {
-        navLights[currentLight].update(scenarioTime,viewPosition);
+        navLights[currentLight].update(scenarioTime,viewPosition, lightLevel);
     }
 
 }

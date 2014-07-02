@@ -23,7 +23,7 @@ class OtherShip : public Ship
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel);
 
     protected:
     private:

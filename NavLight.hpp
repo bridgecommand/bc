@@ -12,7 +12,7 @@ class NavLight {
     public:
         NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="");
         ~NavLight();
-        void update(irr::f32 scenarioTime, irr::core::vector3df viewPosition);
+        void update(irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel);
 
     private:
         irr::scene::IBillboardSceneNode* lightNode;
@@ -21,6 +21,7 @@ class NavLight {
         irr::f32 range;
         std::string sequence;
         irr::f32 timeOffset;
+        bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
 };
 
 #endif

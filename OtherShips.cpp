@@ -72,10 +72,10 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
     }
 }
 
-void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition)
+void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        it->update(deltaTime, scenarioTime, viewPosition);
+        it->update(deltaTime, scenarioTime, viewPosition, lightLevel);
     }
 }
 

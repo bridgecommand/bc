@@ -97,6 +97,9 @@ using namespace irr;
                     case KEY_KEY_6:
                         model->setAccelerator(60.0);
                         break;
+                    case KEY_KEY_7:
+                        model->setAccelerator(3600.0);
+                        break;
 
                     //Camera look
                     case KEY_LEFT:
@@ -117,6 +120,7 @@ using namespace irr;
     }
 
 
+/*
 	s32 MyEventReceiver::GetScrollBarPosSpeed() const
 	{
 		return scrollBarPosSpeed;
@@ -126,3 +130,4 @@ using namespace irr;
 	{
 		return scrollBarPosHeading;
 	}
+*/

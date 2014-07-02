@@ -160,12 +160,13 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //update ambient lighting
         light.update(scenarioTime);
         driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
+        irr::u32 lightLevel = light.getLightLevel();
 
         //update other ship positions etc
-        otherShips.update(deltaTime,scenarioTime,camera.getPosition()); //Update other ship motion (based on leg information), and light visibility.
+        otherShips.update(deltaTime,scenarioTime,camera.getPosition(),lightLevel); //Update other ship motion (based on leg information), and light visibility.
 
         //update buoys (for lights)
-        buoys.update(deltaTime,scenarioTime,camera.getPosition());
+        buoys.update(deltaTime,scenarioTime,camera.getPosition(),lightLevel);
 
         //update own ship
         ownShip.update(deltaTime);
