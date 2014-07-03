@@ -9,7 +9,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
     lightNode->setColor(colour);
-    lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.bmp"));
+    lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
     lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
     lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
 
@@ -98,8 +98,8 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
             u16* Data = (u16*)tex->lock(); //get Data for 16-bit Texture
             for(u32 i = 0; i < size ; i++)
             {
-                //u8 minAlpha = std::min((u8)video::getAlpha(Data[i]),alpha); //FIXME: UNTESTED
-                Data[i] = video::RGBA16(video::getRed(Data[i]), video::getGreen(Data[i]), video::getBlue(Data[i]), alpha);
+                u8 alphaToUse = (u8)video::getAlpha(Data[i])==0 ? 0 : alpha; //If already transparent, leave as-is
+                Data[i] = video::RGBA16(video::getRed(Data[i]), video::getGreen(Data[i]), video::getBlue(Data[i]), alphaToUse);
             }
             tex->unlock();
             break;
@@ -110,7 +110,8 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
             for( u32 i = 0 ; i < size ; i++)
             {
                 //u8 minAlpha = std::min(((u8*)&Data[i])[3],alpha);
-                ((u8*)&Data[i])[3] = alpha;//get Data for 32-bit Texture
+                u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
+                ((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
             }
             tex->unlock();
             break;
