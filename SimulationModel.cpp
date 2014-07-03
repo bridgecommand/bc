@@ -66,6 +66,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load buoys
         buoys.load(worldPath, smgr, this);
 
+        //Load land objects
+        landObjects.load(worldPath, smgr, this, terrain);
+
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(smgr,camera.getSceneNode(),radarOffset);

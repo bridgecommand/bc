@@ -33,6 +33,10 @@
 		<Unit filename="GUIMain.hpp" />
 		<Unit filename="IniFile.cpp" />
 		<Unit filename="IniFile.hpp" />
+		<Unit filename="LandObject.cpp" />
+		<Unit filename="LandObject.hpp" />
+		<Unit filename="LandObjects.cpp" />
+		<Unit filename="LandObjects.hpp" />
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />

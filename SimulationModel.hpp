@@ -13,6 +13,7 @@
 #include "Sky.hpp"
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
+#include "LandObjects.hpp"
 #include "OwnShip.hpp"
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
@@ -52,6 +53,7 @@ private:
     OwnShip ownShip;
     OtherShips otherShips;
     Buoys buoys;
+    LandObjects landObjects;
     Camera camera;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
