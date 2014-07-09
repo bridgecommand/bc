@@ -44,7 +44,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         terrain.load(worldPath, smgr);
 
         //add water
-        Water water (smgr);
+        water.load(smgr);
 
         //sky box/dome
         Sky sky (smgr);
@@ -176,6 +176,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //update own ship
         ownShip.update(deltaTime);
+
+        //update water position
+        water.update(camera.getPosition());
 
         //update the camera position
         camera.update();

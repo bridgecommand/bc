@@ -57,6 +57,7 @@ private:
     LandObjects landObjects;
     LandLights landLights;
     Camera camera;
+    Water water;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;

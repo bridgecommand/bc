@@ -6,11 +6,15 @@
 class Water
 {
     public:
-        Water(irr::scene::ISceneManager* smgr);
+        Water();
         virtual ~Water();
+        void load(irr::scene::ISceneManager* smgr);
+        void update(irr::core::vector3df viewPosition);
 
     private:
         irr::scene::ISceneNode* waterNode;
+        irr::f32 tileWidth;
+        irr::s32 round(irr::f32 numberIn);
 };
 
 #endif
