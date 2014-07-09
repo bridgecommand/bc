@@ -251,9 +251,15 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
     }
 }
 
-irr::s32 RadarCalculation::round(irr::f32 numberIn)
+irr::s32 RadarCalculation::round(irr::f32 numberIn) //Fixme: define this in one place
+//Implements round away from zero
 {
-    irr::s32 result = numberIn + 0.5; //Fixme: Check for negative numbers!
+    irr::s32 result;
+    if (numberIn > 0) {
+        result = numberIn + 0.5;
+    } else {
+        result = numberIn - 0.5;
+    }
     return result;
 }
 
