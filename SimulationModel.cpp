@@ -191,10 +191,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
+
         video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
         radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight);
         radarScreen.update(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
+
 
         //send data to gui
         guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getDepth()); //Set GUI heading in degrees and speed (in m/s)
