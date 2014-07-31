@@ -46,9 +46,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
     //calculations just needed for terrain loading
-    irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize-1);//Fixme: Check this for new 2^n+1 terrains
-    irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/255.0;
-    irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize-1);//Fixme: Check this for new 2^n+1 terrains
+    irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);//Fixme: Check this for new 2^n+1 terrains
+    irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
+    irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);//Fixme: Check this for new 2^n+1 terrains
     irr::f32 terrainY = -1*seaMaxDepth;
 
     //Full paths
@@ -71,7 +71,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
 		               5,					// maxLOD
 		               scene::ETPS_17,		// patchSize
-		               4					// smoothFactoespr
+		               0					// smooth Factoespr
                        );
 
     if (terrain==0) {

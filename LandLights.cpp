@@ -36,7 +36,7 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
             f32 lightZ = model->latToZ(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Lat",currentLight)));
             f32 lightY = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Absolute",currentLight)) != 1) {
-                f32 lightY = lightY + terrain.getHeight(lightX,lightZ);
+                lightY = lightY + terrain.getHeight(lightX,lightZ);
             }
 
             f32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
