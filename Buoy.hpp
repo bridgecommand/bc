@@ -14,6 +14,7 @@ class Buoy
         Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr);
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
+        void setPosition(irr::core::vector3df position);
         irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;

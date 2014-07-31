@@ -14,7 +14,7 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 hdg, irr::f32 spd);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 depth);
 
     void drawGUI();
 
@@ -31,6 +31,7 @@ private:
 
     irr::f32 guiHeading;
     irr::f32 guiSpeed;
+    irr::f32 guiDepth;
 
 };
 

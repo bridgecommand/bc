@@ -19,12 +19,12 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
 
         //add heading indicator:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(20,20,120,40), true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(20,20,120,60), true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 depth)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -32,6 +32,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
+        guiDepth = depth;
     }
 
     void GUIMain::drawGUI()
@@ -41,6 +42,8 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         displayText.append(core::stringw(guiHeading));
         displayText.append(L"\nSpeed: ");
         displayText.append(core::stringw(guiSpeed));
+        displayText.append(L"\nDepth: ");
+        displayText.append(core::stringw(guiDepth));
         dataDisplay->setText(displayText.c_str());
 
         guienv->drawAll();

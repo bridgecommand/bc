@@ -30,6 +30,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         scenarioTime = startTime * SECONDS_IN_HOUR;
         accelerator = 1.0;
 
+        //Set initial tide height to zero
+        tideHeight = 0;
+
         if (worldName == "") {
             //Could not load world name from scenario, so end here
             //ToDo: Tell user problem
@@ -54,7 +57,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Load own ship model. (should also initialise speed)
         //speed = 0.0f;
-        ownShip.load(scenarioPath, smgr, this);
+        ownShip.load(scenarioPath, smgr, this, &terrain);
 
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
@@ -163,33 +166,37 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //add this to the scenario time
         scenarioTime += deltaTime;
 
+        //Fixme:
+        //Update tide height here.
+        tideHeight = tideHeight + 0.0*deltaTime;
+
         //update ambient lighting
         light.update(scenarioTime);
         driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update other ship positions etc
-        otherShips.update(deltaTime,scenarioTime,camera.getPosition(),lightLevel); //Update other ship motion (based on leg information), and light visibility.
+        otherShips.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel); //Update other ship motion (based on leg information), and light visibility.
 
         //update buoys (for lights)
-        buoys.update(deltaTime,scenarioTime,camera.getPosition(),lightLevel);
+        buoys.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel);
 
         //update own ship
-        ownShip.update(deltaTime);
+        ownShip.update(deltaTime, tideHeight);
 
         //update water position
-        water.update(camera.getPosition());
+        water.update(tideHeight,camera.getPosition());
 
         //update the camera position
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
         video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
-        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips);
+        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight);
         radarScreen.update(radarImage);
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed()); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getDepth()); //Set GUI heading in degrees and speed (in m/s)
     }
 

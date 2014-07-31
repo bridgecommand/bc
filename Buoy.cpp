@@ -74,6 +74,11 @@ irr::core::vector3df Buoy::getPosition() const
     return buoy->getAbsolutePosition();
 }
 
+void Buoy::setPosition(irr::core::vector3df position)
+{
+    buoy->setPosition(position);
+}
+
 irr::f32 Buoy::getLength() const
 {
     return length;

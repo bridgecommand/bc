@@ -32,13 +32,13 @@ RadarCalculation::~RadarCalculation()
     //dtor
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips)
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight)
 {
-    scan(terrain, ownShip, buoys, otherShips); // scan into scanArray[row (angle)][column (step)]
+    scan(terrain, ownShip, buoys, otherShips, tideHeight); // scan into scanArray[row (angle)][column (step)]
     render(radarImage,10); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight)
 {
     core::vector3df position = ownShip.getPosition();
     irr::f32 radarScannerHeight = 2.0;//Fixme: Hardcoding
@@ -82,7 +82,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
 
             //get height, and adjustment for earth's curvature
             f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
-            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight; //Fixme: Need to account for tides here when included
+            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight; //Fixme: Need to account for tides here when included
 
             f32 localSlope = radarHeight/localRange;
             //Find height above previous maximum scan slope

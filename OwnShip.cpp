@@ -10,8 +10,10 @@
 
 using namespace irr;
 
-void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain)
 {
+    //Store reference to terrain
+    this->terrain = terrain;
 
     //construct scenario ownship.ini filename
     std::string scenarioOwnShipFilename = scenarioName;
@@ -86,18 +88,27 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     }
 }
 
-void OwnShip::update(irr::f32 deltaTime)
+void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
     //move, according to heading and speed
     xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;
     zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
+    yPos = tideHeight;
 
     //Set position & speed by calling own ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
     setRotation(core::vector3df(0, hdg, 0)); //Global vectors
+
+}
+
+irr::f32 OwnShip::getDepth()
+{
+    return -1*terrain->getHeight(xPos,zPos)+getPosition().Y; //Fixme: Will need to be adjusted with tides
 }
 
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {
     return views;
 }
+
+

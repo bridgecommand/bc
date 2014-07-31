@@ -56,14 +56,14 @@ void Water::load(irr::scene::ISceneManager* smgr)
     waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 }
 
-void Water::update(irr::core::vector3df viewPosition)
+void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition)
 {
     //Update water so it's always seen from our position
     core::vector3df localOriginPosition = viewPosition;
 
     //Round these to nearest segmentWidth
     f32 xPos = tileWidth * round(viewPosition.X/tileWidth);
-    f32 yPos = 0.0;
+    f32 yPos = tideHeight;
     f32 zPos = tileWidth * round(viewPosition.Z/tileWidth);
 
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos)); //Initially just move with the camera

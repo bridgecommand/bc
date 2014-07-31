@@ -49,6 +49,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     irr::f32 accelerator;
+    irr::f32 tideHeight;
     Terrain terrain;
     Light light;
     OwnShip ownShip;
