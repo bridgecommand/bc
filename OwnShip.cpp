@@ -103,7 +103,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 
 irr::f32 OwnShip::getDepth()
 {
-    return -1*terrain->getHeight(xPos,zPos)+getPosition().Y; //Fixme: Will need to be adjusted with tides
+    return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
 }
 
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const

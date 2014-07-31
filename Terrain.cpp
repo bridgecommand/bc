@@ -46,9 +46,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
     //calculations just needed for terrain loading
-    irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);//Fixme: Check this for new 2^n+1 terrains
+    irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
     irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
-    irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);//Fixme: Check this for new 2^n+1 terrains
+    irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
     irr::f32 terrainY = -1*seaMaxDepth;
 
     //Full paths
@@ -62,16 +62,16 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
 
     terrain = smgr->addTerrainSceneNode(
-                       heightMapPath.c_str(), //FIXME: Load from specified file
-                       0,					// parent node
-                       -1,					// node id
+                       heightMapPath.c_str(),//Height map file: Note this should normally be .png - avoid .bmp because of odd irrlicht handling.
+                       0,					 // parent node
+                       -1,					 // node id
 		               core::vector3df(0.f, terrainY, 0.f),		// position
 		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation required for irrlicht terrain loading)
 		               core::vector3df(scaleX,scaleY,scaleZ),	// scale
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
 		               5,					// maxLOD
 		               scene::ETPS_17,		// patchSize
-		               0					// smooth Factoespr
+		               0					// smooth factor
                        );
 
     if (terrain==0) {
@@ -82,8 +82,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
-    terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str())); //FIXME: Load from specified file
-
+    terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
 }
 
 irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates

@@ -168,7 +168,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Fixme:
         //Update tide height here.
-        tideHeight = tideHeight + 0.0*deltaTime;
+        tideHeight = tideHeight + 0.00*deltaTime;
 
         //update ambient lighting
         light.update(scenarioTime);

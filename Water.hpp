@@ -14,7 +14,6 @@ class Water
     private:
         irr::scene::ISceneNode* waterNode;
         irr::f32 tileWidth;
-        irr::s32 round(irr::f32 numberIn);
 };
 
 #endif

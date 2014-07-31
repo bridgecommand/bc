@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Water.hpp"
+#include "Utilities.hpp"
 
 using namespace irr;
 
@@ -62,26 +63,10 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition)
     core::vector3df localOriginPosition = viewPosition;
 
     //Round these to nearest segmentWidth
-    f32 xPos = tileWidth * round(viewPosition.X/tileWidth);
+    f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
     f32 yPos = tideHeight;
-    f32 zPos = tileWidth * round(viewPosition.Z/tileWidth);
+    f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos)); //Initially just move with the camera
 
-    //FIXME: To do:
-    //Make 9 meshes, which will only move by one width at a time, so we're always on the central mesh
-
-
-}
-
-irr::s32 Water::round(irr::f32 numberIn) //Fixme: define this in one place
-//Implements round away from zero
-{
-    irr::s32 result;
-    if (numberIn > 0) {
-        result = numberIn + 0.5;
-    } else {
-        result = numberIn - 0.5;
-    }
-    return result;
 }

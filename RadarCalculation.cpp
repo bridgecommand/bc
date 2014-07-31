@@ -61,7 +61,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     irr::u32 scansPerLoop = 3; //Fixme: Change this to get a constant configurable scan rate (within reason)
     for(int i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
         f32 scanSlope = 0.0; //Slope at start of scan
-        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) { //Fixme: hardcoding
+        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) {
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Clear old value
@@ -82,14 +82,14 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
 
             //get height, and adjustment for earth's curvature
             f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
-            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight; //Fixme: Need to account for tides here when included
+            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight;
 
             f32 localSlope = radarHeight/localRange;
             //Find height above previous maximum scan slope
             f32 heightAboveLine = radarHeight - scanSlope*localRange;
 
             //Scan other contacts here
-            //Fixme: trial implementation
+            //Fixme: Implementation needs completing later for ARPA to check if contact is detectable against clutter
             for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
                 //if( std::abs(it->relX-relX)<50.0 && std::abs(it->relZ-relZ)<50.0 ) {scanArray[currentScanAngle][currentStep] = 1.0;}
                 f32 contactHeightAboveLine = (it->height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
@@ -249,18 +249,6 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
             }
         }
     }
-}
-
-irr::s32 RadarCalculation::round(irr::f32 numberIn) //Fixme: define this in one place
-//Implements round away from zero
-{
-    irr::s32 result;
-    if (numberIn > 0) {
-        result = numberIn + 0.5;
-    } else {
-        result = numberIn - 0.5;
-    }
-    return result;
 }
 
 irr::f32 RadarCalculation::rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading)

@@ -9,6 +9,7 @@
 namespace Utilities
 {
     void to_lower(std::string& toConvert);
+    signed int round(float numberIn);
 
     template <typename T, typename U>
     T lexical_cast(U in)
