@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "RadarScreen.hpp"
 #include <iostream>
 
@@ -24,11 +22,6 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
     radarScreen->setSize(core::dimension2d<f32>(0.5f, 0.5f)); //FIXME: Hardcoded size
     this->parent = parent;
     this->offset = offset;
-
-    //add an initial texture to the screen
-    video::IImage * radarImage = driver->createImage (video::ECF_A1R5G5B5, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
-    radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
-    radarImage->drop();
 }
 
 void RadarScreen::update(video::IImage* radarImage)
@@ -46,15 +39,17 @@ void RadarScreen::update(video::IImage* radarImage)
     //move screen
     radarScreen->setPosition(parent->getPosition() + offsetTransformed);
 
-    //Drop old texture if present
+    //Get old texture if it exists
+    video::ITexture* oldTexture = 0;
     if (radarScreen->getMaterialCount()>0) {
-        video::ITexture* oldTexture = radarScreen->getMaterial(0).getTexture(0);
-        if (oldTexture!=0) {
-            oldTexture->drop();
-        }
+        oldTexture = radarScreen->getMaterial(0).getTexture(0);
     }
     //make texture from image and apply to the screen
     radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
+    //Remove old texture if it exists
+    if (oldTexture!=0) {
+            driver->removeTexture(oldTexture);
+    }
 
 }
 
