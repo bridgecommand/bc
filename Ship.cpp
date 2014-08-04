@@ -1,7 +1,4 @@
 //Parent class for own and other ships - not used un-extended
-
-#include "irrlicht.h"
-
 #include "Ship.hpp"
 
 #include "Constants.hpp"

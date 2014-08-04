@@ -1,7 +1,4 @@
 //Extends from the general 'Ship' class
-
-#include "irrlicht.h"
-
 #include "OwnShip.hpp"
 
 #include "Constants.hpp"

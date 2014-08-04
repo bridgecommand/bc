@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "OtherShips.hpp"
 
 #include "Constants.hpp"

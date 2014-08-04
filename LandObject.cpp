@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "LandObject.hpp"
 #include "IniFile.hpp"
 

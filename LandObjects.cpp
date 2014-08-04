@@ -1,6 +1,3 @@
-
-#include "irrlicht.h"
-
 #include "LandObjects.hpp"
 
 #include "LandObject.hpp"

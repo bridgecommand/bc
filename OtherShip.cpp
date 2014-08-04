@@ -1,7 +1,4 @@
 //Extends from the general 'Ship' class
-
-#include "irrlicht.h"
-
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "RadarData.hpp"

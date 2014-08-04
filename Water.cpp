@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include <vector>
 
 #include "Water.hpp"

@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "Sky.hpp"
 
 using namespace irr;

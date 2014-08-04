@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "Terrain.hpp"
 
 #include "IniFile.hpp"

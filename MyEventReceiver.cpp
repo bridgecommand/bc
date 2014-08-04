@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "MyEventReceiver.hpp"
 
 #include <iostream>

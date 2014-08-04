@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "LandLights.hpp"
 
 #include "NavLight.hpp"

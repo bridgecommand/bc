@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "Buoy.hpp"
 #include "RadarData.hpp"
 #include "Angles.hpp"

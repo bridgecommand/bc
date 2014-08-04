@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "RadarCalculation.hpp"
 
 #include "Terrain.hpp"

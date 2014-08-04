@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "GUIMain.hpp"
 
 #include "Constants.hpp"

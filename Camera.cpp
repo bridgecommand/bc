@@ -1,5 +1,3 @@
-#include "irrlicht.h"
-
 #include "Camera.hpp"
 
 #include <cmath>
