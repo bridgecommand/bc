@@ -17,10 +17,13 @@ int main()
 
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0);
-    device->setWindowCaption(L"Bridge Command 5.Alpha - Irrlicht test example");
+    device->setWindowCaption(L"Bridge Command 5.0 Alpha");
 
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
+
+    //Choose scenario
+    std::string scenarioName = "a) Buoyage";
 
     //create GUI
     GUIMain guiMain(device);
@@ -29,7 +32,7 @@ int main()
     std::srand(device->getTimer()->getTime());
 
     //Create simulation model
-    SimulationModel model (device, smgr, &guiMain); //Add link to gui
+    SimulationModel model (device, smgr, &guiMain, scenarioName);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(&model, &guiMain);

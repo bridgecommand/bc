@@ -3,7 +3,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -12,7 +12,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         guiMain = gui;
 
         //set scenario to load (will be read in from user) //fixme hardcoded
-        std::string scenarioName = "a) Buoyage";
+        //std::string scenarioName = "a) Buoyage";
         //std::string worldName = "SimpleEstuary";
 
         //construct path to scenario
