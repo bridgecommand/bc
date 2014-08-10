@@ -10,6 +10,7 @@
 #include "Terrain.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
+#include "Tide.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
@@ -59,6 +60,7 @@ private:
     LandLights landLights;
     Camera camera;
     Water water;
+    Tide tide;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;

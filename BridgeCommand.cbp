@@ -67,6 +67,8 @@
 		<Unit filename="Sky.hpp" />
 		<Unit filename="Terrain.cpp" />
 		<Unit filename="Terrain.hpp" />
+		<Unit filename="Tide.cpp" />
+		<Unit filename="Tide.hpp" />
 		<Unit filename="Utilities.cpp" />
 		<Unit filename="Utilities.hpp" />
 		<Unit filename="Water.cpp" />

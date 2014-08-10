@@ -73,6 +73,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load land lights
         landLights.load(worldPath, smgr, this, terrain);
 
+        //Load tidal information
+        tide.load(worldPath);
+
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(smgr,camera.getSceneNode(),radarOffset);
@@ -164,9 +167,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //add this to the scenario time
         scenarioTime += deltaTime;
 
-        //Fixme:
         //Update tide height here.
-        tideHeight = tideHeight + 0.00*deltaTime;
+        tide.update(scenarioTime);
+        tideHeight = tide.getTideHeight();
 
         //update ambient lighting
         light.update(scenarioTime);
