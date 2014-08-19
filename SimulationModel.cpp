@@ -1,5 +1,7 @@
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
+#include "Utilities.hpp"
+#include <ctime>
 
 using namespace irr;
 
@@ -24,9 +26,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         environmentIniFilename.append("/environment.ini");
         std::string worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
         irr::f32 startTime = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
+        irr::u32 startDay=IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+        irr::u32 startMonth=IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+        irr::u32 startYear=IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+
+        //Fixme: Think about time zone handling
+        //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
+        scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+
         //set internal scenario time to start
         scenarioTime = startTime * SECONDS_IN_HOUR;
-        accelerator = 1.0;
+
+        //Start paused initially
+        accelerator = 0.0;
 
         //Set initial tide height to zero
         tideHeight = 0;
@@ -166,6 +178,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //add this to the scenario time
         scenarioTime += deltaTime;
+        absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
 
         //Update tide height here.
         tide.update(scenarioTime);
@@ -198,6 +211,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getDepth()); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getDepth(),Utilities::timestampToString(absoluteTime)); //Set GUI heading in degrees and speed (in m/s)
     }
 

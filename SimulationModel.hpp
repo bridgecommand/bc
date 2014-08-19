@@ -69,7 +69,9 @@ private:
     irr::u32 currentTime; //Computer clock time
     irr::u32 previousTime; //Computer clock time
     irr::f32 deltaTime;
-    irr::f32 scenarioTime; //Simulation internal time, starting at zero at start of simulation
+    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+    irr::u64 scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+    irr::u64 absoluteTime; //Unix timestamp for current time, including start day
 
 };
 #endif

@@ -22,7 +22,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         guiSpeed = 0;
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 depth)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 depth, std::string currentTime)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -31,6 +31,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
         guiDepth = depth;
+        guiTime = currentTime;
     }
 
     void GUIMain::drawGUI()
@@ -42,6 +43,8 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         displayText.append(core::stringw(guiSpeed));
         displayText.append(L"\nDepth: ");
         displayText.append(core::stringw(guiDepth));
+        displayText.append(L"\n");
+        displayText.append(core::stringw(guiTime.c_str()));
         dataDisplay->setText(displayText.c_str());
 
         guienv->drawAll();

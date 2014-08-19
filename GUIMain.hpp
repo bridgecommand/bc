@@ -3,6 +3,8 @@
 
 #include "irrlicht.h"
 
+#include <string>
+
 class GUIMain //Create, build and update GUI
 {
 public:
@@ -14,7 +16,7 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 depth);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 depth, std::string currentTime);
 
     void drawGUI();
 
@@ -32,6 +34,7 @@ private:
     irr::f32 guiHeading;
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
+    std::string guiTime;
 
 };
 
