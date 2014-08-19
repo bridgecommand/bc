@@ -4,6 +4,7 @@
 
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
+#include "StartupEventReceiver.hpp"
 #include "MyEventReceiver.hpp"
 #include "Network.hpp"
 
@@ -51,31 +52,6 @@ void getScenarioList(std::vector<std::string>&scenarioList, std::string scenario
     fileList->drop();
 }
 
-std::string getScenarioName(std::string scenarioPath, IrrlichtDevice* device) {
-    std::string scenarioName = "";
-    std::vector<std::string> scenarioList;
-    getScenarioList(scenarioList,scenarioPath, device);
-    u32 scenarioInList = 1;
-    for(std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
-        std::cout << "Scenario " << scenarioInList << ": " << *it << std::endl;
-        scenarioInList++;
-    }
-    //Ask user to choose a scenario.
-    u32 chosenScenario = 0;
-    std::string tempInput = "";
-    if (scenarioList.size()>0) {
-        while (chosenScenario==0 || chosenScenario > scenarioList.size()) {
-            std::cout << "Please choose a scenario: ";
-            getline(std::cin,tempInput); //Read response into string
-            std::stringstream myStream(tempInput);
-            if (!(myStream >> chosenScenario)) {chosenScenario=0;} //Convert to int, or make sure it's 0 if failed.
-        }
-    scenarioName = scenarioList[chosenScenario-1];
-    }
-    return scenarioName;
-
-}
-
 int main()
 {
 
@@ -87,14 +63,34 @@ int main()
     scene::ISceneManager* smgr = device->getSceneManager();
 
     //Choose scenario
-    std::string scenarioName = getScenarioName("Scenarios/",device); //Fixme: Scenarios path duplicated here and in SimulationModel
-    //std::cout << "Chosen scenario \"" << scenarioName << "\""<<std::endl;
-
-    //create GUI
-    GUIMain guiMain(device);
+    std::vector<std::string> scenarioList;
+    getScenarioList(scenarioList,"Scenarios/", device); //Populate list //Fixme: Scenarios path duplicated here and in SimulationModel
+    const s32 LISTBOXID = 10; //Fixme
+    const s32 OKBUTTONID = 11;
+    gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(10,10,110,210),0,LISTBOXID);
+    gui::IGUIButton* okButton = device->getGUIEnvironment()->addButton(core::rect<s32>(10,220,110,240),0,OKBUTTONID,L"OK");
+    for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
+        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme!
+    }
+    StartupEventReceiver startupReceiver(scenarioListBox,LISTBOXID,OKBUTTONID);
+    device->setEventReceiver(&startupReceiver);
+    while(device->run() && startupReceiver.getScenarioSelected()==-1) {
+        if (device->isWindowActive())
+        {
+            driver->beginScene(true, true, video::SColor(0,200,200,200));
+            device->getGUIEnvironment()->drawAll();
+            driver->endScene();
+        }
+    }
+    scenarioListBox->remove();
+    okButton->remove();
+    std::string scenarioName = scenarioList[startupReceiver.getScenarioSelected()];
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
+
+    //create GUI
+    GUIMain guiMain(device);
 
     //Create simulation model
     SimulationModel model (device, smgr, &guiMain, scenarioName);

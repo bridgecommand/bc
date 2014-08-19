@@ -65,6 +65,8 @@
 		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="Sky.cpp" />
 		<Unit filename="Sky.hpp" />
+		<Unit filename="StartupEventReceiver.cpp" />
+		<Unit filename="StartupEventReceiver.hpp" />
 		<Unit filename="Terrain.cpp" />
 		<Unit filename="Terrain.hpp" />
 		<Unit filename="Tide.cpp" />
