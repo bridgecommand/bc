@@ -62,13 +62,14 @@ int main()
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
 
-    //Choose scenario
+    //Choose scenario: Fixme: This should move to a new StartupDialog class, with a method StartupDialog.chooseScenario() that returns the selected scenario.
+
     std::vector<std::string> scenarioList;
     getScenarioList(scenarioList,"Scenarios/", device); //Populate list //Fixme: Scenarios path duplicated here and in SimulationModel
-    const s32 LISTBOXID = 10; //Fixme
+    const s32 LISTBOXID = 10; //Fixme - should be an enum?
     const s32 OKBUTTONID = 11;
     gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(10,10,110,210),0,LISTBOXID);
-    gui::IGUIButton* okButton = device->getGUIEnvironment()->addButton(core::rect<s32>(10,220,110,240),0,OKBUTTONID,L"OK");
+    gui::IGUIButton* okButton = device->getGUIEnvironment()->addButton(core::rect<s32>(10,220,110,240),0,OKBUTTONID,L"OK"); //i18n?
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme!
     }
@@ -82,9 +83,17 @@ int main()
             driver->endScene();
         }
     }
-    scenarioListBox->remove();
-    okButton->remove();
+    scenarioListBox->remove(); scenarioListBox = 0;
+    okButton->remove(); okButton = 0;
     std::string scenarioName = scenarioList[startupReceiver.getScenarioSelected()];
+
+    //Show loading message
+    gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(L"Loading...", core::rect<s32>(10,10,210,20)); //i18n
+    device->run();
+    driver->beginScene(true, true, video::SColor(0,200,200,200));
+    device->getGUIEnvironment()->drawAll();
+    driver->endScene();
+    loadingMessage->remove(); loadingMessage = 0;
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());

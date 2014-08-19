@@ -11,8 +11,6 @@ public:
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected();
-    //irr::s32 GetScrollBarPosSpeed() const;
-    //irr::s32 GetScrollBarPosHeading() const;
 
 private:
 

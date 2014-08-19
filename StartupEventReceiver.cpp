@@ -9,8 +9,7 @@ using namespace irr;
 		this->scenarioListBox = scenarioListBox;
 		this->listBoxID = listBoxID;
 		this->okButtonID = okButtonID;
-		scenarioSelected = -1;
-		std::cout << "Created startup event receiver: " << this << std::endl;
+		scenarioSelected = -1; //Set as initially invalid
 	}
 
     bool StartupEventReceiver::OnEvent(const SEvent& event)
@@ -24,11 +23,8 @@ using namespace irr;
                     scenarioSelected = scenarioListBox->getSelected();
                 }
             }
-
 		}
-
         return false;
-
     }
 
     irr::s32 StartupEventReceiver::getScenarioSelected()
