@@ -59,6 +59,8 @@
 		<Unit filename="RadarData.hpp" />
 		<Unit filename="RadarScreen.cpp" />
 		<Unit filename="RadarScreen.hpp" />
+		<Unit filename="ScenarioChoice.cpp" />
+		<Unit filename="ScenarioChoice.hpp" />
 		<Unit filename="Ship.cpp" />
 		<Unit filename="Ship.hpp" />
 		<Unit filename="SimulationModel.cpp" />
