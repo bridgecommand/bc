@@ -17,9 +17,10 @@ using namespace irr;
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
-            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED  )
+			//If OK button, or double click on list
+            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
-                if (id == okButtonID && scenarioListBox->getSelected() > -1 ) {
+                if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
             }
