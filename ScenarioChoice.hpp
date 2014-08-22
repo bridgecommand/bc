@@ -14,6 +14,7 @@ public:
 private:
     void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);
     irr::IrrlichtDevice* device;
+    irr::gui::IGUIEnvironment* gui;
 
 };
 

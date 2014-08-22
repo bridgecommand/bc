@@ -28,7 +28,7 @@ using namespace irr;
         return false;
     }
 
-    irr::s32 StartupEventReceiver::getScenarioSelected()
+    irr::s32 StartupEventReceiver::getScenarioSelected() const
     {
         return scenarioSelected;
     }

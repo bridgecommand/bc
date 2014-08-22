@@ -10,7 +10,7 @@ public:
     StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::s32 listBoxID, irr::s32 okButtonID);
     bool OnEvent(const irr::SEvent& event);
 
-    irr::s32 getScenarioSelected();
+    irr::s32 getScenarioSelected() const;
 
 private:
 
