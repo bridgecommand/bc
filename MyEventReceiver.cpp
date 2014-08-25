@@ -36,6 +36,15 @@ using namespace irr;
                         model->setSpeed(scrollBarPosSpeed);
                   }
             }
+
+            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
+                if (id == GUIMain::GUI_ID_START_BUTTON)
+                {
+                    model->setAccelerator(1.0);
+                }
+            }
+
+
         }
 
         //From keyboard

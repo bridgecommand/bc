@@ -16,6 +16,12 @@ private:
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* gui;
 
+    enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
+    {
+        GUI_ID_SCENARIO_LISTBOX = 101,
+        GUI_ID_OK_BUTTON
+    };
+
 };
 
 #endif
