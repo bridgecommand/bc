@@ -65,3 +65,9 @@ irr::u32 LandLights::getNumber() const
     return landLights.size();
 }
 
+void LandLights::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    for(std::vector<NavLight>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
+        it->moveNode(deltaX,deltaY,deltaZ);
+    }
+}

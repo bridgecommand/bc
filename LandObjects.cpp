@@ -58,3 +58,11 @@ irr::u32 LandObjects::getNumber() const
 {
     return landObjects.size();
 }
+
+void LandObjects::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    for(std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
+        it->moveNode(deltaX,deltaY,deltaZ);
+    }
+}
+

@@ -104,3 +104,14 @@ irr::u32 Buoys::getNumber() const
 {
     return buoys.size();
 }
+
+void Buoys::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
+        it->moveNode(deltaX,deltaY,deltaZ);
+    }
+
+    for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
+        it->moveNode(deltaX,deltaY,deltaZ);
+    }
+}

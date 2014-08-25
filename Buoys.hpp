@@ -21,6 +21,7 @@ class Buoys
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
+        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
         std::vector<Buoy> buoys;

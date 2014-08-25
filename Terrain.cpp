@@ -1,3 +1,6 @@
+//NOTE: This uses a modified version of Irrlicht for terrain loading, which loads the terrain natively rotated
+//180 degrees compared to standard Irrlicht 1.8.1.
+
 #include "Terrain.hpp"
 
 #include "IniFile.hpp"
@@ -64,7 +67,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
                        0,					 // parent node
                        -1,					 // node id
 		               core::vector3df(0.f, terrainY, 0.f),		// position
-		               core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation required for irrlicht terrain loading)
+		               //core::vector3df(0.f, 180.f, 0.f),		// rotation (NOTE 180 deg rotation required for irrlicht terrain loading) - Also set in .moveNode method
+                       core::vector3df(0.f, 0.f, 0.f),		// rotation (0 using modified irrlicht, which loads terrain 180deg rotated to standard irrlicht)
 		               core::vector3df(scaleX,scaleY,scaleZ),	// scale
 		               video::SColor ( 255, 255, 255, 255 ),	// vertexColor
 		               5,					// maxLOD
@@ -85,9 +89,10 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
 irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
 {
-    irr::f32 localX = x-terrainXWidth; //Needed due to 180 degree rotation of the terrain
-    irr::f32 localZ = z-terrainZWidth; //Needed due to 180 degree rotation of the terrain
-    return terrain->getHeight(localX,localZ);
+    //irr::f32 localX = x-terrainXWidth; //Needed due to 180 degree rotation of the terrain
+    //irr::f32 localZ = z-terrainZWidth; //Needed due to 180 degree rotation of the terrain
+    //return terrain->getHeight(localX,localZ);
+    return terrain->getHeight(x,z);
 }
 
 irr::f32 Terrain::longToX(irr::f32 longitude) const
@@ -98,4 +103,14 @@ irr::f32 Terrain::longToX(irr::f32 longitude) const
 irr::f32 Terrain::latToZ(irr::f32 latitude) const
 {
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+}
+
+void Terrain::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    core::vector3df currentPos = terrain->getPosition();
+    irr::f32 newPosX = currentPos.X + deltaX;
+    irr::f32 newPosY = currentPos.Y + deltaY;
+    irr::f32 newPosZ = currentPos.Z + deltaZ;
+
+    terrain->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
 }

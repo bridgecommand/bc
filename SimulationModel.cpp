@@ -65,8 +65,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make ambient light
         light.load(smgr);
 
-        //Load own ship model. (should also initialise speed)
-        //speed = 0.0f;
+        //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
 
         //make a camera, setting parent and offset
@@ -91,6 +90,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make a radar screen, setting parent and offset from camera (could also be from own ship)
         core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(smgr,camera.getSceneNode(),radarOffset);
+
+        //initialise offset
+        offsetPosition = core::vector3d<u64>(0,0,0);
 
         //store time
         previousTime = device->getTimer()->getTime();
@@ -200,6 +202,29 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //update water position
         water.update(tideHeight,camera.getPosition());
+
+        //Normalise positions if required (More than 2000 metres from origin)
+        if(ownShip.getPosition().getLength() > 2000) {
+            core::vector3df ownShipPos = ownShip.getPosition();
+            irr::s32 deltaX = -1*(s32)ownShipPos.X;
+            irr::s32 deltaZ = -1*(s32)ownShipPos.Z;
+            //Round to nearest 1000 metres - water tile width, to avoid jumps
+            deltaX = 1000.0*Utilities::round(deltaX/1000.0);
+            deltaZ = 1000.0*Utilities::round(deltaZ/1000.0);
+
+            //Move all objects
+            ownShip.moveNode(deltaX,0,deltaZ);
+            terrain.moveNode(deltaX,0,deltaZ);
+            otherShips.moveNode(deltaX,0,deltaZ);
+            buoys.moveNode(deltaX,0,deltaZ);
+            landObjects.moveNode(deltaX,0,deltaZ);
+            landLights.moveNode(deltaX,0,deltaZ);
+
+            //Change stored offset
+            offsetPosition.X -= deltaX;
+            offsetPosition.Z -= deltaZ;
+            std::cout << "Normalised, offset X: " << offsetPosition.X << " Z: " << offsetPosition.Z <<std::endl;
+        }
 
         //update the camera position
         camera.update();

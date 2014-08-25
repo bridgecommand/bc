@@ -22,6 +22,7 @@ class Ship
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
         irr::f32 getSpeed() const;
+        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     protected:
 

@@ -92,3 +92,10 @@ irr::u32 OtherShips::getNumber() const
 {
     return otherShips.size();
 }
+
+void OtherShips::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        it->moveNode(deltaX,deltaY,deltaZ);
+    }
+}

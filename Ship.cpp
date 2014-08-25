@@ -53,6 +53,14 @@ irr::f32 Ship::getSpeed() const
     return spd;
 }
 
+void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    xPos += deltaX;
+    yPos += deltaY;
+    zPos += deltaZ;
+    setPosition(core::vector3df(xPos,yPos,zPos));
+}
+
 //////////////////////////
 //Private member functions (Protected in superclass)
 //////////////////////////

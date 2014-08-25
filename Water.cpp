@@ -1,3 +1,6 @@
+//NOTE: This uses a modified version of Irrlicht for the water surface scene node, which bases the waves
+//on the absolute position, so you can tile multiple water nodes seamlessly.
+
 #include <vector>
 
 #include "Water.hpp"
@@ -20,7 +23,7 @@ void Water::load(irr::scene::ISceneManager* smgr)
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
     //Set tile width
-    tileWidth = 1000; //Width in metres
+    tileWidth = 1000; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
     irr::u32 segments = 10; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 

@@ -73,5 +73,8 @@ private:
     irr::u64 scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     irr::u64 absoluteTime; //Unix timestamp for current time, including start day
 
+    //Offset position handling
+    irr::core::vector3d<irr::u64> offsetPosition;
+
 };
 #endif

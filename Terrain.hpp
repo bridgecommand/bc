@@ -14,6 +14,7 @@ class Terrain
         irr::f32 longToX(irr::f32 longitude) const;
         irr::f32 latToZ(irr::f32 latitude) const;
         irr::f32 getHeight(irr::f32 x, irr::f32 z) const;
+        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
         irr::scene::ITerrainSceneNode* terrain;

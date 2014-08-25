@@ -61,3 +61,13 @@ irr::core::vector3df LandObject::getPosition() const
     landObject->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
     return landObject->getAbsolutePosition();
 }
+
+void LandObject::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    core::vector3df currentPos = landObject->getPosition();
+    irr::f32 newPosX = currentPos.X + deltaX;
+    irr::f32 newPosY = currentPos.Y + deltaY;
+    irr::f32 newPosZ = currentPos.Z + deltaZ;
+
+    landObject->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+}

@@ -120,4 +120,14 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
             return false;
     };
     return true;
-};
+}
+
+void NavLight::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    core::vector3df currentPos = lightNode->getPosition();
+    irr::f32 newPosX = currentPos.X + deltaX;
+    irr::f32 newPosY = currentPos.Y + deltaY;
+    irr::f32 newPosZ = currentPos.Z + deltaZ;
+
+    lightNode->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+}
