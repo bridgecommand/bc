@@ -25,6 +25,13 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
     hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
+    //Start in engine control mode
+    controlMode = MODE_ENGINE;
+    //Fixme: These should be set from speed
+    portEngine = 0;
+    stbdEngine = 0;
+    rudder = 0;
+
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";
     shipIniFilename.append(ownShipName);
@@ -85,8 +92,34 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     }
 }
 
+void OwnShip::setRudder(irr::f32 rudder)
+{
+    controlMode = MODE_ENGINE; //Switch to engine and rudder mode
+    //Set the rudder (-ve is port, +ve is stbd)
+    this->rudder = rudder;
+}
+
+void OwnShip::setPortEngine(irr::f32 port)
+{
+    controlMode = MODE_ENGINE; //Switch to engine and rudder mode
+    portEngine = -1*port/100.0; //+-100 to +-1, inverting sign, as -ve is at top of slider
+}
+
+void OwnShip::setStbdEngine(irr::f32 stbd)
+{
+    controlMode = MODE_ENGINE; //Switch to engine and rudder mode
+    stbdEngine = -1*stbd/100.0; //+-100 to +-1, inverting sign, as -ve is at top of slider
+}
+
 void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
+    if (controlMode == MODE_ENGINE) {
+        //Update spd and hdg with rudder and engine controls
+        //Fixme:: Put proper dynamics here!
+        hdg += rudder*deltaTime*0.1;
+        spd += (portEngine + stbdEngine)*deltaTime*0.1;
+    }
+
     //move, according to heading and speed
     xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;
     zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;

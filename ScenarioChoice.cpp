@@ -19,13 +19,16 @@ std::string ScenarioChoice::chooseScenario()
     std::vector<std::string> scenarioList;
     getScenarioList(scenarioList,"Scenarios/"); //Populate list //Fixme: Scenarios path duplicated here and in SimulationModel
 
+    //Get screen width
+    u32 su = driver->getScreenSize().Width;
+
     //Make gui elements
     core::stringw titleText = L"Bridge Command 5.0 Alpha 1"; //Fixme: Get version automatically
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(10,30,110,230),0,GUI_ID_SCENARIO_LISTBOX);
-    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(10,240,110,260),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?
-    gui::IGUIStaticText* instruction = gui->addStaticText(L"Please choose a scenario:",core::rect<s32>(10,10,110, 30)); //i18n
-    gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((800-titleDimensions.Width)/2, 10, (800+titleDimensions.Width)/2, 30)); //FIXME: Hardcoding for window width 800
+    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.05*su,0.18*su,0.30*su),0,GUI_ID_SCENARIO_LISTBOX);
+    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.31*su,0.18*su,0.36*su),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?
+    gui::IGUIStaticText* instruction = gui->addStaticText(L"Please choose a scenario:",core::rect<s32>(0.02*su,0.02*su,0.18*su, 0.05*su)); //i18n
+    gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 10, (su+titleDimensions.Width)/2, 30));
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme!

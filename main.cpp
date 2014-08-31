@@ -7,6 +7,7 @@
 #include "ScenarioChoice.hpp"
 #include "MyEventReceiver.hpp"
 #include "Network.hpp"
+#include "IniFile.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -18,8 +19,15 @@ using namespace irr;
 int main()
 {
 
+    //Read basic ini settings
+    std::string iniFilename = "bc4.ini";
+    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+
     //create device
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0);
+    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     device->setWindowCaption(L"Bridge Command 5.0 Alpha");
 
     video::IVideoDriver* driver = device->getVideoDriver();

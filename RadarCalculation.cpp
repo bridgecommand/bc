@@ -21,13 +21,37 @@ RadarCalculation::RadarCalculation()
 
     currentScanAngle=0;
 
-    cellLength = 20; //Fixme: This needs to change with radar range
+    radarRangeNm = 1.0; //Fixme: This needs to change with radar range
+    //cellLength = M_IN_NM*radarRangeNm/rangeResolution;
     scanAngleStep=2;
 }
 
 RadarCalculation::~RadarCalculation()
 {
     //dtor
+}
+
+void RadarCalculation::decreaseRange()
+{
+    radarRangeNm = radarRangeNm - 0.5;
+    if (radarRangeNm < 0.5)
+    {
+        radarRangeNm = 0.5;
+    }
+}
+
+void RadarCalculation::increaseRange()
+{
+    radarRangeNm = radarRangeNm + 0.5;
+    if (radarRangeNm > 12.0)
+    {
+        radarRangeNm = 12.0;
+    }
+}
+
+irr::f32 RadarCalculation::getRangeNm() const
+{
+    return radarRangeNm;
 }
 
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
@@ -44,6 +68,9 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     //Some tuning parameters
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
+
+    //Convert range to cell size
+    irr::f32 cellLength = M_IN_NM*radarRangeNm/rangeResolution;
 
     //Load radar data for other contacts
     std::vector<RadarData> radarData;
@@ -65,6 +92,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
 
             //Clear old value
             scanArray[currentScanAngle][currentStep] = 0.0;
+
 
             //Get location of area being scanned
             f32 localRange = cellLength*currentStep;

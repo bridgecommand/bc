@@ -35,6 +35,19 @@ using namespace irr;
                         scrollBarPosSpeed = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
                         model->setSpeed(scrollBarPosSpeed);
                   }
+
+              if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
+                  {
+                        model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
+              if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
+                  {
+                        model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
+              if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
+                  {
+                        model->setRudder(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
@@ -42,6 +55,17 @@ using namespace irr;
                 {
                     model->setAccelerator(1.0);
                 }
+
+                if (id == GUIMain::GUI_ID_RADAR_INCREASE_BUTTON)
+                {
+                    model->increaseRadarRange();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_DECREASE_BUTTON)
+                {
+                    model->decreaseRadarRange();
+                }
+
             }
 
 

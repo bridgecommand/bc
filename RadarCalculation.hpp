@@ -15,7 +15,9 @@ class RadarCalculation
     public:
         RadarCalculation();
         virtual ~RadarCalculation();
-        //void loadRadarCalculation();
+        void increaseRange();
+        void decreaseRange();
+        irr::f32 getRangeNm() const;
         void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime);
 
     private:
@@ -23,7 +25,7 @@ class RadarCalculation
         irr::s32 currentScanAngle;
         irr::u32 scanAngleStep;
         irr::u32 rangeResolution;
-        irr::f32 cellLength;
+        irr::f32 radarRangeNm;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime);
         void render(irr::video::IImage * radarImage, irr::f32 amplification);
         irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);

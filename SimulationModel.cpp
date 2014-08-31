@@ -129,6 +129,24 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         return(ownShip.getHeading());
     }
 
+    void SimulationModel::setRudder(irr::f32 rudder)
+    {
+        //Set the rudder (-ve is port, +ve is stbd)
+        ownShip.setRudder(rudder);
+    }
+
+    void SimulationModel::setPortEngine(irr::f32 port)
+    {
+        //Set the engine, (-ve astern, +ve ahead)
+        ownShip.setPortEngine(port);
+    }
+
+    void SimulationModel::setStbdEngine(irr::f32 stbd)
+    {
+        //Set the engine, (-ve astern, +ve ahead)
+        ownShip.setStbdEngine(stbd);
+    }
+
     void SimulationModel::setAccelerator(irr::f32 accelerator)
     {
         this->accelerator = accelerator;
@@ -167,6 +185,16 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
     void SimulationModel::changeView()
     {
         camera.changeView();
+    }
+
+    void SimulationModel::increaseRadarRange()
+    {
+        radarCalculation.increaseRange();
+    }
+
+    void SimulationModel::decreaseRadarRange()
+    {
+        radarCalculation.decreaseRange();
     }
 
     void SimulationModel::update()

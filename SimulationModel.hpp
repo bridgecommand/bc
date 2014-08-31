@@ -33,6 +33,9 @@ public:
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
+    void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
+    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)
+    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead)
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
@@ -43,6 +46,8 @@ public:
     void lookPort();
     void lookStbd();
     void changeView();
+    void increaseRadarRange();
+    void decreaseRadarRange();
     void update();
 
 private:

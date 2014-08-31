@@ -19,11 +19,18 @@ class OwnShip : public Ship
         void update(irr::f32 deltaTime, irr::f32 tideHeight);
         std::vector<irr::core::vector3df> getCameraViews() const;
         irr::f32 getDepth();
+        void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
+        void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
+        void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
 
     protected:
     private:
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         Terrain* terrain;
+        irr::f32 portEngine; //-1 to + 1
+        irr::f32 stbdEngine; //-1 to + 1
+        irr::f32 rudder; //-30 to + 30
+
 };
 
 #endif // __OWNSHIP_HPP_INCLUDED__

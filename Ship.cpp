@@ -9,7 +9,8 @@ using namespace irr;
 
 Ship::Ship()
 {
-
+    //Default to run on defined spd and hdg
+    controlMode = MODE_AUTO;
 }
 
 Ship::~Ship()
@@ -36,11 +37,13 @@ irr::core::vector3df Ship::getPosition() const
 void Ship::setHeading(irr::f32 hdg)
 {
     this->hdg = hdg;
+    controlMode = MODE_AUTO; //Switch to auto mode
 }
 
 void Ship::setSpeed(irr::f32 spd)
 {
     this->spd = spd;
+    controlMode = MODE_AUTO; //Switch to auto mode
 }
 
 irr::f32 Ship::getHeading() const

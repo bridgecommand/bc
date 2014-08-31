@@ -35,6 +35,12 @@ class Ship
         irr::f32 yPos;
         irr::f32 zPos;
         irr::f32 spd;
+        int controlMode;
+        enum CONTROL_MODE// Define some values that we'll use to identify individual GUI controls.
+        {
+            MODE_AUTO = 0,
+            MODE_ENGINE = 1
+        };
 };
 
 #endif // __SHIP_HPP_INCLUDED__
