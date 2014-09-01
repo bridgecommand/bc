@@ -41,13 +41,6 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
     hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
-    //Start in engine control mode
-    controlMode = MODE_ENGINE;
-    //Fixme: These should be set from speed
-    portEngine = 0;
-    stbdEngine = 0;
-    rudder = 0;
-
     //Load from boat.ini file if it exists
     std::string shipIniFilename = "Models/OwnShip/";
     shipIniFilename.append(ownShipName);
@@ -59,6 +52,51 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
                 ownShipFullPath.append(ownShipName);
                 ownShipFullPath.append("/");
                 ownShipFullPath.append(ownShipFileName);
+
+    //Load dynamics settings
+    shipMass = IniFile::iniFileTof32(shipIniFilename,"Mass");
+    inertia = IniFile::iniFileTof32(shipIniFilename,"Inertia");
+    maxEngineRevs = IniFile::iniFileTof32(shipIniFilename,"MaxRevs");
+    dynamicsSpeedA = IniFile::iniFileTof32(shipIniFilename,"DynamicsSpeedA");
+    dynamicsSpeedB = IniFile::iniFileTof32(shipIniFilename,"DynamicsSpeedB");
+    dynamicsTurnDragA = IniFile::iniFileTof32(shipIniFilename,"DynamicsTurnDragA");
+    dynamicsTurnDragB = IniFile::iniFileTof32(shipIniFilename,"DynamicsTurnDragB");
+    rudderA = IniFile::iniFileTof32(shipIniFilename,"RudderA");
+    rudderB = IniFile::iniFileTof32(shipIniFilename,"RudderB");
+    rudderBAstern = IniFile::iniFileTof32(shipIniFilename,"RudderBAstern");
+    maxForce = IniFile::iniFileTof32(shipIniFilename,"Max_propulsion_force");
+    propellorSpacing = IniFile::iniFileTof32(shipIniFilename,"PropSpace");
+    asternEfficiency = IniFile::iniFileTof32(shipIniFilename,"AsternEfficiency");// (Optional, default 1)
+    if (asternEfficiency == 0)
+        {asternEfficiency = 1;}
+    propWalkAhead = IniFile::iniFileTof32(shipIniFilename,"PropWalkAhead");// (Optional, default 0)
+    propWalkAstern = IniFile::iniFileTof32(shipIniFilename,"PropWalkAstern");// (Optional, default 0)
+
+    //Todo: Missing:
+    //Number of engines
+    //CentrifugalDriftEffect
+    //PropWalkDriftEffect
+    //Buffet
+    //Swell
+    //Windage
+    //WindageTurnEffect
+    //Also:
+    //DeviationMaximum
+    //DeviationMaximumHeading
+    //?Depth
+    //?AngleCorrection
+
+    //Start in engine control mode
+    controlMode = MODE_ENGINE;
+
+    //calculate max speed from dynamics parameters
+    maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
+	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
+
+    //Fixme: These should be set from speed, and sliders set appropriately
+    portEngine = requiredEngineProportion(spd);
+    stbdEngine = requiredEngineProportion(spd);
+    rudder = 0;
 
     //Scale
     f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
@@ -118,23 +156,55 @@ void OwnShip::setRudder(irr::f32 rudder)
 void OwnShip::setPortEngine(irr::f32 port)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
-    portEngine = -1*port/100.0; //+-100 to +-1, inverting sign, as -ve is at top of slider
+    portEngine = port; //+-1
 }
 
 void OwnShip::setStbdEngine(irr::f32 stbd)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
-    stbdEngine = -1*stbd/100.0; //+-100 to +-1, inverting sign, as -ve is at top of slider
+    stbdEngine = stbd; //+-1
+}
+
+irr::f32 OwnShip::getPortEngine() const
+{
+    return portEngine;
+}
+
+irr::f32 OwnShip::getStbdEngine() const
+{
+    return stbdEngine;
+}
+
+irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
+{
+    irr::f32 proportion = 0;
+    if (speed >= 0) {
+        proportion=(dynamicsSpeedA*speed*speed + dynamicsSpeedB*speed)/(2*maxForce);
+    } else {
+        proportion=(-1*dynamicsSpeedA*speed*speed + dynamicsSpeedB*speed)/(2*maxForce*asternEfficiency);
+    }
+    return proportion;
 }
 
 void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
     if (controlMode == MODE_ENGINE) {
         //Update spd and hdg with rudder and engine controls
-        //Fixme:: Put proper dynamics here!
+        portThrust = portEngine * maxForce;
+        stbdThrust = stbdEngine * maxForce;
+        if (portThrust<0) {portThrust*=asternEfficiency;}
+        if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
+        if (spd<0) { //Compensate for loss of sign when squaring
+            drag = -1*dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
+		} else {
+			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
+		}
+		acceleration = (portThrust+stbdThrust-drag)/shipMass;
+        spd += acceleration*deltaTime;
+
+        //Fixme:: Put turn proper dynamics here!
         hdg += rudder*deltaTime*0.1;
-        spd += (portEngine + stbdEngine)*deltaTime*0.1;
-    }
+    } //End of engine mode
 
     //move, according to heading and speed
     xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;

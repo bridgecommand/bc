@@ -280,6 +280,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getDepth(),Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getDepth(),Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
     }
 

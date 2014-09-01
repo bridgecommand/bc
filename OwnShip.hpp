@@ -38,6 +38,8 @@ class OwnShip : public Ship
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
+        irr::f32 getPortEngine() const; //-1 to 1 : Fixme: check consistent
+        irr::f32 getStbdEngine() const; //-1 to 1
 
     protected:
     private:
@@ -46,6 +48,30 @@ class OwnShip : public Ship
         irr::f32 portEngine; //-1 to + 1
         irr::f32 stbdEngine; //-1 to + 1
         irr::f32 rudder; //-30 to + 30
+        //Dynamics parameters
+        irr::f32 shipMass;
+        irr::f32 inertia;
+        irr::f32 maxEngineRevs;
+        irr::f32 dynamicsSpeedA;
+        irr::f32 dynamicsSpeedB;
+        irr::f32 dynamicsTurnDragA;
+        irr::f32 dynamicsTurnDragB;
+        irr::f32 rudderA;
+        irr::f32 rudderB;
+        irr::f32 rudderBAstern;
+        irr::f32 maxForce;
+        irr::f32 propellorSpacing;
+        irr::f32 asternEfficiency;
+        irr::f32 propWalkAhead;
+        irr::f32 propWalkAstern;
+        //Dynamics variables
+        irr::f32 portThrust;
+        irr::f32 stbdThrust;
+        irr::f32 drag;
+        irr::f32 acceleration;
+        irr::f32 maxSpeedAhead;
+        irr::f32 maxSpeedAstern;
+        irr::f32 requiredEngineProportion(irr::f32 speed);
 
 };
 

@@ -64,11 +64,13 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.2*su,0.7*su,0.55*su),0,GUI_ID_START_BUTTON,L"Paused, click to start");//i18n
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 depth, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 depth, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
         spdScrollbar->setPos(spd);
+        portScrollbar->setPos(portEng * -100);//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
+        stbdScrollbar->setPos(stbdEng * -100);
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots

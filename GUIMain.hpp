@@ -38,7 +38,7 @@ public:
         GUI_ID_RADAR_DECREASE_BUTTON
     };
 
-    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 depth, std::string currentTime, bool paused);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 depth, std::string currentTime, bool paused);
 
     void drawGUI();
 

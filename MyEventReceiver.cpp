@@ -54,11 +54,11 @@ using namespace irr;
 
               if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
                   {
-                        model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                        model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
                   }
               if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
                   {
-                        model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                        model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
                   }
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
                   {
