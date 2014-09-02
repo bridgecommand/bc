@@ -72,6 +72,11 @@ class OwnShip : public Ship
         irr::f32 maxSpeedAhead;
         irr::f32 maxSpeedAstern;
         irr::f32 requiredEngineProportion(irr::f32 speed);
+        irr::f32 rateOfTurn;
+        irr::f32 dragTorque;
+        irr::f32 rudderTorque;
+        irr::f32 engineTorque;
+        irr::f32 propWalkTorque;
 
 };
 

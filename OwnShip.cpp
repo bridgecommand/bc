@@ -67,10 +67,15 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     maxForce = IniFile::iniFileTof32(shipIniFilename,"Max_propulsion_force");
     propellorSpacing = IniFile::iniFileTof32(shipIniFilename,"PropSpace");
     asternEfficiency = IniFile::iniFileTof32(shipIniFilename,"AsternEfficiency");// (Optional, default 1)
-    if (asternEfficiency == 0)
-        {asternEfficiency = 1;}
     propWalkAhead = IniFile::iniFileTof32(shipIniFilename,"PropWalkAhead");// (Optional, default 0)
     propWalkAstern = IniFile::iniFileTof32(shipIniFilename,"PropWalkAstern");// (Optional, default 0)
+    //Set defaults for values that shouldn't be zero
+    if (asternEfficiency == 0)
+        {asternEfficiency = 1;}
+    if (shipMass == 0)
+        {shipMass = 10000;}
+    if (inertia == 0)
+        {inertia = 2000;}
 
     //Todo: Missing:
     //Number of engines
@@ -93,10 +98,11 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
 	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
 
-    //Fixme: These should be set from speed, and sliders set appropriately
+    //Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
     portEngine = requiredEngineProportion(spd);
     stbdEngine = requiredEngineProportion(spd);
-    rudder = 0;
+    rudder=0;
+    rateOfTurn=0;
 
     //Scale
     f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
@@ -188,8 +194,9 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 
 void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
+    //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
-        //Update spd and hdg with rudder and engine controls
+        //Update spd and hdg with rudder and engine controls - assume two engines: Fixme: Should also work with single engine
         portThrust = portEngine * maxForce;
         stbdThrust = stbdEngine * maxForce;
         if (portThrust<0) {portThrust*=asternEfficiency;}
@@ -202,9 +209,38 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
 		acceleration = (portThrust+stbdThrust-drag)/shipMass;
         spd += acceleration*deltaTime;
 
-        //Fixme:: Put turn proper dynamics here!
-        hdg += rudder*deltaTime*0.1;
+        //Turn dynamics
+        //Rudder
+        rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB; //Fixme: reduced rudder effect astern?
+        //Engine
+        engineTorque = (portThrust*propellorSpacing - stbdThrust*propellorSpacing)/2.0; //propspace is spacing between propellors, so halve to get moment arm
+        //Prop walk
+        irr::f32 propWalkTorquePort,propWalkTorqueStbd;
+        if (portThrust > 0) {
+            propWalkTorquePort=1*propWalkAhead*(portThrust/maxForce);//Had modification for 'invertspeed'
+        } else {
+			propWalkTorquePort=1*propWalkAstern*(portThrust/maxForce);
+        }
+		if (stbdThrust > 0) {
+            propWalkTorqueStbd=-1*propWalkAhead*(stbdThrust/maxForce);//Had modification for 'invertspeed'
+        } else {
+			propWalkTorqueStbd=-1*propWalkAstern*(stbdThrust/maxForce);
+        }
+		propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
+        //Turn drag
+        if (rateOfTurn<0) {
+            dragTorque=-1*dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
+        } else {
+            dragTorque=   dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
+        }
+        //Turn dynamics
+        rateOfTurn += (rudderTorque + engineTorque + propWalkTorque - dragTorque)*deltaTime/inertia; //Rad/s
+        hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
     } //End of engine mode
+
+    //Normalise heading
+    if(hdg>=360) {hdg-=360;}
+    if(hdg<0) {hdg+=360;}
 
     //move, according to heading and speed
     xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;

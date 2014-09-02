@@ -73,7 +73,7 @@ irr::f32 RadarCalculation::getRangeNm() const
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
-    render(radarImage,10); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
+    render(radarImage,1000); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
 void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
