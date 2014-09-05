@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Tide.hpp"
+#include "IniFile.hpp"
 
 using namespace irr;
 
@@ -35,9 +36,36 @@ void Tide::load(const std::string& worldName) {
     std::string tideFilename = worldName;
     tideFilename.append("/tide.ini");
 
+    irr::u32 numberOfHarmonics = IniFile::iniFileTou32(tideFilename,"Number");
+
+    //If numberOfHarmonics = 0, we either have no tide file, or just a constant component. In either case, load
+    //the constant component. Amplitude will be zero if no tide file
+    //No tidal information, so load a dummy record
+    tidalHarmonic constantHarmonic;
+    constantHarmonic.amplitude = IniFile::iniFileTof32(tideFilename,"Amplitude(0)");
+    constantHarmonic.offset = 0;
+    constantHarmonic.speed = 0;
+    tidalHarmonics.push_back(constantHarmonic);
+
+    //Load other components
+    tidalHarmonic loadingHarmonic;
+    for(int i=1;i<=numberOfHarmonics; i++) {
+        loadingHarmonic.amplitude = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Amplitude",i));
+        loadingHarmonic.offset = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Offset",i));
+        loadingHarmonic.speed = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Speed",i));
+        tidalHarmonics.push_back(loadingHarmonic);
+    }
+
 }
 
-void Tide::update(irr::f32 scenarioTime) {
+void Tide::update(irr::u64 absoluteTime) {
+    //update tideHeight for current time (unix epoch time in s)
+
+    tideHeight = 0;
+    if (tidalHarmonics.size() > 0)
+    {
+        tideHeight += tidalHarmonics[0].amplitude;
+    }
 
 }
 

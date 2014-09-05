@@ -24,15 +24,22 @@
 
 class Tide {
 
+struct tidalHarmonic {
+    irr::f32 amplitude; //Metres
+    irr::f32 offset; //Offset in degrees (Relative to peak at 0000 on 1 Jan 1970)
+    irr::f32 speed; //Degrees per hour
+};
+
 public:
     Tide();
     virtual ~Tide();
     void load(const std::string& worldName);
-    void update(irr::f32 scenarioTime);
+    void update(irr::u64 absoluteTime);
     irr::f32 getTideHeight();
 
 private:
     irr::f32 tideHeight;
+    std::vector<tidalHarmonic> tidalHarmonics;
 
 
 };

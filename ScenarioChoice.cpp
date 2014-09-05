@@ -39,7 +39,7 @@ std::string ScenarioChoice::chooseScenario()
     u32 su = driver->getScreenSize().Width;
 
     //Make gui elements
-    core::stringw titleText = L"Bridge Command 5.0 Alpha 1"; //Fixme: Get version automatically
+    core::stringw titleText = L"Bridge Command 5.0 Alpha 1\nCopyright 2014 James Packer"; //Fixme: Get version automatically
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.05*su,0.18*su,0.30*su),0,GUI_ID_SCENARIO_LISTBOX);
     gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.31*su,0.18*su,0.36*su),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?

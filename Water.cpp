@@ -84,6 +84,6 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition)
     f32 yPos = tideHeight;
     f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
-    waterNode->setPosition(core::vector3df(xPos,yPos,zPos)); //Initially just move with the camera
+    waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
 
 }

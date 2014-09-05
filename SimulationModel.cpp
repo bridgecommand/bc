@@ -227,7 +227,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
 
         //Update tide height here.
-        tide.update(scenarioTime);
+        tide.update(absoluteTime);
         tideHeight = tide.getTideHeight();
 
         //update ambient lighting
@@ -240,6 +240,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //update buoys (for lights)
         buoys.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel);
+
+        //std::cout << tideHeight << std::endl;
 
         //update own ship
         ownShip.update(deltaTime, tideHeight);
