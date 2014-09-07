@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Camera.hpp"
+#include "Constants.hpp"
 
 #include <cmath>
 
@@ -34,6 +35,7 @@ Camera::~Camera()
 void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::IMeshSceneNode* parent, std::vector<irr::core::vector3df> views)
 {
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
+    camera->setFarValue(6*M_IN_NM);//Todo: This should depend on the current (variable) fog range
     this->parent = parent;
     this->views = views;
     currentView = 0;

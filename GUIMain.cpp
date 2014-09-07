@@ -64,7 +64,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.2*su,0.7*su,0.55*su),0,GUI_ID_START_BUTTON,L"Paused, click to start");//i18n
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 depth, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 depth, f32 radarRangeNm, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -75,6 +75,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
         guiDepth = depth;
+        guiRadarRangeNm = radarRangeNm;
         guiTime = currentTime;
         guiPaused = paused;
     }
@@ -89,6 +90,9 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         displayText.append(L"\nDepth: ");
         displayText.append(core::stringw(guiDepth));
         displayText.append(L"\n");
+        displayText.append(L"Radar: ");
+        displayText.append(core::stringw(guiRadarRangeNm));
+        displayText.append(L" Nm\n");
         displayText.append(core::stringw(guiTime.c_str()));
         if (guiPaused) {
             displayText.append(L"\n");

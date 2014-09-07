@@ -229,7 +229,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //update ambient lighting
         light.update(scenarioTime);
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR, 250, 5000, .003f, true, true);
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_EXP , 250, 5*M_IN_NM, .0003f, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update other ship positions etc
@@ -279,6 +279,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getDepth(),Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getDepth(), radarCalculation.getRangeNm(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
     }
 
