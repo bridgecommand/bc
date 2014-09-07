@@ -52,7 +52,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         rudderScrollbar->setPos(0);
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.04*su,0.04*su,0.2*su,0.13*su), true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.04*su,0.04*su,0.2*su,0.13*su), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 

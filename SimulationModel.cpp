@@ -229,6 +229,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Update tide height here.
         tide.update(absoluteTime);
         tideHeight = tide.getTideHeight();
+        //std::cout << tideHeight << std::endl;
 
         //update ambient lighting
         light.update(scenarioTime);

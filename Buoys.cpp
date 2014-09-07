@@ -70,7 +70,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Run through lights, and check if any are associated with this buoy
         for (u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) ==currentBuoy ) {
-                //Light on this buoy, add a light to the buoysLights vector in this location if required (FIXME: Make a child of the sea)
+                //Light on this buoy, add a light to the buoysLights vector in this location if required (FIXME: Think about response to waves?)
                 f32 lightHeight = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
                 f32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
                 f32 lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));

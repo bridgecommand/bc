@@ -16,6 +16,7 @@
 
 #include "ScenarioChoice.hpp"
 #include "StartupEventReceiver.hpp"
+#include "Constants.hpp"
 
 #include <iostream>
 
@@ -39,7 +40,8 @@ std::string ScenarioChoice::chooseScenario()
     u32 su = driver->getScreenSize().Width;
 
     //Make gui elements
-    core::stringw titleText = L"Bridge Command 5.0 Alpha 1\nCopyright 2014 James Packer"; //Fixme: Get version automatically
+    core::stringw titleText(LONGNAME.c_str());
+    titleText.append(L"\nCopyright 2014 James Packer");
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.05*su,0.18*su,0.30*su),0,GUI_ID_SCENARIO_LISTBOX);
     gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.31*su,0.18*su,0.36*su),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?
@@ -47,7 +49,7 @@ std::string ScenarioChoice::chooseScenario()
     gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 10, (su+titleDimensions.Width)/2, 30));
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
-        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme!
+        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
     }
     //Link to our event receiver
     StartupEventReceiver startupReceiver(scenarioListBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON);

@@ -24,6 +24,7 @@
 #include "MyEventReceiver.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
+#include "Constants.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -44,7 +45,7 @@ int main()
 
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    device->setWindowCaption(L"Bridge Command 5.0 Alpha");
+    device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
 
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
