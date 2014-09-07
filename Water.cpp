@@ -53,7 +53,7 @@ void Water::load(irr::scene::ISceneManager* smgr)
                        core::dimension2d<f32>(10,10));
 
     waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
-    //add secondary meshes around the central water mesh: FIXME: Get the waves to match at edges somehow
+    //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
     std::vector<irr::scene::ISceneNode*> secondaryWaterNodes;
     secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0,-1*tileWidth)));
     secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 0*tileWidth)));

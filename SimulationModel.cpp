@@ -29,10 +29,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         driver = scene->getVideoDriver();
         guiMain = gui;
 
-        //set scenario to load (will be read in from user) //fixme hardcoded
-        //std::string scenarioName = "a) Buoyage";
-        //std::string worldName = "SimpleEstuary";
-
         //construct path to scenario
         std::string scenarioPath = "Scenarios/"; //Fixme: Think about proper path handling?
         scenarioPath.append(scenarioName);

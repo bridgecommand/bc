@@ -39,7 +39,7 @@ void Tide::load(const std::string& worldName) {
     tideFilename.append("/tide.ini");
 
     irr::u32 numberOfHarmonics = IniFile::iniFileTou32(tideFilename,"Harmonics");
-    std::cout << "numberOfHarmonics " << numberOfHarmonics <<std::endl;
+    //std::cout << "numberOfHarmonics " << numberOfHarmonics <<std::endl;
 
     //If numberOfHarmonics = 0, we either have no tide file, or just a constant component. In either case, load
     //the constant component. Amplitude will be zero if no tide file

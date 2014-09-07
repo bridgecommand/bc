@@ -37,8 +37,7 @@ RadarCalculation::RadarCalculation()
 
     currentScanAngle=0;
 
-    radarRangeNm = 1.0; //Fixme: This needs to change with radar range
-    //cellLength = M_IN_NM*radarRangeNm/rangeResolution;
+    radarRangeNm = 1.0; //Initial Radar Range
     scanAngleStep=2;
 }
 
