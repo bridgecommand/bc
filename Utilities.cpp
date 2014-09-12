@@ -67,7 +67,7 @@ namespace Utilities
     }
 
     std::string timestampToString(time_t timestamp) {
-        return timestampToString(timestamp, "%d %b %Y %I:%M:%S"); //Default date/time format
+        return timestampToString(timestamp, "%d %b %Y %H:%M:%S"); //Default date/time format
     }
 
 }
