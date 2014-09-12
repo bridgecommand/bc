@@ -1,0 +1,32 @@
+Object heights:
+
+Beacon: 		50
+Castle (Towers): 	30
+CGLookout:		10
+ChapelRuin:		5
+Chimneys:		50
+Church (Tower):		27
+Cross:			15
+Eddystone:		50
+Flagstaff:		50
+Hotel:			20
+House:			30
+Lighthouse		(Light at zero, can be set in height as required (use absolute))
+Masts:			45
+Null:			N/A
+Plymouth Breakwater:	30 (lights)
+Silo:			15
+StAnthonys:		19
+TamarSuspension:	100
+Tower:			50
+Cottage:		3.9
+
+---------------------------
+
+Notes:
+
+House size:
+Say each floor is 8'
+8*12*0.0254m=2.4m per floor.
+2 floors + roof ~ 3 floors
+3*2.4=7.2m Overall height
