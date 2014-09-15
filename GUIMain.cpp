@@ -27,41 +27,42 @@ GUIMain::GUIMain(IrrlichtDevice* device)
 
         video::IVideoDriver* driver = device->getVideoDriver();
         u32 su = driver->getScreenSize().Width;
+        u32 sh = driver->getScreenSize().Height;
 
         //gui - add scroll bars for speed and heading control directly
-        hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.02*su, 0.4*su, 0.05*su, 0.7*su), 0, GUI_ID_HEADING_SCROLL_BAR);
+        hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.02*su, 0.5*sh, 0.05*su, 0.9*sh), 0, GUI_ID_HEADING_SCROLL_BAR);
         hdgScrollbar->setMax(360);
-        spdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.06*su, 0.4*su, 0.09*su, 0.7*su), 0, GUI_ID_SPEED_SCROLL_BAR);
+        spdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.06*su, 0.5*sh, 0.09*su, 0.9*sh), 0, GUI_ID_SPEED_SCROLL_BAR);
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
         //Hide speed/heading bars normally
         hdgScrollbar->setVisible(false);
         spdScrollbar->setVisible(false);
 
         //Add engine and rudder bars
-        portScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.02*su, 0.4*su, 0.05*su, 0.7*su), 0, GUI_ID_PORT_SCROLL_BAR);
+        portScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.02*su, 0.5*sh, 0.05*su, 0.9*sh), 0, GUI_ID_PORT_SCROLL_BAR);
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
-        stbdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.06*su, 0.4*su, 0.09*su, 0.7*su), 0, GUI_ID_STBD_SCROLL_BAR);
+        stbdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.06*su, 0.5*sh, 0.09*su, 0.9*sh), 0, GUI_ID_STBD_SCROLL_BAR);
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
-        rudderScrollbar = guienv->addScrollBar(true,core::rect<s32>(0.11*su, 0.67*su, 0.56*su, 0.70*su), 0, GUI_ID_RUDDER_SCROLL_BAR);
+        rudderScrollbar = guienv->addScrollBar(true,core::rect<s32>(0.11*su, 0.865*sh, 0.56*su, 0.9*sh), 0, GUI_ID_RUDDER_SCROLL_BAR);
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.04*su,0.04*su,0.2*su,0.13*su), true, false, 0, -1, true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.04*su,0.05*sh,0.2*su,0.17*sh), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 
         //add radar buttons
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.63*su,0.63*su,0.68*su),0,GUI_ID_RADAR_INCREASE_BUTTON,L"/\\");//i18n
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.69*su,0.63*su,0.74*su),0,GUI_ID_RADAR_DECREASE_BUTTON,L"\\/");//i18n
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.84*sh,0.63*su,0.91*sh),0,GUI_ID_RADAR_INCREASE_BUTTON,L"/\\");//i18n
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.92*sh,0.63*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,L"\\/");//i18n
 
         //Add paused button
-        pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.2*su,0.7*su,0.55*su),0,GUI_ID_START_BUTTON,L"Paused, click to start");//i18n
+        pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,L"Paused, click to start");//i18n
     }
 
     void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 depth, f32 radarRangeNm, std::string currentTime, bool paused)

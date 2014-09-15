@@ -37,11 +37,16 @@ int main()
 {
 
     //Read basic ini settings
-    std::string iniFilename = "bc4.ini";
+    std::string iniFilename = "bc5.ini";
     u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+
+    //Sensible defaults if not set
+    if (graphicsWidth==0) {graphicsWidth=800;}
+    if (graphicsHeight==0) {graphicsHeight=600;}
+    if (graphicsDepth==0) {graphicsDepth=32;}
 
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);

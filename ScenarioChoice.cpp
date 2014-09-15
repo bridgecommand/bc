@@ -38,15 +38,16 @@ std::string ScenarioChoice::chooseScenario()
 
     //Get screen width
     u32 su = driver->getScreenSize().Width;
+    u32 sh = driver->getScreenSize().Height;
 
     //Make gui elements
     core::stringw titleText(LONGNAME.c_str());
     titleText.append(L"\nCopyright 2014 James Packer");
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.05*su,0.18*su,0.30*su),0,GUI_ID_SCENARIO_LISTBOX);
-    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.31*su,0.18*su,0.36*su),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?
-    gui::IGUIStaticText* instruction = gui->addStaticText(L"Please choose a scenario:",core::rect<s32>(0.02*su,0.02*su,0.18*su, 0.05*su)); //i18n
-    gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 10, (su+titleDimensions.Width)/2, 30));
+    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.07*sh,0.18*su,0.40*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.41*sh,0.18*su,0.48*sh),0,GUI_ID_OK_BUTTON,L"OK"); //i18n?
+    gui::IGUIStaticText* instruction = gui->addStaticText(L"Please choose a scenario:",core::rect<s32>(0.02*su,0.03*sh,0.18*su, 0.07*sh)); //i18n
+    gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.05*sh));
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
@@ -79,7 +80,7 @@ std::string ScenarioChoice::chooseScenario()
     device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.
 
     //Show loading message
-    gui::IGUIStaticText* loadingMessage = gui->addStaticText(L"Loading...", core::rect<s32>(10,10,210,20)); //i18n
+    gui::IGUIStaticText* loadingMessage = gui->addStaticText(L"Loading...", core::rect<s32>(0.0125*su,0.017*sh,0.27*su,0.033*sh)); //i18n
     device->run();
     driver->beginScene(true, true, video::SColor(0,200,200,200));
     gui->drawAll();
