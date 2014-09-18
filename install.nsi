@@ -63,6 +63,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\Scenarios"
   RMDir /r "$INSTDIR\media"
   RMDir /r "$INSTDIR\world"
+  RMDir /r "$INSTDIR\libs"
 
   Delete "$INSTDIR\Leg.hpp"
   Delete "$INSTDIR\Sky.hpp"
@@ -102,7 +103,7 @@ SetShellVarContext all
   Delete "$INSTDIR\OwnShip.hpp"
   Delete "$INSTDIR\main.cpp"
   Delete "$INSTDIR\BridgeCommand.cbp"
-  Delete "$INSTDIR\bc4.ini"
+  Delete "$INSTDIR\bc5.ini"
   Delete "$INSTDIR\Structure.txt"
   Delete "$INSTDIR\Tide.cpp"
   Delete "$INSTDIR\LandObjects.cpp"
@@ -134,6 +135,7 @@ SetShellVarContext all
   Delete "$INSTDIR\BridgeCommand.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
+  Delete "$INSTDIR\IniEditor.exe"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"

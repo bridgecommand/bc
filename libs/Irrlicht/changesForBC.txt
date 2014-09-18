@@ -1,0 +1,9 @@
+The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1 release:
+
+Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
+(CTerrainSceneNode.cpp)
+
+Water Surface Scene node modified to make wave height a function of absolute X,Z position, for seamless tiled water nodes.
+(CWaterSurfaceSceneNode.cpp)
+
+All changes marked in source with //JAMES

@@ -1,0 +1,86 @@
+# depslib dependency file v1.0
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\callbacks.c
+	"enet/enet.h"
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\enet.h
+	<stdlib.h>
+	"enet/win32.h"
+	"enet/unix.h"
+	"enet/types.h"
+	"enet/protocol.h"
+	"enet/list.h"
+	"enet/callbacks.h"
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\win32.h
+	<stdlib.h>
+	<winsock2.h>
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\unix.h
+	<stdlib.h>
+	<sys/time.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<unistd.h>
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\types.h
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\protocol.h
+	"enet/types.h"
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\list.h
+	<stdlib.h>
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\callbacks.h
+	<stdlib.h>
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\compress.c
+	<string.h>
+	"enet/enet.h"
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\host.c
+	<string.h>
+	"enet/enet.h"
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\list.c
+	"enet/enet.h"
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\packet.c
+	<string.h>
+	"enet/enet.h"
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\peer.c
+	<string.h>
+	"enet/enet.h"
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\protocol.c
+	<stdio.h>
+	<string.h>
+	"enet/utility.h"
+	"enet/time.h"
+	"enet/enet.h"
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\utility.h
+
+1388069580 c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\include\enet\time.h
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\unix.c
+	<sys/types.h>
+	<sys/socket.h>
+	<sys/ioctl.h>
+	<sys/time.h>
+	<arpa/inet.h>
+	<netinet/tcp.h>
+	<netdb.h>
+	<unistd.h>
+	<string.h>
+	<errno.h>
+	<time.h>
+	"enet/enet.h"
+	<fcntl.h>
+	<sys/poll.h>
+
+1388069580 source:c:\users\james\documents\programming\bridge command\irrlichttesting\test1\libs\enet\enet-1.3.11\win32.c
+	<time.h>
+	"enet/enet.h"
+

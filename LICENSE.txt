@@ -1,3 +1,8 @@
+NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED FOR NAVIGATION. 
+
+BRIDGE COMMAND MUST NOT BE USED FOR SAFETY-CRITICAL 
+APPLICATIONS SUCH AS NAVIGATION ON THE SEA.
+
 Bridge Command is Copyright (C) 2014 by James Packer. The model
 files distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, 
@@ -13,8 +18,9 @@ Command. For any other use, you must obtain permission from the relevant
 author. Each model is credited to its author in the documentation 
 distributed with Bridge Command.
 
-Bridge Command uses the Irrlicht engine (http://irrlicht.sourceforge.net), 
+Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), 
 and the ENet networking library (http://enet.bespin.org).
+The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.
 
 The configuration editor is distributed under the Apache Licence 2.0
 (http://code.google.com/p/ini-settings-editor.)
@@ -27,10 +33,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. 
-
-NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED FOR NAVIGATION. 
-IT IS NOT MAINTAINED TO NAVIGATIONAL STANDARDS AND MUST NOT BE USED FOR SAFETY-CRITICAL
-APPLICATIONS SUCH AS NAVIGATION ON THE SEA.
 
 GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
