@@ -69,7 +69,7 @@ void Network::connectToServer()
         "No available peers for initiating an ENet connection.\n");
         exit (EXIT_FAILURE);
     }
-    /* Wait up to 5 seconds for the connection attempt to succeed. */
+    /* Wait up to 1 second for the connection attempt to succeed. */
     if (enet_host_service (client, & event, 1000) > 0 &&
         event.type == ENET_EVENT_TYPE_CONNECT)
     {
@@ -77,8 +77,8 @@ void Network::connectToServer()
     }
     else
     {
-        /* Either the 5 seconds are up or a disconnect event was */
-        /* received. Reset the peer in the event the 5 seconds */
+        /* Either the 1 second is up or a disconnect event was */
+        /* received. Reset the peer in the event the 1 second */
         /* had run out without any significant event. */
         enet_peer_reset (peer);
         puts ("Connection to localhost:1234 failed.");
