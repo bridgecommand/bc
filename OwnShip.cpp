@@ -20,6 +20,7 @@
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
 #include "IniFile.hpp"
+#include "Angles.hpp"
 
 using namespace irr;
 
@@ -150,6 +151,16 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
             ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
+
+    //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movement
+    rollPeriod = 11; //Roll period (s)
+    rollAngle = 5; //Roll Angle (deg)
+    pitchPeriod = 23; //Roll period (s)
+    pitchAngle = 2; //Roll Angle (deg)
+
+    //set initial pitch and roll
+    pitch = 0;
+    roll = 0;
 }
 
 void OwnShip::setRudder(irr::f32 rudder)
@@ -192,7 +203,7 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
     return proportion;
 }
 
-void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
+void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight)
 {
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
@@ -247,9 +258,15 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 tideHeight)
     zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
     yPos = tideHeight;
 
-    //Set position & speed by calling own ship methods
+    //calculate pitch and roll - currently simple response, not linked to water/wave motion
+    if (pitchPeriod>0)
+        {pitch = pitchAngle*sin(scenarioTime*2*PI/pitchPeriod);}
+    if (rollPeriod>0)
+        {roll = rollAngle*sin(scenarioTime*2*PI/rollPeriod);}
+
+    //Set position & angles by calling own ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
-    setRotation(core::vector3df(0, hdg, 0)); //Global vectors
+    setRotation(Angles::irrAnglesFromYawPitchRoll(hdg,pitch,roll));
 
 }
 

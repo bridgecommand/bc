@@ -51,3 +51,24 @@ irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-3
 
     return angle;
 }
+
+irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pitch, irr::f32 roll)
+//Convert yaw,pitch,roll (in degrees) into irrlicht 'euler angles' in degrees, as used by setRotation,
+//essentially changing the order the transformations are applied in.
+{
+    //Create rotation matrices (default to identity in construction)
+    irr::core::matrix4 total;
+    irr::core::matrix4 p;
+    irr::core::matrix4 r;
+    irr::core::matrix4 y;
+    //Create the individual components
+    r.setRotationDegrees(irr::core::vector3df(0,0,roll));
+    p.setRotationDegrees(irr::core::vector3df(pitch,0,0));
+    y.setRotationDegrees(irr::core::vector3df(0,yaw,0));
+    //apply rotations, in order of yaw, pitch, roll
+    total*=y;
+    total*=p;
+    total*=r;
+
+    return total.getRotationDegrees();
+}

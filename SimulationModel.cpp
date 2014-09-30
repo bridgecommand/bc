@@ -241,7 +241,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //std::cout << tideHeight << std::endl;
 
         //update own ship
-        ownShip.update(deltaTime, tideHeight);
+        ownShip.update(deltaTime, scenarioTime, tideHeight);
 
         //update water position
         water.update(tideHeight,camera.getPosition());
