@@ -41,6 +41,15 @@ using namespace irr;
                 }
             }
 		}
+
+		if (event.EventType == EET_KEY_INPUT_EVENT)
+		{
+		    if (event.KeyInput.Key==KEY_RETURN) {
+                if (scenarioListBox->getSelected() > -1 ) {
+                    scenarioSelected = scenarioListBox->getSelected();
+                }
+		    }
+		}
         return false;
     }
 

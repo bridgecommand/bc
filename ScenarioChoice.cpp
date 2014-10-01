@@ -52,6 +52,13 @@ std::string ScenarioChoice::chooseScenario()
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
     }
+    //select first one if possible
+    if (scenarioListBox->getItemCount()>0) {
+        scenarioListBox->setSelected(0);
+    }
+    //select list box as active, so user can use up/down arrows without needing to click
+    gui->setFocus(scenarioListBox);
+
     //Link to our event receiver
     StartupEventReceiver startupReceiver(scenarioListBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON);
     device->setEventReceiver(&startupReceiver);
