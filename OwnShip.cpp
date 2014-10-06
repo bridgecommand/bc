@@ -192,6 +192,11 @@ irr::f32 OwnShip::getStbdEngine() const
     return stbdEngine;
 }
 
+irr::f32 OwnShip::getRudder() const
+{
+    return rudder;
+}
+
 irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 {
     irr::f32 proportion = 0;

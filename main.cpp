@@ -43,6 +43,11 @@ int main()
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+    //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
+    u32 portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
+    u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    u32 rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+
     //Sensible defaults if not set
     if (graphicsWidth==0) {graphicsWidth=800;}
     if (graphicsHeight==0) {graphicsHeight=600;}
@@ -69,7 +74,7 @@ int main()
     SimulationModel model (device, smgr, &guiMain, scenarioName);
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(&model, &guiMain);
+    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
     device->setEventReceiver(&receiver);
 
     //Create networking, linked to model

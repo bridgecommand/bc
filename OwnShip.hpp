@@ -40,6 +40,7 @@ class OwnShip : public Ship
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
         irr::f32 getPortEngine() const; //-1 to 1 : Fixme: check consistent
         irr::f32 getStbdEngine() const; //-1 to 1
+        irr::f32 getRudder() const; //-30 to 30
 
     protected:
     private:
