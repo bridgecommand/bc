@@ -38,6 +38,7 @@ class NavLight {
         irr::f32 range;
         std::string sequence;
         irr::f32 timeOffset;
+        irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
         bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
 };
 

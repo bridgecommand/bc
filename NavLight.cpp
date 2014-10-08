@@ -43,6 +43,9 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     //initialise light sequence information
     sequence = lightSequence;
     timeOffset=60.0*((irr::f32)std::rand()/RAND_MAX); //Random, 0-60s
+
+    //set initial alpha to implausible value
+    currentAlpha = -1;
 }
 
 NavLight::~NavLight() {
@@ -90,9 +93,13 @@ void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition, 
         }
     }
 
-    //set transparency dependent on light level
+    //set transparency dependent on light level, only changing if required, as this is a slow operation
     //std::cout << lightLevel << std::endl;
-    setAlpha(255-lightLevel, lightNode->getMaterial(0).getTexture(0));
+    u16 requiredAlpha = 255-lightLevel;
+    if (requiredAlpha != currentAlpha) {
+        setAlpha((u8)requiredAlpha, lightNode->getMaterial(0).getTexture(0));
+        currentAlpha = requiredAlpha;
+    }
 }
 
 bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
