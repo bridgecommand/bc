@@ -38,6 +38,7 @@ class RadarCalculation
 
     private:
         std::vector<std::vector<irr::f32> > scanArray;
+        std::vector<std::vector<irr::f32> > scanArrayPrevious;
         irr::s32 currentScanAngle;
         irr::u32 scanAngleStep;
         irr::u32 rangeResolution;

@@ -103,6 +103,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
         radarScreen.load(smgr,camera.getSceneNode(),radarOffset);
 
+        //make radar image
+        radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
+        radarImage->fill(video::SColor(255, 0, 0, 255)); //Fill with background colour
+
         //initialise offset
         offsetPosition = core::vector3d<u64>(0,0,0);
 
@@ -110,6 +114,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         previousTime = device->getTimer()->getTime();
 
     } //end of SimulationModel constructor
+
+SimulationModel::~SimulationModel()
+{
+    radarImage->drop(); //We created this with 'create', so drop it when we're finished
+}
 
     irr::f32 SimulationModel::longToX(irr::f32 longitude) const
     {
@@ -212,6 +221,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
     void SimulationModel::update()
     {
 
+        //show FPS
+        device->setWindowCaption(core::stringw(driver->getFPS()).c_str());
+
         //get delta time
         currentTime = device->getTimer()->getTime();
         deltaTime = accelerator*(currentTime - previousTime)/1000.f;
@@ -273,10 +285,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        video::IImage * radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
         radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight,deltaTime);
         radarScreen.update(radarImage);
-        radarImage->drop(); //We created this with 'create', so drop it when we're finished
 
         //send data to gui
         guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), radarCalculation.getRangeNm(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)

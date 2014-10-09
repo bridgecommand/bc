@@ -44,7 +44,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 public:
 
     SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-
+    ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const ;
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
@@ -70,6 +70,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
+    irr::video::IImage* radarImage;
     irr::f32 accelerator;
     irr::f32 tideHeight;
     Terrain terrain;

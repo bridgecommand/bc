@@ -34,6 +34,15 @@ RadarCalculation::RadarCalculation()
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
+    scanArrayPrevious.resize(360,std::vector<f32>(rangeResolution,0.0));
+
+    //initialise arrays
+    for(int i = 0; i<360; i++) {
+        for(int j = 0; j<rangeResolution; j++) {
+            scanArray[i][j] = 0.0;
+            scanArrayPrevious[i][j] = -1.0;
+        }
+    }
 
     currentScanAngle=0;
 
@@ -106,6 +115,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Clear old value
+            scanArrayPrevious[currentScanAngle][currentStep]=scanArray[currentScanAngle][currentStep];
             scanArray[currentScanAngle][currentStep] = 0.0;
 
 
@@ -222,9 +232,6 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 amplific
     //generate image from array
     //*************************
 
-    //Fill with background colour
-    radarImage->fill(video::SColor(255, 0, 0, 255));
-
     //Get image size
     int bitmapWidth = radarImage->getDimension().Width;
     if (radarImage->getDimension().Height != bitmapWidth)
@@ -240,11 +247,13 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 amplific
             irr::f32 cellMinRange = ((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
             irr::f32 cellMaxRange = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
 
-            u32 pixelColour=255*amplification*scanArray[scanAngle][currentStep];
-            if (pixelColour>255) {pixelColour = 255;}
-
-            drawSector(radarImage,centrePixel,centrePixel,cellMinRange,cellMaxRange,cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
-
+            //If the sector has changed, draw it
+            if(scanArray[scanAngle][currentStep]!=scanArrayPrevious[scanAngle][currentStep])
+            {
+                u32 pixelColour=255*amplification*scanArray[scanAngle][currentStep];
+                if (pixelColour>255) {pixelColour = 255;}
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange,cellMaxRange,cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
+            }
         }
     }
 }
