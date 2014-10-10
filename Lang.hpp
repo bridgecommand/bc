@@ -14,34 +14,20 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __SCENARIOCHOICE_HPP_INCLUDED__
-#define __SCENARIOCHOICE_HPP_INCLUDED__
+#ifndef __LANG_HPP_INCLUDED__
+#define __LANG_HPP_INCLUDED__
 
-#include "irrlicht.h"
-#include "Lang.hpp"
 #include <string>
-#include <vector>
+#include "irrlicht.h"
 
-class ScenarioChoice
+class Lang //Start of the 'Model' part of MVC
 {
+
 public:
-    ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    std::string chooseScenario();
-
+    Lang(std::string language);
+    irr::core::stringw translate(std::string phraseName);
 private:
-    void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);
-    irr::IrrlichtDevice* device;
-    irr::gui::IGUIEnvironment* gui;
-    Lang* language;
-
-    enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
-    {
-        GUI_ID_SCENARIO_LISTBOX = 101,
-        GUI_ID_OK_BUTTON
-    };
+    std::string languageFileName;
 
 };
-
-#endif
-
-
+#endif // __LANG_HPP_INCLUDED__

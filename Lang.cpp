@@ -14,34 +14,28 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __SCENARIOCHOICE_HPP_INCLUDED__
-#define __SCENARIOCHOICE_HPP_INCLUDED__
-
-#include "irrlicht.h"
 #include "Lang.hpp"
-#include <string>
-#include <vector>
 
-class ScenarioChoice
+#include "IniFile.hpp"
+
+using namespace irr;
+
+Lang::Lang(std::string language)
 {
-public:
-    ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    std::string chooseScenario();
+    languageFileName = language;
+}
 
-private:
-    void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);
-    irr::IrrlichtDevice* device;
-    irr::gui::IGUIEnvironment* gui;
-    Lang* language;
+irr::core::stringw Lang::translate(std::string phraseName)
+{
+    //Look up
+    std::string translatedPhrase = IniFile::iniFileToString(languageFileName,phraseName);
+    //Fall back
+    if (translatedPhrase=="") {
+        translatedPhrase = phraseName;
+    }
 
-    enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
-    {
-        GUI_ID_SCENARIO_LISTBOX = 101,
-        GUI_ID_OK_BUTTON
-    };
+    //convert to stringw
+    core::stringw returnPhrase(translatedPhrase.c_str());
 
-};
-
-#endif
-
-
+    return returnPhrase;
+}

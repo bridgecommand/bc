@@ -20,7 +20,7 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device)
+GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     {
         this->device = device;
         guienv = device->getGUIEnvironment();
@@ -28,6 +28,8 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         video::IVideoDriver* driver = device->getVideoDriver();
         u32 su = driver->getScreenSize().Width;
         u32 sh = driver->getScreenSize().Height;
+
+        this->language = language;
 
         //gui - add scroll bars for speed and heading control directly
         hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.02*su, 0.5*sh, 0.05*su, 0.9*sh), 0, GUI_ID_HEADING_SCROLL_BAR);
@@ -62,7 +64,7 @@ GUIMain::GUIMain(IrrlichtDevice* device)
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.92*sh,0.63*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,L"\\/");//i18n
 
         //Add paused button
-        pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,L"Paused, click to start");//i18n
+        pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
     }
 
     void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 radarRangeNm, std::string currentTime, bool paused)
@@ -85,20 +87,30 @@ GUIMain::GUIMain(IrrlichtDevice* device)
     void GUIMain::drawGUI()
     {
         //update heading display element
-        core::stringw displayText = L"Heading: "; //i18n
+        core::stringw displayText = language->translate("hdg");
         displayText.append(core::stringw(guiHeading));
-        displayText.append(L"\nSpeed: ");
+        displayText.append(L"\n");
+
+        displayText.append(language->translate("spd"));
         displayText.append(core::stringw(guiSpeed));
-        displayText.append(L"\nDepth: ");
+        displayText.append(L"\n");
+
+        displayText.append(language->translate("depth"));
         displayText.append(core::stringw(guiDepth));
         displayText.append(L"\n");
-        displayText.append(L"Radar: ");
+
+        displayText.append(language->translate("radar"));
         displayText.append(core::stringw(guiRadarRangeNm));
-        displayText.append(L" Nm\n");
+        displayText.append(language->translate("nm"));
+        displayText.append(L"\n");
+
         displayText.append(core::stringw(guiTime.c_str()));
+        displayText.append(L"\n");
+
+        displayText.append(language->translate("fps"));
+        displayText.append(core::stringw(device->getVideoDriver()->getFPS()).c_str());
         if (guiPaused) {
-            displayText.append(L"\n");
-            displayText.append(L"Paused"); //i18n
+            displayText.append(language->translate("paused"));
         }
         dataDisplay->setText(displayText.c_str());
 

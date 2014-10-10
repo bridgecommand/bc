@@ -209,7 +209,7 @@ using namespace irr;
                     }
                 }
             } else {
-                std::cout << "Trying to use non-existent joystick axis." << std::endl; //i18n
+                std::cout << "Trying to use non-existent joystick axis." << std::endl;
             }
 
         }

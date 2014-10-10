@@ -25,6 +25,7 @@
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
+#include "Lang.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -60,15 +61,18 @@ int main()
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
 
+    //load language
+    Lang language("language.txt");
+
     //Choose scenario
-    ScenarioChoice scenarioChoice(device);
+    ScenarioChoice scenarioChoice(device,&language);
     std::string scenarioName = scenarioChoice.chooseScenario();
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
 
     //create GUI
-    GUIMain guiMain(device);
+    GUIMain guiMain(device, &language);
 
     //Create simulation model
     SimulationModel model (device, smgr, &guiMain, scenarioName);

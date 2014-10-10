@@ -18,7 +18,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="./libs/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
-			<Add library="./libs/enet/enet-1.3.11/bin/Release/libenet.a" />
+			<Add library=".\libs\enet\enet-1.3.11\bin\Release\libenet.a" />
 		</Linker>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
@@ -39,6 +39,8 @@
 		<Unit filename="LandObject.hpp" />
 		<Unit filename="LandObjects.cpp" />
 		<Unit filename="LandObjects.hpp" />
+		<Unit filename="Lang.cpp" />
+		<Unit filename="Lang.hpp" />
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />

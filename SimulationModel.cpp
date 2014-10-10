@@ -221,9 +221,6 @@ SimulationModel::~SimulationModel()
     void SimulationModel::update()
     {
 
-        //show FPS
-        device->setWindowCaption(core::stringw(driver->getFPS()).c_str());
-
         //get delta time
         currentTime = device->getTimer()->getTime();
         deltaTime = accelerator*(currentTime - previousTime)/1000.f;

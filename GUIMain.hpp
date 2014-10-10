@@ -18,13 +18,13 @@
 #define __GUIMAIN_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
+#include "Lang.hpp"
 #include <string>
 
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device);
+    GUIMain(irr::IrrlichtDevice* device, Lang* language);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -65,6 +65,8 @@ private:
     irr::f32 guiRadarRangeNm;
     std::string guiTime;
     bool guiPaused;
+
+    Lang* language;
 
 };
 
