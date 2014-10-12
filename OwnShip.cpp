@@ -43,13 +43,13 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
     //Load from boat.ini file if it exists
-    std::string shipIniFilename = "Models/OwnShip/";
+    std::string shipIniFilename = "Models/Ownship/";
     shipIniFilename.append(ownShipName);
     shipIniFilename.append("/boat.ini");
 
     //get the model file
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
-    std::string ownShipFullPath = "Models/OwnShip/"; //FIXME: Use proper path handling
+    std::string ownShipFullPath = "Models/Ownship/"; //FIXME: Use proper path handling
                 ownShipFullPath.append(ownShipName);
                 ownShipFullPath.append("/");
                 ownShipFullPath.append(ownShipFileName);

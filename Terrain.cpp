@@ -43,7 +43,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     //Get full path to the main Terrain.ini file
     std::string worldTerrainFile = worldPath;
-    worldTerrainFile.append("/Terrain.ini");
+    worldTerrainFile.append("/terrain.ini");
 
     //Fixme: Note we're only loading the primary terrain here
     terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",1));

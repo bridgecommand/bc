@@ -50,7 +50,7 @@ namespace IniFile
         return ans;
     }
 
-    std::string trim(const std::string& str, const std::string& trimChr=" ")
+    std::string trim(const std::string& str, const std::string& trimChr=" \n\r\t")
     {
         const std::size_t strBegin = str.find_first_not_of(trimChr);
         if (strBegin == std::string::npos)
