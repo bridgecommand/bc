@@ -54,6 +54,11 @@ int main()
     if (graphicsHeight==0) {graphicsHeight=600;}
     if (graphicsDepth==0) {graphicsDepth=32;}
 
+    //set size of camera window
+    u32 graphicsWidth3d = graphicsWidth;
+    u32 graphicsHeight3d = graphicsHeight*0.6;
+    f32 aspect = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
+
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
@@ -75,7 +80,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model (device, smgr, &guiMain, scenarioName);
+    SimulationModel model(device, smgr, &guiMain, scenarioName, aspect);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
@@ -92,9 +97,24 @@ int main()
         network.update();
         model.update();
 
-        //Render
+        //Set up
+        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(true,true,video::SColor(255,100,101,140));
+
+        //3d view portion
+        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+        model.setMainCameraActive();
         smgr->drawAll();
+
+        //radar view portion
+        if (graphicsHeight>graphicsHeight3d) {
+            driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+            model.setRadarCameraActive();
+            smgr->drawAll();
+        }
+
+        //gui
+        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
         driver->endScene();
 

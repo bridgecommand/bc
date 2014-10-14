@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, irr::f32 aspect) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -83,6 +83,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         camera.load(smgr,ownShip.getSceneNode(),views);
+        camera.setAspectRatio(aspect);
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,smgr,this);
@@ -99,13 +100,22 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load tidal information
         tide.load(worldPath);
 
-        //make a radar screen, setting parent and offset from camera (could also be from own ship)
-        core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //FIXME: hardcoded offset - should be read from the own ship model
-        radarScreen.load(smgr,camera.getSceneNode(),radarOffset);
+        //make a radar screen, setting parent and offset from own ship
+        core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
+        //core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //Previous offset from camera
+        radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
 
         //make radar image
         radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
         radarImage->fill(video::SColor(255, 0, 0, 255)); //Fill with background colour
+
+        //make radar camera
+        std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
+        radarViews.push_back(core::vector3df(0,0,-0.25));
+        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews);
+        radarCamera.setAspectRatio(1.0);
+        radarCamera.setNearValue(0.2);
+        radarCamera.setFarValue(0.3);
 
         //initialise offset
         offsetPosition = core::vector3d<u64>(0,0,0);
@@ -218,6 +228,16 @@ SimulationModel::~SimulationModel()
         radarCalculation.decreaseRange();
     }
 
+    void SimulationModel::setMainCameraActive()
+    {
+        camera.setActive();
+    }
+
+    void SimulationModel::setRadarCameraActive()
+    {
+        radarCamera.setActive();
+    }
+
     void SimulationModel::update()
     {
 
@@ -284,6 +304,7 @@ SimulationModel::~SimulationModel()
         //set radar screen position, and update it with a radar image from the radar calculation
         radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight,deltaTime);
         radarScreen.update(radarImage);
+        radarCamera.update();
 
         //send data to gui
         guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), radarCalculation.getRangeNm(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)

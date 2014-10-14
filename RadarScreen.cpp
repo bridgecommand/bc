@@ -69,3 +69,8 @@ void RadarScreen::update(video::IImage* radarImage)
 
 }
 
+irr::scene::ISceneNode* RadarScreen::getSceneNode() const
+{
+    return radarScreen;
+}
+

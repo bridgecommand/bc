@@ -27,6 +27,7 @@ class RadarScreen
 
         void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset);
         void update(irr::video::IImage* radarImage);
+        irr::scene::ISceneNode* getSceneNode() const;
 
 
     private:
