@@ -57,7 +57,8 @@ int main()
     //set size of camera window
     u32 graphicsWidth3d = graphicsWidth;
     u32 graphicsHeight3d = graphicsHeight*0.6;
-    f32 aspect = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
+    f32 aspect = (f32)graphicsWidth/(f32)graphicsHeight;
+    f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
 
     //create device
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
@@ -80,7 +81,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioName, aspect);
+    SimulationModel model(device, smgr, &guiMain, scenarioName);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
@@ -102,12 +103,18 @@ int main()
         driver->beginScene(true,true,video::SColor(255,100,101,140));
 
         //3d view portion
-        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+        if (guiMain.getShowInterface()) {
+            driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+            model.setAspectRatio(aspect3d);
+        } else {
+            driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
+            model.setAspectRatio(aspect);
+        }
         model.setMainCameraActive();
         smgr->drawAll();
 
         //radar view portion
-        if (graphicsHeight>graphicsHeight3d) {
+        if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {
             driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
             model.setRadarCameraActive();
             smgr->drawAll();

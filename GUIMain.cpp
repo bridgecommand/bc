@@ -65,6 +65,48 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
+
+        //show/hide interface
+        showInterface = true; //If we start with the 2d interface shown
+        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.12*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.12*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton->setVisible(false);
+
+    }
+
+    bool GUIMain::getShowInterface() const
+    {
+        return showInterface;
+    }
+
+    void GUIMain::toggleShow2dInterface()
+    {
+        showInterface = !showInterface;
+        updateVisibility();
+    }
+
+    void GUIMain::show2dInterface()
+    {
+        showInterface = true;
+        updateVisibility();
+    }
+
+    void GUIMain::hide2dInterface()
+    {
+        showInterface = false;
+        updateVisibility();
+    }
+
+    void GUIMain::updateVisibility()
+    {
+        //Items to show if we're showing interface
+        increaseRangeButton->setVisible(showInterface);
+        decreaseRangeButton->setVisible(showInterface);
+        dataDisplay->setVisible(showInterface);
+        hideInterfaceButton->setVisible(showInterface);
+
+        //Items to show if we're not
+        showInterfaceButton->setVisible(!showInterface);
     }
 
     void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 radarRangeNm, std::string currentTime, bool paused)

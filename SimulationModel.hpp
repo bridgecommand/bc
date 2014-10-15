@@ -43,7 +43,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, irr::f32 aspect);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const ;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -66,6 +66,7 @@ public:
     void decreaseRadarRange();
     void setMainCameraActive();
     void setRadarCameraActive();
+    void setAspectRatio(irr::f32 aspect);
     void update();
 
 private:

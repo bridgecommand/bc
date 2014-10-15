@@ -89,6 +89,16 @@ using namespace irr;
                     model->decreaseRadarRange();
                 }
 
+                if (id == GUIMain::GUI_ID_SHOW_INTERFACE_BUTTON)
+                {
+                    gui->show2dInterface();
+                }
+
+                if (id == GUIMain::GUI_ID_HIDE_INTERFACE_BUTTON)
+                {
+                    gui->hide2dInterface();
+                }
+
             }
 
 
@@ -164,6 +174,11 @@ using namespace irr;
                         break;
                     case KEY_SPACE:
                         model->changeView();
+                        break;
+
+                    //toggle full screen 3d
+                    case KEY_KEY_F:
+                        gui->toggleShow2dInterface();
                         break;
                 }
             }

@@ -35,11 +35,16 @@ public:
         GUI_ID_RUDDER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
         GUI_ID_RADAR_INCREASE_BUTTON,
-        GUI_ID_RADAR_DECREASE_BUTTON
+        GUI_ID_RADAR_DECREASE_BUTTON,
+        GUI_ID_SHOW_INTERFACE_BUTTON,
+        GUI_ID_HIDE_INTERFACE_BUTTON
     };
 
+    bool getShowInterface() const;
+    void toggleShow2dInterface();
+    void show2dInterface();
+    void hide2dInterface();
     void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 radarRangeNm, std::string currentTime, bool paused);
-
     void drawGUI();
 
 
@@ -58,6 +63,8 @@ private:
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* increaseRangeButton;
     irr::gui::IGUIButton* decreaseRangeButton;
+    irr::gui::IGUIButton* showInterfaceButton;
+    irr::gui::IGUIButton* hideInterfaceButton;
 
     irr::f32 guiHeading;
     irr::f32 guiSpeed;
@@ -65,8 +72,11 @@ private:
     irr::f32 guiRadarRangeNm;
     std::string guiTime;
     bool guiPaused;
+    bool showInterface;
 
     Lang* language;
+
+    void updateVisibility();
 
 };
 

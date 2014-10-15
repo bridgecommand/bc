@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, irr::f32 aspect) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -83,7 +83,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         camera.load(smgr,ownShip.getSceneNode(),views);
-        camera.setAspectRatio(aspect);
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,smgr,this);
@@ -236,6 +235,11 @@ SimulationModel::~SimulationModel()
     void SimulationModel::setRadarCameraActive()
     {
         radarCamera.setActive();
+    }
+
+    void SimulationModel::setAspectRatio(irr::f32 aspect)
+    {
+        camera.setAspectRatio(aspect);;
     }
 
     void SimulationModel::update()

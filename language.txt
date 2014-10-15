@@ -8,5 +8,7 @@ depth="Depth: "
 radar="Radar: "
 nm=" Nm"
 paused=" (Paused)"
+showinterface="Show"
+hideinterface="Hide"
 fps="FPS: "
 
