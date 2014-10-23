@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cstdlib> //For rand()
 
 using namespace irr;
 
@@ -206,15 +207,15 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
                 }
             }
 
-
-            //ToDo Add radar noise
-
             //Add land scan
             if (heightAboveLine>0) {
                 f32 radarLocalGradient = heightAboveLine/cellLength;
                 scanSlope = localSlope; //Highest so far on scan
                 scanArray[currentScanAngle][currentStep] += radarFactorLand*std::atan(radarLocalGradient)*(2/PI)/std::pow(localRange/M_IN_NM,3); //make a reflection off a plane wall at 1nm have a magnitude of 1*radarFactorLand
             }
+
+            //ToDo Add radar noise
+            scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,2,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
 
         } //End of for loop scanning out
 
@@ -262,15 +263,19 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
 //draw a bounded sector
 {
     //find the corner points (Fixme: Not quite right when the extreme point is on the outer curve)
-    irr::f32 point1X = centreX + std::sin(irr::core::DEGTORAD*startAngle)*innerRadius;
-    irr::f32 point1Y = centreY - std::cos(irr::core::DEGTORAD*startAngle)*innerRadius;
-    irr::f32 point2X = centreX + std::sin(irr::core::DEGTORAD*startAngle)*outerRadius;
-    irr::f32 point2Y = centreY - std::cos(irr::core::DEGTORAD*startAngle)*outerRadius;
-    irr::f32 point3X = centreX + std::sin(irr::core::DEGTORAD*endAngle)*outerRadius;
-    irr::f32 point3Y = centreY - std::cos(irr::core::DEGTORAD*endAngle)*outerRadius;
+    irr::f32 sinStartAngle = std::sin(irr::core::DEGTORAD*startAngle);
+    irr::f32 cosStartAngle = std::cos(irr::core::DEGTORAD*startAngle);
+    irr::f32 sinEndAngle = std::sin(irr::core::DEGTORAD*endAngle);
+    irr::f32 cosEndAngle = std::cos(irr::core::DEGTORAD*endAngle);
 
-    irr::f32 point4X = centreX + std::sin(irr::core::DEGTORAD*endAngle)*innerRadius;
-    irr::f32 point4Y = centreY - std::cos(irr::core::DEGTORAD*endAngle)*innerRadius;
+    irr::f32 point1X = centreX + sinStartAngle*innerRadius;
+    irr::f32 point1Y = centreY - cosStartAngle*innerRadius;
+    irr::f32 point2X = centreX + sinStartAngle*outerRadius;
+    irr::f32 point2Y = centreY - cosStartAngle*outerRadius;
+    irr::f32 point3X = centreX + sinEndAngle*outerRadius;
+    irr::f32 point3Y = centreY - cosEndAngle*outerRadius;
+    irr::f32 point4X = centreX + sinEndAngle*innerRadius;
+    irr::f32 point4Y = centreY - cosEndAngle*innerRadius;
 
     //find the 'bounding box'
     irr::f32 minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
@@ -283,17 +288,21 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
 
     //draw the points
     for (int i = minX;i<=maxX;i++) {
+        irr::f32 localX = i - centreX; //position referred to centre
+        irr::f32 localXSq = std::pow(localX,2);
+
         for (int j = minY;j<=maxY;j++) {
 
-            irr::f32 localX = i - centreX; //position referred to centre
             irr::f32 localY = j - centreY; //position referred to centre
 
-            irr::f32 localRadiusSqr = std::pow(localX,2) + std::pow(localY,2); //check radius of points
-            irr::f32 localAngle = irr::core::RADTODEG*std::atan2(localX,-1*localY); //check angle of point
+            irr::f32 localRadiusSqr = localXSq + localY*localY; //check radius of points
+            //irr::f32 localAngle = irr::core::RADTODEG*std::atan2(localX,-1*localY); //check angle of point
+            //irr::f32 localAngle = irr::core::RADTODEG*fast_atan2f(localX,-1*localY);
 
             //if the point is within the limits, plot it
             if (localRadiusSqr >= innerRadiusSqr && localRadiusSqr <= outerRadiusSqr) {
-                if (Angles::isAngleBetween(localAngle,startAngle,endAngle)) {
+                //if (Angles::isAngleBetween(localAngle,startAngle,endAngle)) {
+                if (Angles::isAngleBetween(core::vector2df(localX,-1*localY),core::vector2df(sinStartAngle,cosStartAngle),core::vector2df(sinEndAngle,cosEndAngle))) {
                     //Plot i,j
                     radarImage->setPixel(i,j,video::SColor(alpha,red,green,blue));
                 }
@@ -327,4 +336,55 @@ irr::f32 RadarCalculation::rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, ir
 
 	return distance;
 
+}
+
+irr::f32 RadarCalculation::radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity)
+//radarRange in metres
+{
+	irr::f32 radarNoiseVal = 0;
+
+	if (radarRange != 0) {
+
+		irr::f32 randomValue;
+		irr::f32 randomValueSea;
+		irr::f32 randomValueWithTail=0;
+		irr::f32 randomValueWithTailSea=0;
+		irr::f32 randomValueWithTailRain=0;
+
+		randomValue = (irr::f32)rand()/RAND_MAX; //store this so we can manipulate the random distribution
+		randomValueSea = (irr::f32)rand()/RAND_MAX; //different value for sea clutter
+
+		//reshape the uniform random distribution into one with an infinite tail up to high values
+		if (randomValue > 0) {
+            //3rd power is to shape distribution so sufficient high energy returns are generated
+			randomValueWithTail = randomValue * pow( (1/randomValue) - 1, 3);
+		}
+
+		//same for sea clutter noise
+		if (randomValueSea > 0) {
+            //3rd power is to shape distribution so sufficient high energy returns are generated
+			randomValueWithTailSea = randomValueSea * pow((1/randomValueSea) - 1, 3);
+		}
+
+		//less high power returns for rain clutter - roughly gaussian
+		randomValueWithTailRain = ((irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX)/4.0;
+
+		if (radarInclinationAngle > 0) {
+            randomValueWithTailSea = 0; //if radar is scanning upwards, must be above sea surface, so don't add clutter
+		}
+
+		//Apply directional correction to the clutter, so most is upwind, some is downwind. Mean value = 1
+		irr::f32 relativeWindAngle = (windDirectionDeg - radarBrgDeg)*RAD_IN_DEG;
+		irr::f32 windCorrectionFactor = 2.5*(0.5*(cos(2*relativeWindAngle)+1))*(0.5+sin(relativeWindAngle/2.0)*0.5);
+		randomValueWithTailSea = randomValueWithTailSea * windCorrectionFactor;
+
+		//noise is constant
+		radarNoiseVal = radarNoiseLevel * randomValueWithTail;
+		//clutter falls off with distance^3, and is normalised for weather#=6
+		radarNoiseVal += radarSeaClutter * randomValueWithTailSea * (weather/6.0) * pow((M_IN_NM/radarRange),3);
+		//rain clutter falls off with distance^2, and is normalised for rainIntensity#=10
+		radarNoiseVal += radarRainClutter * randomValueWithTailRain * (rainIntensity/10.0)*(rainIntensity/10.0) * pow((M_IN_NM/radarRange),2);
+	}
+
+	return radarNoiseVal;
 }

@@ -15,6 +15,18 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Angles.hpp"
+#include <algorithm>
+#include <iostream>
+
+bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df startAng, irr::core::vector2df endAng)
+{
+    //Aim is to be a faster way of calculating if an angle is between two others
+
+    //ToDo: This seems to work, but needs proper checking
+    //Ref: http://stackoverflow.com/a/13641047, inverted for different hand of rotation
+
+    return ((startAng.Y*angle.X-startAng.X*angle.Y) * (startAng.Y*endAng.X-startAng.X*endAng.Y) > 0);
+}
 
 bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
 
@@ -71,4 +83,11 @@ irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pi
     total*=r;
 
     return total.getRotationDegrees();
+}
+
+int Angles::sign(float in)
+{
+    if( in > 0 ) {return 1;}
+    if( in < 0 ) {return -1;}
+    return 0;
 }
