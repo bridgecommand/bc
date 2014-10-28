@@ -35,13 +35,15 @@ RadarCalculation::RadarCalculation()
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
-    scanArrayPrevious.resize(360,std::vector<f32>(rangeResolution,0.0));
+    scanArrayAmplified.resize(360,std::vector<f32>(rangeResolution,0.0));
+    scanArrayAmplifiedPrevious.resize(360,std::vector<f32>(rangeResolution,0.0));
 
     //initialise arrays
-    for(int i = 0; i<360; i++) {
-        for(int j = 0; j<rangeResolution; j++) {
+    for(u32 i = 0; i<360; i++) {
+        for(u32 j = 0; j<rangeResolution; j++) {
             scanArray[i][j] = 0.0;
-            scanArrayPrevious[i][j] = -1.0;
+            scanArrayAmplified[i][j] = 0.0;
+            scanArrayAmplifiedPrevious[i][j] = -1.0;
         }
     }
 
@@ -82,7 +84,7 @@ irr::f32 RadarCalculation::getRangeNm() const
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
-    render(radarImage,1000); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
+    render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
 void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
@@ -110,15 +112,14 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
 
     irr::u32 scansPerLoop = 80*deltaTime; //Fixme: Change this to get a constant configurable scan rate (within reason)
     if (scansPerLoop > 10) {scansPerLoop=10;} //Limit to reasonable bounds
-    for(int i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
+    for(u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
         f32 scanSlope = 0.0; //Slope at start of scan
-        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) {
+        for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Clear old value
-            scanArrayPrevious[currentScanAngle][currentStep]=scanArray[currentScanAngle][currentStep];
+            scanArrayAmplifiedPrevious[currentScanAngle][currentStep]=scanArrayAmplified[currentScanAngle][currentStep];
             scanArray[currentScanAngle][currentStep] = 0.0;
-
 
             //Get location of area being scanned
             f32 localRange = cellLength*currentStep;
@@ -217,6 +218,13 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             //ToDo Add radar noise
             scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,2,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
 
+            //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
+            irr::f32 intensityGradient = scanArray[currentScanAngle][currentStep] - scanArray[currentScanAngle][currentStep-1];
+            irr::f32 rainFilter = 0.1; //0-1 TODO: This should be settable
+            irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanAngle][currentStep]*(1-rainFilter);
+
+            scanArrayAmplified[currentScanAngle][currentStep] = filteredSignal*1000;
+
         } //End of for loop scanning out
 
         //Increment scan angle for next time
@@ -227,21 +235,21 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     } //End of repeatable scan section
 }
 
-void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 amplification)
+void RadarCalculation::render(irr::video::IImage * radarImage)
 {
     //*************************
     //generate image from array
     //*************************
 
     //Get image size
-    int bitmapWidth = radarImage->getDimension().Width;
+    u32 bitmapWidth = radarImage->getDimension().Width;
     if (radarImage->getDimension().Height != bitmapWidth)
         {return;} //Check image is square, and return without action if not
 
     //draw from array to image
     f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
     for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
-        for (int currentStep = 1; currentStep<rangeResolution; currentStep++) {
+        for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             irr::f32 cellMinAngle = scanAngle - scanAngleStep/2.0;
             irr::f32 cellMaxAngle = scanAngle + scanAngleStep/2.0;
@@ -249,10 +257,11 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 amplific
             irr::f32 cellMaxRange = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
 
             //If the sector has changed, draw it
-            if(scanArray[scanAngle][currentStep]!=scanArrayPrevious[scanAngle][currentStep])
+            if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep])
             {
-                u32 pixelColour=255*amplification*scanArray[scanAngle][currentStep];
+                s32 pixelColour=255*(scanArrayAmplified[scanAngle][currentStep]);
                 if (pixelColour>255) {pixelColour = 255;}
+                if (pixelColour<0)   {pixelColour =   0;}
                 drawSector(radarImage,centrePixel,centrePixel,cellMinRange,cellMaxRange,cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
             }
         }
@@ -289,7 +298,7 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
     //draw the points
     for (int i = minX;i<=maxX;i++) {
         irr::f32 localX = i - centreX; //position referred to centre
-        irr::f32 localXSq = std::pow(localX,2);
+        irr::f32 localXSq = localX*localX;
 
         for (int j = minY;j<=maxY;j++) {
 
