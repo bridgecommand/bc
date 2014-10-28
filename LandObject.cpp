@@ -56,7 +56,7 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(landObject->getMaterialCount()>0) {
-        for(int mat=0;mat<landObject->getMaterialCount();mat++) {
+        for(u32 mat=0;mat<landObject->getMaterialCount();mat++) {
             landObject->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }

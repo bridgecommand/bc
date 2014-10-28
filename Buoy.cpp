@@ -58,7 +58,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
-        for(int mat=0;mat<buoy->getMaterialCount();mat++) {
+        for(u32 mat=0;mat<buoy->getMaterialCount();mat++) {
             buoy->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }

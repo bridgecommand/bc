@@ -115,7 +115,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
         //ToDo: Tell user that view positions couldn't be loaded
         exit(EXIT_FAILURE);
     }
-    for(int i=1;i<=numberOfViews;i++) {
+    for(u32 i=1;i<=numberOfViews;i++) {
         f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
         f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
         f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
@@ -147,7 +147,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(int mat=0;mat<ship->getMaterialCount();mat++) {
+        for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
             ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }

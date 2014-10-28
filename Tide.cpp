@@ -52,7 +52,7 @@ void Tide::load(const std::string& worldName) {
 
     //Load other components
     tidalHarmonic loadingHarmonic;
-    for(int i=1;i<=numberOfHarmonics; i++) {
+    for(u32 i=1;i<=numberOfHarmonics; i++) {
         loadingHarmonic.amplitude = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Amplitude",i));
         loadingHarmonic.offset = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Offset",i));
         loadingHarmonic.speed = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Speed",i));

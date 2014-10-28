@@ -76,8 +76,6 @@ void Water::load(irr::scene::ISceneManager* smgr)
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition)
 {
-    //Update water so it's always seen from our position
-    core::vector3df localOriginPosition = viewPosition;
 
     //Round these to nearest segmentWidth
     f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);

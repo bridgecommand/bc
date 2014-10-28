@@ -79,7 +79,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(int mat=0;mat<ship->getMaterialCount();mat++) {
+        for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
             ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -143,7 +143,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     setRotation(core::vector3df(0, hdg, 0)); //Global vectors
 
     //for each light, find range and angle
-    for(int currentLight = 0; currentLight<navLights.size(); currentLight++) {
+    for(std::vector<NavLight>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {
         navLights[currentLight].update(scenarioTime,viewPosition, lightLevel);
     }
 

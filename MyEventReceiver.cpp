@@ -186,7 +186,7 @@ using namespace irr;
 
 		//From joystick (actually polled, once per run():
         if (event.EventType == EET_JOYSTICK_INPUT_EVENT) {
-            int numberOfAxes = event.JoystickEvent.NUMBER_OF_AXES;
+            u32 numberOfAxes = event.JoystickEvent.NUMBER_OF_AXES;
             //Do joystick stuff here
             //Todo: track joystick changes, so if not changing, the GUI inputs are used - partially implemented but need to check for jitter etc
             //Todo: Also implement multiplier/offset and joystick map.
