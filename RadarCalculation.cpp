@@ -81,13 +81,13 @@ irr::f32 RadarCalculation::getRangeNm() const
     return radarRangeNm;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime, irr::f32 radarRainClutterReduction, irr::f32 radarSeaClutterReduction, irr::f32 radarGain)
 {
-    scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
+    scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime, radarRainClutterReduction, radarSeaClutterReduction, radarGain); // scan into scanArray[row (angle)][column (step)]
     render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime, irr::f32 radarRainClutterReduction, irr::f32 radarSeaClutterReduction, irr::f32 radarGain)
 {
     core::vector3df position = ownShip.getPosition();
     irr::f32 radarScannerHeight = 2.0;//Fixme: Hardcoding
@@ -219,11 +219,28 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,2,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
-            irr::f32 intensityGradient = scanArray[currentScanAngle][currentStep] - scanArray[currentScanAngle][currentStep-1];
-            irr::f32 rainFilter = 0.1; //0-1 TODO: This should be settable
-            irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanAngle][currentStep]*(1-rainFilter);
 
-            scanArrayAmplified[currentScanAngle][currentStep] = filteredSignal*1000;
+            //Calculate from parameters
+            //localRange is range in metres
+            irr::f32 rainFilter = pow(radarRainClutterReduction/100.0,0.1);
+            irr::f32 maxSTCdistance = 8*M_IN_NM*radarSeaClutterReduction/100.0; //This sets the distance at which the swept gain control becomes 1, and is 8Nm at full reduction
+            irr::f32 radarSTCGain;
+            if(maxSTCdistance>0) {
+                radarSTCGain = pow(localRange/maxSTCdistance,3);
+                if (radarSTCGain > 1) {radarSTCGain=1;} //Gain should never be increased (above 1.0)
+            } else {
+                radarSTCGain = 1;
+            }
+
+            //calculate high pass filter
+            irr::f32 intensityGradient = scanArray[currentScanAngle][currentStep] - scanArray[currentScanAngle][currentStep-1];
+            if (intensityGradient<0) {intensityGradient=0;}
+
+            irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanAngle][currentStep]*(1-rainFilter);
+            irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;//FIXME: Check if gain should increase with distance
+            //take log of signal
+
+            scanArrayAmplified[currentScanAngle][currentStep] = log(filteredSignal*radarLocalGain);
 
         } //End of for loop scanning out
 
@@ -248,13 +265,21 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
 
     //draw from array to image
     f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
-    for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
-        for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
-            irr::f32 cellMinAngle = scanAngle - scanAngleStep/2.0;
-            irr::f32 cellMaxAngle = scanAngle + scanAngleStep/2.0;
-            irr::f32 cellMinRange = ((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
-            irr::f32 cellMaxRange = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
+    //precalculate cell max/min range for speed outside nested loop
+    irr::f32 cellMinRange [rangeResolution];
+    irr::f32 cellMaxRange [rangeResolution];
+    for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
+        cellMinRange[currentStep] = ((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
+        cellMaxRange[currentStep] = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
+    }
+
+    for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
+
+        irr::f32 cellMinAngle = scanAngle - scanAngleStep/2.0;
+        irr::f32 cellMaxAngle = scanAngle + scanAngleStep/2.0;
+
+        for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             //If the sector has changed, draw it
             if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep])
@@ -262,7 +287,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
                 s32 pixelColour=255*(scanArrayAmplified[scanAngle][currentStep]);
                 if (pixelColour>255) {pixelColour = 255;}
                 if (pixelColour<0)   {pixelColour =   0;}
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange,cellMaxRange,cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
             }
         }
     }
