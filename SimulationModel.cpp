@@ -227,6 +227,21 @@ SimulationModel::~SimulationModel()
         radarCalculation.decreaseRange();
     }
 
+    void SimulationModel::setRadarGain(irr::f32 value)
+    {
+        radarCalculation.setGain(value);
+    }
+
+    void SimulationModel::setRadarClutter(irr::f32 value)
+    {
+        radarCalculation.setClutter(value);
+    }
+
+    void SimulationModel::setRadarRain(irr::f32 value)
+    {
+        radarCalculation.setRainClutter(value);
+    }
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();
@@ -306,11 +321,11 @@ SimulationModel::~SimulationModel()
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight,deltaTime, 0, 0, 50); //radarRainClutterReduction, radarSeaClutterReduction and radarGain are all set in range 0-100
+        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight,deltaTime);
         radarScreen.update(radarImage);
         radarCamera.update();
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), radarCalculation.getRangeNm(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
     }
 

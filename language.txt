@@ -1,3 +1,6 @@
+Bridge Command Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
 ok="OK"
 scnChoose="Please choose a scenario:"
 loadingmsg="Loading scenario..."
@@ -6,6 +9,11 @@ hdg="Heading: "
 spd="Speed: "
 depth="Depth: "
 radar="Radar: "
+increaserange="Increase\nRange"
+decreaserange="Decrease\nRange"
+gain="Gain"
+rain="Rain"
+clutter="Clutter"
 nm=" Nm"
 paused=" (Paused)"
 showinterface="Show"

@@ -60,8 +60,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiSpeed = 0;
 
         //add radar buttons
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.84*sh,0.63*su,0.91*sh),0,GUI_ID_RADAR_INCREASE_BUTTON,L"/\\");//i18n
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.58*su,0.92*sh,0.63*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,L"\\/");//i18n
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.84*sh,0.625*su,0.91*sh),0,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.92*sh,0.625*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        radarGainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.628*su,0.84*sh,0.651*su,0.99*sh),0,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.651*su,0.84*sh,0.674*su,0.99*sh),0,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.674*su,0.84*sh,0.697*su,0.99*sh),0,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarGainScrollbar->setSmallStep(2);
+        radarClutterScrollbar->setSmallStep(2);
+        radarRainScrollbar->setSmallStep(2);
+        radarGainScrollbar->setToolTipText(language->translate("gain").c_str());
+        radarClutterScrollbar->setToolTipText(language->translate("clutter").c_str());
+        radarRainScrollbar->setToolTipText(language->translate("rain").c_str());
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
@@ -104,12 +113,15 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         decreaseRangeButton->setVisible(showInterface);
         dataDisplay->setVisible(showInterface);
         hideInterfaceButton->setVisible(showInterface);
+        radarGainScrollbar->setVisible(showInterface);
+        radarRainScrollbar->setVisible(showInterface);
+        radarClutterScrollbar->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 radarRangeNm, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -117,6 +129,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         portScrollbar->setPos(portEng * -100);//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         stbdScrollbar->setPos(stbdEng * -100);
         rudderScrollbar->setPos(rudder);
+        radarGainScrollbar->setPos(radarGain);
+        radarClutterScrollbar->setPos(radarClutter);
+        radarRainScrollbar->setPos(radarRain);
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots

@@ -71,6 +71,18 @@ using namespace irr;
                   {
                         model->setRudder(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
                   }
+              if (id == GUIMain::GUI_ID_RADAR_GAIN_SCROLL_BAR)
+                  {
+                        model->setRadarGain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
+              if (id == GUIMain::GUI_ID_RADAR_CLUTTER_SCROLL_BAR)
+                  {
+                        model->setRadarClutter(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
+              if (id == GUIMain::GUI_ID_RADAR_RAIN_SCROLL_BAR)
+                  {
+                        model->setRadarRain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {

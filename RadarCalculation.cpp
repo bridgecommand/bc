@@ -32,6 +32,11 @@ using namespace irr;
 
 RadarCalculation::RadarCalculation()
 {
+    //Radar display parameters, all 0-100
+    radarGain = 50;
+    radarRainClutterReduction=0;
+    radarSeaClutterReduction=0;
+
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
@@ -81,13 +86,43 @@ irr::f32 RadarCalculation::getRangeNm() const
     return radarRangeNm;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime, irr::f32 radarRainClutterReduction, irr::f32 radarSeaClutterReduction, irr::f32 radarGain)
+void RadarCalculation::setGain(irr::f32 value)
 {
-    scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime, radarRainClutterReduction, radarSeaClutterReduction, radarGain); // scan into scanArray[row (angle)][column (step)]
+    radarGain = value;
+}
+
+void RadarCalculation::setClutter(irr::f32 value)
+{
+    radarSeaClutterReduction = value;
+}
+
+void RadarCalculation::setRainClutter(irr::f32 value)
+{
+    radarRainClutterReduction = value;
+}
+
+irr::f32 RadarCalculation::getGain() const
+{
+    return radarGain;
+}
+
+irr::f32 RadarCalculation::getClutter() const
+{
+    return radarSeaClutterReduction;
+}
+
+irr::f32 RadarCalculation::getRainClutter() const
+{
+    return radarRainClutterReduction;
+}
+
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
+{
+    scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
     render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime, irr::f32 radarRainClutterReduction, irr::f32 radarSeaClutterReduction, irr::f32 radarGain)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     core::vector3df position = ownShip.getPosition();
     irr::f32 radarScannerHeight = 2.0;//Fixme: Hardcoding

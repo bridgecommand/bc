@@ -64,6 +64,9 @@ public:
     void changeView();
     void increaseRadarRange();
     void decreaseRadarRange();
+    void setRadarGain(irr::f32 value);
+    void setRadarClutter(irr::f32 value);
+    void setRadarRain(irr::f32 value);
     void setMainCameraActive();
     void setRadarCameraActive();
     void setAspectRatio(irr::f32 aspect);

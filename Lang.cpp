@@ -34,6 +34,15 @@ irr::core::stringw Lang::translate(std::string phraseName)
         translatedPhrase = phraseName;
     }
 
+    //Convert '\n' characters within string to a newline - based on http://stackoverflow.com/a/24315631
+    size_t start_pos = 0;
+    std::string from = "\\n";
+    std::string to = "\n";
+    while((start_pos = translatedPhrase.find(from, start_pos)) != std::string::npos) {
+        translatedPhrase.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+
     //convert to stringw
     core::stringw returnPhrase(translatedPhrase.c_str());
 

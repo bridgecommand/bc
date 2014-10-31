@@ -36,6 +36,9 @@ public:
         GUI_ID_START_BUTTON,
         GUI_ID_RADAR_INCREASE_BUTTON,
         GUI_ID_RADAR_DECREASE_BUTTON,
+        GUI_ID_RADAR_GAIN_SCROLL_BAR,
+        GUI_ID_RADAR_CLUTTER_SCROLL_BAR,
+        GUI_ID_RADAR_RAIN_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON
     };
@@ -44,7 +47,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
-    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 radarRangeNm, std::string currentTime, bool paused);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
     void drawGUI();
 
 
@@ -63,6 +66,9 @@ private:
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* increaseRangeButton;
     irr::gui::IGUIButton* decreaseRangeButton;
+    irr::gui::IGUIScrollBar* radarGainScrollbar;
+    irr::gui::IGUIScrollBar* radarClutterScrollbar;
+    irr::gui::IGUIScrollBar* radarRainScrollbar;
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
 
@@ -70,6 +76,9 @@ private:
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
     irr::f32 guiRadarRangeNm;
+    irr::f32 guiRadarGain;
+    irr::f32 guiRadarClutter;
+    irr::f32 guiRadarRain;
     std::string guiTime;
     bool guiPaused;
     bool showInterface;
