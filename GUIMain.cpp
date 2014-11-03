@@ -180,4 +180,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         }
 
         guienv->drawAll();
+
+        //draw the heading line on the radar
+        if (showInterface) {
+            u32 su = device->getVideoDriver()->getScreenSize().Width;
+            u32 sh = device->getVideoDriver()->getScreenSize().Height;
+            s32 centreX = su-0.2*sh;
+            s32 centreY = 0.8*sh;
+            s32 deltaX = 0.2*sh*sin(core::DEGTORAD*guiHeading);
+            s32 deltaY = -0.2*sh*cos(core::DEGTORAD*guiHeading);
+            core::position2d<s32> radarCentre (centreX,centreY);
+            core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
+            device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255));
+        }
     }

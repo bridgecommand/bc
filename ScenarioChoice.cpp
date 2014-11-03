@@ -75,7 +75,7 @@ std::string ScenarioChoice::chooseScenario()
     }
 
     //Get name of selected scenario
-    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= scenarioList.size()) {
+    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (s32)scenarioList.size()) {
         exit(EXIT_FAILURE); //No scenario loaded
     }
     std::string scenarioName = scenarioList[startupReceiver.getScenarioSelected()];

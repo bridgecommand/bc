@@ -141,6 +141,9 @@ using namespace irr;
                     case KEY_RIGHT:
                         model->lookStbd();
                         break;
+                    default:
+                        //don't do anything
+                        break;
                 }
 
             } else {
@@ -175,6 +178,9 @@ using namespace irr;
                         break;
                     case KEY_KEY_7:
                         model->setAccelerator(3600.0);
+                        break;
+                    default:
+                        //don't do anything
                         break;
 
                     //Camera look
