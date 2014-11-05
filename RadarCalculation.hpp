@@ -52,7 +52,8 @@ class RadarCalculation
         irr::s32 currentScanAngle;
         irr::u32 scanAngleStep;
         irr::u32 rangeResolution;
-        irr::f32 radarRangeNm;
+        irr::u32 radarRangeIndex;
+        std::vector<irr::f32> radarRangeNm;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
         void render(irr::video::IImage * radarImage);

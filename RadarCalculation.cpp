@@ -54,7 +54,17 @@ RadarCalculation::RadarCalculation()
 
     currentScanAngle=0;
 
-    radarRangeNm = 1.0; //Initial Radar Range
+    //Set radar ranges: Fixme: Should load from own ship radar.ini file
+    radarRangeNm.push_back(0.5);
+    radarRangeNm.push_back(1.0);
+    radarRangeNm.push_back(1.5);
+    radarRangeNm.push_back(3.0);
+    radarRangeNm.push_back(6.0);
+    radarRangeNm.push_back(12.0);
+    radarRangeNm.push_back(24.0);
+    //Initial radar range
+    radarRangeIndex=2;
+
     scanAngleStep=2;
 }
 
@@ -65,25 +75,21 @@ RadarCalculation::~RadarCalculation()
 
 void RadarCalculation::decreaseRange()
 {
-    radarRangeNm = radarRangeNm - 0.5;
-    if (radarRangeNm < 0.5)
-    {
-        radarRangeNm = 0.5;
+    if (radarRangeIndex>0) {
+        radarRangeIndex--;
     }
 }
 
 void RadarCalculation::increaseRange()
 {
-    radarRangeNm = radarRangeNm + 0.5;
-    if (radarRangeNm > 12.0)
-    {
-        radarRangeNm = 12.0;
+    if (radarRangeIndex<radarRangeNm.size()-1) {
+        radarRangeIndex++;
     }
 }
 
 irr::f32 RadarCalculation::getRangeNm() const
 {
-    return radarRangeNm;
+    return radarRangeNm.at(radarRangeIndex); //Assume that radarRangeIndex is in bounds
 }
 
 void RadarCalculation::setGain(irr::f32 value)
@@ -132,7 +138,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     irr::f32 radarFactorVessel=0.0001;
 
     //Convert range to cell size
-    irr::f32 cellLength = M_IN_NM*radarRangeNm/rangeResolution;
+    irr::f32 cellLength = M_IN_NM*radarRangeNm.at(radarRangeIndex)/rangeResolution; ; //Assume that radarRangeIndex is in bounds
 
     //Load radar data for other contacts
     std::vector<RadarData> radarData;
