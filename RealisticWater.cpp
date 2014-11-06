@@ -128,6 +128,8 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 
 	if (IsVisible)
 	{
+		core::rect<s32> currentViewPort = _videoDriver->getViewPort(); //Get the previous viewPort
+
 		setVisible(false); //hide the water
 
 		//refraction
@@ -144,6 +146,11 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 
 		//get current camera
 		scene::ICameraSceneNode* currentCamera = _sceneManager->getActiveCamera();
+		f32 currentAspect = currentCamera->getAspectRatio();
+
+		//use this aspect ratio
+		_camera->setAspectRatio(currentAspect);
+
 
 		//set FOV anf far value from current camera
 		_camera->setFarValue(currentCamera->getFarValue());
@@ -178,7 +185,14 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 		_sceneManager->setActiveCamera(currentCamera);
 
 		setVisible(true); //show it again
+
+        //Reset :: Fixme: Doesn't seem to be working
+        _videoDriver->setViewPort(core::rect<s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
+        _videoDriver->setViewPort(currentViewPort);
+        currentCamera->setAspectRatio(currentAspect);
+
 	}
+
 }
 
 void RealisticWaterSceneNode::render()
