@@ -19,8 +19,10 @@ author. Each model is credited to its author in the documentation
 distributed with Bridge Command.
 
 Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), 
-and the ENet networking library (http://enet.bespin.org).
-The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.
+the ENet networking library (http://enet.bespin.org), and the RealisticWaterSceneNode 
+by elvman (https://github.com/elvman/RealisticWaterSceneNode)
+The Irrlicht Engine is based in part on the work of the Independent JPEG Group, 
+the zlib, and libpng.
 
 The configuration editor is distributed under the Apache Licence 2.0
 (http://code.google.com/p/ini-settings-editor.)

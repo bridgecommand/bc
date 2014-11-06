@@ -27,6 +27,8 @@
 #include "Constants.hpp"
 #include "Lang.hpp"
 
+#include "RealisticWater.h"
+
 #include <cstdlib> //For rand(), srand()
 #include <vector>
 #include <sstream>
@@ -82,6 +84,10 @@ int main()
 
     //Create simulation model
     SimulationModel model(device, smgr, &guiMain, scenarioName);
+
+    //load realistic water
+    RealisticWaterSceneNode* realisticWater;
+    realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);

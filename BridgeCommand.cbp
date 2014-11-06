@@ -10,6 +10,9 @@
 				<Option output="BridgeCommand" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wall" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
@@ -61,6 +64,8 @@
 		<Unit filename="RadarData.hpp" />
 		<Unit filename="RadarScreen.cpp" />
 		<Unit filename="RadarScreen.hpp" />
+		<Unit filename="RealisticWater.cpp" />
+		<Unit filename="RealisticWater.h" />
 		<Unit filename="ScenarioChoice.cpp" />
 		<Unit filename="ScenarioChoice.hpp" />
 		<Unit filename="Ship.cpp" />

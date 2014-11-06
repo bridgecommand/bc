@@ -69,7 +69,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         terrain.load(worldPath, smgr);
 
         //add water
-        water.load(smgr);
+        //water.load(smgr);
 
         //sky box/dome
         Sky sky (smgr);
@@ -254,7 +254,7 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setAspectRatio(irr::f32 aspect)
     {
-        camera.setAspectRatio(aspect);;
+        camera.setAspectRatio(aspect);
     }
 
     void SimulationModel::update()
@@ -292,16 +292,17 @@ SimulationModel::~SimulationModel()
         ownShip.update(deltaTime, scenarioTime, tideHeight);
 
         //update water position
-        water.update(tideHeight,camera.getPosition());
+        //water.update(tideHeight,camera.getPosition());
 
         //Normalise positions if required (More than 2000 metres from origin)
-        if(ownShip.getPosition().getLength() > 2000) {
+        //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
+        if(ownShip.getPosition().getLength() > 1000) {
             core::vector3df ownShipPos = ownShip.getPosition();
             irr::s32 deltaX = -1*(s32)ownShipPos.X;
             irr::s32 deltaZ = -1*(s32)ownShipPos.Z;
             //Round to nearest 1000 metres - water tile width, to avoid jumps
-            deltaX = 1000.0*Utilities::round(deltaX/1000.0);
-            deltaZ = 1000.0*Utilities::round(deltaZ/1000.0);
+            deltaX = 500.0*Utilities::round(deltaX/500.0);
+            deltaZ = 500.0*Utilities::round(deltaZ/500.0);
 
             //Move all objects
             ownShip.moveNode(deltaX,0,deltaZ);
@@ -316,6 +317,7 @@ SimulationModel::~SimulationModel()
             offsetPosition.Z -= deltaZ;
             std::cout << "Normalised, offset X: " << offsetPosition.X << " Z: " << offsetPosition.Z <<std::endl;
         }
+
 
         //update the camera position
         camera.update();
