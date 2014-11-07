@@ -27,8 +27,6 @@
 #include "Constants.hpp"
 #include "Lang.hpp"
 
-#include "RealisticWater.h"
-
 #include <cstdlib> //For rand(), srand()
 #include <vector>
 #include <sstream>
@@ -86,7 +84,7 @@ int main()
     SimulationModel model(device, smgr, &guiMain, scenarioName);
 
     //load realistic water
-    RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+    //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
@@ -121,11 +119,12 @@ int main()
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {
-            realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+            //Fixme: May want to re-introduce this
+            //realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
             driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
             model.setRadarCameraActive();
             smgr->drawAll();
-            realisticWater->setVisible(true);
+            //realisticWater->setVisible(true);
         }
 
         //gui

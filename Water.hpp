@@ -18,6 +18,7 @@
 #define __WATER_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "RealisticWater.h"
 
 class Water
 {
@@ -28,8 +29,9 @@ class Water
         void update(irr::f32 tideHeight, irr::core::vector3df viewPosition);
 
     private:
-        irr::scene::ISceneNode* waterNode;
-        irr::f32 tileWidth;
+        //irr::scene::ISceneNode* waterNode;
+        RealisticWaterSceneNode* realisticWater;
+        //irr::f32 tileWidth;
 };
 
 #endif

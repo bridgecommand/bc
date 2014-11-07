@@ -69,7 +69,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         terrain.load(worldPath, smgr);
 
         //add water
-        //water.load(smgr);
+        water.load(smgr);
 
         //sky box/dome
         Sky sky (smgr);
@@ -292,7 +292,7 @@ SimulationModel::~SimulationModel()
         ownShip.update(deltaTime, scenarioTime, tideHeight);
 
         //update water position
-        //water.update(tideHeight,camera.getPosition());
+        water.update(tideHeight,camera.getPosition());
 
         //Normalise positions if required (More than 2000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE

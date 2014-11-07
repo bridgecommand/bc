@@ -36,6 +36,9 @@ Water::~Water()
 
 void Water::load(irr::scene::ISceneManager* smgr)
 {
+    realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(1024, 1024),smgr->getRootSceneNode());
+    realisticWater->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+    /*
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
     //Set tile width
@@ -72,16 +75,20 @@ void Water::load(irr::scene::ISceneManager* smgr)
 
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
     waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+    */
 }
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition)
 {
-
+    realisticWater->setPosition(core::vector3df(0,tideHeight,0));
+    realisticWater->setWaveHeight(0.5);
+    /*
     //Round these to nearest segmentWidth
     f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
     f32 yPos = tideHeight;
     f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
+    */
 
 }
