@@ -77,8 +77,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.12*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.12*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
     }
