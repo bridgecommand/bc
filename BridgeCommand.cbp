@@ -85,6 +85,8 @@
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="shaders/Water_ps.glsl" />
+		<Unit filename="shaders/Water_vs.glsl" />
 		<Extensions>
 			<code_completion />
 			<envvars />

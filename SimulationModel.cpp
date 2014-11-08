@@ -292,7 +292,7 @@ SimulationModel::~SimulationModel()
         ownShip.update(deltaTime, scenarioTime, tideHeight);
 
         //update water position
-        water.update(tideHeight,camera.getPosition());
+        water.update(tideHeight,camera.getPosition(),light.getLightLevel());
 
         //Normalise positions if required (More than 2000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE

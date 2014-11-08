@@ -43,7 +43,7 @@ public:
 
 	// renders terrain
 	virtual void render();
-    
+
 	// returns the axis aligned bounding box of terrain
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
@@ -55,6 +55,7 @@ public:
 
 	void setWaterColor(const video::SColorf& waterColor);
 	void setColorBlendFactor(f32 colorBlendFactor);
+	void setLightIntensity(f32 lightIntensity);
 
 private:
 
@@ -63,14 +64,14 @@ private:
 
 	video::IVideoDriver*			_videoDriver;
 	scene::ISceneManager*			_sceneManager;
-	
+
 	core::dimension2d<f32>			_size;
 
 	s32								_shaderMaterial;
 
 	scene::IAnimatedMesh*			_waterMesh;
 
-	video::ITexture*				_refractionMap;
+	//video::ITexture*				_refractionMap;
 	video::ITexture*				_reflectionMap;
 
 	f32								_windForce;

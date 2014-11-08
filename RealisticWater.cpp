@@ -28,8 +28,8 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 												 const irr::core::stringc& resourcePath, core::dimension2du renderTargetSize,
 												 scene::ISceneNode* parent, s32 id):
 	scene::ISceneNode(parent, sceneManager, id), _time(0),
-	_size(width, height), _sceneManager(sceneManager), _refractionMap(NULL), _reflectionMap(NULL),
-	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waterColor(0.1f, 0.1f, 0.6f, 1.0f), _colorBlendFactor(0.2f), _camera(NULL)
+	_size(width, height), _sceneManager(sceneManager), /*_refractionMap(NULL),*/ _reflectionMap(NULL),
+	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.5f), _camera(NULL)
 {
 	_videoDriver = sceneManager->getVideoDriver();
 
@@ -45,12 +45,12 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 	core::stringc waterPixelShader;
 	core::stringc waterVertexShader;
 
-	if (_videoDriver->getDriverType() == video::EDT_DIRECT3D9)
+	/*if (_videoDriver->getDriverType() == video::EDT_DIRECT3D9) //Fixme: Temporarily disable DirectX shaders.
 	{
 		waterPixelShader = resourcePath + "/shaders/Water_ps.hlsl";
 		waterVertexShader = resourcePath + "/shaders/Water_vs.hlsl";
 	}
-	else if (_videoDriver->getDriverType() == video::EDT_OPENGL)
+	else*/ if (_videoDriver->getDriverType() == video::EDT_OPENGL)
 	{
 		waterPixelShader = resourcePath + "/shaders/Water_ps.glsl";
 		waterVertexShader = resourcePath + "/shaders/Water_vs.glsl";
@@ -66,10 +66,10 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 	irr::video::ITexture* bumpTexture = _videoDriver->getTexture(resourcePath + "/data/waterbump.png");
 	_waterSceneNode->setMaterialTexture(0, bumpTexture);
 
-	_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
+	//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
 	_reflectionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
 
-	_waterSceneNode->setMaterialTexture(1, _refractionMap);
+	//_waterSceneNode->setMaterialTexture(1, _refractionMap);
 	_waterSceneNode->setMaterialTexture(2, _reflectionMap);
 }
 
@@ -81,11 +81,13 @@ RealisticWaterSceneNode::~RealisticWaterSceneNode()
 		_camera = NULL;
 	}
 
+    /*
 	if (_refractionMap)
 	{
 		_refractionMap->drop();
 		_refractionMap = NULL;
 	}
+	*/
 
 	if (_reflectionMap)
 	{
@@ -117,6 +119,12 @@ void RealisticWaterSceneNode::OnRegisterSceneNode()
 	}
 }
 
+void RealisticWaterSceneNode::setLightIntensity(f32 lightIntensity)
+{
+    //Fixme: Bodge - should store the true colour in one place, and adjust this by the light intensity (here or in shader)
+    _waterColor = video::SColorf(lightIntensity*0.32f, lightIntensity*0.40f, lightIntensity*0.40f, 1.0f);
+}
+
 void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 {
 	ISceneNode::OnAnimate(timeMs);
@@ -124,7 +132,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 	_time = timeMs;
 
 	//fixes glitches with incomplete refraction
-	const f32 CLIP_PLANE_OFFSET_Y = 5.0f;
+	const f32 CLIP_PLANE_OFFSET_Y = 0.0f;
 
 	if (IsVisible)
 	{
@@ -133,6 +141,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 		setVisible(false); //hide the water
 
 		//refraction
+		/*
 		_videoDriver->setRenderTarget(_refractionMap, true, true); //render to refraction
 
 		//refraction clipping plane
@@ -140,6 +149,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 		_videoDriver->setClipPlane(0, refractionClipPlane, true);
 
 		_sceneManager->drawAll(); //draw the scene
+        */
 
 		//reflection
 		_videoDriver->setRenderTarget(_reflectionMap, true, true); //render to reflection
@@ -150,7 +160,6 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 
 		//use this aspect ratio
 		_camera->setAspectRatio(currentAspect);
-
 
 		//set FOV anf far value from current camera
 		_camera->setFarValue(currentCamera->getFarValue());
@@ -279,14 +288,14 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR == 9)
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("WaterBump"), &var0, 1);
-		services->setPixelShaderConstant(services->getVertexShaderConstantID("RefractionMap"), &var1, 1);
+		//services->setPixelShaderConstant(services->getVertexShaderConstantID("RefractionMap"), &var1, 1);
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("ReflectionMap"), &var2, 1);
 
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogEnabled"), (int*)&fogEnabled, 1);
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogMode"), (int*)&fogType, 1);
 #else
 		services->setPixelShaderConstant("WaterBump", &var0, 1);
-		services->setPixelShaderConstant("RefractionMap", &var1, 1);
+		//services->setPixelShaderConstant("RefractionMap", &var1, 1);
 		services->setPixelShaderConstant("ReflectionMap", &var2, 1);
 
 		services->setPixelShaderConstant("FogEnabled", (int*)&fogEnabled, 1);
