@@ -62,4 +62,5 @@ void main()
 
 	// position of the vertex
 	position3D = gl_Vertex.xyz;
+
 }

@@ -79,12 +79,15 @@ void main()
 	vec4 reflectiveColor = (1*color0+color1+color2+color3+color4+color5+color6+color7+color8) / 9.0;
 
 	//fresnel
+	/*
 	vec3 eyeVector = normalize(CameraPosition - position3D);
 	vec3 upVector = vec3(0.0, 1.0, 0.0);
 
 	//fresnel can not be lower than 0
 	float fresnelTerm = max( dot(eyeVector, upVector), 0.0 );
 	fresnelTerm=0;
+	*/
+
 	float fogFactor = 1.0;
 
 	if (FogEnabled)
@@ -107,7 +110,8 @@ void main()
 		}
 	}
 
-	vec4 combinedColor = /*refractiveColor * fresnelTerm +*/ reflectiveColor * (1.0 - fresnelTerm);
+    //vec4 combinedColor = refractiveColor * fresnelTerm + reflectiveColor * (1.0 - fresnelTerm);
+    vec4 combinedColor = reflectiveColor;
 
 	vec4 finalColor = ColorBlendFactor * WaterColor + (1.0 - ColorBlendFactor) * combinedColor;
 
