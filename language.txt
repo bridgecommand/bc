@@ -1,7 +1,9 @@
 Bridge Command Language file. To translate, please change the part after the 'equals' symbol
 The characters \n will be replaced with a line break, so multiple lines of text are possible
+This file currently must be saved in ANSI (Windows-1252) format. In the future this should be
+changed to UTF-8, for proper portability!
 
-ok="OK"
+ok="OK (ß)"
 scnChoose="Please choose a scenario:"
 loadingmsg="Loading scenario..."
 pausedbutton="Paused, click to start"

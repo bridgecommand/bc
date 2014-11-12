@@ -26,6 +26,7 @@
 namespace Utilities
 {
     void to_lower(std::string& toConvert);
+    void to_lower(std::wstring& toConvert);
     signed int round(float numberIn);
     time_t dmyToTimestamp(int day, int month, int year);
     std::string timestampToString(time_t timestamp, std::string format);

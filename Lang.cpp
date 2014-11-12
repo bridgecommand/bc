@@ -27,18 +27,21 @@ Lang::Lang(std::string language)
 
 irr::core::stringw Lang::translate(std::string phraseName)
 {
+    //Convert the string phraseName into a wstring
+    std::wstring wphraseName(phraseName.begin(), phraseName.end());
+
     //Look up
-    std::string translatedPhrase = IniFile::iniFileToString(languageFileName,phraseName);
+    std::wstring translatedPhrase = IniFile::iniFileToWString(languageFileName,wphraseName);
     //Fall back
-    if (translatedPhrase=="") {
-        translatedPhrase = phraseName;
+    if (translatedPhrase==L"") {
+        translatedPhrase = wphraseName;
     }
 
     //Convert '\n' characters within string to a newline - based on http://stackoverflow.com/a/24315631
     size_t start_pos = 0;
-    std::string from = "\\n";
-    std::string to = "\n";
-    while((start_pos = translatedPhrase.find(from, start_pos)) != std::string::npos) {
+    std::wstring from = L"\\n";
+    std::wstring to = L"\n";
+    while((start_pos = translatedPhrase.find(from, start_pos)) != std::wstring::npos) {
         translatedPhrase.replace(start_pos, from.length(), to);
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }

@@ -61,6 +61,17 @@ namespace IniFile
         return str.substr(strBegin, strRange);
     }
 
+    std::wstring trim(const std::wstring& str, const std::wstring& trimChr=L" \n\r\t")
+    {
+        const std::size_t strBegin = str.find_first_not_of(trimChr);
+        if (strBegin == std::wstring::npos)
+            return L""; // no content
+        const std::size_t strEnd = str.find_last_not_of(trimChr);
+        const std::size_t strRange = strEnd - strBegin + 1;
+
+        return str.substr(strBegin, strRange);
+    }
+
     std::string iniFileToString(std::string fileName, std::string command)
     {
         std::ifstream file (fileName.c_str());
@@ -102,6 +113,54 @@ namespace IniFile
         //trim whitespace and " characters if present
         valuePart = trim(valuePart);
         valuePart = trim(valuePart,"\"");
+        return valuePart;
+    }
+
+    std::wstring iniFileToWString(std::string fileName, std::wstring command)
+    {
+        std::wifstream file (fileName.c_str());
+
+        //FIXME: Need to set UTF-8 locale here for file wifstream (required <codecvt> not included in libstdc++ currently, so can't do this at the moment!?
+        //Currently seems to work for ANSI files (?But may depend on user's locale?)
+
+        std::wstring valuePart = L"";
+        if (file.is_open())
+        {
+            std::wstring line;
+            while ( std::getline (file,line) )
+            {
+                std::wstring lowerLine(line); //Duplicate the line so we can make it lowercase, without affecting the result
+                Utilities::to_lower(lowerLine);
+                Utilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
+
+                //Look for the command and the '=' sign in the line
+                std::size_t commandFound = lowerLine.find(command);
+                std::size_t equalsFound = lowerLine.find(L"=");
+
+                //If both found, with equals after the command
+                if (commandFound!=std::string::npos && equalsFound!=std::string::npos && equalsFound>commandFound)
+                {
+                    //Check that the part before the '=' exactly matches the command
+                    if (trim(lowerLine.substr(0,equalsFound))==trim(command))
+                    {
+                        //get the value
+                        //try {
+                            valuePart = line.substr(equalsFound+1,std::string::npos);//from equals to end, not including the equals
+                        //}
+                        //catch (const std::out_of_range& oor) {
+                        //    std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
+                        //}
+                    }
+                }
+
+            }
+            file.close();
+        }
+        else ;//std::cout << "Unable to open file " << fileName << std::endl;
+
+        //trim whitespace and " characters if present
+        valuePart = trim(valuePart);
+        valuePart = trim(valuePart,L"\"");
         return valuePart;
     }
 
