@@ -81,7 +81,8 @@ void Water::load(irr::scene::ISceneManager* smgr)
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 lightLevel)
 {
     realisticWater->setPosition(core::vector3df(0,tideHeight,0));
-    realisticWater->setWaveHeight(0.5);
+    realisticWater->setWaveHeight(1.0);
+    realisticWater->setWaveLength(0.2);
     f32 lightIntensity = lightLevel/256.0;
     realisticWater->setLightIntensity(lightIntensity);
     /*

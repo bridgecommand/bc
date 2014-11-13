@@ -29,7 +29,7 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 												 scene::ISceneNode* parent, s32 id):
 	scene::ISceneNode(parent, sceneManager, id), _time(0),
 	_size(width, height), _sceneManager(sceneManager), /*_refractionMap(NULL),*/ _reflectionMap(NULL),
-	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.5f), _camera(NULL)
+	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waveLength(0.1f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.8f), _camera(NULL)
 {
 	_videoDriver = sceneManager->getVideoDriver();
 
@@ -241,8 +241,8 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	worldReflectionViewProj *= cameraView;
 	worldReflectionViewProj *= world;
 
-	f32 waveLength = 0.1f;
-	f32 time = _time / 100000.0f;
+	//_waveLength = 0.1f;
+	f32 time = _time / 3000000.0f; //Arbitrary units
 	core::vector3df cameraPosition = _sceneManager->getActiveCamera()->getPosition();
 
 	bool fogEnabled = getMaterial(0).getFlag(video::EMF_FOG_ENABLE);
@@ -258,7 +258,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR == 9)
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WorldViewProj"), worldViewProj.pointer(), 16);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WorldReflectionViewProj"), worldReflectionViewProj.pointer(), 16);
-	services->setVertexShaderConstant(services->getVertexShaderConstantID("WaveLength"), &waveLength, 1);
+	services->setVertexShaderConstant(services->getVertexShaderConstantID("WaveLength"), &_waveLength, 1);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("Time"), &time, 1);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WindForce"), &_windForce, 1);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WindDirection"), &_windDirection.X, 2);
@@ -269,7 +269,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 #else
 	services->setVertexShaderConstant("WorldViewProj", worldViewProj.pointer(), 16);
 	services->setVertexShaderConstant("WorldReflectionViewProj", worldReflectionViewProj.pointer(), 16);
-	services->setVertexShaderConstant("WaveLength", &waveLength, 1);
+	services->setVertexShaderConstant("WaveLength", &_waveLength, 1);
 	services->setVertexShaderConstant("Time", &time, 1);
 	services->setVertexShaderConstant("WindForce", &_windForce, 1);
 	services->setVertexShaderConstant("WindDirection", &_windDirection.X, 2);
@@ -318,6 +318,11 @@ void RealisticWaterSceneNode::setWindDirection(const core::vector2df& windDirect
 void RealisticWaterSceneNode::setWaveHeight(const f32 waveHeight)
 {
 	_waveHeight = waveHeight;
+}
+
+void RealisticWaterSceneNode::setWaveLength(f32 waveLength)
+{
+    _waveLength = waveLength;
 }
 
 void RealisticWaterSceneNode::setWaterColor(const video::SColorf& waterColor)

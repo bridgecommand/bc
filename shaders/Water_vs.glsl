@@ -47,7 +47,7 @@ void main()
 	gl_Position = pos;
 
 	// calculate vawe coords
-	bumpMapTexCoord = gl_MultiTexCoord0.xy / WaveLength + Time * WindForce * WindDirection;
+	bumpMapTexCoord = gl_MultiTexCoord0.xy / WaveLength + (Time/WaveLength) * WindForce * WindDirection;
 
 	// refraction texcoords
 	//refractionMapTexCoord.x = 0.5 * (pos.w + pos.x);

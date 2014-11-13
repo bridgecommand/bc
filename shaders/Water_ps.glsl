@@ -57,14 +57,14 @@ void main()
 	vec2 ProjectedReflectionTexCoords = clamp(reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation, 0.0, 1.0);
 	//calculate final reflection color
 
-	vec2 ProjectedReflectionTexCoords1 = clamp(ProjectedReflectionTexCoords+vec2(-0.005,-0.005), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords2 = clamp(ProjectedReflectionTexCoords+vec2(-0.005, 0.0), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords3 = clamp(ProjectedReflectionTexCoords+vec2(-0.005, 0.005), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords4 = clamp(ProjectedReflectionTexCoords+vec2( 0.0,-0.005), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords5 = clamp(ProjectedReflectionTexCoords+vec2( 0.0, 0.005), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords6 = clamp(ProjectedReflectionTexCoords+vec2( 0.005,-0.005), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords7 = clamp(ProjectedReflectionTexCoords+vec2( 0.005, 0.0), 0.0, 1.0);
-	vec2 ProjectedReflectionTexCoords8 = clamp(ProjectedReflectionTexCoords+vec2( 0.005, 0.005), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords1 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025,-0.0025), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords2 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025, 0.0  ), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords3 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025, 0.0025), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords4 = clamp(ProjectedReflectionTexCoords+vec2( 0.0,  -0.0025), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords5 = clamp(ProjectedReflectionTexCoords+vec2( 0.0,   0.0025), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords6 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025,-0.0025), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords7 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025, 0.0  ), 0.0, 1.0);
+	vec2 ProjectedReflectionTexCoords8 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025, 0.0025), 0.0, 1.0);
 
 	vec4 color0 = texture2D(ReflectionMap, ProjectedReflectionTexCoords );
 	vec4 color1 = texture2D(ReflectionMap, ProjectedReflectionTexCoords1);
@@ -77,6 +77,11 @@ void main()
 	vec4 color8 = texture2D(ReflectionMap, ProjectedReflectionTexCoords8);
 
 	vec4 reflectiveColor = (1*color0+color1+color2+color3+color4+color5+color6+color7+color8) / 9.0;
+
+	float xDisp = ProjectedReflectionTexCoords.x-0.5; //-0.5->0.5
+	float yDisp = ProjectedReflectionTexCoords.y-0.5; //-0.5->0.5
+	float centralDisp = sqrt(xDisp*xDisp)+sqrt(yDisp*yDisp); //0.0-1.0
+	vec4 ambientColor= (1-centralDisp)*WaterColor;
 
 	//fresnel
 	/*
@@ -113,7 +118,8 @@ void main()
     //vec4 combinedColor = refractiveColor * fresnelTerm + reflectiveColor * (1.0 - fresnelTerm);
     vec4 combinedColor = reflectiveColor;
 
-	vec4 finalColor = ColorBlendFactor * WaterColor + (1.0 - ColorBlendFactor) * combinedColor;
+	vec4 finalColor = ColorBlendFactor * ambientColor + (1.0 - ColorBlendFactor) * combinedColor;
+    //finalColor = ambientColor;
 
 	gl_FragColor = mix(gl_Fog.color, finalColor, fogFactor );
 }
