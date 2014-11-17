@@ -79,6 +79,7 @@ private:
     irr::video::IImage* radarImage;
     irr::f32 accelerator;
     irr::f32 tideHeight;
+    irr::f32 weather; //0-12.0
     Terrain terrain;
     Light light;
     OwnShip ownShip;

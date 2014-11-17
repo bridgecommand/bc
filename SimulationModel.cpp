@@ -42,6 +42,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         irr::u32 startMonth=IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
         irr::u32 startYear=IniFile::iniFileTou32(environmentIniFilename,"StartYear");
 
+        //load the weather:
+        //Fixme: add in wind direction etc
+        weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
         scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
@@ -69,7 +73,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         terrain.load(worldPath, smgr);
 
         //add water
-        water.load(smgr);
+        water.load(smgr,weather);
 
         //sky box/dome
         Sky sky (smgr);
@@ -292,7 +296,7 @@ SimulationModel::~SimulationModel()
         ownShip.update(deltaTime, scenarioTime, tideHeight);
 
         //update water position
-        water.update(tideHeight,camera.getPosition(),light.getLightLevel());
+        water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
         //Normalise positions if required (More than 2000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE

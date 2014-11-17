@@ -25,8 +25,8 @@ class Water
     public:
         Water();
         virtual ~Water();
-        void load(irr::scene::ISceneManager* smgr);
-        void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 lightLevel);
+        void load(irr::scene::ISceneManager* smgr, irr::f32 weather);
+        void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
 
     private:
         //irr::scene::ISceneNode* waterNode;
