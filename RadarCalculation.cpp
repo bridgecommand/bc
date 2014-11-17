@@ -122,13 +122,13 @@ irr::f32 RadarCalculation::getRainClutter() const
     return radarRainClutterReduction;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
 {
-    scan(terrain, ownShip, buoys, otherShips, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
+    scan(terrain, ownShip, buoys, otherShips, weather, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
     render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     core::vector3df position = ownShip.getPosition();
     irr::f32 radarScannerHeight = 2.0;//Fixme: Hardcoding
@@ -257,7 +257,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             }
 
             //ToDo Add radar noise
-            scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,2,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
+            scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,weather,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
 

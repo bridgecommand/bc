@@ -332,7 +332,7 @@ SimulationModel::~SimulationModel()
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,tideHeight,deltaTime);
+        radarCalculation.update(radarImage,terrain,ownShip,buoys,otherShips,weather,tideHeight,deltaTime);
         radarScreen.update(radarImage);
         radarCamera.update();
 
