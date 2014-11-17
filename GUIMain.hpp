@@ -39,6 +39,7 @@ public:
         GUI_ID_RADAR_GAIN_SCROLL_BAR,
         GUI_ID_RADAR_CLUTTER_SCROLL_BAR,
         GUI_ID_RADAR_RAIN_SCROLL_BAR,
+        GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON
     };
@@ -47,7 +48,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
-    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
+    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
     void drawGUI();
 
 
@@ -55,7 +56,6 @@ private:
 
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
-
 
     irr::gui::IGUIScrollBar* hdgScrollbar;
     irr::gui::IGUIScrollBar* spdScrollbar;
@@ -69,6 +69,7 @@ private:
     irr::gui::IGUIScrollBar* radarGainScrollbar;
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
     irr::gui::IGUIScrollBar* radarRainScrollbar;
+    irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
 

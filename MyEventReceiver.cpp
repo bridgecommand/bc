@@ -83,6 +83,10 @@ using namespace irr;
                   {
                         model->setRadarRain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
                   }
+              if (id == GUIMain::GUI_ID_WEATHER_SCROLL_BAR)
+                  {
+                        model->setWeather(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/10.0); //Scroll bar 0-120, weather 0-12
+                  }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {

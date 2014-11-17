@@ -59,6 +59,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiHeading = 0;
         guiSpeed = 0;
 
+        //Add weather scroll bar
+        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.53*su, 0.62*sh, 0.56*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
+        weatherScrollbar->setMax(120); //Divide by 10 to get weather
+        weatherScrollbar->setMin(0);
+        weatherScrollbar->setSmallStep(5);
+        weatherScrollbar->setToolTipText(language->translate("weather").c_str());
+
         //add radar buttons
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.84*sh,0.625*su,0.91*sh),0,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.92*sh,0.625*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
@@ -116,12 +123,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarGainScrollbar->setVisible(showInterface);
         radarRainScrollbar->setVisible(showInterface);
         radarClutterScrollbar->setVisible(showInterface);
+        weatherScrollbar->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -132,6 +140,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarGainScrollbar->setPos(radarGain);
         radarClutterScrollbar->setPos(radarClutter);
         radarRainScrollbar->setPos(radarRain);
+        weatherScrollbar->setPos(weather*10); //(Weather scroll bar is 0-120, weather is 0-12)
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
