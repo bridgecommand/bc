@@ -34,6 +34,7 @@ uniform vec2	WindDirection;
 
 // Vertex shader output structure
 varying vec2 bumpMapTexCoord;
+varying vec2 bumpMapTexCoord2;
 //varying vec3 refractionMapTexCoord;
 varying vec3 reflectionMapTexCoord;
 varying vec3 position3D;
@@ -48,6 +49,8 @@ void main()
 
 	// calculate vawe coords
 	bumpMapTexCoord = gl_MultiTexCoord0.xy / WaveLength + (Time/WaveLength) * WindForce * WindDirection;
+	//Ripples
+	bumpMapTexCoord2 = 10.0*gl_MultiTexCoord0.xy / WaveLength + (10.0*Time/WaveLength) * WindForce * WindDirection;
 
 	// refraction texcoords
 	//refractionMapTexCoord.x = 0.5 * (pos.w + pos.x);
