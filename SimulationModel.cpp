@@ -298,7 +298,7 @@ SimulationModel::~SimulationModel()
         //std::cout << tideHeight << std::endl;
 
         //update own ship
-        ownShip.update(deltaTime, scenarioTime, tideHeight);
+        ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
 
         //update water position
         water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);

@@ -70,6 +70,13 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     asternEfficiency = IniFile::iniFileTof32(shipIniFilename,"AsternEfficiency");// (Optional, default 1)
     propWalkAhead = IniFile::iniFileTof32(shipIniFilename,"PropWalkAhead");// (Optional, default 0)
     propWalkAstern = IniFile::iniFileTof32(shipIniFilename,"PropWalkAstern");// (Optional, default 0)
+    //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movements
+    rollPeriod = 5; //Roll period (s)
+    rollAngle = 2*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Roll Angle (deg @weather=1)
+    pitchPeriod = 6; //Roll period (s)
+    pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
+
+
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
         {asternEfficiency = 1;}
@@ -152,12 +159,6 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
         }
     }
 
-    //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movement
-    rollPeriod = 11; //Roll period (s)
-    rollAngle = 5; //Roll Angle (deg)
-    pitchPeriod = 23; //Roll period (s)
-    pitchAngle = 2; //Roll Angle (deg)
-
     //set initial pitch and roll
     pitch = 0;
     roll = 0;
@@ -208,7 +209,7 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
     return proportion;
 }
 
-void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight)
+void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
 {
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
@@ -263,11 +264,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
     yPos = tideHeight;
 
-    //calculate pitch and roll - currently simple response, not linked to water/wave motion
+    //calculate pitch and roll - not linked to water/wave motion
     if (pitchPeriod>0)
-        {pitch = pitchAngle*sin(scenarioTime*2*PI/pitchPeriod);}
+        {pitch = weather*pitchAngle*sin(scenarioTime*2*PI/pitchPeriod);}
     if (rollPeriod>0)
-        {roll = rollAngle*sin(scenarioTime*2*PI/rollPeriod);}
+        {roll = weather*rollAngle*sin(scenarioTime*2*PI/rollPeriod);}
 
     //Set position & angles by calling own ship methods
     setPosition(core::vector3df(xPos,yPos,zPos));
