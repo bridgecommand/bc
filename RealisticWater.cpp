@@ -70,7 +70,7 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 	_reflectionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
 
 	//_waterSceneNode->setMaterialTexture(1, _refractionMap);
-	_waterSceneNode->setMaterialTexture(2, _reflectionMap);
+	_waterSceneNode->setMaterialTexture(1, _reflectionMap);
 }
 
 RealisticWaterSceneNode::~RealisticWaterSceneNode()
@@ -195,7 +195,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 
 		setVisible(true); //show it again
 
-        //Reset :: Fixme: Doesn't seem to be working
+        //Reset :: Fixme: Doesn't seem to be working on old PC
         _videoDriver->setViewPort(core::rect<s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
         _videoDriver->setViewPort(currentViewPort);
         currentCamera->setAspectRatio(currentAspect);
@@ -289,14 +289,14 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR == 9)
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("WaterBump"), &var0, 1);
 		//services->setPixelShaderConstant(services->getVertexShaderConstantID("RefractionMap"), &var1, 1);
-		services->setPixelShaderConstant(services->getVertexShaderConstantID("ReflectionMap"), &var2, 1);
+		services->setPixelShaderConstant(services->getVertexShaderConstantID("ReflectionMap"), &var1, 1);
 
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogEnabled"), (int*)&fogEnabled, 1);
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogMode"), (int*)&fogType, 1);
 #else
 		services->setPixelShaderConstant("WaterBump", &var0, 1);
 		//services->setPixelShaderConstant("RefractionMap", &var1, 1);
-		services->setPixelShaderConstant("ReflectionMap", &var2, 1);
+		services->setPixelShaderConstant("ReflectionMap", &var1, 1);
 
 		services->setPixelShaderConstant("FogEnabled", (int*)&fogEnabled, 1);
 		services->setPixelShaderConstant("FogMode", (int*)&fogType, 1);
