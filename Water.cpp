@@ -34,65 +34,74 @@ Water::~Water()
     //dtor
 }
 
-void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
+void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advancedWater)
 {
-    realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(1024, 1024),smgr->getRootSceneNode());
-    realisticWater->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    realisticWater->setWaveHeight(weather);
-    /*
-    irr::video::IVideoDriver* driver = smgr->getVideoDriver();
+    this->advancedWater = advancedWater;
 
-    //Set tile width
-    tileWidth = 1000; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-    irr::u32 segments = 10; //How many tiles per segment
-    irr::f32 segmentSize = tileWidth / segments;
+    if (advancedWater) {
+        realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(1024, 1024),smgr->getRootSceneNode());
+        realisticWater->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        realisticWater->setWaveHeight(weather);
+    } else {
+        irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
-    //some water (from demo 8)
-    scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-                       core::dimension2d<f32>(segmentSize,segmentSize),
-                       core::dimension2d<u32>(segments,segments),
-                       0,
-                       0.0f,
-                       core::dimension2d<f32>(0,0),
-                       core::dimension2d<f32>(10,10));
+        //Set tile width
+        tileWidth = 1000; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
+        irr::u32 segments = 20; //How many tiles per segment
+        irr::f32 segmentSize = tileWidth / segments;
 
-    waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
-    //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
-    std::vector<irr::scene::ISceneNode*> secondaryWaterNodes;
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 0*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0, 1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 0*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 1*tileWidth)));
-    for(std::vector<irr::scene::ISceneNode*>::iterator it = secondaryWaterNodes.begin(); it != secondaryWaterNodes.end(); ++it) {
-        (*it)->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-        (*it)->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        //some water (from demo 8)
+        scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
+                           core::dimension2d<f32>(segmentSize,segmentSize),
+                           core::dimension2d<u32>(segments,segments),
+                           0,
+                           0.0f,
+                           core::dimension2d<f32>(0,0),
+                           core::dimension2d<f32>(10,10));
+
+        waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
+        //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
+        std::vector<irr::scene::ISceneNode*> secondaryWaterNodes;
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0,-1*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 0*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 1*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0,-1*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0, 1*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0,-1*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 0*tileWidth)));
+        secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 1*tileWidth)));
+        for(std::vector<irr::scene::ISceneNode*>::iterator it = secondaryWaterNodes.begin(); it != secondaryWaterNodes.end(); ++it) {
+            (*it)->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+            (*it)->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        }
+
+        waterNode->setPosition(core::vector3df(0,-0.25f,0));
+
+        waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
     }
 
-    waterNode->setPosition(core::vector3df(0,-0.25f,0));
-
-    waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    */
 }
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 lightLevel, irr::f32 weather)
 {
-    realisticWater->setPosition(core::vector3df(0,tideHeight,0));
-    realisticWater->setWaveHeight(weather);
-    realisticWater->setWaveLength(0.2);
-    f32 lightIntensity = lightLevel/256.0;
-    realisticWater->setLightIntensity(lightIntensity);
-    /*
-    //Round these to nearest segmentWidth
-    f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    f32 yPos = tideHeight;
-    f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    if (advancedWater) {
+        realisticWater->setPosition(core::vector3df(0,tideHeight,0));
+        realisticWater->setWaveHeight(weather);
+        realisticWater->setWaveLength(0.2);
+        f32 lightIntensity = lightLevel/256.0;
+        realisticWater->setLightIntensity(lightIntensity);
+    } else {
+        //Round these to nearest segmentWidth
+        f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+        f32 yPos = tideHeight;
+        f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
-    waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
-    */
+        waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
+
+        //scale with weather
+        waterNode->setScale(core::vector3df(1.0,weather,1.0)); //This also scales the child nodes
+    }
 
 }
