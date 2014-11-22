@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 1"
-!define OUTPUTFILE "bc50a1_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a1"
-!define SMFOLDER "Bridge Command 5.0 Alpha 1"
-!define REGKEY "BridgeCommand5.0a1"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 2"
+!define OUTPUTFILE "bc50a2_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a2"
+!define SMFOLDER "Bridge Command 5.0 Alpha 2"
+!define REGKEY "BridgeCommand5.0a2"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -64,6 +64,8 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\media"
   RMDir /r "$INSTDIR\world"
   RMDir /r "$INSTDIR\libs"
+  RMDir /r "$INSTDIR\data"
+  RMDir /r "$INSTDIR\shaders"
 
   Delete "$INSTDIR\Leg.hpp"
   Delete "$INSTDIR\Sky.hpp"
@@ -129,6 +131,8 @@ SetShellVarContext all
   Delete "$INSTDIR\OwnShip.cpp"
   Delete "$INSTDIR\BridgeCommand.layout"
   Delete "$INSTDIR\RadarCalculation.cpp"
+  Delete "$INSTDIR\RealisticWater.hpp" 
+  Delete "$INSTDIR\RealisticWater.cpp"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\libenet.dll"
   Delete "$INSTDIR\BridgeCommand.depend"
