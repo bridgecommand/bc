@@ -17,10 +17,12 @@
 #ifndef __NETWORK_HPP_INCLUDED__
 #define __NETWORK_HPP_INCLUDED__
 
+#ifdef _WIN32
 #include <enet/enet.h>
 
 //Forward declarations
 class SimulationModel;
+#endif // _WIN32
 
 class Network
 {
@@ -32,12 +34,15 @@ public:
     void update();
 
 private:
+
+    #ifdef _WIN32
     SimulationModel* model;
 
     ENetHost * client;
     ENetAddress address;
     ENetEvent event;
     ENetPeer *peer;
+    #endif // _WIN32
 
     void sendNetwork();
     void receiveNetwork();

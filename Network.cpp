@@ -23,6 +23,8 @@
 
 Network::Network(SimulationModel* model) //Constructor
 {
+
+    #ifdef _WIN32
     //link to model so network can interact with model
     this->model = model; //Link to the model
 
@@ -45,19 +47,23 @@ Network::Network(SimulationModel* model) //Constructor
     std::cout << "Started enet\n";
 
     //TODO: Think if this is the best way to handle failure
+    #endif // _WIN32
 }
 
 Network::~Network() //Destructor
 {
+    #ifdef _WIN32
     //shut down networking
     enet_host_destroy(client);
     enet_deinitialize();
 
     std::cout << "Shut down enet\n";
+    #endif // _WIN32
 }
 
 void Network::connectToServer()
 {
+    #ifdef _WIN32
     /* Connect to some.server.net:1234. */
     enet_address_set_host (& address, "localhost");
     address.port = 1234;
@@ -83,16 +89,20 @@ void Network::connectToServer()
         enet_peer_reset (peer);
         puts ("Connection to localhost:1234 failed.");
     }
+    #endif // _WIN32
 }
 
 void Network::update()
 {
+    #ifdef _WIN32
     receiveNetwork();
     sendNetwork();
+    #endif // _WIN32
 }
 
 void Network::receiveNetwork()
 {
+    #ifdef _WIN32
     ENetEvent event;
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
@@ -107,11 +117,12 @@ void Network::receiveNetwork()
             enet_packet_destroy (event.packet);
         }
     }
+    #endif // _WIN32
 }
 
 void Network::sendNetwork()
 {
-
+    #ifdef _WIN32
     /* Get data from model */
     std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
 
@@ -126,4 +137,5 @@ void Network::sendNetwork()
     enet_peer_send (peer, 0, packet);
     /* One could just use enet_host_service() instead. */
     enet_host_flush (client);
+    #endif // _WIN32
 }
