@@ -19,10 +19,10 @@
 
 #ifdef _WIN32
 #include <enet/enet.h>
+#endif // _WIN32
 
 //Forward declarations
 class SimulationModel;
-#endif // _WIN32
 
 class Network
 {
