@@ -60,7 +60,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiSpeed = 0;
 
         //Add weather scroll bar
-        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.53*su, 0.62*sh, 0.56*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
+        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.537*su, 0.79*sh, 0.560*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);

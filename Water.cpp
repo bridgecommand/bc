@@ -39,7 +39,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advance
     this->advancedWater = advancedWater;
 
     if (advancedWater) {
-        realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(1024, 1024),smgr->getRootSceneNode());
+        realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
         realisticWater->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         realisticWater->setWaveHeight(weather);
     } else {
