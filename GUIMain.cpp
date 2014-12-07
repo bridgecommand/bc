@@ -129,7 +129,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         showInterfaceButton->setVisible(!showInterface);
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -143,6 +143,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         weatherScrollbar->setPos(weather*10); //(Weather scroll bar is 0-120, weather is 0-12)
         //Update text display data
         guiHeading = hdg; //Heading in degrees
+        viewHdg = viewAngle+hdg;
+        while (viewHdg>=360) {viewHdg-=360;}
+        while (viewHdg<0) {viewHdg+=360;}
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
         guiDepth = depth;
         guiRadarRangeNm = radarRangeNm;
@@ -155,6 +158,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //update heading display element
         core::stringw displayText = language->translate("hdg");
         displayText.append(core::stringw(guiHeading));
+        displayText.append(L"\n");
+
+        displayText.append(language->translate("viewAng"));
+        displayText.append(core::stringw(viewHdg));
         displayText.append(L"\n");
 
         displayText.append(language->translate("spd"));
@@ -201,5 +208,12 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             core::position2d<s32> radarCentre (centreX,centreY);
             core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
             device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255));
+
+            //draw a look direction line
+            s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*viewHdg);
+            s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*viewHdg);
+            core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
+            core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
+            device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0));
         }
     }

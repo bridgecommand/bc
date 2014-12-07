@@ -93,6 +93,11 @@ void Camera::lookStbd()
     lookAngle = 90;
 }
 
+irr::f32 Camera::getLook() const
+{
+    return lookAngle;
+}
+
 void Camera::changeView()
 {
     currentView++;

@@ -35,7 +35,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x RadarCache /x misc /x shiplights.ods *.*
+File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x RadarCache /x misc /x shiplights.ods /x gmon.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\BridgeCommand.exe"
@@ -131,7 +131,7 @@ SetShellVarContext all
   Delete "$INSTDIR\OwnShip.cpp"
   Delete "$INSTDIR\BridgeCommand.layout"
   Delete "$INSTDIR\RadarCalculation.cpp"
-  Delete "$INSTDIR\RealisticWater.hpp" 
+  Delete "$INSTDIR\RealisticWater.h" 
   Delete "$INSTDIR\RealisticWater.cpp"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\libenet.dll"
@@ -140,6 +140,10 @@ SetShellVarContext all
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
+  Delete "$INSTDIR\Makefile"
+  Delete "$INSTDIR\language.txt"
+  Delete "$INSTDIR\Lang.cpp"
+  Delete "$INSTDIR\Lang.hpp"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"

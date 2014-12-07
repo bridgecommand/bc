@@ -38,6 +38,7 @@ class Camera
         void lookAstern();
         void lookPort();
         void lookStbd();
+        irr::f32 getLook() const;
         void changeView();
         void setNearValue(irr::f32 zn);
         void setFarValue(irr::f32 zf);

@@ -48,7 +48,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
-    void updateGuiData(irr::f32 hdg, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
+    void updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
     void drawGUI();
 
 
@@ -74,6 +74,7 @@ private:
     irr::gui::IGUIButton* hideInterfaceButton;
 
     irr::f32 guiHeading;
+    irr::f32 viewHdg;
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
     irr::f32 guiRadarRangeNm;
