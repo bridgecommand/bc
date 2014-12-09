@@ -141,6 +141,7 @@ SetShellVarContext all
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\Makefile"
+  Delete "$INSTDIR\ReadmeLinux.txt"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
