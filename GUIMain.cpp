@@ -49,29 +49,40 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
-        rudderScrollbar = guienv->addScrollBar(true,core::rect<s32>(0.09*su, 0.96*sh, 0.57*su, 0.99*sh), 0, GUI_ID_RUDDER_SCROLL_BAR);
+        rudderScrollbar = guienv->addScrollBar(true,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh), 0, GUI_ID_RUDDER_SCROLL_BAR);
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.61*sh,0.57*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.61*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 
         //Add weather scroll bar
-        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.537*su, 0.79*sh, 0.560*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
+        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
         //add radar buttons
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.84*sh,0.625*su,0.91*sh),0,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.575*su,0.92*sh,0.625*su,0.99*sh),0,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
-        radarGainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.628*su,0.84*sh,0.651*su,0.99*sh),0,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.651*su,0.84*sh,0.674*su,0.99*sh),0,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.674*su,0.84*sh,0.697*su,0.99*sh),0,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        //add tab control for radar
+        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.61*sh,0.697*su,0.99*sh));
+        irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
+        irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
+        irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
+        irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
+        irr::gui::IGUITab* radarTrackTab = radarTabControl->addTab(language->translate("radarTrackTab").c_str(),0);
+        irr::gui::IGUITab* radarARPAVectorTab = radarTabControl->addTab(language->translate("radarARPAVectorTab").c_str(),0);
+        irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
+        irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
+
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.000*su,0.170*sh,0.050*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.000*su,0.250*sh,0.050*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        radarGainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.053*su,0.17*sh,0.076*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.076*su,0.17*sh,0.099*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.099*su,0.17*sh,0.122*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
@@ -116,13 +127,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
-        increaseRangeButton->setVisible(showInterface);
-        decreaseRangeButton->setVisible(showInterface);
+        radarTabControl->setVisible(showInterface);
         dataDisplay->setVisible(showInterface);
         hideInterfaceButton->setVisible(showInterface);
-        radarGainScrollbar->setVisible(showInterface);
-        radarRainScrollbar->setVisible(showInterface);
-        radarClutterScrollbar->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
 
         //Items to show if we're not

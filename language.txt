@@ -6,21 +6,35 @@ changed to UTF-8, for proper portability!
 ok="OK (ß)"
 scnChoose="Please choose a scenario:"
 loadingmsg="Loading scenario..."
+
 pausedbutton="Paused, click to start"
+
 hdg="Heading: "
 viewAng="View bearing: "
 spd="Speed: "
 depth="Depth: "
 radar="Radar: "
+
+radarMainTab="Main"
+radarPITab="PI"
+radarGuardZoneTab="Guard\nZone"
+radarARPATab="ARPA"
+radarTrackTab="Track\nClear"
+radarARPAVectorTab="Vector"
+radarARPAAlarmTab="Alarm"
+radarARPATrialTab="Trial"
 increaserange="Range\n   +"
 decreaserange="Range\n   -"
 gain="Gain"
 rain="Rain"
 clutter="Clutter"
+
 nm=" Nm"
+
 weather = "Weather"
 paused=" (Paused)"
 showinterface="Show"
 hideinterface="Hide"
+
 fps="FPS: "
 

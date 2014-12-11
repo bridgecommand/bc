@@ -64,6 +64,7 @@ private:
     irr::gui::IGUIScrollBar* rudderScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIButton* pausedButton;
+    irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIButton* increaseRangeButton;
     irr::gui::IGUIButton* decreaseRangeButton;
     irr::gui::IGUIScrollBar* radarGainScrollbar;
