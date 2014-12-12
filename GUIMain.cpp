@@ -78,11 +78,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.000*su,0.170*sh,0.050*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.000*su,0.250*sh,0.050*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
-        radarGainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.053*su,0.17*sh,0.076*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.076*su,0.17*sh,0.099*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.099*su,0.17*sh,0.122*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.110*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.220*sh,0.055*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.110*sh,0.085*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.085*su,0.110*sh,0.110*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.110*su,0.110*sh,0.135*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
