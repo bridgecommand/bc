@@ -78,7 +78,9 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     irr::video::IImage* radarImage;
-    irr::f32 accelerator;
+    irr::scene::ISceneNode* rainNode1;
+    irr::scene::ISceneNode* rainNode2;
+    //irr::f32 accelerator;
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0
     Terrain terrain;

@@ -54,7 +54,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         scenarioTime = startTime * SECONDS_IN_HOUR;
 
         //Start paused initially
-        accelerator = 0.0;
+        device->getTimer()->setSpeed(0.0);
 
         //Set initial tide height to zero
         tideHeight = 0;
@@ -108,6 +108,35 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Load tidal information
         tide.load(worldPath);
+
+        //Make rain
+        //Load rain.x, flip vertexes, and load rain1.jpg texture
+        scene::IMesh* rainMesh = smgr->getMesh("media/rain.x");
+        //add to scene node
+        irr::scene::IMeshManipulator* meshManipulator = smgr->getMeshManipulator();
+        if (rainMesh!=0) {
+            //meshManipulator->scale(rainMesh,core::vector3df(5.0,5.0,5.0)); //Scale mesh - ToDo: Make this dependent on ship/bridge size
+            meshManipulator->flipSurfaces(rainMesh);
+            rainNode1 = smgr->addMeshSceneNode( rainMesh, ownShip.getSceneNode());
+            rainNode2 = smgr->addMeshSceneNode( rainMesh, ownShip.getSceneNode());
+            rainNode1->setScale(core::vector3df(5.0,5.0,5.0));
+            rainNode2->setScale(core::vector3df(6.0,5.0,6.0));
+        } else {
+            //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+            std::cout << "Failed to load rain mesh (rain.x)" <<std::endl;
+            rainNode1 = smgr->addEmptySceneNode(camera.getSceneNode());
+            rainNode2 = smgr->addEmptySceneNode(camera.getSceneNode());
+        }
+
+        //set texture
+        irr::video::ITexture* rainTexture = driver->getTexture("./media/rain1.jpg");
+        if (rainTexture!=0) {
+            rainNode1->setMaterialTexture(0,rainTexture);
+            rainNode2->setMaterialTexture(0,rainTexture);
+            rainNode1->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
+            rainNode2->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
+        }
+        //end rain (should be move to its own class?)
 
         //make a radar screen, setting parent and offset from own ship
         core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
@@ -189,7 +218,7 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setAccelerator(irr::f32 accelerator)
     {
-        this->accelerator = accelerator;
+        device->getTimer()->setSpeed(accelerator);
     }
 
     void SimulationModel::setWeather(irr::f32 weather)
@@ -277,7 +306,7 @@ SimulationModel::~SimulationModel()
 
         //get delta time
         currentTime = device->getTimer()->getTime();
-        deltaTime = accelerator*(currentTime - previousTime)/1000.f;
+        deltaTime = (currentTime - previousTime)/1000.f;
         //deltaTime = (currentTime - previousTime)/1000.f;
         previousTime = currentTime;
 
@@ -294,6 +323,16 @@ SimulationModel::~SimulationModel()
         light.update(scenarioTime);
         driver->setFog(light.getLightSColor(), video::EFT_FOG_EXP , 250, 5*M_IN_NM, .0003f, true, true);
         irr::u32 lightLevel = light.getLightLevel();
+
+        //update rain animation
+        //(Should move to its own class)
+        f32 rainAnimation1 = scenarioTime/2.0;
+        f32 rainAnimation2 = scenarioTime/2.2;
+        rainAnimation1 = rainAnimation1 - (int)rainAnimation1;
+        rainAnimation2 = rainAnimation2 - (int)rainAnimation2;
+        rainNode1->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation1);
+        rainNode2->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation2);
+        //End rain
 
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel); //Update other ship motion (based on leg information), and light visibility.
@@ -342,7 +381,10 @@ SimulationModel::~SimulationModel()
         radarScreen.update(radarImage);
         radarCamera.update();
 
+        //check if paused
+        bool paused = device->getTimer()->getSpeed()==0.0;
+
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), Utilities::timestampToString(absoluteTime),accelerator==0); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
     }
 
