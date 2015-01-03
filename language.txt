@@ -32,6 +32,7 @@ clutter="Clutter"
 nm=" Nm"
 
 weather = "Weather"
+rain = "Rain"
 paused=" (Paused)"
 showinterface="Show"
 hideinterface="Hide"

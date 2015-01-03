@@ -66,6 +66,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
+        //Add rain scroll bar
+        rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.371*su, 0.79*sh, 0.394*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
+        rainScrollbar->setMax(10);
+        rainScrollbar->setMin(0);
+        rainScrollbar->setSmallStep(1);
+        rainScrollbar->setToolTipText(language->translate("rain").c_str());
+
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.61*sh,0.697*su,0.99*sh));
@@ -131,12 +138,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         dataDisplay->setVisible(showInterface);
         hideInterfaceButton->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
+        rainScrollbar->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, u8 rain, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -148,6 +156,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarClutterScrollbar->setPos(radarClutter);
         radarRainScrollbar->setPos(radarRain);
         weatherScrollbar->setPos(weather*10); //(Weather scroll bar is 0-120, weather is 0-12)
+        rainScrollbar->setPos(rain);
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         viewHdg = viewAngle+hdg;

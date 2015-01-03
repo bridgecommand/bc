@@ -26,6 +26,7 @@
 #include "Terrain.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
+#include "Rain.hpp"
 #include "Tide.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
@@ -56,6 +57,7 @@ public:
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
     void setWeather(irr::f32 weather); //Range 0-12.
+    void setRain(irr::u8 rainIntensity); //Range 0-10
     void lookLeft();
     void lookRight();
     void lookAhead();
@@ -78,11 +80,10 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     irr::video::IImage* radarImage;
-    irr::scene::ISceneNode* rainNode1;
-    irr::scene::ISceneNode* rainNode2;
     //irr::f32 accelerator;
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0
+    irr::u8 rainIntensity; //0-10
     Terrain terrain;
     Light light;
     OwnShip ownShip;
@@ -94,6 +95,7 @@ private:
     Camera radarCamera;
     Water water;
     Tide tide;
+    Rain rain;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;
