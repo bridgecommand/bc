@@ -57,7 +57,7 @@ public:
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
     void setWeather(irr::f32 weather); //Range 0-12.
-    void setRain(irr::u8 rainIntensity); //Range 0-10
+    void setRain(irr::f32 rainIntensity); //Range 0-10
     void lookLeft();
     void lookRight();
     void lookAhead();
@@ -83,7 +83,7 @@ private:
     //irr::f32 accelerator;
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0
-    irr::u8 rainIntensity; //0-10
+    irr::f32 rainIntensity; //0-10
     Terrain terrain;
     Light light;
     OwnShip ownShip;

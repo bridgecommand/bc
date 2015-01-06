@@ -45,7 +45,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //load the weather:
         //Fixme: add in wind direction etc
         weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
-        rainIntensity = IniFile::iniFileTou32(environmentIniFilename,"Rain");
+        rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
 
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
@@ -201,7 +201,7 @@ SimulationModel::~SimulationModel()
         this->weather = weather;
     }
 
-    void SimulationModel::setRain(irr::u8 rainIntensity)
+    void SimulationModel::setRain(irr::f32 rainIntensity)
     {
         this->rainIntensity = rainIntensity;
     }

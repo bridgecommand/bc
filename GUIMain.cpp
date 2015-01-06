@@ -67,10 +67,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
         //Add rain scroll bar
-        rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.371*su, 0.79*sh, 0.394*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        rainScrollbar->setMax(10);
+        rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
+        rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
-        rainScrollbar->setSmallStep(1);
+        rainScrollbar->setLargeStep(5);
+        rainScrollbar->setSmallStep(5);
         rainScrollbar->setToolTipText(language->translate("rain").c_str());
 
         //add radar buttons
@@ -144,7 +145,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         showInterfaceButton->setVisible(!showInterface);
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, u8 rain, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 rain, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -155,8 +156,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarGainScrollbar->setPos(radarGain);
         radarClutterScrollbar->setPos(radarClutter);
         radarRainScrollbar->setPos(radarRain);
-        weatherScrollbar->setPos(weather*10); //(Weather scroll bar is 0-120, weather is 0-12)
-        rainScrollbar->setPos(rain);
+        weatherScrollbar->setPos(weather*10.0); //(Weather scroll bar is 0-120, weather is 0-12)
+        rainScrollbar->setPos(rain*10.0); //(Rain scroll bar is 0-100, rain is 0-10)
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         viewHdg = viewAngle+hdg;

@@ -89,7 +89,7 @@ using namespace irr;
                   }
               if (id == GUIMain::GUI_ID_RAIN_SCROLL_BAR)
                   {
-                        model->setRain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                        model->setRain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/10.0); //Scroll bar 0-100, rain 0-10
                   }
             }
 
