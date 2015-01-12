@@ -26,6 +26,7 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Lang.hpp"
+#include "SerialPort.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -102,6 +103,9 @@ int main()
     //Create networking, linked to model
     Network network(&model);
     network.connectToServer();
+
+    //create NMEA serial port, linked to model
+    SerialPort serialPort(&model);
 
     //main loop
     while(device->run())

@@ -70,6 +70,8 @@
 		<Unit filename="RealisticWater.h" />
 		<Unit filename="ScenarioChoice.cpp" />
 		<Unit filename="ScenarioChoice.hpp" />
+		<Unit filename="SerialPort.cpp" />
+		<Unit filename="SerialPort.hpp" />
 		<Unit filename="Ship.cpp" />
 		<Unit filename="Ship.hpp" />
 		<Unit filename="SimulationModel.cpp" />
@@ -86,6 +88,16 @@
 		<Unit filename="Utilities.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
+		<Unit filename="libs/serial/impl/unix.h" />
+		<Unit filename="libs/serial/impl/win.h" />
+		<Unit filename="libs/serial/serial.h" />
+		<Unit filename="libs/serial/src/impl/list_ports/list_ports_linux.cc" />
+		<Unit filename="libs/serial/src/impl/list_ports/list_ports_osx.cc" />
+		<Unit filename="libs/serial/src/impl/list_ports/list_ports_win.cc" />
+		<Unit filename="libs/serial/src/impl/unix.cc" />
+		<Unit filename="libs/serial/src/impl/win.cc" />
+		<Unit filename="libs/serial/src/serial.cc" />
+		<Unit filename="libs/serial/v8stdint.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="shaders/Water_ps.glsl" />
 		<Unit filename="shaders/Water_vs.glsl" />
