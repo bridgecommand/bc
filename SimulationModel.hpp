@@ -46,7 +46,7 @@ public:
 
     SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ~SimulationModel();
-    irr::f32 longToX(irr::f32 longitude) const ;
+    irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
@@ -56,6 +56,15 @@ public:
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
+
+    irr::f32 getLat() const;
+    irr::f32 getLong() const;
+    irr::f32 getCOG() const;
+    irr::f32 getSOG() const;
+
+    void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
+    void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
+
     void setWeather(irr::f32 weather); //Range 0-12.
     void setRain(irr::f32 rainIntensity); //Range 0-10
     void lookLeft();

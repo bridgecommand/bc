@@ -1,3 +1,5 @@
+//TODO: Rename this as NMEA.hpp
+
 /*   Bridge Command 5.0 Ship Simulator
      Copyright (C) 2015 James Packer
 
@@ -18,6 +20,7 @@
 #define __SERIALPORT_HPP_INCLUDED__
 
 #include "libs/serial/serial.h"
+#include <string>
 
 //Forward declarations
 class SimulationModel;
@@ -28,10 +31,15 @@ public:
 
     SerialPort(SimulationModel* model);
     ~SerialPort();
+    void updateNMEA();
+    void sendNMEASerial();
+
 
 private:
     SimulationModel* model;
     serial::Serial mySerialPort;
+    std::string messageToSend;
+    std::string addChecksum(std::string messageIn);
 
 };
 

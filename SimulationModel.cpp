@@ -163,6 +163,30 @@ SimulationModel::~SimulationModel()
         return(ownShip.getSpeed());
     }
 
+    irr::f32 SimulationModel::getLat()  const{
+        return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
+    }
+
+    irr::f32 SimulationModel::getLong() const{
+        return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
+    }
+
+    irr::f32 SimulationModel::getCOG() const{
+        return getHeading(); //FIXME: Will need to be updated when currents etc included
+    }
+
+    irr::f32 SimulationModel::getSOG() const{
+        return getSpeed(); //FIXME: Will need to be updated when currents etc included
+    }
+
+    void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
+        //FIXME: Complete
+    }
+
+    void SimulationModel::getDate(irr::u8& day, irr::u8& month, irr::u16& year) const{
+        //FIXME: Complete
+    }
+
     void SimulationModel::setHeading(f32 hdg)
     {
          ownShip.setHeading(hdg);

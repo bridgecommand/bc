@@ -121,6 +121,14 @@ irr::f32 Terrain::latToZ(irr::f32 latitude) const
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
+irr::f32 Terrain::xToLong(irr::f32 x) const{
+    return terrainLong + x*terrainLongExtent/terrainXWidth;
+}
+
+irr::f32 Terrain::zToLat(irr::f32 z) const{
+    return terrainLat + z*terrainLatExtent/terrainZWidth;
+}
+
 void Terrain::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     core::vector3df currentPos = terrain->getPosition();
