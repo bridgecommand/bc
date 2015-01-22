@@ -16,8 +16,8 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __SERIALPORT_HPP_INCLUDED__
-#define __SERIALPORT_HPP_INCLUDED__
+#ifndef __NMEA_HPP_INCLUDED__
+#define __NMEA_HPP_INCLUDED__
 
 #include "libs/serial/serial.h"
 #include <string>
@@ -43,4 +43,4 @@ private:
 
 };
 
-#endif // __SERIALPORT_HPP_INCLUDED__
+#endif // __NMEA_HPP_INCLUDED__

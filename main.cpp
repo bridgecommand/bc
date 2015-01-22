@@ -26,7 +26,7 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Lang.hpp"
-#include "SerialPort.hpp"
+#include "NMEA.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
