@@ -179,12 +179,16 @@ SimulationModel::~SimulationModel()
         return getSpeed(); //FIXME: Will need to be updated when currents etc included
     }
 
-    void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
-        //FIXME: Complete
-    }
+   // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
+   //    //FIXME: Complete
+   // }
 
-    void SimulationModel::getDate(irr::u8& day, irr::u8& month, irr::u16& year) const{
-        //FIXME: Complete
+    //void SimulationModel::getDate(irr::u8& day, irr::u8& month, irr::u16& year) const{
+    //    //FIXME: Complete
+    //}
+
+    irr::u64 SimulationModel::getTimestamp() const{
+        return absoluteTime;
     }
 
     void SimulationModel::setHeading(f32 hdg)

@@ -105,7 +105,7 @@ int main()
     network.connectToServer();
 
     //create NMEA serial port, linked to model
-    SerialPort serialPort(&model);
+    NMEA nmea(&model);
 
     //set up timing for NMEA
     u32 nextNMEATime = device->getTimer()->getTime()+1000;
@@ -118,8 +118,8 @@ int main()
 
         //Check if time has elapsed, so we send data once per second.
         if (device->getTimer()->getTime() >= nextNMEATime) {
-            serialPort.updateNMEA();
-            serialPort.sendNMEASerial();
+            nmea.updateNMEA();
+            nmea.sendNMEASerial();
             nextNMEATime = device->getTimer()->getTime()+1000;
         }
 

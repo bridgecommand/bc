@@ -1,5 +1,3 @@
-//TODO: Rename this as NMEA.hpp
-
 /*   Bridge Command 5.0 Ship Simulator
      Copyright (C) 2015 James Packer
 
@@ -25,12 +23,12 @@
 //Forward declarations
 class SimulationModel;
 
-class SerialPort {
+class NMEA {
 
 public:
 
-    SerialPort(SimulationModel* model);
-    ~SerialPort();
+    NMEA(SimulationModel* model);
+    ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
 

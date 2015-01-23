@@ -62,8 +62,9 @@ public:
     irr::f32 getCOG() const;
     irr::f32 getSOG() const;
 
-    void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
-    void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
+    //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
+    //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
+    irr::u64 getTimestamp() const;
 
     void setWeather(irr::f32 weather); //Range 0-12.
     void setRain(irr::f32 rainIntensity); //Range 0-10

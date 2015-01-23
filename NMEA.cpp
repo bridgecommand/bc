@@ -1,5 +1,3 @@
-//TODO: Rename this as NMEA.cpp
-
 /*   Bridge Command 5.0 Ship Simulator
      Copyright (C) 2015 James Packer
 
@@ -19,10 +17,11 @@
 #include "NMEA.hpp"
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
+#include "Utilities.hpp"
 #include <iostream>
 #include <string>
 
-SerialPort::SerialPort(SimulationModel* model) //Constructor
+NMEA::NMEA(SimulationModel* model) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
@@ -39,7 +38,7 @@ SerialPort::SerialPort(SimulationModel* model) //Constructor
 
 }
 
-SerialPort::~SerialPort()
+NMEA::~NMEA()
 {
 
     //Shut down serial port here
@@ -54,7 +53,7 @@ SerialPort::~SerialPort()
 
 }
 
-void SerialPort::updateNMEA() {
+void NMEA::updateNMEA() {
 
     f32 lat = model->getLat();
     f32 lon = model->getLong();
@@ -80,23 +79,27 @@ void SerialPort::updateNMEA() {
     u8 latDegrees = (int) lat;
     u8 lonDegrees = (int) lon;
 
+
+    std::string timeString = Utilities::timestampToString(model->getTimestamp(), "%H%M%S");
+    std::string dateString = Utilities::timestampToString(model->getTimestamp(), "%d%m%y");
+
     char messageBuffer[256];
 
     //snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,110141,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest);
-    snprintf(messageBuffer,100,"$GPRMC,110141,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,010170,,,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog); //FIXME: SOG -> knots, COG->degrees
+    snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
 
     std::string messageString(messageBuffer);
 
     messageToSend = addChecksum(messageString);
 }
 
-void SerialPort::sendNMEASerial() {
+void NMEA::sendNMEASerial() {
     if (mySerialPort.isOpen()) {
         mySerialPort.write(messageToSend);
     }
 }
 
-std::string SerialPort::addChecksum(std::string messageIn) {
+std::string NMEA::addChecksum(std::string messageIn) {
 
     char checksumBuffer[6];
 
