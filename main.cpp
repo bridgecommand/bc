@@ -107,8 +107,8 @@ int main()
     //create NMEA serial port, linked to model
     NMEA nmea(&model);
 
-    //set up timing for NMEA
-    u32 nextNMEATime = device->getTimer()->getTime()+1000;
+    //set up timing for NMEA: FIXME: Make this a defined constant
+    u32 nextNMEATime = device->getTimer()->getTime()+250;
 
     //main loop
     while(device->run())
@@ -120,7 +120,7 @@ int main()
         if (device->getTimer()->getTime() >= nextNMEATime) {
             nmea.updateNMEA();
             nmea.sendNMEASerial();
-            nextNMEATime = device->getTimer()->getTime()+1000;
+            nextNMEATime = device->getTimer()->getTime()+250; //Fixme: Make this a defined constant.
         }
 
         model.update();

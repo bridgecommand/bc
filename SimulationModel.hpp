@@ -51,6 +51,7 @@ public:
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
+    irr::f32 getRudder() const;
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)
     void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead)
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression

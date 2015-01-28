@@ -207,6 +207,11 @@ SimulationModel::~SimulationModel()
         ownShip.setRudder(rudder);
     }
 
+    irr::f32 SimulationModel::getRudder() const
+    {
+        return ownShip.getRudder();
+    }
+
     void SimulationModel::setPortEngine(irr::f32 port)
     {
         //Set the engine, (-ve astern, +ve ahead)

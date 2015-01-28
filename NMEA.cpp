@@ -27,11 +27,18 @@ NMEA::NMEA(SimulationModel* model) //Constructor
     this->model = model; //Link to the model
 
     messageToSend = "";
+    currentMessageType=0;
 
     try {
+        serial::Timeout timeout = serial::Timeout::simpleTimeout(50);
+
         mySerialPort.setPort("COM3"); //FIXME: Hardcoded.
+        mySerialPort.setBaudrate(4800);//FIXME: Hardcoded
+        mySerialPort.setTimeout(timeout);
+
         mySerialPort.open();
         std::cout << "Serial port opened." << std::endl;
+
     } catch (std::exception const& e) {
         std::cout << e.what() <<std::endl;
     }
@@ -54,6 +61,13 @@ NMEA::~NMEA()
 }
 
 void NMEA::updateNMEA() {
+
+    std::string timeString = Utilities::timestampToString(
+        model->getTimestamp(), "%H%M%S");
+    std::string dateString = Utilities::timestampToString(
+        model->getTimestamp(), "%d%m%y");
+
+    int rudderAngle = Utilities::round(model->getRudder());
 
     f32 lat = model->getLat();
     f32 lon = model->getLong();
@@ -79,14 +93,23 @@ void NMEA::updateNMEA() {
     u8 latDegrees = (int) lat;
     u8 lonDegrees = (int) lon;
 
-
-    std::string timeString = Utilities::timestampToString(model->getTimestamp(), "%H%M%S");
-    std::string dateString = Utilities::timestampToString(model->getTimestamp(), "%d%m%y");
-
     char messageBuffer[256];
 
-    //snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,110141,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest);
-    snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
+    //Todo: Replace with select/case block:
+    if (currentMessageType        == 0) {
+        snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
+    } else if (currentMessageType == 1) {
+        snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,%s,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,timeString.c_str());
+    } else if (currentMessageType == 2) {
+        snprintf(messageBuffer,100,"$GPGGA,%s,%02u%06.3f,%c,%03u%06.3f,%c,8,8,0.9,0.0,M,0.0,M,,",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
+    } else if (currentMessageType == 3) {
+        snprintf(messageBuffer,100,"$IIRSA,%d,A,,",rudderAngle);
+    }
+
+    currentMessageType++;
+    if (currentMessageType == maxMessages) {
+        currentMessageType = 0;
+    }
 
     std::string messageString(messageBuffer);
 
