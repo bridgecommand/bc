@@ -8,7 +8,6 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="EnetServer" prefix_auto="1" extension_auto="1" />
-				<Option object_output="" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -17,7 +16,6 @@
 			</Target>
 			<Target title="Release">
 				<Option output="EnetServer" prefix_auto="1" extension_auto="1" />
-				<Option object_output="" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,10 +29,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="C:/Users/James/Documents/Programming/enet/enet-1.3.11/include" />
+			<Add directory="../libs/enet/enet-1.3.11/include" />
 		</Compiler>
 		<Linker>
-			<Add library="C:\Users\James\Documents\Programming\enet\enet-1.3.11\bin\Release\libenet.a" />
+			<Add library="..\libs\enet\enet-1.3.11\bin\Release\libenet.a" />
+			<Add directory="../libs/enet/enet-1.3.11/include" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
