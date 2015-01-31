@@ -68,6 +68,8 @@ void NMEA::updateNMEA() {
         model->getTimestamp(), "%d%m%y");
 
     int rudderAngle = Utilities::round(model->getRudder());
+    int portRPM = Utilities::round(model->getPortEngineRPM());
+    int stbdRPM = Utilities::round(model->getStbdEngineRPM());
 
     f32 lat = model->getLat();
     f32 lon = model->getLong();
@@ -104,6 +106,10 @@ void NMEA::updateNMEA() {
         snprintf(messageBuffer,100,"$GPGGA,%s,%02u%06.3f,%c,%03u%06.3f,%c,8,8,0.9,0.0,M,0.0,M,,",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
     } else if (currentMessageType == 3) {
         snprintf(messageBuffer,100,"$IIRSA,%d,A,,",rudderAngle);
+    } else if (currentMessageType == 4) {
+        snprintf(messageBuffer,100,"$IIRPM,S,1,%d,100,A",portRPM); //'S' is for shaft, '100' is pitch
+    } else if (currentMessageType == 5) {
+        snprintf(messageBuffer,100,"$IIRPM,S,2,%d,100,A",stbdRPM);
     }
 
     currentMessageType++;

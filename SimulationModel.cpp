@@ -224,6 +224,26 @@ SimulationModel::~SimulationModel()
         ownShip.setStbdEngine(stbd);
     }
 
+    /*irr::f32 SimulationModel::getPortEngine() const
+    {
+        return ownShip.getPortEngine();
+    }
+
+    irr::f32 SimulationModel::getStbdEngine() const
+    {
+        return ownShip.getStbdEngine();
+    }*/
+
+    irr::f32 SimulationModel::getPortEngineRPM() const
+    {
+        return ownShip.getPortEngineRPM();
+    }
+
+    irr::f32 SimulationModel::getStbdEngineRPM() const
+    {
+        return ownShip.getStbdEngineRPM();
+    }
+
     void SimulationModel::setAccelerator(irr::f32 accelerator)
     {
         device->getTimer()->setSpeed(accelerator);

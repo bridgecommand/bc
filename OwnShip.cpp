@@ -193,6 +193,16 @@ irr::f32 OwnShip::getStbdEngine() const
     return stbdEngine;
 }
 
+irr::f32 OwnShip::getPortEngineRPM() const
+{
+    return portEngine*maxEngineRevs;
+}
+
+irr::f32 OwnShip::getStbdEngineRPM() const
+{
+    return stbdEngine*maxEngineRevs;
+}
+
 irr::f32 OwnShip::getRudder() const
 {
     return rudder;

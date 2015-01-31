@@ -37,7 +37,7 @@ private:
     serial::Serial mySerialPort;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    const int maxMessages=4; //How many messages are defined
+    const int maxMessages=6; //How many messages are defined
     int currentMessageType; //Sequentially send different sentences
 
 };
