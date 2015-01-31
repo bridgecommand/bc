@@ -3,7 +3,7 @@ NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED FOR NAVIGA
 BRIDGE COMMAND MUST NOT BE USED FOR SAFETY-CRITICAL 
 APPLICATIONS SUCH AS NAVIGATION ON THE SEA.
 
-Bridge Command is Copyright (C) 2014 by James Packer. The model
+Bridge Command is Copyright (C) 2015 by James Packer. The model
 files distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, 
 Simon D Richardson, Jason Simpson, Thierry Videlaine, and NETC (Naval 
@@ -19,8 +19,10 @@ author. Each model is credited to its author in the documentation
 distributed with Bridge Command.
 
 Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), 
-the ENet networking library (http://enet.bespin.org), and the RealisticWaterSceneNode 
-by elvman (https://github.com/elvman/RealisticWaterSceneNode)
+the ENet networking library (http://enet.bespin.org), the RealisticWaterSceneNode 
+by elvman (https://github.com/elvman/RealisticWaterSceneNode), and the Serial library
+by William Woodall.
+
 The Irrlicht Engine is based in part on the work of the Independent JPEG Group, 
 the zlib, and libpng.
 
