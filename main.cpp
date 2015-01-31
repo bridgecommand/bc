@@ -50,6 +50,9 @@ int main()
     u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
     u32 rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
 
+    //Load NMEA settings
+    std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
+
     //Sensible defaults if not set
     if (graphicsWidth==0) {graphicsWidth=800;}
     if (graphicsHeight==0) {graphicsHeight=600;}
@@ -105,7 +108,7 @@ int main()
     network.connectToServer();
 
     //create NMEA serial port, linked to model
-    NMEA nmea(&model);
+    NMEA nmea(&model, serialPortName);
 
     //set up timing for NMEA: FIXME: Make this a defined constant
     u32 nextNMEATime = device->getTimer()->getTime()+250;

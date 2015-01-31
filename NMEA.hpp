@@ -27,7 +27,7 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model);
+    NMEA(SimulationModel* model, std::string serialPortName);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();

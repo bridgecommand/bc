@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 
-NMEA::NMEA(SimulationModel* model) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
@@ -29,18 +29,20 @@ NMEA::NMEA(SimulationModel* model) //Constructor
     messageToSend = "";
     currentMessageType=0;
 
-    try {
-        serial::Timeout timeout = serial::Timeout::simpleTimeout(50);
+    if (!serialPortName.empty()){
+        try {
+            serial::Timeout timeout = serial::Timeout::simpleTimeout(50);
 
-        mySerialPort.setPort("COM3"); //FIXME: Hardcoded.
-        mySerialPort.setBaudrate(4800);//FIXME: Hardcoded
-        mySerialPort.setTimeout(timeout);
+            mySerialPort.setPort(serialPortName);
+            mySerialPort.setBaudrate(4800);//FIXME: Hardcoded
+            mySerialPort.setTimeout(timeout);
 
-        mySerialPort.open();
-        std::cout << "Serial port opened." << std::endl;
+            mySerialPort.open();
+            std::cout << "Serial port opened." << std::endl;
 
-    } catch (std::exception const& e) {
-        std::cout << e.what() <<std::endl;
+        } catch (std::exception const& e) {
+            std::cout << e.what() <<std::endl;
+        }
     }
 
 }
