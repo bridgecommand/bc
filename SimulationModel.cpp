@@ -131,7 +131,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarCamera.setFarValue(0.3);
 
         //initialise offset
-        offsetPosition = core::vector3d<u64>(0,0,0);
+        offsetPosition = core::vector3d<s64>(0,0,0);
 
         //store time
         previousTime = device->getTimer()->getTime();
@@ -171,6 +171,14 @@ SimulationModel::~SimulationModel()
         return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
     }
 
+    irr::f32 SimulationModel::getPosX() const{
+        return ownShip.getPosition().X + offsetPosition.X;
+    }
+
+    irr::f32 SimulationModel::getPosZ() const{
+        return ownShip.getPosition().Z + offsetPosition.Z;
+    }
+
     irr::f32 SimulationModel::getCOG() const{
         return getHeading(); //FIXME: Will need to be updated when currents etc included
     }
@@ -189,6 +197,14 @@ SimulationModel::~SimulationModel()
 
     irr::u64 SimulationModel::getTimestamp() const{
         return absoluteTime;
+    }
+
+    irr::u64 SimulationModel::getTimeOffset() const { //The current 'offset' time, ie the timestamp when last normalised
+        return scenarioOffsetTime;
+    }
+
+    irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since last normalisation
+        return scenarioTime;
     }
 
     void SimulationModel::setHeading(f32 hdg)

@@ -64,12 +64,16 @@ public:
 
     irr::f32 getLat() const;
     irr::f32 getLong() const;
+    irr::f32 getPosX() const;
+    irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
-    irr::f32 getSOG() const;
+    irr::f32 getSOG() const; //In metres/second
 
     //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
-    irr::u64 getTimestamp() const;
+    irr::u64 getTimestamp() const; //The unix timestamp in s
+    irr::u64 getTimeOffset() const; //The current 'offset' time, ie the timestamp when last normalised
+    irr::f32 getTimeDelta() const; //The change in time (s) since last normalisation
 
     void setWeather(irr::f32 weather); //Range 0-12.
     void setRain(irr::f32 rainIntensity); //Range 0-10
@@ -124,7 +128,7 @@ private:
     irr::u64 absoluteTime; //Unix timestamp for current time, including start day
 
     //Offset position handling
-    irr::core::vector3d<irr::u64> offsetPosition;
+    irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this
 
 };
 #endif

@@ -18,6 +18,7 @@
 
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
+#include "Constants.hpp"
 #include <iostream>
 #include <cstdio>
 
@@ -124,7 +125,34 @@ void Network::sendNetwork()
 {
     #ifdef _WIN32
     /* Get data from model */
-    std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
+    //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
+    std::string stringToSend = "BC";
+    //Time:
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeOffset()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
+    stringToSend.append("#");
+
+    //Position, speed etc
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosX()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getHeading()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Pitch
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Roll
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getSOG()*MPS_TO_KTS));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getCOG()));
+    stringToSend.append("#");
+
+    //Numbers
+
 
     /* Create a packet */
     ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
