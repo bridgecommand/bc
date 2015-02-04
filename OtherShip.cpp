@@ -26,6 +26,7 @@ using namespace irr;
 OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
 {
 
+    this->name = name;
     //Load from individual boat.ini file
     std::string iniFilename = "Models/Othership/";
     iniFilename.append(name);
@@ -162,6 +163,11 @@ irr::f32 OtherShip::getHeight() const
 irr::f32 OtherShip::getRCS() const
 {
     return rcs;
+}
+
+std::string OtherShip::getName() const
+{
+    return name;
 }
 
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const

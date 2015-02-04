@@ -121,6 +121,16 @@ irr::u32 Buoys::getNumber() const
     return buoys.size();
 }
 
+irr::core::vector3df Buoys::getPosition(int number) const
+{
+    if (number < buoys.size()) {
+        return buoys.at(number).getPosition();
+    } else {
+        return irr::core::vector3df(0,0,0);
+    }
+
+}
+
 void Buoys::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {

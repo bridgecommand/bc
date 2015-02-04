@@ -109,6 +109,34 @@ irr::u32 OtherShips::getNumber() const
     return otherShips.size();
 }
 
+irr::core::vector3df OtherShips::getPosition(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getPosition();
+    } else {
+        return core::vector3df(0,0,0);
+    }
+}
+
+irr::f32 OtherShips::getHeading(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getHeading();
+    } else {
+        return 0;
+    }
+}
+
+
+std::string OtherShips::getName(int number) const
+{
+    if(number < otherShips.size()) {
+        return otherShips.at(number).getName();
+    } else {
+        return "";
+    }
+}
+
 void OtherShips::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {

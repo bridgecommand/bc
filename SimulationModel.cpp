@@ -29,6 +29,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         driver = scene->getVideoDriver();
         guiMain = gui;
 
+        //Set loop number to zero
+        loopNumber = 0;
+
         //construct path to scenario
         std::string scenarioPath = "Scenarios/"; //Fixme: Think about proper path handling?
         scenarioPath.append(scenarioName);
@@ -207,6 +210,38 @@ SimulationModel::~SimulationModel()
         return scenarioTime;
     }
 
+    irr::u32 SimulationModel::getNumberOfOtherShips() const {
+        return otherShips.getNumber();
+    }
+
+    irr::u32 SimulationModel::getNumberOfBuoys() const {
+        return buoys.getNumber();
+    }
+
+    std::string SimulationModel::getOtherShipName(int number) const{
+        return otherShips.getName(number);
+    }
+
+    irr::f32 SimulationModel::getOtherShipPosX(int number) const{
+        return otherShips.getPosition(number).X + offsetPosition.X;
+    }
+
+    irr::f32 SimulationModel::getOtherShipPosZ(int number) const{
+        return otherShips.getPosition(number).Z + offsetPosition.Z;
+    }
+
+    irr::f32 SimulationModel::getOtherShipHeading(int number) const{
+        return otherShips.getHeading(number);
+    }
+
+    irr::f32 SimulationModel::getBuoyPosX(int number) const{
+        return buoys.getPosition(number).X + offsetPosition.X;
+    }
+
+    irr::f32 SimulationModel::getBuoyPosZ(int number) const{
+        return buoys.getPosition(number).Z + offsetPosition.Z;
+    }
+
     void SimulationModel::setHeading(f32 hdg)
     {
          ownShip.setHeading(hdg);
@@ -270,9 +305,19 @@ SimulationModel::~SimulationModel()
         this->weather = weather;
     }
 
+    irr::f32 SimulationModel::getWeather() const
+    {
+        return weather;
+    }
+
     void SimulationModel::setRain(irr::f32 rainIntensity)
     {
         this->rainIntensity = rainIntensity;
+    }
+
+    irr::f32 SimulationModel::getRain() const
+    {
+        return rainIntensity;
     }
 
     void SimulationModel::lookLeft()
@@ -308,6 +353,11 @@ SimulationModel::~SimulationModel()
     void SimulationModel::changeView()
     {
         camera.changeView();
+    }
+
+    irr::u32 SimulationModel::getCameraView() const
+    {
+        return camera.getView();
     }
 
     void SimulationModel::increaseRadarRange()
@@ -350,6 +400,11 @@ SimulationModel::~SimulationModel()
         camera.setAspectRatio(aspect);
     }
 
+    irr::u32 SimulationModel::getLoopNumber() const
+    {
+        return loopNumber;
+    }
+
     void SimulationModel::update()
     {
 
@@ -362,6 +417,9 @@ SimulationModel::~SimulationModel()
         //add this to the scenario time
         scenarioTime += deltaTime;
         absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
+
+        //increment loop number
+        loopNumber++;
 
         //Update tide height here.
         tide.update(absoluteTime);

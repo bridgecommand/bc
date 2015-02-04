@@ -106,6 +106,11 @@ void Camera::changeView()
     }
 }
 
+irr::u32 Camera::getView() const
+{
+    return currentView;
+}
+
 void Camera::setAspectRatio(irr::f32 aspect)
 {
     camera->setAspectRatio(aspect);

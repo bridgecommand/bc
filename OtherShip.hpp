@@ -38,12 +38,14 @@ class OtherShip : public Ship
         irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
+        std::string getName() const;
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel);
 
     protected:
     private:
 
+        std::string name;
         std::vector<Leg> legs;
         std::vector<NavLight> navLights;
         irr::f32 length; //For radar calculation

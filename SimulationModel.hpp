@@ -75,8 +75,19 @@ public:
     irr::u64 getTimeOffset() const; //The current 'offset' time, ie the timestamp when last normalised
     irr::f32 getTimeDelta() const; //The change in time (s) since last normalisation
 
+    irr::u32 getNumberOfOtherShips() const;
+    irr::u32 getNumberOfBuoys() const;
+    std::string getOtherShipName(int number) const;
+    irr::f32 getOtherShipPosX(int number) const;
+    irr::f32 getOtherShipPosZ(int number) const;
+    irr::f32 getOtherShipHeading(int number) const;
+    irr::f32 getBuoyPosX(int number) const;
+    irr::f32 getBuoyPosZ(int number) const;
+
     void setWeather(irr::f32 weather); //Range 0-12.
+    irr::f32 getWeather() const;
     void setRain(irr::f32 rainIntensity); //Range 0-10
+    irr::f32 getRain() const;
     void lookLeft();
     void lookRight();
     void lookAhead();
@@ -84,6 +95,7 @@ public:
     void lookPort();
     void lookStbd();
     void changeView();
+    irr::u32 getCameraView() const;
     void increaseRadarRange();
     void decreaseRadarRange();
     void setRadarGain(irr::f32 value);
@@ -92,6 +104,7 @@ public:
     void setMainCameraActive();
     void setRadarCameraActive();
     void setAspectRatio(irr::f32 aspect);
+    irr::u32 getLoopNumber() const;
     void update();
 
 private:
@@ -103,6 +116,7 @@ private:
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0
     irr::f32 rainIntensity; //0-10
+    irr::u32 loopNumber; //Todo: check if this is a reasonable size
     Terrain terrain;
     Light light;
     OwnShip ownShip;

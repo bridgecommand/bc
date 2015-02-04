@@ -40,6 +40,7 @@ class Camera
         void lookStbd();
         irr::f32 getLook() const;
         void changeView();
+        irr::u32 getView() const;
         void setNearValue(irr::f32 zn);
         void setFarValue(irr::f32 zf);
         void update();
