@@ -18,8 +18,10 @@
 
 #include <algorithm>
 #include <locale>
+#include <sstream>
 
 #include <iostream> //Fixme: Debug only
+
 
 namespace Utilities
 {
@@ -80,6 +82,18 @@ namespace Utilities
 
     std::string timestampToString(time_t timestamp) {
         return timestampToString(timestamp, "%d %b %Y %H:%M:%S"); //Default date/time format
+    }
+
+    std::vector<std::string> split(const std::string &inputString, char delim) {
+        //from http://stackoverflow.com/questions/236129/split-a-string-in-c, Evan Teran answer
+        std::vector<std::string> splitStrings;
+
+        std::stringstream ss(inputString);
+        std::string item;
+        while (std::getline(ss, item, delim)) {
+            splitStrings.push_back(item);
+        }
+        return splitStrings;
     }
 
 }

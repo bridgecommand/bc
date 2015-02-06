@@ -54,7 +54,7 @@ int main (int argc, char ** argv)
                     event.channelID);
 
                 //send something back
-                stringToSend = "5"; //5m/s
+                stringToSend = "5#170"; //5m/s
                 /* Create a packet */
                 packet = enet_packet_create (stringToSend.c_str(),
                 strlen (stringToSend.c_str()) + 1,

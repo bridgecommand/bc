@@ -110,10 +110,16 @@ void Network::receiveNetwork()
 
             //Currently converting data to and from string. Should directly send data of the type required.
             std::string readSpeedString ((char*)event.packet -> data);
+            std::vector<std::string> readComponents = Utilities::split(readSpeedString,'#');
+            if (readComponents.size() == 2) {
+                /*Set this speed in the model */
+                float speed = Utilities::lexical_cast<float>(readComponents.at(0));
+                float angle = Utilities::lexical_cast<float>(readComponents.at(1));
+                model->setSpeed(speed);
+                model->setHeading(angle);
+            }
 
-            /*Set this speed in the model */
-            float readSpeed = Utilities::lexical_cast<float>(readSpeedString);
-            model->setSpeed(readSpeed);
+
 
             enet_packet_destroy (event.packet);
         }

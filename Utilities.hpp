@@ -22,6 +22,7 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <vector>
 
 namespace Utilities
 {
@@ -31,6 +32,7 @@ namespace Utilities
     time_t dmyToTimestamp(int day, int month, int year);
     std::string timestampToString(time_t timestamp, std::string format);
     std::string timestampToString(time_t timestamp);
+    std::vector<std::string> split(const std::string &inputString, char delim);
 
     template <typename T, typename U>
     T lexical_cast(U in)
