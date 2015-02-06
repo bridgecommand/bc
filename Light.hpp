@@ -24,7 +24,7 @@ class Light
     public:
         Light();
         virtual ~Light();
-        void load(irr::scene::ISceneManager* smgr);
+        void load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet);
         void update(irr::f32 scenarioTime);
         irr::video::SColor getLightSColor() const;
         irr::u32 getLightLevel() const;
@@ -33,6 +33,8 @@ class Light
         irr::u32 lightLevel;
         irr::video::SColor ambientColor;
         irr::scene::ISceneManager* smgr;
+        irr::f32 sunRise;
+        irr::f32 sunSet;
 };
 
 #endif // __LIGHT_HPP_INCLUDED__

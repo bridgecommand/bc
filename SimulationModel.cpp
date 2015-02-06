@@ -45,6 +45,12 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         irr::u32 startMonth=IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
         irr::u32 startYear=IniFile::iniFileTou32(environmentIniFilename,"StartYear");
 
+        //load the sun times
+        irr::f32 sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+        irr::f32 sunSet  = IniFile::iniFileTof32(environmentIniFilename,"SunSet" );
+        if(sunRise==0.0) {sunRise=6;}
+        if(sunSet==0.0) {sunSet=18;}
+
         //load the weather:
         //Fixme: add in wind direction etc
         weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
@@ -89,7 +95,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         Sky sky (smgr);
 
         //make ambient light
-        light.load(smgr);
+        light.load(smgr,sunRise,sunSet);
 
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);

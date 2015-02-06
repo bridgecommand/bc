@@ -32,10 +32,12 @@ Light::~Light()
     //dtor
 }
 
-void Light::load(irr::scene::ISceneManager* smgr)
+void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet)
 {
 
     this->smgr = smgr;
+    this->sunRise = sunRise;
+    this->sunSet = sunSet;
 
     lightLevel = 0;
 
@@ -53,8 +55,6 @@ void Light::update(irr::f32 scenarioTime)
     irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
 
     //Light parameters
-    irr::f32 sunRise = 6; //FIXME: Hardcoded
-	irr::f32 sunSet = 18; //FIXME: Hardcoded
     irr::s32 lightLow=50;
 	irr::s32 lightHigh=205;
 	irr::s32 lightCos=45;
