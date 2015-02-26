@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ControllerModel.hpp"
+#include <iostream>
 
 //Constructor
 ControllerModel::ControllerModel()
@@ -44,9 +45,11 @@ irr::f32 ControllerModel::getPosZ() const
 void ControllerModel::setPosX(irr::f32 x)
 {
     ownShipPosX = x;
+    //std::cout << "Current X: " << ownShipPosX << std::endl;
 }
 
 void ControllerModel::setPosZ(irr::f32 z)
 {
     ownShipPosZ = z;
+    //std::cout << "Current Z: " << ownShipPosZ << std::endl;
 }

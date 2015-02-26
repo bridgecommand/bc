@@ -16,7 +16,10 @@
 
 #include "Network.hpp"
 #include "ControllerModel.hpp"
+#include "../Utilities.hpp"
+
 #include <iostream>
+#include <vector>
 
 //Constructor
 Network::Network(ControllerModel* model)
@@ -110,9 +113,41 @@ void Network::sendMessage(ENetPeer* peer)
 void Network::receiveMessage()
 {
     //Assumes that event contains a received message
-    printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
+    /*printf ("A packet of length %u was received from %s on channel %u.\n",
                     event.packet -> dataLength,
-                    event.packet -> data,
                     event.peer -> data,
-                    event.channelID);
+                    event.channelID);*/
+
+    //Convert into a string, max length 2048
+    char tempString[2048]; //Fixme: Think if this is long enough
+    snprintf(tempString,2048,"%s",event.packet -> data);
+    std::string receivedString(tempString);
+
+    //Basic checks
+    if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+        if (receivedString.substr(0,2).compare("BC") == 0 ) { //Check if it starts with BC
+            //Strip 'BC'
+            receivedString = receivedString.substr(2,receivedString.length()-2);
+
+            //Split into main parts
+            std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
+
+            //Check number of elements
+            if (receivedData.size() == 12) { //12 basic records in data sent
+
+                //Weather info is record 0
+
+                //Position info is record 1
+                std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
+                if (positionData.size() == 7) { //7 elements in position data sent
+                    model->setPosX( Utilities::lexical_cast<irr::f32>(positionData.at(0)) );
+                    model->setPosZ( Utilities::lexical_cast<irr::f32>(positionData.at(1)) );
+                }
+
+            }
+
+        }
+    }
+
+
 }
