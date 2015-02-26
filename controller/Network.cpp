@@ -70,25 +70,12 @@ void Network::update()
                 //event.peer -> data = "Client information";
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
-                    event.packet -> dataLength,
-                    event.packet -> data,
-                    event.peer -> data,
-                    event.channelID);
+
+                //receive it
+                receiveMessage();
 
                 //send something back
-                stringToSend = "5#170"; //5m/s
-                /* Create a packet */
-                packet = enet_packet_create (stringToSend.c_str(),
-                strlen (stringToSend.c_str()) + 1,
-                /*ENET_PACKET_FLAG_RELIABLE*/0);
-
-                /* Send the packet to the peer over channel id 0. */
-                /* One could also broadcast the packet by */
-                /* enet_host_broadcast (host, 0, packet); */
-                enet_peer_send (event.peer, 0, packet);
-                /* One could just use enet_host_service() instead. */
-                enet_host_flush (server);
+                sendMessage(event.peer);
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy (event.packet);
@@ -101,4 +88,31 @@ void Network::update()
 
         }
     }
+}
+
+void Network::sendMessage(ENetPeer* peer)
+{
+    //Assumes that event contains a received message
+    stringToSend = "5#170"; //5m/s
+                /* Create a packet */
+                packet = enet_packet_create (stringToSend.c_str(),
+                strlen (stringToSend.c_str()) + 1,
+                /*ENET_PACKET_FLAG_RELIABLE*/0);
+
+                /* Send the packet to the peer over channel id 0. */
+                /* One could also broadcast the packet by */
+                /* enet_host_broadcast (host, 0, packet); */
+                enet_peer_send (peer, 0, packet);
+                /* One could just use enet_host_service() instead. */
+                enet_host_flush (server);
+}
+
+void Network::receiveMessage()
+{
+    //Assumes that event contains a received message
+    printf ("A packet of length %u containing %s was received from %s on channel %u.\n",
+                    event.packet -> dataLength,
+                    event.packet -> data,
+                    event.peer -> data,
+                    event.channelID);
 }

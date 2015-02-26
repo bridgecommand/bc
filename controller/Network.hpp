@@ -41,5 +41,8 @@ private:
     std::string stringToSend;
     ENetPacket * packet;
 
+    void receiveMessage(); //Acts on 'event'
+    void sendMessage(ENetPeer * peer);
+
 };
 #endif // __NETWORK_HPP_INCLUDED__

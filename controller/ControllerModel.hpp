@@ -28,6 +28,15 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel();
     ~ControllerModel();
+    irr::f32 getPosX() const;
+    irr::f32 getPosZ() const;
+    void setPosX(irr::f32 x);
+    void setPosZ(irr::f32 z);
+
+private:
+
+    irr::f32 ownShipPosX;
+    irr::f32 ownShipPosZ;
 
 };
 

@@ -20,6 +20,9 @@
 ControllerModel::ControllerModel()
 {
 
+    ownShipPosX = 0;
+    ownShipPosZ = 0;
+
 }
 
 //Destructor
@@ -28,3 +31,22 @@ ControllerModel::~ControllerModel()
 
 }
 
+irr::f32 ControllerModel::getPosX() const
+{
+    return ownShipPosX;
+}
+
+irr::f32 ControllerModel::getPosZ() const
+{
+    return ownShipPosZ;
+}
+
+void ControllerModel::setPosX(irr::f32 x)
+{
+    ownShipPosX = x;
+}
+
+void ControllerModel::setPosZ(irr::f32 z)
+{
+    ownShipPosZ = z;
+}
