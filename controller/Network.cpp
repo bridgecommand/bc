@@ -78,7 +78,7 @@ void Network::update()
                 receiveMessage();
 
                 //send something back
-                sendMessage(event.peer);
+                //sendMessage(event.peer);
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy (event.packet);

@@ -18,9 +18,10 @@
 #include <iostream>
 
 //Constructor
-ControllerModel::ControllerModel()
+ControllerModel::ControllerModel(GUIMain* gui)
 {
 
+    this->gui = gui;
     ownShipPosX = 0;
     ownShipPosZ = 0;
 
@@ -52,4 +53,10 @@ void ControllerModel::setPosZ(irr::f32 z)
 {
     ownShipPosZ = z;
     //std::cout << "Current Z: " << ownShipPosZ << std::endl;
+}
+
+void ControllerModel::update()
+{
+    //Send the current data to the gui
+    gui->updateGuiData(ownShipPosX,ownShipPosZ);
 }

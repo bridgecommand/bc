@@ -4,6 +4,8 @@
 
 #include "Network.hpp"
 #include "ControllerModel.hpp"
+#include "GUI.hpp"
+#include "../Lang.hpp"
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -15,13 +17,25 @@ int main (int argc, char ** argv)
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
 
-    ControllerModel controller;
+    //load language
+    Lang language("language.txt");
+
+    //create GUI
+    GUIMain guiMain(device, &language);
+
+    ControllerModel controller(&guiMain);
     Network network(&controller);
 
 
     /* Wait up to 100 milliseconds for an event. */
     while(device->run()) {
+
         network.update();
+        controller.update();
+
+        driver->beginScene();
+        guiMain.drawGUI();
+        driver->endScene();
     }
 
     return(0);

@@ -19,6 +19,7 @@
 #define __CONTROLLERMODEL_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "GUI.hpp"
 
 class ControllerModel //Start of the 'Model' part of MVC
 {
@@ -26,15 +27,17 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel();
+    ControllerModel(GUIMain* gui);
     ~ControllerModel();
     irr::f32 getPosX() const;
     irr::f32 getPosZ() const;
     void setPosX(irr::f32 x);
     void setPosZ(irr::f32 z);
+    void update();
 
 private:
 
+    GUIMain* gui;
     irr::f32 ownShipPosX;
     irr::f32 ownShipPosZ;
 
