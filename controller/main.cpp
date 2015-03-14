@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
     //create GUI
     GUIMain guiMain(device, &language);
 
-    ControllerModel controller(&guiMain);
+    ControllerModel controller(device, &guiMain);
     Network network(&controller);
 
 

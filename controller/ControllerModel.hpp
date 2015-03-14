@@ -27,7 +27,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(GUIMain* gui);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
     ~ControllerModel();
     irr::f32 getPosX() const;
     irr::f32 getPosZ() const;
@@ -38,8 +38,23 @@ public:
 private:
 
     GUIMain* gui;
+    irr::IrrlichtDevice* device;
+    irr::video::IVideoDriver* driver;
+
+    irr::video::IImage* unscaledMap;
+    irr::video::IImage* scaledMap;
+
     irr::f32 ownShipPosX;
     irr::f32 ownShipPosZ;
+
+    irr::f32 terrainLong;
+    irr::f32 terrainLat;
+    irr::f32 terrainLongExtent;
+    irr::f32 terrainLatExtent;
+    irr::f32 terrainXWidth;
+    irr::f32 terrainZWidth;
+
+    irr::f32 metresPerPx;
 
 };
 

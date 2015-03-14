@@ -38,6 +38,7 @@
 			<Add directory="../libs/enet/enet-1.3.11/include" />
 			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Linker>
+		<Unit filename="../Constants.hpp" />
 		<Unit filename="../IniFile.cpp" />
 		<Unit filename="../IniFile.hpp" />
 		<Unit filename="../Lang.cpp" />

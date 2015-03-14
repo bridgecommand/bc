@@ -32,7 +32,7 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ);
+    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::video::ITexture* displayMapTexture);
     void drawGUI();
 
 private:
@@ -44,6 +44,7 @@ private:
 //  irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
 
+    irr::video::ITexture* displayMapTexture;
     irr::f32 ownShipPosX;
     irr::f32 ownShipPosZ;
 

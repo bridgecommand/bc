@@ -39,14 +39,19 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     }
 
-    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ)
+    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ,irr::video::ITexture* displayMapTexture)
     {
+        this->displayMapTexture = displayMapTexture;
         this->ownShipPosX = ownShipPosX;
         this->ownShipPosZ = ownShipPosZ;
     }
 
     void GUIMain::drawGUI()
     {
+        //Show map texture
+        device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
+        //TODO: Check that conversion to texture does not distort image
+
         //update heading display element
         core::stringw displayText = language->translate("pos");
         displayText.append(core::stringw(ownShipPosX));
