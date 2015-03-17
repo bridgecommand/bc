@@ -64,6 +64,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
     terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
+    std::cout << "Width m " << terrainXWidth << " Height m " << terrainZWidth << std::endl;
+
     //Calculate ratio required
     irr::f32 widthToHeight;
     if (terrainXWidth>0 &&  terrainZWidth>0) {
@@ -81,6 +83,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     irr::u32 requiredWidth = std::max(widthFromHeight, loadedSize.Width);
     irr::u32 requiredHeight = std::max(heightFromWidth, loadedSize.Height);
 
+    std::cout << "Width px " << requiredWidth << " Height px " << requiredHeight << std::endl;
+
     //Create scaled map with the same image format of the size required
     scaledMap = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
     //Copy and scale image
@@ -92,6 +96,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
 
     //Save scale
     metresPerPx = terrainXWidth / requiredWidth;
+
+    std::cout << "Actual width px " << scaledMap->getDimension().Width << " Height px " << scaledMap->getDimension().Height;
 
 }
 
@@ -129,11 +135,13 @@ void ControllerModel::update()
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
     irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
-    //Copy in data - TODO - make this move!
-    scaledMap->copyTo(tempImage,
-                       irr::core::position2d<irr::s32>(100,-100),
-                       irr::core::rect<irr::s32>(0, 0, 0+screenSize.Width, 0+screenSize.Height)
-                    );
+
+    //Copy in data
+    irr::s32 topLeftX = -1*ownShipPosX/metresPerPx + driver->getScreenSize().Width/2;
+    irr::s32 topLeftZ = ownShipPosZ/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height;
+
+    scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ));
+
     //Drop any previous textures
     for(int i = 0; i < driver->getTextureCount(); i++) {
         if (driver->getTextureByIndex(i)->getName().getPath()=="DisplayTexture") {

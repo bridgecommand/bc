@@ -16,6 +16,8 @@
 
 #include "GUI.hpp"
 
+#include <iostream>
+
 using namespace irr;
 
 GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
@@ -59,8 +61,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(core::stringw(ownShipPosZ));
         displayText.append(L"\n");
 
-
         dataDisplay->setText(displayText.c_str());
+
+        //draw cross hairs
+        irr::s32 width = device->getVideoDriver()->getScreenSize().Width;
+        irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
+        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(width/2,0),irr::core::position2d<s32>(width/2,height),video::SColor(255, 255, 255, 255));
+        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(0,height/2),irr::core::position2d<s32>(width,height/2),video::SColor(255, 255, 255, 255));
 
         guienv->drawAll();
 
