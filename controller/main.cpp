@@ -5,6 +5,7 @@
 #include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
+#include "ShipDataStruct.hpp"
 #include "../Lang.hpp"
 
 // Irrlicht Namespaces
