@@ -17,9 +17,9 @@
 #ifndef __LEG_HPP_INCLUDED__
 #define __LEG_HPP_INCLUDED__
 
-struct Leg //To hold information about each leg of an othership programmed route.
+struct Leg //To hold information about each leg of an othership programmed route. Distance is implicit, set by startTime of next leg
 {
-    irr::f32 bearing, speed, distance, startTime;
+    irr::f32 bearing, speed, startTime;
 };
 
 #endif

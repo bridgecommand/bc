@@ -65,18 +65,19 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
                 Leg currentLeg;
                 currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
                 currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
-                currentLeg.distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
                 currentLeg.startTime = legStartTime;
                 legs.push_back(currentLeg);
 
+                //Use distance to calculate startTime of next leg, but don't need to store.
+                irr::f32 distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+
                 //find the start time for the next leg
-                legStartTime = legStartTime + SECONDS_IN_HOUR*(currentLeg.distance/currentLeg.speed); // nm/kts -> hours, so convert to seconds
+                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/currentLeg.speed); // nm/kts -> hours, so convert to seconds
             }
             //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
             Leg stopLeg;
             stopLeg.bearing=0;
             stopLeg.speed=0;
-            stopLeg.distance=0;
             stopLeg.startTime = legStartTime;
             legs.push_back(stopLeg);
 
