@@ -1,11 +1,13 @@
 #include "irrlicht.h"
 #include <iostream>
 #include <cstdio>
-
+#include <vector>
+#include "ShipDataStruct.hpp"
+#include "PositionDataStruct.hpp"
 #include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
-#include "ShipDataStruct.hpp"
+
 #include "../Lang.hpp"
 
 // Irrlicht Namespaces
@@ -21,18 +23,23 @@ int main (int argc, char ** argv)
     //load language
     Lang language("language.txt");
 
-    //create GUI
+    //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
+    //Network class
+    Network network;
+    //GUI class
     GUIMain guiMain(device, &language);
-
+    //Main model
     ControllerModel controller(device, &guiMain);
-    Network network(&controller);
 
+    //Create data structures to hold own ship, other ship and buoy data
+    ShipData ownShipData;
+    std::vector<PositionData> buoysData;
+    std::vector<ShipData> otherShipsData;
 
-    /* Wait up to 100 milliseconds for an event. */
     while(device->run()) {
 
-        network.update();
-        controller.update();
+        network.update(ownShipData);
+        controller.update(ownShipData);
 
         driver->beginScene();
         guiMain.drawGUI();

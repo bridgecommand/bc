@@ -35,6 +35,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //add data display:
         dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.61*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
+        //dataTree = guienv->addTreeView(core::rect<s32>(0.09*su,0.61*sh,0.45*su,0.95*sh));
+        //dataTree->setToolTipText ( L"Show the current Scenegraph" );
+        //dataTree->getRoot()->clearChildren();
+
         ownShipPosX = 0;
         ownShipPosZ = 0;
 

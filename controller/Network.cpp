@@ -22,11 +22,8 @@
 #include <vector>
 
 //Constructor
-Network::Network(ControllerModel* model)
+Network::Network()
 {
-    //link to model so network can interact with model
-    this->model = model; //Link to the model
-
 
     if (enet_initialize () != 0)
     {
@@ -60,9 +57,9 @@ Network::~Network()
     enet_deinitialize();
 }
 
-void Network::update()
+void Network::update(ShipData& ownShipData)
 {
-
+    /* Wait up to 100 milliseconds for an event. */
     while (enet_host_service (server, & event, 100) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
@@ -75,7 +72,7 @@ void Network::update()
             case ENET_EVENT_TYPE_RECEIVE:
 
                 //receive it
-                receiveMessage();
+                receiveMessage(ownShipData);
 
                 //send something back
                 //sendMessage(event.peer);
@@ -110,7 +107,7 @@ void Network::sendMessage(ENetPeer* peer)
                 enet_host_flush (server);
 }
 
-void Network::receiveMessage()
+void Network::receiveMessage(ShipData& ownShipData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -140,8 +137,8 @@ void Network::receiveMessage()
                 //Position info is record 1
                 std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
                 if (positionData.size() == 7) { //7 elements in position data sent
-                    model->setPosX( Utilities::lexical_cast<irr::f32>(positionData.at(0)) );
-                    model->setPosZ( Utilities::lexical_cast<irr::f32>(positionData.at(1)) );
+                    ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
+                    ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
                 }
 
             }

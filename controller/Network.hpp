@@ -17,8 +17,13 @@
 #ifndef __NETWORK_HPP_INCLUDED__
 #define __NETWORK_HPP_INCLUDED__
 
-#include <enet/enet.h>
 #include <string>
+#include <vector>
+
+#include <enet/enet.h>
+
+#include "ShipDataStruct.hpp"
+#include "PositionDataStruct.hpp"
 
 //Forward declarations
 class ControllerModel;
@@ -26,10 +31,10 @@ class ControllerModel;
 class Network
 {
 public:
-    Network(ControllerModel* model);
+    Network();
     ~Network();
 
-    void update();
+    void update(ShipData& ownShipData);
 
 private:
 
@@ -41,7 +46,7 @@ private:
     std::string stringToSend;
     ENetPacket * packet;
 
-    void receiveMessage(); //Acts on 'event'
+    void receiveMessage(ShipData& ownShipData); //Acts on 'event'
     void sendMessage(ENetPeer * peer);
 
 };

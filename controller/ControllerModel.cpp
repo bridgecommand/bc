@@ -29,8 +29,6 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
 
     unscaledMap = 0; //FIXME: check - do pointers get automatically initialised as 0?
     scaledMap = 0;
-    ownShipPosX = 0;
-    ownShipPosZ = 0;
 
     //construct path to world model
     std::string worldPath = "../World/";
@@ -107,29 +105,7 @@ ControllerModel::~ControllerModel()
     scaledMap->drop();
 }
 
-irr::f32 ControllerModel::getPosX() const
-{
-    return ownShipPosX;
-}
-
-irr::f32 ControllerModel::getPosZ() const
-{
-    return ownShipPosZ;
-}
-
-void ControllerModel::setPosX(irr::f32 x)
-{
-    ownShipPosX = x;
-    //std::cout << "Current X: " << ownShipPosX << std::endl;
-}
-
-void ControllerModel::setPosZ(irr::f32 z)
-{
-    ownShipPosZ = z;
-    //std::cout << "Current Z: " << ownShipPosZ << std::endl;
-}
-
-void ControllerModel::update()
+void ControllerModel::update(ShipData& ownShipData)
 {
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
@@ -137,8 +113,8 @@ void ControllerModel::update()
     irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipPosX/metresPerPx + driver->getScreenSize().Width/2;
-    irr::s32 topLeftZ = ownShipPosZ/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height;
+    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2;
+    irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height;
 
     scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ));
 
@@ -155,5 +131,5 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui
-    gui->updateGuiData(ownShipPosX,ownShipPosZ,displayMapTexture);
+    gui->updateGuiData(ownShipData.X,ownShipData.Z,displayMapTexture);
 }

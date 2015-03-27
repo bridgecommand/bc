@@ -17,9 +17,12 @@
 #ifndef __GUIMAIN_HPP_INCLUDED__
 #define __GUIMAIN_HPP_INCLUDED__
 
-#include "irrlicht.h"
-#include "../Lang.hpp"
 #include <string>
+
+#include "irrlicht.h"
+
+#include "../Lang.hpp"
+
 
 class GUIMain //Create, build and update GUI
 {
@@ -32,7 +35,7 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::video::ITexture* displayMapTexture);
+    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ,irr::video::ITexture* displayMapTexture);
     void drawGUI();
 
 private:
@@ -43,6 +46,7 @@ private:
 //  irr::gui::IGUIScrollBar* hdgScrollbar;
 //  irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
+//    irr::gui::IGUITreeView* dataTree;
 
     irr::video::ITexture* displayMapTexture;
     irr::f32 ownShipPosX;
