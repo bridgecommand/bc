@@ -240,6 +240,10 @@ SimulationModel::~SimulationModel()
         return otherShips.getHeading(number);
     }
 
+    std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
+        return otherShips.getLegs(number);
+    }
+
     irr::f32 SimulationModel::getBuoyPosX(int number) const{
         return buoys.getPosition(number).X + offsetPosition.X;
     }

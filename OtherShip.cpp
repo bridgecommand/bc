@@ -21,6 +21,8 @@
 #include "Constants.hpp"
 #include "OtherShip.hpp"
 
+#include <iostream>
+
 using namespace irr;
 
 OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
@@ -131,6 +133,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
                 break;
             }
         }
+        //currentLeg is now the correct leg, or the last leg, which is a 'stopped' leg.
         spd = legs[currentLeg].speed*KTS_TO_MPS;
         hdg = legs[currentLeg].bearing;
     }
@@ -168,6 +171,11 @@ irr::f32 OtherShip::getRCS() const
 std::string OtherShip::getName() const
 {
     return name;
+}
+
+std::vector<Leg> OtherShip::getLegs() const
+{
+    return legs;
 }
 
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const

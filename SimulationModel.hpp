@@ -19,6 +19,7 @@
 
 #include <iostream> //For debugging
 #include <string>
+#include <vector>
 
 #include "irrlicht.h"
 
@@ -81,6 +82,7 @@ public:
     irr::f32 getOtherShipPosX(int number) const;
     irr::f32 getOtherShipPosZ(int number) const;
     irr::f32 getOtherShipHeading(int number) const;
+    std::vector<Leg> getOtherShipLegs(int number) const;
     irr::f32 getBuoyPosX(int number) const;
     irr::f32 getBuoyPosZ(int number) const;
 

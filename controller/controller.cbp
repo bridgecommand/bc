@@ -43,6 +43,7 @@
 		<Unit filename="../IniFile.hpp" />
 		<Unit filename="../Lang.cpp" />
 		<Unit filename="../Lang.hpp" />
+		<Unit filename="../Leg.hpp" />
 		<Unit filename="../Utilities.cpp" />
 		<Unit filename="../Utilities.hpp" />
 		<Unit filename="ControllerModel.cpp" />
@@ -51,6 +52,7 @@
 		<Unit filename="GUI.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />
 		<Unit filename="main.cpp" />

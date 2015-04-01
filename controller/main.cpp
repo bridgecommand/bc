@@ -2,8 +2,9 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include "ShipDataStruct.hpp"
 #include "PositionDataStruct.hpp"
+#include "ShipDataStruct.hpp"
+#include "OtherShipDataStruct.hpp"
 #include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
@@ -34,7 +35,7 @@ int main (int argc, char ** argv)
     //Create data structures to hold own ship, other ship and buoy data
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
-    std::vector<ShipData> otherShipsData;
+    std::vector<OtherShipData> otherShipsData;
 
     while(device->run()) {
 

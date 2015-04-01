@@ -40,6 +40,7 @@ class OtherShips
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         irr::f32 getHeading(int number) const;
+        std::vector<Leg> getLegs(int number) const;
         std::string getName(int number) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 

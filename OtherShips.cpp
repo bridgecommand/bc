@@ -128,6 +128,16 @@ irr::f32 OtherShips::getHeading(int number) const
     }
 }
 
+std::vector<Leg> OtherShips::getLegs(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getLegs();
+    } else {
+        //Return an empty vector
+        std::vector<Leg> legs;
+        return legs;
+    }
+}
 
 std::string OtherShips::getName(int number) const
 {

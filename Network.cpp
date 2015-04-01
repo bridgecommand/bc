@@ -19,8 +19,10 @@
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"
+#include "Leg.hpp"
 #include <iostream>
 #include <cstdio>
+#include <vector>
 
 Network::Network(SimulationModel* model) //Constructor
 {
@@ -176,6 +178,22 @@ void Network::sendNetwork()
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipHeading(number)));
         stringToSend.append(",");
         stringToSend.append("0"); //Fixme: Sart enabled
+        stringToSend.append(",");
+
+        //TODO: Send leg information
+        std::vector<Leg> legs = model->getOtherShipLegs(number);
+        stringToSend.append(Utilities::lexical_cast<std::string>(legs.size())); //Number of legs
+        stringToSend.append(",");
+        //Build leg information, each leg separated by a '/', each value by ':'
+        for(std::vector<Leg>::iterator it = legs.begin(); it != legs.end(); ++it) {
+            stringToSend.append(Utilities::lexical_cast<std::string>(it->bearing));
+            stringToSend.append(":");
+            stringToSend.append(Utilities::lexical_cast<std::string>(it->speed));
+            stringToSend.append(":");
+            stringToSend.append(Utilities::lexical_cast<std::string>(it->startTime));
+            stringToSend.append("/");
+        }
+
         stringToSend.append("|");
     }
     stringToSend.append("#");
