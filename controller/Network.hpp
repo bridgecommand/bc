@@ -22,8 +22,9 @@
 
 #include <enet/enet.h>
 
-#include "ShipDataStruct.hpp"
 #include "PositionDataStruct.hpp"
+#include "ShipDataStruct.hpp"
+#include "OtherShipDataStruct.hpp"
 
 //Forward declarations
 class ControllerModel;
@@ -34,7 +35,7 @@ public:
     Network();
     ~Network();
 
-    void update(ShipData& ownShipData);
+    void update(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData);
 
 private:
 
@@ -46,7 +47,7 @@ private:
     std::string stringToSend;
     ENetPacket * packet;
 
-    void receiveMessage(ShipData& ownShipData); //Acts on 'event'
+    void receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData); //Acts on 'event'
     void sendMessage(ENetPeer * peer);
 
 };

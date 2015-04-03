@@ -37,12 +37,32 @@ struct RadarData {
     irr::f32 rcs;
     irr::f32 solidHeight;
 
-    //irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
-
     bool hidden;
     std::string racon; //Racon code if set
     irr::f32 raconOffsetTime;
     bool SART; //SART enabled?
+    //irr::f32 radarHorizon; //Only used for tracking contacts outside current radar visibility range
+
+    //Default constructor - initialise to zero
+    RadarData():
+        height(0),
+        angle(0),
+        range(0),
+        relX(0),
+        relZ(0),
+        heading(0),
+        length(0),
+        minRange(0),
+        maxRange(0),
+        minAngle(0),
+        maxAngle(0),
+        rcs(0),
+        solidHeight(0),
+        hidden(false),
+        racon(""),
+        raconOffsetTime(0),
+        SART(false)
+        {}
 
 };
 

@@ -22,8 +22,10 @@
 
 #include "irrlicht.h"
 
-#include "ShipDataStruct.hpp"
 #include "PositionDataStruct.hpp"
+#include "ShipDataStruct.hpp"
+#include "OtherShipDataStruct.hpp"
+
 #include "GUI.hpp"
 
 class ControllerModel //Start of the 'Model' part of MVC
@@ -34,7 +36,7 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
     ~ControllerModel();
-    void update(ShipData& ownShipData);
+    void update(const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
 
 private:
 

@@ -20,6 +20,7 @@
 struct Leg //To hold information about each leg of an othership programmed route. Distance is implicit, set by startTime of next leg
 {
     irr::f32 bearing, speed, startTime;
+    Leg():bearing(0),speed(0),startTime(0){}
 };
 
 #endif

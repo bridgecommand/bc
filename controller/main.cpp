@@ -19,7 +19,7 @@ int main (int argc, char ** argv)
 
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0); //Fixme: Hardcoded size, depth and full screen
     video::IVideoDriver* driver = device->getVideoDriver();
-    scene::ISceneManager* smgr = device->getSceneManager();
+    //scene::ISceneManager* smgr = device->getSceneManager();
 
     //load language
     Lang language("language.txt");
@@ -39,8 +39,8 @@ int main (int argc, char ** argv)
 
     while(device->run()) {
 
-        network.update(ownShipData);
-        controller.update(ownShipData);
+        network.update(ownShipData, otherShipsData, buoysData);
+        controller.update(ownShipData, otherShipsData, buoysData);
 
         driver->beginScene();
         guiMain.drawGUI();

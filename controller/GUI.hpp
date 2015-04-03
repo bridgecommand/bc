@@ -51,6 +51,7 @@ private:
     irr::video::ITexture* displayMapTexture;
     irr::f32 ownShipPosX;
     irr::f32 ownShipPosZ;
+    irr::u32 numberBuoys;
 
     Lang* language;
 

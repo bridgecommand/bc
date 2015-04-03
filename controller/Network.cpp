@@ -57,7 +57,7 @@ Network::~Network()
     enet_deinitialize();
 }
 
-void Network::update(ShipData& ownShipData)
+void Network::update(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
     /* Wait up to 100 milliseconds for an event. */
     while (enet_host_service (server, & event, 100) > 0) {
@@ -72,7 +72,7 @@ void Network::update(ShipData& ownShipData)
             case ENET_EVENT_TYPE_RECEIVE:
 
                 //receive it
-                receiveMessage(ownShipData);
+                receiveMessage(ownShipData,otherShipsData,buoysData);
 
                 //send something back
                 //sendMessage(event.peer);
@@ -107,7 +107,7 @@ void Network::sendMessage(ENetPeer* peer)
                 enet_host_flush (server);
 }
 
-void Network::receiveMessage(ShipData& ownShipData)
+void Network::receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -130,7 +130,7 @@ void Network::receiveMessage(ShipData& ownShipData)
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 12) { //12 basic records in data sent
+            if (receivedData.size() == 11) { //11 basic records in data sent
 
                 //Weather info is record 0
 
@@ -141,9 +141,33 @@ void Network::receiveMessage(ShipData& ownShipData)
                     ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
                 }
 
-            }
+                //Numbers of objects in record 2 (Others, buoys, MOBs)
+                std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
+                if (numberData.size() == 3) {
+                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+                    irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
 
-        }
-    }
+                    //Update buoy data
+                    std::vector<std::string> buoysDataString = Utilities::split(receivedData.at(4),'|');
+                    if (numberBuoys == buoysDataString.size()) {
+
+                        //Ensure buoysData vector is the right size
+                        if (buoysData.size() != buoysDataString.size()) {
+                            buoysData.resize(buoysDataString.size());
+                        }
+
+                        for (irr::u32 i=0; i<numberBuoys; i++) {
+                            std::vector<std::string> thisBuoyData = Utilities::split(buoysDataString.at(i),',');
+                            if (thisBuoyData.size() == 2) {
+                                //Update data
+                                buoysData.at(i).X=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(0));
+                                buoysData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(1));
+                            } //Check if buoy data contains 2 elements for X,Z
+                        } //Iterate through buoys
+                    } //Check number of buoys matches the amount of data
+                } //Check if 3 number elements for Other ships, buoys and MOBs
+            } //Check correct number of records received
+        } //Check received message starts with BC
+    } //Check message at least 3 characters
 
 }

@@ -95,7 +95,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     //Save scale
     metresPerPx = terrainXWidth / requiredWidth;
 
-    std::cout << "Actual width px " << scaledMap->getDimension().Width << " Height px " << scaledMap->getDimension().Height;
+    std::cout << "Actual width px " << scaledMap->getDimension().Width << " Height px " << scaledMap->getDimension().Height << std::endl;
 
 }
 
@@ -105,7 +105,7 @@ ControllerModel::~ControllerModel()
     scaledMap->drop();
 }
 
-void ControllerModel::update(ShipData& ownShipData)
+void ControllerModel::update(const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
 {
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
@@ -116,10 +116,10 @@ void ControllerModel::update(ShipData& ownShipData)
     irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2;
     irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height;
 
-    scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ));
+    scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     //Drop any previous textures
-    for(int i = 0; i < driver->getTextureCount(); i++) {
+    for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
         if (driver->getTextureByIndex(i)->getName().getPath()=="DisplayTexture") {
             driver->removeTexture(driver->getTextureByIndex(i));
         }

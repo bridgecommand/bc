@@ -41,11 +41,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         ownShipPosX = 0;
         ownShipPosZ = 0;
+        //numberBuoys = 0;
+}
 
-
-    }
-
-    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ,irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::video::ITexture* displayMapTexture)
     {
         this->displayMapTexture = displayMapTexture;
         this->ownShipPosX = ownShipPosX;
@@ -64,6 +63,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(L" ");
         displayText.append(core::stringw(ownShipPosZ));
         displayText.append(L"\n");
+
+        //Show number of buoys
+        //displayText.append(core::stringw(numberOfBuoys));
+        //displayText.append(L"\n");
 
         dataDisplay->setText(displayText.c_str());
 

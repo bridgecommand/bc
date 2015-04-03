@@ -135,7 +135,7 @@ void Network::sendNetwork()
     /* Get data from model */
     //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
     std::string stringToSend = "BC";
-    //Time:
+    //0 Time:
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeOffset()));
@@ -143,7 +143,7 @@ void Network::sendNetwork()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
     stringToSend.append("#");
 
-    //Position, speed etc
+    //1 Position, speed etc
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosX()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
@@ -159,17 +159,15 @@ void Network::sendNetwork()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getCOG()));
     stringToSend.append("#");
 
-    //Numbers: Number Other, Number Controlled, Number buoys, Number MOB #
+    //2 Numbers: Number Other, Number Controlled, Number buoys, Number MOB #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfOtherShips()));
-    stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Controlled ships
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfBuoys()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: MOB
     stringToSend.append("#");
 
-    //Each 'Other' (Pos X (abs), Pos Z, angle, SART |) #
+    //3 Each 'Other' (Pos X (abs), Pos Z, angle, SART |) #
     for(int number = 0; number < model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
@@ -198,10 +196,7 @@ void Network::sendNetwork()
     }
     stringToSend.append("#");
 
-    //Each 'Controlled'
-    stringToSend.append("#"); //Fixme: No controlled ships
-
-    //Each Buoy
+    //4 Each Buoy
     for(int number = 0; number < model->getNumberOfBuoys(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getBuoyPosX(number)));
         stringToSend.append(",");
@@ -210,14 +205,14 @@ void Network::sendNetwork()
     }
     stringToSend.append("#");
 
-    //MOB
+    //5 MOB
     stringToSend.append("0,0#"); //Fixme: Mob details
 
-    //Loop
+    //6 Loop
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLoopNumber()));
     stringToSend.append("#");
 
-    //Weather: Weather, Fog range, wind dirn, rain, light level #
+    //7 Weather: Weather, Fog range, wind dirn, rain, light level #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWeather()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Fog range
@@ -229,14 +224,14 @@ void Network::sendNetwork()
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Light level
     stringToSend.append("#");
 
-    //EBL Brg, height, show (or 0,0,0) #
+    //8 EBL Brg, height, show (or 0,0,0) #
     stringToSend.append("0,0,0#"); //Fixme: Mob details
 
-    //View number
+    //9 View number
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getCameraView()));
     stringToSend.append("#");
 
-    //Multiplayer request here (Not used)
+    //10 Multiplayer request here (Not used)
     stringToSend.append("0#");
 
     /* Create a packet */

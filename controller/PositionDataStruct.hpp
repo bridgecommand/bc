@@ -22,6 +22,7 @@
 struct PositionData //To hold information about a position
 {
     irr::f32 X, Z;
+    PositionData():X(0), Z(0){}
 };
 
 #endif // __POSITIONDATASTRUCT_HPP_INCLUDED__

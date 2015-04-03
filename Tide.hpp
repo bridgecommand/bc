@@ -28,6 +28,10 @@ struct tidalHarmonic {
     irr::f32 amplitude; //Metres
     irr::f32 offset; //Offset in degrees (Relative to peak at 0000 on 1 Jan 1970)
     irr::f32 speed; //Degrees per hour
+
+    //Default constructor - initialise to zero
+    tidalHarmonic():
+        amplitude(0),offset(0),speed(0){}
 };
 
 public:
