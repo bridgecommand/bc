@@ -39,20 +39,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //dataTree->setToolTipText ( L"Show the current Scenegraph" );
         //dataTree->getRoot()->clearChildren();
 
-        ownShipPosX = 0;
-        ownShipPosZ = 0;
-        //numberBuoys = 0;
 }
 
-    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::u32 numberOfBuoys, irr::video::ITexture* displayMapTexture)
     {
-        this->displayMapTexture = displayMapTexture;
-        this->ownShipPosX = ownShipPosX;
-        this->ownShipPosZ = ownShipPosZ;
-    }
 
-    void GUIMain::drawGUI()
-    {
+        //(Todo - use references where appropriate)
+
         //Show map texture
         device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
         //TODO: Check that conversion to texture does not distort image
@@ -65,8 +58,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(L"\n");
 
         //Show number of buoys
-        //displayText.append(core::stringw(numberOfBuoys));
-        //displayText.append(L"\n");
+        displayText.append(core::stringw(numberOfBuoys));
+        displayText.append(L"\n");
 
         dataDisplay->setText(displayText.c_str());
 
@@ -79,4 +72,3 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guienv->drawAll();
 
     }
-

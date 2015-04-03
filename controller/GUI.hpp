@@ -35,25 +35,17 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ,irr::video::ITexture* displayMapTexture);
-    void drawGUI();
+    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::u32 numberOfBuoys, irr::video::ITexture* displayMapTexture);
 
 private:
+
+    Lang* language;
 
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
 
-//  irr::gui::IGUIScrollBar* hdgScrollbar;
-//  irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
-//    irr::gui::IGUITreeView* dataTree;
-
-    irr::video::ITexture* displayMapTexture;
-    irr::f32 ownShipPosX;
-    irr::f32 ownShipPosZ;
-    irr::u32 numberBuoys;
-
-    Lang* language;
+//  irr::gui::IGUITreeView* dataTree;
 
 };
 

@@ -39,11 +39,14 @@ int main (int argc, char ** argv)
 
     while(device->run()) {
 
+        driver->beginScene();
+
+        //Read in data from network
         network.update(ownShipData, otherShipsData, buoysData);
+
+        //Update the internal model, and call the gui
         controller.update(ownShipData, otherShipsData, buoysData);
 
-        driver->beginScene();
-        guiMain.drawGUI();
         driver->endScene();
     }
 
