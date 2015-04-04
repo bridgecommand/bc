@@ -131,5 +131,5 @@ void ControllerModel::update(const ShipData& ownShipData, const std::vector<Othe
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(ownShipData.X,ownShipData.Z,buoysData.size(),displayMapTexture);
+    gui->updateGuiData(ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture);
 }

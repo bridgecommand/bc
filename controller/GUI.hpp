@@ -18,11 +18,13 @@
 #define __GUIMAIN_HPP_INCLUDED__
 
 #include <string>
+#include <vector>
 
 #include "irrlicht.h"
 
 #include "../Lang.hpp"
-
+#include "PositionDataStruct.hpp"
+#include "OtherShipDataStruct.hpp"
 
 class GUIMain //Create, build and update GUI
 {
@@ -35,7 +37,7 @@ public:
         GUI_ID_SPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::u32 numberOfBuoys, irr::video::ITexture* displayMapTexture);
+    void updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture);
 
 private:
 

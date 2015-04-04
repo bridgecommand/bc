@@ -41,10 +41,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
 }
 
-    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::u32 numberOfBuoys, irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
     {
-
-        //(Todo - use references where appropriate)
 
         //Show map texture
         device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -57,8 +55,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(core::stringw(ownShipPosZ));
         displayText.append(L"\n");
 
-        //Show number of buoys
-        displayText.append(core::stringw(numberOfBuoys));
+        //Show number of buoys and ships
+        displayText.append(core::stringw(buoys.size()));
+        displayText.append(L" ");
+        displayText.append(core::stringw(otherShips.size()));
         displayText.append(L"\n");
 
         dataDisplay->setText(displayText.c_str());
