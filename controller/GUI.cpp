@@ -41,7 +41,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
 }
 
-    void GUIMain::updateGuiData(irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
     {
 
         //Show map texture
@@ -66,8 +66,22 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //draw cross hairs
         irr::s32 width = device->getVideoDriver()->getScreenSize().Width;
         irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
-        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(width/2,0),irr::core::position2d<s32>(width/2,height),video::SColor(255, 255, 255, 255));
-        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(0,height/2),irr::core::position2d<s32>(width,height/2),video::SColor(255, 255, 255, 255));
+        irr::s32 screenCentreX = width/2;
+        irr::s32 screenCentreY = height/2;
+        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(screenCentreX,0),irr::core::position2d<s32>(screenCentreX,height),video::SColor(255, 255, 255, 255));
+        device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(0,screenCentreY),irr::core::position2d<s32>(width,screenCentreY),video::SColor(255, 255, 255, 255));
+
+        //Draw location of buoys
+        for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {
+            irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx;
+            irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx;
+
+            irr::u32 dotHalfWidth = width/400;
+            if(dotHalfWidth<1) {dotHalfWidth=1;}
+            device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+
+        }
+
 
         guienv->drawAll();
 
