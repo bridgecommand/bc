@@ -126,48 +126,91 @@ void Network::receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& 
             //Strip 'BC'
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
-            //Split into main parts
-            std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
+            //Populate the data structures from the stripped string
+            findDataFromString(receivedString, ownShipData, otherShipsData, buoysData);
 
-            //Check number of elements
-            if (receivedData.size() == 11) { //11 basic records in data sent
-
-                //Weather info is record 0
-
-                //Position info is record 1
-                std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-                if (positionData.size() == 7) { //7 elements in position data sent
-                    ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-                    ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
-                }
-
-                //Numbers of objects in record 2 (Others, buoys, MOBs)
-                std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
-                if (numberData.size() == 3) {
-                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
-                    irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
-
-                    //Update buoy data
-                    std::vector<std::string> buoysDataString = Utilities::split(receivedData.at(4),'|');
-                    if (numberBuoys == buoysDataString.size()) {
-
-                        //Ensure buoysData vector is the right size
-                        if (buoysData.size() != buoysDataString.size()) {
-                            buoysData.resize(buoysDataString.size());
-                        }
-
-                        for (irr::u32 i=0; i<numberBuoys; i++) {
-                            std::vector<std::string> thisBuoyData = Utilities::split(buoysDataString.at(i),',');
-                            if (thisBuoyData.size() == 2) {
-                                //Update data
-                                buoysData.at(i).X=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(0));
-                                buoysData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(1));
-                            } //Check if buoy data contains 2 elements for X,Z
-                        } //Iterate through buoys
-                    } //Check number of buoys matches the amount of data
-                } //Check if 3 number elements for Other ships, buoys and MOBs
-            } //Check correct number of records received
         } //Check received message starts with BC
     } //Check message at least 3 characters
 
+}
+
+void Network::findDataFromString(const std::string& receivedString, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData) {
+//Split into main parts
+    std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
+
+    //Check number of elements
+    if (receivedData.size() == 11) { //11 basic records in data sent
+
+        //Weather info is record 0
+
+        //Position info is record 1
+        std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
+        findOwnShipPositionData(positionData, ownShipData); //Populate ownShipData from the positionData
+
+        //Numbers of objects in record 2 (Others, buoys, MOBs)
+        std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
+        if (numberData.size() == 3) {
+            irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+            irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
+
+            //Update other ship data
+            std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
+            if (numberOthers == otherShipsDataString.size()) {
+                findOtherShipData(otherShipsDataString, otherShipsData); //Populate otherShipsData from otherShipsDataString vector
+            }
+
+            //Update buoy data
+            std::vector<std::string> buoysDataString = Utilities::split(receivedData.at(4),'|');
+            if (numberBuoys == buoysDataString.size()) {
+                findBuoyPositionData(buoysDataString, buoysData); //Populate buoysData from the buoysDataString vector
+            } //Check number of buoys matches the amount of data
+
+        } //Check if 3 number elements for Other ships, buoys and MOBs
+
+    } //Check correct number of records received
+}
+
+void Network::findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData)
+{
+    if (positionData.size() == 7) { //7 elements in position data sent
+        ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
+        ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
+    }
+}
+
+void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipData>& otherShipsData)
+{
+    //Ensure otherShipsData vector is the right size
+    if (otherShipsData.size() != otherShipsDataString.size()) {
+        otherShipsData.resize(otherShipsDataString.size());
+    }
+
+    for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+        std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
+        if (thisShipData.size() == 6) { //6 elements for each ship
+            //Update data
+            otherShipsData.at(i).X=Utilities::lexical_cast<irr::u32>(thisShipData.at(0));
+            otherShipsData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisShipData.at(1));
+
+            //Todo: use leg information, SART etc
+        }
+    } //Iterate through ships
+
+}
+
+void Network::findBuoyPositionData(const std::vector<std::string>&buoysDataString, std::vector<PositionData>& buoysData)
+{
+    //Ensure buoysData vector is the right size
+    if (buoysData.size() != buoysDataString.size()) {
+        buoysData.resize(buoysDataString.size());
+    }
+
+    for (irr::u32 i=0; i<buoysDataString.size(); i++) {
+        std::vector<std::string> thisBuoyData = Utilities::split(buoysDataString.at(i),',');
+        if (thisBuoyData.size() == 2) {
+            //Update data
+            buoysData.at(i).X=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(0));
+            buoysData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisBuoyData.at(1));
+        } //Check if buoy data contains 2 elements for X,Z
+    } //Iterate through buoys
 }

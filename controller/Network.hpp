@@ -48,6 +48,12 @@ private:
     ENetPacket * packet;
 
     void receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData); //Acts on 'event'
+    //Subroutines to break down process of extracting data from the received string:
+    void findDataFromString(const std::string& receivedString, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData);
+    void findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData);
+    void findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipData>& otherShipsData);
+    void findBuoyPositionData(const std::vector<std::string>& buoysDataString, std::vector<PositionData>& buoysData);
+
     void sendMessage(ENetPeer * peer);
 
 };

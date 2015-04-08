@@ -79,9 +79,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             irr::u32 dotHalfWidth = width/400;
             if(dotHalfWidth<1) {dotHalfWidth=1;}
             device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
-
         }
 
+        //Draw location of ships
+        for(std::vector<OtherShipData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+            irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx;
+            irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx;
+
+            irr::u32 dotHalfWidth = width/400;
+            if(dotHalfWidth<1) {dotHalfWidth=1;}
+            device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        }
 
         guienv->drawAll();
 
