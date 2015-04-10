@@ -105,7 +105,7 @@ ControllerModel::~ControllerModel()
     scaledMap->drop();
 }
 
-void ControllerModel::update(const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
+void ControllerModel::update(const irr::u64& timestamp, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
 {
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
@@ -131,5 +131,5 @@ void ControllerModel::update(const ShipData& ownShipData, const std::vector<Othe
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(metresPerPx,ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture);
+    gui->updateGuiData(timestamp,metresPerPx,ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture);
 }

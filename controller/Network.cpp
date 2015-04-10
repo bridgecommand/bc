@@ -57,7 +57,7 @@ Network::~Network()
     enet_deinitialize();
 }
 
-void Network::update(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
+void Network::update(irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
     /* Wait up to 100 milliseconds for an event. */
     while (enet_host_service (server, & event, 100) > 0) {
@@ -72,7 +72,7 @@ void Network::update(ShipData& ownShipData, std::vector<OtherShipData>& otherShi
             case ENET_EVENT_TYPE_RECEIVE:
 
                 //receive it
-                receiveMessage(ownShipData,otherShipsData,buoysData);
+                receiveMessage(timestamp,ownShipData,otherShipsData,buoysData);
 
                 //send something back
                 //sendMessage(event.peer);
@@ -107,7 +107,7 @@ void Network::sendMessage(ENetPeer* peer)
                 enet_host_flush (server);
 }
 
-void Network::receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
+void Network::receiveMessage(irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -127,21 +127,26 @@ void Network::receiveMessage(ShipData& ownShipData, std::vector<OtherShipData>& 
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
             //Populate the data structures from the stripped string
-            findDataFromString(receivedString, ownShipData, otherShipsData, buoysData);
+            findDataFromString(receivedString, timestamp, ownShipData, otherShipsData, buoysData);
 
         } //Check received message starts with BC
     } //Check message at least 3 characters
 
 }
 
-void Network::findDataFromString(const std::string& receivedString, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData) {
+void Network::findDataFromString(const std::string& receivedString, irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData) {
 //Split into main parts
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
     //Check number of elements
     if (receivedData.size() == 11) { //11 basic records in data sent
 
-        //Weather info is record 0
+        //Time info is record 0
+        std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
+        //timestamp is record 0 of this
+        if (timeData.size() > 0) {
+            timestamp = Utilities::lexical_cast<irr::u64>(timeData.at(0));
+        }
 
         //Position info is record 1
         std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
@@ -192,7 +197,7 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
             otherShipsData.at(i).X=Utilities::lexical_cast<irr::u32>(thisShipData.at(0));
             otherShipsData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisShipData.at(1));
 
-            //Todo: use leg information, SART etc
+            //Todo: use SART etc
             irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(4));
             std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(5),'/');
             if (numberOfLegs == legsDataString.size()) {

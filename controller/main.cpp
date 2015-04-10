@@ -33,6 +33,7 @@ int main (int argc, char ** argv)
     ControllerModel controller(device, &guiMain);
 
     //Create data structures to hold own ship, other ship and buoy data
+    irr::u64 timestamp = 0;
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
@@ -42,10 +43,10 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(ownShipData, otherShipsData, buoysData);
+        network.update(timestamp, ownShipData, otherShipsData, buoysData);
 
         //Update the internal model, and call the gui
-        controller.update(ownShipData, otherShipsData, buoysData);
+        controller.update(timestamp, ownShipData, otherShipsData, buoysData);
 
         driver->endScene();
     }

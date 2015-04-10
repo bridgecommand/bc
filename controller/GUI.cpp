@@ -41,7 +41,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
 }
 
-    void GUIMain::updateGuiData(irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::u64 timestamp, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
     {
 
         //Show map texture
@@ -59,6 +59,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(core::stringw(buoys.size()));
         displayText.append(L" ");
         displayText.append(core::stringw(otherShips.size()));
+        displayText.append(L"\n");
+
+        //Show time now
+        displayText.append(core::stringw((irr::u32)timestamp));
         displayText.append(L"\n");
 
         dataDisplay->setText(displayText.c_str());
