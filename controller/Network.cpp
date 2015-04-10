@@ -193,7 +193,27 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
             otherShipsData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisShipData.at(1));
 
             //Todo: use leg information, SART etc
-        }
+            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(4));
+            std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(5),'/');
+            if (numberOfLegs == legsDataString.size()) {
+                //Ensure legs vector is the right size
+                if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
+                    otherShipsData.at(i).legs.resize(legsDataString.size());
+                }
+
+                //Populate the leg data
+                for (irr::u32 j=0; j<legsDataString.size(); j++) {
+                    std::vector<std::string> thisLegData = Utilities::split(legsDataString.at(j),':');
+                    if (thisLegData.size() ==3) {
+                        otherShipsData.at(i).legs.at(j).bearing = Utilities::lexical_cast<irr::f32>(thisLegData.at(0));
+                        otherShipsData.at(i).legs.at(j).speed = Utilities::lexical_cast<irr::f32>(thisLegData.at(1));
+                        otherShipsData.at(i).legs.at(j).startTime = Utilities::lexical_cast<irr::f32>(thisLegData.at(2));
+                    }
+                }//Iterate through legs
+
+            }//If number of legs matches data received
+
+        }//Check number of basic data elements
     } //Iterate through ships
 
 }

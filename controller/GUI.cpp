@@ -88,7 +88,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
             irr::u32 dotHalfWidth = width/400;
             if(dotHalfWidth<1) {dotHalfWidth=1;}
-            device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+            device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
         }
 
         guienv->drawAll();
