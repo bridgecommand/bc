@@ -36,7 +36,7 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
     ~ControllerModel();
-    void update(const irr::u64& timestamp, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
+    void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
 
 private:
 

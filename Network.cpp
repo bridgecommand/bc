@@ -136,11 +136,11 @@ void Network::sendNetwork()
     //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
     std::string stringToSend = "BC";
     //0 Time:
-    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp()));
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp())); //Current timestamp
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeOffset()));
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeOffset())); //Timestamp of start of first day of scenario
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeDelta())); //Time from start day of scenario
     stringToSend.append("#");
 
     //1 Position, speed etc

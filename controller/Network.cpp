@@ -57,10 +57,10 @@ Network::~Network()
     enet_deinitialize();
 }
 
-void Network::update(irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
+void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
-    /* Wait up to 100 milliseconds for an event. */
-    while (enet_host_service (server, & event, 100) > 0) {
+    /* Wait up to 10 milliseconds for an event. */
+    while (enet_host_service (server, & event, 10) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
                 printf ("A new client connected from %x:%u.\n",
@@ -72,7 +72,7 @@ void Network::update(irr::u64& timestamp, ShipData& ownShipData, std::vector<Oth
             case ENET_EVENT_TYPE_RECEIVE:
 
                 //receive it
-                receiveMessage(timestamp,ownShipData,otherShipsData,buoysData);
+                receiveMessage(time,ownShipData,otherShipsData,buoysData);
 
                 //send something back
                 //sendMessage(event.peer);
@@ -107,7 +107,7 @@ void Network::sendMessage(ENetPeer* peer)
                 enet_host_flush (server);
 }
 
-void Network::receiveMessage(irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
+void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -127,14 +127,14 @@ void Network::receiveMessage(irr::u64& timestamp, ShipData& ownShipData, std::ve
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
             //Populate the data structures from the stripped string
-            findDataFromString(receivedString, timestamp, ownShipData, otherShipsData, buoysData);
+            findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData);
 
         } //Check received message starts with BC
     } //Check message at least 3 characters
 
 }
 
-void Network::findDataFromString(const std::string& receivedString, irr::u64& timestamp, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData) {
+void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData) {
 //Split into main parts
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
@@ -143,9 +143,9 @@ void Network::findDataFromString(const std::string& receivedString, irr::u64& ti
 
         //Time info is record 0
         std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
-        //timestamp is record 0 of this
+        //Time since start of scenario day 1 is record 2
         if (timeData.size() > 0) {
-            timestamp = Utilities::lexical_cast<irr::u64>(timeData.at(0));
+            time = Utilities::lexical_cast<irr::f32>(timeData.at(2)); //
         }
 
         //Position info is record 1

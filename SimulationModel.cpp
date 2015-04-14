@@ -208,11 +208,11 @@ SimulationModel::~SimulationModel()
         return absoluteTime;
     }
 
-    irr::u64 SimulationModel::getTimeOffset() const { //The current 'offset' time, ie the timestamp when last normalised
+    irr::u64 SimulationModel::getTimeOffset() const { //The timestamp at the start of the first day of the scenario
         return scenarioOffsetTime;
     }
 
-    irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since last normalisation
+    irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since the start of the start day of the scenario
         return scenarioTime;
     }
 

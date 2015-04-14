@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "GUI.hpp"
+#include "../Constants.hpp"
 
 #include <iostream>
 
@@ -41,7 +42,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
 }
 
-    void GUIMain::updateGuiData(irr::u64 timestamp, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
+    void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
     {
 
         //Show map texture
@@ -62,7 +63,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(L"\n");
 
         //Show time now
-        displayText.append(core::stringw((irr::u32)timestamp));
+        displayText.append(core::stringw(time));
         displayText.append(L"\n");
 
         dataDisplay->setText(displayText.c_str());
@@ -93,6 +94,73 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             irr::u32 dotHalfWidth = width/400;
             if(dotHalfWidth<1) {dotHalfWidth=1;}
             device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+
+            //Draw leg information for each ship
+            if (it->legs.size() > 0) {
+
+                //Find first leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
+                irr::u32 currentLeg = 0;
+                bool currentLegFound = false;
+                for (u32 i=0; i < it->legs.size()-1; i++) {
+                    if (time >= it->legs.at(i).startTime &&  time < it->legs.at(i+1).startTime) {
+                        currentLeg = i;
+                        currentLegFound = true;
+                    }
+                }
+                if (!currentLegFound) {
+                    currentLeg = it->legs.size()-1;
+                }
+
+                //find time remaining on current leg
+                irr::f32 currentLegTimeRemaining = 0;
+                if (currentLeg < it->legs.size() - 1) { //If not on the last leg, find time until we change onto next course
+
+                    irr::f32 legStartX = screenCentreX + relPosX;
+                    irr::f32 legStartY = screenCentreY - relPosY;
+
+                    irr::f32 legEndX = legStartX; //Default values in case current leg is zero length
+                    irr::f32 legEndY = legStartY;
+
+                    currentLegTimeRemaining = it->legs.at(currentLeg+1).startTime - time;
+                    if (currentLegTimeRemaining>0) {
+                        //Line starts at screenCentreX + relPosX, screenCentreY-relPosY
+                        irr::f32 legLengthPx = currentLegTimeRemaining * it->legs.at(currentLeg).speed * KTS_TO_MPS / metresPerPx;
+                        legEndX = legStartX + legLengthPx*sin(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
+                        legEndY = legStartY - legLengthPx*cos(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
+
+                        irr::core::position2d<s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<s32> endLine (legEndX, legEndY);
+
+                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+
+                    } //If currentLegTimeRemaining > 0
+
+                    //Draw remaining legs, excluding 'stop'one
+                    for (irr::u32 i = currentLeg+1; i < it->legs.size() - 1; i++) {
+                        irr::f32 legTimeRemaining = it->legs.at(i+1).startTime -  it->legs.at(i).startTime;
+                        irr::f32 legLengthPx = legTimeRemaining * it->legs.at(i).speed * KTS_TO_MPS / metresPerPx;
+
+                        //current start is previous end
+                        legStartX = legEndX;
+                        legStartY = legEndY;
+
+                        //find new end
+                        legEndX = legStartX + legLengthPx*sin(it->legs.at(i).bearing * RAD_IN_DEG);
+                        legEndY = legStartY - legLengthPx*cos(it->legs.at(i).bearing * RAD_IN_DEG);
+
+                        //Draw
+                        irr::core::position2d<s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<s32> endLine (legEndX, legEndY);
+
+                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                    }
+
+                }
+
+                //std::cout << "Leg " << currentLeg << " Time until course change: " << currentLegTimeRemaining << std::endl;
+
+            }//If Legs.size() >0
+
         }
 
         guienv->drawAll();
