@@ -8,6 +8,7 @@
 #include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
+#include "EventReceiver.hpp"
 
 #include "../Lang.hpp"
 
@@ -37,6 +38,10 @@ int main (int argc, char ** argv)
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
+
+    //create event receiver, linked to model
+    EventReceiver receiver(device, &controller, &guiMain);
+    device->setEventReceiver(&receiver);
 
     while(device->run()) {
 

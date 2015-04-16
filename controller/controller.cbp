@@ -48,6 +48,8 @@
 		<Unit filename="../Utilities.hpp" />
 		<Unit filename="ControllerModel.cpp" />
 		<Unit filename="ControllerModel.hpp" />
+		<Unit filename="EventReceiver.cpp" />
+		<Unit filename="EventReceiver.hpp" />
 		<Unit filename="GUI.cpp" />
 		<Unit filename="GUI.hpp" />
 		<Unit filename="Network.cpp" />
