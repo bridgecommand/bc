@@ -47,7 +47,10 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIStaticText* dataDisplay;
-//  irr::gui::IGUITreeView* dataTree;
+    irr::gui::IGUIComboBox* shipSelector;
+    irr::gui::IGUIComboBox* legSelector;
+
+    void drawInformationOnMap(const irr::f32& time, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips );
 
 };
 
