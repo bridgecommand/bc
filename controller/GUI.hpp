@@ -33,11 +33,11 @@ public:
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
-        GUI_ID_HEADING_SCROLL_BAR = 101,
-        GUI_ID_SPEED_SCROLL_BAR
+        GUI_ID_SHIP_COMBOBOX = 101,
+        GUI_ID_LEG_COMBOBOX
     };
 
-    void updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture);
+    void updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg);
 
 private:
 
@@ -51,6 +51,8 @@ private:
     irr::gui::IGUIComboBox* legSelector;
 
     void drawInformationOnMap(const irr::f32& time, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips );
+    void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip);
+    bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
 
 };
 

@@ -37,6 +37,8 @@ public:
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
     ~ControllerModel();
     void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
+    void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+    void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
 
 private:
 
@@ -55,6 +57,9 @@ private:
     irr::f32 terrainZWidth;
 
     irr::f32 metresPerPx;
+
+    irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
+    irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
 
 };
 

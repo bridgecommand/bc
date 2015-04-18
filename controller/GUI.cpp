@@ -22,75 +22,61 @@
 using namespace irr;
 
 GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
-    {
-        this->device = device;
-        guienv = device->getGUIEnvironment();
+{
+    this->device = device;
+    guienv = device->getGUIEnvironment();
 
-        video::IVideoDriver* driver = device->getVideoDriver();
-        u32 su = driver->getScreenSize().Width;
-        u32 sh = driver->getScreenSize().Height;
+    video::IVideoDriver* driver = device->getVideoDriver();
+    u32 su = driver->getScreenSize().Width;
+    u32 sh = driver->getScreenSize().Height;
 
-        this->language = language;
+    this->language = language;
 
-        //gui
+    //gui
 
-        //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.6*sh,0.45*su,0.7*sh), true, false, 0, -1, true); //Actual text set later
+    //add data display:
+    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.6*sh,0.45*su,0.7*sh), true, false, 0, -1, true); //Actual text set later
 
-        shipSelector = guienv->addComboBox(core::rect<s32>(0.09*su,0.75*sh,0.45*su,0.80*sh));
-        shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
+    shipSelector = guienv->addComboBox(core::rect<s32>(0.09*su,0.75*sh,0.45*su,0.80*sh),0,GUI_ID_SHIP_COMBOBOX);
+    shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
 
-        legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.85*sh,0.45*su,0.90*sh));
+    legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.85*sh,0.45*su,0.90*sh),0,GUI_ID_LEG_COMBOBOX);
 
 }
 
-    void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture)
-    {
+void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg)
+{
 
-        //Show map texture
-        device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
-        //TODO: Check that conversion to texture does not distort image
+    //Show map texture
+    device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
+    //TODO: Check that conversion to texture does not distort image
 
-        //update heading display element
-        core::stringw displayText = language->translate("pos");
-        displayText.append(core::stringw(ownShipPosX));
-        displayText.append(L" ");
-        displayText.append(core::stringw(ownShipPosZ));
-        displayText.append(L"\n");
-        //Show number of buoys and ships
-        displayText.append(core::stringw(buoys.size()));
-        displayText.append(L" ");
-        displayText.append(core::stringw(otherShips.size()));
-        displayText.append(L"\n");
-        //Show time now
-        displayText.append(core::stringw(time));
-        displayText.append(L"\n");
-        //Display
-        dataDisplay->setText(displayText.c_str());
+    //update heading display element
+    core::stringw displayText = language->translate("pos");
+    displayText.append(core::stringw(ownShipPosX));
+    displayText.append(L" ");
+    displayText.append(core::stringw(ownShipPosZ));
+    displayText.append(L"\n");
+    //Show selected ship and legs
+    displayText.append(core::stringw(selectedShip));
+    displayText.append(L" ");
+    displayText.append(core::stringw(selectedLeg));
+    displayText.append(L"\n");
+    //Show time now
+    displayText.append(core::stringw(time));
+    displayText.append(L"\n");
+    //Display
+    dataDisplay->setText(displayText.c_str());
 
-        //Draw cross hairs, buoys, other ships
-        drawInformationOnMap(time, metresPerPx, ownShipPosX, ownShipPosZ, buoys, otherShips);
+    //Draw cross hairs, buoys, other ships
+    drawInformationOnMap(time, metresPerPx, ownShipPosX, ownShipPosZ, buoys, otherShips);
 
-        //Update drop down menus for ships and legs
-        if(shipSelector->getItemCount() != otherShips.size() + 1) {
-            shipSelector->clear();
+    //Update comboboxes for other ships and legs
+    updateDropDowns(otherShips,selectedShip);
 
-            //add own ship (at index 0)
-            shipSelector->addItem(language->translate("own").c_str());
+    guienv->drawAll();
 
-            //Add other ships (at index 1,2,...)
-            for(u32 i = 0; i<otherShips.size(); i++) {
-                core::stringw otherShipLabel = language->translate("other");
-                otherShipLabel.append(L" ");
-                otherShipLabel.append(core::stringw(i+1));
-                shipSelector->addItem(otherShipLabel.c_str());
-            }
-
-        }
-
-        guienv->drawAll();
-
-    }
+}
 
 void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips)
 {
@@ -179,14 +165,58 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
                     irr::core::position2d<s32> endLine (legEndX, legEndY);
 
                     device->getVideoDriver()->draw2DLine(startLine,endLine);
-                }
-
-            }
-
-            //std::cout << "Leg " << currentLeg << " Time until course change: " << currentLegTimeRemaining << std::endl;
-
+                } //Each leg, except last
+            } //If not currently on the last leg
         }//If Legs.size() >0
+    } //Loop for each ship
+}
+
+void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip) {
+
+//Update drop down menus for ships and legs
+    if(shipSelector->getItemCount() != otherShips.size() + 1) {
+        shipSelector->clear();
+
+        //add own ship (at index 0)
+        shipSelector->addItem(language->translate("own").c_str());
+
+        //Add other ships (at index 1,2,...)
+        for(u32 i = 0; i<otherShips.size(); i++) {
+            core::stringw otherShipLabel = language->translate("other");
+            otherShipLabel.append(L" ");
+            otherShipLabel.append(core::stringw(i+1));
+            shipSelector->addItem(otherShipLabel.c_str());
+        }
+        manuallyTriggerGUIEvent((gui::IGUIElement*)shipSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
+
+    } //If different number of ships to show
+
+    //Find number of legs for selected ship if known
+    irr::u32 selectedShipLegs = 0;
+    if (selectedShip>=0) {
+        if (otherShips.size() > selectedShip) { //SelectedShip is valid
+            selectedShipLegs = otherShips.at(selectedShip).legs.size();
+        }
+    }
+    //Update number of legs displayed, if required
+    if(selectedShipLegs>0) {selectedShipLegs--;} //Note that we display legs-1, as the final 'stop' leg shouldn't be changed by the user
+    if(legSelector->getItemCount() != selectedShipLegs) {
+        legSelector->clear();
+        for(irr::u32 i = 0; i<selectedShipLegs; i++) {
+            legSelector->addItem(core::stringw(i+1).c_str());
+        }
+        manuallyTriggerGUIEvent((gui::IGUIElement*)legSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
 
     }
 
+}
+
+bool GUIMain::manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType) {
+
+    irr::SEvent triggerUpdateEvent;
+    triggerUpdateEvent.EventType = EET_GUI_EVENT;
+    triggerUpdateEvent.GUIEvent.Caller = caller;
+    triggerUpdateEvent.GUIEvent.Element = 0;
+    triggerUpdateEvent.GUIEvent.EventType = eType;
+    return device->postEventFromUser(triggerUpdateEvent);
 }

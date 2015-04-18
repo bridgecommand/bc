@@ -30,6 +30,9 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     unscaledMap = 0; //FIXME: check - do pointers get automatically initialised as 0?
     scaledMap = 0;
 
+    selectedShip = -1; //Used to signify own ship selected
+    selectedLeg = -1; //Used to signify no leg selected
+
     //construct path to world model
     std::string worldPath = "../World/";
     worldPath.append("SimpleEstuary"); //Fixme: Hardcoded
@@ -131,5 +134,22 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,metresPerPx,ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture);
+    gui->updateGuiData(time,metresPerPx,ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg);
+}
+
+void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box
+{
+    if(index < 1) { //If 0 or -1
+        selectedShip = -1; //Own ship
+    } else {
+        selectedShip = index-1; //Other ship number
+    }
+
+    //No guarantee from this that the selected ship is valid
+}
+
+void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from eventReceiver, where index is from the combo box. -1 if nothing selected, 0 upwards for leg
+{
+    selectedLeg = index;
+    //No guarantee from this that the selected leg is valid
 }

@@ -41,6 +41,16 @@ using namespace irr;
 
             }
 
+            if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED) {
+                if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
+                    model->updateSelectedShip( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                }
+
+                if (id==GUIMain::GUI_ID_LEG_COMBOBOX) {
+                    model->updateSelectedLeg( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                }
+            }
+
 
         }
 
