@@ -18,6 +18,7 @@
 #include "../Constants.hpp"
 
 #include <iostream>
+#include <limits>
 
 using namespace irr;
 
@@ -164,8 +165,6 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
                 currentLeg = it->legs.size()-1;
             }
 
-            std::cout << "Current leg: " << currentLeg << std::endl; //FIXME: Output for development, to be removed
-
             //find time remaining on current leg
             irr::f32 currentLegTimeRemaining = 0;
             if (currentLeg < it->legs.size() - 1) { //If not on the last leg, find time until we change onto next course
@@ -180,13 +179,15 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
                 if (currentLegTimeRemaining>0) {
                     //Line starts at screenCentreX + relPosX, screenCentreY-relPosY
                     irr::f32 legLengthPx = currentLegTimeRemaining * it->legs.at(currentLeg).speed * KTS_TO_MPS / metresPerPx;
-                    legEndX = legStartX + legLengthPx*sin(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
-                    legEndY = legStartY - legLengthPx*cos(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
+                    if (fabs(currentLegTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) {
+                        legEndX = legStartX + legLengthPx*sin(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
+                        legEndY = legStartY - legLengthPx*cos(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
 
-                    irr::core::position2d<s32> startLine (legStartX, legStartY);
-                    irr::core::position2d<s32> endLine (legEndX, legEndY);
+                        irr::core::position2d<s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<s32> endLine (legEndX, legEndY);
 
-                    device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                    } //Not infinite
 
                 } //If currentLegTimeRemaining > 0
 
@@ -195,19 +196,21 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
                     irr::f32 legTimeRemaining = it->legs.at(i+1).startTime -  it->legs.at(i).startTime;
                     irr::f32 legLengthPx = legTimeRemaining * it->legs.at(i).speed * KTS_TO_MPS / metresPerPx;
 
-                    //current start is previous end
-                    legStartX = legEndX;
-                    legStartY = legEndY;
+                    if (fabs(legTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) {
+                        //current start is previous end
+                        legStartX = legEndX;
+                        legStartY = legEndY;
 
-                    //find new end
-                    legEndX = legStartX + legLengthPx*sin(it->legs.at(i).bearing * RAD_IN_DEG);
-                    legEndY = legStartY - legLengthPx*cos(it->legs.at(i).bearing * RAD_IN_DEG);
+                        //find new end
+                        legEndX = legStartX + legLengthPx*sin(it->legs.at(i).bearing * RAD_IN_DEG);
+                        legEndY = legStartY - legLengthPx*cos(it->legs.at(i).bearing * RAD_IN_DEG);
 
-                    //Draw
-                    irr::core::position2d<s32> startLine (legStartX, legStartY);
-                    irr::core::position2d<s32> endLine (legEndX, legEndY);
+                        //Draw
+                        irr::core::position2d<s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<s32> endLine (legEndX, legEndY);
 
-                    device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                    } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
         }//If Legs.size() >0
