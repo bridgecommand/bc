@@ -84,7 +84,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     irr::u32 requiredWidth = std::max(widthFromHeight, loadedSize.Width);
     irr::u32 requiredHeight = std::max(heightFromWidth, loadedSize.Height);
 
-    std::cout << "Width px " << requiredWidth << " Height px " << requiredHeight << std::endl;
+    std::cout << "Required width px " << requiredWidth << " height px " << requiredHeight << std::endl;
 
     //Create scaled map with the same image format of the size required
     scaledMap = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
@@ -98,7 +98,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     //Save scale
     metresPerPx = terrainXWidth / requiredWidth;
 
-    std::cout << "Actual width px " << scaledMap->getDimension().Width << " Height px " << scaledMap->getDimension().Height << std::endl;
+    std::cout << "Actual width px " << scaledMap->getDimension().Width << " height px " << scaledMap->getDimension().Height << std::endl;
 
 }
 

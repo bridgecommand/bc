@@ -37,11 +37,27 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //add data display:
     dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.6*sh,0.45*su,0.7*sh), true, false, 0, -1, true); //Actual text set later
 
-    shipSelector = guienv->addComboBox(core::rect<s32>(0.09*su,0.75*sh,0.45*su,0.80*sh),0,GUI_ID_SHIP_COMBOBOX);
+    //Add ship selector drop down
+    shipSelector = guienv->addComboBox(core::rect<s32>(0.09*su,0.75*sh,0.45*su,0.78*sh),0,GUI_ID_SHIP_COMBOBOX);
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
 
-    legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.85*sh,0.45*su,0.90*sh),0,GUI_ID_LEG_COMBOBOX);
+    //Add leg selector drop down
+    legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.80*sh,0.45*su,0.83*sh),0,GUI_ID_LEG_COMBOBOX);
 
+    //Add edit boxes for this leg element TODO: These should be updated on change of ship or leg
+    legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.09*su,0.85*sh,0.21*su,0.88*sh),false,0,GUI_ID_COURSE_EDITBOX);
+    legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.21*su,0.85*sh,0.33*su,0.88*sh),false,0,GUI_ID_SPEED_EDITBOX);
+    legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.33*su,0.85*sh,0.45*su,0.88*sh),false,0,GUI_ID_DISTANCE_EDITBOX);
+
+    //This is used to track when the edit boxes need updating, when ship or legs have changed
+    editBoxesNeedUpdating = false;
+
+}
+
+void GUIMain::updateEditBoxes()
+{
+    //Trigger update the edit boxes for course, speed & distance when the selection is changed.
+    editBoxesNeedUpdating = true;
 }
 
 void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg)
@@ -70,6 +86,31 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShi
 
     //Draw cross hairs, buoys, other ships
     drawInformationOnMap(time, metresPerPx, ownShipPosX, ownShipPosZ, buoys, otherShips);
+
+    //Update edit boxes if required, and then mark as updated
+    //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
+    if (editBoxesNeedUpdating) {
+        if (selectedShip >= 0 && selectedShip < otherShips.size() && selectedLeg >= 0 && selectedLeg < otherShips.at(selectedShip).legs.size()) {
+            legCourseEdit  ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
+            legSpeedEdit   ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
+            //Distance
+            if (selectedLeg + 1 < otherShips.at(selectedShip).legs.size()) {
+                //There is a next leg, so can check distance
+                irr::f32 legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
+                irr::f32 legDurationH = legDurationS / SECONDS_IN_HOUR;
+                irr::f32 legDistanceNm  = legDurationH * otherShips.at(selectedShip).legs.at(selectedLeg).speed;
+                legDistanceEdit->setText(core::stringw(legDistanceNm).c_str());
+            } else {
+                legDistanceEdit->setText(L""); //No next leg, so can't find distance
+            }
+        } else {
+            //Set blank (invalid other ship or leg)
+            legCourseEdit  ->setText(L"");
+            legSpeedEdit   ->setText(L"");
+            legDistanceEdit->setText(L"");
+        }
+        editBoxesNeedUpdating = false;
+    }
 
     //Update comboboxes for other ships and legs
     updateDropDowns(otherShips,selectedShip);
@@ -122,6 +163,8 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
             if (!currentLegFound) {
                 currentLeg = it->legs.size()-1;
             }
+
+            std::cout << "Current leg: " << currentLeg << std::endl; //FIXME: Output for development, to be removed
 
             //find time remaining on current leg
             irr::f32 currentLegTimeRemaining = 0;

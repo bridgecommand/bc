@@ -34,10 +34,14 @@ public:
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
         GUI_ID_SHIP_COMBOBOX = 101,
-        GUI_ID_LEG_COMBOBOX
+        GUI_ID_LEG_COMBOBOX,
+        GUI_ID_COURSE_EDITBOX,
+        GUI_ID_SPEED_EDITBOX,
+        GUI_ID_DISTANCE_EDITBOX
     };
 
     void updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg);
+    void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
 
 private:
 
@@ -49,6 +53,11 @@ private:
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIComboBox* shipSelector;
     irr::gui::IGUIComboBox* legSelector;
+    irr::gui::IGUIEditBox* legCourseEdit;
+    irr::gui::IGUIEditBox* legSpeedEdit;
+    irr::gui::IGUIEditBox* legDistanceEdit;
+
+    bool editBoxesNeedUpdating;
 
     void drawInformationOnMap(const irr::f32& time, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips );
     void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip);
