@@ -23,6 +23,7 @@
 #include <sstream>
 #include <ctime>
 #include <vector>
+#include <limits>
 
 namespace Utilities
 {
@@ -33,6 +34,38 @@ namespace Utilities
     std::string timestampToString(time_t timestamp, std::string format);
     std::string timestampToString(time_t timestamp);
     std::vector<std::string> split(const std::string &inputString, char delim);
+
+    template <typename T>
+    T lexical_cast(std::string in) //Special case for string so we can check for inf
+    {
+        T var;
+        if (in.compare("inf")==0 ||
+            in.compare("INF")==0 ||
+            in.compare("infinity")==0 ||
+            in.compare("INFINITY")==0 ||
+            in.compare("+inf")==0 ||
+            in.compare("+INF")==0 ||
+            in.compare("+infinity")==0 ||
+            in.compare("+INFINITY")==0
+        ) {
+            //+inf
+            var = std::numeric_limits<float>::infinity();
+        } else if (in.compare("inf")==0 ||
+            in.compare("-inf")==0 ||
+            in.compare("-INF")==0 ||
+            in.compare("-infinity")==0 ||
+            in.compare("-INFINITY")==0
+        ) {
+           //-inf
+           var = -std::numeric_limits<float>::infinity();;
+        } else {
+            std::stringstream iss;
+            iss << in;
+            iss >> var;
+            // FIXME: deal with any error bits that may have been set on the stream
+        }
+        return var;
+    }
 
     template <typename T, typename U>
     T lexical_cast(U in)
