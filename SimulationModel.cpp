@@ -252,6 +252,10 @@ SimulationModel::~SimulationModel()
         return buoys.getPosition(number).Z + offsetPosition.Z;
     }
 
+    void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
+
+    }
+
     void SimulationModel::setHeading(f32 hdg)
     {
          ownShip.setHeading(hdg);

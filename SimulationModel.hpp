@@ -85,6 +85,7 @@ public:
     std::vector<Leg> getOtherShipLegs(int number) const;
     irr::f32 getBuoyPosX(int number) const;
     irr::f32 getBuoyPosZ(int number) const;
+    void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
 
     void setWeather(irr::f32 weather); //Range 0-12.
     irr::f32 getWeather() const;

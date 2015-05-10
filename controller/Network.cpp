@@ -75,7 +75,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
                 receiveMessage(time,ownShipData,otherShipsData,buoysData);
 
                 //send something back
-                //sendMessage(event.peer);
+                sendMessage(event.peer); //FIXME: Do we only want to send after receipt?
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy (event.packet);
@@ -93,7 +93,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
 void Network::sendMessage(ENetPeer* peer)
 {
     //Assumes that event contains a received message
-    stringToSend = "5#170"; //5m/s
+    stringToSend = "MCCL,1,1,90,10,1#"; //Hardcoded test packet
                 /* Create a packet */
                 packet = enet_packet_create (stringToSend.c_str(),
                 strlen (stringToSend.c_str()) + 1,

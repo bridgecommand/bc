@@ -106,22 +106,68 @@ void Network::update()
 void Network::receiveNetwork()
 {
     #ifdef _WIN32
+
     ENetEvent event;
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 
-            //Currently converting data to and from string. Should directly send data of the type required.
-            std::string readSpeedString ((char*)event.packet -> data);
-            std::vector<std::string> readComponents = Utilities::split(readSpeedString,'#');
-            if (readComponents.size() == 2) {
-                /*Set this speed in the model */
-                float speed = Utilities::lexical_cast<float>(readComponents.at(0));
-                float angle = Utilities::lexical_cast<float>(readComponents.at(1));
-                model->setSpeed(speed);
-                model->setHeading(angle);
-            }
+            //Convert into a string, max length 2048
+            char tempString[2048]; //Fixme: Think if this is long enough
+            snprintf(tempString,2048,"%s",event.packet -> data);
+            std::string receivedString(tempString);
 
+            //Basic checks
+            if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+                if (receivedString.substr(0,2).compare("MC") == 0 ) { //Check if it starts with MC
+                    //Strip 'MC'
+                    receivedString = receivedString.substr(2,receivedString.length()-2);
 
+                    //Populate the data structures from the stripped string
+                    //findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData);
+                    std::vector<std::string> commands = Utilities::split(receivedString,'#'); //Split into basic commands
+                    if (commands.size() > 0) {
+
+                        //Iterate through commands
+                        for(std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); ++it) {
+
+                            std::string thisCommand = *it;
+
+                            //std::cout << "Received: " << thisCommand << std::endl;
+
+                            //Check what sort of command
+                            if (thisCommand.length() > 2) {
+                                if (thisCommand.substr(0,2).compare("CL") == 0) {
+                                    //'CL', change leg
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 6) {
+                                        //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
+                                        //std::cout << "Change leg command received" << std::endl;
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1));
+                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2));
+                                        irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                        irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                        irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                        model->changeOtherShipLeg(shipNo,legNo,bearing,speed,distance);
+                                    } //If six data parts received
+                                } else if (thisCommand.substr(0,2).compare("AL") == 0) {
+                                    //'AL' add leg
+
+                                } else if (thisCommand.substr(0,2).compare("DL") == 0) {
+                                    //'DL' delete leg
+
+                                } else if (thisCommand.substr(0,2).compare("RS") == 0) {
+                                    //'RS' reposition ship
+
+                                }
+                            } //This command has at least three characters
+
+                        }
+
+                        //model->setSpeed(speed);
+                        //model->setHeading(angle);
+                    } //At least one command
+                } //Check received message starts with MC
+            } //Check message at least 3 characters
 
             enet_packet_destroy (event.packet);
         }
