@@ -253,7 +253,7 @@ SimulationModel::~SimulationModel()
     }
 
     void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
-
+        otherShips.changeLeg(shipNumber, legNumber, bearing, speed, distance, scenarioTime);
     }
 
     void SimulationModel::setHeading(f32 hdg)

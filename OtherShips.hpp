@@ -41,6 +41,7 @@ class OtherShips
         irr::core::vector3df getPosition(int number) const;
         irr::f32 getHeading(int number) const;
         std::vector<Leg> getLegs(int number) const;
+        void changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         std::string getName(int number) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 

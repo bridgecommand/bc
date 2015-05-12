@@ -72,7 +72,7 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
                 irr::f32 distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
 
                 //find the start time for the next leg
-                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/currentLeg.speed); // nm/kts -> hours, so convert to seconds
+                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
             }
             //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
             Leg stopLeg;
@@ -136,6 +136,14 @@ std::vector<Leg> OtherShips::getLegs(int number) const
         //Return an empty vector
         std::vector<Leg> legs;
         return legs;
+    }
+}
+
+void OtherShips::changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+{
+    //Check if ship exists
+    if (shipNumber < otherShips.size()) {
+        otherShips.at(shipNumber).changeLeg(legNumber, bearing, speed, distance, scenarioTime);
     }
 }
 

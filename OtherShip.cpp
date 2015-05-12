@@ -127,13 +127,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         hdg = 0;
     } else {
         //Work out which leg we're on
-        std::vector<Leg>::size_type currentLeg;
-        for(currentLeg = 0; currentLeg<legs.size()-1; currentLeg++) {
-            if (legs[currentLeg].startTime <=scenarioTime && legs[currentLeg+1].startTime > scenarioTime ) {
-                break;
-            }
-        }
-        //currentLeg is now the correct leg, or the last leg, which is a 'stopped' leg.
+        std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
+
         spd = legs[currentLeg].speed*KTS_TO_MPS;
         hdg = legs[currentLeg].bearing;
     }
@@ -178,6 +173,47 @@ std::vector<Leg> OtherShip::getLegs() const
     return legs;
 }
 
+void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+{
+    //std::cout << "In OtherShip::changeLeg for leg " << legNumber << " at " << scenarioTime << std::endl;
+
+    //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
+    if (legNumber >=0 && legNumber < legs.size() - 1 && legNumber >= findCurrentLeg(scenarioTime)) {
+
+        //Store old information temporarily
+        irr::f32 oldSpeed = legs.at(legNumber).speed;
+
+        //Change this leg
+        legs.at(legNumber).bearing = bearing;
+        legs.at(legNumber).speed = speed;
+
+        //Recalculate subsequent start times, only changing from the current point.
+        //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
+
+        irr::f32 legDeltaTime; //How many seconds this leg has increased in length
+        if ( legNumber == findCurrentLeg(scenarioTime) ) {
+            //On current leg - calculate from current point only
+            irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - scenarioTime;
+            if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
+            irr::f32 newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed); //The adjusted leg distance starts from now
+            legDeltaTime = newTimeRemaining - oldTimeRemaining;
+        } else {
+            //On subsequent leg - calculate for whole leg
+            irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - legs.at(legNumber).startTime;
+            if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
+            irr::f32 newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed);
+            legDeltaTime = newTimeRemaining - oldTimeRemaining;
+        }
+
+        //Apply the time change
+        for (int i = legNumber + 1; i < legs.size(); i++) {
+            legs.at(i).startTime += legDeltaTime;
+        }
+
+    } //Check leg exists & can be changed
+
+}
+
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Similar code in Buoy.cpp
@@ -216,4 +252,18 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.SART=false;
 
     return radarData;
+}
+
+std::vector<Leg>::size_type OtherShip::findCurrentLeg(irr::f32 scenarioTime)
+{
+    std::vector<Leg>::size_type currentLeg;
+
+    for(currentLeg = 0; currentLeg<legs.size()-1; currentLeg++) {
+        if (legs[currentLeg].startTime <=scenarioTime && legs[currentLeg+1].startTime > scenarioTime ) {
+            break;
+        }
+    }
+    //currentLeg is now the correct leg, or the last leg, which is a 'stopped' leg. (true as we run currentLeg++ once after the check (currentLeg<legs.size()-1) if the 'break' isn't reached
+
+    return currentLeg;
 }

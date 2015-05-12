@@ -40,6 +40,7 @@ class OtherShip : public Ship
         irr::f32 getRCS() const;
         std::string getName() const;
         std::vector<Leg> getLegs() const;
+        void changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel);
 
@@ -52,6 +53,7 @@ class OtherShip : public Ship
         irr::f32 length; //For radar calculation
         irr::f32 height; //For radar
         irr::f32 rcs;
+        std::vector<Leg>::size_type findCurrentLeg(irr::f32 scenarioTime);
 };
 
 #endif

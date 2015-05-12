@@ -93,7 +93,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
 void Network::sendMessage(ENetPeer* peer)
 {
     //Assumes that event contains a received message
-    stringToSend = "MCCL,1,1,90,10,1#"; //Hardcoded test packet
+    stringToSend = "MCCL,1,1,5,50,-1#"; //Hardcoded test packet
                 /* Create a packet */
                 packet = enet_packet_create (stringToSend.c_str(),
                 strlen (stringToSend.c_str()) + 1,

@@ -142,8 +142,8 @@ void Network::receiveNetwork()
                                     if (parts.size() == 6) {
                                         //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
                                         //std::cout << "Change leg command received" << std::endl;
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1));
-                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2));
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                         irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
                                         irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
                                         irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
