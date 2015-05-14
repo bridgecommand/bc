@@ -48,6 +48,8 @@ Network::Network()
         exit (EXIT_FAILURE);
     }
 
+    stringToSend = "";
+
 }
 
 //Destructor
@@ -90,21 +92,30 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
     }
 }
 
+void Network::setStringToSend(std::string stringToSend)
+{
+    this->stringToSend = stringToSend;
+}
+
 void Network::sendMessage(ENetPeer* peer)
 {
     //Assumes that event contains a received message
-    stringToSend = "MCCL,1,1,5,50,-1#"; //Hardcoded test packet
-                /* Create a packet */
-                packet = enet_packet_create (stringToSend.c_str(),
-                strlen (stringToSend.c_str()) + 1,
-                /*ENET_PACKET_FLAG_RELIABLE*/0);
 
-                /* Send the packet to the peer over channel id 0. */
-                /* One could also broadcast the packet by */
-                /* enet_host_broadcast (host, 0, packet); */
-                enet_peer_send (peer, 0, packet);
-                /* One could just use enet_host_service() instead. */
-                enet_host_flush (server);
+    if (stringToSend.length() > 0) {
+        /* Create a packet */
+        packet = enet_packet_create (stringToSend.c_str(),
+        strlen (stringToSend.c_str()) + 1,
+        /*ENET_PACKET_FLAG_RELIABLE*/1);
+
+        /* Send the packet to the peer over channel id 0. */
+        /* One could also broadcast the packet by */
+        /* enet_host_broadcast (host, 0, packet); */
+        enet_peer_send (peer, 0, packet);
+        /* One could just use enet_host_service() instead. */
+        enet_host_flush (server);
+
+        stringToSend = ""; //Sent message, so clear it
+    }
 }
 
 void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData)

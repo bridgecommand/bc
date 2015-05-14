@@ -37,11 +37,18 @@ public:
         GUI_ID_LEG_COMBOBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
-        GUI_ID_DISTANCE_EDITBOX
+        GUI_ID_DISTANCE_EDITBOX,
+        GUI_ID_CHANGE_BUTTON,
+        GUI_ID_CHANGE_COURSESPEED_BUTTON
     };
 
     void updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
+    irr::f32 getEditBoxCourse() const;
+    irr::f32 getEditBoxSpeed() const;
+    irr::f32 getEditBoxDistance() const;
+    int getSelectedShip() const;
+    int getSelectedLeg() const;
 
 private:
 
@@ -56,6 +63,8 @@ private:
     irr::gui::IGUIEditBox* legCourseEdit;
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
+    irr::gui::IGUIButton* changeLeg;
+    irr::gui::IGUIButton* changeLegCourseSpeed;
 
     bool editBoxesNeedUpdating;
 

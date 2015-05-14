@@ -36,6 +36,7 @@ public:
     ~Network();
 
     void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData);
+    void setStringToSend(std::string stringToSend);
 
 private:
 

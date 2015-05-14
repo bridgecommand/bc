@@ -22,12 +22,13 @@
 //forward declarations
 class GUIMain;
 class ControllerModel;
+class Network;
 
 class EventReceiver : public irr::IEventReceiver
 {
 public:
 
-    EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui);
+    EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui, Network* network);
 
     bool OnEvent(const irr::SEvent& event);
 
@@ -35,6 +36,7 @@ private:
 
     ControllerModel* model;
     GUIMain* gui;
+    Network* network;
 
 };
 

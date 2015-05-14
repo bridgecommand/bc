@@ -40,7 +40,7 @@ int main (int argc, char ** argv)
     std::vector<OtherShipData> otherShipsData;
 
     //create event receiver, linked to model
-    EventReceiver receiver(device, &controller, &guiMain);
+    EventReceiver receiver(device, &controller, &guiMain, &network);
     device->setEventReceiver(&receiver);
 
     while(device->run()) {

@@ -20,13 +20,16 @@
 
 #include "GUI.hpp"
 #include "ControllerModel.hpp"
+#include "Network.hpp"
+#include "../Utilities.hpp"
 
 using namespace irr;
 
-    EventReceiver::EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui) //Constructor
+    EventReceiver::EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
 	{
 		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI (Not currently used!)
+		this->gui = gui; //Link to GUI
+		this->network = network; //Link to the network
     }
 
     bool EventReceiver::OnEvent(const SEvent& event)
@@ -38,7 +41,35 @@ using namespace irr;
 
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
+                if (id == GUIMain::GUI_ID_CHANGE_BUTTON || id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
+                    //Get data from gui
 
+                    irr::f32 legCourse = gui->getEditBoxCourse();
+                    irr::f32 legSpeed = gui->getEditBoxSpeed();
+                    irr::f32 legDistance = gui->getEditBoxDistance();
+
+                    if (id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
+                        legDistance = -1; //Flag to change course and speed, but not distance
+                    }
+
+                    int ship = gui->getSelectedShip();
+                    int leg = gui->getSelectedLeg();
+
+                    std::string messageToSend = "MCCL,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legCourse));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legSpeed));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
+                    messageToSend.append("#");
+
+                    network->setStringToSend(messageToSend);
+
+                }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED) {

@@ -22,4 +22,7 @@ paused=" (Paused)"
 own = "Own Ship"
 other = "Other Ship"
 
+changeLeg = "Change leg"
+changeLegCourseSpeed = "Change leg course & speed"
+
 fps="FPS: "

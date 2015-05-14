@@ -16,6 +16,7 @@
 
 #include "GUI.hpp"
 #include "../Constants.hpp"
+#include "../Utilities.hpp"
 
 #include <iostream>
 #include <limits>
@@ -45,10 +46,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //Add leg selector drop down
     legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.80*sh,0.45*su,0.83*sh),0,GUI_ID_LEG_COMBOBOX);
 
-    //Add edit boxes for this leg element TODO: These should be updated on change of ship or leg
+    //Add edit boxes for this leg element
     legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.09*su,0.85*sh,0.21*su,0.88*sh),false,0,GUI_ID_COURSE_EDITBOX);
     legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.21*su,0.85*sh,0.33*su,0.88*sh),false,0,GUI_ID_SPEED_EDITBOX);
     legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.33*su,0.85*sh,0.45*su,0.88*sh),false,0,GUI_ID_DISTANCE_EDITBOX);
+
+    //Add buttons
+    changeLeg       = guienv->addButton(core::rect<s32>(0.09*su, 0.90*sh,0.27*su, 0.93*sh),0,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.27*su, 0.90*sh,0.45*su, 0.93*sh),0, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
@@ -265,4 +270,27 @@ bool GUIMain::manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::E
     triggerUpdateEvent.GUIEvent.Element = 0;
     triggerUpdateEvent.GUIEvent.EventType = eType;
     return device->postEventFromUser(triggerUpdateEvent);
+}
+
+irr::f32 GUIMain::getEditBoxCourse() const {
+    irr::f32 course = _wtof(legCourseEdit->getText()); //TODO: Check portability
+    return course;
+}
+
+irr::f32 GUIMain::getEditBoxSpeed() const {
+    irr::f32 speed = _wtof(legSpeedEdit->getText()); //TODO: Check portability
+    return speed;
+}
+
+irr::f32 GUIMain::getEditBoxDistance() const {
+    irr::f32 distance = _wtof(legDistanceEdit->getText()); //TODO: Check portability
+    return distance;
+}
+
+int GUIMain::getSelectedShip() const {
+    return shipSelector->getSelected();
+}
+
+int GUIMain::getSelectedLeg() const {
+    return (legSelector->getSelected() + 1);
 }
