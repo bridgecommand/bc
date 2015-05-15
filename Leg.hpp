@@ -17,10 +17,13 @@
 #ifndef __LEG_HPP_INCLUDED__
 #define __LEG_HPP_INCLUDED__
 
-struct Leg //To hold information about each leg of an othership programmed route. Distance is implicit, set by startTime of next leg
+//Note that legs are changed by the controller, and there is no guarantee that legs prior to the current leg will be consistent with the route from the start position to the current position
+//Legs should only be used to calculate current and future movement.
+
+struct Leg //To hold information about each leg of an othership programmed route. Distance is implicit, set by startTime of next leg, but is recorded so we can recreate time information when we change legs
 {
-    irr::f32 bearing, speed, startTime;
-    Leg():bearing(0),speed(0),startTime(0){}
+    irr::f32 bearing, speed, startTime, distance;
+    Leg():bearing(0),speed(0),startTime(0), distance(0){}
 };
 
 #endif

@@ -66,10 +66,12 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
                 currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
                 currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
                 currentLeg.startTime = legStartTime;
-                legs.push_back(currentLeg);
 
-                //Use distance to calculate startTime of next leg, but don't need to store.
+                //Use distance to calculate startTime of next leg, and stored for later reference.
                 irr::f32 distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                currentLeg.distance = distance;
+
+                legs.push_back(currentLeg);
 
                 //find the start time for the next leg
                 legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
@@ -78,6 +80,7 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
             Leg stopLeg;
             stopLeg.bearing=0;
             stopLeg.speed=0;
+            stopLeg.distance=0;
             stopLeg.startTime = legStartTime;
             legs.push_back(stopLeg);
 
