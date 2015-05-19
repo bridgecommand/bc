@@ -54,6 +54,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //Add buttons
     changeLeg       = guienv->addButton(core::rect<s32>(0.09*su, 0.90*sh,0.27*su, 0.93*sh),0,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
     changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.27*su, 0.90*sh,0.45*su, 0.93*sh),0, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    addLeg          = guienv->addButton(core::rect<s32>(0.09*su, 0.95*sh,0.27*su, 0.98*sh),0,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(core::rect<s32>(0.27*su, 0.95*sh,0.45*su, 0.98*sh),0, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;

@@ -150,6 +150,22 @@ void OtherShips::changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr:
     }
 }
 
+void OtherShips::addLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+{
+    //Check if ship exists
+    if (shipNumber < otherShips.size()) {
+        otherShips.at(shipNumber).addLeg(afterLegNumber, bearing, speed, distance, scenarioTime);
+    }
+}
+
+void OtherShips::deleteLeg(int shipNumber, int legNumber, irr::f32 scenarioTime)
+{
+    //Check if ship exists
+    if (shipNumber < otherShips.size()) {
+        otherShips.at(shipNumber).deleteLeg(legNumber, scenarioTime);
+    }
+}
+
 std::string OtherShips::getName(int number) const
 {
     if(number < otherShips.size()) {

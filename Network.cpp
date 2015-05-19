@@ -151,10 +151,26 @@ void Network::receiveNetwork()
                                     } //If six data parts received
                                 } else if (thisCommand.substr(0,2).compare("AL") == 0) {
                                     //'AL' add leg
-
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 6) {
+                                        //6 elements in 'Add leg' command: CL,shipNo,afterLegNo,bearing,speed,distance
+                                        //std::cout << "Add leg command received" << std::endl;
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                        irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                        irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                        model->addOtherShipLeg(shipNo,legNo,bearing,speed,distance);
+                                    } //If six data parts received
                                 } else if (thisCommand.substr(0,2).compare("DL") == 0) {
                                     //'DL' delete leg
-
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 3) {
+                                        //3 elements in 'Delete Leg' command: DL,shipNo,legNo
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        model->deleteOtherShipLeg(shipNo,legNo);
+                                    }
                                 } else if (thisCommand.substr(0,2).compare("RS") == 0) {
                                     //'RS' reposition ship
 

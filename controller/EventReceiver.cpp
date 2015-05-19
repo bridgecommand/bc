@@ -70,6 +70,44 @@ using namespace irr;
                     network->setStringToSend(messageToSend);
 
                 }
+                if (id == GUIMain::GUI_ID_DELETELEG_BUTTON) {
+                    int ship = gui->getSelectedShip();
+                    int leg = gui->getSelectedLeg();
+
+                    std::string messageToSend = "MCDL,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
+                    messageToSend.append("#");
+
+                    network->setStringToSend(messageToSend);
+
+                }
+
+                if (id == GUIMain::GUI_ID_ADDLEG_BUTTON) {
+
+                    irr::f32 legCourse = gui->getEditBoxCourse();
+                    irr::f32 legSpeed = gui->getEditBoxSpeed();
+                    irr::f32 legDistance = gui->getEditBoxDistance();
+
+                    int ship = gui->getSelectedShip();
+                    int leg = gui->getSelectedLeg();
+
+                    std::string messageToSend = "MCAL,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legCourse));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legSpeed));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
+                    messageToSend.append("#");
+
+                    network->setStringToSend(messageToSend);
+
+                }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED) {

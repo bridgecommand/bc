@@ -256,6 +256,14 @@ SimulationModel::~SimulationModel()
         otherShips.changeLeg(shipNumber, legNumber, bearing, speed, distance, scenarioTime);
     }
 
+    void SimulationModel::addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
+        otherShips.addLeg(shipNumber, afterLegNumber, bearing, speed, distance, scenarioTime);
+    }
+
+    void SimulationModel::deleteOtherShipLeg(int shipNumber, int legNumber) {
+        otherShips.deleteLeg(shipNumber, legNumber, scenarioTime);
+    }
+
     void SimulationModel::setHeading(f32 hdg)
     {
          ownShip.setHeading(hdg);

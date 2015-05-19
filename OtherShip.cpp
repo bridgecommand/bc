@@ -175,8 +175,6 @@ std::vector<Leg> OtherShip::getLegs() const
 
 void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
 {
-    std::cout << "In OtherShip::changeLeg for leg " << legNumber << " at " << scenarioTime << ". Current leg " << findCurrentLeg(scenarioTime) << std::endl;
-    std::cout << "Checks: " << (legNumber >=0) << " " << (legNumber < legs.size() - 1) << " " << (legNumber >= findCurrentLeg(scenarioTime)) << std::endl;
 
     //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
     if (legNumber >=0 && legNumber < legs.size() - 1 && legNumber >= findCurrentLeg(scenarioTime)) {
@@ -187,33 +185,106 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
         //Recalculate subsequent start times, only changing from the current point.
         //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
 
-        std::cout << legNumber << " " << bearing << " " << speed << " " << distance << std::endl;
-
         irr::f32 newTimeRemaining;
         if ( legNumber == findCurrentLeg(scenarioTime) ) {
             //On current leg - calculate from current point only
             irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - scenarioTime;
             if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
             newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed); //The adjusted leg distance starts from now
+            legs.at(legNumber).startTime = scenarioTime; // New leg effectively starts now
         } else {
             //On subsequent leg - calculate for whole leg
             irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - legs.at(legNumber).startTime;
             if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
             newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed);
+            //No need to change start time.
         }
 
         //Change this leg
         legs.at(legNumber).bearing = bearing;
         legs.at(legNumber).speed = speed;
-        legs.at(legNumber).startTime = scenarioTime; // New leg effectively starts now
         legs.at(legNumber).distance = distance; //Store for later reference
 
         //Set start time of the next leg (guaranteed to exist)
-        legs.at(legNumber + 1).startTime = scenarioTime + newTimeRemaining;
+        legs.at(legNumber + 1).startTime = legs.at(legNumber).startTime + newTimeRemaining;
         //For the remaining legs (which may not exist)
         for (int i = legNumber + 2; i < legs.size(); i++) {
             legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
         }
+
+    } //Check leg exists & can be changed
+
+}
+
+void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+{
+
+    //Check if leg exists, and is before the 'stop leg'
+    if (afterLegNumber >=0 && afterLegNumber < (legs.size() - 1)) {
+
+        //if we're on the stop leg
+        if (findCurrentLeg(scenarioTime) == (legs.size()-1)) {
+
+            //If the 'after' leg is the penultimate, add a leg before the stop one, starting now
+            if (afterLegNumber == (legs.size()-2))  {
+                Leg newLeg;
+                newLeg.bearing = bearing;
+                newLeg.speed = speed;
+                newLeg.distance = distance;
+                newLeg.startTime = scenarioTime;
+
+                legs.insert(legs.end(), newLeg); //Insert before final leg
+            }
+        //else check that the 'after' leg is current or future
+        } else if (afterLegNumber >= findCurrentLeg(scenarioTime)) {
+            Leg newLeg;
+            newLeg.bearing = bearing;
+            newLeg.speed = speed;
+            newLeg.distance = distance;
+            newLeg.startTime = legs.at(afterLegNumber + 1).startTime; //This leg starts when the next leg would have started
+
+            legs.insert(legs.begin()+afterLegNumber+1, newLeg); //Insert leg
+        }
+
+        //set start time of subsequent legs
+        //For the remaining legs (which may not exist)
+        for (int i = afterLegNumber + 2; i < legs.size(); i++) {
+            legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
+        }
+
+
+    } //Check leg exists & can be changed
+
+}
+
+void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
+{
+
+    //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
+    if (legNumber >=0 && legNumber < legs.size() - 1 && legNumber >= findCurrentLeg(scenarioTime)) {
+
+        //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
+
+        //Current or future leg?
+        if (legNumber == findCurrentLeg(scenarioTime)) {
+            //Current leg
+            //Set next leg start time to now: Set start time of the next leg (guaranteed to exist)
+            legs.at(legNumber + 1).startTime = scenarioTime;
+
+        } else {
+            //Future leg
+            //Set next leg start time to the start time of the leg we're removing
+            legs.at(legNumber + 1).startTime = legs.at(legNumber).startTime;
+        }
+
+        //adjust start time of subsequent legs
+        //For the remaining legs (which may not exist)
+        for (int i = legNumber + 2; i < legs.size(); i++) {
+            legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
+        }
+
+        //Remove this leg
+        legs.erase(legs.begin() + legNumber);
 
     } //Check leg exists & can be changed
 

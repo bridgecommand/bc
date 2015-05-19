@@ -224,6 +224,9 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
                         otherShipsData.at(i).legs.at(j).bearing = Utilities::lexical_cast<irr::f32>(thisLegData.at(0));
                         otherShipsData.at(i).legs.at(j).speed = Utilities::lexical_cast<irr::f32>(thisLegData.at(1));
                         otherShipsData.at(i).legs.at(j).startTime = Utilities::lexical_cast<irr::f32>(thisLegData.at(2));
+
+                        //std::cout << "Ship " << i << " Leg " << j << " Bearing " << otherShipsData.at(i).legs.at(j).bearing << " Speed " << otherShipsData.at(i).legs.at(j).speed << " Start Time " << otherShipsData.at(i).legs.at(j).startTime << std::endl;
+
                     }
                 }//Iterate through legs
 
