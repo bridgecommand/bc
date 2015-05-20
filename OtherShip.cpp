@@ -177,7 +177,7 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
 {
 
     //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
-    if (legNumber >=0 && legNumber < legs.size() - 1 && legNumber >= findCurrentLeg(scenarioTime)) {
+    if (legNumber >=0 && legNumber < ((int)legs.size() - 1) && legNumber >= (int)findCurrentLeg(scenarioTime)) {
 
         //Store old information temporarily
         irr::f32 oldSpeed = legs.at(legNumber).speed;
@@ -186,7 +186,7 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
         //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
 
         irr::f32 newTimeRemaining;
-        if ( legNumber == findCurrentLeg(scenarioTime) ) {
+        if ( legNumber == (int)findCurrentLeg(scenarioTime) ) {
             //On current leg - calculate from current point only
             irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - scenarioTime;
             if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
@@ -208,7 +208,7 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
         //Set start time of the next leg (guaranteed to exist)
         legs.at(legNumber + 1).startTime = legs.at(legNumber).startTime + newTimeRemaining;
         //For the remaining legs (which may not exist)
-        for (int i = legNumber + 2; i < legs.size(); i++) {
+        for (int i = legNumber + 2; i < (int)legs.size(); i++) {
             legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
         }
 
@@ -219,41 +219,59 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
 void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
 {
 
-    //Check if leg exists, and is before the 'stop leg'
-    if (afterLegNumber >=0 && afterLegNumber < (legs.size() - 1)) {
+    //Display leg
+    //std::cout << "Legs before add" << std::endl;
+    //for (int i = 0; i < legs.size(); i++) {
+    //    std::cout << "Leg " << i << " Speed " << legs.at(i).speed << " Bearing " << legs.at(i).bearing << " Distance " << legs.at(i).distance << " Start " << legs.at(i).startTime << std::endl;
+    //}
+
+    //Check if leg is reasonable, and is before the 'stop leg'
+    //A special case allows afterLegNumber to equal -1, for when only a single 'stop leg' exists
+    if (afterLegNumber >= -1 && afterLegNumber < ((int)legs.size() - 1)) {
 
         //if we're on the stop leg
         if (findCurrentLeg(scenarioTime) == (legs.size()-1)) {
 
             //If the 'after' leg is the penultimate, add a leg before the stop one, starting now
-            if (afterLegNumber == (legs.size()-2))  {
+            if (afterLegNumber == ((int)legs.size()-2))  { //This also catches the special case where there is only the 'stop' leg, so the 'afterLegNumber value is -1
+
                 Leg newLeg;
                 newLeg.bearing = bearing;
                 newLeg.speed = speed;
                 newLeg.distance = distance;
                 newLeg.startTime = scenarioTime;
 
-                legs.insert(legs.end(), newLeg); //Insert before final leg
+                //std::cout << "A" << std::endl;
+
+                legs.insert(legs.end()-1, newLeg); //Insert before final leg
             }
         //else check that the 'after' leg is current or future
-        } else if (afterLegNumber >= findCurrentLeg(scenarioTime)) {
+        } else if (afterLegNumber >=0 && afterLegNumber >= (int)findCurrentLeg(scenarioTime)) { //First check only required in case findCurrentLeg does not return a valid result (>=0)
             Leg newLeg;
             newLeg.bearing = bearing;
             newLeg.speed = speed;
             newLeg.distance = distance;
             newLeg.startTime = legs.at(afterLegNumber + 1).startTime; //This leg starts when the next leg would have started
 
+            //std::cout << "B" << std::endl;
+
             legs.insert(legs.begin()+afterLegNumber+1, newLeg); //Insert leg
         }
 
         //set start time of subsequent legs
         //For the remaining legs (which may not exist)
-        for (int i = afterLegNumber + 2; i < legs.size(); i++) {
+        for (int i = afterLegNumber + 2; i < (int)legs.size(); i++) {
             legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
         }
 
 
     } //Check leg exists & can be changed
+
+    //Display leg
+    //std::cout << "Legs after add" << std::endl;
+    //for (int i = 0; i < legs.size(); i++) {
+    //    std::cout << "Leg " << i << " Speed " << legs.at(i).speed << " Bearing " << legs.at(i).bearing << " Distance " << legs.at(i).distance << " Start " << legs.at(i).startTime << std::endl;
+    //}
 
 }
 
@@ -261,12 +279,12 @@ void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
 {
 
     //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
-    if (legNumber >=0 && legNumber < legs.size() - 1 && legNumber >= findCurrentLeg(scenarioTime)) {
+    if (legNumber >=0 && legNumber < ((int)legs.size() - 1) && legNumber >= (int)findCurrentLeg(scenarioTime)) {
 
         //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
 
         //Current or future leg?
-        if (legNumber == findCurrentLeg(scenarioTime)) {
+        if (legNumber == (int)findCurrentLeg(scenarioTime)) {
             //Current leg
             //Set next leg start time to now: Set start time of the next leg (guaranteed to exist)
             legs.at(legNumber + 1).startTime = scenarioTime;
@@ -279,7 +297,7 @@ void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
 
         //adjust start time of subsequent legs
         //For the remaining legs (which may not exist)
-        for (int i = legNumber + 2; i < legs.size(); i++) {
+        for (int i = legNumber + 2; i < (int)legs.size(); i++) {
             legs.at(i).startTime = legs.at(i-1).startTime + SECONDS_IN_HOUR*legs.at(i-1).distance/legs.at(i-1).speed;
         }
 

@@ -201,6 +201,12 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
         otherShipsData.resize(otherShipsDataString.size());
     }
 
+    //Check this has been successful
+    if (otherShipsData.size() != otherShipsDataString.size()) {
+        std::cout << "Could not resize otherShipsData" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
         std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
         if (thisShipData.size() == 6) { //6 elements for each ship
@@ -216,6 +222,13 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
                 if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
                     otherShipsData.at(i).legs.resize(legsDataString.size());
                 }
+
+                //Check this has been successful
+                if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
+                    std::cout << "Could not resize otherShipsData.at(i).legs" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+
 
                 //Populate the leg data
                 for (irr::u32 j=0; j<legsDataString.size(); j++) {
@@ -242,6 +255,12 @@ void Network::findBuoyPositionData(const std::vector<std::string>&buoysDataStrin
     //Ensure buoysData vector is the right size
     if (buoysData.size() != buoysDataString.size()) {
         buoysData.resize(buoysDataString.size());
+    }
+
+    //Check this has been successful
+    if (buoysData.size() != buoysDataString.size()) {
+        std::cout << "Could not resize buoysData" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     for (irr::u32 i=0; i<buoysDataString.size(); i++) {

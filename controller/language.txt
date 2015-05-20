@@ -7,7 +7,7 @@ pos="Position: "
 own = "Own Ship"
 other = "Other Ship"
 
-changeLeg = "Change leg"
+changeLeg = "Change leg"	
 changeLegCourseSpeed = "Change leg course & speed"
 addLeg = "Add leg (after selected)"
 deleteLeg = "Delete leg"

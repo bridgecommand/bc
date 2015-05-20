@@ -105,6 +105,8 @@ using namespace irr;
                     messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
                     messageToSend.append("#");
 
+                    //std::cout << messageToSend << std::endl;
+
                     network->setStringToSend(messageToSend);
 
                 }

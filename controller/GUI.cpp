@@ -102,7 +102,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShi
             legCourseEdit  ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
             legSpeedEdit   ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
             //Distance
-            if (selectedLeg + 1 < otherShips.at(selectedShip).legs.size()) {
+            if ( (selectedLeg+1) < otherShips.at(selectedShip).legs.size() ) {
                 //There is a next leg, so can check distance
                 irr::f32 legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
                 irr::f32 legDurationH = legDurationS / SECONDS_IN_HOUR;
@@ -162,7 +162,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
             //Find first leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
             irr::u32 currentLeg = 0;
             bool currentLegFound = false;
-            for (u32 i=0; i < it->legs.size()-1; i++) {
+            for (u32 i=0; i < (it->legs.size()-1); i++) {
                 if (time >= it->legs.at(i).startTime &&  time < it->legs.at(i+1).startTime) {
                     currentLeg = i;
                     currentLegFound = true;
@@ -174,7 +174,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
 
             //find time remaining on current leg
             irr::f32 currentLegTimeRemaining = 0;
-            if (currentLeg < it->legs.size() - 1) { //If not on the last leg, find time until we change onto next course
+            if (currentLeg < (it->legs.size()-1) ) { //If not on the last leg, find time until we change onto next course
 
                 irr::f32 legStartX = screenCentreX + relPosX;
                 irr::f32 legStartY = screenCentreY - relPosY;
@@ -199,11 +199,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
                 } //If currentLegTimeRemaining > 0
 
                 //Draw remaining legs, excluding 'stop'one
-                for (irr::u32 i = currentLeg+1; i < it->legs.size() - 1; i++) {
+                for (irr::u32 i = currentLeg+1; i < (it->legs.size()-1); i++) {
                     irr::f32 legTimeRemaining = it->legs.at(i+1).startTime -  it->legs.at(i).startTime;
                     irr::f32 legLengthPx = legTimeRemaining * it->legs.at(i).speed * KTS_TO_MPS / metresPerPx;
 
-                    if (fabs(legTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) {
+                    if (fabs(legTimeRemaining) != std::numeric_limits<irr::f32>::infinity()) { //FIXME: Also check for NaN?
                         //current start is previous end
                         legStartX = legEndX;
                         legStartY = legEndY;
