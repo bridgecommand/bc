@@ -36,26 +36,35 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //gui
 
+    //Add a moveable window to put things in
+    guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh),false,0,0,GUI_ID_WINDOW);
+
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.6*sh,0.45*su,0.7*sh), true, false, 0, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.47*su,0.18*sh), true, false, guiWindow, -1, true); //Actual text set later
 
     //Add ship selector drop down
-    shipSelector = guienv->addComboBox(core::rect<s32>(0.09*su,0.75*sh,0.45*su,0.78*sh),0,GUI_ID_SHIP_COMBOBOX);
+    shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.22*sh,0.47*su,0.25*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
+    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.20*sh,0.47*su,0.23*sh),false,false,guiWindow);
 
     //Add leg selector drop down
-    legSelector  = guienv->addComboBox(core::rect<s32>(0.09*su,0.80*sh,0.45*su,0.83*sh),0,GUI_ID_LEG_COMBOBOX);
+    legSelector  = guienv->addComboBox(core::rect<s32>(0.01*su,0.29*sh,0.47*su,0.32*sh),guiWindow,GUI_ID_LEG_COMBOBOX);
+    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.01*su,0.27*sh,0.47*su,0.30*sh),false,false,guiWindow);
 
     //Add edit boxes for this leg element
-    legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.09*su,0.85*sh,0.21*su,0.88*sh),false,0,GUI_ID_COURSE_EDITBOX);
-    legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.21*su,0.85*sh,0.33*su,0.88*sh),false,0,GUI_ID_SPEED_EDITBOX);
-    legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.33*su,0.85*sh,0.45*su,0.88*sh),false,0,GUI_ID_DISTANCE_EDITBOX);
+    legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
+    legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
+    legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
+
+    courseTitle = guienv->addStaticText(language->translate("setCourse").c_str(),core::rect<s32>(0.01*su,0.33*sh,0.13*su,0.36*sh),false,false,guiWindow);
+    speedTitle = guienv->addStaticText(language->translate("setSpeed").c_str(),core::rect<s32>(0.18*su,0.33*sh,0.30*su,0.36*sh),false,false,guiWindow);
+    distanceTitle = guienv->addStaticText(language->translate("setDistance").c_str(),core::rect<s32>(0.35*su,0.33*sh,0.47*su,0.36*sh),false,false,guiWindow);
 
     //Add buttons
-    changeLeg       = guienv->addButton(core::rect<s32>(0.09*su, 0.90*sh,0.27*su, 0.93*sh),0,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.27*su, 0.90*sh,0.45*su, 0.93*sh),0, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
-    addLeg          = guienv->addButton(core::rect<s32>(0.09*su, 0.95*sh,0.27*su, 0.98*sh),0,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
-    deleteLeg       = guienv->addButton(core::rect<s32>(0.27*su, 0.95*sh,0.45*su, 0.98*sh),0, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    changeLeg       = guienv->addButton(core::rect<s32>     (0.05*su, 0.40*sh,0.23*su, 0.43*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.40*sh,0.43*su, 0.43*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    addLeg          = guienv->addButton(core::rect<s32>     (0.05*su, 0.44*sh,0.23*su, 0.47*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.44*sh,0.43*su, 0.47*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;

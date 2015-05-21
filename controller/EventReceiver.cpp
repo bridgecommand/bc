@@ -124,6 +124,13 @@ using namespace irr;
                 }
             }
 
+            if (event.GUIEvent.EventType==gui::EGDT_WINDOW_CLOSE) {
+                if (id==GUIMain::GUI_ID_WINDOW) {
+                    return true; //Absorb event : TODO: Should this trigger program close?
+                }
+
+            }
+
 
         }
 

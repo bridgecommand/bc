@@ -7,6 +7,12 @@ pos="Position: "
 own = "Own Ship"
 other = "Other Ship"
 
+selectShip = "Select ship"
+selectLeg = "Select leg"
+setCourse = "Set course"
+setSpeed = "Set speed (Kts)"
+setDistance = "Set distance (Nm)"
+
 changeLeg = "Change leg"	
 changeLegCourseSpeed = "Change leg course & speed"
 addLeg = "Add leg (after selected)"

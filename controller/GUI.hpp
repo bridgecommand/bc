@@ -33,7 +33,8 @@ public:
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
-        GUI_ID_SHIP_COMBOBOX = 101,
+        GUI_ID_WINDOW = 101,
+        GUI_ID_SHIP_COMBOBOX,
         GUI_ID_LEG_COMBOBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
@@ -59,7 +60,14 @@ private:
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
 
+    irr::gui::IGUIWindow* guiWindow;
+
     irr::gui::IGUIStaticText* dataDisplay;
+    irr::gui::IGUIStaticText* shipSelectorTitle;
+    irr::gui::IGUIStaticText* legSelectorTitle;
+    irr::gui::IGUIStaticText* courseTitle;
+    irr::gui::IGUIStaticText* speedTitle;
+    irr::gui::IGUIStaticText* distanceTitle;
     irr::gui::IGUIComboBox* shipSelector;
     irr::gui::IGUIComboBox* legSelector;
     irr::gui::IGUIEditBox* legCourseEdit;
