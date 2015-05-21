@@ -191,6 +191,7 @@ void Network::findOwnShipPositionData(const std::vector<std::string>& positionDa
     if (positionData.size() == 7) { //7 elements in position data sent
         ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
         ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
+        ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
     }
 }
 

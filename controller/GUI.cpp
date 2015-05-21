@@ -77,7 +77,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg)
 {
 
     //Show map texture
@@ -102,7 +102,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShi
     dataDisplay->setText(displayText.c_str());
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(time, metresPerPx, ownShipPosX, ownShipPosZ, buoys, otherShips);
+    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -136,8 +136,9 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 metresPerPx, irr::f32 ownShi
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips)
 {
+
     //draw cross hairs
     irr::s32 width = device->getVideoDriver()->getScreenSize().Width;
     irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
@@ -146,23 +147,35 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::f32& metresP
     device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(screenCentreX,0),irr::core::position2d<s32>(screenCentreX,height),video::SColor(255, 255, 255, 255));
     device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(0,screenCentreY),irr::core::position2d<s32>(width,screenCentreY),video::SColor(255, 255, 255, 255));
 
+    //Dimensions for dots
+    irr::u32 dotHalfWidth = width/400;
+    if(dotHalfWidth<1) {dotHalfWidth=1;}
+
+
+    //Draw location of own ship
+    irr::s32 ownRelPosX = 0 + mapOffsetX;
+    irr::s32 ownRelPosY = 0 - mapOffsetZ;
+    device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 0, 0),irr::core::rect<s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
+    //Heading line
+    irr::s32 hdgLineX = ownRelPosX + width/10*sin(ownShipHeading * RAD_IN_DEG);
+    irr::s32 hdgLineY = ownRelPosY + width/10*cos(ownShipHeading * RAD_IN_DEG);
+    irr::core::position2d<s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
+    irr::core::position2d<s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
+    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,video::SColor(255, 255, 0, 0));
+
     //Draw location of buoys
     for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {
-        irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx;
-        irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx;
+        irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
+        irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        irr::u32 dotHalfWidth = width/400;
-        if(dotHalfWidth<1) {dotHalfWidth=1;}
         device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
     }
 
     //Draw location of ships
     for(std::vector<OtherShipData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx;
-        irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx;
+        irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
+        irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        irr::u32 dotHalfWidth = width/400;
-        if(dotHalfWidth<1) {dotHalfWidth=1;}
         device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
 
         //Draw leg information for each ship

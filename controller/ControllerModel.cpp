@@ -30,6 +30,9 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     unscaledMap = 0; //FIXME: check - do pointers get automatically initialised as 0?
     scaledMap = 0;
 
+    mapOffsetX = 100;
+    mapOffsetZ = 100;
+
     selectedShip = -1; //Used to signify own ship selected
     selectedLeg = -1; //Used to signify no leg selected
 
@@ -116,8 +119,8 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2;
-    irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height;
+    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2 + mapOffsetX;
+    irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height + mapOffsetZ;
 
     scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
@@ -134,7 +137,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,metresPerPx,ownShipData.X,ownShipData.Z,buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg);
 }
 
 void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box
