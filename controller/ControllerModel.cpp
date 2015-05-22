@@ -30,8 +30,11 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     unscaledMap = 0; //FIXME: check - do pointers get automatically initialised as 0?
     scaledMap = 0;
 
-    mapOffsetX = 100;
-    mapOffsetZ = 100;
+    mapOffsetX = 0;
+    mapOffsetZ = 0;
+
+    mouseDown = false;
+    mouseClickedLastUpdate = false;
 
     selectedShip = -1; //Used to signify own ship selected
     selectedLeg = -1; //Used to signify no leg selected
@@ -113,6 +116,23 @@ ControllerModel::~ControllerModel()
 
 void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
 {
+    //std::cout << mouseDown << std::endl;
+
+    //Find mouse position change if clicked, and clicked last time
+    if (mouseClickedLastUpdate && mouseDown) {
+        irr::core::position2d<irr::s32> mouseNow = device->getCursorControl()->getPosition();
+        irr::s32 mouseDeltaX = mouseNow.X - mouseLastPosition.X;
+        irr::s32 mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
+
+        //Change offset
+        mapOffsetX += mouseDeltaX;
+        mapOffsetZ += mouseDeltaY;
+    }
+    //Update mouse position and clicked state
+    mouseLastPosition = device->getCursorControl()->getPosition();
+    mouseClickedLastUpdate = mouseDown;
+
+
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
@@ -155,4 +175,9 @@ void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from even
 {
     selectedLeg = index;
     //No guarantee from this that the selected leg is valid
+}
+
+void ControllerModel::setMouseDown(bool isMouseDown)
+{
+    mouseDown = isMouseDown;
 }

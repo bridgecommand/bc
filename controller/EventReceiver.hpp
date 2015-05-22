@@ -29,8 +29,9 @@ class EventReceiver : public irr::IEventReceiver
 public:
 
     EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui, Network* network);
-
     bool OnEvent(const irr::SEvent& event);
+
+    bool isMouseDown() const;
 
 private:
 

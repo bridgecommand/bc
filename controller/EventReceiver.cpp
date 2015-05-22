@@ -151,6 +151,20 @@ using namespace irr;
             }
 		} //end of key down event
 
+		//From mouse
+		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+
+            if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {
+                model->setMouseDown(true);
+            }
+
+            if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {
+                model->setMouseDown(false);
+            }
+
+		} //end of mouse event
+
+
         return false;
 
     }
