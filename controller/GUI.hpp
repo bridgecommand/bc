@@ -53,6 +53,7 @@ public:
     int getSelectedShip() const;
     int getSelectedLeg() const;
 
+
 private:
 
     Lang* language;

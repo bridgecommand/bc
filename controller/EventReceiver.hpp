@@ -28,13 +28,14 @@ class EventReceiver : public irr::IEventReceiver
 {
 public:
 
-    EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui, Network* network);
+    EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network);
     bool OnEvent(const irr::SEvent& event);
 
     bool isMouseDown() const;
 
 private:
 
+    irr::IrrlichtDevice* device;
     ControllerModel* model;
     GUIMain* gui;
     Network* network;

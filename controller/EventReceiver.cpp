@@ -25,8 +25,9 @@
 
 using namespace irr;
 
-    EventReceiver::EventReceiver(irr::IrrlichtDevice* dev, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
+    EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
 	{
+		this->device = device; //Link to the irrlicht device
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI
 		this->network = network; //Link to the network
@@ -155,7 +156,12 @@ using namespace irr;
 		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
 
             if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {
-                model->setMouseDown(true);
+
+                //Check if we're over a gui element, and if so ignore the click
+                irr::gui::IGUIElement* overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(device->getCursorControl()->getPosition());
+                if ( (overElement == 0 || overElement == device->getGUIEnvironment()->getRootGUIElement()) ) {
+                    model->setMouseDown(true);
+                }
             }
 
             if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {
