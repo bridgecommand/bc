@@ -35,7 +35,7 @@ public:
     {
         GUI_ID_WINDOW = 101,
         GUI_ID_SHIP_COMBOBOX,
-        GUI_ID_LEG_COMBOBOX,
+        GUI_ID_LEG_LISTBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
@@ -70,7 +70,7 @@ private:
     irr::gui::IGUIStaticText* speedTitle;
     irr::gui::IGUIStaticText* distanceTitle;
     irr::gui::IGUIComboBox* shipSelector;
-    irr::gui::IGUIComboBox* legSelector;
+    irr::gui::IGUIListBox* legSelector;
     irr::gui::IGUIEditBox* legCourseEdit;
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;

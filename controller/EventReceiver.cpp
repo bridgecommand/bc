@@ -113,14 +113,14 @@ using namespace irr;
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED) {
+            if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
                 if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
                     model->updateSelectedShip( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
 
-                if (id==GUIMain::GUI_ID_LEG_COMBOBOX) {
-                    model->updateSelectedLeg( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                if (id==GUIMain::GUI_ID_LEG_LISTBOX) {
+                    model->updateSelectedLeg( ((gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
             }

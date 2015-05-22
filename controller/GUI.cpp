@@ -43,13 +43,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.47*su,0.18*sh), true, false, guiWindow, -1, true); //Actual text set later
 
     //Add ship selector drop down
-    shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.22*sh,0.47*su,0.25*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
+    shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.22*sh,0.13*su,0.25*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
-    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.20*sh,0.47*su,0.23*sh),false,false,guiWindow);
+    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),false,false,guiWindow);
 
     //Add leg selector drop down
-    legSelector  = guienv->addComboBox(core::rect<s32>(0.01*su,0.29*sh,0.47*su,0.32*sh),guiWindow,GUI_ID_LEG_COMBOBOX);
-    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.01*su,0.27*sh,0.47*su,0.30*sh),false,false,guiWindow);
+    legSelector  = guienv->addListBox(core::rect<s32>(0.18*su,0.22*sh,0.47*su,0.32*sh),guiWindow,GUI_ID_LEG_LISTBOX);
+    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.18*su,0.20*sh,0.47*su,0.23*sh),false,false,guiWindow);
 
     //Add edit boxes for this leg element
     legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
@@ -181,7 +181,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         //Draw leg information for each ship
         if (it->legs.size() > 0) {
 
-            //Find first leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
+            //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
             irr::u32 currentLeg = 0;
             bool currentLegFound = false;
             for (u32 i=0; i < (it->legs.size()-1); i++) {
@@ -280,8 +280,20 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr:
         for(irr::u32 i = 0; i<selectedShipLegs; i++) {
             legSelector->addItem(core::stringw(i+1).c_str());
         }
-        manuallyTriggerGUIEvent((gui::IGUIElement*)legSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
+        manuallyTriggerGUIEvent((gui::IGUIElement*)legSelector, irr::gui::EGET_LISTBOX_CHANGED ); //Trigger event here so any changes caused by the update are found
 
+    } else {
+        //don't clear and update, but show which legs are past, current and future
+        if (legSelector->getItemCount() > 0) {
+
+            //Get legs for selected ship
+
+            //Find current leg (FIXME: Code duplication)
+
+            //For legs before, set as 'Past', current as 'Current', future as 'Future'
+
+            //legSelector->setItem(0, L"Hello", -1);
+        }
     }
 
 }
