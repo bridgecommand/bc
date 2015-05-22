@@ -82,7 +82,7 @@ private:
     bool editBoxesNeedUpdating;
 
     void drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips );
-    void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip);
+    void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time);
     bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
 
 };

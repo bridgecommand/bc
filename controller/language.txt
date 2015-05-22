@@ -13,6 +13,10 @@ setCourse = "Set course"
 setSpeed = "Set speed (Kts)"
 setDistance = "Set distance (Nm)"
 
+past = " (Past)"
+current = " (Current)"
+future = " (Future)"
+
 changeLeg = "Change leg"	
 changeLegCourseSpeed = "Change leg course & speed"
 addLeg = "Add leg (after selected)"

@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <limits>
+#include <string>
 
 using namespace irr;
 
@@ -130,7 +131,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     }
 
     //Update comboboxes for other ships and legs
-    updateDropDowns(otherShips,selectedShip);
+    updateDropDowns(otherShips,selectedShip,time);
 
     guienv->drawAll();
 
@@ -246,7 +247,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     } //Loop for each ship
 }
 
-void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip) {
+void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
 
 //Update drop down menus for ships and legs
     if(shipSelector->getItemCount() != otherShips.size() + 1) {
@@ -267,17 +268,17 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr:
     } //If different number of ships to show
 
     //Find number of legs for selected ship if known
-    irr::u32 selectedShipLegs = 0;
+    irr::u32 selectedShipNoLegs = 0;
     if (selectedShip>=0) {
         if (otherShips.size() > selectedShip) { //SelectedShip is valid
-            selectedShipLegs = otherShips.at(selectedShip).legs.size();
+            selectedShipNoLegs = otherShips.at(selectedShip).legs.size();
         }
     }
     //Update number of legs displayed, if required
-    if(selectedShipLegs>0) {selectedShipLegs--;} //Note that we display legs-1, as the final 'stop' leg shouldn't be changed by the user
-    if(legSelector->getItemCount() != selectedShipLegs) {
+    if(selectedShipNoLegs>0) {selectedShipNoLegs--;} //Note that we display legs-1, as the final 'stop' leg shouldn't be changed by the user
+    if(legSelector->getItemCount() != selectedShipNoLegs) {
         legSelector->clear();
-        for(irr::u32 i = 0; i<selectedShipLegs; i++) {
+        for(irr::u32 i = 0; i<selectedShipNoLegs; i++) {
             legSelector->addItem(core::stringw(i+1).c_str());
         }
         manuallyTriggerGUIEvent((gui::IGUIElement*)legSelector, irr::gui::EGET_LISTBOX_CHANGED ); //Trigger event here so any changes caused by the update are found
@@ -287,14 +288,45 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr:
         if (legSelector->getItemCount() > 0) {
 
             //Get legs for selected ship
+            if (selectedShip>=0 && otherShips.size() > selectedShip) { //SelectedShip is valid
+                std::vector<Leg> selectedShipLegs = otherShips.at(selectedShip).legs;
 
-            //Find current leg (FIXME: Code duplication)
+                //Find current leg (FIXME: Duplicated code)
+                //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
+                irr::u32 currentLeg = 0;
+                bool currentLegFound = false;
+                for (u32 i=0; i < (selectedShipLegs.size()-1); i++) {
+                    if (time >= selectedShipLegs.at(i).startTime &&  time < selectedShipLegs.at(i+1).startTime) {
+                        currentLeg = i;
+                        currentLegFound = true;
+                    }
+                }
+                if (!currentLegFound) {
+                    currentLeg = selectedShipLegs.size()-1;
+                }
 
-            //For legs before, set as 'Past', current as 'Current', future as 'Future'
+                //Update text for past, current and future legs.
+                for (u32 i=0; i<legSelector->getItemCount(); i++) {
+                    if (i < currentLeg) {
+                        std::wstring label(core::stringw(i+1).c_str());
+                        label.append(language->translate("past").c_str());
+                        legSelector->setItem(i,label.c_str(),-1);
+                    }
+                    if (i == currentLeg) {
+                        std::wstring label(core::stringw(i+1).c_str());
+                        label.append(language->translate("current").c_str());
+                        legSelector->setItem(i,label.c_str(),-1);
+                    }
+                    if (i > currentLeg) {
+                        std::wstring label(core::stringw(i+1).c_str());
+                        label.append(language->translate("future").c_str());
+                        legSelector->setItem(i,label.c_str(),-1);
+                    }
+                }
 
-            //legSelector->setItem(0, L"Hello", -1);
-        }
-    }
+            } //Selected ships valid
+        } //At least one leg in selector
+    } //Update descriptive text on legs, if they don't need updating entirely
 
 }
 
