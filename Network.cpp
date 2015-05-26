@@ -194,6 +194,29 @@ void Network::receiveNetwork()
 void Network::sendNetwork()
 {
     #ifdef _WIN32
+    std::string stringToSend;
+    if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SC' message
+        stringToSend = generateSendStringSC();
+    } else {
+        stringToSend = generateSendString();
+    }
+
+    /* Create a packet */
+    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
+    strlen (stringToSend.c_str()) + 1,
+    /*ENET_PACKET_FLAG_RELIABLE*/0);
+
+    /* Send the packet to the peer over channel id 0. */
+    /* One could also broadcast the packet by */
+    /* enet_host_broadcast (host, 0, packet); */
+    enet_peer_send (peer, 0, packet);
+    /* One could just use enet_host_service() instead. */
+    enet_host_flush (client);
+    #endif // _WIN32
+}
+
+std::string Network::generateSendString()
+{
     /* Get data from model */
     //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
     std::string stringToSend = "BC";
@@ -296,16 +319,16 @@ void Network::sendNetwork()
     //10 Multiplayer request here (Not used)
     stringToSend.append("0#");
 
-    /* Create a packet */
-    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-    strlen (stringToSend.c_str()) + 1,
-    /*ENET_PACKET_FLAG_RELIABLE*/0);
+    return stringToSend;
+}
 
-    /* Send the packet to the peer over channel id 0. */
-    /* One could also broadcast the packet by */
-    /* enet_host_broadcast (host, 0, packet); */
-    enet_peer_send (peer, 0, packet);
-    /* One could just use enet_host_service() instead. */
-    enet_host_flush (client);
-    #endif // _WIN32
+std::string Network::generateSendStringSC()
+{
+    std::string stringToSend = "SC";
+    stringToSend.append(model->getScenarioName());
+    stringToSend.append("|");
+    stringToSend.append(model->getWorldName());
+    stringToSend.append("|");
+    //todo: Add rest of records here
+    return stringToSend;
 }

@@ -20,14 +20,14 @@
 #include <iostream>
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName)
 {
 
     this->gui = gui;
     this->device = device;
     driver = device->getVideoDriver();
 
-    unscaledMap = 0; //FIXME: check - do pointers get automatically initialised as 0?
+    unscaledMap = 0;
     scaledMap = 0;
 
     mapOffsetX = 0;
@@ -41,7 +41,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
 
     //construct path to world model
     std::string worldPath = "../World/";
-    worldPath.append("SimpleEstuary"); //Fixme: Hardcoded
+    worldPath.append(worldName);
 
     std::string worldTerrainFile = worldPath;
     worldTerrainFile.append("/terrain.ini");
@@ -60,7 +60,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
     std::string displayMapPath = worldPath;
     displayMapPath.append("/");
     displayMapPath.append(displayMapName);
-    unscaledMap = driver->createImageFromFile(displayMapPath.c_str()); //Fixme: need to get an irr::video::IImageLoader here.
+    unscaledMap = driver->createImageFromFile(displayMapPath.c_str());
     if (unscaledMap==0) {
         std::cout << "Could not load map image for " << worldPath << std::endl;
         exit(EXIT_FAILURE);
@@ -99,7 +99,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui)
 
     //Drop the unscaled map, as we don't need this again
     unscaledMap->drop();
-    //Fixme - should unscaled map be set to zero now?
+    unscaledMap=0;
 
     //Save scale
     metresPerPx = terrainXWidth / requiredWidth;

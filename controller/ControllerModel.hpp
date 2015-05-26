@@ -34,7 +34,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName);
     ~ControllerModel();
     void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box

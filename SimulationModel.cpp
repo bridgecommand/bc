@@ -29,6 +29,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         driver = scene->getVideoDriver();
         guiMain = gui;
 
+        //store scenario name
+        this->scenarioName = scenarioName;
+
         //Set loop number to zero
         loopNumber = 0;
 
@@ -39,7 +42,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Read world file name from scenario:
         std::string environmentIniFilename = scenarioPath;
         environmentIniFilename.append("/environment.ini");
-        std::string worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
+        worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
         irr::f32 startTime = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
         irr::u32 startDay=IniFile::iniFileTou32(environmentIniFilename,"StartDay");
         irr::u32 startMonth=IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
@@ -425,6 +428,16 @@ SimulationModel::~SimulationModel()
     irr::u32 SimulationModel::getLoopNumber() const
     {
         return loopNumber;
+    }
+
+    std::string SimulationModel::getScenarioName() const
+    {
+        return scenarioName;
+    }
+
+    std::string SimulationModel::getWorldName() const
+    {
+        return worldName;
     }
 
     void SimulationModel::update()

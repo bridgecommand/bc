@@ -110,6 +110,8 @@ public:
     void setRadarCameraActive();
     void setAspectRatio(irr::f32 aspect);
     irr::u32 getLoopNumber() const;
+    std::string getScenarioName() const;
+    std::string getWorldName() const;
     void update();
 
 private:
@@ -149,6 +151,10 @@ private:
 
     //Offset position handling
     irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this
+
+    //store useful information
+    std::string scenarioName;
+    std::string worldName;
 
 };
 #endif

@@ -17,6 +17,8 @@
 #ifndef __NETWORK_HPP_INCLUDED__
 #define __NETWORK_HPP_INCLUDED__
 
+#include <string>
+
 #ifdef _WIN32
 #include <enet/enet.h>
 #endif // _WIN32
@@ -44,6 +46,8 @@ private:
     ENetPeer *peer;
     #endif // _WIN32
 
+    std::string generateSendString(); //Prepare then normal data message to send
+    std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information
     void sendNetwork();
     void receiveNetwork();
 

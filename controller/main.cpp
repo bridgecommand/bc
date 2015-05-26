@@ -28,10 +28,15 @@ int main (int argc, char ** argv)
     //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
     //Network class
     Network network;
+
+    //Wait here until we know which word model to load
+    //Todo: Add a patience/cancel message here
+    std::string worldName = network.findWorldName();
+
     //GUI class
     GUIMain guiMain(device, &language);
     //Main model
-    ControllerModel controller(device, &guiMain);
+    ControllerModel controller(device, &guiMain, worldName);
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario
