@@ -10,6 +10,7 @@
 #include "GUI.hpp"
 #include "EventReceiver.hpp"
 
+#include "../IniFile.hpp"
 #include "../Lang.hpp"
 
 // Irrlicht Namespaces
@@ -18,7 +19,13 @@ using namespace irr;
 int main (int argc, char ** argv)
 {
 
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(800,600),32,false,false,false,0); //Fixme: Hardcoded size, depth and full screen
+    std::string iniFilename = "map.ini";
+    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+
+    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
