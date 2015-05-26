@@ -29,9 +29,23 @@ int main (int argc, char ** argv)
     //Network class
     Network network;
 
-    //Wait here until we know which word model to load
-    //Todo: Add a patience/cancel message here
-    std::string worldName = network.findWorldName();
+    //Find world model to use, from the network
+    irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language.translate("startBC").c_str(), core::rect<s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
+
+    std::string worldName = "";
+    while (device->run() && worldName.size() == 0) {
+        driver->beginScene();
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+        worldName = network.findWorldName();
+    }
+    patienceText->remove();
+    patienceWindow->remove();
+    if (worldName.size() == 0) {
+        std::cout << "Could not receive world name" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     //GUI class
     GUIMain guiMain(device, &language);

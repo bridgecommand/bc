@@ -39,6 +39,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //Add a moveable window to put things in
     guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh),false,0,0,GUI_ID_WINDOW);
+    guiWindow->getCloseButton()->setVisible(false);
 
     //add data display:
     dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.47*su,0.18*sh), true, false, guiWindow, -1, true); //Actual text set later

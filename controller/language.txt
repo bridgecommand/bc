@@ -3,6 +3,9 @@ The characters \n will be replaced with a line break, so multiple lines of text 
 This file currently must be saved in ANSI (Windows-1252) format. In the future this should be
 changed to UTF-8, for proper portability!
 
+waiting = "Waiting..."
+startBC = "Please start the Bridge Command session"
+
 pos="Position: "
 own = "Own Ship"
 other = "Other Ship"

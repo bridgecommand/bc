@@ -61,36 +61,37 @@ Network::~Network()
 
 std::string Network::findWorldName()
 {
-    //Wait for message from BC, and return world name
+    //Return world name if it's just been sent, or an empty string
+    //This function should normally be called from a loop
+
     std::string worldName = "";
 
-    while (worldName.size()==0) { //Todo: Think about how to show waiting here, without freezing up
-        if (enet_host_service (server, & event, 10) > 0) {
-            if (event.type == ENET_EVENT_TYPE_RECEIVE) {
-                //receive it
-                char tempString[2048]; //Fixme: Think if this is long enough
-                snprintf(tempString,2048,"%s",event.packet -> data);
-                std::string receivedString(tempString);
 
-                //Basic checks
-                if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
-                    if (receivedString.substr(0,2).compare("SC") == 0 ) { //Check if it starts with SC
-                        //Strip 'SC'
-                        receivedString = receivedString.substr(2,receivedString.length()-2);
+    if (enet_host_service (server, & event, 10) > 0) {
+        if (event.type == ENET_EVENT_TYPE_RECEIVE) {
+            //receive it
+            char tempString[2048]; //Fixme: Think if this is long enough
+            snprintf(tempString,2048,"%s",event.packet -> data);
+            std::string receivedString(tempString);
 
-                        //Find world model from this
-                        std::vector<std::string> receivedData = Utilities::split(receivedString,'|');
-                        if (receivedData.size() >= 2) {
-                            worldName = receivedData.at(1);
-                        }
+            //Basic checks
+            if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+                if (receivedString.substr(0,2).compare("SC") == 0 ) { //Check if it starts with SC
+                    //Strip 'SC'
+                    receivedString = receivedString.substr(2,receivedString.length()-2);
+
+                    //Find world model from this
+                    std::vector<std::string> receivedData = Utilities::split(receivedString,'|');
+                    if (receivedData.size() >= 2) {
+                        worldName = receivedData.at(1);
                     }
                 }
+            }
 
-                /* Clean up the packet now that we're done using it. */
-                enet_packet_destroy (event.packet);
-            } //received message
-        } //enet event
-     } //Infinite loop
+            /* Clean up the packet now that we're done using it. */
+            enet_packet_destroy (event.packet);
+        } //received message
+    } //enet event
 
     return worldName;
 }
