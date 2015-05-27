@@ -12,9 +12,9 @@ other = "Other Ship"
 
 selectShip = "Select ship"
 selectLeg = "Select leg"
-setCourse = "Set course"
-setSpeed = "Set speed (Kts)"
-setDistance = "Set distance (Nm)"
+setCourse = "Course"
+setSpeed = "Speed (Kts)"
+setDistance = "Distance (Nm)"
 
 past = " (Past)"
 current = " (Current)"

@@ -32,6 +32,15 @@ int main (int argc, char ** argv)
     //load language
     Lang language("language.txt");
 
+    //Set font : Todo - make this configurable
+    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../media/lucida.xml");
+    if (font == 0) {
+        std::cout << "Could not load font, using default" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
+
     //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
     //Network class
     Network network;
