@@ -35,8 +35,8 @@ Network::Network()
     /* A specific host address can be specified by */
     /* enet_address_set_host (& address, "x.x.x.x"); */
     address.host = ENET_HOST_ANY;
-    /* Bind the server to port 1234. */
-    address.port = 1234;
+    /* Bind the server to port 18304. */
+    address.port = 18304;
     server = enet_host_create (& address /* the address to bind the server host to */,
     32 /* allow up to 32 clients and/or outgoing connections */,
     2 /* allow up to 2 channels to be used, 0 and 1 */,
@@ -44,7 +44,7 @@ Network::Network()
     0 /* assume any amount of outgoing bandwidth */);
     if (server == NULL)
     {
-        std::cout << "An error occurred while trying to create an ENet server host.\n";
+        std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
         exit (EXIT_FAILURE);
     }
 

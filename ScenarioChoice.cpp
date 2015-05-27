@@ -29,7 +29,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-std::string ScenarioChoice::chooseScenario()
+void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -43,12 +43,16 @@ std::string ScenarioChoice::chooseScenario()
 
     //Make gui elements
     core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2014 James Packer");
+    titleText.append(L"\nCopyright 2015 James Packer");
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.07*sh,0.30*su,0.40*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.41*sh,0.30*su,0.48*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
-    gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),core::rect<s32>(0.02*su,0.03*sh,0.30*su, 0.07*sh));
     gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
+
+    gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),core::rect<s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
+    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
+
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.17*sh,0.80*su,0.20*sh));
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
@@ -78,13 +82,21 @@ std::string ScenarioChoice::chooseScenario()
     if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (s32)scenarioList.size()) {
         exit(EXIT_FAILURE); //No scenario loaded
     }
-    std::string scenarioName = scenarioList[startupReceiver.getScenarioSelected()];
+
+    //Use selected scenario
+    scenarioName = scenarioList[startupReceiver.getScenarioSelected()]; //scenarioName is a pass by reference return value
+    //Get hostname, and convert from wchar_t* to wstring to string
+    std::wstring wHostname = std::wstring(hostnameBox->getText());
+    std::string sHostname(wHostname.begin(), wHostname.end());
+    hostname = sHostname; //hostname is a pass by reference return value
 
     //Clean up
     scenarioListBox->remove(); scenarioListBox = 0;
     okButton->remove(); okButton = 0;
     title->remove(); title = 0;
     instruction->remove(); instruction=0;
+    hostnameBox->remove(); hostnameBox=0;
+    hostnameText->remove();hostnameText=0;
     device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.
 
     //Show loading message
@@ -95,7 +107,7 @@ std::string ScenarioChoice::chooseScenario()
     driver->endScene();
     loadingMessage->remove(); loadingMessage = 0;
 
-    return scenarioName;
+    return;
 }
 
 void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {

@@ -84,8 +84,12 @@ int main()
     }
 
     //Choose scenario
+    std::string scenarioName = "";
+    std::string hostname = "";
     ScenarioChoice scenarioChoice(device,&language);
-    std::string scenarioName = scenarioChoice.chooseScenario();
+    scenarioChoice.chooseScenario(scenarioName, hostname);
+
+    //std::cout << "Chosen " << scenarioName << " with " << hostname << std::endl;
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
@@ -105,7 +109,7 @@ int main()
 
     //Create networking, linked to model
     Network network(&model);
-    network.connectToServer();
+    network.connectToServer(hostname);
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName);

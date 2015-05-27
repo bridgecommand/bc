@@ -5,6 +5,7 @@ changed to UTF-8, for proper portability!
 
 ok="OK (ß)"
 scnChoose="Please choose a scenario:"
+hostname="Please enter hostname (PC name) for controller if used"
 loadingmsg="Loading scenario..."
 
 pausedbutton="Paused, click to start"

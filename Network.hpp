@@ -32,7 +32,7 @@ public:
     Network(SimulationModel* model);
     ~Network();
 
-    void connectToServer();
+    void connectToServer(std::string hostname);
     void update();
 
 private:

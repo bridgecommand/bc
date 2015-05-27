@@ -43,7 +43,7 @@ Network::Network(SimulationModel* model) //Constructor
     57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */,
     14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
     if (client == NULL) {
-        //fprintf (stderr, "An error occurred while trying to create an ENet client host.\n");
+        std::cout << "An error occurred while trying to create an ENet client host." << std::endl;
         exit (EXIT_FAILURE);
     }
 
@@ -64,25 +64,24 @@ Network::~Network() //Destructor
     #endif // _WIN32
 }
 
-void Network::connectToServer()
+void Network::connectToServer(std::string hostname)
 {
     #ifdef _WIN32
-    /* Connect to some.server.net:1234. */
-    enet_address_set_host (& address, "localhost");
-    address.port = 1234;
+    /* Connect to some.server.net:18304. */
+    enet_address_set_host (& address, hostname.c_str());
+    address.port = 18304; //Todo: Make this configurable
     /* Initiate the connection, allocating the two channels 0 and 1. */
     peer = enet_host_connect (client, & address, 2, 0);
     if (peer == NULL)
     {
-        fprintf (stderr,
-        "No available peers for initiating an ENet connection.\n");
+        std::cout << "No available peers for initiating an ENet connection." << std::endl;
         exit (EXIT_FAILURE);
     }
     /* Wait up to 1 second for the connection attempt to succeed. */
     if (enet_host_service (client, & event, 1000) > 0 &&
         event.type == ENET_EVENT_TYPE_CONNECT)
     {
-        puts ("Connection to localhost:1234 succeeded.");
+        std::cout << "ENet connection succeeded." << std::endl;
     }
     else
     {
@@ -90,7 +89,7 @@ void Network::connectToServer()
         /* received. Reset the peer in the event the 1 second */
         /* had run out without any significant event. */
         enet_peer_reset (peer);
-        puts ("Connection to localhost:1234 failed.");
+        std::cout << "ENet connection failed." << std::endl;
     }
     #endif // _WIN32
 }
