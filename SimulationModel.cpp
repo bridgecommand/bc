@@ -103,6 +103,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
 
+        //set camera zoom to 1
+        zoom = 1.0;
+
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         camera.load(smgr,ownShip.getSceneNode(),views,core::PI/2.0);
@@ -419,6 +422,17 @@ SimulationModel::~SimulationModel()
     {
         radarCamera.setActive();
     }
+
+    void SimulationModel::toggleZoom()
+    {
+        if (zoom > 1) {
+            zoom = 1;
+        } else {
+            zoom = 7.0; //Binoculars magnification
+        }
+        camera.setHFOV((core::PI/2)/zoom);
+    }
+
 
     void SimulationModel::updateViewport(irr::f32 aspect)
     {

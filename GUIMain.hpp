@@ -42,7 +42,8 @@ public:
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
-        GUI_ID_HIDE_INTERFACE_BUTTON
+        GUI_ID_HIDE_INTERFACE_BUTTON,
+        GUI_ID_BINOS_INTERFACE_BUTTON
     };
 
     bool getShowInterface() const;
@@ -75,6 +76,7 @@ private:
     irr::gui::IGUIScrollBar* rainScrollbar;
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
+    irr::gui::IGUIButton* binosButton;
 
     irr::f32 guiHeading;
     irr::f32 viewHdg;

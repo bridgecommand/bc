@@ -30,6 +30,7 @@ class Camera
         void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV);
         irr::scene::ISceneNode* getSceneNode() const;
         irr::core::vector3df getPosition() const;
+        void setHFOV(irr::f32 hFOV);
         void updateViewport(irr::f32 aspect);
         void setActive();
         void lookLeft();

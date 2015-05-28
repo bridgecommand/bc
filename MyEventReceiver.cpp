@@ -119,6 +119,11 @@ using namespace irr;
                     gui->hide2dInterface();
                 }
 
+                if (id == GUIMain::GUI_ID_BINOS_INTERFACE_BUTTON)
+                {
+                    model->toggleZoom();
+                }
+
             }
 
 

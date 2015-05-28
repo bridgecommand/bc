@@ -109,6 +109,7 @@ public:
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);
+    void toggleZoom();
     irr::u32 getLoopNumber() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
@@ -124,6 +125,7 @@ private:
     irr::f32 weather; //0-12.0
     irr::f32 rainIntensity; //0-10
     irr::u32 loopNumber; //Todo: check if this is a reasonable size
+    irr::f32 zoom;
     Terrain terrain;
     Light light;
     OwnShip ownShip;

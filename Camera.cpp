@@ -111,6 +111,11 @@ irr::u32 Camera::getView() const
     return currentView;
 }
 
+void Camera::setHFOV(irr::f32 hFOV)
+{
+    this->hFOV=hFOV;
+}
+
 void Camera::updateViewport(irr::f32 aspect)
 {
     camera->setAspectRatio(aspect);

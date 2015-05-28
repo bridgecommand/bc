@@ -15,6 +15,7 @@ viewAng="View bearing: "
 spd="Speed: "
 depth="Depth: "
 radar="Radar: "
+zoom="Zoom"
 
 radarMainTab="Main"
 radarPITab="PI"
