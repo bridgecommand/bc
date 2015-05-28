@@ -32,9 +32,9 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV)
 {
-    hFOV = core::PI/2.0f; //90 degrees
+    this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
     camera->setFarValue(6*M_IN_NM);//Todo: This should depend on the current (variable) fog range
     camera->setFOV(hFOV/camera->getAspectRatio()); //Convert horizontal field of view to vertical
@@ -111,10 +111,11 @@ irr::u32 Camera::getView() const
     return currentView;
 }
 
-void Camera::setAspectRatio(irr::f32 aspect)
+void Camera::updateViewport(irr::f32 aspect)
 {
     camera->setAspectRatio(aspect);
-    camera->setFOV(hFOV/aspect);
+    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    camera->setFOV(vFOV);
 }
 
 void Camera::setActive()

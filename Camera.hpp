@@ -27,10 +27,10 @@ class Camera
         Camera();
         virtual ~Camera();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV);
         irr::scene::ISceneNode* getSceneNode() const;
         irr::core::vector3df getPosition() const;
-        void setAspectRatio(irr::f32 aspect);
+        void updateViewport(irr::f32 aspect);
         void setActive();
         void lookLeft();
         void lookRight();

@@ -139,10 +139,10 @@ int main()
         //3d view portion
         if (guiMain.getShowInterface()) {
             driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
-            model.setAspectRatio(aspect3d);
+            model.updateViewport(aspect3d);
         } else {
             driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
-            model.setAspectRatio(aspect);
+            model.updateViewport(aspect);
         }
         model.setMainCameraActive();
 

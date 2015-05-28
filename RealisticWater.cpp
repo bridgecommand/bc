@@ -161,7 +161,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 		//use this aspect ratio
 		_camera->setAspectRatio(currentAspect);
 
-		//set FOV anf far value from current camera
+		//set FOV and far value from current camera
 		_camera->setFarValue(currentCamera->getFarValue());
 		_camera->setFOV(currentCamera->getFOV());
 

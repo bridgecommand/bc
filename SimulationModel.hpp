@@ -108,7 +108,7 @@ public:
     void setRadarRain(irr::f32 value);
     void setMainCameraActive();
     void setRadarCameraActive();
-    void setAspectRatio(irr::f32 aspect);
+    void updateViewport(irr::f32 aspect);
     irr::u32 getLoopNumber() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
