@@ -48,6 +48,9 @@ int main (int argc, char ** argv)
     //Find world model to use, from the network
     irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
     irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language.translate("startBC").c_str(), core::rect<s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
+    //hide close button
+    patienceWindow->getCloseButton()->setVisible(false);
+
 
     std::string worldName = "";
     while (device->run() && worldName.size() == 0) {
@@ -56,6 +59,7 @@ int main (int argc, char ** argv)
         driver->endScene();
         worldName = network.findWorldName();
     }
+
     patienceText->remove();
     patienceWindow->remove();
     if (worldName.size() == 0) {
