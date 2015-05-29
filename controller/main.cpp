@@ -30,10 +30,10 @@ int main (int argc, char ** argv)
     //scene::ISceneManager* smgr = device->getSceneManager();
 
     //load language
-    Lang language("language.txt");
+    Lang language("languageController.txt");
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../media/lucida.xml");
+    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {

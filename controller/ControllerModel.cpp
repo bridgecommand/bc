@@ -40,7 +40,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     selectedLeg = -1; //Used to signify no leg selected
 
     //construct path to world model
-    std::string worldPath = "../World/";
+    std::string worldPath = "World/";
     worldPath.append(worldName);
 
     std::string worldTerrainFile = worldPath;
