@@ -1,11 +1,13 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 2"
-!define OUTPUTFILE "bc50a2_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a2"
-!define SMFOLDER "Bridge Command 5.0 Alpha 2"
-!define REGKEY "BridgeCommand5.0a2"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 3"
+!define OUTPUTFILE "bc50a3_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a3"
+!define SMFOLDER "Bridge Command 5.0 Alpha 3"
+!define REGKEY "BridgeCommand5.0a3"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SetCompressor /SOLID lzma
 
 Name "${PROGRAMNAME}"
 
@@ -35,10 +37,11 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x RadarCache /x misc /x shiplights.ods /x gmon.out *.*
+File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\BridgeCommand.exe"
+  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Controller.lnk" "$INSTDIR\controller.exe"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 ; Write the uninstall keys for Windows
@@ -59,6 +62,7 @@ SetShellVarContext all
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${REGKEY}"
 
   ; Remove files and uninstaller
+  RMDir /r "$INSTDIR\controller"
   RMDir /r "$INSTDIR\Models"  
   RMDir /r "$INSTDIR\Scenarios"
   RMDir /r "$INSTDIR\media"
@@ -115,7 +119,6 @@ SetShellVarContext all
   Delete "$INSTDIR\LandLights.cpp"
   Delete "$INSTDIR\Network.cpp"
   Delete "$INSTDIR\Water.cpp"
-  Delete "$INSTDIR\BridgeCommand.cscope_file_list"
   Delete "$INSTDIR\OtherShips.cpp"
   Delete "$INSTDIR\install.nsi"
   Delete "$INSTDIR\IniFile.cpp"
@@ -137,14 +140,22 @@ SetShellVarContext all
   Delete "$INSTDIR\libenet.dll"
   Delete "$INSTDIR\BridgeCommand.depend"
   Delete "$INSTDIR\BridgeCommand.exe"
+  Delete "$INSTDIR\controller.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\Makefile"
   Delete "$INSTDIR\ReadmeLinux.txt"
   Delete "$INSTDIR\language.txt"
+  Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
+  Delete "$INSTDIR\map.ini"
+  Delete "$INSTDIR\NMEA.cpp"
+  Delete "$INSTDIR\NMEA.hpp"
+  Delete "$INSTDIR\Rain.cpp"
+  Delete "$INSTDIR\Rain.hpp"
+  Delete "$INSTDIR\README"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"
