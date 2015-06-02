@@ -3,7 +3,7 @@ The characters \n will be replaced with a line break, so multiple lines of text 
 This file currently must be saved in ANSI (Windows-1252) format. In the future this should be
 changed to UTF-8, for proper portability!
 
-ok="OK (ß)"
+ok="OK"
 scnChoose="Please choose a scenario:"
 hostname="Please enter hostname (PC name) for controller if used"
 loadingmsg="Loading scenario..."
