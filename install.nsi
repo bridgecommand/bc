@@ -40,8 +40,7 @@ SetOutPath $INSTDIR
 File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
-  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\BridgeCommand.exe"
-  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Controller.lnk" "$INSTDIR\controller.exe"
+  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 ; Write the uninstall keys for Windows
@@ -70,6 +69,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\libs"
   RMDir /r "$INSTDIR\data"
   RMDir /r "$INSTDIR\shaders"
+  RMDir /r "$INSTDIR\launcher"
 
   Delete "$INSTDIR\Leg.hpp"
   Delete "$INSTDIR\Sky.hpp"
@@ -148,6 +148,7 @@ SetShellVarContext all
   Delete "$INSTDIR\ReadmeLinux.txt"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
+  Delete "$INSTDIR\languageLauncher.txt"
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
   Delete "$INSTDIR\map.ini"
@@ -156,13 +157,15 @@ SetShellVarContext all
   Delete "$INSTDIR\Rain.cpp"
   Delete "$INSTDIR\Rain.hpp"
   Delete "$INSTDIR\README"
+  Delete "$INSTDIR\Icon.ico"
+  Delete "$INSTDIR\launcher.exe"
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"
+  ;Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"
   Delete "$SMPROGRAMS\${SMFOLDER}\*.*"
 
   ; Remove directories used
-  RMDir "$SMPROGRAMS\${SMFOLDER}\Settings"
+  ;RMDir "$SMPROGRAMS\${SMFOLDER}\Settings"
   RMDir "$SMPROGRAMS\${SMFOLDER}"
   RMDir "$INSTDIR"
 
