@@ -55,6 +55,7 @@
 		<Unit filename="NavLight.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="NetworkInterface.hpp" />
 		<Unit filename="OtherShip.cpp" />
 		<Unit filename="OtherShip.hpp" />
 		<Unit filename="OtherShips.cpp" />

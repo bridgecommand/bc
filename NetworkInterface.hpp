@@ -14,40 +14,21 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __NETWORK_HPP_INCLUDED__
-#define __NETWORK_HPP_INCLUDED__
+#ifndef __NETWORKINTERFACE_HPP_INCLUDED__
+#define __NETWORKINTERFACE_HPP_INCLUDED__
 
-#include "NetworkInterface.hpp"
+#include <string>
 
-#ifdef _WIN32
-#include <enet/enet.h>
-#endif // _WIN32
+//Forward declarations
+class SimulationModel;
 
-class Network : public NetworkInterface
+class NetworkInterface
 {
-
 public:
-    Network(SimulationModel* model);
-    ~Network();
+    //NetworkInterface(SimulationModel* model);
+    //~NetworkInterface();
+
     void connectToServer(std::string hostname);
     void update();
-
-private:
-
-    #ifdef _WIN32
-    SimulationModel* model;
-
-    ENetHost * client;
-    ENetAddress address;
-    ENetEvent event;
-    ENetPeer *peer;
-    #endif // _WIN32
-
-    std::string generateSendString(); //Prepare then normal data message to send
-    std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information
-    void sendNetwork();
-    void receiveNetwork();
-
 };
-
 #endif
