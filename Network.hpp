@@ -17,18 +17,21 @@
 #ifndef __NETWORK_HPP_INCLUDED__
 #define __NETWORK_HPP_INCLUDED__
 
-#include "NetworkInterface.hpp"
+#include <string>
 
 #ifdef _WIN32
 #include <enet/enet.h>
 #endif // _WIN32
 
-class Network : public NetworkInterface
-{
+//Forward declarations
+class SimulationModel;
 
+class Network
+{
 public:
     Network(SimulationModel* model);
     ~Network();
+
     void connectToServer(std::string hostname);
     void update();
 
