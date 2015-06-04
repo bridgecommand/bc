@@ -24,7 +24,12 @@
 #include <cstdio>
 #include <vector>
 
-Network::Network(SimulationModel* model) //Constructor
+Network* Network::createNetwork(SimulationModel* model, bool primary) //Factory class, create a primary or secondary network object, and return a pointer
+{
+    return new NetworkPrimary(model);
+}
+
+NetworkPrimary::NetworkPrimary(SimulationModel* model) //Constructor
 {
 
     #ifdef _WIN32
@@ -53,7 +58,7 @@ Network::Network(SimulationModel* model) //Constructor
     #endif // _WIN32
 }
 
-Network::~Network() //Destructor
+NetworkPrimary::~NetworkPrimary() //Destructor
 {
     #ifdef _WIN32
     //shut down networking
@@ -64,7 +69,7 @@ Network::~Network() //Destructor
     #endif // _WIN32
 }
 
-void Network::connectToServer(std::string hostname)
+void NetworkPrimary::connectToServer(std::string hostname)
 {
     #ifdef _WIN32
     /* Connect to some.server.net:18304. */
@@ -94,7 +99,7 @@ void Network::connectToServer(std::string hostname)
     #endif // _WIN32
 }
 
-void Network::update()
+void NetworkPrimary::update()
 {
     #ifdef _WIN32
     receiveNetwork();
@@ -102,7 +107,7 @@ void Network::update()
     #endif // _WIN32
 }
 
-void Network::receiveNetwork()
+void NetworkPrimary::receiveNetwork()
 {
     #ifdef _WIN32
 
@@ -190,7 +195,7 @@ void Network::receiveNetwork()
     #endif // _WIN32
 }
 
-void Network::sendNetwork()
+void NetworkPrimary::sendNetwork()
 {
     #ifdef _WIN32
     std::string stringToSend;
@@ -214,7 +219,7 @@ void Network::sendNetwork()
     #endif // _WIN32
 }
 
-std::string Network::generateSendString()
+std::string NetworkPrimary::generateSendString()
 {
     /* Get data from model */
     //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
@@ -321,7 +326,7 @@ std::string Network::generateSendString()
     return stringToSend;
 }
 
-std::string Network::generateSendStringSC()
+std::string NetworkPrimary::generateSendStringSC()
 {
     std::string stringToSend = "SC";
     stringToSend.append(model->getScenarioName());

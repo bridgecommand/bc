@@ -26,6 +26,50 @@
 //Forward declarations
 class SimulationModel;
 
+//start new
+class Network
+{
+    public:
+    //Factory method
+    static Network* createNetwork(SimulationModel* model, bool primary); //remember to use 'delete' later.
+    virtual void connectToServer(std::string hostname) = 0;
+    virtual void update() = 0;
+};
+
+class NetworkPrimary : public Network
+{
+public:
+    NetworkPrimary(SimulationModel* model);
+    ~NetworkPrimary();
+
+    void connectToServer(std::string hostname);
+    void update();
+
+private:
+    #ifdef _WIN32
+    SimulationModel* model;
+
+    ENetHost * client;
+    ENetAddress address;
+    ENetEvent event;
+    ENetPeer *peer;
+    #endif // _WIN32
+
+    std::string generateSendString(); //Prepare then normal data message to send
+    std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information
+    void sendNetwork();
+    void receiveNetwork();
+
+};
+
+class NetworkSecondary : public Network
+{
+};
+
+//end new
+
+/*
+
 class Network
 {
 public:
@@ -52,5 +96,6 @@ private:
     void receiveNetwork();
 
 };
-
+*/
 #endif
+

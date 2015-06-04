@@ -108,8 +108,9 @@ int main()
     device->setEventReceiver(&receiver);
 
     //Create networking, linked to model
-    Network network(&model);
-    network.connectToServer(hostname);
+    Network* network = Network::createNetwork(&model, true);
+    //Network network(&model);
+    network->connectToServer(hostname);
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName);
@@ -121,7 +122,7 @@ int main()
     while(device->run())
     {
 
-        network.update();
+        network->update();
 
         //Check if time has elapsed, so we send data once per second.
         if (device->getTimer()->getTime() >= nextNMEATime) {
@@ -167,7 +168,7 @@ int main()
 
     device->drop();
     //networking should be stopped (presumably with destructor when it goes out of scope?)
-
+    delete network;
 
     return(0);
 }
