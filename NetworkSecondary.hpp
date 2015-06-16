@@ -14,23 +14,23 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#ifndef __NETWORKSECONDARY_HPP_INCLUDED__
+#define __NETWORKSECONDARY_HPP_INCLUDED__
+
 #include "Network.hpp"
-#include "NetworkPrimary.hpp"
-#include "NetworkSecondary.hpp"
 
-#include "SimulationModel.hpp"
-#include "Utilities.hpp"
-#include "Constants.hpp"
-#include "Leg.hpp"
-#include <iostream>
-#include <cstdio>
-#include <vector>
+#include <string>
 
-Network::~Network() //Virtual destructor
+#ifdef _WIN32
+#include <enet/enet.h>
+#endif // _WIN32
+
+//Forward declarations
+class SimulationModel;
+
+class NetworkSecondary : public Network
 {
-}
+};
 
-Network* Network::createNetwork(SimulationModel* model, bool primary) //Factory class, create a primary or secondary network object, and return a pointer
-{
-    return new NetworkPrimary(model);
-}
+#endif
+

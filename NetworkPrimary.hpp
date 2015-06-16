@@ -14,8 +14,10 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __NETWORK_HPP_INCLUDED__
-#define __NETWORK_HPP_INCLUDED__
+#ifndef __NETWORKPRIMARY_HPP_INCLUDED__
+#define __NETWORKPRIMARY_HPP_INCLUDED__
+
+#include "Network.hpp"
 
 #include <string>
 
@@ -26,14 +28,30 @@
 //Forward declarations
 class SimulationModel;
 
-class Network
+class NetworkPrimary : public Network
 {
-    public:
-    //Factory method
-    static Network* createNetwork(SimulationModel* model, bool primary); //remember to use 'delete' later.
-    virtual void connectToServer(std::string hostname) = 0;
-    virtual void update() = 0;
-    virtual ~Network();
+public:
+    NetworkPrimary(SimulationModel* model);
+    ~NetworkPrimary();
+
+    void connectToServer(std::string hostname);
+    void update();
+
+private:
+    #ifdef _WIN32
+    SimulationModel* model;
+
+    ENetHost * client;
+    ENetAddress address;
+    ENetEvent event;
+    ENetPeer *peer;
+    #endif // _WIN32
+
+    std::string generateSendString(); //Prepare then normal data message to send
+    std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information
+    void sendNetwork();
+    void receiveNetwork();
+
 };
 
 #endif

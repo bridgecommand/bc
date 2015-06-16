@@ -14,23 +14,4 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#include "Network.hpp"
-#include "NetworkPrimary.hpp"
 #include "NetworkSecondary.hpp"
-
-#include "SimulationModel.hpp"
-#include "Utilities.hpp"
-#include "Constants.hpp"
-#include "Leg.hpp"
-#include <iostream>
-#include <cstdio>
-#include <vector>
-
-Network::~Network() //Virtual destructor
-{
-}
-
-Network* Network::createNetwork(SimulationModel* model, bool primary) //Factory class, create a primary or secondary network object, and return a pointer
-{
-    return new NetworkPrimary(model);
-}

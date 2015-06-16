@@ -168,7 +168,8 @@ int main()
 
     device->drop();
     //networking should be stopped (presumably with destructor when it goes out of scope?)
-    delete network;
+    std::cout << "About to delete network" << std::endl;
+    delete network; //Fixme: Check this is working
 
     return(0);
 }
