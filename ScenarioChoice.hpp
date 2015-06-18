@@ -26,7 +26,7 @@ class ScenarioChoice
 {
 public:
     ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    void chooseScenario(std::string& scenarioName, std::string& hostname);
+    void chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary);
 
 private:
     void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);
@@ -37,7 +37,8 @@ private:
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
         GUI_ID_SCENARIO_LISTBOX = 101,
-        GUI_ID_OK_BUTTON
+        GUI_ID_OK_BUTTON,
+        GUI_ID_SECONDARY_CHECKBOX
     };
 
 };

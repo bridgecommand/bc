@@ -30,6 +30,25 @@ class SimulationModel;
 
 class NetworkSecondary : public Network
 {
+public:
+    NetworkSecondary(SimulationModel* model);
+    ~NetworkSecondary();
+
+    void connectToServer(std::string hostname);
+    void update();
+
+private:
+    #ifdef _WIN32
+    SimulationModel* model;
+
+    ENetHost * server;
+    ENetAddress address;
+    ENetEvent event;
+    ENetPeer *peer;
+
+    void receiveMessage();
+    #endif // _WIN32
+
 };
 
 #endif

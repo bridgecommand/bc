@@ -29,7 +29,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname)
+void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -51,8 +51,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
     gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.17*sh,0.80*su,0.20*sh));
+    gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
+    gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
+
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.27*sh,0.80*su,0.30*sh));
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
@@ -90,11 +93,16 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     std::string sHostname(wHostname.begin(), wHostname.end());
     hostname = sHostname; //hostname is a pass by reference return value
 
+    //Check if 'secondary' mode is selected
+    secondary = secondaryCheckbox->isChecked(); //secondary is a pass by reference return value
+
     //Clean up
     scenarioListBox->remove(); scenarioListBox = 0;
     okButton->remove(); okButton = 0;
     title->remove(); title = 0;
     instruction->remove(); instruction=0;
+    secondaryText->remove(); secondaryText=0;
+    secondaryCheckbox->remove(); secondaryCheckbox=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
     device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.

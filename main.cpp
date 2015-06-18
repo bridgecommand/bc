@@ -86,8 +86,9 @@ int main()
     //Choose scenario
     std::string scenarioName = "";
     std::string hostname = "";
+    bool secondary = false;
     ScenarioChoice scenarioChoice(device,&language);
-    scenarioChoice.chooseScenario(scenarioName, hostname);
+    scenarioChoice.chooseScenario(scenarioName, hostname, secondary);
 
     //std::cout << "Chosen " << scenarioName << " with " << hostname << std::endl;
 
@@ -107,8 +108,8 @@ int main()
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
     device->setEventReceiver(&receiver);
 
-    //Create networking, linked to model
-    Network* network = Network::createNetwork(&model, true);
+    //Create networking, linked to model, choosing whether to use main or secondary network mode
+    Network* network = Network::createNetwork(&model, secondary);
     //Network network(&model);
     network->connectToServer(hostname);
 
@@ -168,8 +169,8 @@ int main()
 
     device->drop();
     //networking should be stopped (presumably with destructor when it goes out of scope?)
-    std::cout << "About to delete network" << std::endl;
-    delete network; //Fixme: Check this is working
+    std::cout << "About to stop network" << std::endl;
+    delete network;
 
     return(0);
 }
