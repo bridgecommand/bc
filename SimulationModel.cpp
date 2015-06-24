@@ -218,6 +218,10 @@ SimulationModel::~SimulationModel()
         return scenarioOffsetTime;
     }
 
+    void SimulationModel::setTimeDelta(irr::f32 scenarioTime) {
+        this->scenarioTime = scenarioTime;
+    }
+
     irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since the start of the start day of the scenario
         return scenarioTime;
     }

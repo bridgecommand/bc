@@ -121,14 +121,23 @@ void NetworkSecondary::receiveMessage()
             //Check number of elements
             if (receivedData.size() == 11) { //11 basic records in data sent
 
+                //Time info is record 0
+                std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
+                //Time since start of scenario day 1 is record 2
+                if (timeData.size() > 2) {
+                    model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                }
+
                 //Position info is record 1
                 std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-
                 if (positionData.size() == 7) { //7 elements in position data sent
                     //ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
                     //ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
                     model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
                 }
+
+                //Todo: Get
+                //position and heading of all other ships, weather, rain, viewpoint
 
             } //Check for right number of elements in received data
         } //Check received message starts with BC

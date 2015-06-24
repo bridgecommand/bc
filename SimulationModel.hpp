@@ -75,6 +75,7 @@ public:
     irr::u64 getTimestamp() const; //The unix timestamp in s
     irr::u64 getTimeOffset() const; //The timestamp at the start of the first day of the scenario
     irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
+    void     setTimeDelta(irr::f32 scenarioTime);
 
     irr::u32 getNumberOfOtherShips() const;
     irr::u32 getNumberOfBuoys() const;
@@ -148,8 +149,7 @@ private:
     irr::f32 deltaTime;
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     irr::u64 scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-    irr::u64 absoluteTime; //Unix timestamp for current time, including start day
-    irr::u64 scenarioStartAbsoluteTime; //The timestamp of the start of the scenario
+    irr::u64 absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
     //Offset position handling
     irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this
