@@ -68,7 +68,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui->setFocus(scenarioListBox);
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON);
+    StartupEventReceiver startupReceiver(scenarioListBox,hostnameText,hostnameBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX);
     device->setEventReceiver(&startupReceiver);
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
