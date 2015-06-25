@@ -279,6 +279,12 @@ SimulationModel::~SimulationModel()
          ownShip.setHeading(hdg);
     }
 
+    void SimulationModel::setPos(irr::f32 positionX, irr::f32 positionZ)
+    {
+        ownShip.setPosition(positionX - offsetPosition.X, positionZ - offsetPosition.Z );
+    }
+
+
     irr::f32 SimulationModel::getHeading() const
     {
         return(ownShip.getHeading());

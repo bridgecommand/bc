@@ -39,11 +39,9 @@ class Ship
         irr::f32 getHeading() const;
         irr::f32 getSpeed() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void setPosition(irr::f32 xPos, irr::f32 yPos);
 
     protected:
-
-        void setPosition(irr::core::vector3df position);
-        void setRotation(irr::core::vector3df rotation);
 
         irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
         irr::f32 hdg;

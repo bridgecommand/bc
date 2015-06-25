@@ -133,6 +133,8 @@ void NetworkSecondary::receiveMessage()
                 if (positionData.size() == 7) { //7 elements in position data sent
                     //ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
                     //ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
+                    model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
+                                  Utilities::lexical_cast<irr::f32>(positionData.at(1)));
                     model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
                 }
 

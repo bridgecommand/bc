@@ -138,8 +138,9 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     yPos = tideHeight;
 
     //Set position & speed by calling ship methods
-    setPosition(core::vector3df(xPos,yPos,zPos));
-    setRotation(core::vector3df(0, hdg, 0)); //Global vectors
+    //setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setRotation(core::vector3df(0, hdg, 0)); //Global vectors
 
     //for each light, find range and angle
     for(std::vector<NavLight>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {

@@ -50,6 +50,13 @@ irr::core::vector3df Ship::getPosition() const
     return ship->getAbsolutePosition();
 }
 
+void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
+{
+     //Update the position used, ready for next update. Doesn't actually move the mesh at this point
+     this->xPos = xPos;
+     this->zPos = zPos;
+}
+
 void Ship::setHeading(irr::f32 hdg)
 {
     this->hdg = hdg;
@@ -77,20 +84,8 @@ void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     xPos += deltaX;
     yPos += deltaY;
     zPos += deltaZ;
-    setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(core::vector3df(xPos,yPos,zPos));
 }
 
-//////////////////////////
-//Private member functions (Protected in superclass)
-//////////////////////////
 
-void Ship::setPosition(irr::core::vector3df position)
-{
-     ship->setPosition(position);
-}
-
-void Ship::setRotation(irr::core::vector3df rotation)
-{
-    ship->setRotation(rotation);
-}
 

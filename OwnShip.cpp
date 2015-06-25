@@ -280,9 +280,9 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     if (rollPeriod>0)
         {roll = weather*rollAngle*sin(scenarioTime*2*PI/rollPeriod);}
 
-    //Set position & angles by calling own ship methods
-    setPosition(core::vector3df(xPos,yPos,zPos));
-    setRotation(Angles::irrAnglesFromYawPitchRoll(hdg,pitch,roll));
+    //Set position & angles
+    ship->setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg,pitch,roll));
 
 }
 
