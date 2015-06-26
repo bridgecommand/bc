@@ -24,7 +24,6 @@
 #include "Leg.hpp"
 #include <iostream>
 #include <cstdio>
-#include <vector>
 
 Network::~Network() //Virtual destructor
 {

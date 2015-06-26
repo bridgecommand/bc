@@ -34,7 +34,7 @@ public:
     NetworkSecondary(SimulationModel* model);
     ~NetworkSecondary();
 
-    void connectToServer(std::string hostname);
+    void connectToServer(std::string hostnames);
     void update();
 
 private:

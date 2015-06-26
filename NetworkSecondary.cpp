@@ -64,7 +64,7 @@ NetworkSecondary::~NetworkSecondary()
     #endif
 }
 
-void NetworkSecondary::connectToServer(std::string hostname)
+void NetworkSecondary::connectToServer(std::string hostnames)
 {
     #ifdef _WIN32
     #endif // _WIN32

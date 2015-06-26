@@ -38,9 +38,9 @@ NetworkPrimary::NetworkPrimary(SimulationModel* model) //Constructor
     }
 
     client = enet_host_create (NULL /* create a client host */,
-    1 /* only allow 1 outgoing connection */,
+    10 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
     2 /* allow up 2 channels to be used, 0 and 1 */,
-    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */,
+    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */, //Todo: Think about bandwidth limits
     14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
     if (client == NULL) {
         std::cout << "An error occurred while trying to create an ENet client host." << std::endl;
@@ -64,35 +64,49 @@ NetworkPrimary::~NetworkPrimary() //Destructor
     #endif // _WIN32
 }
 
-void NetworkPrimary::connectToServer(std::string hostname)
+void NetworkPrimary::connectToServer(std::string hostnames)
 {
     #ifdef _WIN32
-    ENetAddress address;
 
-    /* Connect to some.server.net:18304. */
-    enet_address_set_host (& address, hostname.c_str());
-    address.port = 18304; //Todo: Make this configurable
-    /* Initiate the connection, allocating the two channels 0 and 1. */
-    peer = enet_host_connect (client, & address, 2, 0);
-    if (peer == NULL)
-    {
-        std::cout << "No available peers for initiating an ENet connection." << std::endl;
-        exit (EXIT_FAILURE);
+    //hostname may be multiple comma separated names
+    std::vector<std::string> multipleHostnames = Utilities::split(hostnames,',');
+
+    //Ensure there's at least one entry
+    if (multipleHostnames.size() < 1 ) {
+        multipleHostnames.push_back(""); //Add an empty record
     }
-    /* Wait up to 1 second for the connection attempt to succeed. */
-    if (enet_host_service (client, & event, 1000) > 0 &&
-        event.type == ENET_EVENT_TYPE_CONNECT)
-    {
-        std::cout << "ENet connection succeeded." << std::endl;
+
+    //Set up a peer for each hostname
+    for (int i = 0; i<multipleHostnames.size(); i++) {
+        ENetAddress address;
+        ENetPeer* peer;
+
+        std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
+        //Todo: validate this?
+
+        /* Connect to some.server.net:18304. */
+        enet_address_set_host (& address, thisHostname.c_str());
+        address.port = 18304; //Todo: Make this configurable
+        /* Initiate the connection, allocating the two channels 0 and 1. */
+        peer = enet_host_connect (client, & address, 2, 0);
+        //Note we don't store peer pointer, as we broadcast to all connected peers.
+        if (peer == NULL)
+        {
+            std::cout << "No available peers for initiating an ENet connection." << std::endl;
+            exit (EXIT_FAILURE);
+        }
+        /* Wait up to 1 second for the connection attempt to succeed. */
+        if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+            std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
+        } else {
+            /* Either the 1 second is up or a disconnect event was */
+            /* received. Reset the peer in the event the 1 second */
+            /* had run out without any significant event. */
+            enet_peer_reset (peer);
+            std::cout << "ENet connection failed to: " << thisHostname << std::endl;
+        }
     }
-    else
-    {
-        /* Either the 1 second is up or a disconnect event was */
-        /* received. Reset the peer in the event the 1 second */
-        /* had run out without any significant event. */
-        enet_peer_reset (peer);
-        std::cout << "ENet connection failed." << std::endl;
-    }
+
     #endif // _WIN32
 }
 
@@ -108,7 +122,6 @@ void NetworkPrimary::receiveNetwork()
 {
     #ifdef _WIN32
 
-    ENetEvent event;
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 
@@ -207,10 +220,9 @@ void NetworkPrimary::sendNetwork()
     strlen (stringToSend.c_str()) + 1,
     /*ENET_PACKET_FLAG_RELIABLE*/0);
 
-    /* Send the packet to the peer over channel id 0. */
-    /* One could also broadcast the packet by */
-    /* enet_host_broadcast (host, 0, packet); */
-    enet_peer_send (peer, 0, packet);
+    /* Send the packet to all connected peers over channel id 0. */
+    enet_host_broadcast(client, 0, packet);
+
     /* One could just use enet_host_service() instead. */
     enet_host_flush (client);
     #endif // _WIN32

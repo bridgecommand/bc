@@ -33,6 +33,7 @@ namespace Utilities
     time_t dmyToTimestamp(int day, int month, int year);
     std::string timestampToString(time_t timestamp, std::string format);
     std::string timestampToString(time_t timestamp);
+    std::string trim(std::string inString);
     std::vector<std::string> split(const std::string &inputString, char delim);
 
     template <typename T>

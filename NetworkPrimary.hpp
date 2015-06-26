@@ -34,16 +34,15 @@ public:
     NetworkPrimary(SimulationModel* model);
     ~NetworkPrimary();
 
-    void connectToServer(std::string hostname);
+    void connectToServer(std::string hostnames);
     void update();
 
 private:
     #ifdef _WIN32
     SimulationModel* model;
 
-    ENetHost * client;
+    ENetHost* client; //One client
     ENetEvent event;
-    ENetPeer *peer;
     #endif // _WIN32
 
     std::string generateSendString(); //Prepare then normal data message to send
