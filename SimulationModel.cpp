@@ -250,6 +250,14 @@ SimulationModel::~SimulationModel()
         return otherShips.getHeading(number);
     }
 
+    void SimulationModel::setOtherShipHeading(int number, irr::f32 hdg){
+        otherShips.setHeading(number, hdg);
+    }
+
+    void SimulationModel::setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ){
+        otherShips.setPos(number, positionX - offsetPosition.X, positionZ - offsetPosition.Z);
+    }
+
     std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
         return otherShips.getLegs(number);
     }

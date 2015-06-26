@@ -40,6 +40,8 @@ class OtherShips
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         irr::f32 getHeading(int number) const;
+        void setPos(int number, irr::f32 positionX, irr::f32 positionZ);
+        void setHeading(int number, irr::f32 hdg);
         std::vector<Leg> getLegs(int number) const;
         void changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         void addLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);

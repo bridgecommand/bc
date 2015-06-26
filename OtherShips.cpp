@@ -131,6 +131,20 @@ irr::f32 OtherShips::getHeading(int number) const
     }
 }
 
+void OtherShips::setPos(int number, irr::f32 positionX, irr::f32 positionZ)
+{
+    if (number < otherShips.size()) {
+        otherShips.at(number).setPosition(positionX,positionZ);
+    }
+}
+
+void OtherShips::setHeading(int number, irr::f32 hdg)
+{
+    if (number < otherShips.size()) {
+        otherShips.at(number).setHeading(hdg);
+    }
+}
+
 std::vector<Leg> OtherShips::getLegs(int number) const
 {
     if (number < otherShips.size()) {

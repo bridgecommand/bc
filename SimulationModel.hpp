@@ -52,6 +52,8 @@ public:
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
     void setPos(irr::f32 positionX, irr::f32 positionZ);
+    void setOtherShipHeading(int number, irr::f32 hdg);
+    void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     irr::f32 getRudder() const;
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)

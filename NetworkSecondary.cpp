@@ -121,25 +121,47 @@ void NetworkSecondary::receiveMessage()
             //Check number of elements
             if (receivedData.size() == 11) { //11 basic records in data sent
 
-                //Time info is record 0
+                //Get time info from record 0
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
                 //Time since start of scenario day 1 is record 2
                 if (timeData.size() > 2) {
                     model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
                 }
 
-                //Position info is record 1
+                //Get own ship position info from record 1
                 std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
                 if (positionData.size() == 7) { //7 elements in position data sent
-                    //ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-                    //ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
                     model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
                                   Utilities::lexical_cast<irr::f32>(positionData.at(1)));
                     model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
                 }
 
-                //Todo: Get
-                //position and heading of all other ships, weather, rain, viewpoint
+                //Start
+                //Get other ship info from records 2 and 3
+                //Numbers of objects in record 2 (Others, buoys, MOBs)
+                std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
+                if (numberData.size() == 3) {
+                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+
+                    //Update other ship data
+                    std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
+                    if (numberOthers == otherShipsDataString.size()) {
+                        for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+                            std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
+                            if (thisShipData.size() == 6) { //6 elements for each ship
+                                //Update data
+                                model->setOtherShipPos(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(0)),
+                                                       Utilities::lexical_cast<irr::u32>(thisShipData.at(1)));
+                                model->setOtherShipHeading(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(2)));
+
+                                //Todo: use SART etc
+                            }
+                        }
+                    }
+                } //Check if 3 number elements for Other ships, buoys and MOBs
+
+                //Todo: Get weather, rain, viewpoint.
+                //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)
 
             } //Check for right number of elements in received data
         } //Check received message starts with BC
