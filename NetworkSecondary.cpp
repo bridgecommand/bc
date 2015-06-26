@@ -26,6 +26,8 @@
 NetworkSecondary::NetworkSecondary(SimulationModel* model)
 {
     #ifdef _WIN32
+    ENetAddress address;
+
     this->model = model;
 
     if (enet_initialize () != 0)

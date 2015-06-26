@@ -42,9 +42,7 @@ private:
     SimulationModel* model;
 
     ENetHost * server;
-    ENetAddress address;
     ENetEvent event;
-    ENetPeer *peer;
 
     void receiveMessage();
     #endif // _WIN32

@@ -42,7 +42,6 @@ private:
     SimulationModel* model;
 
     ENetHost * client;
-    ENetAddress address;
     ENetEvent event;
     ENetPeer *peer;
     #endif // _WIN32

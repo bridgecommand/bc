@@ -67,6 +67,8 @@ NetworkPrimary::~NetworkPrimary() //Destructor
 void NetworkPrimary::connectToServer(std::string hostname)
 {
     #ifdef _WIN32
+    ENetAddress address;
+
     /* Connect to some.server.net:18304. */
     enet_address_set_host (& address, hostname.c_str());
     address.port = 18304; //Todo: Make this configurable
