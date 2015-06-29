@@ -10,18 +10,16 @@
 				<Option output="BridgeCommand" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-Wall" />
-				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wall" />
 			<Add directory="./libs/Irrlicht/irrlicht-1.8.1/include" />
-			<Add directory="./libs/enet/enet-1.3.11/include" />
 		</Compiler>
 		<Linker>
 			<Add option="./libs/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
-			<Add library=".\libs\enet\enet-1.3.11\bin\Release\libenet.a" />
+			<Add library="ws2_32" />
+			<Add library="Winmm" />
 		</Linker>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
@@ -92,6 +90,42 @@
 		<Unit filename="Utilities.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
+		<Unit filename="libs/enet/callbacks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/callbacks.h" />
+		<Unit filename="libs/enet/compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/enet.h" />
+		<Unit filename="libs/enet/host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/list.h" />
+		<Unit filename="libs/enet/packet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/peer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/protocol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/protocol.h" />
+		<Unit filename="libs/enet/time.h" />
+		<Unit filename="libs/enet/types.h" />
+		<Unit filename="libs/enet/unix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/unix.h" />
+		<Unit filename="libs/enet/utility.h" />
+		<Unit filename="libs/enet/win32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="libs/enet/win32.h" />
 		<Unit filename="libs/serial/impl/unix.h" />
 		<Unit filename="libs/serial/impl/win.h" />
 		<Unit filename="libs/serial/serial.h" />

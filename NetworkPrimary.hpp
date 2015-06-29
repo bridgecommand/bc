@@ -22,7 +22,7 @@
 #include <string>
 
 #ifdef _WIN32
-#include <enet/enet.h>
+#include "libs/enet/enet.h"
 #endif // _WIN32
 
 //Forward declarations
