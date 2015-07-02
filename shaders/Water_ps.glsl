@@ -78,12 +78,12 @@ void main()
 	vec4 color7 = texture2D(ReflectionMap, ProjectedReflectionTexCoords7);
 	vec4 color8 = texture2D(ReflectionMap, ProjectedReflectionTexCoords8);
 
-	vec4 reflectiveColor = (1*color0+color1+color2+color3+color4+color5+color6+color7+color8) / 9.0;
+	vec4 reflectiveColor = (color0+color1+color2+color3+color4+color5+color6+color7+color8) / 9.0;
 
 	float xDisp = ProjectedReflectionTexCoords.x-0.5; //-0.5->0.5
 	float yDisp = ProjectedReflectionTexCoords.y-0.5; //-0.5->0.5
 	float centralDisp = sqrt(xDisp*xDisp)+sqrt(yDisp*yDisp); //0.0-1.0
-	vec4 ambientColor= (1-centralDisp)*WaterColor;
+	vec4 ambientColor= (1.0-centralDisp)*WaterColor;
 
 	//fresnel
 	/*
