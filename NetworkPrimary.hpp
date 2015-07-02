@@ -21,9 +21,7 @@
 
 #include <string>
 
-#ifdef _WIN32
 #include "libs/enet/enet.h"
-#endif // _WIN32
 
 //Forward declarations
 class SimulationModel;
@@ -38,12 +36,10 @@ public:
     void update();
 
 private:
-    #ifdef _WIN32
     SimulationModel* model;
 
     ENetHost* client; //One client
     ENetEvent event;
-    #endif // _WIN32
 
     std::string generateSendString(); //Prepare then normal data message to send
     std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information

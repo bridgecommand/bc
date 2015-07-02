@@ -27,7 +27,6 @@
 NetworkPrimary::NetworkPrimary(SimulationModel* model) //Constructor
 {
 
-    #ifdef _WIN32
     //link to model so network can interact with model
     this->model = model; //Link to the model
 
@@ -50,23 +49,19 @@ NetworkPrimary::NetworkPrimary(SimulationModel* model) //Constructor
     std::cout << "Started enet\n";
 
     //TODO: Think if this is the best way to handle failure
-    #endif // _WIN32
 }
 
 NetworkPrimary::~NetworkPrimary() //Destructor
 {
-    #ifdef _WIN32
     //shut down networking
     enet_host_destroy(client);
     enet_deinitialize();
 
     std::cout << "Shut down enet\n";
-    #endif // _WIN32
 }
 
 void NetworkPrimary::connectToServer(std::string hostnames)
 {
-    #ifdef _WIN32
 
     //hostname may be multiple comma separated names
     std::vector<std::string> multipleHostnames = Utilities::split(hostnames,',');
@@ -106,21 +101,16 @@ void NetworkPrimary::connectToServer(std::string hostnames)
             std::cout << "ENet connection failed to: " << thisHostname << std::endl;
         }
     }
-
-    #endif // _WIN32
 }
 
 void NetworkPrimary::update()
 {
-    #ifdef _WIN32
     receiveNetwork();
     sendNetwork();
-    #endif // _WIN32
 }
 
 void NetworkPrimary::receiveNetwork()
 {
-    #ifdef _WIN32
 
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
@@ -202,12 +192,10 @@ void NetworkPrimary::receiveNetwork()
             enet_packet_destroy (event.packet);
         }
     }
-    #endif // _WIN32
 }
 
 void NetworkPrimary::sendNetwork()
 {
-    #ifdef _WIN32
     std::string stringToSend;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SC' message
         stringToSend = generateSendStringSC();
@@ -225,7 +213,6 @@ void NetworkPrimary::sendNetwork()
 
     /* One could just use enet_host_service() instead. */
     enet_host_flush (client);
-    #endif // _WIN32
 }
 
 std::string NetworkPrimary::generateSendString()

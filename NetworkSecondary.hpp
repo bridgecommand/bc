@@ -21,9 +21,7 @@
 
 #include <string>
 
-#ifdef _WIN32
 #include "libs/enet/enet.h"
-#endif // _WIN32
 
 //Forward declarations
 class SimulationModel;
@@ -38,14 +36,12 @@ public:
     void update();
 
 private:
-    #ifdef _WIN32
     SimulationModel* model;
 
     ENetHost * server;
     ENetEvent event;
 
     void receiveMessage();
-    #endif // _WIN32
 
 };
 

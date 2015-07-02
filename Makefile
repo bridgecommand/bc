@@ -5,7 +5,7 @@
 # Name of the executable created (.exe will be added automatically if necessary)
 Target := bridgecommand
 # List of source files, separated by spaces
-Sources := main.cpp Angles.cpp Buoy.cpp Buoys.cpp Camera.cpp GUIMain.cpp IniFile.cpp LandLights.cpp LandObject.cpp LandObjects.cpp Lang.cpp Light.cpp MyEventReceiver.cpp NavLight.cpp Network.cpp NetworkPrimary.cpp NetworkSecondary.cpp NMEA.cpp OtherShip.cpp OtherShips.cpp OwnShip.cpp RadarCalculation.cpp RadarScreen.cpp Rain.cpp RealisticWater.cpp ScenarioChoice.cpp Ship.cpp SimulationModel.cpp Sky.cpp StartupEventReceiver.cpp Terrain.cpp Tide.cpp Utilities.cpp Water.cpp
+Sources := main.cpp Angles.cpp Buoy.cpp Buoys.cpp Camera.cpp GUIMain.cpp IniFile.cpp LandLights.cpp LandObject.cpp LandObjects.cpp Lang.cpp Light.cpp MyEventReceiver.cpp NavLight.cpp Network.cpp NetworkPrimary.cpp NetworkSecondary.cpp NMEA.cpp OtherShip.cpp OtherShips.cpp OwnShip.cpp RadarCalculation.cpp RadarScreen.cpp Rain.cpp RealisticWater.cpp ScenarioChoice.cpp Ship.cpp SimulationModel.cpp Sky.cpp StartupEventReceiver.cpp Terrain.cpp Tide.cpp Utilities.cpp Water.cpp libs/enet/callbacks.c libs/enet/compress.c libs/enet/host.c libs/enet/list.c libs/enet/packet.c libs/enet/peer.c libs/enet/protocol.c libs/enet/unix.c libs/enet/win32.c libs/serial/src/impl/list_ports/list_ports_linux.cc libs/serial/src/impl/list_ports/list_ports_osx.cc libs/serial/src/impl/list_ports/list_ports_win.cc libs/serial/src/impl/unix.cc libs/serial/src/impl/win.cc libs/serial/src/serial.cc
 # Path to Irrlicht directory, should contain include/ and lib/
 IrrlichtHome := ./libs/Irrlicht/irrlicht-1.8.1
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems

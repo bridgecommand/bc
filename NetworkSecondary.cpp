@@ -25,7 +25,6 @@
 
 NetworkSecondary::NetworkSecondary(SimulationModel* model)
 {
-    #ifdef _WIN32
     ENetAddress address;
 
     this->model = model;
@@ -52,29 +51,22 @@ NetworkSecondary::NetworkSecondary(SimulationModel* model)
         std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
         exit (EXIT_FAILURE);
     }
-    #endif
 }
 
 NetworkSecondary::~NetworkSecondary()
 {
-    #ifdef _WIN32
     enet_host_destroy(server);
     enet_deinitialize();
     std::cout << "Shut down enet\n";
-    #endif
 }
 
 void NetworkSecondary::connectToServer(std::string hostnames)
 {
-    #ifdef _WIN32
-    #endif // _WIN32
-
     //Don't need to do anything
 }
 
 void NetworkSecondary::update()
 {
-    #ifdef _WIN32
 
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
@@ -100,8 +92,6 @@ void NetworkSecondary::update()
                 event.peer -> data = NULL;
         }
     }
-
-    #endif // _WIN32
 }
 
 void NetworkSecondary::receiveMessage()

@@ -19,9 +19,7 @@
 
 #include <string>
 
-#ifdef _WIN32
 #include "libs/enet/enet.h"
-#endif // _WIN32
 
 //Forward declarations
 class SimulationModel;

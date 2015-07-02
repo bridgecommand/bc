@@ -48,8 +48,12 @@
 #include <sys/poll.h>
 #endif
 
-#ifndef HAS_SOCKLEN_T
+//#ifndef HAS_SOCKLEN_T
+//typedef int socklen_t;
+//#endif
+#ifndef __socklen_t_defined
 typedef int socklen_t;
+#define __socklen_t_defined
 #endif
 
 #ifndef MSG_NOSIGNAL

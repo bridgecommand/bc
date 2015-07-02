@@ -26,6 +26,8 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName) //Constructor
     //link to model so network can interact with model
     this->model = model; //Link to the model
 
+    maxMessages=6;
+
     messageToSend = "";
     currentMessageType=0;
 
