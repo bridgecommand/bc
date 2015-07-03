@@ -5,6 +5,11 @@ To build on linux:
 3) cd back to this directory
 4) Run 'make' to compile Bridge Command
 
+(Optional:)
+5) cd to ./controller
+6) Run 'make' to compile the Map Controller
+
 Running
 
-5) run ./bridgecommand to start the simulator.
+7) Run ./bridgecommand to start the simulator.
+8) Run ./mapController to start the Map Controller (optional)
