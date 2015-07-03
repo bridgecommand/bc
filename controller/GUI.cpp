@@ -342,17 +342,23 @@ bool GUIMain::manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::E
 }
 
 irr::f32 GUIMain::getEditBoxCourse() const {
-    irr::f32 course = _wtof(legCourseEdit->getText()); //TODO: Check portability
+    //irr::f32 course = _wtof(legCourseEdit->getText()); //TODO: Check portability
+    wchar_t* endPtr;
+    irr::f32 course = wcstof(legCourseEdit->getText(), &endPtr);
     return course;
 }
 
 irr::f32 GUIMain::getEditBoxSpeed() const {
-    irr::f32 speed = _wtof(legSpeedEdit->getText()); //TODO: Check portability
+    //irr::f32 speed = _wtof(legSpeedEdit->getText()); //TODO: Check portability
+    wchar_t* endPtr;
+    irr::f32 speed = wcstof(legSpeedEdit->getText(), &endPtr); //TODO: Check portability
     return speed;
 }
 
 irr::f32 GUIMain::getEditBoxDistance() const {
-    irr::f32 distance = _wtof(legDistanceEdit->getText()); //TODO: Check portability
+    //irr::f32 distance = _wtof(legDistanceEdit->getText()); //TODO: Check portability
+    wchar_t* endPtr;
+    irr::f32 distance = wcstof(legDistanceEdit->getText(), &endPtr); //TODO: Check portability
     return distance;
 }
 
