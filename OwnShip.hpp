@@ -34,6 +34,7 @@ class OwnShip : public Ship
         void load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
+        std::string getRadarConfigFile() const;
         irr::f32 getDepth();
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
@@ -47,6 +48,7 @@ class OwnShip : public Ship
     protected:
     private:
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
+        std::string radarConfigFile;
         Terrain* terrain;
         irr::f32 rollPeriod; //Roll period (s)
         irr::f32 rollAngle; //Roll Angle (deg)

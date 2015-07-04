@@ -47,6 +47,11 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     shipIniFilename.append(ownShipName);
     shipIniFilename.append("/boat.ini");
 
+    //Construct the radar config file name, to be used later by the radar
+    radarConfigFile = "Models/Ownship/";
+    radarConfigFile.append(ownShipName);
+    radarConfigFile.append("/radar.ini");
+
     //get the model file
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
     std::string ownShipFullPath = "Models/Ownship/";
@@ -293,4 +298,8 @@ std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
     return views;
 }
 
+std::string OwnShip::getRadarConfigFile() const
+{
+    return radarConfigFile;
+}
 

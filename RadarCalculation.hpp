@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 
 #include <vector>
+#include <string>
 
 class Terrain;
 class OwnShip;
@@ -31,6 +32,7 @@ class RadarCalculation
     public:
         RadarCalculation();
         virtual ~RadarCalculation();
+        void load(std::string radarConfigFile);
         void increaseRange();
         void decreaseRange();
         irr::f32 getRangeNm() const;
@@ -49,10 +51,16 @@ class RadarCalculation
         irr::f32 radarGain;
         irr::f32 radarRainClutterReduction;
         irr::f32 radarSeaClutterReduction;
-        irr::s32 currentScanAngle;
-        irr::u32 scanAngleStep;
+        irr::u32 currentScanAngle; //Note that this MUST be an integer, as the angle is used to look up values in radar scan arrays
+        irr::u32 scanAngleStep; //Should also be an integer, as the angle being incremented is an integer
         irr::u32 rangeResolution;
         irr::u32 radarRangeIndex;
+        irr::f32 radarScannerHeight;
+        //parameters for noise behaviour
+        irr::f32 radarNoiseLevel;
+        irr::f32 radarSeaClutter;
+        irr::f32 radarRainClutter;
+
         std::vector<irr::f32> radarRangeNm;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);

@@ -103,6 +103,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
 
+        //Todo: Set the radar parameters, based on the radar.ini file from the own ship
+        //std::cout << "Radar file:" << ownShip.getRadarConfigFile() << std::endl;
+        radarCalculation.load(ownShip.getRadarConfigFile());
+
         //set camera zoom to 1
         zoom = 1.0;
 

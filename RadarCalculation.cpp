@@ -23,6 +23,7 @@
 #include "RadarData.hpp"
 #include "Angles.hpp"
 #include "Constants.hpp"
+#include "IniFile.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -32,7 +33,7 @@ using namespace irr;
 
 RadarCalculation::RadarCalculation()
 {
-    //Radar display parameters, all 0-100
+    //Radar display parameters, all 0-100. Initial values:
     radarGain = 50;
     radarRainClutterReduction=0;
     radarSeaClutterReduction=0;
@@ -53,24 +54,65 @@ RadarCalculation::RadarCalculation()
     }
 
     currentScanAngle=0;
-
-    //Set radar ranges: Fixme: Should load from own ship radar.ini file
-    radarRangeNm.push_back(0.5);
-    radarRangeNm.push_back(1.0);
-    radarRangeNm.push_back(1.5);
-    radarRangeNm.push_back(3.0);
-    radarRangeNm.push_back(6.0);
-    radarRangeNm.push_back(12.0);
-    radarRangeNm.push_back(24.0);
-    //Initial radar range
-    radarRangeIndex=2;
-
-    scanAngleStep=2;
 }
 
 RadarCalculation::~RadarCalculation()
 {
     //dtor
+}
+
+void RadarCalculation::load(std::string radarConfigFile)
+{
+    //Load parameters from the radarConfig file (if it exists)
+    irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
+    if (numberOfRadarRanges==0) {
+        //Assume file doesn't exist, and load defaults
+
+        //Set radar ranges:
+        radarRangeNm.push_back(0.5);
+        radarRangeNm.push_back(1.0);
+        radarRangeNm.push_back(1.5);
+        radarRangeNm.push_back(3.0);
+        radarRangeNm.push_back(6.0);
+        radarRangeNm.push_back(12.0);
+        radarRangeNm.push_back(24.0);
+        //Initial radar range
+        radarRangeIndex=2;
+
+        scanAngleStep=2; //Radar angular resolution (integer degree)
+        radarScannerHeight = 2.0;
+        radarNoiseLevel = 0.000000000005;
+        radarSeaClutter = 0.000000001;
+        radarRainClutter = 0.00001;
+
+    } else {
+        //Load from file, but check plausibility
+
+        //TODO: IMPLEMENT THIS
+        //Use numberOfRadarRanges, already checked.
+
+        //Set radar ranges: Fixme: Should load from own ship radar.ini file
+        radarRangeNm.push_back(0.5);
+        radarRangeNm.push_back(1.0);
+        radarRangeNm.push_back(1.5);
+        radarRangeNm.push_back(3.0);
+        radarRangeNm.push_back(6.0);
+        radarRangeNm.push_back(12.0);
+        radarRangeNm.push_back(24.0);
+        //Initial radar range
+        radarRangeIndex=2;
+
+        //Radar angular resolution (integer degree)
+        scanAngleStep=2; //Fixme: Hardcoding
+        radarScannerHeight = 2.0;//Fixme: Hardcoding
+
+        //Fixme: Noise parameters currently hardcoded, should come from a radar.ini file
+        radarNoiseLevel = 0.000000000005;
+        radarSeaClutter = 0.000000001;
+        radarRainClutter = 0.00001;
+    }
+
+
 }
 
 void RadarCalculation::decreaseRange()
@@ -124,16 +166,15 @@ irr::f32 RadarCalculation::getRainClutter() const
 
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
 {
-    scan(terrain, ownShip, buoys, otherShips, weather, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)]
-    render(radarImage); //From scanArray[row (angle)][column (step)], render to radarImage (Fixme: hardcoded amplification factor)
+    scan(terrain, ownShip, buoys, otherShips, weather, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    render(radarImage); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     core::vector3df position = ownShip.getPosition();
-    irr::f32 radarScannerHeight = 2.0;//Fixme: Hardcoding
 
-    //Some tuning parameters
+    //Some tuning constants
     irr::f32 radarFactorLand=2.0;
     irr::f32 radarFactorVessel=0.0001;
 
@@ -154,7 +195,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     irr::u32 scansPerLoop = 80*deltaTime; //Fixme: Change this to get a constant configurable scan rate (within reason)
     if (scansPerLoop > 10) {scansPerLoop=10;} //Limit to reasonable bounds
     for(u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
-        f32 scanSlope = 0.0; //Slope at start of scan
+        f32 scanSlope = -0.5; //Slope at start of scan (in metres/metre) - Make slightly negative so vessel contacts close in get detected
         for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
@@ -175,22 +216,15 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             f32 minCellRange = localRange - cellLength/2.0;
             f32 maxCellRange = localRange + cellLength/2.0;
 
-            //get height, and adjustment for earth's curvature
+            //get adjustment of height for earth's curvature
             f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
-            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight;
-
-            f32 localSlope = radarHeight/localRange;
-            //Find height above previous maximum scan slope
-            f32 heightAboveLine = radarHeight - scanSlope*localRange;
 
             //Scan other contacts here
             //Fixme: Implementation needs completing later for ARPA to check if contact is detectable against clutter
             for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
-                //if( std::abs(it->relX-relX)<50.0 && std::abs(it->relZ-relZ)<50.0 ) {scanArray[currentScanAngle][currentStep] = 1.0;}
                 f32 contactHeightAboveLine = (it->height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
-                    //if( std::abs(it->relX-relX)<50.0 && std::abs(it->relZ-relZ)<50.0 ) {scanArray[currentScanAngle][currentStep] = 1.0;} //Initial test implementation
                     //Start of B3D code
                     if ((it->range >= minCellRange && it->range <= maxCellRange) || (it->minRange >= minCellRange && it->minRange <= maxCellRange) || (it->maxRange >= minCellRange && it->maxRange <= maxCellRange) || (it->minRange < minCellRange && it->maxRange > maxCellRange)) {//Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
                         if ((Angles::isAngleBetween(it->angle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(it->minAngle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(it->maxAngle,minCellAngle,maxCellAngle)) || ( Angles::normaliseAngle(it->minAngle-minCellAngle) > 270 && Angles::normaliseAngle(it->maxAngle-maxCellAngle) < 90)) {//Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
@@ -236,7 +270,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
                                 */
                                 //if a target entirely covers the angle of a cell, then use its blocking height and increase radarHeight, so it blocks reflections from behind
                                 if ( Angles::normaliseAngle(it->minAngle-minCellAngle) > 270 && Angles::normaliseAngle(it->maxAngle-maxCellAngle) < 90) {
-                                    //reset maxRadarHeight to new value if the solid height is higher
+                                    //reset scanSlope to new value if the solid height is higher
                                     scanSlope = std::max(scanSlope,(it->solidHeight-radarScannerHeight-dropWithCurvature)/localRange);
 
                                 }
@@ -250,14 +284,18 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             }
 
             //Add land scan
-            if (heightAboveLine>0) {
+            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight;
+            f32 localSlope = radarHeight/localRange;
+            f32 heightAboveLine = radarHeight - scanSlope*localRange; //Find height above previous maximum scan slope
+
+            if (heightAboveLine>0 && localSlope>0) {
                 f32 radarLocalGradient = heightAboveLine/cellLength;
                 scanSlope = localSlope; //Highest so far on scan
                 scanArray[currentScanAngle][currentStep] += radarFactorLand*std::atan(radarLocalGradient)*(2/PI)/std::pow(localRange/M_IN_NM,3); //make a reflection off a plane wall at 1nm have a magnitude of 1*radarFactorLand
             }
 
-            //ToDo Add radar noise
-            scanArray[currentScanAngle][currentStep] += radarNoise(0.000000000005,0.000000001,0.00001,weather,localRange,currentScanAngle,0,scanSlope,0); //FIXME: HARDCODING
+            //Add radar noise
+            scanArray[currentScanAngle][currentStep] += radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,0); //FIXME: Needs rain intensity and wind direction
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
 
@@ -278,9 +316,9 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             if (intensityGradient<0) {intensityGradient=0;}
 
             irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanAngle][currentStep]*(1-rainFilter);
-            irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;//FIXME: Check if gain should increase with distance
-            //take log of signal
+            irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;
 
+            //take log (natural) of signal
             scanArrayAmplified[currentScanAngle][currentStep] = log(filteredSignal*radarLocalGain);
 
         } //End of for loop scanning out
@@ -328,6 +366,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
                 s32 pixelColour=255*(scanArrayAmplified[scanAngle][currentStep]);
                 if (pixelColour>255) {pixelColour = 255;}
                 if (pixelColour<0)   {pixelColour =   0;}
+                //Todo: Note that the colour is hardcoded into the following command, drawing as (R,G,B = intensity, intensity, 0), i.e. Yellow
                 drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
             }
         }
@@ -420,33 +459,29 @@ irr::f32 RadarCalculation::radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSe
 
 	if (radarRange != 0) {
 
-		irr::f32 randomValue;
-		irr::f32 randomValueSea;
-		irr::f32 randomValueWithTail=0;
-		irr::f32 randomValueWithTailSea=0;
-		irr::f32 randomValueWithTailRain=0;
-
-		randomValue = (irr::f32)rand()/RAND_MAX; //store this so we can manipulate the random distribution
-		randomValueSea = (irr::f32)rand()/RAND_MAX; //different value for sea clutter
+		irr::f32 randomValue = (irr::f32)rand()/RAND_MAX; //store this so we can manipulate the random distribution;
+		irr::f32 randomValueSea = (irr::f32)rand()/RAND_MAX; //different value for sea clutter;
 
 		//reshape the uniform random distribution into one with an infinite tail up to high values
+		irr::f32 randomValueWithTail=0;
 		if (randomValue > 0) {
             //3rd power is to shape distribution so sufficient high energy returns are generated
 			randomValueWithTail = randomValue * pow( (1/randomValue) - 1, 3);
 		}
 
 		//same for sea clutter noise
+		irr::f32 randomValueWithTailSea=0;
 		if (randomValueSea > 0) {
-            //3rd power is to shape distribution so sufficient high energy returns are generated
-			randomValueWithTailSea = randomValueSea * pow((1/randomValueSea) - 1, 3);
+            if (radarInclinationAngle > 0) {
+                randomValueWithTailSea = 0; //if radar is scanning upwards, must be above sea surface, so don't add clutter
+            } else {
+                //3rd power is to shape distribution so sufficient high energy returns are generated
+                randomValueWithTailSea = randomValueSea * pow((1/randomValueSea) - 1, 3);
+            }
 		}
 
-		//less high power returns for rain clutter - roughly gaussian
-		randomValueWithTailRain = ((irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX)/4.0;
-
-		if (radarInclinationAngle > 0) {
-            randomValueWithTailSea = 0; //if radar is scanning upwards, must be above sea surface, so don't add clutter
-		}
+		//less high power returns for rain clutter - roughly gaussian, so get an average of independent random numbers
+		irr::f32 randomValueWithTailRain = ((irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX)/4.0;
 
 		//Apply directional correction to the clutter, so most is upwind, some is downwind. Mean value = 1
 		irr::f32 relativeWindAngle = (windDirectionDeg - radarBrgDeg)*RAD_IN_DEG;

@@ -341,7 +341,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.minAngle=std::min(relAngle1,relAngle2);
     radarData.maxAngle=std::max(relAngle1,relAngle2);
 
-    //Initial defaults: Will need changing with full implementation
+    //Initial defaults: Fixme: Will need changing with full implementation
     radarData.hidden=false;
     radarData.racon=""; //Racon code if set
     radarData.raconOffsetTime=0.0;
