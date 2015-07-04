@@ -36,7 +36,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         loopNumber = 0;
 
         //construct path to scenario
-        std::string scenarioPath = "Scenarios/"; //Fixme: Think about proper path handling?
+        std::string scenarioPath = "Scenarios/"; //Fixme: Should be a parameter, and duplicated in ScenarioChoice.cpp
         scenarioPath.append(scenarioName);
 
         //Read world file name from scenario:

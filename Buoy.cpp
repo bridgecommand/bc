@@ -19,6 +19,8 @@
 #include "Angles.hpp"
 #include "IniFile.hpp"
 
+#include <iostream>
+
 using namespace irr;
 
 Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr)
@@ -41,7 +43,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
         buoyScale = 1.0; //Default if not set
     }
 
-    std::string buoyFullPath = "Models/Buoy/"; //FIXME: Use proper path handling
+    std::string buoyFullPath = "Models/Buoy/";
     buoyFullPath.append(name);
     buoyFullPath.append("/");
     buoyFullPath.append(buoyFileName);
@@ -50,7 +52,8 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
 	//add to scene node
 	if (buoyMesh==0) {
-        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        //Failed to load mesh - load with dummy and continue
+        std::cout << "Failed to load buoy model " << buoyFullPath << std::endl;
         buoy = smgr->addCubeSceneNode(0.1);
     } else {
         buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );

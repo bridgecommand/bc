@@ -45,7 +45,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
 
-    std::string shipFullPath = "Models/Othership/"; //FIXME: Use proper path handling
+    std::string shipFullPath = "Models/Othership/";
     shipFullPath.append(name);
     shipFullPath.append("/");
     shipFullPath.append(shipFileName);
@@ -57,13 +57,14 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     core::matrix4 transformMatrix;
     transformMatrix.setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     transformMatrix.setTranslation(core::vector3df(0,yCorrection*scaleFactor,0));
-    smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
 
     //add to scene node
 	if (shipMesh==0) {
-        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        //Failed to load mesh - load with dummy and continue
+        std::cout << "Failed to load other ship model " << shipFullPath << std::endl;
         ship = smgr->addCubeSceneNode(0.1);
     } else {
+        smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
         ship = smgr->addMeshSceneNode( shipMesh, 0, -1);
     }
 

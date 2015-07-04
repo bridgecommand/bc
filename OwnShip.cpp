@@ -49,7 +49,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
 
     //get the model file
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
-    std::string ownShipFullPath = "Models/Ownship/"; //FIXME: Use proper path handling
+    std::string ownShipFullPath = "Models/Ownship/";
                 ownShipFullPath.append(ownShipName);
                 ownShipFullPath.append("/");
                 ownShipFullPath.append(ownShipFileName);
@@ -136,18 +136,15 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     core::matrix4 transformMatrix;
     transformMatrix.setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     transformMatrix.setTranslation(core::vector3df(0,yCorrection*scaleFactor,0));
-    smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
 
     //Make mesh scene node
     if (shipMesh==0) {
-        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        //Failed to load mesh - load with dummy and continue
+        std::cout << "Failed to load own ship model " << ownShipFullPath << std::endl;
         ship = smgr->addCubeSceneNode(0.1);
     } else {
-        ship = smgr->addMeshSceneNode(
-                        shipMesh,
-                        0,
-                        -1,
-                        core::vector3df(0,0,0));
+        smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
+        ship = smgr->addMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
     }
 
     ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting

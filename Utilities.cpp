@@ -20,9 +20,6 @@
 #include <locale>
 #include <sstream>
 
-#include <iostream> //Fixme: Debug only
-
-
 namespace Utilities
 {
     void to_lower(std::string& toConvert) {

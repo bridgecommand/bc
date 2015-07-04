@@ -35,7 +35,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
-    getScenarioList(scenarioList,"Scenarios/"); //Populate list //Fixme: Scenarios path duplicated here and in SimulationModel
+    getScenarioList(scenarioList,"Scenarios/"); //Populate list //Fixme: Should be a parameter, and duplicated in SimulationModel.cpp
 
     //Get screen width
     u32 su = driver->getScreenSize().Width;

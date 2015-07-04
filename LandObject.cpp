@@ -17,6 +17,8 @@
 #include "LandObject.hpp"
 #include "IniFile.hpp"
 
+#include <iostream>
+
 using namespace irr;
 
 LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr)
@@ -39,7 +41,7 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
         objectScale = 1.0; //Default if not set
     }
 
-    std::string objectFullPath = "Models/LandObject/"; //FIXME: Use proper path handling
+    std::string objectFullPath = "Models/LandObject/";
     objectFullPath.append(name);
     objectFullPath.append("/");
     objectFullPath.append(objectFileName);
@@ -48,7 +50,8 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());
 	//add to scene node
 	if (objectMesh==0) {
-        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
+        //Failed to load mesh - load with dummy and continue
+        std::cout << "Failed to load land object model " << objectFullPath << std::endl;
         landObject = smgr->addCubeSceneNode(0.1);
     } else {
         landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location );
