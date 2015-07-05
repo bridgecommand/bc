@@ -28,12 +28,13 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib> //For rand()
+#include <algorithm> //For sort()
 
 using namespace irr;
 
 RadarCalculation::RadarCalculation()
 {
-    //Radar display parameters, all 0-100. Initial values:
+    //Initial values for controls, all 0-100:
     radarGain = 50;
     radarRainClutterReduction=0;
     radarSeaClutterReduction=0;
@@ -77,7 +78,7 @@ void RadarCalculation::load(std::string radarConfigFile)
         radarRangeNm.push_back(12.0);
         radarRangeNm.push_back(24.0);
         //Initial radar range
-        radarRangeIndex=2;
+        radarRangeIndex=3;
 
         scanAngleStep=2; //Radar angular resolution (integer degree)
         radarScannerHeight = 2.0;
@@ -86,33 +87,34 @@ void RadarCalculation::load(std::string radarConfigFile)
         radarRainClutter = 0.00001;
 
     } else {
-        //Load from file, but check plausibility
+        //Load from file, but check plausibility where required
 
-        //TODO: IMPLEMENT THIS
-        //Use numberOfRadarRanges, already checked.
+        //Use numberOfRadarRanges, which we know is at least 1, to fill the radarRangeNm vector
+        for (int i = 1; i <= numberOfRadarRanges; i++) {
+            irr::f32 thisRadarRange = IniFile::iniFileTof32(radarConfigFile,IniFile::enumerate1("RadarRange",i));
+            if (thisRadarRange<=0) {thisRadarRange = 1;} //Check value is reasonable
+            radarRangeNm.push_back(thisRadarRange);
+        }
+        std::sort(radarRangeNm.begin(), radarRangeNm.end());
 
-        //Set radar ranges: Fixme: Should load from own ship radar.ini file
-        radarRangeNm.push_back(0.5);
-        radarRangeNm.push_back(1.0);
-        radarRangeNm.push_back(1.5);
-        radarRangeNm.push_back(3.0);
-        radarRangeNm.push_back(6.0);
-        radarRangeNm.push_back(12.0);
-        radarRangeNm.push_back(24.0);
         //Initial radar range
-        radarRangeIndex=2;
+        radarRangeIndex=numberOfRadarRanges/2;
 
         //Radar angular resolution (integer degree)
-        scanAngleStep=2; //Fixme: Hardcoding
-        radarScannerHeight = 2.0;//Fixme: Hardcoding
+        scanAngleStep=IniFile::iniFileTof32(radarConfigFile,"radar_sensitivity");
+        if (scanAngleStep < 1 || scanAngleStep > 180) {scanAngleStep = 2;}
 
-        //Fixme: Noise parameters currently hardcoded, should come from a radar.ini file
-        radarNoiseLevel = 0.000000000005;
-        radarSeaClutter = 0.000000001;
-        radarRainClutter = 0.00001;
+        //Radar scanner height (Metres)
+        radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
+
+        //Noise parameters
+        radarNoiseLevel = IniFile::iniFileTof32(radarConfigFile,"radar_noise");
+        radarSeaClutter = IniFile::iniFileTof32(radarConfigFile,"radar_sea_clutter");
+        radarRainClutter =IniFile::iniFileTof32(radarConfigFile,"radar_rain_clutter");
+        if (radarNoiseLevel < 0) {radarNoiseLevel = 0.000000000005;}
+        if (radarSeaClutter < 0) {radarSeaClutter = 0.000000001;}
+        if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
     }
-
-
 }
 
 void RadarCalculation::decreaseRange()
