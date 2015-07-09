@@ -74,6 +74,10 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     length = ship->getBoundingBox().getExtent().Z;
     height = ship->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight"); //FIXME: Note in documentation that this is height above waterline in model units
+    if (solidHeight == 0) {
+        solidHeight = 0.5*height; //Default if not set (Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default)
+    }
 
     //store initial x,y,z positions
     xPos = location.X;
@@ -326,7 +330,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.heading = getHeading();
 
     radarData.height=getHeight();
-    radarData.solidHeight=0.5*radarData.height; //Fixme: Allow this to be set as a parameter.
+    radarData.solidHeight=solidHeight;
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
     radarData.rcs=getRCS();

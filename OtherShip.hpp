@@ -54,6 +54,7 @@ class OtherShip : public Ship
         std::vector<NavLight> navLights;
         irr::f32 length; //For radar calculation
         irr::f32 height; //For radar
+        irr::f32 solidHeight; //For radar
         irr::f32 rcs;
         std::vector<Leg>::size_type findCurrentLeg(irr::f32 scenarioTime);
 };
