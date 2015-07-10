@@ -65,6 +65,7 @@ private:
     irr::gui::IGUIScrollBar* stbdScrollbar;
     irr::gui::IGUIScrollBar* rudderScrollbar;
     irr::gui::IGUIStaticText* dataDisplay;
+    irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIButton* increaseRangeButton;
@@ -93,6 +94,9 @@ private:
     Lang* language;
 
     void updateVisibility();
+    std::wstring f32To1dp(irr::f32 value);
+    std::wstring f32To2dp(irr::f32 value);
+    std::wstring f32To3dp(irr::f32 value);
 
 };
 

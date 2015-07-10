@@ -86,6 +86,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
+        radarText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.010*sh,0.232*su,0.100*sh),true,true,mainRadarTab);
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.110*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.220*sh,0.055*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
         radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.110*sh,0.085*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
@@ -148,6 +149,30 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         showInterfaceButton->setVisible(!showInterface);
     }
 
+    std::wstring GUIMain::f32To1dp(irr::f32 value)
+    {
+        //Convert a floating point value to a wstring, with 1dp
+        char tempStr[100];
+        snprintf(tempStr,100,"%.1f",value);
+        return std::wstring(tempStr, tempStr+strlen(tempStr));
+    }
+
+    std::wstring GUIMain::f32To2dp(irr::f32 value)
+    {
+        //Convert a floating point value to a wstring, with 2dp
+        char tempStr[100];
+        snprintf(tempStr,100,"%.2f",value);
+        return std::wstring(tempStr, tempStr+strlen(tempStr));
+    }
+
+    std::wstring GUIMain::f32To3dp(irr::f32 value)
+    {
+        //Convert a floating point value to a wstring, with 3dp
+        char tempStr[100];
+        snprintf(tempStr,100,"%.3f",value);
+        return std::wstring(tempStr, tempStr+strlen(tempStr));
+    }
+
     void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 rain, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
     {
         //Update scroll bars
@@ -175,26 +200,29 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     void GUIMain::drawGUI()
     {
+        //Remove big paused button when the simulation is started.
+        if (pausedButton) {
+            if (!guiPaused) {
+                pausedButton->remove();
+                pausedButton = 0;
+            }
+        }
+
         //update heading display element
         core::stringw displayText = language->translate("hdg");
-        displayText.append(core::stringw(guiHeading));
+        displayText.append(f32To1dp(guiHeading).c_str());
         displayText.append(L"\n");
 
         displayText.append(language->translate("viewAng"));
-        displayText.append(core::stringw(viewHdg));
+        displayText.append(f32To1dp(viewHdg).c_str());
         displayText.append(L"\n");
 
         displayText.append(language->translate("spd"));
-        displayText.append(core::stringw(guiSpeed));
+        displayText.append(f32To1dp(guiSpeed).c_str());
         displayText.append(L"\n");
 
         displayText.append(language->translate("depth"));
-        displayText.append(core::stringw(guiDepth));
-        displayText.append(L"\n");
-
-        displayText.append(language->translate("radar"));
-        displayText.append(core::stringw(guiRadarRangeNm));
-        displayText.append(language->translate("nm"));
+        displayText.append(f32To1dp(guiDepth).c_str());
         displayText.append(L"\n");
 
         displayText.append(core::stringw(guiTime.c_str()));
@@ -207,13 +235,12 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         }
         dataDisplay->setText(displayText.c_str());
 
-        //Remove big paused button when the simulation is started.
-        if (pausedButton) {
-            if (!guiPaused) {
-                pausedButton->remove();
-                pausedButton = 0;
-            }
-        }
+        //add radar text (reuse the displayText)
+        displayText = language->translate("range");
+        displayText.append(f32To1dp(guiRadarRangeNm).c_str());
+        displayText.append(language->translate("nm"));
+        displayText.append(L"\n");
+        radarText->setText(displayText.c_str());
 
         guienv->drawAll();
 
