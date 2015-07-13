@@ -110,6 +110,10 @@ public:
     void setRadarGain(irr::f32 value);
     void setRadarClutter(irr::f32 value);
     void setRadarRain(irr::f32 value);
+    void increaseRadarEBLRange();
+    void decreaseRadarEBLRange();
+    void increaseRadarEBLBrg();
+    void decreaseRadarEBLBrg();
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

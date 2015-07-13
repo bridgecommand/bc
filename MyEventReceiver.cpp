@@ -124,6 +124,26 @@ using namespace irr;
                     model->toggleZoom();
                 }
 
+                if (id == GUIMain::GUI_ID_RADAR_EBL_LEFT_BUTTON)
+                {
+                    model->decreaseRadarEBLBrg();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_EBL_RIGHT_BUTTON)
+                {
+                    model->increaseRadarEBLBrg();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_EBL_UP_BUTTON)
+                {
+                    model->increaseRadarEBLRange();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_EBL_DOWN_BUTTON)
+                {
+                    model->decreaseRadarEBLRange();
+                }
+
             }
 
 

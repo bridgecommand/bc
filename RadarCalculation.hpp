@@ -42,6 +42,12 @@ class RadarCalculation
         irr::f32 getGain() const;
         irr::f32 getClutter() const;
         irr::f32 getRainClutter() const;
+        irr::f32 getEBLRangeNm() const;
+        irr::f32 getEBLBrg() const;
+        void increaseEBLRange();
+        void decreaseEBLRange();
+        void increaseEBLBrg();
+        void decreaseEBLBrg();
         void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime);
 
     private:
@@ -60,6 +66,9 @@ class RadarCalculation
         irr::f32 radarNoiseLevel;
         irr::f32 radarSeaClutter;
         irr::f32 radarRainClutter;
+        //Parameters for EBL
+        irr::f32 EBLRangeNm;
+        irr::f32 EBLBrg;
 
         std::vector<irr::f32> radarRangeNm;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime);

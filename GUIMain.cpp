@@ -89,6 +89,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.010*sh,0.232*su,0.100*sh),true,true,mainRadarTab);
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.110*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.220*sh,0.055*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        eblLeftButton = guienv->addButton(core::rect<s32>(0.137*su,0.200*sh,0.167*su,0.230*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,L"L"); //FIXME: Add proper caption
+        eblRightButton = guienv->addButton(core::rect<s32>(0.197*su,0.200*sh,0.227*su,0.230*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,L"R");
+        eblUpButton = guienv->addButton(core::rect<s32>(0.167*su,0.170*sh,0.197*su,0.200*sh),mainRadarTab,GUI_ID_RADAR_EBL_UP_BUTTON,L"U");
+        eblDownButton = guienv->addButton(core::rect<s32>(0.167*su,0.230*sh,0.197*su,0.260*sh),mainRadarTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,L"D");
         radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.110*sh,0.085*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.085*su,0.110*sh,0.110*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.110*su,0.110*sh,0.135*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
@@ -173,7 +177,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         return std::wstring(tempStr, tempStr+strlen(tempStr));
     }
 
-    void GUIMain::updateGuiData(f32 hdg, f32 viewAngle, f32 spd, f32 portEng, f32 stbdEng, f32 rudder, f32 depth, f32 weather, f32 rain, f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -196,6 +200,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiRadarRangeNm = radarRangeNm;
         guiTime = currentTime;
         guiPaused = paused;
+
+        //update EBL Data
+        this->guiRadarEBLBrg = guiRadarEBLBrg;
+        this->guiRadarEBLRangeNm = guiRadarEBLRangeNm;
     }
 
     void GUIMain::drawGUI()
@@ -262,5 +270,19 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
             core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
             device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0));
+
+            //draw an EBL line
+            s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
+            s32 deltaYEBL = -0.2*sh*cos(core::DEGTORAD*guiRadarEBLBrg);
+            core::position2d<s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
+            device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(128, 128, 128, 0));
+            //draw EBL range
+            if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
+                irr::f32 eblRangePx = 0.2*sh*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
+                irr::u8 noSegments = eblRangePx/2;
+                if (noSegments < 10) {noSegments=10;}
+                device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(128, 128, 128, 0),noSegments); //An n segment polygon, to approximate a circle
+            }
+
         }
     }

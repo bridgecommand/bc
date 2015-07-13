@@ -435,6 +435,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRainClutter(value);
     }
 
+    void SimulationModel::increaseRadarEBLRange() {radarCalculation.increaseEBLRange();}
+    void SimulationModel::decreaseRadarEBLRange() {radarCalculation.decreaseEBLRange();}
+    void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
+    void SimulationModel::decreaseRadarEBLBrg() {radarCalculation.decreaseEBLBrg();}
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();
@@ -557,6 +562,6 @@ SimulationModel::~SimulationModel()
         bool paused = device->getTimer()->getSpeed()==0.0;
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
     }
 

@@ -39,6 +39,9 @@ RadarCalculation::RadarCalculation()
     radarRainClutterReduction=0;
     radarSeaClutterReduction=0;
 
+    EBLRangeNm=0;
+    EBLBrg=0;
+
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
@@ -164,6 +167,53 @@ irr::f32 RadarCalculation::getClutter() const
 irr::f32 RadarCalculation::getRainClutter() const
 {
     return radarRainClutterReduction;
+}
+
+irr::f32 RadarCalculation::getEBLRangeNm() const
+{
+    return EBLRangeNm;
+}
+
+irr::f32 RadarCalculation::getEBLBrg() const
+{
+    return EBLBrg;
+}
+
+void RadarCalculation::increaseEBLRange()
+{
+    if (EBLRangeNm >= 1) {
+        EBLRangeNm += 0.1;
+    } else {
+        EBLRangeNm += 0.01;
+    }
+}
+
+void RadarCalculation::decreaseEBLRange()
+{
+    if (EBLRangeNm > 1) {
+        EBLRangeNm -= 0.1;
+    } else {
+        EBLRangeNm -= 0.01;
+    }
+    if (EBLRangeNm < 0) {
+        EBLRangeNm = 0;
+    }
+}
+
+void RadarCalculation::increaseEBLBrg()
+{
+    EBLBrg++;
+    if (EBLBrg >= 360) {
+        EBLBrg -= 360;
+    }
+}
+
+void RadarCalculation::decreaseEBLBrg()
+{
+    EBLBrg--;
+    if (EBLBrg < 0) {
+        EBLBrg += 360;
+    }
 }
 
 void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)

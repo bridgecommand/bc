@@ -39,6 +39,10 @@ public:
         GUI_ID_RADAR_GAIN_SCROLL_BAR,
         GUI_ID_RADAR_CLUTTER_SCROLL_BAR,
         GUI_ID_RADAR_RAIN_SCROLL_BAR,
+        GUI_ID_RADAR_EBL_LEFT_BUTTON,
+        GUI_ID_RADAR_EBL_RIGHT_BUTTON,
+        GUI_ID_RADAR_EBL_UP_BUTTON,
+        GUI_ID_RADAR_EBL_DOWN_BUTTON,
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
@@ -50,7 +54,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
-    void updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, std::string currentTime, bool paused);
+    void updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused);
     void drawGUI();
 
 
@@ -67,6 +71,10 @@ private:
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIButton* pausedButton;
+    irr::gui::IGUIButton* eblLeftButton;
+    irr::gui::IGUIButton* eblRightButton;
+    irr::gui::IGUIButton* eblUpButton;
+    irr::gui::IGUIButton* eblDownButton;
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIButton* increaseRangeButton;
     irr::gui::IGUIButton* decreaseRangeButton;
@@ -87,6 +95,8 @@ private:
     irr::f32 guiRadarGain;
     irr::f32 guiRadarClutter;
     irr::f32 guiRadarRain;
+    irr::f32 guiRadarEBLBrg;
+    irr::f32 guiRadarEBLRangeNm;
     std::string guiTime;
     bool guiPaused;
     bool showInterface;
