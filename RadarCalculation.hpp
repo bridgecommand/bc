@@ -22,6 +22,8 @@
 #include <vector>
 #include <string>
 
+#include <ctime> //To check time elapsed between changing EBL when button held down
+
 class Terrain;
 class OwnShip;
 class Buoys;
@@ -69,6 +71,7 @@ class RadarCalculation
         //Parameters for EBL
         irr::f32 EBLRangeNm;
         irr::f32 EBLBrg;
+        clock_t EBLLastUpdated;
 
         std::vector<irr::f32> radarRangeNm;
         void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime);

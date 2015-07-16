@@ -42,6 +42,8 @@ RadarCalculation::RadarCalculation()
     EBLRangeNm=0;
     EBLBrg=0;
 
+    EBLLastUpdated = clock();
+
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
@@ -181,39 +183,59 @@ irr::f32 RadarCalculation::getEBLBrg() const
 
 void RadarCalculation::increaseEBLRange()
 {
-    //Todo: Only trigger this if it hasn't been called in the last N ms.
-    if (EBLRangeNm >= 1) {
-        EBLRangeNm += 0.1;
-    } else {
-        EBLRangeNm += 0.01;
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        EBLLastUpdated = clockNow;
+
+        EBLRangeNm += getRangeNm()/100;
+
     }
 }
 
 void RadarCalculation::decreaseEBLRange()
 {
-    if (EBLRangeNm > 1) {
-        EBLRangeNm -= 0.1;
-    } else {
-        EBLRangeNm -= 0.01;
-    }
-    if (EBLRangeNm < 0) {
-        EBLRangeNm = 0;
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        EBLLastUpdated = clockNow;
+
+        EBLRangeNm -= getRangeNm()/100;
+        if (EBLRangeNm<0) {
+            EBLRangeNm = 0;
+        }
     }
 }
 
 void RadarCalculation::increaseEBLBrg()
 {
-    EBLBrg++;
-    if (EBLBrg >= 360) {
-        EBLBrg -= 360;
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        EBLLastUpdated = clockNow;
+
+        EBLBrg++;
+        if (EBLBrg >= 360) {
+            EBLBrg -= 360;
+        }
     }
 }
 
 void RadarCalculation::decreaseEBLBrg()
 {
-    EBLBrg--;
-    if (EBLBrg < 0) {
-        EBLBrg += 360;
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        EBLLastUpdated = clockNow;
+
+        EBLBrg--;
+        if (EBLBrg < 0) {
+            EBLBrg += 360;
+        }
     }
 }
 
