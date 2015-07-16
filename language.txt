@@ -17,6 +17,8 @@ spd="Speed: "
 depth="Depth: "
 zoom="Zoom"
 range="Range: "
+ebl="EBL: "
+deg="°"
 
 radarMainTab="Main"
 radarPITab="PI"

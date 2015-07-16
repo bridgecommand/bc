@@ -181,6 +181,7 @@ irr::f32 RadarCalculation::getEBLBrg() const
 
 void RadarCalculation::increaseEBLRange()
 {
+    //Todo: Only trigger this if it hasn't been called in the last N ms.
     if (EBLRangeNm >= 1) {
         EBLRangeNm += 0.1;
     } else {

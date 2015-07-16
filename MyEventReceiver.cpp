@@ -144,10 +144,10 @@ using namespace irr;
                     model->decreaseRadarEBLRange();
                 }
 
-            }
+            } //Button clicked
 
+        } //GUI Event
 
-        }
 
         //From keyboard
         if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)

@@ -107,6 +107,7 @@ private:
     std::wstring f32To1dp(irr::f32 value);
     std::wstring f32To2dp(irr::f32 value);
     std::wstring f32To3dp(irr::f32 value);
+    bool manuallyTriggerClick(irr::gui::IGUIButton* button);
 
 };
 

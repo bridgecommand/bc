@@ -177,6 +177,16 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         return std::wstring(tempStr, tempStr+strlen(tempStr));
     }
 
+    bool GUIMain::manuallyTriggerClick(irr::gui::IGUIButton* button)
+    {
+        irr::SEvent triggerUpdateEvent;
+        triggerUpdateEvent.EventType = EET_GUI_EVENT;
+        triggerUpdateEvent.GUIEvent.Caller = button;
+        triggerUpdateEvent.GUIEvent.Element = 0;
+        triggerUpdateEvent.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED ;
+        return device->postEventFromUser(triggerUpdateEvent);
+    }
+
     void GUIMain::updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused)
     {
         //Update scroll bars
@@ -248,7 +258,19 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(f32To1dp(guiRadarRangeNm).c_str());
         displayText.append(language->translate("nm"));
         displayText.append(L"\n");
+        displayText.append(language->translate("ebl"));
+        displayText.append(f32To2dp(guiRadarEBLRangeNm).c_str());
+        displayText.append(language->translate("nm"));
+        displayText.append(L"/");
+        displayText.append(f32To1dp(guiRadarEBLBrg).c_str());
+        displayText.append(language->translate("deg"));
         radarText->setText(displayText.c_str());
+
+        //manually trigger gui event if buttons are held down
+        if (eblUpButton->isPressed()) {manuallyTriggerClick(eblUpButton);}
+        if (eblDownButton->isPressed()) {manuallyTriggerClick(eblDownButton);}
+        if (eblLeftButton->isPressed()) {manuallyTriggerClick(eblLeftButton);}
+        if (eblRightButton->isPressed()) {manuallyTriggerClick(eblRightButton);}
 
         guienv->drawAll();
 
