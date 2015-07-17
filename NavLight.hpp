@@ -18,8 +18,6 @@
 #define __NAVLIGHT_HPP_INCLUDED__
 
 #include <string>
-#include <cmath> //For fmod()
-#include <cstdlib> //For rand()
 
 #include "irrlicht.h"
 

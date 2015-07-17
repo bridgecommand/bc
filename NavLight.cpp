@@ -18,6 +18,8 @@
 #include "Angles.hpp"
 
 #include <iostream>
+#include <cmath> //For fmod()
+#include <cstdlib> //For rand()
 
 using namespace irr;
 
