@@ -264,7 +264,27 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
         //Turn dynamics
         rateOfTurn += (rudderTorque + engineTorque + propWalkTorque - dragTorque)*deltaTime/inertia; //Rad/s
+
+        //slow down if aground
+        if (getDepth()<0) { //Todo: Have a separate groundingDepth(), that checks min depth at centre, and 3/4 ahead and astern of centre
+            if (spd>0) {
+                spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
+            }
+            if (spd<0) {
+                spd = fmax(-0.1,spd);
+            }
+
+            if (rateOfTurn>0) {
+                rateOfTurn = fmin(0.01,rateOfTurn);//Rate of turn in rad/s, currently hardcoded for 0.01 rad/s
+            }
+            if (rateOfTurn<0) {
+                rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
+            }
+        }
+
+        //Apply turn
         hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
+
     } //End of engine mode
 
     //Normalise heading
