@@ -297,13 +297,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
             s32 deltaYEBL = -0.2*sh*cos(core::DEGTORAD*guiRadarEBLBrg);
             core::position2d<s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
-            device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(128, 128, 128, 0));
+            device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
             //draw EBL range
             if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
                 irr::f32 eblRangePx = 0.2*sh*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
                 irr::u8 noSegments = eblRangePx/2;
                 if (noSegments < 10) {noSegments=10;}
-                device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(128, 128, 128, 0),noSegments); //An n segment polygon, to approximate a circle
+                device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
             }
 
         }
