@@ -370,6 +370,16 @@ SimulationModel::~SimulationModel()
         return rainIntensity;
     }
 
+    void SimulationModel::lookUp()
+    {
+        camera.lookUp();
+    }
+
+    void SimulationModel::lookDown()
+    {
+        camera.lookDown();
+    }
+
     void SimulationModel::lookLeft()
     {
         camera.lookLeft();

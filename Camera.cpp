@@ -42,6 +42,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
     this->views = views;
     currentView = 0;
     lookAngle = 0;
+    lookUpAngle = 0;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -53,6 +54,24 @@ irr::core::vector3df Camera::getPosition() const
 {
     camera->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
     return camera->getAbsolutePosition();
+}
+
+void Camera::lookUp()
+{
+    lookUpAngle++;
+    if (lookUpAngle>40)
+    {
+        lookUpAngle=40;
+    }
+}
+
+void Camera::lookDown()
+{
+    lookUpAngle--;
+    if (lookUpAngle<-40)
+    {
+        lookUpAngle=-40;
+    }
 }
 
 void Camera::lookLeft()
@@ -76,21 +95,25 @@ void Camera::lookRight()
 void Camera::lookAhead()
 {
     lookAngle = 0;
+    lookUpAngle = 0;
 }
 
 void Camera::lookAstern()
 {
     lookAngle = 180;
+    lookUpAngle = 0;
 }
 
 void Camera::lookPort()
 {
     lookAngle = 270;
+    lookUpAngle = 0;
 }
 
 void Camera::lookStbd()
 {
     lookAngle = 90;
+    lookUpAngle = 0;
 }
 
 irr::f32 Camera::getLook() const
@@ -146,7 +169,7 @@ void Camera::update()
         m.setRotationDegrees(parent->getRotation());
 
         // transform forward vector of camera
-        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*lookAngle), 0.0f, 1.0f*std::cos(irr::core::DEGTORAD*lookAngle));
+        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*lookAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*lookAngle));
         m.transformVect(frv);
 
         // transform upvector of camera

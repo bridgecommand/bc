@@ -97,6 +97,8 @@ public:
     irr::f32 getWeather() const;
     void setRain(irr::f32 rainIntensity); //Range 0-10
     irr::f32 getRain() const;
+    void lookUp();
+    void lookDown();
     void lookLeft();
     void lookRight();
     void lookAhead();

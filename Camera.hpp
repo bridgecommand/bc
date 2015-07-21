@@ -33,6 +33,8 @@ class Camera
         void setHFOV(irr::f32 hFOV);
         void updateViewport(irr::f32 aspect);
         void setActive();
+        void lookUp();
+        void lookDown();
         void lookLeft();
         void lookRight();
         void lookAhead();
@@ -52,6 +54,7 @@ class Camera
         irr::u32 currentView;
         std::vector<irr::core::vector3df> views;
         irr::f32 lookAngle;
+        irr::f32 lookUpAngle;
         irr::f32 hFOV;//horizontal field of view (radians)
 };
 

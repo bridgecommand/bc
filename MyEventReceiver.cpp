@@ -212,11 +212,14 @@ using namespace irr;
                     case KEY_KEY_7:
                         model->setAccelerator(3600.0);
                         break;
-                    default:
-                        //don't do anything
-                        break;
 
                     //Camera look
+                    case KEY_UP:
+                        model->lookUp();
+                        break;
+                    case KEY_DOWN:
+                        model->lookDown();
+                        break;
                     case KEY_LEFT:
                         model->lookLeft();
                         break;
@@ -230,6 +233,10 @@ using namespace irr;
                     //toggle full screen 3d
                     case KEY_KEY_F:
                         gui->toggleShow2dInterface();
+                        break;
+
+                    default:
+                        //don't do anything
                         break;
                 }
             }
