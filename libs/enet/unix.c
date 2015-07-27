@@ -51,9 +51,11 @@
 //#ifndef HAS_SOCKLEN_T
 //typedef int socklen_t;
 //#endif
+#ifndef __APPLE__ //Added for Mac OS compilation
 #ifndef __socklen_t_defined
 typedef int socklen_t;
 #define __socklen_t_defined
+#endif
 #endif
 
 #ifndef MSG_NOSIGNAL

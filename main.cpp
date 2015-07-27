@@ -32,11 +32,33 @@
 #include <vector>
 #include <sstream>
 
+//Mac OS:
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
 int main()
 {
+
+    //Mac OS:
+    //Find starting folder
+	#ifdef __APPLE__
+    char exePath[1024];
+    uint32_t pathSize = sizeof(exePath);
+    std::string exeFolderPath = "";
+    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
+        std::cout << "ExePath: " << exePath << std::endl;
+        std::string exePathString(exePath);
+        size_t pos = exePathString.find_last_of("\\/");
+        if (std::string::npos != pos) {
+            exeFolderPath = exePathString.substr(0, pos);
+        }
+    }
+    //Todo: Think if we need to cd here so the .ini file gets read correctly
+	#endif
 
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
@@ -70,6 +92,16 @@ int main()
 
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
+
+    #ifdef __APPLE__
+    //Mac OS - cd back to original dir - seems to be changed during createDevice
+    io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem==0) {
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get filesystem" << std::endl;
+    }
+    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+    #endif
 
     //load language
     Lang language("language.txt");
@@ -149,6 +181,11 @@ int main()
         model.setMainCameraActive();
 
         smgr->drawAll();
+
+        //add in a delay to simulate a slow computer
+        //if (secondary) {
+        //    Sleep(150);
+        //}
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {

@@ -18,7 +18,11 @@ USERCPPFLAGS = -I./libs/enet/enet-1.3.11/include
 USERCXXFLAGS = -O3 -ffast-math
 #USERCXXFLAGS = -g -Wall
 # linker flags such as additional libraries and link paths
-USERLDFLAGS = 
+ifeq "$(PLATFORM)" "Darwin"
+USERLDFLAGS =  -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+else
+USERLDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
+endif
 
 ####
 #no changes necessary below this line
@@ -28,32 +32,21 @@ CPPFLAGS = -I$(IrrlichtHome)/include -I/usr/X11R6/include $(USERCPPFLAGS)
 CXXFLAGS = $(USERCXXFLAGS)
 LDFLAGS = $(USERLDFLAGS)
 
-#default target is Linux
-all: all_linux
-
-# target specific settings
-all_linux all_win32 static_win32: LDFLAGS += -L$(IrrlichtHome)/lib/$(SYSTEM) -lIrrlicht
-all_linux: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
-all_linux clean_linux: SYSTEM=Linux
-all_win32 clean_win32 static_win32: SYSTEM=Win32-gcc
-all_win32 clean_win32 static_win32: SUF=.exe
-static_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
-all_win32: LDFLAGS += -lopengl32 -lm
-static_win32: LDFLAGS += -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32
 # name of the binary - only valid for targets which set SYSTEM
 DESTPATH = $(BinPath)/$(Target)$(SUF)
 
-all_linux all_win32 static_win32:
+#default target is Linux
+all: 
+	LDFLAGS += -L$/libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht
+
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 
-clean: clean_linux clean_win32
+clean:
 	$(warning Cleaning...)
-
-clean_linux clean_win32:
 	@$(RM) $(DESTPATH)
 
-.PHONY: all all_win32 static_win32 clean clean_linux clean_win32
+.PHONY: all
 
 #multilib handling
 ifeq ($(HOSTTYPE), x86_64)
@@ -63,4 +56,3 @@ endif
 ifeq ($(HOSTTYPE), sun4)
 LDFLAGS += -lrt
 endif
-
