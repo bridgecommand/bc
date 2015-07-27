@@ -54,6 +54,8 @@ class OwnShip : public Ship
         irr::f32 rollAngle; //Roll Angle (deg)
         irr::f32 pitchPeriod; //Roll period (s)
         irr::f32 pitchAngle; //Roll Angle (deg)
+        irr::f32 buffetPeriod; //Yaw period (s)
+        irr::f32 buffet; //How much ship is buffeted by waves (undefined units)
         irr::f32 pitch; //(deg)
         irr::f32 roll; //(deg)
         irr::f32 portEngine; //-1 to + 1

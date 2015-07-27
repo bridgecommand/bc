@@ -22,6 +22,8 @@
 #include "IniFile.hpp"
 #include "Angles.hpp"
 
+#include <cstdlib> //For rand()
+
 using namespace irr;
 
 void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain)
@@ -80,7 +82,8 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     rollAngle = 2*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Roll Angle (deg @weather=1)
     pitchPeriod = 6; //Roll period (s)
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
-
+    buffetPeriod = 8; //Yaw period (s)
+    buffet = IniFile::iniFileTof32(shipIniFilename,"Buffet");
 
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
@@ -284,6 +287,12 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Apply turn
         hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
+
+        //Apply buffeting from waves
+        irr::f32 buffetAngle= buffet*weather*sin(scenarioTime*2*PI/buffetPeriod)*deltaTime;//Deg
+        buffetAngle = buffetAngle * (irr::f32)std::rand()/RAND_MAX;
+
+        hdg += buffetAngle;
 
     } //End of engine mode
 
