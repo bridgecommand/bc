@@ -38,7 +38,7 @@ public:
     Tide();
     virtual ~Tide();
     void load(const std::string& worldName);
-    void update(irr::u64 absoluteTime);
+    void update(uint64_t absoluteTime);
     irr::f32 getTideHeight();
 
 private:

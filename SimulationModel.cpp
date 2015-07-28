@@ -214,11 +214,11 @@ SimulationModel::~SimulationModel()
     //    //FIXME: Complete
     //}
 
-    irr::u64 SimulationModel::getTimestamp() const{
+    uint64_t SimulationModel::getTimestamp() const{
         return absoluteTime;
     }
 
-    irr::u64 SimulationModel::getTimeOffset() const { //The timestamp at the start of the first day of the scenario
+    uint64_t SimulationModel::getTimeOffset() const { //The timestamp at the start of the first day of the scenario
         return scenarioOffsetTime;
     }
 

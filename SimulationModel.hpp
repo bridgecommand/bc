@@ -75,8 +75,8 @@ public:
 
     //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
-    irr::u64 getTimestamp() const; //The unix timestamp in s
-    irr::u64 getTimeOffset() const; //The timestamp at the start of the first day of the scenario
+    uint64_t getTimestamp() const; //The unix timestamp in s
+    uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
     irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
     void     setTimeDelta(irr::f32 scenarioTime);
 
@@ -157,8 +157,8 @@ private:
     irr::u32 previousTime; //Computer clock time
     irr::f32 deltaTime;
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
-    irr::u64 scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-    irr::u64 absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
+    uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+    uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
     //Offset position handling
     irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this

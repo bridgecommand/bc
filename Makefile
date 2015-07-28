@@ -18,7 +18,8 @@ USERCPPFLAGS = -I./libs/enet/enet-1.3.11/include
 USERCXXFLAGS = -O3 -ffast-math
 #USERCXXFLAGS = -g -Wall
 # linker flags such as additional libraries and link paths
-ifeq "$(PLATFORM)" "Darwin"
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
 USERLDFLAGS =  -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 else
 USERLDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
@@ -31,14 +32,13 @@ endif
 CPPFLAGS = -I$(IrrlichtHome)/include -I/usr/X11R6/include $(USERCPPFLAGS)
 CXXFLAGS = $(USERCXXFLAGS)
 LDFLAGS = $(USERLDFLAGS)
+LDFLAGS += -L$/libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht
 
 # name of the binary - only valid for targets which set SYSTEM
 DESTPATH = $(BinPath)/$(Target)$(SUF)
 
 #default target is Linux
 all: 
-	LDFLAGS += -L$/libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht
-
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 

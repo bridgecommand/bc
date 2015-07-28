@@ -61,7 +61,7 @@ void Tide::load(const std::string& worldName) {
 
 }
 
-void Tide::update(irr::u64 absoluteTime) {
+void Tide::update(uint64_t absoluteTime) {
     //update tideHeight for current time (unix epoch time in s)
 
     tideHeight = 0;
