@@ -20,9 +20,9 @@ USERCXXFLAGS = -O3 -ffast-math
 # linker flags such as additional libraries and link paths
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-USERLDFLAGS =  -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -L./libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht
+USERLDFLAGS =  -L./libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 else
-USERLDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor -L$(IrrlichtHome)/lib/$(SYSTEM) -lIrrlicht
+USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 endif
 
 ####
