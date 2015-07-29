@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h> //for uint64_t
 
 class Tide {
 

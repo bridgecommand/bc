@@ -20,6 +20,7 @@
 #include <iostream> //For debugging
 #include <string>
 #include <vector>
+#include <stdint.h> //for uint64_t
 
 #include "irrlicht.h"
 
