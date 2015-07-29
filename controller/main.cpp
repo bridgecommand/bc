@@ -13,12 +13,34 @@
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 
+//Mac OS:
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
 int main (int argc, char ** argv)
 {
 
+    //Mac OS:
+    //Find starting folder
+    #ifdef __APPLE__
+    char exePath[1024];
+    uint32_t pathSize = sizeof(exePath);
+    std::string exeFolderPath = "";
+    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
+        std::cout << "ExePath: " << exePath << std::endl;
+        std::string exePathString(exePath);
+        size_t pos = exePathString.find_last_of("\\/");
+        if (std::string::npos != pos) {
+            exeFolderPath = exePathString.substr(0, pos);
+        }
+    }
+    //Todo: Think if we need to cd here so the .ini file gets read correctly
+    #endif
+    
     std::string iniFilename = "map.ini";
     u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
@@ -28,6 +50,17 @@ int main (int argc, char ** argv)
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
+    
+    
+    #ifdef __APPLE__
+    //Mac OS - cd back to original dir - seems to be changed during createDevice
+    io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem==0) {
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get filesystem" << std::endl;
+    }
+    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+    #endif
 
     //load language
     Lang language("languageController.txt");
