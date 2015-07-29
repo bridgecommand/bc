@@ -103,6 +103,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
 
+        //Tell gui to hide the second engine scroll bar if we have a single engine
+        if (ownShip.isSingleEngine()) {
+            gui->hideStbdEngineBar();
+        }
+
         //Todo: Set the radar parameters, based on the radar.ini file from the own ship
         //std::cout << "Radar file:" << ownShip.getRadarConfigFile() << std::endl;
         radarCalculation.load(ownShip.getRadarConfigFile());

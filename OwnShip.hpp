@@ -44,6 +44,7 @@ class OwnShip : public Ship
         irr::f32 getPortEngineRPM() const;
         irr::f32 getStbdEngineRPM() const;
         irr::f32 getRudder() const; //-30 to 30
+        bool isSingleEngine() const;
 
     protected:
     private:
@@ -60,6 +61,7 @@ class OwnShip : public Ship
         irr::f32 roll; //(deg)
         irr::f32 portEngine; //-1 to + 1
         irr::f32 stbdEngine; //-1 to + 1
+        bool singleEngine;
         irr::f32 rudder; //-30 to + 30
         //Dynamics parameters
         irr::f32 shipMass;

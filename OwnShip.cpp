@@ -93,6 +93,14 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     if (inertia == 0)
         {inertia = 2000;}
 
+    if (propellorSpacing==0) {
+        singleEngine=true;
+        maxForce *= 0.5; //Internally simulated with two equal engines, so halve the value
+        std::cout << "Single engine" << std::endl;
+    } else {
+        singleEngine=false;
+    }
+
     //Todo: Missing:
     //Number of engines
     //CentrifugalDriftEffect
@@ -213,6 +221,11 @@ irr::f32 OwnShip::getRudder() const
     return rudder;
 }
 
+bool OwnShip::isSingleEngine() const
+{
+    return singleEngine;
+}
+
 irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 {
     irr::f32 proportion = 0;
@@ -231,6 +244,9 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //Update spd and hdg with rudder and engine controls - assume two engines: Fixme: Should also work with single engine
         portThrust = portEngine * maxForce;
         stbdThrust = stbdEngine * maxForce;
+        if (singleEngine) {
+            stbdThrust = portThrust; //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
+        }
         if (portThrust<0) {portThrust*=asternEfficiency;}
         if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
         if (spd<0) { //Compensate for loss of sign when squaring

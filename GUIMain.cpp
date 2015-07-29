@@ -140,6 +140,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         updateVisibility();
     }
 
+    void GUIMain::hideStbdEngineBar()
+    {
+        stbdScrollbar->setVisible(false);
+    }
+
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
