@@ -121,6 +121,11 @@ irr::f32 Camera::getLook() const
     return lookAngle;
 }
 
+irr::f32 Camera::getLookUp() const
+{
+    return lookUpAngle;
+}
+
 void Camera::changeView()
 {
     currentView++;

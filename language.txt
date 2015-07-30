@@ -19,6 +19,7 @@ zoom="Zoom"
 range="Range: "
 ebl="EBL: "
 deg="°"
+bearing="Brg"
 
 radarMainTab="Main"
 radarPITab="PI"

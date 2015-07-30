@@ -42,6 +42,7 @@ class Camera
         void lookPort();
         void lookStbd();
         irr::f32 getLook() const;
+        irr::f32 getLookUp() const;
         void changeView();
         irr::u32 getView() const;
         void setNearValue(irr::f32 zn);

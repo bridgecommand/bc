@@ -221,6 +221,16 @@ irr::f32 OwnShip::getRudder() const
     return rudder;
 }
 
+irr::f32 OwnShip::getPitch() const
+{
+    return pitch;
+}
+
+irr::f32 OwnShip::getRoll() const
+{
+    return roll;
+}
+
 bool OwnShip::isSingleEngine() const
 {
     return singleEngine;

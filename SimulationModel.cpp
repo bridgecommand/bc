@@ -576,7 +576,11 @@ SimulationModel::~SimulationModel()
         //check if paused
         bool paused = device->getTimer()->getSpeed()==0.0;
 
+        //calculate current angular elevation due to pitch and roll in the view direction
+        irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
+        irr::f32 elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
+
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
     }
 

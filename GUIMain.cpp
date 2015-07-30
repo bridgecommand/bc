@@ -115,6 +115,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //binoculars button
         binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.92*sh,0.19*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
 
+        //Take bearing button
+        bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton->setIsPushButton(true);
+
     }
 
     bool GUIMain::getShowInterface() const
@@ -192,7 +196,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused)
+    void GUIMain::updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -208,6 +212,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //Update text display data
         guiHeading = hdg; //Heading in degrees
         viewHdg = viewAngle+hdg;
+        viewElev = viewElevationAngle;
         while (viewHdg>=360) {viewHdg-=360;}
         while (viewHdg<0) {viewHdg+=360;}
         guiSpeed = spd*MPS_TO_KTS; //Speed in knots
@@ -281,35 +286,75 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //draw the heading line on the radar
         if (showInterface) {
-            u32 su = device->getVideoDriver()->getScreenSize().Width;
-            u32 sh = device->getVideoDriver()->getScreenSize().Height;
-            s32 centreX = su-0.2*sh;
-            s32 centreY = 0.8*sh;
-            s32 deltaX = 0.2*sh*sin(core::DEGTORAD*guiHeading);
-            s32 deltaY = -0.2*sh*cos(core::DEGTORAD*guiHeading);
-            core::position2d<s32> radarCentre (centreX,centreY);
-            core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
-            device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255));
-
-            //draw a look direction line
-            s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*viewHdg);
-            s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*viewHdg);
-            core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
-            core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
-            device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0));
-
-            //draw an EBL line
-            s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
-            s32 deltaYEBL = -0.2*sh*cos(core::DEGTORAD*guiRadarEBLBrg);
-            core::position2d<s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
-            device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
-            //draw EBL range
-            if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
-                irr::f32 eblRangePx = 0.2*sh*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
-                irr::u8 noSegments = eblRangePx/2;
-                if (noSegments < 10) {noSegments=10;}
-                device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
-            }
-
+            draw2dRadar();
         }
+
+        //draw view bearing if needed
+        if (bearingButton->isPressed()){
+            draw2dBearing();
+        }
+    }
+
+    void GUIMain::draw2dRadar()
+    {
+        u32 su = device->getVideoDriver()->getScreenSize().Width;
+        u32 sh = device->getVideoDriver()->getScreenSize().Height;
+        s32 centreX = su-0.2*sh;
+        s32 centreY = 0.8*sh;
+        s32 deltaX = 0.2*sh*sin(core::DEGTORAD*guiHeading);
+        s32 deltaY = -0.2*sh*cos(core::DEGTORAD*guiHeading);
+        core::position2d<s32> radarCentre (centreX,centreY);
+        core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
+        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255));
+
+        //draw a look direction line
+        s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*viewHdg);
+        s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*viewHdg);
+        core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
+        core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
+        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0));
+
+        //draw an EBL line
+        s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
+        s32 deltaYEBL = -0.2*sh*cos(core::DEGTORAD*guiRadarEBLBrg);
+        core::position2d<s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
+        device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
+        //draw EBL range
+        if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
+            irr::f32 eblRangePx = 0.2*sh*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
+            irr::u8 noSegments = eblRangePx/2;
+            if (noSegments < 10) {noSegments=10;}
+            device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
+        }
+    }
+
+    void GUIMain::draw2dBearing()
+    {
+        u32 su = device->getVideoDriver()->getScreenSize().Width;
+        u32 sh = device->getVideoDriver()->getScreenSize().Height;
+
+        //make cross hairs
+        s32 screenCentreX = 0.5*su;
+        s32 screenCentreY;
+        if (showInterface) {
+            screenCentreY = 0.3*sh;
+        } else {
+            screenCentreY = 0.5*sh;
+        }
+        s32 lineLength = 0.1*sh;
+        core::position2d<s32> left(screenCentreX-lineLength,screenCentreY);
+        core::position2d<s32> right(screenCentreX+lineLength,screenCentreY);
+        core::position2d<s32> top(screenCentreX,screenCentreY-lineLength);
+        core::position2d<s32> bottom(screenCentreX,screenCentreY+lineLength);
+        core::position2d<s32> centre(screenCentreX,screenCentreY);
+        device->getVideoDriver()->draw2DLine(left,right,video::SColor(255, 255, 0, 0));
+        device->getVideoDriver()->draw2DLine(top,bottom,video::SColor(255, 255, 0, 0));
+
+        //show view bearing
+        guienv->getSkin()->getFont()->draw(f32To1dp(viewHdg).c_str(),core::rect<s32>(screenCentreX-lineLength,screenCentreY-lineLength,screenCentreX, screenCentreY), video::SColor(255,255,0,0),true,true);
+        guienv->getSkin()->getFont()->draw(f32To1dp(viewElev).c_str(),core::rect<s32>(screenCentreX-lineLength,screenCentreY,screenCentreX, screenCentreY+lineLength), video::SColor(255,255,0,0),true,true);
+
+
+        //show angle (from horizon)
+
     }

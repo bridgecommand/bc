@@ -44,6 +44,8 @@ class OwnShip : public Ship
         irr::f32 getPortEngineRPM() const;
         irr::f32 getStbdEngineRPM() const;
         irr::f32 getRudder() const; //-30 to 30
+        irr::f32 getPitch() const;
+        irr::f32 getRoll() const;
         bool isSingleEngine() const;
 
     protected:
