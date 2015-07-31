@@ -24,4 +24,4 @@ To build on Mac:
 4) cd back to this directory
 5) Run 'make' to compile Bridge Command
 Running
-6) run ./bridgecommand to start the simulator
+6) Run the BridgeCommand app
