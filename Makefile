@@ -40,6 +40,9 @@ DESTPATH = $(BinPath)/$(Target)$(SUF)
 all: 
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
+ifeq ($(UNAME_S),Darwin)
+	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/BridgeCommand
+endif
 
 clean:
 	$(warning Cleaning...)
