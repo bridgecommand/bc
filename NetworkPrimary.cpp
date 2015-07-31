@@ -177,6 +177,19 @@ void NetworkPrimary::receiveNetwork()
                                     }
                                 } else if (thisCommand.substr(0,2).compare("RS") == 0) {
                                     //'RS' reposition ship
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 4) {
+                                        //4 elements in 'Reposition ship' command: RS,shipNo,posX,posZ
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2)) - 1;
+                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3)) - 1;
+                                        if (shipNo<0){
+                                            model->setPos(positionX,positionZ);
+                                        } else {
+                                            model->setOtherShipPos(shipNo,positionX,positionZ);
+                                        }
+                                    }
+
 
                                 }
                             } //This command has at least three characters

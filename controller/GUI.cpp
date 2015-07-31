@@ -63,13 +63,18 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     distanceTitle = guienv->addStaticText(language->translate("setDistance").c_str(),core::rect<s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
 
     //Add buttons
-    changeLeg       = guienv->addButton(core::rect<s32>     (0.03*su, 0.40*sh,0.23*su, 0.43*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.40*sh,0.45*su, 0.43*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
-    addLeg          = guienv->addButton(core::rect<s32>     (0.03*su, 0.44*sh,0.23*su, 0.47*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
-    deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.44*sh,0.45*su, 0.47*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    changeLeg       = guienv->addButton(core::rect<s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    addLeg          = guienv->addButton(core::rect<s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
+
+    //These get updated in updateGuiData
+    mapCentreX = 0;
+    mapCentreZ = 0;
 
 }
 
@@ -86,11 +91,15 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
     //TODO: Check that conversion to texture does not distort image
 
+    //Calculate map centre as displayed
+    mapCentreX = ownShipPosX - mapOffsetX*metresPerPx;
+    mapCentreZ = ownShipPosZ + mapOffsetZ*metresPerPx;
+
     //update heading display element
     core::stringw displayText = language->translate("pos");
-    displayText.append(core::stringw(ownShipPosX));
+    displayText.append(core::stringw(mapCentreX));
     displayText.append(L" ");
-    displayText.append(core::stringw(ownShipPosZ));
+    displayText.append(core::stringw(mapCentreZ));
     displayText.append(L"\n");
     //Show selected ship and legs
     displayText.append(core::stringw(selectedShip));
@@ -368,4 +377,8 @@ int GUIMain::getSelectedShip() const {
 
 int GUIMain::getSelectedLeg() const {
     return (legSelector->getSelected() + 1);
+}
+
+irr::core::vector2df GUIMain::getScreenCentrePosition() const {
+    return core::vector2df(mapCentreX, mapCentreZ);
 }

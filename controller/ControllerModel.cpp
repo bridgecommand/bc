@@ -160,6 +160,12 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg);
 }
 
+void ControllerModel::resetOffset()
+{
+    mapOffsetX = 0;
+    mapOffsetZ = 0;
+}
+
 void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box
 {
     if(index < 1) { //If 0 or -1

@@ -42,7 +42,8 @@ public:
         GUI_ID_CHANGE_BUTTON,
         GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
-        GUI_ID_DELETELEG_BUTTON
+        GUI_ID_DELETELEG_BUTTON,
+        GUI_ID_MOVESHIP_BUTTON
     };
 
     void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg);
@@ -52,6 +53,7 @@ public:
     irr::f32 getEditBoxDistance() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
+    irr::core::vector2df getScreenCentrePosition() const;
 
 
 private:
@@ -78,6 +80,9 @@ private:
     irr::gui::IGUIButton* changeLegCourseSpeed;
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
+    irr::gui::IGUIButton* moveShip;
+    irr::f32 mapCentreX;
+    irr::f32 mapCentreZ;
 
     bool editBoxesNeedUpdating;
 

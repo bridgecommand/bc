@@ -111,6 +111,26 @@ using namespace irr;
                     network->setStringToSend(messageToSend);
 
                 }
+                if (id == GUIMain::GUI_ID_MOVESHIP_BUTTON) {
+
+                    int ship = gui->getSelectedShip();
+                    irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition(); //Check screen centre
+
+                    std::string messageToSend = "MCRS,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(screenCentrePos.X));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(screenCentrePos.Y));
+                    messageToSend.append("#");
+                    network->setStringToSend(messageToSend);
+
+                    //If moving own ship, reset offset, so the map doesn't jump
+                    if (ship==0) {
+                        model->resetOffset();
+                    }
+                    //std::cout << messageToSend << std::endl;
+                }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
