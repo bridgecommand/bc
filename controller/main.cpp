@@ -26,20 +26,24 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-    #ifdef __APPLE__
+	#ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
     if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
-        std::cout << "ExePath: " << exePath << std::endl;
         std::string exePathString(exePath);
         size_t pos = exePathString.find_last_of("\\/");
         if (std::string::npos != pos) {
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-    //Todo: Think if we need to cd here so the .ini file gets read correctly
-    #endif
+    //change up from BridgeCommand.app/Contents/MacOS to ../../..
+    exeFolderPath.append("/../../..");
+    std::cout << "ExePath: " << exeFolderPath << std::endl;
+    //change to this path now, so ini file is read
+    chdir(exeFolderPath.c_str());
+    //Note, we use this again after the createDevice call
+	#endif
     
     std::string iniFilename = "map.ini";
     u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
