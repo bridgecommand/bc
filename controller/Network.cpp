@@ -247,14 +247,14 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
 
     for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
         std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-        if (thisShipData.size() == 6) { //6 elements for each ship
+        if (thisShipData.size() == 7) { //7 elements for each ship
             //Update data
             otherShipsData.at(i).X=Utilities::lexical_cast<irr::u32>(thisShipData.at(0));
             otherShipsData.at(i).Z=Utilities::lexical_cast<irr::u32>(thisShipData.at(1));
 
             //Todo: use SART etc
-            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(4));
-            std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(5),'/');
+            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(5));
+            std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(6),'/');
             if (numberOfLegs == legsDataString.size()) {
                 //Ensure legs vector is the right size
                 if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
