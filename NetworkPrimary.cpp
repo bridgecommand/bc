@@ -273,6 +273,8 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipHeading(number)));
         stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipSpeed(number)*MPS_TO_KTS));
+        stringToSend.append(",");
         stringToSend.append("0"); //Fixme: Sart enabled
         stringToSend.append(",");
 

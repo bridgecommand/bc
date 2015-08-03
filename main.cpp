@@ -135,7 +135,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioName);
+    SimulationModel model(device, smgr, &guiMain, scenarioName, secondary);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());

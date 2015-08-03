@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -31,6 +31,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //store scenario name
         this->scenarioName = scenarioName;
+
+        //store if we're running in secondary mode
+        this->secondary = secondary;
 
         //Set loop number to zero
         loopNumber = 0;
@@ -102,10 +105,18 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
+        if(secondary) {
+            ownShip.setSpeed(0); //Don't start moving if in secondary mode
+        }
 
         //Tell gui to hide the second engine scroll bar if we have a single engine
         if (ownShip.isSingleEngine()) {
             gui->hideStbdEngineBar();
+        }
+
+        //Tell gui to hide all ship controls if in secondary mode
+        if (secondary) {
+            gui->hideEngineAndRudder();
         }
 
         //Todo: Set the radar parameters, based on the radar.ini file from the own ship
@@ -120,7 +131,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.load(smgr,ownShip.getSceneNode(),views,core::PI/2.0);
 
         //Load other ships
-        otherShips.load(scenarioPath,scenarioTime,smgr,this);
+        otherShips.load(scenarioPath,scenarioTime,secondary,smgr,this);
 
         //Load buoys
         buoys.load(worldPath, smgr, this);
@@ -177,7 +188,7 @@ SimulationModel::~SimulationModel()
         return terrain.latToZ(latitude); //Cascade to terrain
     }
 
-    void SimulationModel::setSpeed(f32 spd)
+    void SimulationModel::setSpeed(irr::f32 spd)
     {
          ownShip.setSpeed(spd);
     }
@@ -259,8 +270,16 @@ SimulationModel::~SimulationModel()
         return otherShips.getHeading(number);
     }
 
+    irr::f32 SimulationModel::getOtherShipSpeed(int number) const{
+        return otherShips.getSpeed(number);
+    }
+
     void SimulationModel::setOtherShipHeading(int number, irr::f32 hdg){
         otherShips.setHeading(number, hdg);
+    }
+
+    void SimulationModel::setOtherShipSpeed(int number, irr::f32 speed){
+        otherShips.setSpeed(number, speed);
     }
 
     void SimulationModel::setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ){

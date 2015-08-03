@@ -46,15 +46,13 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
     void setPos(irr::f32 positionX, irr::f32 positionZ);
-    void setOtherShipHeading(int number, irr::f32 hdg);
-    void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     irr::f32 getRudder() const;
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)
@@ -87,6 +85,10 @@ public:
     irr::f32 getOtherShipPosX(int number) const;
     irr::f32 getOtherShipPosZ(int number) const;
     irr::f32 getOtherShipHeading(int number) const;
+    irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
+    void setOtherShipHeading(int number, irr::f32 hdg);
+    void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
+    void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
     std::vector<Leg> getOtherShipLegs(int number) const;
     irr::f32 getBuoyPosX(int number) const;
     irr::f32 getBuoyPosZ(int number) const;
@@ -130,6 +132,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
+    bool secondary; //Are we in secondary mode?
     irr::video::IImage* radarImage;
     //irr::f32 accelerator;
     irr::f32 tideHeight;

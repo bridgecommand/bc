@@ -21,7 +21,7 @@
 #include "NetworkSecondary.hpp"
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
-
+#include "Constants.hpp"
 
 NetworkSecondary::NetworkSecondary(SimulationModel* model)
 {
@@ -126,6 +126,7 @@ void NetworkSecondary::receiveMessage()
                     model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
                                   Utilities::lexical_cast<irr::f32>(positionData.at(1)));
                     model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
+                    model->setSpeed(Utilities::lexical_cast<float>(positionData.at(5))/MPS_TO_KTS);
                 }
 
                 //Start
@@ -140,12 +141,12 @@ void NetworkSecondary::receiveMessage()
                     if (numberOthers == otherShipsDataString.size()) {
                         for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-                            if (thisShipData.size() == 6) { //6 elements for each ship
+                            if (thisShipData.size() == 7) { //7 elements for each ship
                                 //Update data
                                 model->setOtherShipPos(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(0)),
                                                        Utilities::lexical_cast<irr::u32>(thisShipData.at(1)));
                                 model->setOtherShipHeading(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(2)));
-
+                                model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(3))/MPS_TO_KTS);
                                 //Todo: use SART etc
                             }
                         }

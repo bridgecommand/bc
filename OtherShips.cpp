@@ -36,7 +36,7 @@ OtherShips::~OtherShips()
     //dtor
 }
 
-void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTime, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTime, bool secondary, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     //construct path
@@ -60,29 +60,31 @@ void OtherShips::load(const std::string& scenarioName, irr::f32 scenarioStartTim
             std::vector<Leg> legs;
             irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
             irr::f32 legStartTime = scenarioStartTime;
-            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
-                //go through each leg (if any), and load
-                Leg currentLeg;
-                currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
-                currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
-                currentLeg.startTime = legStartTime;
+            if (!secondary) { //Don't load leg information in secondary mode
+                for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                    //go through each leg (if any), and load
+                    Leg currentLeg;
+                    currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                    currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                    currentLeg.startTime = legStartTime;
 
-                //Use distance to calculate startTime of next leg, and stored for later reference.
-                irr::f32 distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
-                currentLeg.distance = distance;
+                    //Use distance to calculate startTime of next leg, and stored for later reference.
+                    irr::f32 distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                    currentLeg.distance = distance;
 
-                legs.push_back(currentLeg);
+                    legs.push_back(currentLeg);
 
-                //find the start time for the next leg
-                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+                    //find the start time for the next leg
+                    legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+                }
+                //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+                Leg stopLeg;
+                stopLeg.bearing=0;
+                stopLeg.speed=0;
+                stopLeg.distance=0;
+                stopLeg.startTime = legStartTime;
+                legs.push_back(stopLeg);
             }
-            //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
-            Leg stopLeg;
-            stopLeg.bearing=0;
-            stopLeg.speed=0;
-            stopLeg.distance=0;
-            stopLeg.startTime = legStartTime;
-            legs.push_back(stopLeg);
 
             //Create otherShip and load into vector
             otherShips.push_back(OtherShip (otherShipName,core::vector3df(shipX,0.0f,shipZ),legs,smgr));
@@ -128,6 +130,22 @@ irr::f32 OtherShips::getHeading(int number) const
         return otherShips.at(number).getHeading();
     } else {
         return 0;
+    }
+}
+
+irr::f32 OtherShips::getSpeed(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getSpeed();
+    } else {
+        return 0;
+    }
+}
+
+void OtherShips::setSpeed(int number, irr::f32 speed)
+{
+    if (number < otherShips.size()) {
+        otherShips.at(number).setSpeed(speed);
     }
 }
 

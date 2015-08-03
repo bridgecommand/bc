@@ -149,6 +149,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         stbdScrollbar->setVisible(false);
     }
 
+    void GUIMain::hideEngineAndRudder()
+    {
+        stbdScrollbar->setVisible(false);
+        portScrollbar->setVisible(false);
+        rudderScrollbar->setVisible(false);
+    }
+
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface

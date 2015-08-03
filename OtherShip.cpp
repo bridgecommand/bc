@@ -28,6 +28,10 @@ using namespace irr;
 OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
 {
 
+    //Initialise speed and heading, normally updated from leg information
+    spd = 0;
+    hdg = 0;
+
     this->name = name;
     //Load from individual boat.ini file
     std::string iniFilename = "Models/Othership/";
@@ -128,8 +132,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
 
     //move according to leg information
     if (legs.empty()) {
-        spd = 0;
-        hdg = 0;
+        //Don't change speed and hdg - may be in secondary mode, where these are set externally
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
