@@ -189,6 +189,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
         device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
 
+        //number
+        int thisShipNumber = 1 + it - otherShips.begin();
+        guienv->getSkin()->getFont()->draw(irr::core::stringw(thisShipNumber),irr::core::rect<s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), video::SColor(255,0,0,255),true,true);
+
         //Draw leg information for each ship
         if (it->legs.size() > 0) {
 
