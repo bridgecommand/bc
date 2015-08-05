@@ -38,6 +38,9 @@ public:
 private:
     SimulationModel* model;
 
+    float accelAdjustment;
+    float previousTimeError;
+
     ENetHost * server;
     ENetEvent event;
 

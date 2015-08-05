@@ -27,6 +27,7 @@ Ship::Ship()
 {
     //Default to run on defined spd and hdg
     controlMode = MODE_AUTO;
+    positionManuallyUpdated = false; //Used to track if position has been manually updated, and shouldn't have position update applied this loop
 }
 
 Ship::~Ship()
@@ -55,6 +56,7 @@ void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
      //Update the position used, ready for next update. Doesn't actually move the mesh at this point
      this->xPos = xPos;
      this->zPos = zPos;
+     positionManuallyUpdated = true;
 }
 
 void Ship::setHeading(irr::f32 hdg)

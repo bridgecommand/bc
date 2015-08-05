@@ -239,6 +239,8 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeOffset())); //Timestamp of start of first day of scenario
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimeDelta())); //Time from start day of scenario
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getAccelerator())); //Current accelerator
     stringToSend.append("#");
 
     //1 Position, speed etc

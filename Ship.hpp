@@ -50,6 +50,7 @@ class Ship
         irr::f32 zPos;
         irr::f32 spd;
         int controlMode;
+        bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
         enum CONTROL_MODE// Define some values that we'll use to identify individual GUI controls.
         {
             MODE_AUTO = 0,

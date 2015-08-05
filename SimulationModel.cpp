@@ -374,6 +374,11 @@ SimulationModel::~SimulationModel()
         device->getTimer()->setSpeed(accelerator);
     }
 
+    irr::f32 SimulationModel::getAccelerator() const
+    {
+        return device->getTimer()->getSpeed();
+    }
+
     void SimulationModel::setWeather(irr::f32 weather)
     {
         this->weather = weather;

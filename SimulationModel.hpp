@@ -62,6 +62,7 @@ public:
     //irr::f32 getPortEngine() const;
     //irr::f32 getStbdEngine() const;
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
+    irr::f32 getAccelerator() const;
     irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
 

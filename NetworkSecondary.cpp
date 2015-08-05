@@ -29,6 +29,9 @@ NetworkSecondary::NetworkSecondary(SimulationModel* model)
 
     this->model = model;
 
+    accelAdjustment = 0;
+    previousTimeError = 0;
+
     if (enet_initialize () != 0)
     {
         std::cout << "An error occurred while initializing ENet.\n";
@@ -117,7 +120,23 @@ void NetworkSecondary::receiveMessage()
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
                 //Time since start of scenario day 1 is record 2
                 if (timeData.size() > 2) {
-                    model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                    irr::f32 timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta();
+                    irr::f32 baseAccelerator = Utilities::lexical_cast<irr::f32>(timeData.at(3)); //The master accelerator setting
+                    if (fabs(timeError) > 1) {
+                        //Big time difference, so reset
+                        model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                        accelAdjustment = 0;
+                        std::cout << "Resetting time alignment" << std::endl;
+                    } else { //Adjust accelerator to maintain time alignment
+                        accelAdjustment += timeError*0.01; //Integral only at the moment
+                        //Check for zero crossing, and reset
+                        if (previousTimeError * timeError < 0) {
+                            accelAdjustment = 0;
+                        }
+                        if (baseAccelerator + accelAdjustment < 0) {accelAdjustment= -1*baseAccelerator;}//Saturate at zero
+                    }
+                    model->setAccelerator(baseAccelerator + accelAdjustment);
+                    previousTimeError = timeError; //Store for next time
                 }
 
                 //Get own ship position info from record 1
@@ -143,10 +162,11 @@ void NetworkSecondary::receiveMessage()
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
                             if (thisShipData.size() == 7) { //7 elements for each ship
                                 //Update data
-                                model->setOtherShipPos(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(0)),
-                                                       Utilities::lexical_cast<irr::u32>(thisShipData.at(1)));
-                                model->setOtherShipHeading(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(2)));
-                                model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::u32>(thisShipData.at(3))/MPS_TO_KTS);
+                                model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
+                                model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
+                                irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
+                                irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
+                                model->setOtherShipPos(i,receivedPosX,receivedPosZ);
                                 //Todo: use SART etc
                             }
                         }
