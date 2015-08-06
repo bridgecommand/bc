@@ -116,11 +116,13 @@ void NetworkSecondary::receiveMessage()
             //Check number of elements
             if (receivedData.size() == 11) { //11 basic records in data sent
 
+                irr::f32 timeError;
+
                 //Get time info from record 0
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
                 //Time since start of scenario day 1 is record 2
                 if (timeData.size() > 2) {
-                    irr::f32 timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta();
+                    timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta(); //How far we are behind the master
                     irr::f32 baseAccelerator = Utilities::lexical_cast<irr::f32>(timeData.at(3)); //The master accelerator setting
                     if (fabs(timeError) > 1) {
                         //Big time difference, so reset
@@ -144,8 +146,8 @@ void NetworkSecondary::receiveMessage()
                 if (positionData.size() == 7) { //7 elements in position data sent
                     model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
                                   Utilities::lexical_cast<irr::f32>(positionData.at(1)));
-                    model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
-                    model->setSpeed(Utilities::lexical_cast<float>(positionData.at(5))/MPS_TO_KTS);
+                    model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
+                    model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(5))/MPS_TO_KTS);
                 }
 
                 //Start
@@ -167,6 +169,7 @@ void NetworkSecondary::receiveMessage()
                                 irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
                                 irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
                                 model->setOtherShipPos(i,receivedPosX,receivedPosZ);
+                                //Todo: Think about using timeError to extrapolate position to get more accurately.
                                 //Todo: use SART etc
                             }
                         }
