@@ -616,6 +616,8 @@ SimulationModel::~SimulationModel()
     {
 
         irr::u32 numberOfOtherShips = otherShips.getNumber();
+        irr::u32 numberOfBuoys = buoys.getNumber();
+
         irr::core::vector3df thisShipPosition = ownShip.getPosition();
         irr::f32 thisShipLength = ownShip.getLength();
         irr::f32 thisShipWidth = ownShip.getWidth();
@@ -641,6 +643,24 @@ SimulationModel::~SimulationModel()
             irr::f32 minDistance = minDistanceOther + minDistanceOwn;
 
             if (distanceToShip < minDistance) {
+                return true;
+            }
+        }
+
+        for (irr::u32 i = 0; i<numberOfBuoys; i++) { //Collision with buoy
+            irr::core::vector3df otherPosition = buoys.getPosition(i);
+
+            irr::core::vector3df relPosition = otherPosition - thisShipPosition;
+            irr::f32 distanceToBuoy = relPosition.getLength();
+            irr::f32 bearingToBuoyDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
+
+            //Bearings relative to ship's head (from this ship and from other)
+            irr::f32 relativeBearingOwnShip = bearingToBuoyDeg - thisShipHeading;
+
+            //Find the minimum distance before a collision occurs
+            irr::f32 minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
+
+            if (distanceToBuoy < minDistanceOwn) {
                 return true;
             }
         }
