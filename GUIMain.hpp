@@ -112,6 +112,7 @@ private:
     void updateVisibility();
     void draw2dRadar();
     void draw2dBearing();
+    void drawCollisionWarning();
     std::wstring f32To1dp(irr::f32 value);
     std::wstring f32To2dp(irr::f32 value);
     std::wstring f32To3dp(irr::f32 value);

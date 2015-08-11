@@ -271,10 +271,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             displayText.append(language->translate("paused"));
             displayText.append(L"\n");
         }
-        if (guiCollided) {
-            displayText.append(language->translate("collided"));
-            displayText.append(L"\n");
-        }
         dataDisplay->setText(displayText.c_str());
 
         //add radar text (reuse the displayText)
@@ -289,6 +285,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(f32To1dp(guiRadarEBLBrg).c_str());
         displayText.append(language->translate("deg"));
         radarText->setText(displayText.c_str());
+
+        //add a collision warning
+        if (guiCollided) {
+            drawCollisionWarning();
+        }
 
         //manually trigger gui event if buttons are held down
         if (eblUpButton->isPressed()) {manuallyTriggerClick(eblUpButton);}
@@ -371,4 +372,22 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //show angle (from horizon)
 
+    }
+
+    void GUIMain::drawCollisionWarning()
+    {
+        u32 su = device->getVideoDriver()->getScreenSize().Width;
+        u32 sh = device->getVideoDriver()->getScreenSize().Height;
+        s32 screenCentreX = 0.5*su;
+        s32 screenCentreY;
+        if (showInterface) {
+            screenCentreY = 0.3*sh;
+        } else {
+            screenCentreY = 0.5*sh;
+        }
+
+        device->getVideoDriver()->draw2DRectangle(video::SColor(255,255,255,255),core::rect<s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh));
+        guienv->getSkin()->getFont()->draw(language->translate("collided"),
+            core::rect<s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh),
+            video::SColor(255,255,0,0),true,true);
     }
