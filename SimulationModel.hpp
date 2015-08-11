@@ -165,6 +165,9 @@ private:
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
+    //utility function to check for collision
+    bool checkOwnShipCollision();
+
     //Offset position handling
     irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this
 

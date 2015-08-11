@@ -172,6 +172,9 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
         }
     }
 
+    length = ship->getBoundingBox().getExtent().Z; //Store length for basic collision calculation
+    width = ship->getBoundingBox().getExtent().X; //Store length for basic collision calculation
+
     //set initial pitch and roll
     pitch = 0;
     roll = 0;

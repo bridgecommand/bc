@@ -35,7 +35,6 @@ class OtherShip : public Ship
         OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr);
         //virtual ~OtherShip();
 
-        irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
         std::string getName() const;
@@ -52,7 +51,6 @@ class OtherShip : public Ship
         std::string name;
         std::vector<Leg> legs;
         std::vector<NavLight> navLights;
-        irr::f32 length; //For radar calculation
         irr::f32 height; //For radar
         irr::f32 solidHeight; //For radar
         irr::f32 rcs;

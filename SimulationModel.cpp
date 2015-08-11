@@ -561,6 +561,10 @@ SimulationModel::~SimulationModel()
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
 
+        //Check for collisions
+        bool collided = checkOwnShipCollision();
+
+
         //update water position
         water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
@@ -605,6 +609,42 @@ SimulationModel::~SimulationModel()
         irr::f32 elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
         //send data to gui
-        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime),paused); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime), paused, collided); //Set GUI heading in degrees and speed (in m/s)
+    }
+
+    bool SimulationModel::checkOwnShipCollision()
+    {
+
+        irr::u32 numberOfOtherShips = otherShips.getNumber();
+        irr::core::vector3df thisShipPosition = ownShip.getPosition();
+        irr::f32 thisShipLength = ownShip.getLength();
+        irr::f32 thisShipWidth = ownShip.getWidth();
+        irr::f32 thisShipHeading = ownShip.getHeading();
+
+        for (irr::u32 i = 0; i<numberOfOtherShips; i++) {
+            irr::core::vector3df otherPosition = otherShips.getPosition(i);
+            irr::f32 otherShipLength = otherShips.getLength(i);
+            irr::f32 otherShipWidth = otherShips.getWidth(i);
+            irr::f32 otherShipHeading = otherShips.getHeading(i);
+
+            irr::core::vector3df relPosition = otherPosition - thisShipPosition;
+            irr::f32 distanceToShip = relPosition.getLength();
+            irr::f32 bearingToOtherShipDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
+
+            //Bearings relative to ship's head (from this ship and from other)
+            irr::f32 relativeBearingOwnShip = bearingToOtherShipDeg - thisShipHeading;
+            irr::f32 relativeBearingOtherShip = 180 + bearingToOtherShipDeg - otherShipHeading;
+
+            //Find the minimum distance before a collision occurs
+            irr::f32 minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
+            irr::f32 minDistanceOther = 0.5*fabs(otherShipWidth*sin(irr::core::degToRad(relativeBearingOtherShip))) + 0.5*fabs(otherShipLength*cos(irr::core::degToRad(relativeBearingOtherShip)));
+            irr::f32 minDistance = minDistanceOther + minDistanceOwn;
+
+            if (distanceToShip < minDistance) {
+                return true;
+            }
+        }
+
+        return false; //If no collision has been found
     }
 

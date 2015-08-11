@@ -76,6 +76,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     //store length and RCS information for radar etc
     length = ship->getBoundingBox().getExtent().Z;
+    width = ship->getBoundingBox().getExtent().X;
     height = ship->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight"); //FIXME: Note in documentation that this is height above waterline in model units
@@ -159,11 +160,6 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         navLights[currentLight].update(scenarioTime,viewPosition, lightLevel);
     }
 
-}
-
-irr::f32 OtherShip::getLength() const
-{
-    return length;
 }
 
 irr::f32 OtherShip::getHeight() const

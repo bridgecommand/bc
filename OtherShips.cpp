@@ -124,6 +124,24 @@ irr::core::vector3df OtherShips::getPosition(int number) const
     }
 }
 
+irr::f32 OtherShips::getLength(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getLength();
+    } else {
+        return 0.0;
+    }
+}
+
+irr::f32 OtherShips::getWidth(int number) const
+{
+    if (number < otherShips.size()) {
+        return otherShips.at(number).getWidth();
+    } else {
+        return 0.0;
+    }
+}
+
 irr::f32 OtherShips::getHeading(int number) const
 {
     if (number < otherShips.size()) {

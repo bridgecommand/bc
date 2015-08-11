@@ -34,6 +34,8 @@ class Ship
         irr::scene::IMeshSceneNode* getSceneNode() const;
         irr::core::vector3df getRotation() const;
         irr::core::vector3df getPosition() const;
+        irr::f32 getLength() const;
+        irr::f32 getWidth() const;
         void setHeading(irr::f32 hdg);
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
@@ -49,6 +51,8 @@ class Ship
         irr::f32 yPos;
         irr::f32 zPos;
         irr::f32 spd;
+        irr::f32 length;
+        irr::f32 width;
         int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
         enum CONTROL_MODE// Define some values that we'll use to identify individual GUI controls.

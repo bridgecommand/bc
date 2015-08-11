@@ -39,6 +39,8 @@ class OtherShips
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
+        irr::f32 getLength(int number) const;
+        irr::f32 getWidth(int number) const;
         irr::f32 getHeading(int number) const;
         irr::f32 getSpeed(int number) const; //Speed in m/s
         void setSpeed(int number, irr::f32 speed); //Speed in m/s

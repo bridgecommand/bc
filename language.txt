@@ -39,7 +39,8 @@ nm=" Nm"
 
 weather = "Weather"
 rain = "Rain"
-paused=" (Paused)"
+paused="PAUSED"
+collided="YOU ARE IN COLLISION!"
 showinterface="Show"
 hideinterface="Hide"
 
