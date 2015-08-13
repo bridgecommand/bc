@@ -59,6 +59,7 @@ void main()
 	vec2 ProjectedReflectionTexCoords = clamp(reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation, 0.0, 1.0);
 	//calculate final reflection color
 
+	/*
 	vec2 ProjectedReflectionTexCoords1 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025,-0.0025), 0.0, 1.0);
 	vec2 ProjectedReflectionTexCoords2 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025, 0.0  ), 0.0, 1.0);
 	vec2 ProjectedReflectionTexCoords3 = clamp(ProjectedReflectionTexCoords+vec2(-0.0025, 0.0025), 0.0, 1.0);
@@ -67,16 +68,17 @@ void main()
 	vec2 ProjectedReflectionTexCoords6 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025,-0.0025), 0.0, 1.0);
 	vec2 ProjectedReflectionTexCoords7 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025, 0.0  ), 0.0, 1.0);
 	vec2 ProjectedReflectionTexCoords8 = clamp(ProjectedReflectionTexCoords+vec2( 0.0025, 0.0025), 0.0, 1.0);
+    */
 
 	vec4 color0 = texture2D(ReflectionMap, ProjectedReflectionTexCoords );
-	vec4 color1 = texture2D(ReflectionMap, ProjectedReflectionTexCoords1);
+	/*vec4 color1 = texture2D(ReflectionMap, ProjectedReflectionTexCoords1);
 	vec4 color2 = texture2D(ReflectionMap, ProjectedReflectionTexCoords2);
 	vec4 color3 = texture2D(ReflectionMap, ProjectedReflectionTexCoords3);
 	vec4 color4 = texture2D(ReflectionMap, ProjectedReflectionTexCoords4);
 	vec4 color5 = texture2D(ReflectionMap, ProjectedReflectionTexCoords5);
 	vec4 color6 = texture2D(ReflectionMap, ProjectedReflectionTexCoords6);
 	vec4 color7 = texture2D(ReflectionMap, ProjectedReflectionTexCoords7);
-	vec4 color8 = texture2D(ReflectionMap, ProjectedReflectionTexCoords8);
+	vec4 color8 = texture2D(ReflectionMap, ProjectedReflectionTexCoords8);*/
 
 	//vec4 reflectiveColor = (color0+color1+color2+color3+color4+color5+color6+color7+color8) / 9.0;
 	vec4 reflectiveColor = color0;
