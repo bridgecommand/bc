@@ -203,7 +203,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided)
+    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided)
     {
         //Update scroll bars
         hdgScrollbar->setPos(hdg);
@@ -217,6 +217,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         weatherScrollbar->setPos(weather*10.0); //(Weather scroll bar is 0-120, weather is 0-12)
         rainScrollbar->setPos(rain*10.0); //(Rain scroll bar is 0-100, rain is 0-10)
         //Update text display data
+        guiLat = lat;
+        guiLong = longitude;
         guiHeading = hdg; //Heading in degrees
         viewHdg = viewAngle+hdg;
         viewElev = viewElevationAngle;
@@ -244,13 +246,45 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
             }
         }
 
+        //Convert lat/long into a readable format
+        wchar_t eastWest;
+        wchar_t northSouth;
+        if (guiLat >= 0) {
+            northSouth='N';
+        } else {
+            northSouth='S';
+        }
+        if (guiLong >= 0) {
+            eastWest='E';
+        } else {
+            eastWest='W';
+        }
+        irr::f32 displayLat = fabs(guiLat);
+        irr::f32 displayLong = fabs(guiLong);
+
+        f32 latMinutes = (displayLat - (int)displayLat)*60;
+        f32 lonMinutes = (displayLong - (int)displayLong)*60;
+        u8 latDegrees = (int) displayLat;
+        u8 lonDegrees = (int) displayLong;
+
         //update heading display element
         core::stringw displayText = language->translate("hdg");
         displayText.append(f32To1dp(guiHeading).c_str());
         displayText.append(L"\n");
 
-        displayText.append(language->translate("viewAng"));
-        displayText.append(f32To1dp(viewHdg).c_str());
+        displayText.append(language->translate("pos"));
+        displayText.append(irr::core::stringw(latDegrees));
+        displayText.append(language->translate("deg"));
+        displayText.append(f32To3dp(latMinutes).c_str());
+        displayText.append(language->translate("minSymbol"));
+        displayText.append(northSouth);
+        displayText.append(L" ");
+
+        displayText.append(irr::core::stringw(lonDegrees));
+        displayText.append(language->translate("deg"));
+        displayText.append(f32To3dp(lonMinutes).c_str());
+        displayText.append(language->translate("minSymbol"));
+        displayText.append(eastWest);
         displayText.append(L"\n");
 
         displayText.append(language->translate("spd"));

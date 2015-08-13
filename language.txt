@@ -11,14 +11,15 @@ loadingmsg="Loading scenario..."
 
 pausedbutton="Paused, click to start"
 
+pos = "Position: "
 hdg="Heading: "
-viewAng="View bearing: "
 spd="Speed: "
 depth="Depth: "
 zoom="Zoom"
 range="Range: "
 ebl="EBL: "
 deg="°"
+minSymbol="'"
 bearing="Brg"
 
 radarMainTab="Main"
