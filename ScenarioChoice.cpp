@@ -56,6 +56,10 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
     gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.27*sh,0.80*su,0.30*sh));
+
+    //add credits text
+    //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
+
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
         scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
@@ -105,10 +109,14 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     secondaryCheckbox->remove(); secondaryCheckbox=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
+    //creditsText->remove(); creditsText=0;
     device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.
 
     //Show loading message
-    gui::IGUIStaticText* loadingMessage = gui->addStaticText(language->translate("loadingmsg").c_str(), core::rect<s32>(0.0125*su,0.017*sh,0.9*su,0.09*sh));
+    irr::core::stringw creditsText = language->translate("loadingmsg");
+    creditsText.append(L"\n\n");
+    creditsText.append(getCredits());
+    gui::IGUIStaticText* loadingMessage = gui->addStaticText(creditsText.c_str(), core::rect<s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
     device->run();
     driver->beginScene(true, true, video::SColor(0,200,200,200));
     gui->drawAll();
@@ -153,4 +161,24 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
         exit(EXIT_FAILURE); //Couldn't change dir back
     }
     fileList->drop();
+}
+
+irr::core::stringw ScenarioChoice::getCredits(){
+
+    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAMME, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
+    creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
+    creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
+    creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
+    creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
+    creditsString.append(L"> Juergen Klemp\n");
+    creditsString.append(L"> Simon D Richardson\n");
+    creditsString.append(L"> Jason Simpson\n");
+    creditsString.append(L"> Ragnar\n");
+    creditsString.append(L"> Thierry Videlaine\n");
+    creditsString.append(L"> NETC (Naval Education and Training Command)\n\n");
+    creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.");
+
+    return creditsString;
+
+
 }

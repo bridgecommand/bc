@@ -126,6 +126,8 @@ int main()
     ScenarioChoice scenarioChoice(device,&language);
     scenarioChoice.chooseScenario(scenarioName, hostname, secondary);
 
+    u32 creditsStartTime = device->getTimer()->getRealTime();
+
     //std::cout << "Chosen " << scenarioName << " with " << hostname << std::endl;
 
     //seed random number generator
@@ -151,6 +153,11 @@ int main()
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName);
+
+    //check enough time has elapsed to show the credits screen (15s)
+    while(device->getTimer()->getRealTime() - creditsStartTime < 15000) {
+        device->sleep(100);
+    }
 
     //set up timing for NMEA: FIXME: Make this a defined constant
     u32 nextNMEATime = device->getTimer()->getTime()+250;

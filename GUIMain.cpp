@@ -76,32 +76,36 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //add radar buttons
         //add tab control for radar
-        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.61*sh,0.697*su,0.99*sh));
+        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh));
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
-        irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
-        irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
-        irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
-        irr::gui::IGUITab* radarTrackTab = radarTabControl->addTab(language->translate("radarTrackTab").c_str(),0);
-        irr::gui::IGUITab* radarARPAVectorTab = radarTabControl->addTab(language->translate("radarARPAVectorTab").c_str(),0);
-        irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
-        irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
+        irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
+        //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
+        //irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
+        //irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
+        //irr::gui::IGUITab* radarTrackTab = radarTabControl->addTab(language->translate("radarTrackTab").c_str(),0);
+        //irr::gui::IGUITab* radarARPAVectorTab = radarTabControl->addTab(language->translate("radarARPAVectorTab").c_str(),0);
+        //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
+        //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        radarText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.010*sh,0.232*su,0.100*sh),true,true,mainRadarTab);
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.110*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.220*sh,0.055*su,0.320*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
-        eblLeftButton = guienv->addButton(core::rect<s32>(0.137*su,0.200*sh,0.167*su,0.230*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,L"L"); //FIXME: Add proper caption
-        eblRightButton = guienv->addButton(core::rect<s32>(0.197*su,0.200*sh,0.227*su,0.230*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,L"R");
-        eblUpButton = guienv->addButton(core::rect<s32>(0.167*su,0.170*sh,0.197*su,0.200*sh),mainRadarTab,GUI_ID_RADAR_EBL_UP_BUTTON,L"U");
-        eblDownButton = guienv->addButton(core::rect<s32>(0.167*su,0.230*sh,0.197*su,0.260*sh),mainRadarTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,L"D");
-        radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.110*sh,0.085*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.085*su,0.110*sh,0.110*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.110*su,0.110*sh,0.135*su,0.32*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true);
+
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.110*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.120*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+
+        radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.010*sh,0.085*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.085*su,0.010*sh,0.110*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.110*su,0.010*sh,0.135*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
         radarGainScrollbar->setToolTipText(language->translate("gain").c_str());
         radarClutterScrollbar->setToolTipText(language->translate("clutter").c_str());
         radarRainScrollbar->setToolTipText(language->translate("rain").c_str());
+
+        eblLeftButton = guienv->addButton(core::rect<s32>(0.025*su,0.100*sh,0.092*su,0.130*sh),radarEBLTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
+        eblRightButton = guienv->addButton(core::rect<s32>(0.158*su,0.100*sh,0.225*su,0.130*sh),radarEBLTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
+        eblUpButton = guienv->addButton(core::rect<s32>(0.092*su,0.070*sh,0.158*su,0.100*sh),radarEBLTab,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
+        eblDownButton = guienv->addButton(core::rect<s32>(0.092*su,0.130*sh,0.158*su,0.160*sh),radarEBLTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());

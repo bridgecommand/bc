@@ -23,6 +23,7 @@ minSymbol="'"
 bearing="Brg"
 
 radarMainTab="Main"
+radarEBLVRMTab="EBL\nVRM"
 radarPITab="PI"
 radarGuardZoneTab="Guard\nZone"
 radarARPATab="ARPA"
@@ -35,6 +36,10 @@ decreaserange="Range\n   -"
 gain="Gain"
 rain="Rain"
 clutter="Clutter"
+eblLeft="EBL -"
+eblRight="EBL +"
+eblUp="VRM +"
+eblDown="VRM -"
 
 nm=" Nm"
 
