@@ -168,6 +168,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         hideInterfaceButton->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
         rainScrollbar->setVisible(showInterface);
+        radarText->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
