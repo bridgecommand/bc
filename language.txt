@@ -6,7 +6,7 @@ changed to UTF-8, for proper portability!
 ok="OK"
 scnChoose="Please choose a scenario:"
 secondary="Use as secondary display"
-hostname="Please enter hostname (PC name) for controller if used"
+hostname="Optional: Hostname (PC name) for controller/secondary display.\nMultiple entries can be comma separated."
 loadingmsg="Loading scenario..."
 
 pausedbutton="Paused, click to start"

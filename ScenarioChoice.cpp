@@ -54,8 +54,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
     gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.27*sh,0.80*su,0.30*sh));
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.32*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.30*sh,0.80*su,0.33*sh));
 
     //add credits text
     //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
