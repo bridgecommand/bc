@@ -7,6 +7,8 @@ waiting = "Waiting..."
 startBC = "Please start the Bridge Command session"
 
 pos="Position: "
+deg="°"
+minSymbol="'"
 own = "Own Ship"
 other = "Other Ship"
 

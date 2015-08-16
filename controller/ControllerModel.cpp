@@ -157,7 +157,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()

@@ -84,7 +84,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
 {
 
     //Show map texture
@@ -95,12 +95,46 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     mapCentreX = ownShipPosX - mapOffsetX*metresPerPx;
     mapCentreZ = ownShipPosZ + mapOffsetZ*metresPerPx;
 
+    irr::f32 mapCentreLong = terrainLong + mapCentreX*terrainLongExtent/terrainXWidth;
+    irr::f32 mapCentreLat = terrainLat + mapCentreZ*terrainLatExtent/terrainZWidth;
+
+    //Convert lat/long into a readable format
+    wchar_t eastWest;
+    wchar_t northSouth;
+    if (mapCentreLat >= 0) {
+        northSouth='N';
+    } else {
+        northSouth='S';
+    }
+    if (mapCentreLong >= 0) {
+        eastWest='E';
+    } else {
+        eastWest='W';
+    }
+    irr::f32 displayLat = fabs(mapCentreLat);
+    irr::f32 displayLong = fabs(mapCentreLong);
+
+    f32 latMinutes = (displayLat - (int)displayLat)*60;
+    f32 lonMinutes = (displayLong - (int)displayLong)*60;
+    u8 latDegrees = (int) displayLat;
+    u8 lonDegrees = (int) displayLong;
+
     //update heading display element
     core::stringw displayText = language->translate("pos");
-    displayText.append(core::stringw(mapCentreX));
+    displayText.append(irr::core::stringw(latDegrees));
+    displayText.append(language->translate("deg"));
+    displayText.append(f32To3dp(latMinutes).c_str());
+    displayText.append(language->translate("minSymbol"));
+    displayText.append(northSouth);
     displayText.append(L" ");
-    displayText.append(core::stringw(mapCentreZ));
+
+    displayText.append(irr::core::stringw(lonDegrees));
+    displayText.append(language->translate("deg"));
+    displayText.append(f32To3dp(lonMinutes).c_str());
+    displayText.append(language->translate("minSymbol"));
+    displayText.append(eastWest);
     displayText.append(L"\n");
+    /*
     //Show selected ship and legs
     displayText.append(core::stringw(selectedShip));
     displayText.append(L" ");
@@ -109,6 +143,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     //Show time now
     displayText.append(core::stringw(time));
     displayText.append(L"\n");
+    */
     //Display
     dataDisplay->setText(displayText.c_str());
 
@@ -385,4 +420,12 @@ int GUIMain::getSelectedLeg() const {
 
 irr::core::vector2df GUIMain::getScreenCentrePosition() const {
     return core::vector2df(mapCentreX, mapCentreZ);
+}
+
+std::wstring GUIMain::f32To3dp(irr::f32 value)
+{
+    //Convert a floating point value to a wstring, with 3dp
+    char tempStr[100];
+    snprintf(tempStr,100,"%.3f",value);
+    return std::wstring(tempStr, tempStr+strlen(tempStr));
 }
