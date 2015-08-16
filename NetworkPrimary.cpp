@@ -212,20 +212,22 @@ void NetworkPrimary::sendNetwork()
     std::string stringToSend;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SC' message
         stringToSend = generateSendStringSC();
-    } else {
+    } else if ( model->getLoopNumber() % 3 == 0 ) { //every 3rd loop, send the main BC message
         stringToSend = generateSendString();
     }
 
-    /* Create a packet */
-    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-    strlen (stringToSend.c_str()) + 1,
-    /*ENET_PACKET_FLAG_RELIABLE*/0);
+    if (stringToSend.length() > 0) {
+        /* Create a packet */
+        ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
+        strlen (stringToSend.c_str()) + 1,
+        /*ENET_PACKET_FLAG_RELIABLE*/0);
 
-    /* Send the packet to all connected peers over channel id 0. */
-    enet_host_broadcast(client, 0, packet);
+        /* Send the packet to all connected peers over channel id 0. */
+        enet_host_broadcast(client, 0, packet);
 
-    /* One could just use enet_host_service() instead. */
-    enet_host_flush (client);
+        /* One could just use enet_host_service() instead. */
+        enet_host_flush (client);
+    }
 }
 
 std::string NetworkPrimary::generateSendString()
