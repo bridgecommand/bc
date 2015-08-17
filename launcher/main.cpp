@@ -1,3 +1,8 @@
+//Common launcher program - WINDOWS ONLY
+//This just launches BridgeCommand.exe or
+//controller.exe depending on which button
+//the user presses
+
 #include "irrlicht.h"
 #include <iostream>
 #include <process.h>
@@ -23,10 +28,10 @@ public:
             if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED ) {
                 s32 id = event.GUIEvent.Caller->getID();
                 if (id == BC_BUTTON) {
-                    _execl("BridgeCommand.exe", "BridgeCommand.exe"); //Windows only
+                    _execl("BridgeCommand.exe", "BridgeCommand.exe", NULL); //Windows only
                 }
                 if (id == MC_BUTTON) {
-                    _execl("controller.exe", "controller.exe"); //Windows only
+                    _execl("controller.exe", "controller.exe", NULL); //Windows only
                 }
             }
         }
@@ -68,7 +73,5 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
-
-
     return(0);
 }
