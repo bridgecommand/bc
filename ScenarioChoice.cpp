@@ -165,7 +165,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
 irr::core::stringw ScenarioChoice::getCredits(){
 
-    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAMME, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
+    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
     creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
     creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
     creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
