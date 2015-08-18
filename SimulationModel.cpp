@@ -551,10 +551,10 @@ SimulationModel::~SimulationModel()
         rain.update(scenarioTime);
 
         //update other ship positions etc
-        otherShips.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel); //Update other ship motion (based on leg information), and light visibility.
+        otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel); //Update other ship motion (based on leg information), and light visibility.
 
         //update buoys (for lights)
-        buoys.update(deltaTime,scenarioTime,tideHeight,camera.getPosition(),lightLevel);
+        buoys.update(deltaTime,scenarioTime,tideHeight,lightLevel);
 
         //std::cout << tideHeight << std::endl;
 

@@ -69,10 +69,10 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
 
 }
 
-void LandLights::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel)
+void LandLights::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::u32 lightLevel)
 {
     for(std::vector<NavLight>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
-        it->update(scenarioTime, viewPosition, lightLevel);
+        it->update(scenarioTime, lightLevel);
     }
 }
 

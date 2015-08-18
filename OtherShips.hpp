@@ -35,7 +35,7 @@ class OtherShips
         OtherShips();
         virtual ~OtherShips();
         void load(const std::string& scenarioName, irr::f32 scenarioStartTime, bool secondary, irr::scene::ISceneManager* smgr, SimulationModel* model);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;

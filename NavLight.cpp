@@ -25,6 +25,9 @@ using namespace irr;
 
 NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence) {
 
+    //Store the scene manager, so we can find the active camera
+    this->smgr = smgr;
+
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
     lightNode->setColor(colour);
     lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
@@ -53,18 +56,29 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 NavLight::~NavLight() {
 }
 
-void NavLight::update(irr::f32 scenarioTime, irr::core::vector3df viewPosition, irr::u32 lightLevel) {
+void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
+
+    //FIXME: Remove viewPosition being passed in (now from Camera), and check if camera is null.
 
     //find light position
     lightNode->updateAbsolutePosition(); //ToDo: This is needed, but seems odd that it's required
     core::vector3df lightPosition = lightNode->getAbsolutePosition();
 
-    //std::cout << "Light pos: " << lightPosition.X << "," << lightPosition.Y << "," << lightPosition.Z << std::endl;
-    //std::cout << "View pos: " << viewPosition.X << "," << viewPosition.Z << std::endl;
+    //Find the active camera
+    irr::scene::ICameraSceneNode* camera = smgr->getActiveCamera();
+    if (camera == 0) {
+        return; //If we don't know where the camera is, we can't update lights etc, so give up here.
+    }
+    camera->updateAbsolutePosition();
+    irr::core::vector3df viewPosition = camera->getAbsolutePosition();
+
+    //find the HFOV
+    irr::f32 hFOV = 2*atan(tan(camera->getFOV()/2)*camera->getAspectRatio()); //Convert from VFOV to hFOV
+    irr::f32 zoom = hFOV / (core::PI/2.0); //Zoom compared to standard 90 degree field of view
 
     //scale so lights appear same size independent of range
     f32 lightDistance=lightPosition.getDistanceFrom(viewPosition);
-    lightNode->setSize(core::dimension2df(lightDistance*0.01,lightDistance*0.01));
+    lightNode->setSize(core::dimension2df(lightDistance*0.01*zoom,lightDistance*0.01*zoom));
 
     //set light visibility depending on range
     if (lightDistance > range) {

@@ -43,7 +43,7 @@ class OtherShip : public Ship
         void addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         void deleteLeg(int legNumber, irr::f32 scenarioTime);
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
 
     protected:
     private:
