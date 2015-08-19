@@ -27,6 +27,8 @@ class NavLight {
         NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="");
         ~NavLight();
         void update(irr::f32 scenarioTime, irr::u32 lightLevel);
+        irr::core::vector3df getPosition() const;
+        void setPosition(irr::core::vector3df position);
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:

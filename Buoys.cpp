@@ -62,6 +62,9 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Create buoy and load into vector
         buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),rcs,smgr));
 
+        //Find scene node
+        irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
+
         //Load buoy light information from light.ini file if available
 
         //Find number of lights
@@ -81,8 +84,12 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                 f32 lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
                 lightRange = lightRange * M_IN_NM;
 
-
-                buoysLights.push_back(NavLight (0,smgr,core::dimension2d<f32>(5, 5), core::vector3df(buoyX,lightHeight,buoyZ),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence));
+                //Scale height to adjust for buoy scaling
+                if (buoyNode->getScale().Y>0) {
+                    lightHeight/=buoyNode->getScale().Y;
+                }
+                //Create buoy light as a child of the buoy
+                buoysLights.push_back(NavLight (buoyNode,smgr,core::dimension2d<f32>(5, 5), core::vector3df(0,lightHeight,0),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence));
             }
         }
     }
@@ -100,7 +107,11 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
     }
 
     for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
+
+        //Update light size/visibility etc
         it->update(scenarioTime, lightLevel);
+
+        //Note that the buoy light is a child of the buoy, so it moves with it
     }
 }
 
@@ -137,7 +148,5 @@ void Buoys::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
         it->moveNode(deltaX,deltaY,deltaZ);
     }
 
-    for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
-        it->moveNode(deltaX,deltaY,deltaZ);
-    }
+    //Note the light is a child of the buoy, so it moves with it
 }

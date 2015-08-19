@@ -50,6 +50,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //Load the mesh
     scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
+
 	//add to scene node
 	if (buoyMesh==0) {
         //Failed to load mesh - load with dummy and continue
@@ -109,6 +110,11 @@ irr::f32 Buoy::getHeight() const
 irr::f32 Buoy::getRCS() const
 {
     return rcs;
+}
+
+irr::scene::ISceneNode* Buoy::getSceneNode() const
+{
+    return (irr::scene::ISceneNode*)buoy;
 }
 
 RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const

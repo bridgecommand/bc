@@ -56,6 +56,17 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 NavLight::~NavLight() {
 }
 
+irr::core::vector3df NavLight::getPosition() const
+{
+    lightNode->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
+    return lightNode->getAbsolutePosition();
+}
+
+void NavLight::setPosition(irr::core::vector3df position)
+{
+    lightNode->setPosition(position);
+}
+
 void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 
     //FIXME: Remove viewPosition being passed in (now from Camera), and check if camera is null.

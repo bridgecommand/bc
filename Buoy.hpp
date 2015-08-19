@@ -36,6 +36,7 @@ class Buoy
         irr::f32 getRCS() const;
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        irr::scene::ISceneNode* getSceneNode() const;
     protected:
     private:
         irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
