@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 3"
-!define OUTPUTFILE "bc50a3_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a3"
-!define SMFOLDER "Bridge Command 5.0 Alpha 3"
-!define REGKEY "BridgeCommand5.0a3"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 4"
+!define OUTPUTFILE "bc50a4_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a4"
+!define SMFOLDER "Bridge Command 5.0 Alpha 4"
+!define REGKEY "BridgeCommand5.0a4"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x EnetServer /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
@@ -76,6 +76,8 @@ SetShellVarContext all
   Delete "$INSTDIR\Angles.hpp"
   Delete "$INSTDIR\Water.hpp"
   Delete "$INSTDIR\Network.hpp"
+  Delete "$INSTDIR\NetworkPrimary.hpp"
+  Delete "$INSTDIR\NetworkSecondary.hpp"
   Delete "$INSTDIR\Light.hpp"
   Delete "$INSTDIR\IniFile.hpp"
   Delete "$INSTDIR\StartupEventReceiver.hpp"
@@ -118,6 +120,8 @@ SetShellVarContext all
   Delete "$INSTDIR\SimulationModel.hpp"
   Delete "$INSTDIR\LandLights.cpp"
   Delete "$INSTDIR\Network.cpp"
+  Delete "$INSTDIR\NetworkPrimary.cpp"
+  Delete "$INSTDIR\NetworkSecondary.cpp"
   Delete "$INSTDIR\Water.cpp"
   Delete "$INSTDIR\OtherShips.cpp"
   Delete "$INSTDIR\install.nsi"
@@ -145,7 +149,7 @@ SetShellVarContext all
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\Makefile"
-  Delete "$INSTDIR\ReadmeLinux.txt"
+  Delete "$INSTDIR\CompilingLinuxAndMac.txt"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\languageLauncher.txt"
