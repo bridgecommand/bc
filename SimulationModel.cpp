@@ -158,7 +158,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make radar image
         radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
-        radarImage->fill(video::SColor(255, 0, 0, 255)); //Fill with background colour
+        radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
 
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen

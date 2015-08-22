@@ -91,6 +91,16 @@ void RadarCalculation::load(std::string radarConfigFile)
         radarSeaClutter = 0.000000001;
         radarRainClutter = 0.00001;
 
+        radarBackgroundColour.setAlpha(255);
+        radarBackgroundColour.setRed(0);
+        radarBackgroundColour.setGreen(0);
+        radarBackgroundColour.setBlue(200);
+
+        radarForegroundColour.setAlpha(255);
+        radarForegroundColour.setRed(255);
+        radarForegroundColour.setGreen(220);
+        radarForegroundColour.setBlue(0);
+
     } else {
         //Load from file, but check plausibility where required
 
@@ -119,6 +129,16 @@ void RadarCalculation::load(std::string radarConfigFile)
         if (radarNoiseLevel < 0) {radarNoiseLevel = 0.000000000005;}
         if (radarSeaClutter < 0) {radarSeaClutter = 0.000000001;}
         if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
+
+        radarBackgroundColour.setAlpha(255);
+        radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar_bg_red"));
+        radarBackgroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar_bg_green"));
+        radarBackgroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,"radar_bg_blue"));
+
+        radarForegroundColour.setAlpha(255);
+        radarForegroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar1_red"));
+        radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar1_green"));
+        radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,"radar1_blue"));
     }
 }
 
@@ -442,11 +462,14 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
             //If the sector has changed, draw it
             if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep])
             {
-                s32 pixelColour=255*(scanArrayAmplified[scanAngle][currentStep]);
-                if (pixelColour>255) {pixelColour = 255;}
+                f32 pixelColour=scanArrayAmplified[scanAngle][currentStep];
+                if (pixelColour>1.0) {pixelColour = 1.0;}
                 if (pixelColour<0)   {pixelColour =   0;}
-                //Todo: Note that the colour is hardcoded into the following command, drawing as (R,G,B = intensity, intensity, 0), i.e. Yellow
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,255,pixelColour,pixelColour,0);
+
+                //Interpolate colour between foreground and background
+                irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
+
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue());
             }
         }
     }
