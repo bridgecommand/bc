@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -34,6 +34,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //store if we're running in secondary mode
         this->secondary = secondary;
+
+        //store default view angle
+        this->viewAngle = viewAngle;
 
         //Set loop number to zero
         loopNumber = 0;
@@ -128,7 +131,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
-        camera.load(smgr,ownShip.getSceneNode(),views,core::PI/2.0);
+        camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle);
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,secondary,smgr,this);
@@ -160,7 +163,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
         radarViews.push_back(core::vector3df(0,0,-0.25));
-        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews,core::PI/2.0);
+        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews,core::PI/2.0,0);
         radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.2);
         radarCamera.setFarValue(0.3);
@@ -496,7 +499,7 @@ SimulationModel::~SimulationModel()
         } else {
             zoom = 7.0; //Binoculars magnification
         }
-        camera.setHFOV((core::PI/2)/zoom);
+        camera.setHFOV(core::degToRad(viewAngle)/zoom);
     }
 
 

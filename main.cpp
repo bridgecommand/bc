@@ -71,6 +71,13 @@ int main()
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+    //Initial view configuration
+    f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+    f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+    if (viewAngle <= 0) {
+        viewAngle = 90;
+    }
+
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     u32 portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
     u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
@@ -137,7 +144,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioName, secondary);
+    SimulationModel model(device, smgr, &guiMain, scenarioName, secondary, viewAngle, lookAngle);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());

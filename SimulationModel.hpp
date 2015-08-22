@@ -46,7 +46,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -134,6 +134,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     bool secondary; //Are we in secondary mode?
+    irr::f32 viewAngle;
     irr::video::IImage* radarImage;
     //irr::f32 accelerator;
     irr::f32 tideHeight;

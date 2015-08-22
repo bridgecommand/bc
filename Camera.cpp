@@ -32,7 +32,7 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
@@ -41,7 +41,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
     this->parent = parent;
     this->views = views;
     currentView = 0;
-    lookAngle = 0;
+    this->lookAngle = lookAngle;
     lookUpAngle = 0;
 }
 
