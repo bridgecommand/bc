@@ -76,7 +76,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //add radar buttons
         //add tab control for radar
-        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh));
+        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
@@ -87,7 +87,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true);
+        radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
 
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.110*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.120*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
@@ -359,14 +359,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         s32 deltaY = -0.2*sh*cos(core::DEGTORAD*guiHeading);
         core::position2d<s32> radarCentre (centreX,centreY);
         core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
-        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255));
+        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255)); //Todo: Make these configurable
 
         //draw a look direction line
         s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*viewHdg);
         s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*viewHdg);
         core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
-        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0));
+        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0)); //Todo: Make these configurable
 
         //draw an EBL line
         s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
