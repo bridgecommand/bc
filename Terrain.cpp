@@ -100,6 +100,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    //Todo: Anti-aliasing flag?
     terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
 }
 

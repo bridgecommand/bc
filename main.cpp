@@ -70,6 +70,7 @@ int main()
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+    u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
 
     //Initial view configuration
     f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
@@ -98,7 +99,14 @@ int main()
     f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
 
     //create device
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    SIrrlichtCreationParameters deviceParameters;
+    deviceParameters.DriverType = video::EDT_OPENGL;
+    deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.Bits = graphicsDepth;
+    deviceParameters.Fullscreen = fullScreen;
+    deviceParameters.AntiAlias = antiAlias;
+    IrrlichtDevice* device = createDeviceEx(deviceParameters);
+
     device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
 
     video::IVideoDriver* driver = device->getVideoDriver();
@@ -186,7 +194,7 @@ int main()
 
         //Set up
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(true,true,video::SColor(255,100,101,140));
+        driver->beginScene(true, true, video::SColor(0,128,128,128));
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {
