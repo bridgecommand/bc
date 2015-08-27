@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 4"
-!define OUTPUTFILE "bc50a4_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a4"
-!define SMFOLDER "Bridge Command 5.0 Alpha 4"
-!define REGKEY "BridgeCommand5.0a4"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 5"
+!define OUTPUTFILE "bc50a5_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a5"
+!define SMFOLDER "Bridge Command 5.0 Alpha 5"
+!define REGKEY "BridgeCommand5.0a5"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -67,7 +67,6 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\media"
   RMDir /r "$INSTDIR\world"
   RMDir /r "$INSTDIR\libs"
-  RMDir /r "$INSTDIR\data"
   RMDir /r "$INSTDIR\shaders"
   RMDir /r "$INSTDIR\launcher"
 
