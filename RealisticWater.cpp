@@ -63,7 +63,7 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 
 	_waterSceneNode->setMaterialType((video::E_MATERIAL_TYPE)_shaderMaterial);
 
-	irr::video::ITexture* bumpTexture = _videoDriver->getTexture(resourcePath + "/data/waterbump.png");
+	irr::video::ITexture* bumpTexture = _videoDriver->getTexture(resourcePath + "/media/waterbump.png");
 	_waterSceneNode->setMaterialTexture(0, bumpTexture);
 
 	//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
