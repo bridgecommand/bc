@@ -35,6 +35,8 @@ namespace Utilities
     std::string timestampToString(time_t timestamp);
     std::string trim(std::string inString);
     std::vector<std::string> split(const std::string &inputString, char delim);
+    std::string getUserDir();
+    bool fileExists(std::string filePath);
 
     template <typename T>
     T lexical_cast(std::string in) //Special case for string so we can check for inf
@@ -51,7 +53,7 @@ namespace Utilities
         ) {
             //+inf
             var = std::numeric_limits<float>::infinity();
-        } else if (in.compare("inf")==0 ||
+        } else if (
             in.compare("-inf")==0 ||
             in.compare("-INF")==0 ||
             in.compare("-infinity")==0 ||

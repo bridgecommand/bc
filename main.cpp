@@ -27,6 +27,7 @@
 #include "Constants.hpp"
 #include "Lang.hpp"
 #include "NMEA.hpp"
+#include "Utilities.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -64,8 +65,18 @@ int main()
     //Note, we use this again after the createDevice call
 	#endif
 
+    //User read/write location - look in here first and the exe folder second for files
+    std::string userFolder = Utilities::getUserDir();
+
+    std::cout << "User folder is " << userFolder << std::endl;
+
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
+    //Use local ini file if it exists
+    if (Utilities::fileExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+
     u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");

@@ -15,10 +15,24 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Utilities.hpp"
+#include "Constants.hpp"
 
 #include <algorithm>
 #include <locale>
 #include <sstream>
+#include <sys/stat.h>
+
+#ifndef _WIN32
+    #ifdef __APPLE__
+        //Apple
+        #include <CoreServices/CoreServices.h>
+    #else
+        //Other posix
+        #include <unistd.h>
+        #include <sys/types.h>
+        #include <pwd.h>
+    #endif // __APPLE__
+#endif // _WIN32
 
 namespace Utilities
 {
@@ -104,5 +118,70 @@ namespace Utilities
         }
         return splitStrings;
     }
+
+    std::string getUserDir() {
+        // Return the user directory (eg %appdata%/Bridge Command/version on Windows,
+        // ~/.Bridge Command/version on Linux
+        // and
+        // ~/Library/Application Support/Bridge Command/version on Mac)
+
+        std::string userFolder;
+
+        #ifdef _WIN32
+            char* appdataLocation;
+            appdataLocation = getenv("APPDATA"); //TODO: Check this works on windows XP-10
+            if (appdataLocation!=NULL) {
+                userFolder = appdataLocation;
+                userFolder.append("/Bridge Command/");
+                userFolder.append(VERSION);
+                userFolder.append("/");
+            }
+        #else
+            #ifdef __APPLE__
+                //Apple
+                FSRef ref;
+                OSType folderType = kApplicationSupportFolderType;
+                char path[PATH_MAX];
+                FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
+                FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
+                // You now have ~/Library/Application Support stored in 'path'
+                if (path!=NULL) {
+                    userFolder = path;
+                    userFolder.append("/Bridge Command/");
+                    userFolder.append(VERSION);
+                    userFolder.append("/");
+                }
+            #else
+                //Other posix
+                struct passwd *pw = getpwuid(getuid());
+                const char *path = pw->pw_dir;
+                if (path!=NULL) {
+                    userFolder = path;
+                    userFolder.append("/.Bridge Command/");
+                    userFolder.append(VERSION);
+                    userFolder.append("/");
+                }
+            #endif // __APPLE__
+
+        #endif // _WIN32
+        //FIXME: Implement for Linux/OSX
+
+        return userFolder;
+    }
+
+    bool fileExists(std::string filePath) {
+
+        //Todo: Use same for file or folder? if so, strip trailing slash
+
+        struct stat buffer;
+        int retVal = stat(filePath.c_str(),&buffer);
+        if (retVal==0) { //Check this
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Note for dir check - strip trailing slash
 
 }
