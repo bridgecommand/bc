@@ -36,7 +36,7 @@ namespace Utilities
     std::string trim(std::string inString);
     std::vector<std::string> split(const std::string &inputString, char delim);
     std::string getUserDir();
-    bool fileExists(std::string filePath);
+    bool pathExists(std::string filePath);
 
     template <typename T>
     T lexical_cast(std::string in) //Special case for string so we can check for inf

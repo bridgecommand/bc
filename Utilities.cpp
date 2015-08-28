@@ -169,13 +169,20 @@ namespace Utilities
         return userFolder;
     }
 
-    bool fileExists(std::string filePath) {
+    bool pathExists(std::string filePath) {
 
-        //Todo: Use same for file or folder? if so, strip trailing slash
+        if (filePath.empty()) {
+            return false;
+        }
+
+        //Strip trailing slashes
+        while(!filePath.empty() && (*filePath.rbegin() == '/' || *filePath.rbegin() == '\\')) {
+            std::string::iterator it = filePath.end() - 1;
+            filePath.erase(it);
+        }
 
         struct stat buffer;
-        int retVal = stat(filePath.c_str(),&buffer);
-        if (retVal==0) { //Check this
+        if (stat(filePath.c_str(),&buffer)==0) { //File exists
             return true;
         } else {
             return false;
