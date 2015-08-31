@@ -17,6 +17,7 @@
 #include "ControllerModel.hpp"
 #include "../IniFile.hpp"
 #include "../Constants.hpp"
+#include "../Utilities.hpp"
 #include <iostream>
 
 //Constructor
@@ -42,6 +43,12 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     //construct path to world model
     std::string worldPath = "World/";
     worldPath.append(worldName);
+
+    //Check if this world model exists in the user dir.
+    std::string userFolder = Utilities::getUserDir();
+    if (Utilities::pathExists(userFolder + worldPath)) {
+        worldPath = userFolder + worldPath;
+    }
 
     std::string worldTerrainFile = worldPath;
     worldTerrainFile.append("/terrain.ini");

@@ -20,6 +20,7 @@
 #include "RadarData.hpp"
 #include "Constants.hpp"
 #include "OtherShip.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -33,10 +34,16 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     hdg = 0;
 
     this->name = name;
+
+    std::string basePath = "Models/Othership/" + name + "/";
+    std::string userFolder = Utilities::getUserDir();
+    //Read model from user dir if it exists there.
+    if (Utilities::pathExists(userFolder + basePath)) {
+        basePath = userFolder + basePath;
+    }
+
     //Load from individual boat.ini file
-    std::string iniFilename = "Models/Othership/";
-    iniFilename.append(name);
-    iniFilename.append("/boat.ini");
+    std::string iniFilename = basePath + "boat.ini";
 
     //load information about this model from its ini file
     std::string shipFileName = IniFile::iniFileToString(iniFilename,"FileName");
@@ -49,10 +56,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
 
-    std::string shipFullPath = "Models/Othership/";
-    shipFullPath.append(name);
-    shipFullPath.append("/");
-    shipFullPath.append(shipFileName);
+    std::string shipFullPath = basePath + shipFileName;
 
     //load mesh
     scene::IMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());

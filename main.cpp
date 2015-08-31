@@ -134,7 +134,11 @@ int main()
     #endif
 
     //load language
-    Lang language("language.txt");
+    std::string languageFile = "language.txt";
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+    Lang language(languageFile);
 
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
@@ -148,9 +152,15 @@ int main()
     //Choose scenario
     std::string scenarioName = "";
     std::string hostname = "";
+    //Scenario path - default to user dir if it exists
+    std::string scenarioPath = "Scenarios/";
+    if (Utilities::pathExists(userFolder + scenarioPath)) {
+        scenarioPath = userFolder + scenarioPath;
+    }
+
     bool secondary = false;
     ScenarioChoice scenarioChoice(device,&language);
-    scenarioChoice.chooseScenario(scenarioName, hostname, secondary);
+    scenarioChoice.chooseScenario(scenarioName, hostname, secondary, scenarioPath);
 
     u32 creditsStartTime = device->getTimer()->getRealTime();
 
@@ -163,7 +173,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioName, secondary, viewAngle, lookAngle);
+    SimulationModel model(device, smgr, &guiMain, scenarioPath + scenarioName, secondary, viewAngle, lookAngle);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());

@@ -21,6 +21,7 @@
 #include "SimulationModel.hpp"
 #include "IniFile.hpp"
 #include "Angles.hpp"
+#include "Utilities.hpp"
 
 #include <cstdlib> //For rand()
 
@@ -44,22 +45,22 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
     hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
+    std::string basePath = "Models/Ownship/" + ownShipName + "/";
+    std::string userFolder = Utilities::getUserDir();
+    //Read model from user dir if it exists there.
+    if (Utilities::pathExists(userFolder + basePath)) {
+        basePath = userFolder + basePath;
+    }
+
     //Load from boat.ini file if it exists
-    std::string shipIniFilename = "Models/Ownship/";
-    shipIniFilename.append(ownShipName);
-    shipIniFilename.append("/boat.ini");
+    std::string shipIniFilename = basePath + "boat.ini";
 
     //Construct the radar config file name, to be used later by the radar
-    radarConfigFile = "Models/Ownship/";
-    radarConfigFile.append(ownShipName);
-    radarConfigFile.append("/radar.ini");
+    radarConfigFile = basePath + "radar.ini";
 
     //get the model file
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename,"FileName");
-    std::string ownShipFullPath = "Models/Ownship/";
-                ownShipFullPath.append(ownShipName);
-                ownShipFullPath.append("/");
-                ownShipFullPath.append(ownShipFileName);
+    std::string ownShipFullPath = basePath + ownShipFileName;
 
     //Load dynamics settings
     shipMass = IniFile::iniFileTof32(shipIniFilename,"Mass");
@@ -135,7 +136,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     //camera offset (in unscaled and uncorrected ship coords)
     irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
     if (numberOfViews==0) {
-        //ToDo: Tell user that view positions couldn't be loaded
+        std::cout << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
         exit(EXIT_FAILURE);
     }
     for(u32 i=1;i<=numberOfViews;i++) {

@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioPath, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -40,10 +40,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Set loop number to zero
         loopNumber = 0;
-
-        //construct path to scenario
-        std::string scenarioPath = "Scenarios/"; //Fixme: Should be a parameter, and duplicated in ScenarioChoice.cpp
-        scenarioPath.append(scenarioName);
 
         //Read world file name from scenario:
         std::string environmentIniFilename = scenarioPath;
@@ -81,12 +77,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         if (worldName == "") {
             //Could not load world name from scenario, so end here
             //ToDo: Tell user problem
+            std::cout << "World model name not defined" << std::endl;
             exit(EXIT_FAILURE);
         }
 
         //construct path to world model
         std::string worldPath = "World/";
         worldPath.append(worldName);
+
+        //Check if this world model exists in the user dir.
+        std::string userFolder = Utilities::getUserDir();
+        if (Utilities::pathExists(userFolder + worldPath)) {
+            worldPath = userFolder + worldPath;
+        }
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
         terrain.load(worldPath, smgr);

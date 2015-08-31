@@ -26,7 +26,7 @@ class ScenarioChoice
 {
 public:
     ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    void chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary);
+    void chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary, std::string scenarioPath);
 
 private:
     void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);

@@ -12,6 +12,7 @@
 
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
+#include "../Utilities.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -44,8 +45,15 @@ int main (int argc, char ** argv)
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
 	#endif
-    
+
+    //User read/write location - look in here first and the exe folder second for files
+    std::string userFolder = Utilities::getUserDir();
+
     std::string iniFilename = "map.ini";
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
     u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -54,8 +62,8 @@ int main (int argc, char ** argv)
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
-    
-    
+
+
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
@@ -67,7 +75,12 @@ int main (int argc, char ** argv)
     #endif
 
     //load language
-    Lang language("languageController.txt");
+    //load language
+    std::string languageFile = "languageController.txt";
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+    Lang language(languageFile);
 
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");

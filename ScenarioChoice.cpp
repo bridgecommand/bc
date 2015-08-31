@@ -29,13 +29,13 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary)
+void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary, std::string scenarioPath)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
-    getScenarioList(scenarioList,"Scenarios/"); //Populate list //Fixme: Should be a parameter, and duplicated in SimulationModel.cpp
+    getScenarioList(scenarioList,scenarioPath); //Populate list
 
     //Get screen width
     u32 su = driver->getScreenSize().Width;

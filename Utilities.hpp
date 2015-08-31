@@ -35,7 +35,7 @@ namespace Utilities
     std::string timestampToString(time_t timestamp);
     std::string trim(std::string inString);
     std::vector<std::string> split(const std::string &inputString, char delim);
-    std::string getUserDir();
+    std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory
     bool pathExists(std::string filePath);
 
     template <typename T>

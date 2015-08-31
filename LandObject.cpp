@@ -16,6 +16,7 @@
 
 #include "LandObject.hpp"
 #include "IniFile.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -24,10 +25,15 @@ using namespace irr;
 LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr)
 {
 
+    std::string basePath = "Models/LandObject/" + name + "/";
+    std::string userFolder = Utilities::getUserDir();
+    //Read model from user dir if it exists there.
+    if (Utilities::pathExists(userFolder + basePath)) {
+        basePath = userFolder + basePath;
+    }
+
     //Load from individual object.ini file if it exists
-    std::string objectIniFilename = "Models/LandObject/";
-    objectIniFilename.append(name);
-    objectIniFilename.append("/object.ini");
+    std::string objectIniFilename = basePath + "/object.ini";
 
     //get filename from ini file (or empty string if file doesn't exist)
     std::string objectFileName = IniFile::iniFileToString(objectIniFilename,"FileName");
@@ -41,10 +47,7 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
         objectScale = 1.0; //Default if not set
     }
 
-    std::string objectFullPath = "Models/LandObject/";
-    objectFullPath.append(name);
-    objectFullPath.append("/");
-    objectFullPath.append(objectFileName);
+    std::string objectFullPath = basePath + objectFileName;
 
     //Load the mesh
     scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());

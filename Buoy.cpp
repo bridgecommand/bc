@@ -18,6 +18,7 @@
 #include "RadarData.hpp"
 #include "Angles.hpp"
 #include "IniFile.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -26,10 +27,15 @@ using namespace irr;
 Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr)
 {
 
+    std::string basePath = "Models/Buoy/" + name + "/";
+    std::string userFolder = Utilities::getUserDir();
+    //Read model from user dir if it exists there.
+    if (Utilities::pathExists(userFolder + basePath)) {
+        basePath = userFolder + basePath;
+    }
+
     //Load from individual buoy.ini file if it exists
-    std::string buoyIniFilename = "Models/Buoy/";
-    buoyIniFilename.append(name);
-    buoyIniFilename.append("/buoy.ini");
+    std::string buoyIniFilename = basePath + "buoy.ini";
 
     //get filename from ini file (or empty string if file doesn't exist)
     std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName");
@@ -43,10 +49,8 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
         buoyScale = 1.0; //Default if not set
     }
 
-    std::string buoyFullPath = "Models/Buoy/";
-    buoyFullPath.append(name);
-    buoyFullPath.append("/");
-    buoyFullPath.append(buoyFileName);
+    //The path to the actual model file
+    std::string buoyFullPath = basePath + buoyFileName;
 
     //Load the mesh
     scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
