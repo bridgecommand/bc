@@ -9,6 +9,11 @@
 
 #include "../Lang.hpp"
 
+//Mac OS:
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
@@ -28,10 +33,30 @@ public:
             if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED ) {
                 s32 id = event.GUIEvent.Caller->getID();
                 if (id == BC_BUTTON) {
-                    _execl("BridgeCommand.exe", "BridgeCommand.exe", NULL); //Windows only
+                    #ifdef _WIN32
+                        execl("BridgeCommand.exe", "BridgeCommand.exe", NULL);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        execl("../MacOS/bc5", "bc5", NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("./bridgecommand", "bridgecommand", NULL);
+                    #endif
+                    #endif
                 }
                 if (id == MC_BUTTON) {
-                    _execl("controller.exe", "controller.exe", NULL); //Windows only
+                    #ifdef _WIN32
+                        execl("controller.exe", "controller.exe", NULL);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        execl("../MacOS/map", "map", NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("./mapController", "mapController", NULL);
+                    #endif
+                    #endif
                 }
             }
         }
@@ -42,6 +67,27 @@ public:
 int main (int argc, char ** argv)
 {
 
+    //Mac OS:
+    //Find starting folder
+	#ifdef __APPLE__
+    char exePath[1024];
+    uint32_t pathSize = sizeof(exePath);
+    std::string exeFolderPath = "";
+    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
+        std::string exePathString(exePath);
+        size_t pos = exePathString.find_last_of("\\/");
+        if (std::string::npos != pos) {
+            exeFolderPath = exePathString.substr(0, pos);
+        }
+    }
+    //change up from BridgeCommand.app/Contents/MacOS to ../Resources
+    exeFolderPath.append("/../Resources");
+    std::cout << "ExePath: " << exeFolderPath << std::endl;
+    //change to this path now
+    chdir(exeFolderPath.c_str());
+    //Note, we use this again after the createDevice call
+	#endif
+
     u32 graphicsWidth = 400;
     u32 graphicsHeight = 100;
     u32 graphicsDepth = 32;
@@ -51,6 +97,16 @@ int main (int argc, char ** argv)
 
     IrrlichtDevice* device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
+
+    #ifdef __APPLE__
+    //Mac OS - cd back to original dir - seems to be changed during createDevice
+    io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem==0) {
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get filesystem" << std::endl;
+    }
+    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+    #endif
 
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");

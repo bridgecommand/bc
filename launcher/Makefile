@@ -3,9 +3,9 @@
 # and be sure that CXX is set to a valid compiler
 
 # Name of the executable created (.exe will be added automatically if necessary)
-Target := mapController
+Target := launcher
 # List of source files, separated by spaces
-Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ControllerModel.cpp EventReceiver.cpp GUI.cpp Network.cpp ../libs/enet/callbacks.c ../libs/enet/compress.c ../libs/enet/host.c ../libs/enet/list.c ../libs/enet/packet.c ../libs/enet/peer.c ../libs/enet/protocol.c ../libs/enet/unix.c ../libs/enet/win32.c
+Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp
 # Path to Irrlicht directory, should contain include/ and lib/
 IrrlichtHome := ../libs/Irrlicht/irrlicht-1.8.1
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
@@ -41,7 +41,7 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/map
+	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/BridgeCommand
 endif
 
 clean:

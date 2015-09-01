@@ -57,8 +57,8 @@ int main()
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-    //change up from BridgeCommand.app/Contents/MacOS to ../../..
-    exeFolderPath.append("/../../..");
+    //change up from BridgeCommand.app/Contents/MacOS to ../Resources
+    exeFolderPath.append("/../Resources");
     std::cout << "ExePath: " << exeFolderPath << std::endl;
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());

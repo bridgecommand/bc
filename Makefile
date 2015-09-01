@@ -41,7 +41,17 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/BridgeCommand
+	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc5
+	cp -a media BridgeCommand.app/Contents/Resources/media
+	cp -a Models BridgeCommand.app/Contents/Resources/Models
+	cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
+	cp -a shaders BridgeCommand.app/Contents/Resources/shaders
+	cp -a World BridgeCommand.app/Contents/Resources/World
+	cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
+	cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
+	cp -a language.txt BridgeCommand.app/Contents/Resources/language.txt
+	cp -a languageController.txt BridgeCommand.app/Contents/Resources/languageController.txt
+	cp -a languageLauncher.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
 endif
 
 clean:
