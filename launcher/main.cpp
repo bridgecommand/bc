@@ -86,7 +86,6 @@ int main (int argc, char ** argv)
     }
     //change up from BridgeCommand.app/Contents/MacOS to ../Resources
     exeFolderPath.append("/../Resources");
-    std::cout << "ExePath: " << exeFolderPath << std::endl;
     //change to this path now
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
