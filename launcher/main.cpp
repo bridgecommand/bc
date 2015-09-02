@@ -1,13 +1,18 @@
-//Common launcher program - WINDOWS ONLY
-//This just launches BridgeCommand.exe or
-//controller.exe depending on which button
-//the user presses
+//Common launcher program
+//This just launches Bridge Command or
+//Map Controller executable depending
+//on which button the user presses
 
 #include "irrlicht.h"
 #include <iostream>
-#include <process.h>
-
 #include "../Lang.hpp"
+
+//headers for execl
+#ifdef _WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 
 //Mac OS:
 #ifdef __APPLE__
@@ -20,8 +25,7 @@ using namespace irr;
 const irr::s32 BC_BUTTON = 1;
 const irr::s32 MC_BUTTON = 2;
 
-//TODO: add event receiver
-
+//Event receiver: This does the actual launching
 class Receiver : public IEventReceiver
 {
 public:
@@ -34,7 +38,7 @@ public:
                 s32 id = event.GUIEvent.Caller->getID();
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
-                        execl("BridgeCommand.exe", "BridgeCommand.exe", NULL);
+                        execl("./BridgeCommand.exe", "BridgeCommand.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -47,7 +51,7 @@ public:
                 }
                 if (id == MC_BUTTON) {
                     #ifdef _WIN32
-                        execl("controller.exe", "controller.exe", NULL);
+                        execl("./controller.exe", "controller.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
