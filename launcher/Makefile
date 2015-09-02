@@ -3,7 +3,7 @@
 # and be sure that CXX is set to a valid compiler
 
 # Name of the executable created (.exe will be added automatically if necessary)
-Target := launcher
+Target := bcLauncher
 # List of source files, separated by spaces
 Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp
 # Path to Irrlicht directory, should contain include/ and lib/
