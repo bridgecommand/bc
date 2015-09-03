@@ -23,5 +23,7 @@ To build on Mac:
 3) Run 'xcodebuild -project MacOSX.xcodeproj' to compile irrlicht
 4) cd back to this directory
 5) Run 'make' to compile Bridge Command
+6) cd to ./launcher, run ‘make’, and cd ..
+7) cd to ./controller and run ‘make’
 Running
-6) Run the BridgeCommand app
+8) Run the BridgeCommand app
