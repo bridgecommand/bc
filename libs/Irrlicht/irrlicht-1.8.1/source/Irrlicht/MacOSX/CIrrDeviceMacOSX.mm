@@ -625,6 +625,10 @@ bool CIrrDeviceMacOSX::createWindow()
 				NSBackingStoreType type = (CreationParams.DriverType == video::EDT_OPENGL) ? NSBackingStoreBuffered : NSBackingStoreNonretained;
 
 				Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:type defer:FALSE];
+                
+                [Window setReleasedWhenClosed:FALSE]; //JAMES - Trying to avoid crash on close
+                
+                [[NSApplication sharedApplication] activateIgnoringOtherApps : YES]; //JAMES - Ensure it's at the front when launched
 			}
 
 			if (Window != NULL || CreationParams.WindowId)
@@ -840,6 +844,8 @@ bool CIrrDeviceMacOSX::createWindow()
 						else
 						{
 							Window = [[NSWindow alloc] initWithContentRect:[[NSScreen mainScreen] frame] styleMask:NSBorderlessWindowMask backing:NSBackingStoreNonretained defer:NO screen:[NSScreen mainScreen]];
+                            
+                            [Window setReleasedWhenClosed:FALSE]; //JAMES - Trying to avoid crash on close
 
 							[Window setLevel: CGShieldingWindowLevel()];
 							[Window setAcceptsMouseMovedEvents:TRUE];

@@ -45,8 +45,8 @@ int main()
 {
 
     //Mac OS:
-    //Find starting folder
 	#ifdef __APPLE__
+    //Find starting folder
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -123,6 +123,8 @@ int main()
     scene::ISceneManager* smgr = device->getSceneManager();
 
     #ifdef __APPLE__
+    //Bring window to front
+    //NSWindow* window = reinterpret_cast<NSWindow>(device->getVideoDriver()->getExposedVideoData().HWnd);
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {

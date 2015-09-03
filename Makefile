@@ -42,6 +42,11 @@ all:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
 	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc5
+	rm -rf BridgeCommand.app/Contents/Resources/media
+	rm -rf BridgeCommand.app/Contents/Resources/Models
+	rm -rf BridgeCommand.app/Contents/Resources/Scenarios
+	rm -rf BridgeCommand.app/Contents/Resources/shaders
+	rm -rf BridgeCommand.app/Contents/Resources/World
 	cp -a media BridgeCommand.app/Contents/Resources/media
 	cp -a Models BridgeCommand.app/Contents/Resources/Models
 	cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
