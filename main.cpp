@@ -106,6 +106,12 @@ int main()
     //Load NMEA settings
     std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
 
+    //Load UDP network settings
+    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    if (udpPort == 0) {
+        udpPort = 18304;
+    }
+
     //Sensible defaults if not set
     if (graphicsWidth==0) {graphicsWidth=800;}
     if (graphicsHeight==0) {graphicsHeight=600;}
@@ -193,7 +199,7 @@ int main()
     device->setEventReceiver(&receiver);
 
     //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(&model, secondary);
+    Network* network = Network::createNetwork(&model, secondary, udpPort);
     //Network network(&model);
     network->connectToServer(hostname);
 

@@ -23,7 +23,7 @@
 #include "Utilities.hpp"
 #include "Constants.hpp"
 
-NetworkSecondary::NetworkSecondary(SimulationModel* model)
+NetworkSecondary::NetworkSecondary(SimulationModel* model, int port)
 {
     ENetAddress address;
 
@@ -42,8 +42,8 @@ NetworkSecondary::NetworkSecondary(SimulationModel* model)
     /* A specific host address can be specified by */
     /* enet_address_set_host (& address, "x.x.x.x"); */
     address.host = ENET_HOST_ANY;
-    /* Bind the server to port 18304. */
-    address.port = 18304;
+    /* Bind the server to port XXXXX. */
+    address.port = port;
     server = enet_host_create (& address /* the address to bind the server host to */,
     32 /* allow up to 32 clients and/or outgoing connections */,
     2 /* allow up to 2 channels to be used, 0 and 1 */,

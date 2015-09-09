@@ -32,7 +32,7 @@ class ControllerModel;
 class Network
 {
 public:
-    Network();
+    Network(int port);
     ~Network();
 
     std::string findWorldName();

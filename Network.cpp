@@ -29,11 +29,11 @@ Network::~Network() //Virtual destructor
 {
 }
 
-Network* Network::createNetwork(SimulationModel* model, bool secondary) //Factory class, create a primary or secondary network object, and return a pointer
+Network* Network::createNetwork(SimulationModel* model, bool secondary, int port) //Factory class, create a primary or secondary network object, and return a pointer
 {
     if (secondary) {
-        return new NetworkSecondary(model);
+        return new NetworkSecondary(model, port);
     } else {
-        return new NetworkPrimary(model);
+        return new NetworkPrimary(model, port);
     }
 }

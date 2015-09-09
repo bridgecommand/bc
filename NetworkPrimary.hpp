@@ -29,7 +29,7 @@ class SimulationModel;
 class NetworkPrimary : public Network
 {
 public:
-    NetworkPrimary(SimulationModel* model);
+    NetworkPrimary(SimulationModel* model, int port);
     ~NetworkPrimary();
 
     void connectToServer(std::string hostnames);
@@ -37,6 +37,7 @@ public:
 
 private:
     SimulationModel* model;
+    int port;
 
     ENetHost* client; //One client
     ENetEvent event;

@@ -24,11 +24,12 @@
 #include <cstdio>
 #include <vector>
 
-NetworkPrimary::NetworkPrimary(SimulationModel* model) //Constructor
+NetworkPrimary::NetworkPrimary(SimulationModel* model, int port) //Constructor
 {
 
     //link to model so network can interact with model
     this->model = model; //Link to the model
+    this->port = port;
 
     //start networking
     if (enet_initialize () != 0) {
@@ -81,7 +82,7 @@ void NetworkPrimary::connectToServer(std::string hostnames)
 
         /* Connect to some.server.net:18304. */
         enet_address_set_host (& address, thisHostname.c_str());
-        address.port = 18304; //Todo: Make this configurable
+        address.port = port;
         /* Initiate the connection, allocating the two channels 0 and 1. */
         peer = enet_host_connect (client, & address, 2, 0);
         //Note we don't store peer pointer, as we broadcast to all connected peers.

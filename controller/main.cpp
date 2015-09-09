@@ -58,6 +58,12 @@ int main (int argc, char ** argv)
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+    //Load UDP network settings
+    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    if (udpPort == 0) {
+        udpPort = 18304;
+    }
+
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
@@ -92,7 +98,7 @@ int main (int argc, char ** argv)
 
     //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
     //Network class
-    Network network;
+    Network network(udpPort);
 
     //Find world model to use, from the network
     irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
