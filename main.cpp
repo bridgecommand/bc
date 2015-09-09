@@ -89,6 +89,15 @@ int main()
         viewAngle = 90;
     }
 
+    f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+    f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+    if (cameraMinDistance<=0) {
+        cameraMinDistance = 1;
+    }
+    if (cameraMaxDistance<=0) {
+        cameraMaxDistance = 6*M_IN_NM;
+    }
+
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     u32 portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
     u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
@@ -174,7 +183,7 @@ int main()
     GUIMain guiMain(device, &language);
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioPath + scenarioName, secondary, viewAngle, lookAngle);
+    SimulationModel model(device, smgr, &guiMain, scenarioPath + scenarioName, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());

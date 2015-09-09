@@ -19,6 +19,7 @@
 
 #include <cmath>
 
+
 using namespace irr;
 
 Camera::Camera()
@@ -36,8 +37,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
-    camera->setFarValue(6*M_IN_NM);//Todo: This should depend on the current (variable) fog range
-//    camera->setFOV(hFOV/camera->getAspectRatio()); //Convert horizontal field of view to vertical (Camera FOV now set each loop)
+
     this->parent = parent;
     this->views = views;
     currentView = 0;

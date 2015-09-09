@@ -103,11 +103,8 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     }
 
     //Todo: Missing:
-    //Number of engines
     //CentrifugalDriftEffect
     //PropWalkDriftEffect
-    //Buffet
-    //Swell
     //Windage
     //WindageTurnEffect
     //Also:

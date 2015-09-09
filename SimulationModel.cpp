@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioPath, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioPath, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -135,6 +135,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle);
+        camera.setNearValue(cameraMinDistance);
+        camera.setFarValue(cameraMaxDistance);
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,secondary,smgr,this);
