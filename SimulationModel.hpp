@@ -52,6 +52,8 @@ public:
     irr::f32 latToZ(irr::f32 latitude) const;
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
+    irr::f32 getRateOfTurn() const;
+    void setRateOfTurn(irr::f32 rateOfTurn);
     void setPos(irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     irr::f32 getRudder() const;

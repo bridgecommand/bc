@@ -178,6 +178,17 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     roll = 0;
 }
 
+void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
+{
+    controlMode = MODE_AUTO; //Switch to controlled mode
+    this->rateOfTurn = rateOfTurn;
+}
+
+irr::f32 OwnShip::getRateOfTurn() const
+{
+    return rateOfTurn;
+}
+
 void OwnShip::setRudder(irr::f32 rudder)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
@@ -321,7 +332,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         hdg += buffetAngle;
 
-    } //End of engine mode
+    } else //End of engine mode
+    {
+        //MODE_AUTO
+        if (!positionManuallyUpdated) {
+            //Apply rate of turn
+            hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
+        }
+    }
 
     //Normalise heading
     if(hdg>=360) {hdg-=360;}

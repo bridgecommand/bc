@@ -323,6 +323,16 @@ SimulationModel::~SimulationModel()
          ownShip.setHeading(hdg);
     }
 
+    irr::f32 SimulationModel::getRateOfTurn() const
+    {
+        return ownShip.getRateOfTurn();
+    }
+
+    void SimulationModel::setRateOfTurn(irr::f32 rateOfTurn)
+    {
+        ownShip.setRateOfTurn(rateOfTurn);
+    }
+
     void SimulationModel::setPos(irr::f32 positionX, irr::f32 positionZ)
     {
         ownShip.setPosition(positionX - offsetPosition.X, positionZ - offsetPosition.Z );

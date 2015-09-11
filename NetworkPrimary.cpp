@@ -253,6 +253,8 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getHeading()));
     stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getRateOfTurn()));
+    stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Pitch
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Roll

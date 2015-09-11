@@ -39,6 +39,8 @@ class OwnShip : public Ship
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
+        void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
+        irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1 : Fixme: check consistent
         irr::f32 getStbdEngine() const; //-1 to 1
         irr::f32 getPortEngineRPM() const;
