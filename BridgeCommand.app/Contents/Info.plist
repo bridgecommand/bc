@@ -8,6 +8,8 @@
 	<string>BridgeCommand</string>
 	<key>CFBundleIdentifier</key>
 	<string>uk.co.bridgecommand.BridgeCommand</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.simulation-games</string>
 	<key>CFBundleName</key>
 	<string>Bridge Command</string>
 	<key>CFBundleInfoDictionaryVersion</key>
