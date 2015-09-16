@@ -20,17 +20,17 @@
 
 #include "GUI.hpp"
 #include "ControllerModel.hpp"
-#include "Network.hpp"
+//#include "Network.hpp"
 #include "../Utilities.hpp"
 
 using namespace irr;
 
-    EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
+    EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui/*, Network* network*/) //Constructor
 	{
 		this->device = device; //Link to the irrlicht device
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI
-		this->network = network; //Link to the network
+		//this->network = network; //Link to the network
     }
 
     bool EventReceiver::OnEvent(const SEvent& event)
@@ -68,7 +68,7 @@ using namespace irr;
                     messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
                     messageToSend.append("#");
 
-                    network->setStringToSend(messageToSend);
+                    //network->setStringToSend(messageToSend);
 
                 }
                 if (id == GUIMain::GUI_ID_DELETELEG_BUTTON) {
@@ -81,7 +81,7 @@ using namespace irr;
                     messageToSend.append(Utilities::lexical_cast<std::string>(leg));
                     messageToSend.append("#");
 
-                    network->setStringToSend(messageToSend);
+                    //network->setStringToSend(messageToSend);
 
                 }
 
@@ -108,7 +108,7 @@ using namespace irr;
 
                     //std::cout << messageToSend << std::endl;
 
-                    network->setStringToSend(messageToSend);
+                    //network->setStringToSend(messageToSend);
 
                 }
                 if (id == GUIMain::GUI_ID_MOVESHIP_BUTTON) {
@@ -123,7 +123,7 @@ using namespace irr;
                     messageToSend.append(",");
                     messageToSend.append(Utilities::lexical_cast<std::string>(screenCentrePos.Y));
                     messageToSend.append("#");
-                    network->setStringToSend(messageToSend);
+                    //network->setStringToSend(messageToSend);
 
                     //If moving own ship, reset offset, so the map doesn't jump
                     if (ship==0) {

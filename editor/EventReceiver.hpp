@@ -22,13 +22,13 @@
 //forward declarations
 class GUIMain;
 class ControllerModel;
-class Network;
+//class Network;
 
 class EventReceiver : public irr::IEventReceiver
 {
 public:
 
-    EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network);
+    EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui/*, Network* network*/);
     bool OnEvent(const irr::SEvent& event);
 
     bool isMouseDown() const;
@@ -38,7 +38,7 @@ private:
     irr::IrrlichtDevice* device;
     ControllerModel* model;
     GUIMain* gui;
-    Network* network;
+    //Network* network;
 
 };
 

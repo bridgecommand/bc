@@ -35,9 +35,9 @@
 		</Compiler>
 		<Linker>
 			<Add library="..\libs\Irrlicht\irrlicht-1.8.1\lib\Win32-gcc\libIrrlicht.a" />
-			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 			<Add library="ws2_32" />
 			<Add library="Winmm" />
+			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Linker>
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../IniFile.cpp" />
@@ -47,50 +47,12 @@
 		<Unit filename="../Leg.hpp" />
 		<Unit filename="../Utilities.cpp" />
 		<Unit filename="../Utilities.hpp" />
-		<Unit filename="../libs/enet/callbacks.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/callbacks.h" />
-		<Unit filename="../libs/enet/compress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/enet.h" />
-		<Unit filename="../libs/enet/host.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/list.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/list.h" />
-		<Unit filename="../libs/enet/packet.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/peer.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/protocol.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/protocol.h" />
-		<Unit filename="../libs/enet/time.h" />
-		<Unit filename="../libs/enet/types.h" />
-		<Unit filename="../libs/enet/unix.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/unix.h" />
-		<Unit filename="../libs/enet/utility.h" />
-		<Unit filename="../libs/enet/win32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/win32.h" />
 		<Unit filename="ControllerModel.cpp" />
 		<Unit filename="ControllerModel.hpp" />
 		<Unit filename="EventReceiver.cpp" />
 		<Unit filename="EventReceiver.hpp" />
 		<Unit filename="GUI.cpp" />
 		<Unit filename="GUI.hpp" />
-		<Unit filename="Network.cpp" />
-		<Unit filename="Network.hpp" />
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />

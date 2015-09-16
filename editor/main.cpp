@@ -5,7 +5,7 @@
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
-#include "Network.hpp"
+//#include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
 #include "EventReceiver.hpp"
@@ -58,12 +58,6 @@ int main (int argc, char ** argv)
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
-    //Load UDP network settings
-    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-    if (udpPort == 0) {
-        udpPort = 18304;
-    }
-
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
@@ -81,7 +75,7 @@ int main (int argc, char ** argv)
 
     //load language
     //load language
-    std::string languageFile = "languageController.txt";
+    std::string languageFile = "languageController.txt"; //TODO: Update when needed
     if (Utilities::pathExists(userFolder + languageFile)) {
         languageFile = userFolder + languageFile;
     }
@@ -98,6 +92,7 @@ int main (int argc, char ** argv)
 
     //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
     //Network class
+    /*
     Network network(udpPort);
 
     //Find world model to use, from the network
@@ -106,8 +101,10 @@ int main (int argc, char ** argv)
     //hide close button
     patienceWindow->getCloseButton()->setVisible(false);
 
+    */
+    std::string worldName = "SimpleEstuary"; //Todo: make this a user selection.
 
-    std::string worldName = "";
+    /*
     while (device->run() && worldName.size() == 0) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
@@ -121,6 +118,7 @@ int main (int argc, char ** argv)
         std::cout << "Could not receive world name" << std::endl;
         exit(EXIT_FAILURE);
     }
+    */
 
     //GUI class
     GUIMain guiMain(device, &language);
@@ -134,7 +132,7 @@ int main (int argc, char ** argv)
     std::vector<OtherShipData> otherShipsData;
 
     //create event receiver, linked to model
-    EventReceiver receiver(device, &controller, &guiMain, &network);
+    EventReceiver receiver(device, &controller, &guiMain/*, &network*/);
     device->setEventReceiver(&receiver);
 
     while(device->run()) {
@@ -142,7 +140,7 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(time, ownShipData, otherShipsData, buoysData);
+        //network.update(time, ownShipData, otherShipsData, buoysData);
 
         //Update the internal model, and call the gui
         controller.update(time, ownShipData, otherShipsData, buoysData);
