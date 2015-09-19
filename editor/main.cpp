@@ -5,6 +5,7 @@
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
+#include "StartupEventReceiver.hpp"
 //#include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
@@ -60,7 +61,7 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
     fileList->drop();
 }
 
-void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string scenarioName, Lang* language, std::string userFolder)
+void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, Lang* language, std::string userFolder)
 //Will fill one of worldName of scenarioName, depending on user's selection.
 {
 
@@ -85,11 +86,18 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string 
     std::vector<std::string> worldDirList;
     getDirectoryList(device,worldDirList,worldPath); //Populates worldDirList
 
+    const irr::s32 SCENARIO_BOX_ID = 101;
+    const irr::s32 WORLD_BOX_ID = 102;
+    const irr::s32 OK_SCENARIO_BUTTON_ID = 103;
+    const irr::s32 OK_WORLD_BUTTON_ID = 104;
+
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
-    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.01*su,0.100*sh,0.485*su,0.80*sh),scnWorldChoiceWindow,-1); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.495*su,0.100*sh,0.970*su,0.80*sh),scnWorldChoiceWindow,-1); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.01*su,0.100*sh,0.485*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.495*su,0.100*sh,0.970*su,0.80*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
     irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),core::rect<s32>(0.01*su,0.050*sh,0.485*su,0.090*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),core::rect<s32>(0.495*su,0.050*sh,0.970*su,0.090*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
+    irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
 
     //Add scenarios to list box
@@ -112,18 +120,34 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string 
     //set focus on first box
     device->getGUIEnvironment()->setFocus(scenarioListBox);
 
-    while (device->run() && worldName.size() == 0 && scenarioName.size() == 0) {
+    //Link to our event receiver
+    StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID);
+    device->setEventReceiver(&startupReceiver);
+
+    while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 ) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
-        //worldName = "SimpleEstuary"; //Todo: make this a user selection.
     }
+
     //Clean up
     scenarioText->remove();
     worldText->remove();
     scenarioListBox->remove();
     worldListBox->remove();
+    scenarioOK->remove();
+    worldOK->remove();
     scnWorldChoiceWindow->remove();
+
+    irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
+    if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
+        scenarioName = scenarioDirList.at(selectedScenario);
+    }
+
+    irr::s32 selectedWorld = startupReceiver.getWorldSelected();
+    if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
+        worldName = worldDirList.at(selectedWorld);
+    }
 }
 
 int main (int argc, char ** argv)

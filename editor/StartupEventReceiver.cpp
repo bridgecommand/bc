@@ -20,15 +20,16 @@
 
 using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
-		this->hostnameText = hostnameText;
-		this->hostnameBox = hostnameBox;
-		this->listBoxID = listBoxID;
-		this->okButtonID = okButtonID;
-		this->secondaryBoxID = secondaryBoxID;
+		this->worldListBox = worldListBox;
+		this->scenarioListBoxID = scenarioListBoxID;
+		this->worldListBoxID = worldListBoxID;
+		this->okScenarioButtonID = okScenarioButtonID;
+		this->okWorldButtonID = okWorldButtonID;
 		scenarioSelected = -1; //Set as initially invalid
+		worldSelected = -1; //Set as initially invalid
 	}
 
     bool StartupEventReceiver::OnEvent(const SEvent& event)
@@ -36,27 +37,26 @@ using namespace irr;
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
-			//If OK button, or double click on list
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  )
+			//If OK button, or double click on list, for scenario
+            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okScenarioButtonID ) || (event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  && id == scenarioListBoxID ) )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_CHECKBOX_CHANGED && id == secondaryBoxID)
+            //If OK button, or double click on list, for world
+            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okWorldButtonID ) || (event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  && id == worldListBoxID ) )
             {
-                //Check state, and set hostname box and text visible
-                if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
-                    hostnameBox->setVisible(false);
-                    hostnameText->setVisible(false);
-                } else {
-                    hostnameBox->setVisible(true);
-                    hostnameText->setVisible(true);
+                if (worldListBox->getSelected() > -1 ) {
+                    worldSelected = worldListBox->getSelected();
                 }
             }
+
+
 		}
 
+		/* TODO: Implement this, checking focus (or is it needed -  handled by EGET_LISTBOX_SELECTED_AGAIN
 		if (event.EventType == EET_KEY_INPUT_EVENT)
 		{
 		    if (event.KeyInput.Key==KEY_RETURN) {
@@ -65,10 +65,16 @@ using namespace irr;
                 }
 		    }
 		}
+		*/
         return false;
     }
 
     irr::s32 StartupEventReceiver::getScenarioSelected() const
     {
         return scenarioSelected;
+    }
+
+    irr::s32 StartupEventReceiver::getWorldSelected() const
+    {
+        return worldSelected;
     }

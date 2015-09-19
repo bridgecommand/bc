@@ -23,20 +23,22 @@ class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID);
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected() const;
+    irr::s32 getWorldSelected() const;
 
 private:
 
     irr::gui::IGUIListBox* scenarioListBox;
-    irr::gui::IGUIStaticText* hostnameText;
-    irr::gui::IGUIEditBox* hostnameBox;
-    irr::s32 listBoxID;
-    irr::s32 okButtonID;
-    irr::s32 secondaryBoxID;
+    irr::gui::IGUIListBox* worldListBox;
+    irr::s32 scenarioListBoxID;
+    irr::s32 worldListBoxID;
+    irr::s32 okScenarioButtonID;
+    irr::s32 okWorldButtonID;
     irr::s32 scenarioSelected;
+    irr::s32 worldSelected;
 
 };
 
