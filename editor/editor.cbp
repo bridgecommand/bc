@@ -56,6 +56,8 @@
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />
+		<Unit filename="StartupEventReceiver.cpp" />
+		<Unit filename="StartupEventReceiver.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
