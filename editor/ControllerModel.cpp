@@ -63,6 +63,12 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     if (displayMapName.empty())
         {displayMapName = IniFile::iniFileToString(worldTerrainFile, "RadarImage");} //Fall back to 'RadarImage' if 'MapImage' parameter isn't set
 
+    //If still empty, we don't have an image to load, so fail here
+    if (displayMapName.empty()) {
+        std::cout << "Could not load name of map image from ini file: " <<  worldTerrainFile << " (please check this file exists and has not been corrupted)." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     //Load map image if possible (if not, end with error)
     std::string displayMapPath = worldPath;
     displayMapPath.append("/");
