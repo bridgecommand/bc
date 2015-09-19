@@ -217,9 +217,35 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->getSkin()->setFont(font);
     }
 
-    std::string worldName; //Todo: make this a user selection.
-    std::string scenarioName; //Todo: make this a user selection.
-    findWhatToLoad(device, worldName, scenarioName, &language, userFolder);
+    //Query which scenario or world to start with
+    std::string worldName;
+    std::string scenarioName;
+    findWhatToLoad(device, worldName, scenarioName, &language, userFolder); //worldName or scenarioName updated by reference
+    //check that one of worldName and scenarioName have been set
+    if (worldName.length() == 0 && scenarioName.length() == 0) {
+        std::cout << "Failed to select a scenario or world model to use" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    //if worldName isn't set, we need to find it from the scenario.
+    if (worldName.length() == 0) {
+
+        //Find scenario path
+        std::string scenarioPath = "Scenarios/";
+        if (Utilities::pathExists(userFolder + scenarioPath)) {
+            scenarioPath = userFolder + scenarioPath;
+        }
+        scenarioPath.append(scenarioName);
+
+        std::string environmentIniFilename = scenarioPath;
+        environmentIniFilename.append("/environment.ini");
+        worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
+
+        if (worldName.length() == 0) {
+            std::cout << "Could not find world model name from scenario file: " << environmentIniFilename << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
 
     //GUI class
     GUIMain guiMain(device, &language);
@@ -234,8 +260,26 @@ int main (int argc, char ** argv)
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
 
-    //TODO: If an existing scenario, load data into this
+    //If an existing scenario, load data into these structures
+    if(scenarioName.length() != 0) {
+        //Find scenario path
+        std::string scenarioPath = "Scenarios/";
+        if (Utilities::pathExists(userFolder + scenarioPath)) {
+            scenarioPath = userFolder + scenarioPath;
+        }
+        scenarioPath.append(scenarioName);
 
+        //Need to read in ownship.ini, othership.ini, environment.ini
+        std::string environmentIniFilename = scenarioPath;
+        environmentIniFilename.append("/environment.ini");
+
+        std::string ownShipIniFilename = scenarioPath;
+        environmentIniFilename.append("/ownship.ini");
+
+        std::string otherShipIniFilename = scenarioPath;
+        environmentIniFilename.append("/othership.ini");
+
+    }
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain/*, &network*/);
