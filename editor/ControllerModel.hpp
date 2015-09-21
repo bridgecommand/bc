@@ -36,6 +36,10 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName);
     ~ControllerModel();
+    irr::f32 longToX(irr::f32 longitude) const;
+    irr::f32 latToZ(irr::f32 latitude) const;
+    irr::f32 xToLong(irr::f32 x) const;
+    irr::f32 zToLat(irr::f32 z) const;
     void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
     void resetOffset(); //Re-centre the map on the own-ship
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box

@@ -274,12 +274,19 @@ int main (int argc, char ** argv)
         environmentIniFilename.append("/environment.ini");
 
         std::string ownShipIniFilename = scenarioPath;
-        environmentIniFilename.append("/ownship.ini");
+        ownShipIniFilename.append("/ownship.ini");
 
         std::string otherShipIniFilename = scenarioPath;
-        environmentIniFilename.append("/othership.ini");
+        otherShipIniFilename.append("/othership.ini");
+
+        //Load own ship information
+        ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
+        ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
+        ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
 
     }
+
+    //ToDo: Load buoy data
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain/*, &network*/);

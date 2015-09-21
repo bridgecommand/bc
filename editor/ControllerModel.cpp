@@ -127,6 +127,26 @@ ControllerModel::~ControllerModel()
     scaledMap->drop();
 }
 
+irr::f32 ControllerModel::longToX(irr::f32 longitude) const
+{
+    return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+}
+
+irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
+{
+    return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+}
+
+irr::f32 ControllerModel::xToLong(irr::f32 x) const
+{
+    return terrainLong + x*terrainLongExtent/terrainXWidth;
+}
+
+irr::f32 ControllerModel::zToLat(irr::f32 z) const
+{
+    return terrainLat + z*terrainLatExtent/terrainZWidth;
+}
+
 void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
 {
     //std::cout << mouseDown << std::endl;
