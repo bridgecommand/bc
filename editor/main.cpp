@@ -11,6 +11,7 @@
 #include "GUI.hpp"
 #include "EventReceiver.hpp"
 
+#include "../Constants.hpp"
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 #include "../Utilities.hpp"
@@ -201,7 +202,6 @@ int main (int argc, char ** argv)
     #endif
 
     //load language
-    //load language
     std::string languageFile = "languageController.txt"; //TODO: Update when needed
     if (Utilities::pathExists(userFolder + languageFile)) {
         languageFile = userFolder + languageFile;
@@ -279,10 +279,56 @@ int main (int argc, char ** argv)
         std::string otherShipIniFilename = scenarioPath;
         otherShipIniFilename.append("/othership.ini");
 
+        //Load general information
+        time = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
         ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
         ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
+
+        //Load other ship information
+
+        int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
+        for(u32 i=1;i<=numberOfOtherShips;i++) {
+
+            //Temporary structure to load data
+            OtherShipData thisShip;
+
+            //Get initial position
+            thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
+            thisShip.Z = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
+            int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
+            std::cout << "Number of legs: " << numberOfLegs << std::endl;
+            irr::f32 legStartTime = time; //Legs start at the start of the scenario
+            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                //go through each leg (if any), and load
+                Leg currentLeg;
+                currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                currentLeg.startTime = legStartTime;
+
+                //Use distance to calculate startTime of next leg, and stored for later reference.
+                irr::f32 distance = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                currentLeg.distance = distance;
+
+                //Add the leg to the array
+                thisShip.legs.push_back(currentLeg);
+
+                //find the start time for the next leg
+                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+            }
+            //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+            Leg stopLeg;
+            stopLeg.bearing=0;
+            stopLeg.speed=0;
+            stopLeg.distance=0;
+            stopLeg.startTime = legStartTime;
+            thisShip.legs.push_back(stopLeg);
+
+            //Add to array.
+            otherShipsData.push_back(thisShip);
+        }
 
     }
 
