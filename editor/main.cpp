@@ -299,7 +299,7 @@ int main (int argc, char ** argv)
             thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
             thisShip.Z = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
             int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
-            std::cout << "Number of legs: " << numberOfLegs << std::endl;
+
             irr::f32 legStartTime = time; //Legs start at the start of the scenario
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
@@ -332,7 +332,27 @@ int main (int argc, char ** argv)
 
     }
 
-    //ToDo: Load buoy data
+    //Load buoy data
+    //construct path to world model
+    std::string worldPath = "World/";
+    worldPath.append(worldName);
+    //Check if this world model exists in the user dir.
+    if (Utilities::pathExists(userFolder + worldPath)) {
+        worldPath = userFolder + worldPath;
+    }
+    std::string scenarioBuoyFilename = worldPath;
+    scenarioBuoyFilename.append("/buoy.ini");
+    //Find number of buoys
+    u32 numberOfBuoys;
+    numberOfBuoys = IniFile::iniFileTou32(scenarioBuoyFilename,"Number");
+    for(u32 currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
+
+        PositionData thisBuoy;
+        //Get buoy position
+        thisBuoy.X = controller.longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
+        thisBuoy.Z = controller.latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
+        buoysData.push_back(thisBuoy);
+    }
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain/*, &network*/);
