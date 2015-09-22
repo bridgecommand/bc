@@ -249,16 +249,17 @@ int main (int argc, char ** argv)
 
     //GUI class
     GUIMain guiMain(device, &language);
-    //Main model
-    ControllerModel controller(device, &guiMain, worldName);
 
-    //Classes:  Data structures created in main, and shared with controller by reference. Controller then pushes data to the GUI
+    //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
+
+    //Main model
+    ControllerModel controller(device, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &time);
 
     //If an existing scenario, load data into these structures
     if(scenarioName.length() != 0) {
@@ -366,7 +367,7 @@ int main (int argc, char ** argv)
         //network.update(time, ownShipData, otherShipsData, buoysData);
 
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData);
+        controller.update();
 
         driver->endScene();
     }

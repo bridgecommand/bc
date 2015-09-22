@@ -34,14 +34,15 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, ShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, irr::f32* time);
     ~ControllerModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
     irr::f32 xToLong(irr::f32 x) const;
     irr::f32 zToLat(irr::f32 z) const;
-    void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData);
+    void update();
     void resetOffset(); //Re-centre the map on the own-ship
+    void setShipPosition(irr::s32 ship, irr::core::vector2df position);
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
@@ -51,6 +52,12 @@ private:
     GUIMain* gui;
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
+
+    //Data shared from main
+    ShipData* ownShipData;
+    std::vector<PositionData>* buoysData;
+    std::vector<OtherShipData>* otherShipsData;
+    irr::f32* time;
 
     irr::video::IImage* unscaledMap;
     irr::video::IImage* scaledMap;

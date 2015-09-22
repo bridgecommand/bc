@@ -21,12 +21,17 @@
 #include <iostream>
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, ShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, irr::f32* time)
 {
 
     this->gui = gui;
     this->device = device;
     driver = device->getVideoDriver();
+
+    this->ownShipData = ownShipData;
+    this->otherShipsData = otherShipsData;
+    this->buoysData = buoysData;
+    this->time = time;
 
     unscaledMap = 0;
     scaledMap = 0;
@@ -147,7 +152,7 @@ irr::f32 ControllerModel::zToLat(irr::f32 z) const
     return terrainLat + z*terrainLatExtent/terrainZWidth;
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipData>& otherShipsData, const std::vector<PositionData>& buoysData)
+void ControllerModel::update()
 {
     //std::cout << mouseDown << std::endl;
 
@@ -172,8 +177,8 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height + mapOffsetZ;
+    irr::s32 topLeftX = -1*ownShipData->X/metresPerPx + driver->getScreenSize().Width/2 + mapOffsetX;
+    irr::s32 topLeftZ = ownShipData->Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height + mapOffsetZ;
 
     scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
@@ -190,13 +195,29 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(*time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData->X,ownShipData->Z,ownShipData->heading, *buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()
 {
     mapOffsetX = 0;
     mapOffsetZ = 0;
+}
+
+void ControllerModel::setShipPosition(irr::s32 ship, irr::core::vector2df position)
+{
+    if (ship==0) {
+        //Own ship
+        ownShipData->X = position.X;
+        ownShipData->Z = position.Y;
+    } else if (ship>0) {
+        //Other ship
+        irr::s32 otherShipNumber = ship-1; //Ship number is minimum of 1, so subtract 1 to start at 0
+        if (otherShipNumber < otherShipsData->size()) {
+            otherShipsData->at(otherShipNumber).X = position.X;
+            otherShipsData->at(otherShipNumber).Z = position.Y;
+        }
+    }
 }
 
 void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box

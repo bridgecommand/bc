@@ -56,32 +56,14 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    std::string messageToSend = "MCCL,";
-                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legCourse));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legSpeed));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
-                    messageToSend.append("#");
-
-                    //network->setStringToSend(messageToSend);
+                    //Todo: use model method to apply change
 
                 }
                 if (id == GUIMain::GUI_ID_DELETELEG_BUTTON) {
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    std::string messageToSend = "MCDL,";
-                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
-                    messageToSend.append("#");
-
-                    //network->setStringToSend(messageToSend);
+                    //Todo: use model method to delete selected leg
 
                 }
 
@@ -94,21 +76,7 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    std::string messageToSend = "MCAL,";
-                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(leg));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legCourse));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legSpeed));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(legDistance));
-                    messageToSend.append("#");
-
-                    //std::cout << messageToSend << std::endl;
-
-                    //network->setStringToSend(messageToSend);
+                    //Todo: use model method to add leg
 
                 }
                 if (id == GUIMain::GUI_ID_MOVESHIP_BUTTON) {
@@ -116,20 +84,14 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition(); //Check screen centre
 
-                    std::string messageToSend = "MCRS,";
-                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(screenCentrePos.X));
-                    messageToSend.append(",");
-                    messageToSend.append(Utilities::lexical_cast<std::string>(screenCentrePos.Y));
-                    messageToSend.append("#");
-                    //network->setStringToSend(messageToSend);
+                    //Todo: use model method to apply change in ownship position
+                    model->setShipPosition(ship, screenCentrePos);
 
                     //If moving own ship, reset offset, so the map doesn't jump
                     if (ship==0) {
                         model->resetOffset();
                     }
-                    //std::cout << messageToSend << std::endl;
+
                 }
             }
 
