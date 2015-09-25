@@ -21,7 +21,7 @@
 #include <iostream>
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, irr::f32* time)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
 {
 
     this->gui = gui;
@@ -31,7 +31,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     this->ownShipData = ownShipData;
     this->otherShipsData = otherShipsData;
     this->buoysData = buoysData;
-    this->time = time;
+    this->generalData = generalData;
 
     unscaledMap = 0;
     scaledMap = 0;
@@ -195,7 +195,7 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(*time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData->X,ownShipData->Z,ownShipData->heading, ownShipData->initialSpeed, *buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(generalData->startTime,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData->X,ownShipData->Z,ownShipData->heading, ownShipData->initialSpeed, *buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()

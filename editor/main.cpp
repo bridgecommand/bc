@@ -5,6 +5,7 @@
 #include "PositionDataStruct.hpp"
 #include "OwnShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
+#include "GeneralDataStruct.hpp"
 #include "StartupEventReceiver.hpp"
 //#include "Network.hpp"
 #include "ControllerModel.hpp"
@@ -253,13 +254,13 @@ int main (int argc, char ** argv)
     //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
 
     //Create data structures to hold own ship, other ship and buoy data
-    irr::f32 time = 0; //Time since start of day 1 of the scenario
+    GeneralData generalData;
     OwnShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
 
     //Main model
-    ControllerModel controller(device, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &time);
+    ControllerModel controller(device, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData);
 
     //If an existing scenario, load data into these structures
     if(scenarioName.length() != 0) {
@@ -281,7 +282,7 @@ int main (int argc, char ** argv)
         otherShipIniFilename.append("/othership.ini");
 
         //Load general information
-        time = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+        generalData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
 
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
@@ -303,7 +304,7 @@ int main (int argc, char ** argv)
             thisShip.name = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
             int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
 
-            irr::f32 legStartTime = time; //Legs start at the start of the scenario
+            irr::f32 legStartTime = generalData.startTime; //Legs start at the start of the scenario
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
                 Leg currentLeg;

@@ -25,6 +25,7 @@
 #include "PositionDataStruct.hpp"
 #include "OwnShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
+#include "GeneralDataStruct.hpp"
 
 #include "GUI.hpp"
 
@@ -34,7 +35,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, irr::f32* time);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData);
     ~ControllerModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -57,7 +58,7 @@ private:
     OwnShipData* ownShipData;
     std::vector<PositionData>* buoysData;
     std::vector<OtherShipData>* otherShipsData;
-    irr::f32* time;
+    GeneralData* generalData;
 
     irr::video::IImage* unscaledMap;
     irr::video::IImage* scaledMap;

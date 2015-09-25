@@ -53,6 +53,7 @@
 		<Unit filename="EventReceiver.hpp" />
 		<Unit filename="GUI.cpp" />
 		<Unit filename="GUI.hpp" />
+		<Unit filename="GeneralDataStruct.hpp" />
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="OwnShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />

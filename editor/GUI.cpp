@@ -134,6 +134,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     displayText.append(language->translate("minSymbol"));
     displayText.append(eastWest);
     displayText.append(L"\n");
+    displayText.append(irr::core::stringw(time/SECONDS_IN_HOUR)); //Fixme: update text for this
     /*
     //Show selected ship and legs
     displayText.append(core::stringw(selectedShip));
