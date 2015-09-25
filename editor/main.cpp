@@ -288,6 +288,7 @@ int main (int argc, char ** argv)
         ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
         ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
         ownShipData.name = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
+        ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
 
         //Load other ship information
         int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");

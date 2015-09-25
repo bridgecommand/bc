@@ -195,7 +195,7 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(*time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData->X,ownShipData->Z,ownShipData->heading, *buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(*time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData->X,ownShipData->Z,ownShipData->heading, ownShipData->initialSpeed, *buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()
