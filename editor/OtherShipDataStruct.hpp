@@ -18,6 +18,7 @@
 #define __OTHERSHIPDATASTRUCT_HPP_INCLUDED__
 
 #include <vector>
+#include <string>
 
 #include "irrlicht.h"
 #include "ShipDataStruct.hpp"
@@ -26,6 +27,7 @@
 struct OtherShipData : public ShipData //To hold information about a ship's position and heading
 {
     std::vector<Leg> legs;
+    std::string name;
 };
 
 #endif // __OWNSHIPDATASTRUCT_HPP_INCLUDED__

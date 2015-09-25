@@ -226,7 +226,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
         //number
         int thisShipNumber = 1 + it - otherShips.begin();
-        guienv->getSkin()->getFont()->draw(irr::core::stringw(thisShipNumber),irr::core::rect<s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), video::SColor(255,0,0,255),true,true);
+        irr::core::stringw label(thisShipNumber);
+        //name
+        label.append(" ");
+        label.append(it->name.c_str());
+        guienv->getSkin()->getFont()->draw(label,irr::core::rect<s32>(screenCentreX+relPosX,screenCentreY-relPosY-0.025*height,screenCentreX+relPosX,screenCentreY-relPosY), video::SColor(128,0,0,255),true,true);
 
         //Draw leg information for each ship
         if (it->legs.size() > 0) {
@@ -265,7 +269,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<s32> startLine (legStartX, legStartY);
                         irr::core::position2d<s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
                     } //Not infinite
 
                 } //If currentLegTimeRemaining > 0
@@ -288,7 +292,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<s32> startLine (legStartX, legStartY);
                         irr::core::position2d<s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
@@ -307,9 +311,9 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr:
 
         //Add other ships (at index 1,2,...)
         for(u32 i = 0; i<otherShips.size(); i++) {
-            core::stringw otherShipLabel = language->translate("other");
+            core::stringw otherShipLabel(core::stringw(i+1));
             otherShipLabel.append(L" ");
-            otherShipLabel.append(core::stringw(i+1));
+            otherShipLabel.append(otherShips.at(i).name.c_str());
             shipSelector->addItem(otherShipLabel.c_str());
         }
         manuallyTriggerGUIEvent((gui::IGUIElement*)shipSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
