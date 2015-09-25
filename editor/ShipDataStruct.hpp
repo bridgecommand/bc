@@ -17,12 +17,15 @@
 #ifndef __SHIPDATASTRUCT_HPP_INCLUDED__
 #define __SHIPDATASTRUCT_HPP_INCLUDED__
 
+#include <string>
+
 #include "irrlicht.h"
 #include "PositionDataStruct.hpp"
 
 struct ShipData : public PositionData //To hold information about a ship's position and heading
 {
     irr::f32 heading;
+    std::string name;
     ShipData():heading(0){}
 };
 

@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <vector>
 #include "PositionDataStruct.hpp"
-#include "ShipDataStruct.hpp"
+#include "OwnShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
 #include "StartupEventReceiver.hpp"
 //#include "Network.hpp"
@@ -254,7 +254,7 @@ int main (int argc, char ** argv)
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario
-    ShipData ownShipData;
+    OwnShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
 
@@ -287,9 +287,9 @@ int main (int argc, char ** argv)
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
         ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
         ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
+        ownShipData.name = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
 
         //Load other ship information
-
         int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
         for(u32 i=1;i<=numberOfOtherShips;i++) {
 

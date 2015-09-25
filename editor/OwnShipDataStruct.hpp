@@ -14,18 +14,15 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __OTHERSHIPDATASTRUCT_HPP_INCLUDED__
-#define __OTHERSHIPDATASTRUCT_HPP_INCLUDED__
-
-#include <vector>
+#ifndef __OWNSHIPDATASTRUCT_HPP_INCLUDED__
+#define __OWNSHIPDATASTRUCT_HPP_INCLUDED__
 
 #include "irrlicht.h"
 #include "ShipDataStruct.hpp"
-#include "../Leg.hpp"
 
-struct OtherShipData : public ShipData //To hold information about a ship's position and heading
+struct OwnShipData : public ShipData //To hold information about a ship's position and heading
 {
-    std::vector<Leg> legs;
+    irr::f32 initialSpeed;
 };
 
 #endif // __OWNSHIPDATASTRUCT_HPP_INCLUDED__

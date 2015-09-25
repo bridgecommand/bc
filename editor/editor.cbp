@@ -54,6 +54,7 @@
 		<Unit filename="GUI.cpp" />
 		<Unit filename="GUI.hpp" />
 		<Unit filename="OtherShipDataStruct.hpp" />
+		<Unit filename="OwnShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />
 		<Unit filename="StartupEventReceiver.cpp" />
