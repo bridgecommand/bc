@@ -98,7 +98,7 @@ int main (int argc, char ** argv)
 
     Lang language("languageLauncher.txt");
 
-    IrrlichtDevice* device = createDevice(video::EDT_BURNINGSVIDEO, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
 
     #ifdef __APPLE__
