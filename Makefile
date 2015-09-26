@@ -41,7 +41,7 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc5
+	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
 	rm -rf BridgeCommand.app/Contents/Resources/media
 	rm -rf BridgeCommand.app/Contents/Resources/Models
 	rm -rf BridgeCommand.app/Contents/Resources/Scenarios

@@ -41,7 +41,7 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/map
+	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/mc
 endif
 
 clean:

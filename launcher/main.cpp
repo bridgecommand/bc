@@ -42,7 +42,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/bc5", "bc5", NULL);
+                        execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand", "bridgecommand", NULL);
@@ -55,7 +55,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/map", "map", NULL);
+                        execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./mapController", "mapController", NULL);

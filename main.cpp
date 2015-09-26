@@ -57,8 +57,8 @@ int main()
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-    //change up from BridgeCommand.app/Contents/MacOS to ../Resources
-    exeFolderPath.append("/../Resources");
+    //change up from BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
+    exeFolderPath.append("/../../../../Resources");
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
