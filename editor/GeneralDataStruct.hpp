@@ -18,12 +18,13 @@
 #define __GENERALDATASTRUCT_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "../Constants.hpp"
 
-struct GeneralData //To hold information about a position
+struct GeneralData //To hold information about a position, including defaults for new scenarios
 {
     irr::f32 startTime, sunRiseTime, sunSetTime, weather, rain;
     irr::u32 startDay, startMonth, startYear;
-    GeneralData():startTime(0), sunRiseTime(0), sunSetTime(0), weather(0), rain(0), startDay(1), startMonth(1), startYear(2015) {}
+    GeneralData():startTime(10*SECONDS_IN_HOUR), sunRiseTime(6), sunSetTime(18), weather(0), rain(0), startDay(1), startMonth(1), startYear(2015) {}
 };
 
 #endif // __POSITIONDATASTRUCT_HPP_INCLUDED__

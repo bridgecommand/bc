@@ -25,6 +25,7 @@
 #include "../Lang.hpp"
 #include "PositionDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
+#include "GeneralDataStruct.hpp"
 
 class GUIMain //Create, build and update GUI
 {
@@ -46,7 +47,7 @@ public:
         GUI_ID_MOVESHIP_BUTTON
     };
 
-    void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
+    void updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
     irr::f32 getEditBoxCourse() const;
     irr::f32 getEditBoxSpeed() const;

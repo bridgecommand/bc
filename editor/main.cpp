@@ -283,6 +283,13 @@ int main (int argc, char ** argv)
 
         //Load general information
         generalData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+        generalData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+        generalData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+        generalData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+        generalData.sunRiseTime = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+        generalData.sunSetTime = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
+        generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+        generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
 
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));

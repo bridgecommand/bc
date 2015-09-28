@@ -84,7 +84,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
+void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
 {
 
     //Show map texture
@@ -134,7 +134,34 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     displayText.append(language->translate("minSymbol"));
     displayText.append(eastWest);
     displayText.append(L"\n");
-    displayText.append(irr::core::stringw(time/SECONDS_IN_HOUR)); //Fixme: update text for this
+
+    //Show start time & data (Todo: This should be part of an editable window)
+    irr::f32 timeFloat = scenarioInfo.startTime/SECONDS_IN_HOUR;
+    irr::u32 timeHrs = floor(timeFloat);
+    irr::u32 timeMins = (timeFloat - timeHrs)*60;
+    core::stringw hoursString(timeHrs);
+    core::stringw minsString(timeMins);
+    if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
+    if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+
+    displayText.append(hoursString);
+    displayText.append(L":");
+    displayText.append(minsString);
+    displayText.append(L" ");
+
+    //Show Date (YYYY-MM-DD, iso format)
+    displayText.append(irr::core::stringw(scenarioInfo.startYear));
+    displayText.append(L"-");
+
+    core::stringw monthString(scenarioInfo.startMonth);
+    if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
+    displayText.append(monthString);
+    displayText.append(L"-");
+
+    core::stringw dayString(scenarioInfo.startDay);
+    if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
+    displayText.append(dayString);
+
     /*
     //Show selected ship and legs
     displayText.append(core::stringw(selectedShip));
@@ -149,7 +176,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     dataDisplay->setText(displayText.c_str());
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips);
+    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -182,7 +209,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     }
 
     //Update comboboxes for other ships and legs
-    updateDropDowns(otherShips,selectedShip,time);
+    updateDropDowns(otherShips,selectedShip,scenarioInfo.startTime);
 
     guienv->drawAll();
 
