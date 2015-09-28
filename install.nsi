@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 5"
-!define OUTPUTFILE "bc50a5_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a5"
-!define SMFOLDER "Bridge Command 5.0 Alpha 5"
-!define REGKEY "BridgeCommand5.0a5"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 6"
+!define OUTPUTFILE "bc50a6_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a6"
+!define SMFOLDER "Bridge Command 5.0 Alpha 6"
+!define REGKEY "BridgeCommand5.0a6"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x editor /x editor.exe /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
