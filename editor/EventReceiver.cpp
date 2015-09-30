@@ -20,6 +20,7 @@
 
 #include "GUI.hpp"
 #include "ControllerModel.hpp"
+#include "GeneralDataStruct.hpp"
 //#include "Network.hpp"
 #include "../Utilities.hpp"
 
@@ -57,6 +58,7 @@ using namespace irr;
                     int leg = gui->getSelectedLeg();
 
                     //Todo: use model method to apply change
+                    model->changeLeg(ship,leg,legCourse,legSpeed,legDistance);
 
                 }
                 if (id == GUIMain::GUI_ID_DELETELEG_BUTTON) {
@@ -93,6 +95,23 @@ using namespace irr;
                     }
 
                 }
+                if (id == GUIMain::GUI_ID_APPLY_BUTTON) {
+                    //Get changes to general data from gui
+
+                    GeneralData tempData;
+                    tempData.startTime = gui->getStartTime();
+                    tempData.startDay = gui->getStartDay();
+                    tempData.startMonth = gui->getStartMonth();
+                    tempData.startYear = gui->getStartYear();
+                    tempData.sunRiseTime = gui->getSunRise();
+                    tempData.sunSetTime = gui->getSunSet();
+                    tempData.weather = gui->getWeather();
+                    tempData.rain = gui->getRain();
+
+                    model->setScenarioData(tempData);
+
+                 }
+
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
@@ -106,15 +125,6 @@ using namespace irr;
                     gui->updateEditBoxes();
                 }
             }
-
-            if (event.GUIEvent.EventType==gui::EGDT_WINDOW_CLOSE) {
-                if (id==GUIMain::GUI_ID_WINDOW) {
-                    return true; //Absorb event : TODO: Should this trigger program close?
-                }
-
-            }
-
-
         }
 
         //From keyboard

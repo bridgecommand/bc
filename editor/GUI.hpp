@@ -34,8 +34,7 @@ public:
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
-        GUI_ID_WINDOW = 101,
-        GUI_ID_SHIP_COMBOBOX,
+        GUI_ID_SHIP_COMBOBOX = 101,
         GUI_ID_LEG_LISTBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
@@ -44,7 +43,17 @@ public:
         GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
-        GUI_ID_MOVESHIP_BUTTON
+        GUI_ID_MOVESHIP_BUTTON,
+        GUI_ID_STARTHOURS_EDITBOX,
+        GUI_ID_STARTMINS_EDITBOX,
+        GUI_ID_STARTDAY_EDITBOX,
+        GUI_ID_STARTMONTH_EDITBOX,
+        GUI_ID_STARTYEAR_EDITBOX,
+        GUI_ID_SUNRISE_EDITBOX,
+        GUI_ID_SUNSET_EDITBOX,
+        GUI_ID_WEATHER_COMBOBOX,
+        GUI_ID_RAIN_COMBOBOX,
+        GUI_ID_APPLY_BUTTON
     };
 
     void updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
@@ -54,8 +63,15 @@ public:
     irr::f32 getEditBoxDistance() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
+    irr::f32 getStartTime() const;
+    irr::u32 getStartDay() const;
+    irr::u32 getStartMonth() const;
+    irr::u32 getStartYear() const;
+    irr::f32 getSunRise() const;
+    irr::f32 getSunSet() const;
+    irr::f32 getWeather() const;
+    irr::f32 getRain() const;
     irr::core::vector2df getScreenCentrePosition() const;
-
 
 private:
 
@@ -65,6 +81,7 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIWindow* guiWindow;
+    irr::gui::IGUIWindow* generalDataWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* shipSelectorTitle;
@@ -82,10 +99,24 @@ private:
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
+
+    irr::gui::IGUIEditBox* startHours;
+    irr::gui::IGUIEditBox* startMins;
+    irr::gui::IGUIEditBox* startDay;
+    irr::gui::IGUIEditBox* startMonth;
+    irr::gui::IGUIEditBox* startYear;
+    irr::gui::IGUIEditBox* sunRise;
+    irr::gui::IGUIEditBox* sunSet;
+    irr::gui::IGUIComboBox* weather;
+    irr::gui::IGUIComboBox* rain;
+    irr::gui::IGUIButton* apply;
+
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;
 
     bool editBoxesNeedUpdating;
+
+    GeneralData oldScenarioInfo; //Keep a copy of the data we have already displayed, so the dialog boxes only get updated when needed
 
     void drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips );
     void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time);

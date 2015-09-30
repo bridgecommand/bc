@@ -38,7 +38,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //gui
 
     //Add a moveable window to put things in
-    guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh),false,0,0,GUI_ID_WINDOW);
+    guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh));
     guiWindow->getCloseButton()->setVisible(false);
 
     //add data display:
@@ -71,6 +71,73 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
+
+    //Add a window to allow general scenario parameters to be edited
+    generalDataWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
+    generalDataWindow->getCloseButton()->setVisible(false);
+
+    guienv->addStaticText(language->translate("startTime").c_str(),core::rect<s32>(0.010*su,0.05*sh,0.115*su,0.08*sh),false,false,generalDataWindow);
+    startHours = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.08*sh,0.035*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTHOURS_EDITBOX );
+    startMins = guienv->addEditBox(L"",core::rect<s32>(0.045*su,0.08*sh,0.070*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMINS_EDITBOX );
+
+    guienv->addStaticText(language->translate("startDate").c_str(),core::rect<s32>(0.130*su,0.05*sh,0.280*su,0.08*sh),false,false,generalDataWindow);
+    startYear = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.08*sh,0.180*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTYEAR_EDITBOX );
+    startMonth = guienv->addEditBox(L"",core::rect<s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMONTH_EDITBOX );
+    startDay = guienv->addEditBox(L"",core::rect<s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTDAY_EDITBOX );
+
+    guienv->addStaticText(language->translate("sunRise").c_str(),core::rect<s32>(0.010*su,0.14*sh,0.115*su,0.17*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("sunSet").c_str(),core::rect<s32>(0.130*su,0.14*sh,0.280*su,0.17*sh),false,false,generalDataWindow);
+    sunRise = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.17*sh,0.085*su,0.20*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
+    sunSet = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.17*sh,0.205*su,0.20*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
+
+    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.23*sh,0.115*su,0.26*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.23*sh,0.280*su,0.26*sh),false,false,generalDataWindow);
+    weather = guienv->addComboBox(core::rect<s32>(0.010*su,0.26*sh,0.085*su,0.29*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
+    rain = guienv->addComboBox(core::rect<s32>(0.130*su,0.26*sh,0.205*su,0.29*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
+
+    apply = guienv->addButton(core::rect<s32>(0.300*su,0.11*sh,0.450*su,0.26*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+
+    weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
+    weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");
+    weather->addItem(L"4"); weather->addItem(L"4.5"); weather->addItem(L"5"); weather->addItem(L"5.5");
+    weather->addItem(L"6"); weather->addItem(L"6.5"); weather->addItem(L"7"); weather->addItem(L"7.5");
+    weather->addItem(L"8"); weather->addItem(L"8.5"); weather->addItem(L"9"); weather->addItem(L"9.5");
+    weather->addItem(L"10"); weather->addItem(L"10.5"); weather->addItem(L"11"); weather->addItem(L"11.5");
+    weather->addItem(L"12");
+
+    rain->addItem(L"0"); rain->addItem(L"0.5"); rain->addItem(L"1"); rain->addItem(L"1.5");
+    rain->addItem(L"2"); rain->addItem(L"2.5"); rain->addItem(L"3"); rain->addItem(L"3.5");
+    rain->addItem(L"4"); rain->addItem(L"4.5"); rain->addItem(L"5"); rain->addItem(L"5.5");
+    rain->addItem(L"6"); rain->addItem(L"6.5"); rain->addItem(L"7"); rain->addItem(L"7.5");
+    rain->addItem(L"8"); rain->addItem(L"8.5"); rain->addItem(L"9"); rain->addItem(L"9.5");
+    rain->addItem(L"10");
+
+    //Fill in initial info into dialog boxes:
+    irr::f32 timeFloat = oldScenarioInfo.startTime/SECONDS_IN_HOUR;
+    irr::u32 timeHrs = floor(timeFloat);
+    irr::u32 timeMins = (timeFloat - timeHrs)*60;
+    core::stringw hoursString(timeHrs);
+    core::stringw minsString(timeMins);
+    if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
+    if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+    startHours->setText(hoursString.c_str());
+    startMins->setText(minsString.c_str());
+
+    startYear->setText((irr::core::stringw(oldScenarioInfo.startYear)).c_str());
+
+    core::stringw monthString(oldScenarioInfo.startMonth);
+    if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
+    startMonth->setText(monthString.c_str());
+
+    core::stringw dayString(oldScenarioInfo.startDay);
+    if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
+    startDay->setText(dayString.c_str());
+
+    //SunRise, SunSet, Weather, Rain
+    sunRise->setText((irr::core::stringw(oldScenarioInfo.sunRiseTime)).c_str());
+    sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSetTime)).c_str());
+    weather->setSelected(floor(oldScenarioInfo.weather*2));
+    rain->setSelected(floor(oldScenarioInfo.rain*2));
 
     //These get updated in updateGuiData
     mapCentreX = 0;
@@ -135,45 +202,58 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     displayText.append(eastWest);
     displayText.append(L"\n");
 
-    //Show start time & data (Todo: This should be part of an editable window)
-    irr::f32 timeFloat = scenarioInfo.startTime/SECONDS_IN_HOUR;
-    irr::u32 timeHrs = floor(timeFloat);
-    irr::u32 timeMins = (timeFloat - timeHrs)*60;
-    core::stringw hoursString(timeHrs);
-    core::stringw minsString(timeMins);
-    if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
-    if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+    //Temp: Check that things are getting updated
+    displayText.append(irr::core::stringw(scenarioInfo.rain));
 
-    displayText.append(hoursString);
-    displayText.append(L":");
-    displayText.append(minsString);
-    displayText.append(L" ");
-
-    //Show Date (YYYY-MM-DD, iso format)
-    displayText.append(irr::core::stringw(scenarioInfo.startYear));
-    displayText.append(L"-");
-
-    core::stringw monthString(scenarioInfo.startMonth);
-    if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
-    displayText.append(monthString);
-    displayText.append(L"-");
-
-    core::stringw dayString(scenarioInfo.startDay);
-    if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
-    displayText.append(dayString);
-
-    /*
-    //Show selected ship and legs
-    displayText.append(core::stringw(selectedShip));
-    displayText.append(L" ");
-    displayText.append(core::stringw(selectedLeg));
-    displayText.append(L"\n");
-    //Show time now
-    displayText.append(core::stringw(time));
-    displayText.append(L"\n");
-    */
     //Display
     dataDisplay->setText(displayText.c_str());
+
+    //Note that this section is duplicated in constructor to populate with initial values
+    //Show start time & data
+    if (oldScenarioInfo.startTime != scenarioInfo.startTime) {
+        irr::f32 timeFloat = scenarioInfo.startTime/SECONDS_IN_HOUR;
+        irr::u32 timeHrs = floor(timeFloat);
+        irr::u32 timeMins = (timeFloat - timeHrs)*60;
+        core::stringw hoursString(timeHrs);
+        core::stringw minsString(timeMins);
+        if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
+        if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+        startHours->setText(hoursString.c_str());
+        startMins->setText(minsString.c_str());
+    }
+
+    if (oldScenarioInfo.startYear != scenarioInfo.startYear) {
+        startYear->setText((irr::core::stringw(scenarioInfo.startYear)).c_str());
+    }
+
+    if (oldScenarioInfo.startMonth != scenarioInfo.startMonth) {
+        core::stringw monthString(scenarioInfo.startMonth);
+        if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
+        startMonth->setText(monthString.c_str());
+    }
+
+    if (oldScenarioInfo.startDay != scenarioInfo.startDay) {
+        core::stringw dayString(scenarioInfo.startDay);
+        if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
+        startDay->setText(dayString.c_str());
+    }
+
+    if (oldScenarioInfo.sunRiseTime != scenarioInfo.sunRiseTime) {
+        sunRise->setText((irr::core::stringw(scenarioInfo.sunRiseTime)).c_str());
+    }
+    if (oldScenarioInfo.sunSetTime != scenarioInfo.sunSetTime) {
+        sunSet->setText((irr::core::stringw(scenarioInfo.sunSetTime)).c_str());
+    }
+    if (oldScenarioInfo.weather != scenarioInfo.weather) {
+        weather->setSelected(floor(scenarioInfo.weather*2));
+    }
+    if (oldScenarioInfo.rain != scenarioInfo.rain) {
+        rain->setSelected(floor(scenarioInfo.rain*2));
+    }
+
+    //End of duplicated section
+    //Store what's been shown
+    oldScenarioInfo = scenarioInfo;
 
     //Draw cross hairs, buoys, other ships
     drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips);
@@ -458,6 +538,62 @@ int GUIMain::getSelectedLeg() const {
 irr::core::vector2df GUIMain::getScreenCentrePosition() const {
     return core::vector2df(mapCentreX, mapCentreZ);
 }
+
+/*
+irr::gui::IGUIEditBox* startHours;
+    irr::gui::IGUIEditBox* startMins;
+    irr::gui::IGUIEditBox* startDay;
+    irr::gui::IGUIEditBox* startMonth;
+    irr::gui::IGUIEditBox* startYear;
+    irr::gui::IGUIEditBox* sunRise;
+    irr::gui::IGUIEditBox* sunSet;
+    irr::gui::IGUIComboBox* weather;
+    irr::gui::IGUIComboBox* rain;
+*/
+
+irr::f32 GUIMain::getStartTime() const {
+    wchar_t* endPtr;
+    irr::f32 hours = floor(wcstof(startHours->getText(),&endPtr));
+    wchar_t* endPtr2; //Is this needed? Is endPtr changed in the call above
+    irr::f32 mins = floor(wcstof(startMins->getText(),&endPtr2));
+
+    return ((hours + mins/60.0) * SECONDS_IN_HOUR);
+}
+
+irr::u32 GUIMain::getStartDay() const {
+    wchar_t* endPtr;
+    return wcstof(startDay->getText(),&endPtr);
+}
+
+irr::u32 GUIMain::getStartMonth() const {
+    wchar_t* endPtr;
+    return wcstof(startMonth->getText(),&endPtr);
+}
+
+irr::u32 GUIMain::getStartYear() const {
+    wchar_t* endPtr;
+    return wcstof(startYear->getText(),&endPtr);
+}
+
+irr::f32 GUIMain::getSunRise() const {
+    wchar_t* endPtr;
+    return wcstof(sunRise->getText(),&endPtr);
+}
+
+irr::f32 GUIMain::getSunSet() const {
+    wchar_t* endPtr;
+    return wcstof(sunSet->getText(),&endPtr);
+}
+
+irr::f32 GUIMain::getWeather() const {
+
+    return ((irr::f32)weather->getSelected())/2.0; //Entries for integer and half values, so Nth entry is for N/2
+}
+
+irr::f32 GUIMain::getRain() const {
+    return ((irr::f32)rain->getSelected())/2.0;
+}
+
 
 std::wstring GUIMain::f32To3dp(irr::f32 value)
 {

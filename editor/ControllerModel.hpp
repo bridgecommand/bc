@@ -41,11 +41,22 @@ public:
     irr::f32 latToZ(irr::f32 latitude) const;
     irr::f32 xToLong(irr::f32 x) const;
     irr::f32 zToLat(irr::f32 z) const;
-    void update();
+    void update(); //Called once per loop from the main function.
     void resetOffset(); //Re-centre the map on the own-ship
-    void setShipPosition(irr::s32 ship, irr::core::vector2df position);
+
+    //Methods used to update the state, called by the event receiver:
+    void setShipPosition(irr::s32 ship, irr::core::vector2df position); //To be called from eventReceiver
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+    void setScenarioData(GeneralData newData); //To be called from event receiver
+    /*Functions to implement:
+    changeLeg (including -1 leg distance flag for unchanged distance)
+    deleteLeg
+    addLeg
+    Also: changeShipType (inc own ship), addShip, deleteShip
+    */
+    void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
+
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
 
 private:

@@ -237,6 +237,23 @@ void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from even
     //No guarantee from this that the selected leg is valid
 }
 
+void ControllerModel::setScenarioData(GeneralData newData)
+{
+    *generalData=newData;
+}
+
+void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)  //Change othership (or ownship) course, speed etc.
+{
+    //If ownship:
+    if (ship==0) {
+        ownShipData->heading = legCourse;
+        ownShipData->initialSpeed = legSpeed;
+    }
+
+    //If other ship:
+    //Remember to change subsequent leg start times
+}
+
 void ControllerModel::setMouseDown(bool isMouseDown)
 {
     mouseDown = isMouseDown;
