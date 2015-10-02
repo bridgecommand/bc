@@ -39,5 +39,6 @@ startTime = "Start time"
 startDate="Date (YYYY-MM-DD)"
 sunRise="Sun rise"
 sunSet="Sun set"
-
+scenario="Scenario name"
 apply="Apply"
+save="Save"

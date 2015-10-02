@@ -57,6 +57,8 @@ public:
     */
     void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
 
+    void save();
+
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
 
 private:
@@ -70,6 +72,7 @@ private:
     std::vector<PositionData>* buoysData;
     std::vector<OtherShipData>* otherShipsData;
     GeneralData* generalData;
+    std::string worldName;
 
     irr::video::IImage* unscaledMap;
     irr::video::IImage* scaledMap;

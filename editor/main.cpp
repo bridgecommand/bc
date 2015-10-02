@@ -290,6 +290,7 @@ int main (int argc, char ** argv)
         generalData.sunSetTime = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
         generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
         generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+        generalData.scenarioName = scenarioName;
 
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));

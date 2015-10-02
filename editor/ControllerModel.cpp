@@ -19,6 +19,12 @@
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
 #include <iostream>
+#include <fstream>
+#ifdef _WIN32
+#include <direct.h> //for windows _mkdir
+#else
+#include <sys/stat.h>
+#endif // _WIN32
 
 //Constructor
 ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
@@ -32,6 +38,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     this->otherShipsData = otherShipsData;
     this->buoysData = buoysData;
     this->generalData = generalData;
+    this->worldName = worldName;
 
     unscaledMap = 0;
     scaledMap = 0;
@@ -252,6 +259,87 @@ void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCours
 
     //If other ship:
     //Remember to change subsequent leg start times
+}
+
+void ControllerModel::save()
+{
+    //Do save here
+    std::cout << "About to save" << std::endl;
+
+    //Find path to scenario folder
+    std::string userFolder = Utilities::getUserDir();
+    std::string scenarioPath = "Scenarios/";
+    if (Utilities::pathExists(userFolder + scenarioPath)) {
+        scenarioPath = userFolder + scenarioPath;
+    }
+
+    //Check if path exists already
+    std::string fullScenarioPath = scenarioPath.append(generalData->scenarioName);
+
+    if (!Utilities::pathExists(fullScenarioPath)) {
+        //Path does not exist, try and create it
+        #ifdef _WIN32
+        _mkdir(fullScenarioPath.c_str());
+        #else
+        mkdir(fullScenarioPath.c_str(),0755);
+        #endif // _WIN32
+        //TODO: Implement for POSIX
+    }
+
+    //Try and create files
+
+    //environment.ini
+    std::string envPath = fullScenarioPath + "/environment.ini";
+    std::ofstream envFile;
+    //Todo: error checking etc
+    envFile.open(envPath.c_str());
+    envFile << "Setting=\"" << worldName << "\"" << std::endl;
+    envFile << "StartTime=" << generalData->startTime/SECONDS_IN_HOUR << std::endl;
+    envFile << "StartDay=" << generalData->startDay << std::endl;
+    envFile << "StartMonth=" << generalData->startMonth << std::endl;
+    envFile << "StartYear=" << generalData->startYear << std::endl;
+    envFile << "SunRise=" << generalData->sunRiseTime << std::endl;
+    envFile << "SunSet=" << generalData->sunSetTime << std::endl;
+    //envFile << "Variation=0" << std::endl;
+    //envFile << "VisibilityRange=5" << std::endl;
+    envFile << "Weather=" << generalData->weather << std::endl;
+    //envFile << "WindDirection=90" << std::endl;
+    envFile << "Rain=" << generalData->rain << std::endl;
+    envFile.close();
+
+    //othership.ini
+    std::string otherPath = fullScenarioPath + "/othership.ini";
+    std::ofstream otherFile;
+    //Todo: error checking etc
+    otherFile.open(otherPath.c_str());
+    otherFile << "Number=" << otherShipsData->size() << std::endl;
+    for (int i = 1; i<=otherShipsData->size(); i++) {
+        otherFile << "Type(" << i << ")=\"" << otherShipsData->at(i-1).name << "\"" << std::endl;
+        otherFile << "InitLong(" << i << ")=" << xToLong(otherShipsData->at(i-1).X) << std::endl;
+        otherFile << "InitLat(" << i << ")=" << zToLat(otherShipsData->at(i-1).Z) << std::endl;
+        //Don't save last leg, as this is an automatically added 'stop' leg.
+        otherFile << "Legs(" << i << ")=" << otherShipsData->at(i-1).legs.size() - 1 << std::endl;
+
+        for (int j = 1; j<=otherShipsData->at(i-1).legs.size() - 1; j++) {
+            otherFile << "Bearing(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).bearing << std::endl;
+            otherFile << "Speed(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).speed << std::endl;
+            otherFile << "Distance(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).distance << std::endl;
+        }
+    }
+    otherFile.close();
+
+    //ownship.ini
+    std::string ownPath = fullScenarioPath + "/ownship.ini";
+    std::ofstream ownFile;
+    //Todo: error checking etc
+    ownFile.open(ownPath.c_str());
+    ownFile << "ShipName=\"" << ownShipData->name << "\"" << std::endl;
+    ownFile << "InitialLong=" << xToLong(ownShipData->X) << std::endl;
+    ownFile << "InitialLat=" << zToLat(ownShipData->Z) << std::endl;
+    ownFile << "InitialBearing=" << ownShipData->heading << std::endl;
+    ownFile << "InitialSpeed=" << ownShipData->initialSpeed << std::endl;
+    ownFile.close();
+
 }
 
 void ControllerModel::setMouseDown(bool isMouseDown)

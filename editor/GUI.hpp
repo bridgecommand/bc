@@ -53,7 +53,9 @@ public:
         GUI_ID_SUNSET_EDITBOX,
         GUI_ID_WEATHER_COMBOBOX,
         GUI_ID_RAIN_COMBOBOX,
-        GUI_ID_APPLY_BUTTON
+        GUI_ID_SCENARIONAME_EDITBOX,
+        GUI_ID_APPLY_BUTTON,
+        GUI_ID_SAVE_BUTTON
     };
 
     void updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
@@ -71,6 +73,7 @@ public:
     irr::f32 getSunSet() const;
     irr::f32 getWeather() const;
     irr::f32 getRain() const;
+    std::string getScenarioName() const;
     irr::core::vector2df getScreenCentrePosition() const;
 
 private:
@@ -109,7 +112,10 @@ private:
     irr::gui::IGUIEditBox* sunSet;
     irr::gui::IGUIComboBox* weather;
     irr::gui::IGUIComboBox* rain;
+    irr::gui::IGUIEditBox* scenarioName;
     irr::gui::IGUIButton* apply;
+    irr::gui::IGUIButton* save;
+
 
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;

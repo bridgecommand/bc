@@ -95,22 +95,6 @@ using namespace irr;
                     }
 
                 }
-                if (id == GUIMain::GUI_ID_APPLY_BUTTON) {
-                    //Get changes to general data from gui
-
-                    GeneralData tempData;
-                    tempData.startTime = gui->getStartTime();
-                    tempData.startDay = gui->getStartDay();
-                    tempData.startMonth = gui->getStartMonth();
-                    tempData.startYear = gui->getStartYear();
-                    tempData.sunRiseTime = gui->getSunRise();
-                    tempData.sunSetTime = gui->getSunSet();
-                    tempData.weather = gui->getWeather();
-                    tempData.rain = gui->getRain();
-
-                    model->setScenarioData(tempData);
-
-                 }
 
             }
 
@@ -125,6 +109,28 @@ using namespace irr;
                     gui->updateEditBoxes();
                 }
             }
+
+            //Check scenario name change, or user clicks on 'save or apply'. If so, apply general data changes to model.
+            if ((event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && (id == GUIMain::GUI_ID_APPLY_BUTTON || id == GUIMain::GUI_ID_SAVE_BUTTON)) || (event.GUIEvent.EventType==gui::EGET_EDITBOX_CHANGED && id == GUIMain::GUI_ID_SCENARIONAME_EDITBOX)) {
+                GeneralData tempData;
+                tempData.startTime = gui->getStartTime();
+                tempData.startDay = gui->getStartDay();
+                tempData.startMonth = gui->getStartMonth();
+                tempData.startYear = gui->getStartYear();
+                tempData.sunRiseTime = gui->getSunRise();
+                tempData.sunSetTime = gui->getSunSet();
+                tempData.weather = gui->getWeather();
+                tempData.rain = gui->getRain();
+                tempData.scenarioName = gui->getScenarioName();
+
+                model->setScenarioData(tempData);
+            }
+
+            //Check for Save button here (ensure 'Apply' gets run first!)
+            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == GUIMain::GUI_ID_SAVE_BUTTON) {
+                model->save();
+            }
+
         }
 
         //From keyboard

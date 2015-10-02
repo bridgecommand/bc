@@ -21,6 +21,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <algorithm>
 
 using namespace irr;
 
@@ -85,17 +86,21 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     startMonth = guienv->addEditBox(L"",core::rect<s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMONTH_EDITBOX );
     startDay = guienv->addEditBox(L"",core::rect<s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTDAY_EDITBOX );
 
-    guienv->addStaticText(language->translate("sunRise").c_str(),core::rect<s32>(0.010*su,0.14*sh,0.115*su,0.17*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("sunSet").c_str(),core::rect<s32>(0.130*su,0.14*sh,0.280*su,0.17*sh),false,false,generalDataWindow);
-    sunRise = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.17*sh,0.085*su,0.20*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
-    sunSet = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.17*sh,0.205*su,0.20*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
+    guienv->addStaticText(language->translate("sunRise").c_str(),core::rect<s32>(0.010*su,0.12*sh,0.115*su,0.15*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("sunSet").c_str(),core::rect<s32>(0.130*su,0.12*sh,0.280*su,0.15*sh),false,false,generalDataWindow);
+    sunRise = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
+    sunSet = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.23*sh,0.115*su,0.26*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.23*sh,0.280*su,0.26*sh),false,false,generalDataWindow);
-    weather = guienv->addComboBox(core::rect<s32>(0.010*su,0.26*sh,0.085*su,0.29*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
-    rain = guienv->addComboBox(core::rect<s32>(0.130*su,0.26*sh,0.205*su,0.29*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
+    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.19*sh,0.115*su,0.22*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.19*sh,0.280*su,0.22*sh),false,false,generalDataWindow);
+    weather = guienv->addComboBox(core::rect<s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
+    rain = guienv->addComboBox(core::rect<s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
 
-    apply = guienv->addButton(core::rect<s32>(0.300*su,0.11*sh,0.450*su,0.26*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    guienv->addStaticText(language->translate("scenario").c_str(),core::rect<s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
+    scenarioName = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
+
+    apply = guienv->addButton(core::rect<s32>(0.300*su,0.11*sh,0.450*su,0.17*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    save = guienv->addButton(core::rect<s32>(0.300*su,0.18*sh,0.450*su,0.24*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
 
     weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
     weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");
@@ -138,6 +143,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSetTime)).c_str());
     weather->setSelected(floor(oldScenarioInfo.weather*2));
     rain->setSelected(floor(oldScenarioInfo.rain*2));
+    scenarioName->setText(core::stringw(oldScenarioInfo.scenarioName.c_str()).c_str());
 
     //These get updated in updateGuiData
     mapCentreX = 0;
@@ -249,6 +255,9 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
     if (oldScenarioInfo.rain != scenarioInfo.rain) {
         rain->setSelected(floor(scenarioInfo.rain*2));
+    }
+    if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
+        scenarioName->setText(core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
     }
 
     //End of duplicated section
@@ -594,6 +603,28 @@ irr::f32 GUIMain::getRain() const {
     return ((irr::f32)rain->getSelected())/2.0;
 }
 
+std::string GUIMain::getScenarioName() const {
+
+    //Convert from wide to narrow string: Todo: Think about having this all wide.
+    std::wstring wideName(scenarioName->getText());
+    char narrowCharString[256];
+    wcstombs(narrowCharString,wideName.c_str(),256);
+
+    std::string scenarioNameString(narrowCharString);
+
+    //Strip any invalid characters: /\*:"|?<>
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'/',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'\\',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'*',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),':',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'"',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'|',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'?',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'<',' ');
+    replace(scenarioNameString.begin(), scenarioNameString.end(),'>',' ');
+
+    return scenarioNameString;
+}
 
 std::wstring GUIMain::f32To3dp(irr::f32 value)
 {
