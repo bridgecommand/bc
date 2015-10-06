@@ -261,6 +261,20 @@ void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCours
     //Remember to change subsequent leg start times
 }
 
+void ControllerModel::changeOwnShipName(std::string name)
+{
+    ownShipData->name = name;
+
+}
+
+void ControllerModel::changeOtherShipName(irr::s32 ship, std::string name)
+{
+    irr::s32 shipIndex = ship-1; //'ship' number starts at 1 for otherShips
+    if (shipIndex < otherShipsData->size()) {
+        otherShipsData->at(shipIndex).name = name;
+    }
+}
+
 void ControllerModel::save()
 {
     //Do save here

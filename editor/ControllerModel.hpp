@@ -57,6 +57,9 @@ public:
     */
     void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
 
+    void changeOwnShipName(std::string name);
+    void changeOtherShipName(irr::s32 ship, std::string name);
+
     void save();
 
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.

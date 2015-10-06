@@ -269,6 +269,15 @@ int main (int argc, char ** argv)
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
 
+    //Make default name the first in the list, in case it isn't set by an update later
+    if (ownShipTypes.size() > 0) {
+        ownShipData.name = ownShipTypes.at(0);
+    }
+    if (otherShipTypes.size() > 0) {
+        for (int i=0; i<otherShipsData.size(); i++)
+        otherShipsData.at(i).name = otherShipTypes.at(0);
+    }
+
     //Main model
     ControllerModel controller(device, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData);
 
