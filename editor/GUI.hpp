@@ -25,12 +25,13 @@
 #include "../Lang.hpp"
 #include "PositionDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
+#include "OwnShipDataStruct.hpp"
 #include "GeneralDataStruct.hpp"
 
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device, Lang* language);
+    GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -55,10 +56,12 @@ public:
         GUI_ID_RAIN_COMBOBOX,
         GUI_ID_SCENARIONAME_EDITBOX,
         GUI_ID_APPLY_BUTTON,
-        GUI_ID_SAVE_BUTTON
+        GUI_ID_SAVE_BUTTON,
+        GUI_ID_OWNSHIPSELECT_COMBOBOX,
+        GUI_ID_OTHERSHIPSELECT_COMBOBOX
     };
 
-    void updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
+    void updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const OwnShipData& ownShipData, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
     irr::f32 getEditBoxCourse() const;
     irr::f32 getEditBoxSpeed() const;
@@ -87,11 +90,6 @@ private:
     irr::gui::IGUIWindow* generalDataWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
-    irr::gui::IGUIStaticText* shipSelectorTitle;
-    irr::gui::IGUIStaticText* legSelectorTitle;
-    irr::gui::IGUIStaticText* courseTitle;
-    irr::gui::IGUIStaticText* speedTitle;
-    irr::gui::IGUIStaticText* distanceTitle;
     irr::gui::IGUIComboBox* shipSelector;
     irr::gui::IGUIListBox* legSelector;
     irr::gui::IGUIEditBox* legCourseEdit;
@@ -102,6 +100,9 @@ private:
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
+
+    irr::gui::IGUIComboBox* ownShipTypeSelector;
+    irr::gui::IGUIComboBox* otherShipTypeSelector;
 
     irr::gui::IGUIEditBox* startHours;
     irr::gui::IGUIEditBox* startMins;

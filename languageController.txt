@@ -13,6 +13,7 @@ own = "Own Ship"
 other = "Other Ship"
 
 selectShip = "Select ship"
+shipType="Ship type"
 selectLeg = "Select leg"
 setCourse = "Course"
 setSpeed = "Speed (Kts)"

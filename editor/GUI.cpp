@@ -25,7 +25,7 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
+GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes)
 {
     this->device = device;
     guienv = device->getGUIEnvironment();
@@ -48,20 +48,32 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //Add ship selector drop down
     shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
-    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
+
+    //Add selectors to allow changing own and other ships (only one visible at a time)
+    guienv->addStaticText(language->translate("shipType").c_str(),core::rect<s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,false,guiWindow);
+    ownShipTypeSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OWNSHIPSELECT_COMBOBOX);
+    for (int i = 0; i<ownShipTypes.size(); i++) {
+        ownShipTypeSelector->addItem( core::stringw(ownShipTypes.at(i).c_str()).c_str() );
+    }
+    otherShipTypeSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OTHERSHIPSELECT_COMBOBOX);
+    for (int i = 0; i<otherShipTypes.size(); i++) {
+        otherShipTypeSelector->addItem( core::stringw(otherShipTypes.at(i).c_str()).c_str() );
+    }
+    otherShipTypeSelector->setVisible(false); //Initially show own ship selector.
 
     //Add leg selector drop down
     legSelector  = guienv->addListBox(core::rect<s32>(0.18*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
-    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
 
     //Add edit boxes for this leg element
     legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
     legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
     legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
 
-    courseTitle = guienv->addStaticText(language->translate("setCourse").c_str(),core::rect<s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
-    speedTitle = guienv->addStaticText(language->translate("setSpeed").c_str(),core::rect<s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
-    distanceTitle = guienv->addStaticText(language->translate("setDistance").c_str(),core::rect<s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setCourse").c_str(),core::rect<s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setSpeed").c_str(),core::rect<s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setDistance").c_str(),core::rect<s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
 
     //Add buttons
     changeLeg       = guienv->addButton(core::rect<s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
@@ -70,8 +82,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
-    //This is used to track when the edit boxes need updating, when ship or legs have changed
-    editBoxesNeedUpdating = false;
+    //This is used to track when the edit boxes need updating, when ship or legs have changed. Set to true for initial load
+    editBoxesNeedUpdating = true;
 
     //Add a window to allow general scenario parameters to be edited
     generalDataWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
@@ -157,7 +169,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, irr::f32 ownShipSpeed, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
+void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const OwnShipData& ownShipData, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
 {
 
     //Show map texture
@@ -165,8 +177,8 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     //TODO: Check that conversion to texture does not distort image
 
     //Calculate map centre as displayed
-    mapCentreX = ownShipPosX - mapOffsetX*metresPerPx;
-    mapCentreZ = ownShipPosZ + mapOffsetZ*metresPerPx;
+    mapCentreX = ownShipData.X - mapOffsetX*metresPerPx;
+    mapCentreZ = ownShipData.Z + mapOffsetZ*metresPerPx;
 
     irr::f32 mapCentreLong = terrainLong + mapCentreX*terrainLongExtent/terrainXWidth;
     irr::f32 mapCentreLat = terrainLat + mapCentreZ*terrainLatExtent/terrainZWidth;
@@ -265,7 +277,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     oldScenarioInfo = scenarioInfo;
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips);
+    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipData.X, ownShipData.Z, ownShipData.heading, buoys, otherShips);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -285,8 +297,8 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             }
         } else if (selectedShip == -1) {
             //Own ship
-            legCourseEdit  ->setText((core::stringw(ownShipHeading)).c_str());
-            legSpeedEdit   ->setText((core::stringw(ownShipSpeed)).c_str());
+            legCourseEdit  ->setText((core::stringw(ownShipData.heading)).c_str());
+            legSpeedEdit   ->setText((core::stringw(ownShipData.initialSpeed)).c_str());
             legDistanceEdit->setText(L"---");
         } else {
             //Set blank (invalid other ship or leg)
@@ -294,6 +306,30 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             legSpeedEdit   ->setText(L"");
             legDistanceEdit->setText(L"");
         }
+        //For visibility of ship selector boxes:
+        if (selectedShip == -1) {
+            otherShipTypeSelector->setVisible(false);
+            ownShipTypeSelector->setVisible(true);
+            //Find the ship name in the list that matches (if it exists)
+            core::stringw ownShipName = core::stringw(ownShipData.name.c_str());
+            for(int i = 0; i < ownShipTypeSelector->getItemCount(); i++) {
+                core::stringw thisName(ownShipTypeSelector->getItem(i));
+                if (thisName.equals_ignore_case(ownShipName)) {ownShipTypeSelector->setSelected(i);}
+            }
+        } else {
+            otherShipTypeSelector->setVisible(true);
+            ownShipTypeSelector->setVisible(false);
+            //Find the ship name in the list that matches (if it exists)
+            if (selectedShip >= 0 && selectedShip < otherShips.size()) {
+                //Find the ship name in the list that matches (if it exists)
+                core::stringw otherShipName = core::stringw(otherShips.at(selectedShip).name.c_str());
+                for(int i = 0; i < otherShipTypeSelector->getItemCount(); i++) {
+                    core::stringw thisName(otherShipTypeSelector->getItem(i));
+                    if (thisName.equals_ignore_case(otherShipName)) {otherShipTypeSelector->setSelected(i);}
+                }
+            }
+        }
+
         editBoxesNeedUpdating = false;
     }
 

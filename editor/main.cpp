@@ -248,8 +248,18 @@ int main (int argc, char ** argv)
         }
     }
 
+    //Get a list of available boat models (own and other ships)
+    std::vector<std::string> ownShipTypes;
+    std::vector<std::string> otherShipTypes;
+    std::string ownShipModelPath = "Models/Ownship/";
+    std::string otherShipModelPath = "Models/Othership/";
+    if (Utilities::pathExists(userFolder + ownShipModelPath)) {ownShipModelPath = userFolder + ownShipModelPath;}
+    if (Utilities::pathExists(userFolder + otherShipModelPath)) {otherShipModelPath = userFolder + otherShipModelPath;}
+    getDirectoryList(device,ownShipTypes,ownShipModelPath);
+    getDirectoryList(device,otherShipTypes,otherShipModelPath);
+
     //GUI class
-    GUIMain guiMain(device, &language);
+    GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes);
 
     //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
 
