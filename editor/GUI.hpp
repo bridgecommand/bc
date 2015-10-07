@@ -41,7 +41,8 @@ public:
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
         GUI_ID_CHANGE_BUTTON,
-        GUI_ID_CHANGE_COURSESPEED_BUTTON,
+//        GUI_ID_CHANGE_COURSESPEED_BUTTON,
+        GUI_ID_ADDSHIP_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
         GUI_ID_MOVESHIP_BUTTON,
@@ -99,7 +100,8 @@ private:
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
     irr::gui::IGUIButton* changeLeg;
-    irr::gui::IGUIButton* changeLegCourseSpeed;
+    //irr::gui::IGUIButton* changeLegCourseSpeed;
+    irr::gui::IGUIButton* addShip;
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;

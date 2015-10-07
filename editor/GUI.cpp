@@ -77,7 +77,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     //Add buttons
     changeLeg       = guienv->addButton(core::rect<s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+//    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    addShip         = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
     addLeg          = guienv->addButton(core::rect<s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
     deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());

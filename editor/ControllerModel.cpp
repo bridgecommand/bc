@@ -261,6 +261,25 @@ void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCours
     //Remember to change subsequent leg start times
 }
 
+void ControllerModel::recalculateLegTimes()
+{
+    //Run through all othership legs, recalculating leg stop times
+    irr::f32 scenarioStartTime = generalData->startTime; //Legs start at the start of the scenario
+
+    for (int thisShip = 0; thisShip < otherShipsData->size(); thisShip++) {
+
+        irr::f32 legStartTime = scenarioStartTime; //Legs start at the start of the scenario
+        for (int thisLeg = 0; thisLeg < otherShipsData->at(thisShip).legs.size(); thisLeg++) {
+            otherShipsData->at(thisShip).legs.at(thisLeg).startTime = legStartTime;
+            irr::f32 thisLegDistance = otherShipsData->at(thisShip).legs.at(thisLeg).distance;
+            irr::f32 thisLegSpeed = otherShipsData->at(thisShip).legs.at(thisLeg).speed;
+            //Update legStart time for start of next leg:
+            legStartTime+= SECONDS_IN_HOUR*(thisLegDistance/fabs(thisLegSpeed)); // nm/kts -> hours, so convert to seconds
+        }
+    }
+
+}
+
 void ControllerModel::changeOwnShipName(std::string name)
 {
     ownShipData->name = name;

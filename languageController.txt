@@ -28,6 +28,7 @@ future = " (Future)"
 changeLeg = "Change leg"	
 changeLegCourseSpeed = "Change leg course & speed"
 addLeg = "Add leg (after selected)"
+addShip = "Add ship"
 deleteLeg = "Delete leg"
 move = "Move ship"
 

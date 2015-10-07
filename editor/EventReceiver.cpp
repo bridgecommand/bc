@@ -43,16 +43,12 @@ using namespace irr;
 
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
-                if (id == GUIMain::GUI_ID_CHANGE_BUTTON || id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
+                if (id == GUIMain::GUI_ID_CHANGE_BUTTON) {
                     //Get data from gui
 
                     irr::f32 legCourse = gui->getEditBoxCourse();
                     irr::f32 legSpeed = gui->getEditBoxSpeed();
                     irr::f32 legDistance = gui->getEditBoxDistance();
-
-                    if (id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
-                        legDistance = -1; //Flag to change course and speed, but not distance
-                    }
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
@@ -95,6 +91,14 @@ using namespace irr;
                     }
 
                 }
+                if (id==GUIMain::GUI_ID_ADDSHIP_BUTTON) {
+                    //Add a new ship, at the current screen centre
+                    irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition();
+                    std::string newShipName = gui->getOtherShipTypeSelected();
+
+                    //Todo: use model method to add an other ship at the screen centre position (Does this need a 'stop' leg adding when we do this)
+                }
+
 
             }
 
@@ -137,6 +141,7 @@ using namespace irr;
                 tempData.scenarioName = gui->getScenarioName();
 
                 model->setScenarioData(tempData);
+                model->recalculateLegTimes(); //These need to be updated to match new startTime.
             }
 
             //Check for Save button here (ensure 'Apply' gets run first!)
