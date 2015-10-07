@@ -68,6 +68,8 @@ public:
     irr::f32 getEditBoxDistance() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
+    std::string getOwnShipTypeSelected() const;
+    std::string getOtherShipTypeSelected() const;
     irr::f32 getStartTime() const;
     irr::u32 getStartDay() const;
     irr::u32 getStartMonth() const;
@@ -78,6 +80,7 @@ public:
     irr::f32 getRain() const;
     std::string getScenarioName() const;
     irr::core::vector2df getScreenCentrePosition() const;
+
 
 private:
 

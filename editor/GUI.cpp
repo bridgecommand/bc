@@ -580,6 +580,29 @@ int GUIMain::getSelectedLeg() const {
     return (legSelector->getSelected() + 1);
 }
 
+std::string GUIMain::getOwnShipTypeSelected() const {
+    //Todo: Instead of this, should probably use the strings directly from 'std::vector<std::string> ownShipTypes'
+
+    if (ownShipTypeSelector->getSelected()<0) {return "";} //If nothing selected
+    std::wstring wideName(ownShipTypeSelector->getItem(ownShipTypeSelector->getSelected()));
+    char narrowCharString[256];
+    wcstombs(narrowCharString,wideName.c_str(),256);
+    std::string nameString(narrowCharString);
+    return nameString;
+}
+
+std::string GUIMain::getOtherShipTypeSelected() const {
+    //Todo: Instead of this, should probably use the strings directly from 'std::vector<std::string> otherShipTypes'
+
+    if (otherShipTypeSelector->getSelected()<0) {return "";} //If nothing selected
+    std::wstring wideName(otherShipTypeSelector->getItem(otherShipTypeSelector->getSelected()));
+    char narrowCharString[256];
+    wcstombs(narrowCharString,wideName.c_str(),256);
+    std::string nameString(narrowCharString);
+    return nameString;
+}
+
+
 irr::core::vector2df GUIMain::getScreenCentrePosition() const {
     return core::vector2df(mapCentreX, mapCentreZ);
 }

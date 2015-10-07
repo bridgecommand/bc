@@ -111,31 +111,13 @@ using namespace irr;
 
                 if (id==GUIMain::GUI_ID_OWNSHIPSELECT_COMBOBOX)  {
                     //Change type of selected own ship
-
-                    //Get the current value, change to string, and set in model
-                    //Convert from wide to narrow string: Todo: Think about having this all wide.
-                    std::wstring wideName(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getItem(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected()));
-                    char narrowCharString[256];
-                    wcstombs(narrowCharString,wideName.c_str(),256);
-                    std::string nameString(narrowCharString);
-
-                    model->changeOwnShipName(nameString);
+                    model->changeOwnShipName(gui->getOwnShipTypeSelected());
                 }
 
                 if (id==GUIMain::GUI_ID_OTHERSHIPSELECT_COMBOBOX)  {
                     //Change type of selected other ship
                     int ship = gui->getSelectedShip(); //-1 if nothing selected, 0 for own ship, 1 - numberOfOtherShips for otherShips
-
-                    //Get the current value, change to string, and set in model
-                    //Convert from wide to narrow string: Todo: Think about having this all wide.
-                    std::wstring wideName(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getItem(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected()));
-                    char narrowCharString[256];
-                    wcstombs(narrowCharString,wideName.c_str(),256);
-                    std::string nameString(narrowCharString);
-
-                    model->changeOtherShipName(ship, nameString);
-
-
+                    model->changeOtherShipName(ship, gui->getOtherShipTypeSelected());
                 }
 
 
