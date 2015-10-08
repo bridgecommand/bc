@@ -578,7 +578,8 @@ int GUIMain::getSelectedShip() const {
 }
 
 int GUIMain::getSelectedLeg() const {
-    return (legSelector->getSelected() + 1);
+    //Note that this returns the leg, starting at 0 (Different from controller implementation, which starts at 1 (not 0))
+    return legSelector->getSelected();
 }
 
 std::string GUIMain::getOwnShipTypeSelected() const {

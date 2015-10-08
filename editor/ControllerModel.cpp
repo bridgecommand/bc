@@ -247,6 +247,7 @@ void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from even
 void ControllerModel::setScenarioData(GeneralData newData)
 {
     *generalData=newData;
+    recalculateLegTimes(); //These need to be updated to match new startTime.
 }
 
 void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)  //Change othership (or ownship) course, speed etc.
@@ -258,8 +259,36 @@ void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCours
     }
 
     //If other ship:
-    //Remember to change subsequent leg start times
+    if (ship>0) {
+        int otherShipIndex = ship-1;
+        if (otherShipIndex < otherShipsData->size()) {
+            if (index < otherShipsData->at(otherShipIndex).legs.size()) {
+                otherShipsData->at(otherShipIndex).legs.at(index).bearing = legCourse;
+                otherShipsData->at(otherShipIndex).legs.at(index).speed = legSpeed;
+                otherShipsData->at(otherShipIndex).legs.at(index).distance = legDistance;
+            }
+        }
+    }
+    recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
 }
+
+void ControllerModel::deleteLeg(irr::s32 ship, irr::s32 index)
+{
+    //If other ship:
+    if (ship>0) {
+        int otherShipIndex = ship-1;
+        if (otherShipIndex < otherShipsData->size()) {
+            if (index < otherShipsData->at(otherShipIndex).legs.size()) {
+                //Delete this leg
+                otherShipsData->at(otherShipIndex).legs.erase(otherShipsData->at(otherShipIndex).legs.begin() + index);
+                recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
+            }
+        }
+    }
+}
+
+//addLeg
+//addShip
 
 void ControllerModel::recalculateLegTimes()
 {

@@ -56,6 +56,7 @@ public:
     Also: changeShipType (inc own ship), addShip, deleteShip
     */
     void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
+    void deleteLeg(irr::s32 ship, irr::s32 index);
     void recalculateLegTimes();
 
     void changeOwnShipName(std::string name);

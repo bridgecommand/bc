@@ -62,6 +62,7 @@ using namespace irr;
                     int leg = gui->getSelectedLeg();
 
                     //Todo: use model method to delete selected leg
+                    model->deleteLeg(ship,leg);
 
                 }
 
@@ -141,7 +142,6 @@ using namespace irr;
                 tempData.scenarioName = gui->getScenarioName();
 
                 model->setScenarioData(tempData);
-                model->recalculateLegTimes(); //These need to be updated to match new startTime.
             }
 
             //Check for Save button here (ensure 'Apply' gets run first!)
