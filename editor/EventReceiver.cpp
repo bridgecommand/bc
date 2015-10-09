@@ -75,7 +75,8 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    //Todo: use model method to add leg
+                    //Use model method to add leg
+                    model->addLeg(ship,leg,legCourse,legSpeed,legDistance);
 
                 }
                 if (id == GUIMain::GUI_ID_MOVESHIP_BUTTON) {
@@ -97,7 +98,7 @@ using namespace irr;
                     irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition();
                     std::string newShipName = gui->getOtherShipTypeSelected();
 
-                    //Todo: use model method to add an other ship at the screen centre position (Does this need a 'stop' leg adding when we do this)
+                    model->addShip(newShipName,screenCentrePos);
                 }
 
 

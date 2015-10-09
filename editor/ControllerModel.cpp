@@ -287,8 +287,61 @@ void ControllerModel::deleteLeg(irr::s32 ship, irr::s32 index)
     }
 }
 
-//addLeg
-//addShip
+void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
+{
+    //If other ship:
+    if (ship>0) {
+        int otherShipIndex = ship-1;
+        if (otherShipIndex < otherShipsData->size()) {
+            std::vector<Leg>* legs = &otherShipsData->at(otherShipIndex).legs;
+            //Check if leg is reasonable, and is before the 'stop leg'
+            //A special case allows afterLegNumber to equal -1, for when only a single 'stop leg' exists
+            if (afterLegNumber >= -1 && afterLegNumber < ((int)legs->size() - 1)) {
+
+                //If the 'after' leg is the penultimate, add a leg before the stop one, starting now
+                if (afterLegNumber == ((int)legs->size()-2))  { //This also catches the special case where there is only the 'stop' leg, so the 'afterLegNumber value is -1
+
+                    Leg newLeg;
+                    newLeg.bearing = legCourse;
+                    newLeg.speed = legSpeed;
+                    newLeg.distance = legDistance;
+                    legs->insert(legs->end()-1, newLeg); //Insert before final leg
+
+                } else {
+
+                    Leg newLeg;
+                    newLeg.bearing = legCourse;
+                    newLeg.speed = legSpeed;
+                    newLeg.distance = legDistance;
+
+                    //std::cout << "B" << std::endl;
+
+                    legs->insert(legs->begin()+afterLegNumber+1, newLeg); //Insert leg
+                }
+            }
+        }
+    }
+    recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
+}
+
+void ControllerModel::addShip(std::string name, irr::core::vector2df position)
+{
+    OtherShipData newShip;
+    newShip.X = position.X;
+    newShip.Z = position.Y;
+    newShip.name = name;
+    //Add a 'stop' leg
+    Leg stopLeg;
+    stopLeg.bearing=0;
+    stopLeg.speed=0;
+    stopLeg.distance=0;
+    newShip.legs.push_back(stopLeg);
+
+    //Add to list
+    otherShipsData->push_back(newShip);
+
+    recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
+}
 
 void ControllerModel::recalculateLegTimes()
 {
