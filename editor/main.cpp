@@ -279,7 +279,7 @@ int main (int argc, char ** argv)
     }
 
     //Main model
-    ControllerModel controller(device, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData);
+    ControllerModel controller(device, &language, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData);
 
     //If an existing scenario, load data into these structures
     if(scenarioName.length() != 0) {

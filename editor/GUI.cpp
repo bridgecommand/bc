@@ -521,17 +521,17 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr:
                 for (u32 i=0; i<legSelector->getItemCount(); i++) {
                     if (i < currentLeg) {
                         std::wstring label(core::stringw(i+1).c_str());
-                        label.append(language->translate("past").c_str());
+                        //label.append(language->translate("past").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
                     if (i == currentLeg) {
                         std::wstring label(core::stringw(i+1).c_str());
-                        label.append(language->translate("current").c_str());
+                        //label.append(language->translate("current").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
                     if (i > currentLeg) {
                         std::wstring label(core::stringw(i+1).c_str());
-                        label.append(language->translate("future").c_str());
+                        //label.append(language->translate("future").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
                 }

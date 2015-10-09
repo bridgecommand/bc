@@ -27,10 +27,11 @@
 #endif // _WIN32
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
 {
 
     this->gui = gui;
+    this->lang = lang;
     this->device = device;
     driver = device->getVideoDriver();
 
@@ -399,9 +400,12 @@ void ControllerModel::save()
         mkdir(fullScenarioPath.c_str(),0755);
         #endif // _WIN32
         //TODO: Implement for POSIX
+    } else {
+        std::cout << "Overwriting scenario at " << fullScenarioPath << std::endl;
     }
 
     //Try and create files
+    bool successOfFar = true;
 
     //environment.ini
     std::string envPath = fullScenarioPath + "/environment.ini";
@@ -421,6 +425,7 @@ void ControllerModel::save()
     //envFile << "WindDirection=90" << std::endl;
     envFile << "Rain=" << generalData->rain << std::endl;
     envFile.close();
+    if (!envFile.good()) {successOfFar=false;}
 
     //othership.ini
     std::string otherPath = fullScenarioPath + "/othership.ini";
@@ -442,6 +447,7 @@ void ControllerModel::save()
         }
     }
     otherFile.close();
+    if (!otherFile.good()) {successOfFar=false;}
 
     //ownship.ini
     std::string ownPath = fullScenarioPath + "/ownship.ini";
@@ -454,6 +460,14 @@ void ControllerModel::save()
     ownFile << "InitialBearing=" << ownShipData->heading << std::endl;
     ownFile << "InitialSpeed=" << ownShipData->initialSpeed << std::endl;
     ownFile.close();
+    if (!ownFile.good()) {successOfFar=false;}
+
+    if (successOfFar) {
+        device->getGUIEnvironment()->addMessageBox(lang->translate("saved").c_str(), lang->translate("scenarioSaved").c_str());
+    } else {
+        device->getGUIEnvironment()->addMessageBox(lang->translate("failed").c_str(), lang->translate("failedScenarioSave").c_str());
+    }
+
 
 }
 

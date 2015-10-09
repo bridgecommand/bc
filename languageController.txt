@@ -44,3 +44,8 @@ sunSet="Sun set"
 scenario="Scenario name"
 apply="Apply"
 save="Save"
+
+saved="Saved"
+failed="Failed"
+scenarioSaved="Scenario saved"
+failedScenarioSave="Failed to save scenario"
