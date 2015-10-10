@@ -24,6 +24,7 @@ using namespace irr;
 
 const irr::s32 BC_BUTTON = 1;
 const irr::s32 MC_BUTTON = 2;
+const irr::s32 ED_BUTTON = 3;
 
 //Event receiver: This does the actual launching
 class Receiver : public IEventReceiver
@@ -62,6 +63,19 @@ public:
                     #endif
                     #endif
                 }
+                if (id == ED_BUTTON) {
+                    #ifdef _WIN32
+                        execl("./editor.exe", "editor.exe", NULL);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("./scenarioEditor", "scenarioEditor", NULL);
+                    #endif
+                    #endif
+                }
             }
         }
         return false;
@@ -91,8 +105,8 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    u32 graphicsWidth = 400;
-    u32 graphicsHeight = 100;
+    u32 graphicsWidth = 200;
+    u32 graphicsHeight = 300;
     u32 graphicsDepth = 32;
     bool fullScreen = false;
 
@@ -122,7 +136,8 @@ int main (int argc, char ** argv)
 
     //Add launcher buttons
     irr::gui::IGUIButton* launchBC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,10,190,90),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(core::rect<s32>(210,10,390,90),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    irr::gui::IGUIButton* launchED = device->getGUIEnvironment()->addButton(core::rect<s32>(10,110,190,190),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
+    irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,210,190,290),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);

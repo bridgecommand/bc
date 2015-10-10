@@ -5,3 +5,4 @@ changed to UTF-8, for proper portability!
 
 startBC = "Start Bridge Command"
 startMC = "Start Map Controller"
+startED = "Start Scenario Editor"

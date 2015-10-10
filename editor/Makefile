@@ -3,9 +3,9 @@
 # and be sure that CXX is set to a valid compiler
 
 # Name of the executable created (.exe will be added automatically if necessary)
-Target := mapController
+Target := scenarioEditor
 # List of source files, separated by spaces
-Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ControllerModel.cpp EventReceiver.cpp GUI.cpp Network.cpp ../libs/enet/callbacks.c ../libs/enet/compress.c ../libs/enet/host.c ../libs/enet/list.c ../libs/enet/packet.c ../libs/enet/peer.c ../libs/enet/protocol.c ../libs/enet/unix.c ../libs/enet/win32.c
+Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ControllerModel.cpp EventReceiver.cpp GUI.cpp StartupEventReceiver.cpp
 # Path to Irrlicht directory, should contain include/ and lib/
 IrrlichtHome := ../libs/Irrlicht/irrlicht-1.8.1
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
@@ -13,7 +13,7 @@ BinPath = ..
 
 # general compiler settings (might need to be set when compiling the lib, too)
 # preprocessor flags, e.g. defines and include paths
-USERCPPFLAGS = -I../libs/enet/enet-1.3.11/include
+USERCPPFLAGS =  
 # compiler flags such as optimization flags
 USERCXXFLAGS = -O3 -ffast-math
 #USERCXXFLAGS = -g -Wall
@@ -41,7 +41,8 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/map
+	rm -f ../BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/.gitignore
+	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/ed
 endif
 
 clean:

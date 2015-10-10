@@ -41,7 +41,6 @@ all:
 	$(warning Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	rm -f ../BridgeCommand.app/Contents/MacOS/.gitignore
 	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/BridgeCommand
 endif
 
