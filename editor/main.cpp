@@ -30,18 +30,21 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
 
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Failed to get access to file system" << std::endl;
+        exit(EXIT_FAILURE);
     }
     //store current dir
     io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to dir
     if (!fileSystem->changeWorkingDirectoryTo(path.c_str())) {
+        std::cout << "Failed to change to scenario directory" << std::endl;
         exit(EXIT_FAILURE); //Couldn't change to dir
     }
 
     io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
+        std::cout << "Could not get scenario list" << std::endl;
         exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
     }
 
@@ -58,6 +61,7 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
 
     //change back
     if (!fileSystem->changeWorkingDirectoryTo(cwd)) {
+        std::cout << "Could not return to normal working directory" << std::endl;
         exit(EXIT_FAILURE); //Couldn't change dir back
     }
     fileList->drop();
@@ -94,10 +98,10 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     const irr::s32 OK_WORLD_BUTTON_ID = 104;
 
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
-    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.01*su,0.100*sh,0.485*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.495*su,0.100*sh,0.970*su,0.80*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),core::rect<s32>(0.01*su,0.050*sh,0.485*su,0.090*sh),false,true,scnWorldChoiceWindow);
-    irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),core::rect<s32>(0.495*su,0.050*sh,0.970*su,0.090*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.545*su,0.200*sh,0.920*su,0.80*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),core::rect<s32>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),core::rect<s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
     irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
@@ -120,7 +124,7 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     }
 
     //set focus on first box
-    device->getGUIEnvironment()->setFocus(scenarioListBox);
+    //device->getGUIEnvironment()->setFocus(scenarioListBox);
 
     //Link to our event receiver
     StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID);
@@ -196,8 +200,8 @@ int main (int argc, char ** argv)
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
         std::cout << "Could not get filesystem" << std::endl;
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
@@ -310,6 +314,10 @@ int main (int argc, char ** argv)
         generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
         generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
         generalData.scenarioName = scenarioName;
+        //defaults
+        if(generalData.sunRiseTime==0.0) {generalData.sunRiseTime=6;}
+        if(generalData.sunSetTime==0.0) {generalData.sunSetTime=18;}
+
 
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
@@ -384,6 +392,9 @@ int main (int argc, char ** argv)
         thisBuoy.Z = controller.latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
         buoysData.push_back(thisBuoy);
     }
+
+    //Check if pre-set scenario name will cause an overwrite when saved
+    controller.checkOverwrite();
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain/*, &network*/);

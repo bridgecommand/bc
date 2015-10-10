@@ -53,7 +53,7 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    //Todo: use model method to apply change
+                    //Use model method to apply change
                     model->changeLeg(ship,leg,legCourse,legSpeed,legDistance);
 
                 }
@@ -61,7 +61,7 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
 
-                    //Todo: use model method to delete selected leg
+                    //Use model method to delete selected leg
                     model->deleteLeg(ship,leg);
 
                 }
@@ -84,7 +84,7 @@ using namespace irr;
                     int ship = gui->getSelectedShip();
                     irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition(); //Check screen centre
 
-                    //Todo: use model method to apply change in ownship position
+                    //Use model method to apply change in ownship position
                     model->setShipPosition(ship, screenCentrePos);
 
                     //If moving own ship, reset offset, so the map doesn't jump

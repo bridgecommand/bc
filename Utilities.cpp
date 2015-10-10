@@ -164,7 +164,6 @@ namespace Utilities
             #endif // __APPLE__
 
         #endif // _WIN32
-        //FIXME: Implement for Linux/OSX
 
         return userFolder;
     }

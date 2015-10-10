@@ -41,6 +41,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     this->generalData = generalData;
     this->worldName = worldName;
 
+    checkOverwrite();//Check if the scenario name (preset in generalData) will cause an overwrite, and if so, set flag in generalData
+
     unscaledMap = 0;
     scaledMap = 0;
 
@@ -249,6 +251,26 @@ void ControllerModel::setScenarioData(GeneralData newData)
 {
     *generalData=newData;
     recalculateLegTimes(); //These need to be updated to match new startTime.
+    checkOverwrite(); //Check if the scenario name chosen will cause overwrite, and if so, set flag.
+}
+
+void ControllerModel::checkOverwrite() //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
+{
+    //Find path to scenario folder
+    std::string userFolder = Utilities::getUserDir();
+    std::string scenarioPath = "Scenarios/";
+    if (Utilities::pathExists(userFolder + scenarioPath)) {
+        scenarioPath = userFolder + scenarioPath;
+    }
+
+    //Check if path exists already
+    std::string fullScenarioPath = scenarioPath.append(generalData->scenarioName);
+
+    if (Utilities::pathExists(fullScenarioPath)) {
+        generalData->willOverwrite=true;
+    } else {
+        generalData->willOverwrite=false;
+    }
 }
 
 void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)  //Change othership (or ownship) course, speed etc.
@@ -382,6 +404,12 @@ void ControllerModel::save()
     //Do save here
     std::cout << "About to save" << std::endl;
 
+    //check there's a scenario name to save to
+    if (generalData->scenarioName.empty()) {
+        device->getGUIEnvironment()->addMessageBox(lang->translate("failed").c_str(), lang->translate("failedScenarioSave").c_str());
+        return;
+    }
+
     //Find path to scenario folder
     std::string userFolder = Utilities::getUserDir();
     std::string scenarioPath = "Scenarios/";
@@ -397,9 +425,9 @@ void ControllerModel::save()
         #ifdef _WIN32
         _mkdir(fullScenarioPath.c_str());
         #else
-        mkdir(fullScenarioPath.c_str(),0755);
+        mkdir(fullScenarioPath.c_str(),0755); //Todo: Test this
         #endif // _WIN32
-        //TODO: Implement for POSIX
+
     } else {
         std::cout << "Overwriting scenario at " << fullScenarioPath << std::endl;
     }
@@ -410,7 +438,7 @@ void ControllerModel::save()
     //environment.ini
     std::string envPath = fullScenarioPath + "/environment.ini";
     std::ofstream envFile;
-    //FIXME: Needs error checking etc.
+
     envFile.open(envPath.c_str());
     envFile << "Setting=\"" << worldName << "\"" << std::endl;
     envFile << "StartTime=" << generalData->startTime/SECONDS_IN_HOUR << std::endl;
@@ -430,7 +458,7 @@ void ControllerModel::save()
     //othership.ini
     std::string otherPath = fullScenarioPath + "/othership.ini";
     std::ofstream otherFile;
-    //Todo: error checking etc
+
     otherFile.open(otherPath.c_str());
     otherFile << "Number=" << otherShipsData->size() << std::endl;
     for (int i = 1; i<=otherShipsData->size(); i++) {
@@ -452,7 +480,7 @@ void ControllerModel::save()
     //ownship.ini
     std::string ownPath = fullScenarioPath + "/ownship.ini";
     std::ofstream ownFile;
-    //Todo: error checking etc
+
     ownFile.open(ownPath.c_str());
     ownFile << "ShipName=\"" << ownShipData->name << "\"" << std::endl;
     ownFile << "InitialLong=" << xToLong(ownShipData->X) << std::endl;

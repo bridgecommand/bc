@@ -111,6 +111,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     guienv->addStaticText(language->translate("scenario").c_str(),core::rect<s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
     scenarioName = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
+    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),core::rect<s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
 
     apply = guienv->addButton(core::rect<s32>(0.300*su,0.11*sh,0.450*su,0.17*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
     save = guienv->addButton(core::rect<s32>(0.300*su,0.18*sh,0.450*su,0.24*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
@@ -221,9 +222,6 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     displayText.append(eastWest);
     displayText.append(L"\n");
 
-    //Temp: Check that things are getting updated
-    displayText.append(irr::core::stringw(scenarioInfo.rain));
-
     //Display
     dataDisplay->setText(displayText.c_str());
 
@@ -271,6 +269,14 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
     if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
         scenarioName->setText(core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
+    }
+    if (scenarioInfo.willOverwrite) {
+        //Show in red if it will overwrite an existing scenario
+        scenarioName->setOverrideColor(video::SColor(255, 255, 0, 0));
+        overwriteWarning->setVisible(true);
+    } else {
+        scenarioName->enableOverrideColor(false);
+        overwriteWarning->setVisible(false);
     }
 
     //End of duplicated section
@@ -683,6 +689,8 @@ std::string GUIMain::getScenarioName() const {
     replace(scenarioNameString.begin(), scenarioNameString.end(),'?',' ');
     replace(scenarioNameString.begin(), scenarioNameString.end(),'<',' ');
     replace(scenarioNameString.begin(), scenarioNameString.end(),'>',' ');
+
+    scenarioNameString = Utilities::trim(scenarioNameString);
 
     return scenarioNameString;
 }

@@ -119,6 +119,7 @@ private:
     irr::gui::IGUIComboBox* weather;
     irr::gui::IGUIComboBox* rain;
     irr::gui::IGUIEditBox* scenarioName;
+    irr::gui::IGUIStaticText* overwriteWarning;
     irr::gui::IGUIButton* apply;
     irr::gui::IGUIButton* save;
 
