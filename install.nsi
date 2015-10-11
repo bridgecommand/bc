@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Alpha 6"
-!define OUTPUTFILE "bc50a6_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0a6"
-!define SMFOLDER "Bridge Command 5.0 Alpha 6"
-!define REGKEY "BridgeCommand5.0a6"
+!define PROGRAMNAME "Bridge Command 5.0 Alpha 7"
+!define OUTPUTFILE "bc50a7_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0a7"
+!define SMFOLDER "Bridge Command 5.0 Alpha 7"
+!define REGKEY "BridgeCommand5.0a7"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x editor /x editor.exe /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
@@ -62,6 +62,7 @@ SetShellVarContext all
 
   ; Remove files and uninstaller
   RMDir /r "$INSTDIR\controller"
+  RMDir /r "$INSTDIR\editor"
   RMDir /r "$INSTDIR\Models"  
   RMDir /r "$INSTDIR\Scenarios"
   RMDir /r "$INSTDIR\media"
@@ -144,6 +145,7 @@ SetShellVarContext all
   Delete "$INSTDIR\BridgeCommand.depend"
   Delete "$INSTDIR\BridgeCommand.exe"
   Delete "$INSTDIR\controller.exe"
+  Delete "$INSTDIR\editor.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
