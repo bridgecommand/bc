@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <algorithm>
+#include <string>
 #include "PositionDataStruct.hpp"
 #include "OwnShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
@@ -20,7 +22,12 @@
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
-#endif
+#endif //__APPLE__
+
+#ifdef WIN32
+#include <windows.h>
+#include <Shellapi.h>
+#endif // WIN32
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -156,6 +163,42 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     }
 }
 
+int copyDir(std::string source, std::string dest)
+{
+
+    //Copy contents of source dir into dest dir, creating dest recursively if needed.
+
+    #ifdef WIN32
+    source.append(1,'\0'); //Add an extra null to end of string
+    dest.append(1,'\0');
+    replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
+
+    SHFILEOPSTRUCT fileOp;
+    fileOp.wFunc = FO_COPY;
+    fileOp.pFrom = source.c_str();
+    fileOp.pTo = dest.c_str();
+    fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
+
+    return SHFileOperation(&fileOp);
+    #endif // WIN32
+
+    return -1;
+}
+
+void checkUserScenarioDir(void)
+{
+    //Check if scenarios are in the user dir, and if not, try to copy in
+    std::string userFolder = Utilities::getUserDir();
+
+    std::string scenarioPath = "Scenarios/";
+    if (!Utilities::pathExists(userFolder + scenarioPath)) {
+
+        std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
+        copyDir("Scenarios", userFolder + scenarioPath );
+    }
+}
+
+
 int main (int argc, char ** argv)
 {
 
@@ -221,6 +264,9 @@ int main (int argc, char ** argv)
         //set skin default font
         device->getGUIEnvironment()->getSkin()->setFont(font);
     }
+
+	//Check if user scenario dir exists. If not, try to copy scenarios into the user dir.
+    checkUserScenarioDir();
 
     //Query which scenario or world to start with
     std::string worldName;
