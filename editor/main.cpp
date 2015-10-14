@@ -31,7 +31,7 @@
 #endif // WIN32
 #ifdef __APPLE__
 #include <copyfile.h>
-#include <CoreServices/CoreServices.h>
+#include <sys/stat.h>
 #endif // __APPLE__
 
 // Irrlicht Namespaces
