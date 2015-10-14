@@ -206,7 +206,7 @@ void checkUserScenarioDir(void)
     //Check if scenarios are in the user dir, and if not, try to copy in
     std::string userFolder = Utilities::getUserDir();
 
-    std::string scenarioPath = "Scenarios/";
+    std::string scenarioPath = "Scenarios";
     if (!Utilities::pathExists(userFolder + scenarioPath)) {
 
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
