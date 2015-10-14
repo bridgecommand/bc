@@ -425,7 +425,7 @@ void ControllerModel::save()
         #ifdef _WIN32
         _mkdir(fullScenarioPath.c_str());
         #else
-        mkdir(fullScenarioPath.c_str(),0755); //Todo: Test this
+        mkdir(fullScenarioPath.c_str(),0755);
         #endif // _WIN32
 
     } else {

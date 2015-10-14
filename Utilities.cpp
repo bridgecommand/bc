@@ -119,11 +119,11 @@ namespace Utilities
         return splitStrings;
     }
 
-    std::string getUserDir() {
-        // Return the user directory (eg %appdata%/Bridge Command/version on Windows,
-        // ~/.Bridge Command/version on Linux
+    std::string getUserDirBase() {
+        // Return the user directory (eg %appdata%/Bridge Command/ on Windows,
+        // ~/.Bridge Command/ on Linux
         // and
-        // ~/Library/Application Support/Bridge Command/version on Mac)
+        // ~/Library/Application Support/Bridge Command/on Mac)
 
         std::string userFolder;
 
@@ -133,8 +133,6 @@ namespace Utilities
             if (appdataLocation!=NULL) {
                 userFolder = appdataLocation;
                 userFolder.append("/Bridge Command/");
-                userFolder.append(VERSION);
-                userFolder.append("/");
             }
         #else
             #ifdef __APPLE__
@@ -148,8 +146,6 @@ namespace Utilities
                 if (path!=NULL) {
                     userFolder = path;
                     userFolder.append("/Bridge Command/");
-                    userFolder.append(VERSION);
-                    userFolder.append("/");
                 }
             #else
                 //Other posix
@@ -158,12 +154,26 @@ namespace Utilities
                 if (path!=NULL) {
                     userFolder = path;
                     userFolder.append("/.Bridge Command/");
-                    userFolder.append(VERSION);
-                    userFolder.append("/");
                 }
             #endif // __APPLE__
 
         #endif // _WIN32
+
+        return userFolder;
+    }
+
+    std::string getUserDir() {
+        // Return the user directory (eg %appdata%/Bridge Command/version on Windows,
+        // ~/.Bridge Command/version on Linux
+        // and
+        // ~/Library/Application Support/Bridge Command/version on Mac)
+
+        std::string userFolder = getUserDirBase();
+
+        if (userFolder.length() > 0) {
+            userFolder.append(VERSION);
+            userFolder.append("/");
+        }
 
         return userFolder;
     }

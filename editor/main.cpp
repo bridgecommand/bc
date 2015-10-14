@@ -24,10 +24,14 @@
 #include <mach-o/dyld.h>
 #endif //__APPLE__
 
+//Includes for copying scenario files
 #ifdef WIN32
 #include <windows.h>
 #include <Shellapi.h>
 #endif // WIN32
+#ifdef __APPLE__
+#include <copyfile.h>
+#endif // __APPLE__
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -182,6 +186,17 @@ int copyDir(std::string source, std::string dest)
     return SHFileOperation(&fileOp);
     #endif // WIN32
 
+    #ifdef __APPLE__
+    copyfile_state_t s;
+    s=copyfile_state_alloc();
+    //use copyfile here to do recursive copy
+    int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
+    copyfile_state_free(s);
+    return returnValue;
+    #endif // __APPLE__
+
+    //Note: Not implemented yet for other posix: need to implement recursive directory copy.
+
     return -1;
 }
 
@@ -194,6 +209,25 @@ void checkUserScenarioDir(void)
     if (!Utilities::pathExists(userFolder + scenarioPath)) {
 
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
+
+        #ifdef __APPLE__
+        //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
+        if (!Utilities::pathExists(Utilities::getUserDirBase())) {
+            std::string pathToMake = Utilities::getUserDirBase();
+            if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+            mkdir(pathToMake.c_str(),0755);
+        }
+        if (!Utilities::pathExists(Utilities::getUserDir())) {
+            std::string pathToMake = Utilities::getUserDir();
+            if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+            mkdir(pathToMake.c_str(),0755);
+        }
+        if (!Utilities::pathExists(Utilities::getUserDir() + "Scenarios/")) {
+            std::string pathToMake = Utilities::getUserDir() + "Scenarios";
+            mkdir(pathToMake.c_str(),0755);
+        }
+        #endif // __APPLE__
+
         copyDir("Scenarios", userFolder + scenarioPath );
     }
 }
