@@ -36,11 +36,23 @@ using namespace irr;
 		this->portJoystickAxis=portJoystickAxis;
 		this->stbdJoystickAxis=stbdJoystickAxis;
 		this->rudderJoystickAxis=rudderJoystickAxis;
+        
+        //assume mouse buttons not pressed initially
+        leftMouseDown = false;
+        rightMouseDown = false;
 	}
 
     bool MyEventReceiver::OnEvent(const SEvent& event)
 	{
 
+        //From mouse - keep track of button press state
+        if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+            if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {leftMouseDown=true;}
+            if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {leftMouseDown=false;}
+            if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ) {rightMouseDown=true;}
+            if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP ) {rightMouseDown=false;}
+        }
+        
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
@@ -62,10 +74,18 @@ using namespace irr;
               if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
                   {
                         model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        //If right mouse button, set the other engine as well
+                        if (rightMouseDown) {
+                            model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                        }
                   }
               if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
                   {
                         model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        //If right mouse button, set the other engine as well
+                        if (rightMouseDown) {
+                            model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                        }
                   }
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
                   {

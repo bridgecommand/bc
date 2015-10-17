@@ -37,6 +37,8 @@ private:
 
     SimulationModel* model;
     GUIMain* gui;
+    bool leftMouseDown;
+    bool rightMouseDown;
     irr::s32 scrollBarPosSpeed;
     irr::s32 scrollBarPosHeading;
     irr::core::array<irr::SJoystickInfo> joystickInfo;
