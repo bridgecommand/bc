@@ -209,7 +209,11 @@ void checkUserScenarioDir(void)
     std::string scenarioPath = "Scenarios";
     if (!Utilities::pathExists(userFolder + scenarioPath)) {
 
-        std::cout << "Copying scenario files into " << userFolder << std::endl;
+
+        #ifdef WIN32
+        std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
+        copyDir("Scenarios", userFolder + scenarioPath);
+        #endif // WIN32
 
         #ifdef __APPLE__
         //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
@@ -227,9 +231,11 @@ void checkUserScenarioDir(void)
             std::string pathToMake = Utilities::getUserDir() + "Scenarios";
             mkdir(pathToMake.c_str(),0755);
         }
+        std::cout << "Copying scenario files into " << userFolder << std::endl;
+        copyDir("Scenarios", userFolder);
         #endif // __APPLE__
 
-        copyDir("Scenarios/", userFolder);
+
     }
 }
 
