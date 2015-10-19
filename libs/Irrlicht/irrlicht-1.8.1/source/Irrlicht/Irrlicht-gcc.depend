@@ -4642,3 +4642,4647 @@
 	<windows.h>
 	<errno.h>
 
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\aescrypt.cpp
+	"aesopt.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\aesopt.h
+	"aes.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\aes.h
+	"irrMath.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrmath.h
+	"IrrCompileConfig.h"
+	"irrTypes.h"
+	<math.h>
+	<float.h>
+	<stdlib.h>
+	<limits.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrcompileconfig.h
+	<stdio.h>
+	<xtl.h>
+	<tchar.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrtypes.h
+	"IrrCompileConfig.h"
+	<wchar.h>
+	<crtdbg.h>
+	"assert.h"
+	<stdlib.h>
+	<crtdbg.h>
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\aeskey.cpp
+	"aesopt.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\aestab.cpp
+	"aesopt.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\fileenc.cpp
+	<memory.h>
+	"fileenc.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\fileenc.h
+	"aes.h"
+	"hmac.h"
+	"pwd2key.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\hmac.h
+	<memory.h>
+	"sha1.h"
+	"sha2.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\sha1.h
+	<limits.h>
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\sha2.h
+	"irrMath.h"
+	<sys/int_types.h>
+	<stdint.h>
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\pwd2key.h
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\hmac.cpp
+	"hmac.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\prng.cpp
+	<memory.h>
+	"prng.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\prng.h
+	"sha1.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\pwd2key.cpp
+	<memory.h>
+	"hmac.h"
+	<stdio.h>
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\sha1.cpp
+	<string.h>
+	<stdlib.h>
+	"sha1.h"
+	"../os.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\os.h
+	"IrrCompileConfig.h"
+	"irrTypes.h"
+	"irrString.h"
+	"path.h"
+	"ILogger.h"
+	"ITimer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrstring.h
+	"irrTypes.h"
+	"irrAllocator.h"
+	"irrMath.h"
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrallocator.h
+	"irrTypes.h"
+	<new>
+	<memory.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\path.h
+	"irrString.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ilogger.h
+	"IReferenceCounted.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ireferencecounted.h
+	"irrTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\itimer.h
+	"IReferenceCounted.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\aesgladman\sha2.cpp
+	<string.h>
+	<stdlib.h>
+	"sha2.h"
+	"../os.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\blocksort.c
+	"bzlib_private.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\bzlib_private.h
+	<stdlib.h>
+	<stdio.h>
+	<ctype.h>
+	<string.h>
+	"bzlib.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\bzlib.h
+	<stdio.h>
+	<windows.h>
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\bzcompress.c
+	"bzlib_private.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\bzlib.c
+	"bzlib_private.h"
+	<fcntl.h>
+	<io.h>
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\crctable.c
+	"bzlib_private.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\decompress.c
+	"bzlib_private.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\huffman.c
+	"bzlib_private.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\bzip2\randtable.c
+	"bzlib_private.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\c3dsmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"C3DSMeshFileLoader.h"
+	"os.h"
+	"SMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+	"IVideoDriver.h"
+	"IMeshManipulator.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\c3dsmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"ISceneManager.h"
+	"irrString.h"
+	"SMesh.h"
+	"matrix4.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshloader.h
+	"IReferenceCounted.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ifilesystem.h
+	"IReferenceCounted.h"
+	"IXMLReader.h"
+	"IFileArchive.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ixmlreader.h
+	"IReferenceCounted.h"
+	"irrXML.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrxml.h
+	<stdio.h>
+	"IrrCompileConfig.h"
+	<irrXML.h>
+	<string>
+	<irrXML.h>
+	<irrXML.h>
+	<irrXML.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ifilearchive.h
+	"IReadFile.h"
+	"IFileList.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ireadfile.h
+	"IReferenceCounted.h"
+	"coreutil.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\coreutil.h
+	"irrString.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ifilelist.h
+	"IReferenceCounted.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenemanager.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"irrString.h"
+	"path.h"
+	"vector3d.h"
+	"dimension2d.h"
+	"SColor.h"
+	"ETerrainElements.h"
+	"ESceneNodeTypes.h"
+	"ESceneNodeAnimatorTypes.h"
+	"EMeshWriterEnums.h"
+	"SceneParameters.h"
+	"IGeometryCreator.h"
+	"ISkinnedMesh.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrarray.h
+	"irrTypes.h"
+	"heapsort.h"
+	"irrAllocator.h"
+	"irrMath.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\heapsort.h
+	"irrTypes.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\vector3d.h
+	"irrMath.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\dimension2d.h
+	"irrTypes.h"
+	"irrMath.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\scolor.h
+	"irrTypes.h"
+	"irrMath.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eterrainelements.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\escenenodetypes.h
+	"irrTypes.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\escenenodeanimatortypes.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\emeshwriterenums.h
+	"irrTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sceneparameters.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\igeometrycreator.h
+	"IReferenceCounted.h"
+	"IMesh.h"
+	"IImage.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imesh.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"EHardwareBufferFlags.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smaterial.h
+	"SColor.h"
+	"matrix4.h"
+	"irrArray.h"
+	"irrMath.h"
+	"EMaterialTypes.h"
+	"EMaterialFlags.h"
+	"SMaterialLayer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\matrix4.h
+	"irrMath.h"
+	"vector3d.h"
+	"vector2d.h"
+	"plane3d.h"
+	"aabbox3d.h"
+	"rect.h"
+	"irrString.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\vector2d.h
+	"irrMath.h"
+	"dimension2d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\plane3d.h
+	"irrMath.h"
+	"vector3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\aabbox3d.h
+	"irrMath.h"
+	"plane3d.h"
+	"line3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\line3d.h
+	"irrTypes.h"
+	"vector3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\rect.h
+	"irrTypes.h"
+	"dimension2d.h"
+	"position2d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\position2d.h
+	"vector2d.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ematerialtypes.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ematerialflags.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smateriallayer.h
+	"matrix4.h"
+	"irrAllocator.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ehardwarebufferflags.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iimage.h
+	"IReferenceCounted.h"
+	"position2d.h"
+	"rect.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iskinnedmesh.h
+	"irrArray.h"
+	"IBoneSceneNode.h"
+	"IAnimatedMesh.h"
+	"SSkinMeshBuffer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ibonescenenode.h
+	"ISceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenode.h
+	"IAttributeExchangingObject.h"
+	"ESceneNodeTypes.h"
+	"ECullingTypes.h"
+	"EDebugSceneTypes.h"
+	"ISceneNodeAnimator.h"
+	"ITriangleSelector.h"
+	"SMaterial.h"
+	"irrString.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"irrList.h"
+	"IAttributes.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iattributeexchangingobject.h
+	"IReferenceCounted.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ecullingtypes.h
+	"irrTypes.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\edebugscenetypes.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodeanimator.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"ESceneNodeAnimatorTypes.h"
+	"IAttributeExchangingObject.h"
+	"IEventReceiver.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ieventreceiver.h
+	"ILogger.h"
+	"Keycodes.h"
+	"irrString.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\keycodes.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\itriangleselector.h
+	"IReferenceCounted.h"
+	"triangle3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"line3d.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\triangle3d.h
+	"vector3d.h"
+	"line3d.h"
+	"plane3d.h"
+	"aabbox3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrlist.h
+	"irrTypes.h"
+	"irrAllocator.h"
+	"irrMath.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iattributes.h
+	"IReferenceCounted.h"
+	"SColor.h"
+	"vector3d.h"
+	"vector2d.h"
+	"line2d.h"
+	"line3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"rect.h"
+	"dimension2d.h"
+	"matrix4.h"
+	"quaternion.h"
+	"plane3d.h"
+	"triangle3d.h"
+	"line2d.h"
+	"line3d.h"
+	"irrString.h"
+	"irrArray.h"
+	"IXMLReader.h"
+	"EAttributes.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\line2d.h
+	"irrTypes.h"
+	"vector2d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\quaternion.h
+	"irrTypes.h"
+	"irrMath.h"
+	"matrix4.h"
+	"vector3d.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eattributes.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ianimatedmesh.h
+	"aabbox3d.h"
+	"IMesh.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sskinmeshbuffer.h
+	"IMeshBuffer.h"
+	"S3DVertex.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshbuffer.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"aabbox3d.h"
+	"S3DVertex.h"
+	"SVertexIndex.h"
+	"EHardwareBufferFlags.h"
+	"EPrimitiveTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\s3dvertex.h
+	"vector3d.h"
+	"vector2d.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\svertexindex.h
+	"irrTypes.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eprimitivetypes.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smesh.h
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"aabbox3d.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrpack.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrunpack.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smeshbuffer.h
+	"CMeshBuffer.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\cmeshbuffer.h
+	"irrArray.h"
+	"IMeshBuffer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sanimatedmesh.h
+	"IAnimatedMesh.h"
+	"IMesh.h"
+	"aabbox3d.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ivideodriver.h
+	"rect.h"
+	"SColor.h"
+	"ITexture.h"
+	"irrArray.h"
+	"matrix4.h"
+	"plane3d.h"
+	"dimension2d.h"
+	"position2d.h"
+	"SMaterial.h"
+	"IMeshBuffer.h"
+	"triangle3d.h"
+	"EDriverTypes.h"
+	"EDriverFeatures.h"
+	"SExposedVideoData.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\itexture.h
+	"IReferenceCounted.h"
+	"IImage.h"
+	"dimension2d.h"
+	"EDriverTypes.h"
+	"path.h"
+	"matrix4.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\edrivertypes.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\edriverfeatures.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sexposedvideodata.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshmanipulator.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"IAnimatedMesh.h"
+	"IMeshBuffer.h"
+	"SVertexManipulator.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\svertexmanipulator.h
+	"S3DVertex.h"
+	"SColor.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshhalflife.cpp
+	"IrrCompileConfig.h"
+	"CAnimatedMeshHalfLife.h"
+	"os.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"coreutil.h"
+	"SMeshBuffer.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshhalflife.h
+	"IAnimatedMesh.h"
+	"ISceneManager.h"
+	"irrArray.h"
+	"irrString.h"
+	"IMeshLoader.h"
+	"SMesh.h"
+	"IReadFile.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolorconverter.h
+	"irrTypes.h"
+	"IImage.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimage.h
+	"IImage.h"
+	"rect.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshmd2.cpp
+	"IrrCompileConfig.h"
+	"CAnimatedMeshMD2.h"
+	"SColor.h"
+	"irrMath.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshmd2.h
+	"IAnimatedMeshMD2.h"
+	"IMesh.h"
+	"CMeshBuffer.h"
+	"IReadFile.h"
+	"S3DVertex.h"
+	"irrArray.h"
+	"irrString.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ianimatedmeshmd2.h
+	"IAnimatedMesh.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshmd3.cpp
+	"IrrCompileConfig.h"
+	"CAnimatedMeshMD3.h"
+	"os.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshmd3.h
+	"IAnimatedMeshMD3.h"
+	"IReadFile.h"
+	"IFileSystem.h"
+	"irrArray.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"IQ3Shader.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ianimatedmeshmd3.h
+	"IAnimatedMesh.h"
+	"IQ3Shader.h"
+	"quaternion.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iq3shader.h
+	"irrArray.h"
+	"fast_atof.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"coreutil.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\fast_atof.h
+	"irrMath.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshscenenode.cpp
+	"CAnimatedMeshSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"os.h"
+	"CShadowVolumeSceneNode.h"
+	"IAnimatedMeshMD3.h"
+	"CSkinnedMesh.h"
+	"IDummyTransformationSceneNode.h"
+	"IBoneSceneNode.h"
+	"IMaterialRenderer.h"
+	"IMesh.h"
+	"IMeshCache.h"
+	"IAnimatedMesh.h"
+	"quaternion.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\canimatedmeshscenenode.h
+	"IAnimatedMeshSceneNode.h"
+	"IAnimatedMesh.h"
+	"matrix4.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ianimatedmeshscenenode.h
+	"ISceneNode.h"
+	"IBoneSceneNode.h"
+	"IAnimatedMeshMD2.h"
+	"IAnimatedMeshMD3.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cshadowvolumescenenode.h
+	"IShadowVolumeSceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ishadowvolumescenenode.h
+	"ISceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskinnedmesh.h
+	"ISkinnedMesh.h"
+	"SMeshBuffer.h"
+	"S3DVertex.h"
+	"irrString.h"
+	"matrix4.h"
+	"quaternion.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\idummytransformationscenenode.h
+	"ISceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imaterialrenderer.h
+	"IReferenceCounted.h"
+	"SMaterial.h"
+	"S3DVertex.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshcache.h
+	"IReferenceCounted.h"
+	"path.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cattributes.cpp
+	"CAttributes.h"
+	"CAttributeImpl.h"
+	"ITexture.h"
+	"IXMLWriter.h"
+	"IVideoDriver.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cattributes.h
+	"IAttributes.h"
+	"IAttribute.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\iattribute.h
+	"IReferenceCounted.h"
+	"SColor.h"
+	"vector3d.h"
+	"vector2d.h"
+	"line2d.h"
+	"line3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"rect.h"
+	"dimension2d.h"
+	"matrix4.h"
+	"quaternion.h"
+	"plane3d.h"
+	"triangle3d.h"
+	"line2d.h"
+	"line3d.h"
+	"irrString.h"
+	"irrArray.h"
+	"EAttributes.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cattributeimpl.h
+	"CAttributes.h"
+	"fast_atof.h"
+	"ITexture.h"
+	"IVideoDriver.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ixmlwriter.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cb3dmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CB3DMeshFileLoader.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cb3dmeshfileloader.h
+	"IrrCompileConfig.h"
+	"IMeshLoader.h"
+	"ISceneManager.h"
+	"CSkinnedMesh.h"
+	"IReadFile.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbillboardscenenode.cpp
+	"CBillboardSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbillboardscenenode.h
+	"IBillboardSceneNode.h"
+	"S3DVertex.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ibillboardscenenode.h
+	"ISceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\icamerascenenode.h
+	"ISceneNode.h"
+	"IEventReceiver.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbonescenenode.cpp
+	"IrrCompileConfig.h"
+	"CBoneSceneNode.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbonescenenode.h
+	"IBoneSceneNode.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbspmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CBSPMeshFileLoader.h"
+	"CQ3LevelMesh.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cbspmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"IQ3Shader.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cq3levelmesh.h
+	"IQ3LevelMesh.h"
+	"IReadFile.h"
+	"IFileSystem.h"
+	"SMesh.h"
+	"SMeshBufferLightMap.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"ISceneManager.h"
+	"os.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iq3levelmesh.h
+	"IAnimatedMesh.h"
+	"IQ3Shader.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smeshbufferlightmap.h
+	"CMeshBuffer.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cburningshader_raster_reference.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\iburningshader.h
+	"SoftwareDriver2_compile_config.h"
+	"IReferenceCounted.h"
+	"irrMath.h"
+	"IImage.h"
+	"S2DVertex.h"
+	"rect.h"
+	"CDepthBuffer.h"
+	"S4DVertex.h"
+	"irrArray.h"
+	"SLight.h"
+	"SMaterial.h"
+	"os.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\softwaredriver2_compile_config.h
+	"IrrCompileConfig.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\s2dvertex.h
+	"vector2d.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdepthbuffer.h
+	"IDepthBuffer.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\idepthbuffer.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+	"S4DVertex.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\s4dvertex.h
+	"SoftwareDriver2_compile_config.h"
+	"SoftwareDriver2_helper.h"
+	"irrAllocator.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\softwaredriver2_helper.h
+	"SoftwareDriver2_compile_config.h"
+	"irrMath.h"
+	"CSoftwareTexture2.h"
+	"SMaterial.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaretexture2.h
+	"SoftwareDriver2_compile_config.h"
+	"ITexture.h"
+	"CImage.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\slight.h
+	"SColor.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccamerascenenode.cpp
+	"CCameraSceneNode.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccamerascenenode.h
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sviewfrustum.h
+	"plane3d.h"
+	"vector3d.h"
+	"line3d.h"
+	"aabbox3d.h"
+	"matrix4.h"
+	"IVideoDriver.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccgmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CCgMaterialRenderer.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccgmaterialrenderer.h
+	"IrrCompileConfig.h"
+	"IMaterialRenderer.h"
+	"IMaterialRendererServices.h"
+	"IShaderConstantSetCallBack.h"
+	"IGPUProgrammingServices.h"
+	"irrArray.h"
+	"irrString.h"
+	"IVideoDriver.h"
+	"os.h"
+	"Cg/cg.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imaterialrendererservices.h
+	"SMaterial.h"
+	"S3DVertex.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ishaderconstantsetcallback.h
+	"IReferenceCounted.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\igpuprogrammingservices.h
+	"EShaderTypes.h"
+	"EMaterialTypes.h"
+	"EPrimitiveTypes.h"
+	"path.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eshadertypes.h
+	"irrTypes.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolladafileloader.cpp
+	"IrrCompileConfig.h"
+	"CColladaFileLoader.h"
+	"os.h"
+	"IXMLReader.h"
+	"IDummyTransformationSceneNode.h"
+	"SAnimatedMesh.h"
+	"fast_atof.h"
+	"quaternion.h"
+	"ILightSceneNode.h"
+	"ICameraSceneNode.h"
+	"IMeshManipulator.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"IMeshCache.h"
+	"IMeshSceneNode.h"
+	"SMeshBufferLightMap.h"
+	"irrMap.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolladafileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"ISceneManager.h"
+	"irrMap.h"
+	"CAttributes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrmap.h
+	"irrTypes.h"
+	"irrMath.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ilightscenenode.h
+	"ISceneNode.h"
+	"SLight.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshscenenode.h
+	"ISceneNode.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolladameshwriter.cpp
+	"IrrCompileConfig.h"
+	"CColladaMeshWriter.h"
+	"os.h"
+	"IFileSystem.h"
+	"IWriteFile.h"
+	"IXMLWriter.h"
+	"IMesh.h"
+	"IAttributes.h"
+	"IAnimatedMeshSceneNode.h"
+	"IMeshSceneNode.h"
+	"ITerrainSceneNode.h"
+	"ILightSceneNode.h"
+	"ICameraSceneNode.h"
+	"ISceneManager.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolladameshwriter.h
+	"IColladaMeshWriter.h"
+	"S3DVertex.h"
+	"irrMap.h"
+	"IVideoDriver.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\icolladameshwriter.h
+	"IMeshWriter.h"
+	"ISceneNode.h"
+	"IAnimatedMesh.h"
+	"SMaterial.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imeshwriter.h
+	"IReferenceCounted.h"
+	"EMeshWriterEnums.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iwritefile.h
+	"IReferenceCounted.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iterrainscenenode.h
+	"ETerrainElements.h"
+	"ISceneNode.h"
+	"IDynamicMeshBuffer.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\idynamicmeshbuffer.h
+	"IMeshBuffer.h"
+	"IVertexBuffer.h"
+	"IIndexBuffer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ivertexbuffer.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"S3DVertex.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iindexbuffer.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"SVertexIndex.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccolorconverter.cpp
+	"CColorConverter.h"
+	"SColor.h"
+	"os.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccsmloader.cpp
+	"IrrCompileConfig.h"
+	"CCSMLoader.h"
+	"os.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+	"ISceneManager.h"
+	"IAttributes.h"
+	"SMesh.h"
+	"IVideoDriver.h"
+	"SAnimatedMesh.h"
+	"SMeshBufferLightMap.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccsmloader.h
+	"irrArray.h"
+	"IMesh.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"IMeshLoader.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccubescenenode.cpp
+	"CCubeSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"SMeshBuffer.h"
+	"os.h"
+	"CShadowVolumeSceneNode.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ccubescenenode.h
+	"IMeshSceneNode.h"
+	"SMesh.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8driver.cpp
+	"IrrCompileConfig.h"
+	"CD3D8Driver.h"
+	"os.h"
+	"S3DVertex.h"
+	"CD3D8Texture.h"
+	"CD3D8MaterialRenderer.h"
+	"CD3D8ShaderMaterialRenderer.h"
+	"CD3D8NormalMapRenderer.h"
+	"CD3D8ParallaxMapRenderer.h"
+	"SIrrCreationParameters.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8driver.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	"SIrrCreationParameters.h"
+	"CNullDriver.h"
+	"IMaterialRendererServices.h"
+	<d3d8.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sirrcreationparameters.h
+	"EDriverTypes.h"
+	"EDeviceTypes.h"
+	"dimension2d.h"
+	"ILogger.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\edevicetypes.h
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cnulldriver.h
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"IImagePresenter.h"
+	"IGPUProgrammingServices.h"
+	"irrArray.h"
+	"irrString.h"
+	"irrMap.h"
+	"IAttributes.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IMeshSceneNode.h"
+	"CFPSCounter.h"
+	"S3DVertex.h"
+	"SVertexIndex.h"
+	"SLight.h"
+	"SExposedVideoData.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\iimagepresenter.h
+	"IImage.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfpscounter.h
+	"irrTypes.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8texture.h
+	"IrrCompileConfig.h"
+	"ITexture.h"
+	"IImage.h"
+	<d3d8.h>
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8materialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"IMaterialRenderer.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8shadermaterialrenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	<d3dx8core.h>
+	"IMaterialRenderer.h"
+	"S3DVertex.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8normalmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"CD3D8ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8parallaxmaprenderer.h
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	"CD3D8ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8normalmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D8NormalMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8parallaxmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D8ParallaxMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8shadermaterialrenderer.cpp
+	"CD3D8ShaderMaterialRenderer.h"
+	"IrrCompileConfig.h"
+	<d3d8.h>
+	<d3dx8core.h>
+	"IShaderConstantSetCallBack.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	<stdio.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d8texture.cpp
+	"IrrCompileConfig.h"
+	"CD3D8Texture.h"
+	"CD3D8Driver.h"
+	"os.h"
+	<d3dx8tex.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9cgmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9CgMaterialRenderer.h"
+	"CD3D9Driver.h"
+	"CD3D9Texture.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9cgmaterialrenderer.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	<d3d9.h>
+	<d3dx9.h>
+	"CCgMaterialRenderer.h"
+	"Cg/cgD3D9.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9driver.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	"CNullDriver.h"
+	"SIrrCreationParameters.h"
+	"IMaterialRendererServices.h"
+	"irrMath.h"
+	<d3d9.h>
+	"Cg/cg.h"
+	"Cg/cgD3D9.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9texture.h
+	"IrrCompileConfig.h"
+	"ITexture.h"
+	"IImage.h"
+	"irrMath.h"
+	<d3d9.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9driver.cpp
+	"CD3D9Driver.h"
+	"os.h"
+	"S3DVertex.h"
+	"CD3D9Texture.h"
+	"CD3D9MaterialRenderer.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"CD3D9NormalMapRenderer.h"
+	"CD3D9ParallaxMapRenderer.h"
+	"CD3D9HLSLMaterialRenderer.h"
+	"CD3D9CgMaterialRenderer.h"
+	"SIrrCreationParameters.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9materialrenderer.h
+	"IrrCompileConfig.h"
+	"irrMath.h"
+	<d3d9.h>
+	"IMaterialRenderer.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9shadermaterialrenderer.h
+	"IrrCompileConfig.h"
+	"irrMath.h"
+	<d3dx9shader.h>
+	"IMaterialRenderer.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9normalmaprenderer.h
+	"IrrCompileConfig.h"
+	"irrMath.h"
+	<d3d9.h>
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9parallaxmaprenderer.h
+	"IrrCompileConfig.h"
+	"irrMath.h"
+	<d3d9.h>
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9hlslmaterialrenderer.h
+	"IrrCompileConfig.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"IGPUProgrammingServices.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9hlslmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9HLSLMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+	"IVideoDriver.h"
+	"os.h"
+	"irrString.h"
+	<stdio.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9normalmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9NormalMapRenderer.h"
+	"IVideoDriver.h"
+	"IMaterialRendererServices.h"
+	"os.h"
+	"SLight.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9parallaxmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9ParallaxMapRenderer.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"SLight.h"
+	"CReadFile.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\creadfile.h
+	<stdio.h>
+	"IReadFile.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9shadermaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"CD3D9ShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"irrString.h"
+	<stdio.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cd3d9texture.cpp
+	"IrrCompileConfig.h"
+	"CD3D9Texture.h"
+	"CD3D9Driver.h"
+	"os.h"
+	<d3dx9tex.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultguielementfactory.cpp
+	"CDefaultGUIElementFactory.h"
+	"IGUIEnvironment.h"
+	"IGUIButton.h"
+	"IGUICheckBox.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIComboBox.h"
+	"IGUIContextMenu.h"
+	"IGUIEditBox.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIInOutFader.h"
+	"IGUIImage.h"
+	"IGUIListBox.h"
+	"IGUIMeshViewer.h"
+	"IGUIScrollBar.h"
+	"IGUISpinBox.h"
+	"IGUIStaticText.h"
+	"IGUITabControl.h"
+	"IGUITable.h"
+	"IGUIToolbar.h"
+	"IGUIWindow.h"
+	"IGUITreeView.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultguielementfactory.h
+	"IrrCompileConfig.h"
+	"IGUIElementFactory.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguielementfactory.h
+	"IReferenceCounted.h"
+	"EGUIElementTypes.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eguielementtypes.h
+	"irrTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguienvironment.h
+	"IReferenceCounted.h"
+	"IGUISkin.h"
+	"rect.h"
+	"EMessageBoxFlags.h"
+	"IEventReceiver.h"
+	"IXMLReader.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiskin.h
+	"IAttributeExchangingObject.h"
+	"EGUIAlignment.h"
+	"SColor.h"
+	"rect.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\eguialignment.h
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\emessageboxflags.h
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguibutton.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguielement.h
+	"IAttributeExchangingObject.h"
+	"irrList.h"
+	"rect.h"
+	"irrString.h"
+	"IEventReceiver.h"
+	"EGUIElementTypes.h"
+	"EGUIAlignment.h"
+	"IAttributes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguicheckbox.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguicolorselectdialog.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguicombobox.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguicontextmenu.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguieditbox.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguifileopendialog.h
+	"IGUIElement.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiinoutfader.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiimage.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguilistbox.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguimeshviewer.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiscrollbar.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguispinbox.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguistatictext.h
+	"IGUIElement.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguitabcontrol.h
+	"IGUIElement.h"
+	"SColor.h"
+	"IGUISkin.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguitable.h
+	"IGUIElement.h"
+	"irrTypes.h"
+	"SColor.h"
+	"IGUISkin.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguitoolbar.h
+	"IGUIElement.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiwindow.h
+	"IGUIElement.h"
+	"EMessageBoxFlags.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguitreeview.h
+	"IGUIElement.h"
+	"IGUIImageList.h"
+	"irrTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguiimagelist.h
+	"IGUIElement.h"
+	"rect.h"
+	"irrTypes.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultscenenodeanimatorfactory.cpp
+	"CDefaultSceneNodeAnimatorFactory.h"
+	"CSceneNodeAnimatorCameraFPS.h"
+	"CSceneNodeAnimatorCameraMaya.h"
+	"ICursorControl.h"
+	"ISceneNodeAnimatorCollisionResponse.h"
+	"ISceneManager.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultscenenodeanimatorfactory.h
+	"ISceneNodeAnimatorFactory.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodeanimatorfactory.h
+	"IReferenceCounted.h"
+	"ESceneNodeAnimatorTypes.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcamerafps.h
+	"ISceneNodeAnimatorCameraFPS.h"
+	"vector2d.h"
+	"position2d.h"
+	"SKeyMap.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodeanimatorcamerafps.h
+	"ISceneNodeAnimator.h"
+	"IEventReceiver.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\skeymap.h
+	"Keycodes.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcameramaya.h
+	"ISceneNodeAnimatorCameraMaya.h"
+	"ICameraSceneNode.h"
+	"vector2d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodeanimatorcameramaya.h
+	"ISceneNodeAnimator.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\icursorcontrol.h
+	"IReferenceCounted.h"
+	"position2d.h"
+	"rect.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodeanimatorcollisionresponse.h
+	"ISceneNode.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultscenenodefactory.cpp
+	"CDefaultSceneNodeFactory.h"
+	"ISceneManager.h"
+	"ITextSceneNode.h"
+	"ITerrainSceneNode.h"
+	"IDummyTransformationSceneNode.h"
+	"ICameraSceneNode.h"
+	"IBillboardSceneNode.h"
+	"IAnimatedMeshSceneNode.h"
+	"IParticleSystemSceneNode.h"
+	"ILightSceneNode.h"
+	"IMeshSceneNode.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdefaultscenenodefactory.h
+	"ISceneNodeFactory.h"
+	"irrArray.h"
+	"irrString.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenenodefactory.h
+	"IReferenceCounted.h"
+	"ESceneNodeTypes.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\itextscenenode.h
+	"ISceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlesystemscenenode.h
+	"ISceneNode.h"
+	"IParticleAnimatedMeshSceneNodeEmitter.h"
+	"IParticleBoxEmitter.h"
+	"IParticleCylinderEmitter.h"
+	"IParticleMeshEmitter.h"
+	"IParticleRingEmitter.h"
+	"IParticleSphereEmitter.h"
+	"IParticleAttractionAffector.h"
+	"IParticleFadeOutAffector.h"
+	"IParticleGravityAffector.h"
+	"IParticleRotationAffector.h"
+	"dimension2d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleanimatedmeshscenenodeemitter.h
+	"IParticleEmitter.h"
+	"IAnimatedMeshSceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleemitter.h
+	"IAttributeExchangingObject.h"
+	"SParticle.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\sparticle.h
+	"vector3d.h"
+	"dimension2d.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleboxemitter.h
+	"IParticleEmitter.h"
+	"aabbox3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlecylinderemitter.h
+	"IParticleEmitter.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlemeshemitter.h
+	"IParticleEmitter.h"
+	"IMesh.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleringemitter.h
+	"IParticleEmitter.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlesphereemitter.h
+	"IParticleEmitter.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleattractionaffector.h
+	"IParticleAffector.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticleaffector.h
+	"IAttributeExchangingObject.h"
+	"SParticle.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlefadeoutaffector.h
+	"IParticleAffector.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlegravityaffector.h
+	"IParticleAffector.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iparticlerotationaffector.h
+	"IParticleAffector.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdepthbuffer.cpp
+	"IrrCompileConfig.h"
+	"SoftwareDriver2_compile_config.h"
+	"CDepthBuffer.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdmfloader.cpp
+	"IrrCompileConfig.h"
+	"os.h"
+	"CDMFLoader.h"
+	"ISceneManager.h"
+	"IAttributes.h"
+	"SAnimatedMesh.h"
+	"SSkinMeshBuffer.h"
+	"irrString.h"
+	"irrMath.h"
+	"dmfsupport.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdmfloader.h
+	"IMeshLoader.h"
+	"IReadFile.h"
+	"IFileSystem.h"
+	"SMesh.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"SAnimatedMesh.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\dmfsupport.h
+	"irrString.h"
+	"fast_atof.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdummytransformationscenenode.cpp
+	"CDummyTransformationSceneNode.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cdummytransformationscenenode.h
+	"IDummyTransformationSceneNode.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cemptyscenenode.cpp
+	"CEmptySceneNode.h"
+	"ISceneManager.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cemptyscenenode.h
+	"ISceneNode.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfilelist.cpp
+	"CFileList.h"
+	"IrrCompileConfig.h"
+	"irrArray.h"
+	"coreutil.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfilelist.h
+	"IFileList.h"
+	"irrString.h"
+	"irrArray.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfilesystem.cpp
+	"IrrCompileConfig.h"
+	"CFileSystem.h"
+	"IReadFile.h"
+	"IWriteFile.h"
+	"CZipReader.h"
+	"CMountPointReader.h"
+	"CPakReader.h"
+	"CNPKReader.h"
+	"CTarReader.h"
+	"CWADReader.h"
+	"CFileList.h"
+	"CXMLReader.h"
+	"CXMLWriter.h"
+	"stdio.h"
+	"os.h"
+	"CAttributes.h"
+	"CMemoryFile.h"
+	"CLimitReadFile.h"
+	"irrList.h"
+	<direct.h>
+	<io.h>
+	<tchar.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<limits.h>
+	<sys/types.h>
+	<dirent.h>
+	<sys/stat.h>
+	<unistd.h>
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfilesystem.h
+	"IFileSystem.h"
+	"irrArray.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\czipreader.h
+	"IrrCompileConfig.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"CFileList.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmountpointreader.h
+	"IrrCompileConfig.h"
+	"IFileSystem.h"
+	"CFileList.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cpakreader.h
+	"IrrCompileConfig.h"
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"CFileList.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cnpkreader.h
+	"IrrCompileConfig.h"
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"CFileList.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctarreader.h
+	"IrrCompileConfig.h"
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"CFileList.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwadreader.h
+	"IrrCompileConfig.h"
+	"IReferenceCounted.h"
+	"IReadFile.h"
+	"irrArray.h"
+	"irrString.h"
+	"IFileSystem.h"
+	"CFileList.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmlreader.h
+	"IXMLReader.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmlwriter.h
+	<wchar.h>
+	"IXMLWriter.h"
+	"IWriteFile.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmemoryfile.h
+	"IReadFile.h"
+	"IWriteFile.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\climitreadfile.h
+	"IReadFile.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cfpscounter.cpp
+	"CFPSCounter.h"
+	"irrMath.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cgeometrycreator.cpp
+	"CGeometryCreator.h"
+	"SAnimatedMesh.h"
+	"SMeshBuffer.h"
+	"SMesh.h"
+	"IMesh.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cgeometrycreator.h
+	"IGeometryCreator.h"
+	"SMeshBuffer.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguibutton.cpp
+	"CGUIButton.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguibutton.h
+	"IrrCompileConfig.h"
+	"IGUIButton.h"
+	"IGUISpriteBank.h"
+	"SColor.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguispritebank.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"SColor.h"
+	"rect.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguifont.h
+	"IReferenceCounted.h"
+	"SColor.h"
+	"rect.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicheckbox.cpp
+	"CGUICheckBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicheckbox.h
+	"IrrCompileConfig.h"
+	"IGUICheckBox.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicolorselectdialog.cpp
+	"CGUIColorSelectDialog.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIStaticText.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"IFileList.h"
+	"os.h"
+	"fast_atof.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicolorselectdialog.h
+	"IrrCompileConfig.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIButton.h"
+	"IGUISpinBox.h"
+	"IGUIImage.h"
+	"irrArray.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicombobox.cpp
+	"CGUIComboBox.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IGUIButton.h"
+	"CGUIListBox.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicombobox.h
+	"IrrCompileConfig.h"
+	"IGUIComboBox.h"
+	"IGUIStaticText.h"
+	"irrString.h"
+	"irrArray.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguilistbox.h
+	"IrrCompileConfig.h"
+	"IGUIListBox.h"
+	"irrArray.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicontextmenu.cpp
+	"CGUIContextMenu.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguicontextmenu.h
+	"IrrCompileConfig.h"
+	"IGUIContextMenu.h"
+	"irrString.h"
+	"irrArray.h"
+	"IGUIFont.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguieditbox.cpp
+	"CGUIEditBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+	"os.h"
+	"Keycodes.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguieditbox.h
+	"IrrCompileConfig.h"
+	"IGUIEditBox.h"
+	"irrArray.h"
+	"IOSOperator.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iosoperator.h
+	"IReferenceCounted.h"
+	"irrString.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguienvironment.cpp
+	"CGUIEnvironment.h"
+	"IVideoDriver.h"
+	"CGUISkin.h"
+	"CGUIButton.h"
+	"CGUIWindow.h"
+	"CGUIScrollBar.h"
+	"CGUIFont.h"
+	"CGUISpriteBank.h"
+	"CGUIImage.h"
+	"CGUIMeshViewer.h"
+	"CGUICheckBox.h"
+	"CGUIListBox.h"
+	"CGUITreeView.h"
+	"CGUIImageList.h"
+	"CGUIFileOpenDialog.h"
+	"CGUIColorSelectDialog.h"
+	"CGUIStaticText.h"
+	"CGUIEditBox.h"
+	"CGUISpinBox.h"
+	"CGUIInOutFader.h"
+	"CGUIMessageBox.h"
+	"CGUIModalScreen.h"
+	"CGUITabControl.h"
+	"CGUIContextMenu.h"
+	"CGUIComboBox.h"
+	"CGUIMenu.h"
+	"CGUIToolBar.h"
+	"CGUITable.h"
+	"CDefaultGUIElementFactory.h"
+	"IWriteFile.h"
+	"IXMLWriter.h"
+	"BuiltInFont.h"
+	"os.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguienvironment.h
+	"IrrCompileConfig.h"
+	"IGUIEnvironment.h"
+	"IGUIElement.h"
+	"irrArray.h"
+	"IFileSystem.h"
+	"IOSOperator.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiskin.h
+	"IrrCompileConfig.h"
+	"IGUISkin.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiwindow.h
+	"IrrCompileConfig.h"
+	"IGUIWindow.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiscrollbar.h
+	"IrrCompileConfig.h"
+	"IGUIScrollBar.h"
+	"IGUIButton.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguifont.h
+	"IrrCompileConfig.h"
+	"IGUIFontBitmap.h"
+	"irrString.h"
+	"irrMap.h"
+	"IXMLReader.h"
+	"IReadFile.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iguifontbitmap.h
+	"IGUIFont.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguispritebank.h
+	"IrrCompileConfig.h"
+	"IGUISpriteBank.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiimage.h
+	"IrrCompileConfig.h"
+	"IGUIImage.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimeshviewer.h
+	"IrrCompileConfig.h"
+	"IGUIMeshViewer.h"
+	"SMaterial.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitreeview.h
+	"IGUITreeView.h"
+	"irrList.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiimagelist.h
+	"IGUIImageList.h"
+	"IVideoDriver.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguifileopendialog.h
+	"IrrCompileConfig.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIButton.h"
+	"IGUIListBox.h"
+	"IGUIEditBox.h"
+	"IFileSystem.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguistatictext.h
+	"IrrCompileConfig.h"
+	"IGUIStaticText.h"
+	"irrArray.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguispinbox.h
+	"IrrCompileConfig.h"
+	"IGUISpinBox.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiinoutfader.h
+	"IrrCompileConfig.h"
+	"IGUIInOutFader.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimessagebox.h
+	"IrrCompileConfig.h"
+	"CGUIWindow.h"
+	"IGUIStaticText.h"
+	"IGUIImage.h"
+	"irrArray.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimodalscreen.h
+	"IrrCompileConfig.h"
+	"IGUIElement.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitabcontrol.h
+	"IrrCompileConfig.h"
+	"IGUITabControl.h"
+	"irrArray.h"
+	"IGUISkin.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimenu.h
+	"IrrCompileConfig.h"
+	"CGUIContextMenu.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitoolbar.h
+	"IrrCompileConfig.h"
+	"IGUIToolbar.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitable.h
+	"IrrCompileConfig.h"
+	"IGUITable.h"
+	"irrArray.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\builtinfont.h
+	"IrrCompileConfig.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguifileopendialog.cpp
+	"CGUIFileOpenDialog.h"
+	<locale.h>
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIStaticText.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"IFileList.h"
+	"os.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguifont.cpp
+	"CGUIFont.h"
+	"os.h"
+	"IGUIEnvironment.h"
+	"IXMLReader.h"
+	"IReadFile.h"
+	"IVideoDriver.h"
+	"IGUISpriteBank.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiimage.cpp
+	"CGUIImage.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiimagelist.cpp
+	"CGUIImageList.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiinoutfader.cpp
+	"CGUIInOutFader.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguilistbox.cpp
+	"CGUIListBox.h"
+	"CGUIListBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"CGUIScrollBar.h"
+	"os.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimenu.cpp
+	"CGUIMenu.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"IGUIWindow.h"
+	"os.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimeshviewer.cpp
+	"CGUIMeshViewer.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IAnimatedMesh.h"
+	"IMesh.h"
+	"os.h"
+	"IGUISkin.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimessagebox.cpp
+	"CGUIMessageBox.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+	"ITexture.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguimodalscreen.cpp
+	"CGUIModalScreen.h"
+	"IGUIEnvironment.h"
+	"os.h"
+	"IVideoDriver.h"
+	"IGUISkin.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiskin.cpp
+	"CGUISkin.h"
+	"IGUIFont.h"
+	"IGUISpriteBank.h"
+	"IGUIElement.h"
+	"IVideoDriver.h"
+	"IAttributes.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguispinbox.cpp
+	"CGUISpinBox.h"
+	"CGUIEditBox.h"
+	"CGUIButton.h"
+	"IGUIEnvironment.h"
+	"IEventReceiver.h"
+	"fast_atof.h"
+	<wchar.h>
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguispritebank.cpp
+	"CGUISpriteBank.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"ITexture.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguistatictext.cpp
+	"CGUIStaticText.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitabcontrol.cpp
+	"CGUITabControl.h"
+	"CGUIButton.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IGUIFont.h"
+	"IVideoDriver.h"
+	"rect.h"
+	"os.h"
+
+1422702041 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitable.cpp
+	"CGUITable.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"CGUIScrollBar.h"
+	"os.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitoolbar.cpp
+	"CGUIToolBar.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+	"CGUIButton.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguitreeview.cpp
+	"CGUITreeView.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIFont.h"
+	"CGUIScrollBar.h"
+	"os.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiwindow.cpp
+	"CGUIWindow.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"IGUIButton.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimage.cpp
+	"CImage.h"
+	"irrString.h"
+	"CColorConverter.h"
+	"CBlit.h"
+
+1422702041 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cblit.h
+	"SoftwareDriver2_helper.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderbmp.cpp
+	"CImageLoaderBMP.h"
+	"IReadFile.h"
+	"SColor.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderbmp.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iimageloader.h
+	"IReferenceCounted.h"
+	"IImage.h"
+	"path.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderdds.cpp
+	"CImageLoaderDDS.h"
+	"IReadFile.h"
+	"os.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderdds.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderjpg.cpp
+	"CImageLoaderJPG.h"
+	"IReadFile.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderjpg.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	<stdio.h>
+	<jpeglib.h>
+	"jpeglib/jpeglib.h"
+	<setjmp.h>
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jpeglib.h
+	"jconfig.h"
+	"jmorecfg.h"
+	"jpegint.h"
+	"jerror.h"
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jconfig.h
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jmorecfg.h
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jpegint.h
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jerror.h
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpcx.cpp
+	"CImageLoaderPCX.h"
+	"IReadFile.h"
+	"SColor.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpcx.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpng.cpp
+	"CImageLoaderPNG.h"
+	<png.h>
+	"libpng/png.h"
+	"CImage.h"
+	"CReadFile.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpng.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\png.h
+	"pnglibconf.h"
+	<setjmp.h>
+	<time.h>
+	"pngconf.h"
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pnglibconf.h
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngconf.h
+	<limits.h>
+	<strings.h>
+	<string.h>
+	<stdio.h>
+	<dos.h>
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderppm.cpp
+	"CImageLoaderPPM.h"
+	"IReadFile.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"fast_atof.h"
+	"coreutil.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderppm.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpsd.cpp
+	"CImageLoaderPSD.h"
+	"IReadFile.h"
+	"os.h"
+	"CImage.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderpsd.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderrgb.cpp
+	"CImageLoaderRGB.h"
+	"IReadFile.h"
+	"SColor.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderrgb.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloadertga.cpp
+	"CImageLoaderTGA.h"
+	"IReadFile.h"
+	"os.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloadertga.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderwal.cpp
+	"CImageLoaderWAL.h"
+	"CColorConverter.h"
+	"CImage.h"
+	"os.h"
+	"dimension2d.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimageloaderwal.h
+	"IrrCompileConfig.h"
+	"IImageLoader.h"
+	"irrpack.h"
+	"irrunpack.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterbmp.cpp
+	"CImageWriterBMP.h"
+	"CImageLoaderBMP.h"
+	"IWriteFile.h"
+	"CColorConverter.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterbmp.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iimagewriter.h
+	"IReferenceCounted.h"
+	"irrString.h"
+	"coreutil.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterjpg.cpp
+	"CImageWriterJPG.h"
+	"CColorConverter.h"
+	"IWriteFile.h"
+	"CImage.h"
+	"irrString.h"
+	<stdio.h>
+	<jpeglib.h>
+	<jerror.h>
+	"jpeglib/jpeglib.h"
+	"jpeglib/jerror.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterjpg.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpcx.cpp
+	"CImageWriterPCX.h"
+	"CImageLoaderPCX.h"
+	"IWriteFile.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpcx.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpng.cpp
+	"CImageWriterPNG.h"
+	"CImageLoaderPNG.h"
+	"CColorConverter.h"
+	"IWriteFile.h"
+	"irrString.h"
+	"os.h"
+	<png.h>
+	"libpng/png.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpng.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterppm.cpp
+	"CImageWriterPPM.h"
+	"IWriteFile.h"
+	"IImage.h"
+	"dimension2d.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterppm.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpsd.cpp
+	"CImageWriterPSD.h"
+	"CImageLoaderPSD.h"
+	"IWriteFile.h"
+	"os.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewriterpsd.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewritertga.cpp
+	"CImageWriterTGA.h"
+	"CImageLoaderTGA.h"
+	"IWriteFile.h"
+	"CColorConverter.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cimagewritertga.h
+	"IrrCompileConfig.h"
+	"IImageWriter.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdeviceconsole.cpp
+	"CIrrDeviceConsole.h"
+	"os.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	<signal.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdeviceconsole.h
+	"IrrCompileConfig.h"
+	"SIrrCreationParameters.h"
+	"CIrrDeviceStub.h"
+	"IImagePresenter.h"
+	"IGUIFont.h"
+	<windows.h>
+	<time.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicestub.h
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"SIrrCreationParameters.h"
+	"CVideoModeList.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrlichtdevice.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+	"IVideoDriver.h"
+	"EDriverTypes.h"
+	"EDeviceTypes.h"
+	"IEventReceiver.h"
+	"ICursorControl.h"
+	"IVideoModeList.h"
+	"ITimer.h"
+	"IOSOperator.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ivideomodelist.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cvideomodelist.h
+	"IVideoModeList.h"
+	"dimension2d.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicelinux.cpp
+	"CIrrDeviceLinux.h"
+	<stdio.h>
+	<stdlib.h>
+	<sys/utsname.h>
+	<time.h>
+	"IEventReceiver.h"
+	"ISceneManager.h"
+	"IGUIEnvironment.h"
+	"os.h"
+	"CTimer.h"
+	"irrString.h"
+	"Keycodes.h"
+	"COSOperator.h"
+	"CColorConverter.h"
+	"SIrrCreationParameters.h"
+	"IGUISpriteBank.h"
+	<X11/XKBlib.h>
+	<X11/Xatom.h>
+	<X11/Xcursor/Xcursor.h>
+	<fcntl.h>
+	<unistd.h>
+	<sys/joystick.h>
+	<sys/ioctl.h>
+	<linux/joystick.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicelinux.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"ICursorControl.h"
+	"os.h"
+	<GL/gl.h>
+	<GL/glx.h>
+	"glxext.h"
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/cursorfont.h>
+	<X11/extensions/xf86vmode.h>
+	<X11/extensions/Xrandr.h>
+	<X11/keysym.h>
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\glxext.h
+	<windows.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctimer.h
+	"ITimer.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cosoperator.h
+	"IOSOperator.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicesdl.cpp
+	"IrrCompileConfig.h"
+	"CIrrDeviceSDL.h"
+	"IEventReceiver.h"
+	"irrList.h"
+	"os.h"
+	"CTimer.h"
+	"irrString.h"
+	"Keycodes.h"
+	"COSOperator.h"
+	<stdio.h>
+	<stdlib.h>
+	"SIrrCreationParameters.h"
+	<SDL/SDL_syswm.h>
+	<SDL/SDL_video.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicesdl.h
+	"IrrCompileConfig.h"
+	"IrrlichtDevice.h"
+	"CIrrDeviceStub.h"
+	"IImagePresenter.h"
+	"ICursorControl.h"
+	<SDL/SDL.h>
+	<SDL/SDL_syswm.h>
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicestub.cpp
+	"CIrrDeviceStub.h"
+	"ISceneManager.h"
+	"IEventReceiver.h"
+	"IFileSystem.h"
+	"IGUIEnvironment.h"
+	"os.h"
+	"IrrCompileConfig.h"
+	"CTimer.h"
+	"CLogger.h"
+	"irrString.h"
+	"IRandomizer.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clogger.h
+	"ILogger.h"
+	"os.h"
+	"irrString.h"
+	"IEventReceiver.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irandomizer.h
+	"IReferenceCounted.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicewin32.cpp
+	"IrrCompileConfig.h"
+	"CIrrDeviceWin32.h"
+	"IEventReceiver.h"
+	"irrList.h"
+	"os.h"
+	"CTimer.h"
+	"irrString.h"
+	"COSOperator.h"
+	"dimension2d.h"
+	"IGUISpriteBank.h"
+	<winuser.h>
+	<dinput.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicewin32.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	<windows.h>
+	<mmsystem.h>
+	<windowsx.h>
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicewince.cpp
+	"IrrCompileConfig.h"
+	"CIrrDeviceWinCE.h"
+	"IEventReceiver.h"
+	"irrList.h"
+	"os.h"
+	"CTimer.h"
+	"irrString.h"
+	"COSOperator.h"
+	"dimension2d.h"
+	<winuser.h>
+	"irrlicht.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicewince.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	<windows.h>
+	<windowsx.h>
+	<commctrl.h>
+	<aygshell.h>
+	<sipapi.h>
+	<gx.h>
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\irrlicht.h
+	"IrrCompileConfig.h"
+	"aabbox3d.h"
+	"CDynamicMeshBuffer.h"
+	"CIndexBuffer.h"
+	"CMeshBuffer.h"
+	"coreutil.h"
+	"CVertexBuffer.h"
+	"dimension2d.h"
+	"ECullingTypes.h"
+	"EDebugSceneTypes.h"
+	"EDriverFeatures.h"
+	"EDriverTypes.h"
+	"EGUIAlignment.h"
+	"EGUIElementTypes.h"
+	"EHardwareBufferFlags.h"
+	"EMaterialFlags.h"
+	"EMaterialTypes.h"
+	"EMeshWriterEnums.h"
+	"EMessageBoxFlags.h"
+	"ESceneNodeAnimatorTypes.h"
+	"ESceneNodeTypes.h"
+	"ETerrainElements.h"
+	"fast_atof.h"
+	"heapsort.h"
+	"IAnimatedMesh.h"
+	"IAnimatedMeshMD2.h"
+	"IAnimatedMeshMD3.h"
+	"IAnimatedMeshSceneNode.h"
+	"IAttributeExchangingObject.h"
+	"IAttributes.h"
+	"IBillboardSceneNode.h"
+	"IBillboardTextSceneNode.h"
+	"IBoneSceneNode.h"
+	"ICameraSceneNode.h"
+	"ICursorControl.h"
+	"IDummyTransformationSceneNode.h"
+	"IDynamicMeshBuffer.h"
+	"IEventReceiver.h"
+	"IFileList.h"
+	"IFileSystem.h"
+	"IGeometryCreator.h"
+	"IGPUProgrammingServices.h"
+	"IGUIButton.h"
+	"IGUICheckBox.h"
+	"IGUIColorSelectDialog.h"
+	"IGUIComboBox.h"
+	"IGUIContextMenu.h"
+	"IGUIEditBox.h"
+	"IGUIElement.h"
+	"IGUIElementFactory.h"
+	"IGUIEnvironment.h"
+	"IGUIFileOpenDialog.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"IGUIImage.h"
+	"IGUIInOutFader.h"
+	"IGUIListBox.h"
+	"IGUIMeshViewer.h"
+	"IGUIScrollBar.h"
+	"IGUISkin.h"
+	"IGUISpinBox.h"
+	"IGUISpriteBank.h"
+	"IGUIStaticText.h"
+	"IGUITabControl.h"
+	"IGUITable.h"
+	"IGUIToolbar.h"
+	"IGUIWindow.h"
+	"IGUITreeView.h"
+	"IImage.h"
+	"IImageLoader.h"
+	"IImageWriter.h"
+	"IIndexBuffer.h"
+	"ILightSceneNode.h"
+	"ILogger.h"
+	"IMaterialRenderer.h"
+	"IMaterialRendererServices.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IMeshCache.h"
+	"IMeshLoader.h"
+	"IMeshManipulator.h"
+	"IMeshSceneNode.h"
+	"IMeshWriter.h"
+	"IColladaMeshWriter.h"
+	"IMetaTriangleSelector.h"
+	"IOSOperator.h"
+	"IParticleSystemSceneNode.h"
+	"IQ3LevelMesh.h"
+	"IQ3Shader.h"
+	"IReadFile.h"
+	"IReferenceCounted.h"
+	"irrArray.h"
+	"IRandomizer.h"
+	"IrrlichtDevice.h"
+	"irrList.h"
+	"irrMap.h"
+	"irrMath.h"
+	"irrString.h"
+	"irrTypes.h"
+	"path.h"
+	"irrXML.h"
+	"ISceneCollisionManager.h"
+	"ISceneLoader.h"
+	"ISceneManager.h"
+	"ISceneNode.h"
+	"ISceneNodeAnimator.h"
+	"ISceneNodeAnimatorCameraFPS.h"
+	"ISceneNodeAnimatorCameraMaya.h"
+	"ISceneNodeAnimatorCollisionResponse.h"
+	"ISceneNodeAnimatorFactory.h"
+	"ISceneNodeFactory.h"
+	"ISceneUserDataSerializer.h"
+	"IShaderConstantSetCallBack.h"
+	"IShadowVolumeSceneNode.h"
+	"ISkinnedMesh.h"
+	"ITerrainSceneNode.h"
+	"ITextSceneNode.h"
+	"ITexture.h"
+	"ITimer.h"
+	"ITriangleSelector.h"
+	"IVertexBuffer.h"
+	"IVideoDriver.h"
+	"IVideoModeList.h"
+	"IVolumeLightSceneNode.h"
+	"IWriteFile.h"
+	"IXMLReader.h"
+	"IXMLWriter.h"
+	"ILightManager.h"
+	"Keycodes.h"
+	"line2d.h"
+	"line3d.h"
+	"matrix4.h"
+	"plane3d.h"
+	"position2d.h"
+	"quaternion.h"
+	"rect.h"
+	"S3DVertex.h"
+	"SAnimatedMesh.h"
+	"SceneParameters.h"
+	"SColor.h"
+	"SExposedVideoData.h"
+	"SIrrCreationParameters.h"
+	"SKeyMap.h"
+	"SLight.h"
+	"SMaterial.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"SMeshBufferLightMap.h"
+	"SMeshBufferTangents.h"
+	"SParticle.h"
+	"SSharedMeshBuffer.h"
+	"SSkinMeshBuffer.h"
+	"SVertexIndex.h"
+	"SViewFrustum.h"
+	"triangle3d.h"
+	"vector2d.h"
+	"vector3d.h"
+	"SIrrCreationParameters.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\cdynamicmeshbuffer.h
+	"IDynamicMeshBuffer.h"
+	"CVertexBuffer.h"
+	"CIndexBuffer.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\cvertexbuffer.h
+	"IVertexBuffer.h"
+
+1422702039 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\cindexbuffer.h
+	"IIndexBuffer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ibillboardtextscenenode.h
+	"IBillboardSceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\imetatriangleselector.h
+	"ITriangleSelector.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\iscenecollisionmanager.h
+	"IReferenceCounted.h"
+	"vector3d.h"
+	"triangle3d.h"
+	"position2d.h"
+	"line3d.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\isceneloader.h
+	"IReferenceCounted.h"
+	"path.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\isceneuserdataserializer.h
+	"IReferenceCounted.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ivolumelightscenenode.h
+	"ISceneNode.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ilightmanager.h
+	"IReferenceCounted.h"
+	"irrArray.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\smeshbuffertangents.h
+	"CMeshBuffer.h"
+
+1422702040 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\include\ssharedmeshbuffer.h
+	"irrArray.h"
+	"IMeshBuffer.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CIrrMeshFileLoader.h"
+	"os.h"
+	"IXMLReader.h"
+	"SAnimatedMesh.h"
+	"fast_atof.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"IMeshSceneNode.h"
+	"CDynamicMeshBuffer.h"
+	"SMeshBufferLightMap.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"CDynamicMeshBuffer.h"
+	"ISceneManager.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrmeshwriter.cpp
+	"IrrCompileConfig.h"
+	"CIrrMeshWriter.h"
+	"os.h"
+	"IWriteFile.h"
+	"IXMLWriter.h"
+	"IMesh.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrmeshwriter.h
+	"IMeshWriter.h"
+	"S3DVertex.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clightscenenode.cpp
+	"CLightSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clightscenenode.h
+	"ILightSceneNode.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\climitreadfile.cpp
+	"CLimitReadFile.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clmtsmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"SMeshBufferLightMap.h"
+	"SAnimatedMesh.h"
+	"SMeshBuffer.h"
+	"irrString.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"ISceneManager.h"
+	"CLMTSMeshFileLoader.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clmtsmeshfileloader.h
+	"IMeshLoader.h"
+	"SMesh.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clogger.cpp
+	"CLogger.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clwomeshfileloader.cpp
+	"CLWOMeshFileLoader.h"
+	"os.h"
+	"SAnimatedMesh.h"
+	"SMesh.h"
+	"IReadFile.h"
+	"ISceneManager.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"IMeshManipulator.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\clwomeshfileloader.h
+	"IMeshLoader.h"
+	"SMeshBuffer.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmd2meshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CMD2MeshFileLoader.h"
+	"CAnimatedMeshMD2.h"
+	"os.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmd2meshfileloader.h
+	"IMeshLoader.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmd3meshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CMD3MeshFileLoader.h"
+	"CAnimatedMeshMD3.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmd3meshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"IQ3Shader.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmemoryfile.cpp
+	"CMemoryFile.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshcache.cpp
+	"CMeshCache.h"
+	"IAnimatedMesh.h"
+	"IMesh.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshcache.h
+	"IMeshCache.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshmanipulator.cpp
+	"CMeshManipulator.h"
+	"SMesh.h"
+	"CMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"os.h"
+	"irrMap.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshmanipulator.h
+	"IMeshManipulator.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshscenenode.cpp
+	"CMeshSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"ICameraSceneNode.h"
+	"IMeshCache.h"
+	"IAnimatedMesh.h"
+	"IMaterialRenderer.h"
+	"IFileSystem.h"
+	"CShadowVolumeSceneNode.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmeshscenenode.h
+	"IMeshSceneNode.h"
+	"IMesh.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmetatriangleselector.cpp
+	"CMetaTriangleSelector.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmetatriangleselector.h
+	"IMetaTriangleSelector.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmountpointreader.cpp
+	"CMountPointReader.h"
+	"CReadFile.h"
+	"os.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cms3dmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"IReadFile.h"
+	"os.h"
+	"CMS3DMeshFileLoader.h"
+	"CSkinnedMesh.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cms3dmeshfileloader.h
+	"IMeshLoader.h"
+	"IVideoDriver.h"
+	"CSkinnedMesh.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmy3dmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CMY3DMeshFileLoader.h"
+	"SAnimatedMesh.h"
+	"SMeshBuffer.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"CMY3DHelper.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmy3dmeshfileloader.h
+	"IMeshLoader.h"
+	"SMesh.h"
+	"SMeshBufferLightMap.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"ISceneManager.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cmy3dhelper.h
+	<irrTypes.h>
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cnpkreader.cpp
+	"CNPKReader.h"
+	"os.h"
+	"coreutil.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cnulldriver.cpp
+	"CNullDriver.h"
+	"os.h"
+	"CImage.h"
+	"CAttributes.h"
+	"IReadFile.h"
+	"IWriteFile.h"
+	"IImageLoader.h"
+	"IImageWriter.h"
+	"IMaterialRenderer.h"
+	"IAnimatedMeshSceneNode.h"
+	"CMeshManipulator.h"
+	"CColorConverter.h"
+	"IAttributeExchangingObject.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cobjmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"COBJMeshFileLoader.h"
+	"IMeshManipulator.h"
+	"IVideoDriver.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+	"IAttributes.h"
+	"fast_atof.h"
+	"coreutil.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cobjmeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"ISceneManager.h"
+	"irrString.h"
+	"SMeshBuffer.h"
+	"irrMap.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cobjmeshwriter.cpp
+	"IrrCompileConfig.h"
+	"COBJMeshWriter.h"
+	"os.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IAttributes.h"
+	"ISceneManager.h"
+	"IMeshCache.h"
+	"IWriteFile.h"
+	"IFileSystem.h"
+	"ITexture.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cobjmeshwriter.h
+	"IMeshWriter.h"
+	"S3DVertex.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctloader.cpp
+	"IrrCompileConfig.h"
+	"COCTLoader.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"os.h"
+	"SAnimatedMesh.h"
+	"SMeshBufferLightMap.h"
+	"irrString.h"
+	"ISceneManager.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctloader.h
+	"IMeshLoader.h"
+	"IReadFile.h"
+	"SMesh.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctreescenenode.cpp
+	"COctreeSceneNode.h"
+	"Octree.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"ICameraSceneNode.h"
+	"IMeshCache.h"
+	"IAnimatedMesh.h"
+	"IMaterialRenderer.h"
+	"os.h"
+	"CShadowVolumeSceneNode.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctreescenenode.h
+	"IMeshSceneNode.h"
+	"Octree.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\octree.h
+	"SViewFrustum.h"
+	"S3DVertex.h"
+	"aabbox3d.h"
+	"irrArray.h"
+	"CMeshBuffer.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctreetriangleselector.cpp
+	"COctreeTriangleSelector.h"
+	"ISceneNode.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\coctreetriangleselector.h
+	"CTriangleSelector.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctriangleselector.h
+	"ITriangleSelector.h"
+	"IMesh.h"
+	"irrArray.h"
+	"aabbox3d.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cogremeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"COgreMeshFileLoader.h"
+	"os.h"
+	"SMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+	"fast_atof.h"
+	"coreutil.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cogremeshfileloader.h
+	"IMeshLoader.h"
+	"IFileSystem.h"
+	"IVideoDriver.h"
+	"irrString.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"SMeshBufferLightMap.h"
+	"IMeshManipulator.h"
+	"matrix4.h"
+	"quaternion.h"
+	"CSkinnedMesh.h"
+	"irrpack.h"
+	"irrunpack.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglcgmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"COpenGLCgMaterialRenderer.h"
+	"COpenGLDriver.h"
+	"COpenGLTexture.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglcgmaterialrenderer.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	<GL/gl.h>
+	"glext.h"
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	"glext.h"
+	"CCgMaterialRenderer.h"
+	"Cg/cgGL.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\glext.h
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copengldriver.h
+	"IrrCompileConfig.h"
+	"SIrrCreationParameters.h"
+	"CNullDriver.h"
+	"IMaterialRendererServices.h"
+	"COpenGLExtensionHandler.h"
+	"Cg/cg.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglextensionhandler.h
+	"IrrCompileConfig.h"
+	"EDriverFeatures.h"
+	"irrTypes.h"
+	"os.h"
+	<windows.h>
+	<GL/gl.h>
+	"glext.h"
+	"wglext.h"
+	<OpenGL/gl.h>
+	"glext.h"
+	<SDL/SDL_video.h>
+	<SDL/SDL_opengl.h>
+	"glext.h"
+	<GL/gl.h>
+	<GL/glx.h>
+	"glext.h"
+	"glxext.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\wglext.h
+	<windows.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copengltexture.h
+	"ITexture.h"
+	"IImage.h"
+	"IrrCompileConfig.h"
+	<windows.h>
+	<GL/gl.h>
+	<OpenGL/gl.h>
+	<SDL/SDL_video.h>
+	<SDL/SDL_opengl.h>
+	<OpenGL/gl.h>
+	<GL/gl.h>
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copengldriver.cpp
+	"COpenGLDriver.h"
+	"CNullDriver.h"
+	"COpenGLTexture.h"
+	"COpenGLMaterialRenderer.h"
+	"COpenGLShaderMaterialRenderer.h"
+	"COpenGLSLMaterialRenderer.h"
+	"COpenGLCgMaterialRenderer.h"
+	"COpenGLNormalMapRenderer.h"
+	"COpenGLParallaxMapRenderer.h"
+	"os.h"
+	"MacOSX/CIrrDeviceMacOSX.h"
+	<SDL/SDL.h>
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglmaterialrenderer.h
+	"IrrCompileConfig.h"
+	"COpenGLDriver.h"
+	"IMaterialRenderer.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglshadermaterialrenderer.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	<GL/gl.h>
+	<OpenGL/gl.h>
+	<SDL/SDL_video.h>
+	<SDL/SDL_opengl.h>
+	<GL/gl.h>
+	"IMaterialRenderer.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglslmaterialrenderer.h
+	"IrrCompileConfig.h"
+	<windows.h>
+	<GL/gl.h>
+	"glext.h"
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	"glext.h"
+	"IMaterialRenderer.h"
+	"IMaterialRendererServices.h"
+	"IGPUProgrammingServices.h"
+	"irrArray.h"
+	"irrString.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglnormalmaprenderer.h
+	"IrrCompileConfig.h"
+	"COpenGLShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglparallaxmaprenderer.h
+	"IrrCompileConfig.h"
+	"COpenGLShaderMaterialRenderer.h"
+	"IShaderConstantSetCallBack.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\macosx\cirrdevicemacosx.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"IGUIEnvironment.h"
+	"ICursorControl.h"
+	<OpenGL/OpenGL.h>
+	<map>
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglextensionhandler.cpp
+	"IrrCompileConfig.h"
+	"COpenGLExtensionHandler.h"
+	"irrString.h"
+	"SMaterial.h"
+	"fast_atof.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglnormalmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"COpenGLNormalMapRenderer.h"
+	"IGPUProgrammingServices.h"
+	"IShaderConstantSetCallBack.h"
+	"IVideoDriver.h"
+	"os.h"
+	"COpenGLDriver.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglparallaxmaprenderer.cpp
+	"IrrCompileConfig.h"
+	"COpenGLParallaxMapRenderer.h"
+	"COpenGLDriver.h"
+	"IGPUProgrammingServices.h"
+	"IShaderConstantSetCallBack.h"
+	"IVideoDriver.h"
+	"os.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglshadermaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"COpenGLShaderMaterialRenderer.h"
+	"IGPUProgrammingServices.h"
+	"IShaderConstantSetCallBack.h"
+	"IVideoDriver.h"
+	"os.h"
+	"COpenGLDriver.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copenglslmaterialrenderer.cpp
+	"IrrCompileConfig.h"
+	"COpenGLSLMaterialRenderer.h"
+	"IGPUProgrammingServices.h"
+	"IShaderConstantSetCallBack.h"
+	"IMaterialRendererServices.h"
+	"IVideoDriver.h"
+	"os.h"
+	"COpenGLDriver.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\copengltexture.cpp
+	"IrrCompileConfig.h"
+	"irrTypes.h"
+	"COpenGLTexture.h"
+	"COpenGLDriver.h"
+	"os.h"
+	"CColorConverter.h"
+	"irrString.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cosoperator.cpp
+	"COSOperator.h"
+	<windows.h>
+	<string.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/sysctl.h>
+	"CIrrDeviceLinux.h"
+	"MacOSX/OSXClipboard.h"
+
+1422702044 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\macosx\osxclipboard.h
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cpakreader.cpp
+	"CPakReader.h"
+	"os.h"
+	"coreutil.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleanimatedmeshscenenodeemitter.cpp
+	"CParticleAnimatedMeshSceneNodeEmitter.h"
+	"IAnimatedMeshSceneNode.h"
+	"IMesh.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleanimatedmeshscenenodeemitter.h
+	"IParticleAnimatedMeshSceneNodeEmitter.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleattractionaffector.cpp
+	"CParticleAttractionAffector.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleattractionaffector.h
+	"IParticleAttractionAffector.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleboxemitter.cpp
+	"CParticleBoxEmitter.h"
+	"os.h"
+	"IAttributes.h"
+	"irrMath.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleboxemitter.h
+	"IParticleBoxEmitter.h"
+	"irrArray.h"
+	"aabbox3d.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlecylinderemitter.cpp
+	"CParticleCylinderEmitter.h"
+	"os.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlecylinderemitter.h
+	"IParticleCylinderEmitter.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlefadeoutaffector.cpp
+	"CParticleFadeOutAffector.h"
+	"IAttributes.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlefadeoutaffector.h
+	"IParticleFadeOutAffector.h"
+	"SColor.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlegravityaffector.cpp
+	"CParticleGravityAffector.h"
+	"os.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlegravityaffector.h
+	"IParticleGravityAffector.h"
+	"SColor.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlemeshemitter.cpp
+	"IrrCompileConfig.h"
+	"CParticleMeshEmitter.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlemeshemitter.h
+	"IParticleMeshEmitter.h"
+	"irrArray.h"
+	"aabbox3d.h"
+	"IMeshBuffer.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlepointemitter.cpp
+	"CParticlePointEmitter.h"
+	"os.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlepointemitter.h
+	"IParticleEmitter.h"
+	"irrArray.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleringemitter.cpp
+	"CParticleRingEmitter.h"
+	"os.h"
+	"IAttributes.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticleringemitter.h
+	"IParticleRingEmitter.h"
+	"irrArray.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlerotationaffector.cpp
+	"CParticleRotationAffector.h"
+	"IAttributes.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlerotationaffector.h
+	"IParticleRotationAffector.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlescaleaffector.cpp
+	"CParticleScaleAffector.h"
+	"IAttributes.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlescaleaffector.h
+	<IParticleAffector.h>
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlesphereemitter.cpp
+	"IrrCompileConfig.h"
+	"CParticleSphereEmitter.h"
+	"os.h"
+	"IAttributes.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlesphereemitter.h
+	"IParticleSphereEmitter.h"
+	"irrArray.h"
+	"aabbox3d.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlesystemscenenode.cpp
+	"CParticleSystemSceneNode.h"
+	"os.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"IVideoDriver.h"
+	"CParticleAnimatedMeshSceneNodeEmitter.h"
+	"CParticleBoxEmitter.h"
+	"CParticleCylinderEmitter.h"
+	"CParticleMeshEmitter.h"
+	"CParticlePointEmitter.h"
+	"CParticleRingEmitter.h"
+	"CParticleSphereEmitter.h"
+	"CParticleAttractionAffector.h"
+	"CParticleFadeOutAffector.h"
+	"CParticleGravityAffector.h"
+	"CParticleRotationAffector.h"
+	"CParticleScaleAffector.h"
+	"SViewFrustum.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cparticlesystemscenenode.h
+	"IParticleSystemSceneNode.h"
+	"irrArray.h"
+	"irrList.h"
+	"SMeshBuffer.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cplymeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CPLYMeshFileLoader.h"
+	"IMeshManipulator.h"
+	"SMesh.h"
+	"CDynamicMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+	"fast_atof.h"
+	"os.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cplymeshfileloader.h
+	"IMeshLoader.h"
+	"ISceneManager.h"
+	"CDynamicMeshBuffer.h"
+
+1422702042 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cplymeshwriter.cpp
+	"IrrCompileConfig.h"
+	"CPLYMeshWriter.h"
+	"os.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IWriteFile.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cplymeshwriter.h
+	"IMeshWriter.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cq3levelmesh.cpp
+	"IrrCompileConfig.h"
+	"CQ3LevelMesh.h"
+	"ISceneManager.h"
+	"os.h"
+	"SMeshBufferLightMap.h"
+	"irrString.h"
+	"ILightSceneNode.h"
+	"IQ3Shader.h"
+	"IFileList.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cquake3shaderscenenode.cpp
+	"IrrCompileConfig.h"
+	"CQuake3ShaderSceneNode.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+	"IMeshManipulator.h"
+	"SMesh.h"
+	"IMaterialRenderer.h"
+	"CShadowVolumeSceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cquake3shaderscenenode.h
+	"IMeshSceneNode.h"
+	"IQ3Shader.h"
+	"IFileSystem.h"
+	"SMeshBuffer.h"
+	"SMeshBufferLightMap.h"
+	"SMesh.h"
+	"ISceneManager.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\creadfile.cpp
+	"CReadFile.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenecollisionmanager.cpp
+	"CSceneCollisionManager.h"
+	"ISceneNode.h"
+	"ICameraSceneNode.h"
+	"ITriangleSelector.h"
+	"SViewFrustum.h"
+	"os.h"
+	"irrMath.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenecollisionmanager.h
+	"ISceneCollisionManager.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csceneloaderirr.cpp
+	"CSceneLoaderIrr.h"
+	"ISceneNodeAnimatorFactory.h"
+	"ISceneUserDataSerializer.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"os.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csceneloaderirr.h
+	"ISceneLoader.h"
+	"IXMLReader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenemanager.cpp
+	"IrrCompileConfig.h"
+	"CSceneManager.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"SAnimatedMesh.h"
+	"CMeshCache.h"
+	"IXMLWriter.h"
+	"ISceneUserDataSerializer.h"
+	"IGUIEnvironment.h"
+	"IMaterialRenderer.h"
+	"IReadFile.h"
+	"IWriteFile.h"
+	"ISceneLoader.h"
+	"os.h"
+	"CSkinnedMesh.h"
+	"CIrrMeshFileLoader.h"
+	"CBSPMeshFileLoader.h"
+	"CMD2MeshFileLoader.h"
+	"CAnimatedMeshHalfLife.h"
+	"CMS3DMeshFileLoader.h"
+	"C3DSMeshFileLoader.h"
+	"CXMeshFileLoader.h"
+	"COCTLoader.h"
+	"CCSMLoader.h"
+	"CLMTSMeshFileLoader.h"
+	"CMY3DMeshFileLoader.h"
+	"CColladaFileLoader.h"
+	"CDMFLoader.h"
+	"COgreMeshFileLoader.h"
+	"COBJMeshFileLoader.h"
+	"CMD3MeshFileLoader.h"
+	"CB3DMeshFileLoader.h"
+	"CLWOMeshFileLoader.h"
+	"CSTLMeshFileLoader.h"
+	"CPLYMeshFileLoader.h"
+	"CSMFMeshFileLoader.h"
+	"CSceneLoaderIrr.h"
+	"CColladaMeshWriter.h"
+	"CIrrMeshWriter.h"
+	"CSTLMeshWriter.h"
+	"COBJMeshWriter.h"
+	"CPLYMeshWriter.h"
+	"CCubeSceneNode.h"
+	"CSphereSceneNode.h"
+	"CAnimatedMeshSceneNode.h"
+	"COctreeSceneNode.h"
+	"CCameraSceneNode.h"
+	"CLightSceneNode.h"
+	"CBillboardSceneNode.h"
+	"CMeshSceneNode.h"
+	"CSkyBoxSceneNode.h"
+	"CSkyDomeSceneNode.h"
+	"CParticleSystemSceneNode.h"
+	"CDummyTransformationSceneNode.h"
+	"CWaterSurfaceSceneNode.h"
+	"CTerrainSceneNode.h"
+	"CEmptySceneNode.h"
+	"CTextSceneNode.h"
+	"CQuake3ShaderSceneNode.h"
+	"CVolumeLightSceneNode.h"
+	"CDefaultSceneNodeFactory.h"
+	"CSceneCollisionManager.h"
+	"CTriangleSelector.h"
+	"COctreeTriangleSelector.h"
+	"CTriangleBBSelector.h"
+	"CMetaTriangleSelector.h"
+	"CTerrainTriangleSelector.h"
+	"CSceneNodeAnimatorRotation.h"
+	"CSceneNodeAnimatorFlyCircle.h"
+	"CSceneNodeAnimatorFlyStraight.h"
+	"CSceneNodeAnimatorTexture.h"
+	"CSceneNodeAnimatorCollisionResponse.h"
+	"CSceneNodeAnimatorDelete.h"
+	"CSceneNodeAnimatorFollowSpline.h"
+	"CSceneNodeAnimatorCameraFPS.h"
+	"CSceneNodeAnimatorCameraMaya.h"
+	"CDefaultSceneNodeAnimatorFactory.h"
+	"CGeometryCreator.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenemanager.h
+	"ISceneManager.h"
+	"ISceneNode.h"
+	"ICursorControl.h"
+	"irrString.h"
+	"irrArray.h"
+	"IMeshLoader.h"
+	"CAttributes.h"
+	"ILightManager.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmeshfileloader.h
+	"IMeshLoader.h"
+	"irrString.h"
+	"CSkinnedMesh.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cstlmeshfileloader.h
+	"IMeshLoader.h"
+	"irrString.h"
+	"vector3d.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csmfmeshfileloader.h
+	"IMeshLoader.h"
+	"SMesh.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cstlmeshwriter.h
+	"IMeshWriter.h"
+	"S3DVertex.h"
+	"irrString.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cspherescenenode.h
+	"IMeshSceneNode.h"
+	"IMesh.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskyboxscenenode.h
+	"ISceneNode.h"
+	"S3DVertex.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskydomescenenode.h
+	"ISceneNode.h"
+	"SMeshBuffer.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwatersurfacescenenode.h
+	"CMeshSceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cterrainscenenode.h
+	"ITerrainSceneNode.h"
+	"IDynamicMeshBuffer.h"
+	"path.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctextscenenode.h
+	"ITextSceneNode.h"
+	"IBillboardTextSceneNode.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"ISceneCollisionManager.h"
+	"SMesh.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cvolumelightscenenode.h
+	"IVolumeLightSceneNode.h"
+	"IMesh.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrianglebbselector.h
+	"CTriangleSelector.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cterraintriangleselector.h
+	"ITriangleSelector.h"
+	"irrArray.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorrotation.h
+	"ISceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorflycircle.h
+	"ISceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorflystraight.h
+	"ISceneNodeAnimatorFinishing.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\iscenenodeanimatorfinishing.h
+	"ISceneNode.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatortexture.h
+	"irrArray.h"
+	"ISceneNodeAnimatorFinishing.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcollisionresponse.h
+	"ISceneNodeAnimatorCollisionResponse.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatordelete.h
+	"ISceneNodeAnimatorFinishing.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorfollowspline.h
+	"ISceneNode.h"
+	"irrArray.h"
+	"ISceneNodeAnimatorFinishing.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcamerafps.cpp
+	"CSceneNodeAnimatorCameraFPS.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"Keycodes.h"
+	"ICursorControl.h"
+	"ICameraSceneNode.h"
+	"ISceneNodeAnimatorCollisionResponse.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcameramaya.cpp
+	"CSceneNodeAnimatorCameraMaya.h"
+	"ICursorControl.h"
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+	"ISceneManager.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorcollisionresponse.cpp
+	"CSceneNodeAnimatorCollisionResponse.h"
+	"ISceneCollisionManager.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatordelete.cpp
+	"CSceneNodeAnimatorDelete.h"
+	"ISceneManager.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorflycircle.cpp
+	"CSceneNodeAnimatorFlyCircle.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorflystraight.cpp
+	"CSceneNodeAnimatorFlyStraight.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorfollowspline.cpp
+	"CSceneNodeAnimatorFollowSpline.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatorrotation.cpp
+	"CSceneNodeAnimatorRotation.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cscenenodeanimatortexture.cpp
+	"CSceneNodeAnimatorTexture.h"
+	"ITexture.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cshadowvolumescenenode.cpp
+	"CShadowVolumeSceneNode.h"
+	"ISceneManager.h"
+	"IMesh.h"
+	"IVideoDriver.h"
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+	"SLight.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskinnedmesh.cpp
+	"IrrCompileConfig.h"
+	"CSkinnedMesh.h"
+	"CBoneSceneNode.h"
+	"IAnimatedMeshSceneNode.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskyboxscenenode.cpp
+	"CSkyBoxSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"S3DVertex.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cskydomescenenode.cpp
+	"CSkyDomeSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"IAnimatedMesh.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csmfmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CSMFMeshFileLoader.h"
+	"SAnimatedMesh.h"
+	"SMeshBuffer.h"
+	"IReadFile.h"
+	"coreutil.h"
+	"os.h"
+	"IVideoDriver.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaredriver.cpp
+	"IrrCompileConfig.h"
+	"CSoftwareDriver.h"
+	"CSoftwareTexture.h"
+	"CBlit.h"
+	"os.h"
+	"S3DVertex.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaredriver.h
+	"ITriangleRenderer.h"
+	"CNullDriver.h"
+	"SViewFrustum.h"
+	"CImage.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\itrianglerenderer.h
+	"IReferenceCounted.h"
+	"S2DVertex.h"
+	"rect.h"
+	"IZBuffer.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\izbuffer.h
+	"IReferenceCounted.h"
+	"dimension2d.h"
+	"S2DVertex.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaretexture.h
+	"ITexture.h"
+	"CImage.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaredriver2.cpp
+	"IrrCompileConfig.h"
+	"CSoftwareDriver2.h"
+	"SoftwareDriver2_helper.h"
+	"CSoftwareTexture2.h"
+	"CSoftware2MaterialRenderer.h"
+	"S3DVertex.h"
+	"S4DVertex.h"
+	"CBlit.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaredriver2.h
+	"SoftwareDriver2_compile_config.h"
+	"IBurningShader.h"
+	"CNullDriver.h"
+	"CImage.h"
+	"os.h"
+	"irrString.h"
+	"SIrrCreationParameters.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftware2materialrenderer.h
+	"SoftwareDriver2_compile_config.h"
+	"IMaterialRenderer.h"
+	"CSoftwareDriver2.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaretexture.cpp
+	"IrrCompileConfig.h"
+	"CSoftwareTexture.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\csoftwaretexture2.cpp
+	"IrrCompileConfig.h"
+	"SoftwareDriver2_compile_config.h"
+	"SoftwareDriver2_helper.h"
+	"CSoftwareTexture2.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cspherescenenode.cpp
+	"CSphereSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"os.h"
+	"CShadowVolumeSceneNode.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cstlmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CSTLMeshFileLoader.h"
+	"SMesh.h"
+	"SMeshBuffer.h"
+	"SAnimatedMesh.h"
+	"IReadFile.h"
+	"fast_atof.h"
+	"coreutil.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cstlmeshwriter.cpp
+	"IrrCompileConfig.h"
+	"CSTLMeshWriter.h"
+	"os.h"
+	"IMesh.h"
+	"IMeshBuffer.h"
+	"IAttributes.h"
+	"ISceneManager.h"
+	"IMeshCache.h"
+	"IWriteFile.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctarreader.cpp
+	"CTarReader.h"
+	"CFileList.h"
+	"CLimitReadFile.h"
+	"os.h"
+	"coreutil.h"
+	"errno.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cterrainscenenode.cpp
+	"CTerrainSceneNode.h"
+	"CTerrainTriangleSelector.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"ICameraSceneNode.h"
+	"SViewFrustum.h"
+	"irrMath.h"
+	"os.h"
+	"IGUIFont.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+	"ITextSceneNode.h"
+	"IAnimatedMesh.h"
+	"SMesh.h"
+	"CDynamicMeshBuffer.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cterraintriangleselector.cpp
+	"CTerrainTriangleSelector.h"
+	"CTerrainSceneNode.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctextscenenode.cpp
+	"CTextSceneNode.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"ICameraSceneNode.h"
+	"IGUISpriteBank.h"
+	"SMeshBuffer.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrflat.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraud.h
+	"IrrCompileConfig.h"
+	"ITriangleRenderer.h"
+	"IImage.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrflatwire.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrgouraud.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrgouraud2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrgouraudalpha2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrgouraudalphanoz2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrgouraudwire.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrianglebbselector.cpp
+	"CTriangleBBSelector.h"
+	"ISceneNode.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctriangleselector.cpp
+	"CTriangleSelector.h"
+	"ISceneNode.h"
+	"IMeshBuffer.h"
+	"IAnimatedMeshSceneNode.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrnormalmap.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrstencilshadow.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtextureblend.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturedetailmap2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtextureflat.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtextureflatwire.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraud.cpp
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraud2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudadd.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudadd2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudaddnoz2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudalpha.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudalphanoz.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudnoz.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+	"SColor.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudnoz2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudvertexalpha2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturegouraudwire.cpp
+	"IrrCompileConfig.h"
+	"CTRTextureGouraud.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturelightmap2_add.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturelightmap2_m1.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturelightmap2_m2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturelightmap2_m4.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturelightmapgouraud2_m4.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\ctrtexturewire2.cpp
+	"IrrCompileConfig.h"
+	"IBurningShader.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cvideomodelist.cpp
+	"CVideoModeList.h"
+	"irrMath.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cvolumelightscenenode.cpp
+	"CVolumeLightSceneNode.h"
+	"IVideoDriver.h"
+	"ISceneManager.h"
+	"S3DVertex.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwadreader.cpp
+	"IrrCompileConfig.h"
+	"CWADReader.h"
+	"os.h"
+	"coreutil.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwatersurfacescenenode.cpp
+	"CWaterSurfaceSceneNode.h"
+	"ISceneManager.h"
+	"IMeshManipulator.h"
+	"IMeshCache.h"
+	"S3DVertex.h"
+	"SMesh.h"
+	"os.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwritefile.cpp
+	"CWriteFile.h"
+	<stdio.h>
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cwritefile.h
+	<stdio.h>
+	"IWriteFile.h"
+	"irrString.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmeshfileloader.cpp
+	"IrrCompileConfig.h"
+	"CXMeshFileLoader.h"
+	"os.h"
+	"fast_atof.h"
+	"coreutil.h"
+	"ISceneManager.h"
+	"IVideoDriver.h"
+	"IFileSystem.h"
+	"IReadFile.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmlreader.cpp
+	"CXMLReaderImpl.h"
+	"CXMLReader.h"
+	"IReadFile.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmlreaderimpl.h
+	"irrXML.h"
+	"irrString.h"
+	"irrArray.h"
+	"fast_atof.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cxmlwriter.cpp
+	"CXMLWriter.h"
+	<wchar.h>
+	"irrString.h"
+	"IrrCompileConfig.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\czbuffer.cpp
+	"IrrCompileConfig.h"
+	"CZBuffer.h"
+	"irrString.h"
+
+1422702043 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\czbuffer.h
+	"IZBuffer.h"
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\czipreader.cpp
+	"CZipReader.h"
+	"os.h"
+	"CFileList.h"
+	"CReadFile.h"
+	"coreutil.h"
+	"IrrCompileConfig.h"
+	<zlib.h>
+	"zlib/zlib.h"
+	"aesGladman/fileenc.h"
+	<bzlib.h>
+	"bzip2/bzlib.h"
+	"lzma/LzmaDec.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\zlib.h
+	"zconf.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\zconf.h
+	<windows.h>
+	<limits.h>
+	<sys/types.h>
+	<stddef.h>
+	<unistd.h>
+	<unixio.h>
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\lzma\lzmadec.h
+	"Types.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\lzma\types.h
+	<stddef.h>
+	<windows.h>
+
+1422702043 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\iburningshader.cpp
+	"IrrCompileConfig.h"
+	"SoftwareDriver2_compile_config.h"
+	"IBurningShader.h"
+	"CSoftwareDriver2.h"
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\irrlicht.cpp
+	"IrrCompileConfig.h"
+	<windows.h>
+	<crtdbg.h>
+	"irrlicht.h"
+	"CIrrDeviceWin32.h"
+	"MacOSX/CIrrDeviceMacOSX.h"
+	"CIrrDeviceWinCE.h"
+	"CIrrDeviceLinux.h"
+	"CIrrDeviceSDL.h"
+	"CIrrDeviceFB.h"
+	"CIrrDeviceConsole.h"
+
+1422702042 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cirrdevicefb.h
+	"IrrCompileConfig.h"
+	"CIrrDeviceStub.h"
+	"SIrrCreationParameters.h"
+	"IrrlichtDevice.h"
+	"IImagePresenter.h"
+	"ICursorControl.h"
+	<linux/fb.h>
+	<linux/kd.h>
+
+1422702044 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\irrxml.cpp
+	"irrXML.h"
+	"irrString.h"
+	"irrArray.h"
+	"fast_atof.h"
+	"CXMLReaderImpl.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jaricom.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jinclude.h
+	"jconfig.h"
+	<stddef.h>
+	<stdlib.h>
+	<sys/types.h>
+	<stdio.h>
+	<strings.h>
+	<string.h>
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcapimin.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcapistd.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcarith.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jccoefct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jccolor.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcdctmgr.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdct.h
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jchuff.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcinit.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcmainct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcmarker.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcmaster.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcomapi.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcparam.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcprepct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jcsample.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jctrans.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdapimin.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdapistd.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdarith.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdatadst.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jerror.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdatasrc.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jerror.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdcoefct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdcolor.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jddctmgr.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdhuff.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdinput.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdmainct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdmarker.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdmaster.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdmerge.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdpostct.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdsample.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jdtrans.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jerror.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jversion.h"
+	"jerror.h"
+	<windows.h>
+	"jerror.h"
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jversion.h
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jfdctflt.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jfdctfst.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jfdctint.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jidctflt.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jidctfst.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jidctint.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jdct.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jmemmgr.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jmemsys.h"
+
+1422702045 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jmemsys.h
+	<Files.h>
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jmemnobs.c
+	"jinclude.h"
+	"jpeglib.h"
+	"jmemsys.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jquant1.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jquant2.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702045 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\jpeglib\jutils.c
+	"jinclude.h"
+	"jpeglib.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\png.c
+	"pngpriv.h"
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngpriv.h
+	<stdlib.h>
+	<stddef.h>
+	"pngusr.h"
+	"png.h"
+	"pnginfo.h"
+	"pngstruct.h"
+	"config.h"
+	<float.h>
+	<fp.h>
+	<math.h>
+	<m68881.h>
+	<mem.h>
+	<alloc.h>
+	<windows.h>
+	"pngdebug.h"
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pnginfo.h
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngstruct.h
+	"zlib.h"
+
+1422702047 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngdebug.h
+	<crtdbg.h>
+	<stdio.h>
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngerror.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngget.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngmem.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngpread.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngread.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngrio.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngrtran.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngrutil.c
+	"pngpriv.h"
+	<stdio.h>
+	<elf.h>
+	<asm/hwcap.h>
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngset.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngtrans.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngwio.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngwrite.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngwtran.c
+	"pngpriv.h"
+
+1422702047 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\libpng\pngwutil.c
+	"pngpriv.h"
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\lzma\lzmadec.c
+	"LzmaDec.h"
+	<string.h>
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\os.cpp
+	"os.h"
+	"irrString.h"
+	"IrrCompileConfig.h"
+	"irrMath.h"
+	<SDL/SDL_endian.h>
+	<stdlib.h>
+	<libkern/OSByteOrder.h>
+	<sys/endian.h>
+	<byteswap.h>
+	<xtl.h>
+	<windows.h>
+	<time.h>
+	<stdio.h>
+	<time.h>
+	<sys/time.h>
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\adler32.c
+	"zutil.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\zutil.h
+	"zlib.h"
+	<stddef.h>
+	<string.h>
+	<stdlib.h>
+	<alloc.h>
+	<malloc.h>
+	<malloc.h>
+	<unix.h>
+	<stdio.h>
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\compress.c
+	"zlib.h"
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\crc32.c
+	<stdio.h>
+	"zutil.h"
+	"crc32.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\crc32.h
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\deflate.c
+	"deflate.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\deflate.h
+	"zutil.h"
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inffast.c
+	"zutil.h"
+	"inftrees.h"
+	"inflate.h"
+	"inffast.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inftrees.h
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inflate.h
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inffast.h
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inflate.c
+	"zutil.h"
+	"inftrees.h"
+	"inflate.h"
+	"inffast.h"
+	"inffixed.h"
+	<stdio.h>
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inffixed.h
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\inftrees.c
+	"zutil.h"
+	"inftrees.h"
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\trees.c
+	"deflate.h"
+	<ctype.h>
+	"trees.h"
+	<stdio.h>
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\trees.h
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\uncompr.c
+	"zlib.h"
+
+1422702048 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\zutil.c
+	"zutil.h"
+	"gzguts.h"
+
+1422702048 c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\zlib\gzguts.h
+	<stdio.h>
+	"zlib.h"
+	<string.h>
+	<stdlib.h>
+	<limits.h>
+	<fcntl.h>
+	<stddef.h>
+	<io.h>
+	<windows.h>
+	<errno.h>
+
+1445241676 source:c:\users\james\documents\programming\bridge command\irrlichttesting\bc5\libs\irrlicht\irrlicht-1.8.1\source\irrlicht\cguiscrollbar.cpp
+	"CGUIScrollBar.h"
+	"IGUISkin.h"
+	"IGUIEnvironment.h"
+	"IVideoDriver.h"
+	"CGUIButton.h"
+	"IGUIFont.h"
+	"IGUIFontBitmap.h"
+	"os.h"
+	<iostream>
+

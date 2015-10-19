@@ -159,6 +159,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				}
 				break;
 			case EMIE_LMOUSE_PRESSED_DOWN:
+			case EMIE_RMOUSE_PRESSED_DOWN: //JAMES: Allow right click for scroll bar movement
 			{
 				if (isInside)
 				{
@@ -172,9 +173,10 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				break;
 			}
 			case EMIE_LMOUSE_LEFT_UP:
+			case EMIE_RMOUSE_LEFT_UP: //JAMES: Allow right click for scroll bar movement
 			case EMIE_MOUSE_MOVED:
 			{
-				if ( !event.MouseInput.isLeftPressed () )
+				if ( !event.MouseInput.isLeftPressed () && !event.MouseInput.isRightPressed ()  ) //JAMES: Allow right click for scroll bar movement
 					Dragging = false;
 
 				if ( !Dragging )
@@ -184,7 +186,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 					return isInside;
 				}
 
-				if ( event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP )
+				if ( event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP || event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP ) //JAMES: Allow right click for scroll bar movement
 					Dragging = false;
 
 				const s32 newPos = getPosFromMousePos(p);

@@ -560,7 +560,7 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 
 		updateHoveredElement(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN || event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) //JAMES: Allow right click to get focus as well
 			if ( (Hovered && Hovered != Focus) || !Focus )
 		{
 			setFocus(Hovered);
