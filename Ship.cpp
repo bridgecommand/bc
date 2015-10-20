@@ -37,7 +37,7 @@ Ship::~Ship()
 
 irr::scene::IMeshSceneNode* Ship::getSceneNode() const
 {
-    return ship;
+    return (irr::scene::IMeshSceneNode*)ship;
 }
 
 irr::core::vector3df Ship::getRotation() const

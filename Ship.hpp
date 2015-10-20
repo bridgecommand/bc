@@ -45,7 +45,7 @@ class Ship
 
     protected:
 
-        irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
+        irr::scene::IAnimatedMeshSceneNode* ship; //The scene node for the own ship.
         irr::f32 hdg;
         irr::f32 xPos;
         irr::f32 yPos;
@@ -53,6 +53,7 @@ class Ship
         irr::f32 spd;
         irr::f32 length;
         irr::f32 width;
+        irr::f32 heightCorrection;
         int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
         enum CONTROL_MODE// Define some values that we'll use to identify individual GUI controls.

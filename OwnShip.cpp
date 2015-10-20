@@ -140,26 +140,25 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
         f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
         f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
         f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
-        views.push_back(core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+yCorrection),scaleFactor*camOffsetZ));
+        views.push_back(core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
     }
 
     //Load the model
-    scene::IMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+    scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
-    //Translate and scale mesh here
-    core::matrix4 transformMatrix;
-    transformMatrix.setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    transformMatrix.setTranslation(core::vector3df(0,yCorrection*scaleFactor,0));
+    //Set mesh vertical correction (world units)
+    heightCorrection = yCorrection*scaleFactor;
 
     //Make mesh scene node
     if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue
         std::cout << "Failed to load own ship model " << ownShipFullPath << std::endl;
-        ship = smgr->addCubeSceneNode(0.1);
-    } else {
-        smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
-        ship = smgr->addMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
+        shipMesh = smgr->addSphereMesh("Dummy");
     }
+    //smgr->getMeshManipulator()->transform(shipMesh,transformMatrix); //FIXME: This seems to 'explode' some models, (assembled with animation?)
+    ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
+    ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
+    ship->setPosition(core::vector3df(0,heightCorrection,0));
 
     ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
@@ -170,8 +169,8 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
         }
     }
 
-    length = ship->getBoundingBox().getExtent().Z; //Store length for basic collision calculation
-    width = ship->getBoundingBox().getExtent().X; //Store length for basic collision calculation
+    length = ship->getBoundingBox().getExtent().Z*scaleFactor; //Store length for basic collision calculation
+    width = ship->getBoundingBox().getExtent().X*scaleFactor; //Store length for basic collision calculation
 
     //set initial pitch and roll
     pitch = 0;
@@ -352,7 +351,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     } else {
         positionManuallyUpdated = false;
     }
-    yPos = tideHeight;
+    yPos = tideHeight+heightCorrection;
 
     //calculate pitch and roll - not linked to water/wave motion
     if (pitchPeriod>0)

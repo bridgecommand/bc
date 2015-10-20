@@ -59,29 +59,27 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     std::string shipFullPath = basePath + shipFileName;
 
     //load mesh
-    scene::IMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
+    scene::IAnimatedMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
-    //scale and translate
-    core::matrix4 transformMatrix;
-    transformMatrix.setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    transformMatrix.setTranslation(core::vector3df(0,yCorrection*scaleFactor,0));
+    //Set mesh vertical correction (world units)
+    heightCorrection = yCorrection*scaleFactor;
 
     //add to scene node
 	if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue
         std::cout << "Failed to load other ship model " << shipFullPath << std::endl;
-        ship = smgr->addCubeSceneNode(0.1);
-    } else {
-        smgr->getMeshManipulator()->transform(shipMesh,transformMatrix);
-        ship = smgr->addMeshSceneNode( shipMesh, 0, -1);
+        shipMesh = smgr->addSphereMesh("Dummy");
     }
+    ship = smgr->addAnimatedMeshSceneNode( shipMesh, 0, -1);
+    ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
+    ship->setPosition(core::vector3df(0,heightCorrection,0));
 
 	ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
-    length = ship->getBoundingBox().getExtent().Z;
-    width = ship->getBoundingBox().getExtent().X;
-    height = ship->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    length = ship->getBoundingBox().getExtent().Z*scaleFactor;
+    width = ship->getBoundingBox().getExtent().X*scaleFactor;
+    height = ship->getBoundingBox().getExtent().Y * 0.75 * scaleFactor; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight"); //FIXME: Note in documentation that this is height above waterline in model units
     if (solidHeight == 0) {
@@ -152,7 +150,7 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     } else {
         positionManuallyUpdated = false;
     }
-    yPos = tideHeight;
+    yPos = tideHeight+heightCorrection;
 
     //Set position & speed by calling ship methods
     //setPosition(core::vector3df(xPos,yPos,zPos));
