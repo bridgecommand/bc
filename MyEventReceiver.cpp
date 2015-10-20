@@ -36,7 +36,7 @@ using namespace irr;
 		this->portJoystickAxis=portJoystickAxis;
 		this->stbdJoystickAxis=stbdJoystickAxis;
 		this->rudderJoystickAxis=rudderJoystickAxis;
-        
+
         //assume mouse buttons not pressed initially
         leftMouseDown = false;
         rightMouseDown = false;
@@ -52,10 +52,11 @@ using namespace irr;
             if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ) {rightMouseDown=true;}
             if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP ) {rightMouseDown=false;}
         }
-        
+
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
+			//std::cout << "GUI event from " << id << std::endl;
             if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED)
             {
 
