@@ -54,6 +54,7 @@ class Ship
         irr::f32 length;
         irr::f32 width;
         irr::f32 heightCorrection;
+        irr::f32 angleCorrection;
         int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
         enum CONTROL_MODE// Define some values that we'll use to identify individual GUI controls.

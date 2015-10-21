@@ -36,6 +36,7 @@ class OwnShip : public Ship
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::string getRadarConfigFile() const;
         irr::f32 getDepth();
+        irr::f32 getAngleCorrection() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)

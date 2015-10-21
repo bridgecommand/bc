@@ -45,6 +45,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
     hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
 
+
     std::string basePath = "Models/Ownship/" + ownShipName + "/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
@@ -85,6 +86,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
     buffetPeriod = 8; //Yaw period (s)
     buffet = IniFile::iniFileTof32(shipIniFilename,"Buffet");
+
 
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
@@ -129,6 +131,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     //Scale
     f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
     f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
+    angleCorrection = IniFile::iniFileTof32(shipIniFilename,"AngleCorrection");
 
     //camera offset (in unscaled and uncorrected ship coords)
     irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
@@ -363,13 +366,18 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
     //Set position & angles
     ship->setPosition(core::vector3df(xPos,yPos,zPos));
-    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg,pitch,roll));
+    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,pitch,roll));
 
 }
 
 irr::f32 OwnShip::getDepth()
 {
     return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
+}
+
+irr::f32 OwnShip::getAngleCorrection() const
+{
+    return angleCorrection;
 }
 
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const

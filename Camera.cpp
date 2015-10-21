@@ -33,7 +33,7 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(0,0,1));
@@ -43,6 +43,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
     currentView = 0;
     this->lookAngle = lookAngle;
     lookUpAngle = 0;
+    this->angleCorrection = angleCorrection;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -174,7 +175,7 @@ void Camera::update()
         m.setRotationDegrees(parent->getRotation());
 
         // transform forward vector of camera
-        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*lookAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*lookAngle));
+        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection)), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection)));
         m.transformVect(frv);
 
         // transform upvector of camera

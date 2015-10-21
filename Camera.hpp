@@ -27,7 +27,7 @@ class Camera
         Camera();
         virtual ~Camera();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection);
         irr::scene::ISceneNode* getSceneNode() const;
         irr::core::vector3df getPosition() const;
         void setHFOV(irr::f32 hFOV);
@@ -54,6 +54,7 @@ class Camera
         irr::scene::ISceneNode* parent;
         irr::u32 currentView;
         std::vector<irr::core::vector3df> views;
+        irr::f32 angleCorrection;
         irr::f32 lookAngle; //In degrees
         irr::f32 lookUpAngle;
         irr::f32 hFOV;//horizontal field of view (radians)

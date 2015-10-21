@@ -134,7 +134,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make a camera, setting parent and offset
         std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
-        camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle);
+        irr::f32 angleCorrection = ownShip.getAngleCorrection();
+        camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle,angleCorrection);
         camera.setNearValue(cameraMinDistance);
         camera.setFarValue(cameraMaxDistance);
 
@@ -168,7 +169,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
         radarViews.push_back(core::vector3df(0,0,-0.25));
-        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews,core::PI/2.0,0);
+        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews,core::PI/2.0,0,0);
         radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.2);
         radarCamera.setFarValue(0.3);
