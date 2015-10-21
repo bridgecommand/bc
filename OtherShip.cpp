@@ -95,6 +95,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
         for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
             ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }

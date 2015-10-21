@@ -165,6 +165,8 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
         for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            //ship->getMaterial(mat).setFlag(video::EMF_ZWRITE_ENABLE,true);
             ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
