@@ -289,7 +289,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Turn dynamics
         //Rudder
-        rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB; //Fixme: reduced rudder effect astern?
+        if ((portThrust+stbdThrust) > 0) {
+            rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB;
+        } else {
+            rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderBAstern; //Reduced effect of rudder when engines engaged astern
+        }
         //Engine
         engineTorque = (portThrust*propellorSpacing - stbdThrust*propellorSpacing)/2.0; //propspace is spacing between propellors, so halve to get moment arm
         //Prop walk
