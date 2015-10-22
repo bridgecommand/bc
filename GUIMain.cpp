@@ -160,6 +160,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rudderScrollbar->setVisible(false);
     }
 
+    void GUIMain::setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS)
+    {
+        this->hasDepthSounder = hasDepthSounder;
+        this->maxSounderDepth = maxSounderDepth;
+        this->hasGPS = hasGPS;
+    }
+
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
@@ -277,28 +284,36 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         displayText.append(f32To1dp(guiHeading).c_str());
         displayText.append(L"\n");
 
-        displayText.append(language->translate("pos"));
-        displayText.append(irr::core::stringw(latDegrees));
-        displayText.append(language->translate("deg"));
-        displayText.append(f32To3dp(latMinutes).c_str());
-        displayText.append(language->translate("minSymbol"));
-        displayText.append(northSouth);
-        displayText.append(L" ");
+        if (hasGPS) {
+            displayText.append(language->translate("pos"));
+            displayText.append(irr::core::stringw(latDegrees));
+            displayText.append(language->translate("deg"));
+            displayText.append(f32To3dp(latMinutes).c_str());
+            displayText.append(language->translate("minSymbol"));
+            displayText.append(northSouth);
+            displayText.append(L" ");
 
-        displayText.append(irr::core::stringw(lonDegrees));
-        displayText.append(language->translate("deg"));
-        displayText.append(f32To3dp(lonMinutes).c_str());
-        displayText.append(language->translate("minSymbol"));
-        displayText.append(eastWest);
-        displayText.append(L"\n");
+            displayText.append(irr::core::stringw(lonDegrees));
+            displayText.append(language->translate("deg"));
+            displayText.append(f32To3dp(lonMinutes).c_str());
+            displayText.append(language->translate("minSymbol"));
+            displayText.append(eastWest);
+            displayText.append(L"\n");
+        }
 
         displayText.append(language->translate("spd"));
         displayText.append(f32To1dp(guiSpeed).c_str());
         displayText.append(L"\n");
 
-        displayText.append(language->translate("depth"));
-        displayText.append(f32To1dp(guiDepth).c_str());
-        displayText.append(L"\n");
+        if (hasDepthSounder) {
+            displayText.append(language->translate("depth"));
+            if (guiDepth <= maxSounderDepth) {
+                displayText.append(f32To1dp(guiDepth).c_str());
+            } else {
+                displayText.append(L"-");
+            }
+            displayText.append(L"\n");
+        }
 
         displayText.append(core::stringw(guiTime.c_str()));
         displayText.append(L"\n");

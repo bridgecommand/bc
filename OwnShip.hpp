@@ -37,6 +37,9 @@ class OwnShip : public Ship
         std::string getRadarConfigFile() const;
         irr::f32 getDepth();
         irr::f32 getAngleCorrection() const;
+        bool hasGPS() const;
+        bool hasDepthSounder() const;
+        irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead)
@@ -97,6 +100,10 @@ class OwnShip : public Ship
         irr::f32 rudderTorque;
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
+        //General settings
+        bool gps;
+        bool depthSounder;
+        irr::f32 maxSounderDepth;
 
 };
 

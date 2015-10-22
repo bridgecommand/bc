@@ -87,6 +87,10 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     buffetPeriod = 8; //Yaw period (s)
     buffet = IniFile::iniFileTof32(shipIniFilename,"Buffet");
 
+    depthSounder = (IniFile::iniFileTou32(shipIniFilename,"HasDepthSounder")==1);
+    maxSounderDepth = IniFile::iniFileTof32(shipIniFilename,"MaxDepth");
+    gps = (IniFile::iniFileTou32(shipIniFilename,"HasGPS")==1);
+    if (maxSounderDepth < 1) {maxSounderDepth=100;} //Default
 
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
@@ -379,6 +383,22 @@ irr::f32 OwnShip::getAngleCorrection() const
 {
     return angleCorrection;
 }
+
+bool OwnShip::hasGPS() const
+{
+    return gps;
+}
+
+bool OwnShip::hasDepthSounder() const
+{
+    return depthSounder;
+}
+
+irr::f32 OwnShip::getMaxSounderDepth() const
+{
+    return maxSounderDepth;
+}
+
 
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {

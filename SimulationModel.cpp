@@ -125,6 +125,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
             gui->hideEngineAndRudder();
         }
 
+        //Tell the GUI what instruments to display - currently GPS and depth sounder
+        gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
+
         //Todo: Set the radar parameters, based on the radar.ini file from the own ship
         //std::cout << "Radar file:" << ownShip.getRadarConfigFile() << std::endl;
         radarCalculation.load(ownShip.getRadarConfigFile());
