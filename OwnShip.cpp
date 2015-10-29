@@ -167,6 +167,7 @@ void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* s
     ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(core::vector3df(0,heightCorrection,0));
 
+    ship->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works

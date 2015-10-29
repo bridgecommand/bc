@@ -75,6 +75,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(core::vector3df(0,heightCorrection,0));
 
+	ship->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc

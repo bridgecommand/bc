@@ -69,6 +69,7 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 
     landObject->setScale(core::vector3df(objectScale,objectScale,objectScale));
     landObject->setRotation(irr::core::vector3df(0,rotation,0));
+    landObject->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     landObject->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
 }

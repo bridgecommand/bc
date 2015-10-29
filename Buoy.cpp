@@ -72,6 +72,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     }
 
     buoy->setScale(core::vector3df(buoyScale,buoyScale,buoyScale));
+    buoy->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     buoy->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc

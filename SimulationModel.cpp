@@ -565,7 +565,7 @@ SimulationModel::~SimulationModel()
 
         //update ambient lighting
         light.update(scenarioTime);
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_EXP , 250, 5*M_IN_NM, .0003f, true, true);
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 250/*not used for exp fog*/, 0.5*M_IN_NM/*not used for exp fog*/, 0.00003f, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update rain
