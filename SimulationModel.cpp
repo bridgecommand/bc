@@ -565,7 +565,8 @@ SimulationModel::~SimulationModel()
 
         //update ambient lighting
         light.update(scenarioTime);
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 50/*not used for exp fog*/, 0.5*M_IN_NM/*not used for exp fog*/, 0.00003f, true, true);
+        //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 50, 1.0*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update rain

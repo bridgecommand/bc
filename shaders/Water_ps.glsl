@@ -34,8 +34,9 @@ uniform sampler2D	WaterBump; //coverage
 //uniform sampler2D	RefractionMap; //coverage
 uniform sampler2D	ReflectionMap; //coverage
 
-uniform bool		FogEnabled;
-uniform int			FogMode;
+//Hard code for FogEnabled, FogMode == Linear
+//uniform bool		FogEnabled;
+//uniform int		FogMode;
 
 varying vec2 bumpMapTexCoord;
 varying vec2 bumpMapTexCoord2;
@@ -98,15 +99,16 @@ void main()
 	fresnelTerm=0;
 	*/
 
-	float fogFactor = 1.0;
+	//float fogFactor = 1.0;
+	float fogFactor;
 
-    float z = gl_FragCoord.z / gl_FragCoord.w;
 
-    //FogEnabled = true;
 
-    if (FogEnabled)
-	{
+
+    //if (FogEnabled)
+	//{
 		float z = gl_FragCoord.z / gl_FragCoord.w;
+		/*
 		if (FogMode == 0) //exp
 		{
 			fogFactor = exp2(-gl_Fog.density * z * LOG2);
@@ -114,8 +116,11 @@ void main()
 		}
 		else if (FogMode == 1) //linear
 		{
-			fogFactor = (gl_Fog.end - z) / (gl_Fog.end - gl_Fog.start);
-			fogFactor = clamp(fogFactor, 0.0, 1.0);
+		*/
+		//Assume linear fog
+        fogFactor = (gl_Fog.end - z) / (gl_Fog.end - gl_Fog.start);
+        fogFactor = clamp(fogFactor, 0.0, 1.0);
+        /*
 		}
 		else if (FogMode == 2) //exp2
 		{
@@ -123,6 +128,7 @@ void main()
 			fogFactor = clamp(fogFactor, 0.0, 1.0);
 		}
 	}
+	*/
 
     //vec4 combinedColor = refractiveColor * fresnelTerm + reflectiveColor * (1.0 - fresnelTerm);
     vec4 combinedColor = reflectiveColor;
