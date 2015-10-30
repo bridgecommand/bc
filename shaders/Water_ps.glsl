@@ -100,22 +100,26 @@ void main()
 
 	float fogFactor = 1.0;
 
-	if (FogEnabled)
+    float z = gl_FragCoord.z / gl_FragCoord.w;
+
+    //FogEnabled = true;
+
+    if (FogEnabled)
 	{
 		float z = gl_FragCoord.z / gl_FragCoord.w;
-
-		if (FogMode == 1) //exp
+		if (FogMode == 0) //exp
 		{
-			float fogFactor = exp2(-gl_Fog.density * z * LOG2);
+			fogFactor = exp2(-gl_Fog.density * z * LOG2);
 			fogFactor = clamp(fogFactor, 0.0, 1.0);
 		}
-		else if (FogMode == 0) //linear
+		else if (FogMode == 1) //linear
 		{
 			fogFactor = (gl_Fog.end - z) / (gl_Fog.end - gl_Fog.start);
+			fogFactor = clamp(fogFactor, 0.0, 1.0);
 		}
 		else if (FogMode == 2) //exp2
 		{
-			float fogFactor = exp2(-gl_Fog.density * gl_Fog.density * z * z * LOG2);
+			fogFactor = exp2(-gl_Fog.density * gl_Fog.density * z * z * LOG2);
 			fogFactor = clamp(fogFactor, 0.0, 1.0);
 		}
 	}
@@ -124,8 +128,8 @@ void main()
     vec4 combinedColor = reflectiveColor;
 
 	vec4 finalColor = ColorBlendFactor * ambientColor + (1.0 - ColorBlendFactor) * combinedColor;
-    //finalColor = ambientColor;
 
-	gl_FragColor = mix(gl_Fog.color, finalColor, fogFactor );
+    gl_FragColor = mix(gl_Fog.color, finalColor, fogFactor );
+
 }
 

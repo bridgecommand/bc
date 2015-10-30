@@ -22,6 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream> //Debugging only
 #include "RealisticWater.h"
 
 RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneManager, f32 width, f32 height,
@@ -66,11 +67,15 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 	irr::video::ITexture* bumpTexture = _videoDriver->getTexture(resourcePath + "/media/waterbump.png");
 	_waterSceneNode->setMaterialTexture(0, bumpTexture);
 
+
 	//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
 	_reflectionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
 
 	//_waterSceneNode->setMaterialTexture(1, _refractionMap);
 	_waterSceneNode->setMaterialTexture(1, _reflectionMap);
+
+	getMaterial(0).setFlag(video::EMF_FOG_ENABLE, true); //FIXME: We currently don't seem to be able to turn off fog.
+
 }
 
 RealisticWaterSceneNode::~RealisticWaterSceneNode()
@@ -254,6 +259,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	bool pixelFog;
 	bool rangeFog;
 	driver->getFog(color, fogType, start, end, density, pixelFog, rangeFog);
+	std::cout << "Fog: " << fogEnabled << " Type: " << fogType <<std::endl;
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR == 9)
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WorldViewProj"), worldViewProj.pointer(), 16);
@@ -291,14 +297,15 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 		//services->setPixelShaderConstant(services->getVertexShaderConstantID("RefractionMap"), &var1, 1);
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("ReflectionMap"), &var1, 1);
 
-		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogEnabled"), (int*)&fogEnabled, 1);
+		//services->setPixelShaderConstant(services->getVertexShaderConstantID("FogEnabled"), (int*)&fogEnabled, 1);
+		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogEnabled"), &fogEnabled, 1);
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("FogMode"), (int*)&fogType, 1);
 #else
 		services->setPixelShaderConstant("WaterBump", &var0, 1);
 		//services->setPixelShaderConstant("RefractionMap", &var1, 1);
 		services->setPixelShaderConstant("ReflectionMap", &var1, 1);
 
-		services->setPixelShaderConstant("FogEnabled", (int*)&fogEnabled, 1);
+		services->setPixelShaderConstant("FogEnabled", &fogEnabled, 1);
 		services->setPixelShaderConstant("FogMode", (int*)&fogType, 1);
 #endif
 	}
