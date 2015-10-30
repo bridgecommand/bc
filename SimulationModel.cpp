@@ -60,6 +60,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Fixme: add in wind direction etc
         weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
         rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+        visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange"); //In Nm
+        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;}
 
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
@@ -566,7 +568,7 @@ SimulationModel::~SimulationModel()
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 50, 1.0*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update rain
