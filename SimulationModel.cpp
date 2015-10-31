@@ -423,6 +423,16 @@ SimulationModel::~SimulationModel()
         return rainIntensity;
     }
 
+    void SimulationModel::setVisibility(irr::f32 visibilityNm)
+    {
+        this->visibilityRange = visibilityNm;
+    }
+
+    irr::f32 SimulationModel::getVisibility() const
+    {
+        return visibilityRange;
+    }
+
     void SimulationModel::lookUp()
     {
         camera.lookUp();
@@ -634,7 +644,7 @@ SimulationModel::~SimulationModel()
         irr::f32 elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
         //send data to gui
-        guiMain->updateGuiData(getLat(), getLong(), ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime), paused, collided); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(getLat(), getLong(), ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, visibilityRange, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime), paused, collided); //Set GUI heading in degrees and speed (in m/s)
     }
 
     bool SimulationModel::checkOwnShipCollision()

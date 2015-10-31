@@ -112,6 +112,10 @@ using namespace irr;
                   {
                         model->setRain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/10.0); //Scroll bar 0-100, rain 0-10
                   }
+              if (id == GUIMain::GUI_ID_VISIBILITY_SCROLL_BAR)
+                  {
+                        model->setVisibility(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/10.0); //Scroll bar 1-101, vis 0.1-10.1
+                  }
             }
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {

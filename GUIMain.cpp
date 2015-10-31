@@ -17,6 +17,7 @@
 #include "GUIMain.hpp"
 
 #include "Constants.hpp"
+#include "Utilities.hpp"
 
 using namespace irr;
 
@@ -73,6 +74,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rainScrollbar->setLargeStep(5);
         rainScrollbar->setSmallStep(5);
         rainScrollbar->setToolTipText(language->translate("rain").c_str());
+
+        //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
+        visibilityScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
+        visibilityScrollbar->setMax(101);
+        visibilityScrollbar->setMin(1);
+        visibilityScrollbar->setLargeStep(5);
+        visibilityScrollbar->setSmallStep(1);
+        visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
         //add radar buttons
         //add tab control for radar
@@ -175,6 +184,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         hideInterfaceButton->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
         rainScrollbar->setVisible(showInterface);
+        visibilityScrollbar->setVisible(showInterface);
         radarText->setVisible(showInterface);
 
         //Items to show if we're not
@@ -215,19 +225,20 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided)
+    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided)
     {
         //Update scroll bars
-        hdgScrollbar->setPos(hdg);
-        spdScrollbar->setPos(spd);
-        portScrollbar->setPos(portEng * -100);//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
-        stbdScrollbar->setPos(stbdEng * -100);
-        rudderScrollbar->setPos(rudder);
-        radarGainScrollbar->setPos(radarGain);
-        radarClutterScrollbar->setPos(radarClutter);
-        radarRainScrollbar->setPos(radarRain);
-        weatherScrollbar->setPos(weather*10.0); //(Weather scroll bar is 0-120, weather is 0-12)
-        rainScrollbar->setPos(rain*10.0); //(Rain scroll bar is 0-100, rain is 0-10)
+        hdgScrollbar->setPos(Utilities::round(hdg));
+        spdScrollbar->setPos(Utilities::round(spd));
+        portScrollbar->setPos(Utilities::round(portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
+        stbdScrollbar->setPos(Utilities::round(stbdEng * -100));
+        rudderScrollbar->setPos(Utilities::round(rudder));
+        radarGainScrollbar->setPos(Utilities::round(radarGain));
+        radarClutterScrollbar->setPos(Utilities::round(radarClutter));
+        radarRainScrollbar->setPos(Utilities::round(radarRain));
+        weatherScrollbar->setPos(Utilities::round(weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
+        rainScrollbar->setPos(Utilities::round(rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
+        visibilityScrollbar->setPos(Utilities::round(visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
         //Update text display data
         guiLat = lat;
         guiLong = longitude;
