@@ -34,6 +34,7 @@ public:
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
         GUI_ID_WINDOW = 101,
+        GUI_ID_WEATHER_WINDOW,
         GUI_ID_SHIP_COMBOBOX,
         GUI_ID_LEG_LISTBOX,
         GUI_ID_COURSE_EDITBOX,
@@ -43,7 +44,10 @@ public:
         GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
-        GUI_ID_MOVESHIP_BUTTON
+        GUI_ID_MOVESHIP_BUTTON,
+        GUI_ID_WEATHER_SCROLLBAR,
+        GUI_ID_RAIN_SCROLLBAR,
+        GUI_ID_VISIBILITY_SCROLLBAR
     };
 
     void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
@@ -54,7 +58,9 @@ public:
     int getSelectedShip() const;
     int getSelectedLeg() const;
     irr::core::vector2df getScreenCentrePosition() const;
-
+    irr::f32 getWeather() const;
+    irr::f32 getRain() const;
+    irr::f32 getVisibility() const;
 
 private:
 
@@ -64,6 +70,7 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIWindow* guiWindow;
+    irr::gui::IGUIWindow* guiWeatherWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* shipSelectorTitle;
@@ -81,6 +88,9 @@ private:
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
+    irr::gui::IGUIScrollBar* weatherBar;
+    irr::gui::IGUIScrollBar* rainBar;
+    irr::gui::IGUIScrollBar* visibilityBar;
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;
 

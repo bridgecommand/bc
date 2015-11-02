@@ -182,13 +182,27 @@ void NetworkPrimary::receiveNetwork()
                                     if (parts.size() == 4) {
                                         //4 elements in 'Reposition ship' command: RS,shipNo,posX,posZ
                                         int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2)) - 1;
-                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3)) - 1;
+                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
                                         if (shipNo<0){
                                             model->setPos(positionX,positionZ);
                                         } else {
                                             model->setOtherShipPos(shipNo,positionX,positionZ);
                                         }
+                                    }
+
+
+                                } else if (thisCommand.substr(0,2).compare("SW") == 0) {
+                                    //'SW' Set weather
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 4) {
+                                        //4 elements in 'Set weather' command: SW,weather,rain,vis
+                                        irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
+                                        irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                        irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                        if (weather >= 0) {model->setWeather(weather);}
+                                        if (rain >=0) {model->setRain(rain);}
+                                        if (visibility>0) {model->setVisibility(visibility);}
                                     }
 
 

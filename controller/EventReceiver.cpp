@@ -131,6 +131,7 @@ using namespace irr;
                     }
                     //std::cout << messageToSend << std::endl;
                 }
+
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
@@ -145,12 +146,32 @@ using namespace irr;
                 }
             }
 
+            if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED) {
+                if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || id == GUIMain::GUI_ID_RAIN_SCROLLBAR || id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR) {
+                    //Weather
+                    //4 elements in 'Set weather' command: MCSW,weather,rain,vis
+                    irr::f32 weather=gui->getWeather();
+                    irr::f32 rain=gui->getRain();
+                    irr::f32 visibility=gui->getVisibility();
+
+                    std::string messageToSend = "MCSW,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(weather));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(rain));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(visibility));
+                    messageToSend.append("#");
+                    network->setStringToSend(messageToSend);
+                }
+            }
+            /*
             if (event.GUIEvent.EventType==gui::EGDT_WINDOW_CLOSE) {
                 if (id==GUIMain::GUI_ID_WINDOW) {
                     return true; //Absorb event : TODO: Should this trigger program close?
                 }
 
             }
+            */
 
 
         }

@@ -69,6 +69,28 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
+    //add a smaller window for weather (should these be arranged in tabs?)
+    guiWeatherWindow = guienv->addWindow(core::rect<s32>(0.51*su,0.51*sh,0.99*su,0.99*sh),false,0,0,GUI_ID_WEATHER_WINDOW);
+    guiWeatherWindow->getCloseButton()->setVisible(false);
+
+    //Scroll bars for weather setting
+    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.25*sh,0.03*su, 0.45*sh),guiWeatherWindow,GUI_ID_WEATHER_SCROLLBAR);
+    rainBar = guienv->addScrollBar(false,core::rect<s32>(0.04*su, 0.25*sh,0.06*su, 0.45*sh),guiWeatherWindow,GUI_ID_RAIN_SCROLLBAR);
+    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.07*su, 0.25*sh,0.09*su, 0.45*sh),guiWeatherWindow,GUI_ID_VISIBILITY_SCROLLBAR);
+    weatherBar->setMax(120); //Divide by 10 to get weather
+    weatherBar->setMin(0);
+    weatherBar->setSmallStep(5);
+    rainBar->setMax(100);
+    rainBar->setMin(0);
+    rainBar->setLargeStep(5);
+    rainBar->setSmallStep(5);
+    visibilityBar->setMax(101);
+    visibilityBar->setMin(1);
+    visibilityBar->setLargeStep(5);
+    visibilityBar->setSmallStep(1);
+
+
+
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
 
@@ -420,6 +442,18 @@ int GUIMain::getSelectedLeg() const {
 
 irr::core::vector2df GUIMain::getScreenCentrePosition() const {
     return core::vector2df(mapCentreX, mapCentreZ);
+}
+
+irr::f32 GUIMain::getWeather() const {
+    return (irr::f32)(weatherBar->getPos())/10.0;
+}
+
+irr::f32 GUIMain::getRain() const {
+    return (irr::f32)(rainBar->getPos())/10.0;
+}
+
+irr::f32 GUIMain::getVisibility() const {
+    return (irr::f32)(visibilityBar->getPos())/10.0;
 }
 
 std::wstring GUIMain::f32To3dp(irr::f32 value)
