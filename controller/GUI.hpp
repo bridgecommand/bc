@@ -100,6 +100,7 @@ private:
     void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time);
     bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
     std::wstring f32To3dp(irr::f32 value);
+    std::wstring f32To1dp(irr::f32 value);
 
 };
 

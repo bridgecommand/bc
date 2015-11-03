@@ -159,6 +159,19 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     displayText.append(language->translate("minSymbol"));
     displayText.append(eastWest);
     displayText.append(L"\n");
+
+    displayText.append(language->translate("visibility"));
+    displayText.append(L": ");
+    displayText.append(f32To1dp(visibility).c_str());
+    displayText.append(L" ");
+    displayText.append(language->translate("rain"));
+    displayText.append(L": ");
+    displayText.append(f32To1dp(rain).c_str());
+    displayText.append(L" ");
+    displayText.append(language->translate("weather"));
+    displayText.append(L": ");
+    displayText.append(f32To1dp(weather).c_str());
+    displayText.append(L"\n");
     /*
     //Show selected ship and legs
     displayText.append(core::stringw(selectedShip));
@@ -462,6 +475,14 @@ irr::f32 GUIMain::getRain() const {
 
 irr::f32 GUIMain::getVisibility() const {
     return (irr::f32)(visibilityBar->getPos())/10.0;
+}
+
+std::wstring GUIMain::f32To1dp(irr::f32 value)
+{
+    //Convert a floating point value to a wstring, with 1dp
+    char tempStr[100];
+    snprintf(tempStr,100,"%.1f",value);
+    return std::wstring(tempStr, tempStr+strlen(tempStr));
 }
 
 std::wstring GUIMain::f32To3dp(irr::f32 value)
