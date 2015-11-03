@@ -19,6 +19,7 @@ setCourse = "Course"
 setSpeed = "Speed (Kts)"
 weather = "Weather"
 rain = "Rain"
+visibility="Visibility"
 setDistance = "Distance (Nm)"
 
 past = " (Past)"

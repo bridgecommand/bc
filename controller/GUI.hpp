@@ -34,7 +34,7 @@ public:
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
         GUI_ID_WINDOW = 101,
-        GUI_ID_WEATHER_WINDOW,
+        //GUI_ID_WEATHER_WINDOW,
         GUI_ID_SHIP_COMBOBOX,
         GUI_ID_LEG_LISTBOX,
         GUI_ID_COURSE_EDITBOX,
@@ -70,7 +70,7 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIWindow* guiWindow;
-    irr::gui::IGUIWindow* guiWeatherWindow;
+    //irr::gui::IGUIWindow* guiWeatherWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* shipSelectorTitle;

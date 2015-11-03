@@ -42,7 +42,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     guiWindow->getCloseButton()->setVisible(false);
 
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.47*su,0.15*sh), true, false, guiWindow, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.35*su,0.15*sh), true, true, guiWindow, -1, true); //Actual text set later
 
     //Add ship selector drop down
     shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
@@ -69,14 +69,16 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
-    //add a smaller window for weather (should these be arranged in tabs?)
-    guiWeatherWindow = guienv->addWindow(core::rect<s32>(0.51*su,0.51*sh,0.61*su,0.99*sh),false,0,0,GUI_ID_WEATHER_WINDOW);
-    guiWeatherWindow->getCloseButton()->setVisible(false);
 
     //Scroll bars for weather setting
-    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.25*sh,0.03*su, 0.45*sh),guiWeatherWindow,GUI_ID_VISIBILITY_SCROLLBAR);
-    rainBar = guienv->addScrollBar(false,core::rect<s32>(0.04*su, 0.25*sh,0.06*su, 0.45*sh),guiWeatherWindow,GUI_ID_RAIN_SCROLLBAR);
-    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.07*su, 0.25*sh,0.09*su, 0.45*sh),guiWeatherWindow,GUI_ID_WEATHER_SCROLLBAR);
+    //core::rect<s32>(0.01*su,0.05*sh,0.35*su,0.15*sh)
+    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.38*su, 0.05*sh,0.40*su, 0.19*sh),guiWindow,GUI_ID_VISIBILITY_SCROLLBAR);
+    rainBar = guienv->addScrollBar(false,core::rect<s32>(0.41*su, 0.05*sh,0.43*su, 0.19*sh),guiWindow,GUI_ID_RAIN_SCROLLBAR);
+    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.44*su, 0.05*sh,0.46*su, 0.19*sh),guiWindow,GUI_ID_WEATHER_SCROLLBAR);
+
+    visibilityBar->setToolTipText(language->translate("visibility").c_str());
+    rainBar->setToolTipText(language->translate("rain").c_str());
+    weatherBar->setToolTipText(language->translate("weather").c_str());
 
     weatherBar->setMax(120); //Divide by 10 to get weather
     weatherBar->setMin(0);
