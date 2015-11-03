@@ -70,13 +70,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
     //add a smaller window for weather (should these be arranged in tabs?)
-    guiWeatherWindow = guienv->addWindow(core::rect<s32>(0.51*su,0.51*sh,0.99*su,0.99*sh),false,0,0,GUI_ID_WEATHER_WINDOW);
+    guiWeatherWindow = guienv->addWindow(core::rect<s32>(0.51*su,0.51*sh,0.61*su,0.99*sh),false,0,0,GUI_ID_WEATHER_WINDOW);
     guiWeatherWindow->getCloseButton()->setVisible(false);
 
     //Scroll bars for weather setting
-    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.25*sh,0.03*su, 0.45*sh),guiWeatherWindow,GUI_ID_WEATHER_SCROLLBAR);
+    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.25*sh,0.03*su, 0.45*sh),guiWeatherWindow,GUI_ID_VISIBILITY_SCROLLBAR);
     rainBar = guienv->addScrollBar(false,core::rect<s32>(0.04*su, 0.25*sh,0.06*su, 0.45*sh),guiWeatherWindow,GUI_ID_RAIN_SCROLLBAR);
-    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.07*su, 0.25*sh,0.09*su, 0.45*sh),guiWeatherWindow,GUI_ID_VISIBILITY_SCROLLBAR);
+    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.07*su, 0.25*sh,0.09*su, 0.45*sh),guiWeatherWindow,GUI_ID_WEATHER_SCROLLBAR);
+
     weatherBar->setMax(120); //Divide by 10 to get weather
     weatherBar->setMin(0);
     weatherBar->setSmallStep(5);
@@ -106,7 +107,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
 {
 
     //Show map texture
@@ -199,6 +200,11 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 
     //Update comboboxes for other ships and legs
     updateDropDowns(otherShips,selectedShip,time);
+
+    //Update gui info for weather bars
+    weatherBar->setPos(Utilities::round(weather*10.0));
+    visibilityBar->setPos(Utilities::round(visibility*10.0));
+    rainBar->setPos(Utilities::round(rain*10.0));
 
     guienv->drawAll();
 

@@ -336,7 +336,7 @@ std::string NetworkPrimary::generateSendString()
     //7 Weather: Weather, Fog range, wind dirn, rain, light level #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWeather()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Fog range
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getVisibility()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Wind dirn
     stringToSend.append(",");

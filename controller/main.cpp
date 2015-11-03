@@ -129,6 +129,9 @@ int main (int argc, char ** argv)
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario
+    irr::f32 weather = 0; //(0-12)
+    irr::f32 rain = 0; //(0-10)
+    irr::f32 visibility = 10.1; //(0.1-10.1)
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipData> otherShipsData;
@@ -142,10 +145,10 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(time, ownShipData, otherShipsData, buoysData);
+        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain);
 
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData);
+        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain);
 
         driver->endScene();
     }
