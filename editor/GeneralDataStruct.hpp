@@ -24,7 +24,7 @@
 
 struct GeneralData //To hold information about a position, including defaults for new scenarios
 {
-    irr::f32 startTime, sunRiseTime, sunSetTime, weather, rain;
+    irr::f32 startTime, sunRiseTime, sunSetTime, weather, rain, visibility;
     irr::u32 startDay, startMonth, startYear;
     std::string scenarioName;
     bool willOverwrite;

@@ -104,17 +104,19 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     sunRise = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
     sunSet = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.19*sh,0.115*su,0.22*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.19*sh,0.280*su,0.22*sh),false,false,generalDataWindow);
-    weather = guienv->addComboBox(core::rect<s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
-    rain = guienv->addComboBox(core::rect<s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
+    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.19*sh,0.130*su,0.22*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.19*sh,0.250*su,0.22*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("visibility").c_str(),core::rect<s32>(0.250*su,0.19*sh,0.370*su,0.22*sh),false,false,generalDataWindow);
+    weather    = guienv->addComboBox(core::rect<s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
+    rain       = guienv->addComboBox(core::rect<s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
+    visibility = guienv->addComboBox(core::rect<s32>(0.250*su,0.22*sh,0.325*su,0.25*sh),generalDataWindow,GUI_ID_VISIBILITY_COMBOBOX);
 
     guienv->addStaticText(language->translate("scenario").c_str(),core::rect<s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
     scenarioName = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
     overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),core::rect<s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
 
-    apply = guienv->addButton(core::rect<s32>(0.300*su,0.11*sh,0.450*su,0.17*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
-    save = guienv->addButton(core::rect<s32>(0.300*su,0.18*sh,0.450*su,0.24*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
+    apply = guienv->addButton(core::rect<s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    save = guienv->addButton(core::rect<s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
 
     weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
     weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");
@@ -130,6 +132,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     rain->addItem(L"6"); rain->addItem(L"6.5"); rain->addItem(L"7"); rain->addItem(L"7.5");
     rain->addItem(L"8"); rain->addItem(L"8.5"); rain->addItem(L"9"); rain->addItem(L"9.5");
     rain->addItem(L"10");
+
+    visibility->addItem(L"10.0");visibility->addItem(L"9.5");visibility->addItem(L"9.0");visibility->addItem(L"8.5");
+    visibility->addItem(L"8.0");visibility->addItem(L"7.5");visibility->addItem(L"7.0");visibility->addItem(L"6.5");
+    visibility->addItem(L"6.0");visibility->addItem(L"5.5");visibility->addItem(L"5.0");visibility->addItem(L"4.5");
+    visibility->addItem(L"4.0");visibility->addItem(L"3.5");visibility->addItem(L"3.0");visibility->addItem(L"2.5");
+    visibility->addItem(L"2.0");visibility->addItem(L"1.5");visibility->addItem(L"1.0");
+    visibility->addItem(L"0.8");visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
+    visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");
 
     //Fill in initial info into dialog boxes:
     irr::f32 timeFloat = oldScenarioInfo.startTime/SECONDS_IN_HOUR;
@@ -668,6 +678,14 @@ irr::f32 GUIMain::getWeather() const {
 
 irr::f32 GUIMain::getRain() const {
     return ((irr::f32)rain->getSelected())/2.0;
+}
+
+irr::f32 GUIMain::getVisibility() const {
+    //Get value from string in drop down.
+    std::wstring wStringVal = std::wstring(visibility->getText());
+    std::string sStringVal(wStringVal.begin(), wStringVal.end());
+    irr::f32 value = Utilities::lexical_cast<irr::f32>(sStringVal);
+    return value;
 }
 
 std::string GUIMain::getScenarioName() const {

@@ -448,7 +448,7 @@ void ControllerModel::save()
     envFile << "SunRise=" << generalData->sunRiseTime << std::endl;
     envFile << "SunSet=" << generalData->sunSetTime << std::endl;
     //envFile << "Variation=0" << std::endl;
-    //envFile << "VisibilityRange=5" << std::endl;
+    envFile << "VisibilityRange=" << generalData->visibility << std::endl;
     envFile << "Weather=" << generalData->weather << std::endl;
     //envFile << "WindDirection=90" << std::endl;
     envFile << "Rain=" << generalData->rain << std::endl;

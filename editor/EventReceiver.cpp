@@ -140,6 +140,7 @@ using namespace irr;
                 tempData.sunSetTime = gui->getSunSet();
                 tempData.weather = gui->getWeather();
                 tempData.rain = gui->getRain();
+                tempData.visibility = gui->getVisibility();
                 tempData.scenarioName = gui->getScenarioName();
 
                 model->setScenarioData(tempData);

@@ -54,6 +54,7 @@ public:
         GUI_ID_SUNRISE_EDITBOX,
         GUI_ID_SUNSET_EDITBOX,
         GUI_ID_WEATHER_COMBOBOX,
+        GUI_ID_VISIBILITY_COMBOBOX,
         GUI_ID_RAIN_COMBOBOX,
         GUI_ID_SCENARIONAME_EDITBOX,
         GUI_ID_APPLY_BUTTON,
@@ -79,6 +80,7 @@ public:
     irr::f32 getSunSet() const;
     irr::f32 getWeather() const;
     irr::f32 getRain() const;
+    irr::f32 getVisibility() const;
     std::string getScenarioName() const;
     irr::core::vector2df getScreenCentrePosition() const;
 
@@ -117,6 +119,7 @@ private:
     irr::gui::IGUIEditBox* sunRise;
     irr::gui::IGUIEditBox* sunSet;
     irr::gui::IGUIComboBox* weather;
+    irr::gui::IGUIComboBox* visibility;
     irr::gui::IGUIComboBox* rain;
     irr::gui::IGUIEditBox* scenarioName;
     irr::gui::IGUIStaticText* overwriteWarning;
