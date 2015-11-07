@@ -20,12 +20,6 @@
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
@@ -35,9 +29,9 @@
 		</Compiler>
 		<Linker>
 			<Add library="..\libs\Irrlicht\irrlicht-1.8.1\lib\Win32-gcc\libIrrlicht.a" />
-			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 			<Add library="ws2_32" />
 			<Add library="Winmm" />
+			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Linker>
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../IniFile.cpp" />
