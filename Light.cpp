@@ -32,12 +32,13 @@ Light::~Light()
     //dtor
 }
 
-void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet)
+void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent)
 {
 
     this->smgr = smgr;
     this->sunRise = sunRise;
     this->sunSet = sunSet;
+    this->parent = parent;
 
     lightLevel = 0;
 
@@ -47,6 +48,9 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
     //add a directional light
     //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
     //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
+
+    directionalLight = smgr->addLightSceneNode();
+    //directionalLight = smgr->addSphereSceneNode(0.5);
 }
 
 void Light::update(irr::f32 scenarioTime)
@@ -72,6 +76,18 @@ void Light::update(irr::f32 scenarioTime)
     ambientColor=video::SColor(255,lightLevel,lightLevel,lightLevel);
     //update ambient light
     smgr->setAmbientLight(ambientColor);
+
+    //Update the directional light
+    irr::video::SLight lightData;
+    lightData.DiffuseColor = video::SColor(255,0,0,0);
+    lightData.AmbientColor = video::SColor(255,0,0,0);
+    lightData.SpecularColor = ambientColor;
+    lightData.Radius = 500;
+    directionalLight->setLightData(lightData);
+    parent->updateAbsolutePosition();
+    core::vector3df lightPosition = parent->getAbsolutePosition() + core::vector3df(0,100,100); //Light to south at 45deg up.
+    directionalLight->setPosition(lightPosition);
+
 }
 
 irr::video::SColor Light::getLightSColor() const

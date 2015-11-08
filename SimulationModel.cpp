@@ -108,9 +108,6 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //sky box/dome
         Sky sky (smgr);
 
-        //make ambient light
-        light.load(smgr,sunRise,sunSet);
-
         //Load own ship model.
         ownShip.load(scenarioPath, smgr, this, &terrain);
         if(secondary) {
@@ -130,8 +127,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Tell the GUI what instruments to display - currently GPS and depth sounder
         gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
 
-        //Todo: Set the radar parameters, based on the radar.ini file from the own ship
-        //std::cout << "Radar file:" << ownShip.getRadarConfigFile() << std::endl;
+        //Load the radar with config parameters
         radarCalculation.load(ownShip.getRadarConfigFile());
 
         //set camera zoom to 1
@@ -143,6 +139,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle,angleCorrection);
         camera.setNearValue(cameraMinDistance);
         camera.setFarValue(cameraMaxDistance);
+
+        //make ambient light
+        light.load(smgr,sunRise,sunSet, camera.getSceneNode());
+
 
         //Load other ships
         otherShips.load(scenarioPath,scenarioTime,secondary,smgr,this);

@@ -24,7 +24,7 @@ class Light
     public:
         Light();
         virtual ~Light();
-        void load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet);
+        void load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent);
         void update(irr::f32 scenarioTime);
         irr::video::SColor getLightSColor() const;
         irr::u32 getLightLevel() const;
@@ -35,6 +35,9 @@ class Light
         irr::scene::ISceneManager* smgr;
         irr::f32 sunRise;
         irr::f32 sunSet;
+        irr::scene::ISceneNode* parent;
+        irr::scene::ILightSceneNode* directionalLight;
+        //irr::scene::IMeshSceneNode* directionalLight;
 };
 
 #endif // __LIGHT_HPP_INCLUDED__
