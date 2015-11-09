@@ -120,9 +120,11 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
             //correct to local scaled coordinates
+            /*
             lightX *= scaleFactor;
             lightY = (lightY+yCorrection)*scaleFactor;
             lightZ *= scaleFactor;
+            */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
             navLights.push_back(NavLight (ship,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));

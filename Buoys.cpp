@@ -84,7 +84,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                 f32 lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
                 lightRange = lightRange * M_IN_NM;
 
-                //Scale height to adjust for buoy scaling
+                //Scale height to adjust for buoy scaling (As buoy lights given absolute heights, so needs to be scaled to match parent)
                 if (buoyNode->getScale().Y>0) {
                     lightHeight/=buoyNode->getScale().Y;
                 }
