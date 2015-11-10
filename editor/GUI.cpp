@@ -138,7 +138,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     visibility->addItem(L"6.0");visibility->addItem(L"5.5");visibility->addItem(L"5.0");visibility->addItem(L"4.5");
     visibility->addItem(L"4.0");visibility->addItem(L"3.5");visibility->addItem(L"3.0");visibility->addItem(L"2.5");
     visibility->addItem(L"2.0");visibility->addItem(L"1.5");visibility->addItem(L"1.0");
-    visibility->addItem(L"0.8");visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
+    visibility->addItem(L"0.9");visibility->addItem(L"0.8");visibility->addItem(L"0.7");
+    visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
     visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");
 
     //Fill in initial info into dialog boxes:
@@ -167,6 +168,21 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSetTime)).c_str());
     weather->setSelected(floor(oldScenarioInfo.weather*2));
     rain->setSelected(floor(oldScenarioInfo.rain*2));
+
+    irr::s32 selectedVis;
+    if (oldScenarioInfo.visibility<=1) {
+        selectedVis = Utilities::round(-10.0*oldScenarioInfo.visibility + 28); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+    } else {
+        selectedVis = Utilities::round(-2.0*oldScenarioInfo.visibility + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
+    }
+    if(selectedVis >= 0 && selectedVis < visibility->getItemCount()) {
+        visibility->setSelected(selectedVis);
+    } else if (selectedVis < 0) {
+        visibility->setSelected(0);
+    } else {
+        visibility->setSelected(visibility->getItemCount()-1);
+    }
+
     scenarioName->setText(core::stringw(oldScenarioInfo.scenarioName.c_str()).c_str());
 
     //These get updated in updateGuiData
@@ -276,6 +292,21 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
     if (oldScenarioInfo.rain != scenarioInfo.rain) {
         rain->setSelected(floor(scenarioInfo.rain*2));
+    }
+    if (oldScenarioInfo.visibility != scenarioInfo.visibility) {
+        irr::s32 selectedVis;
+        if (scenarioInfo.visibility<=1) {
+            selectedVis = Utilities::round(-10.0*scenarioInfo.visibility + 28.0); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+        } else {
+            selectedVis = Utilities::round(-2.0*scenarioInfo.visibility + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
+        }
+        if(selectedVis >= 0 && selectedVis < visibility->getItemCount()) {
+            visibility->setSelected(selectedVis);
+        } else if (selectedVis < 0) {
+            visibility->setSelected(0);
+        } else {
+            visibility->setSelected(visibility->getItemCount()-1);
+        }
     }
     if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
         scenarioName->setText(core::stringw(scenarioInfo.scenarioName.c_str()).c_str());

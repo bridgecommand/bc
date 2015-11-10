@@ -398,6 +398,7 @@ int main (int argc, char ** argv)
         generalData.sunRiseTime = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
         generalData.sunSetTime = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
         generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+        generalData.visibility = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
         generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
         generalData.scenarioName = scenarioName;
         //defaults
