@@ -210,8 +210,10 @@ int main()
 
     //check enough time has elapsed to show the credits screen (15s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 15000) {
-        device->sleep(100);
+        device->run();
     }
+    //remove credits here
+    //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA: FIXME: Make this a defined constant
     u32 nextNMEATime = device->getTimer()->getTime()+250;
