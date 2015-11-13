@@ -1,0 +1,35 @@
+Specifications CONTAINER SHIP
+
+Name: BERNHARD S
+Flag: ANTIQUA
+Port of Registery: Willemstad 
+Owner: Besten Shipping 
+Current state: Liner Service, see below for details
+Build at:  Poland, 1987
+
+Swedish/Finnish ice class 1E
+Lloyd's Register class + 100 E1
+
+LOA 230.23 m 
+Breadth moulded 28.20 m 
+Depth 18.80 m 
+Draft (design winter)abt 12.20 m 
+
+DEADWEIGHT  tonnage 33,221 t
+Total container capacity 1,960 TEU 
+Conair reefer capacity 650 TEU 
+Cargo-handling gear none
+
+Speed 24 kn in good weather
+Main engine's output  19,260 kW 
+
+Communications:
+GMDSS all area's
+
+------------------------------------------
+LINE INFORMATION
+
+Ports of call: Hamburg, Felixstowe, Rotterdam, Le Havre, Ponce*, Port of Spain, La Guaira, Puerto Cabello, Willemstad**, Oranjestad, Santa Marta, Cartagena, Puerto Limon, Kingston* 
+Vessels: 6 container ships; 1,500 to 2,400 TEU 
+Frequency: weekly; round voyage 42 days 
+Partners: HAMBURG SÜD, Hapag-Lloyd 
