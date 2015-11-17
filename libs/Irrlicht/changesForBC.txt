@@ -10,6 +10,8 @@ Scroll bar (CGUIScrollBar.cpp) modified to accept right click as well as left cl
 
 OSX specific code (CIrrDeviceMacOSX.mm) modified to avoid crash on close, and to bring window to front when launched (otherwise the window disappears when the program is selected in the launcher)
 
+CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
+
 All changes marked in source with //JAMES
 
 Other changes:

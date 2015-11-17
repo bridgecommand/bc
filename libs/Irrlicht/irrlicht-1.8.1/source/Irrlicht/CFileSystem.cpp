@@ -836,7 +836,7 @@ IFileList* CFileSystem::createFileList()
 		#ifdef _IRR_WINDOWS_API_
 		#if !defined ( _WIN32_WCE )
 
-		r = new CFileList(Path, true, false);
+		r = new CFileList(Path, false, false); //JAMES Changed ignoreCase parameter from true to false - Don't make the returned file names lower case
 
 		// TODO: Should be unified once mingw adapts the proper types
 #if defined(__GNUC__)
