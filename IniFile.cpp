@@ -18,6 +18,7 @@
 
 #include <fstream> //for ini loading
 #include <string> //for ini loading
+#include <iostream>
 #include "Utilities.hpp" //for ini loading
 
 // Irrlicht Namespaces
@@ -107,8 +108,9 @@ namespace IniFile
 
             }
             file.close();
-        }
-        else ;//std::cout << "Unable to open file " << fileName << std::endl;
+        } else {
+            std::cout << "Unable to open file " << fileName << std::endl;
+        }//
 
         //trim whitespace and " characters if present
         valuePart = trim(valuePart);

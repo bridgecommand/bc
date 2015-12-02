@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include "../Lang.hpp"
+#include "../IniFile.hpp"
 #include "../Utilities.hpp"
 
 // Irrlicht Namespaces
@@ -55,7 +56,9 @@ void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
                     for (int j = 0; j<numberOfRows; j++) {
                         std::string varName(core::stringc(thisTable->getCellText(j,0)).c_str());
                         std::string varValue(core::stringc(thisTable->getCellText(j,1)).c_str());
+                        std::string desc(core::stringc(thisTable->getCellText(j,2)).c_str());
                         file << varName << "=" << "\"" << varValue << "\"" << std::endl;
+                        file <<varName << "_DESC=\"" << desc << "\"" << std::endl;
                     }
                 }
             }
@@ -268,6 +271,8 @@ int main (int argc, char ** argv)
                     IniFileEntry thisEntry;
                     thisEntry.settingName = splitLine.at(0);
                     thisEntry.settingValue = Utilities::trim(splitLine.at(1),"\"");
+                    //check if a '_DESC' setting is available
+                    thisEntry.description = IniFile::iniFileToString(iniFilename,thisEntry.settingName+"_DESC");
 
                     thisSection->settings.push_back(thisEntry);
                 }
@@ -303,6 +308,7 @@ int main (int argc, char ** argv)
             thisTable->addRow(j);
             thisTable->setCellText(j,0,core::stringw(iniFileStructure.at(i).settings.at(j).settingName.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
             thisTable->setCellText(j,1,core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
+            thisTable->setCellText(j,2,core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
         }
 
 
