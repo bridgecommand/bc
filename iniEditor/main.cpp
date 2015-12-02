@@ -3,6 +3,11 @@
 //Map Controller executable depending
 //on which button the user presses
 
+//TODO:
+//Description text
+//Copy bc5.ini into user dir if needed
+//(Later - drop downs for _OPTION)
+
 #include "irrlicht.h"
 #include <iostream>
 #include <fstream>
@@ -13,8 +18,6 @@
 using namespace irr;
 
 const irr::s32 SAVE_BUTTON = 1;
-//const irr::s32 MC_BUTTON = 2;
-//const irr::s32 ED_BUTTON = 3;
 
 //Structures to hold ini file contents
 struct IniFileEntry {
@@ -30,9 +33,6 @@ struct IniFileTab {
 };
 
 void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
-
-    std::cout << "Doing save here" << std::endl;
-    std::cout << "There are " << tabbedPane->getTabCount() << " tabs." << std::endl;
 
     std::ofstream file (iniFilename.c_str());
     if (file.is_open())
@@ -267,7 +267,7 @@ int main (int argc, char ** argv)
                 if (splitLine.size() == 2) {
                     IniFileEntry thisEntry;
                     thisEntry.settingName = splitLine.at(0);
-                    thisEntry.settingValue = splitLine.at(1);
+                    thisEntry.settingValue = Utilities::trim(splitLine.at(1),"\"");
 
                     thisSection->settings.push_back(thisEntry);
                 }

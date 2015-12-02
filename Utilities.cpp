@@ -60,15 +60,15 @@ namespace Utilities
 
     }
 
-    std::string trim(std::string inString) {
+    std::string trim(std::string inString, std::string trimChrs) {
         //Based on http://codereview.stackexchange.com/questions/40124/trim-white-space-from-string, Loki Astari answer
         if(inString.empty()) {
             return inString;
         }
 
-        std::size_t firstScan = inString.find_first_not_of(" \f\n\r\t\v");
+        std::size_t firstScan = inString.find_first_not_of(trimChrs);
         std::size_t first     = firstScan == std::string::npos ? inString.length() : firstScan;
-        std::size_t last      = inString.find_last_not_of(" \f\n\r\t\v");
+        std::size_t last      = inString.find_last_not_of(trimChrs);
         return inString.substr(first, last-first+1);
     }
 
