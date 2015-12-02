@@ -29,13 +29,55 @@ struct IniFileTab {
     std::vector<IniFileEntry> settings;
 };
 
+void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
+
+    std::cout << "Doing save here" << std::endl;
+    std::cout << "There are " << tabbedPane->getTabCount() << " tabs." << std::endl;
+
+    std::ofstream file (iniFilename.c_str());
+    if (file.is_open())
+    {
+        //For each tab, get tab name and child table
+        for (int i = 0; i<tabbedPane->getTabCount(); i++) {
+
+            //Get tab name - convert from stringw to std::string, loosing any extended character info.
+            std::string sectionName(core::stringc(tabbedPane->getTab(i)->getText()).c_str());
+            file << sectionName << std::endl;
+
+            //For each table, get contents, including description
+            core::list<gui::IGUIElement*> tabChildren = tabbedPane->getTab(i)->getChildren();
+            //There should just be one child, but iterate through all, and do stuff with tables
+            for (core::list<gui::IGUIElement*>::Iterator it = tabChildren.begin(); it != tabChildren.end(); ++it) {
+
+                if ((*it)->getType() == gui::EGUIET_TABLE ) {
+                    gui::IGUITable* thisTable = (gui::IGUITable*)(*it);
+                    u32 numberOfRows = thisTable->getRowCount();
+                    for (int j = 0; j<numberOfRows; j++) {
+                        std::string varName(core::stringc(thisTable->getCellText(j,0)).c_str());
+                        std::string varValue(core::stringc(thisTable->getCellText(j,1)).c_str());
+                        file << varName << "=" << "\"" << varValue << "\"" << std::endl;
+                    }
+                }
+            }
+
+
+
+            //Collate these
+            //Save (or warn if not possible)
+        }
+    file.close();
+    }
+}
+
 //Event receiver: This does the actual launching
 class Receiver : public IEventReceiver
 {
 public:
-    Receiver(gui::IGUIEnvironment* environment)
+    Receiver(gui::IGUIEnvironment* environment, gui::IGUITabControl* tabbedPane, std::string iniFilename)
     {
         this->environment = environment;
+        this->tabbedPane = tabbedPane;
+        this->iniFilename = iniFilename;
     }
 
 private:
@@ -44,6 +86,8 @@ private:
     irr::gui::IGUIEditBox* valueEntryBox = 0;
     irr::gui::IGUITable* selectedTable = 0; //Keep track of which table was last selected
     s32 selectedRow = 0; //In the selected table, which row was last selected?
+    gui::IGUITabControl* tabbedPane;
+    std::string iniFilename;
 
     virtual bool OnEvent(const SEvent& event)
     {
@@ -72,6 +116,9 @@ private:
             if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED ) {
                 s32 id = event.GUIEvent.Caller->getID();
                 if (id == SAVE_BUTTON) {
+
+                    //Save to the ini file
+                    saveFile(iniFilename,tabbedPane);
 
                 }
 
@@ -235,7 +282,10 @@ int main (int argc, char ** argv)
     }
 
     //Do set-up here
-    gui::IGUITabControl* tabbedPane = environment->addTabControl( core::rect<s32>(10,10,width-10,height-10));
+
+    gui::IGUIButton* saveButton = environment->addButton(core::rect<s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
+
+    gui::IGUITabControl* tabbedPane = environment->addTabControl( core::rect<s32>(10,10,width-10,height-100));
 
 
     //Add tab entry here
@@ -259,7 +309,7 @@ int main (int argc, char ** argv)
 
     }
 
-    Receiver receiver(environment);
+    Receiver receiver(environment, tabbedPane, iniFilename);
     device->setEventReceiver(&receiver);
 
     while (device->run()) {

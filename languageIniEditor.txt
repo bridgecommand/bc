@@ -6,3 +6,4 @@ changed to UTF-8, for proper portability!
 name="Setting name"
 value="Setting value"
 description="Description"
+save="Save"
