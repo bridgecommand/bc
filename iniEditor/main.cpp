@@ -14,6 +14,11 @@
 #include "../Lang.hpp"
 #include "../IniFile.hpp"
 #include "../Utilities.hpp"
+#ifdef _WIN32
+#include <direct.h> //for windows _mkdir
+#else
+#include <sys/stat.h>
+#endif // _WIN32
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -217,6 +222,45 @@ int main (int argc, char ** argv)
     std::cout << "User folder is " << userFolder << std::endl;
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
+
+    //Copy into userdir if not already there
+    if (!Utilities::pathExists(userFolder + iniFilename)) {
+        if (!Utilities::pathExists(Utilities::getUserDirBase())) {
+            std::string pathToMake = Utilities::getUserDirBase();
+            if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+            #ifdef _WIN32
+            mkdir(pathToMake.c_str());
+            #else
+            mkdir(pathToMake.c_str(),0755);
+            #endif // _WIN32
+        }
+        if (!Utilities::pathExists(Utilities::getUserDir())) {
+            std::string pathToMake = Utilities::getUserDir();
+            if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+            #ifdef _WIN32
+            mkdir(pathToMake.c_str());
+            #else
+            mkdir(pathToMake.c_str(),0755);
+            #endif // _WIN32
+        }
+
+        //Copy ini file from main into user dir
+        std::ifstream iniFileIn (iniFilename.c_str());
+        std::ofstream iniFileOut ((userFolder + iniFilename).c_str());
+        if (iniFileIn.is_open()) {
+            if (iniFileOut.is_open()) {
+                //Copy line by line
+                std::string line;
+                while ( std::getline (iniFileIn,line) ) {
+                    iniFileOut << line << std::endl ;
+                }
+                iniFileOut.close();
+            }
+            iniFileIn.close();
+        }
+    }
+    //end copy
+
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
