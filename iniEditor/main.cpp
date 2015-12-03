@@ -108,7 +108,7 @@ private:
                 if (valueEntryBox!=0) {
 
                     //Update the table
-                    selectedTable->setCellText(selectedRow,1,core::stringw(valueEntryBox->getText()),video::SColor (255, 255, 255, 255));
+                    selectedTable->setCellText(selectedRow,1,core::stringw(valueEntryBox->getText())/*,video::SColor (255, 255, 255, 255)*/);
 
                     //Remove the edit box
                     valueEntryBox->remove();
@@ -290,8 +290,7 @@ int main (int argc, char ** argv)
 
     gui::IGUIButton* saveButton = environment->addButton(core::rect<s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
 
-    gui::IGUITabControl* tabbedPane = environment->addTabControl( core::rect<s32>(10,10,width-10,height-100));
-
+    gui::IGUITabControl* tabbedPane = environment->addTabControl( core::rect<s32>(10,10,width-10,height-100),0,true);
 
     //Add tab entry here
     for(int i = 0; i<iniFileStructure.size(); i++) {
@@ -303,12 +302,14 @@ int main (int argc, char ** argv)
         thisTable->addColumn(language.translate("name").c_str());
         thisTable->addColumn(language.translate("value").c_str());
         thisTable->addColumn(language.translate("description").c_str());
+        thisTable->setColumnWidth(0,150);
+        thisTable->setColumnWidth(2,2000);
 
         for (int j = 0; j<iniFileStructure.at(i).settings.size(); j++) {
             thisTable->addRow(j);
-            thisTable->setCellText(j,0,core::stringw(iniFileStructure.at(i).settings.at(j).settingName.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
-            thisTable->setCellText(j,1,core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
-            thisTable->setCellText(j,2,core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str(),video::SColor (255, 255, 255, 255) );
+            thisTable->setCellText(j,0,core::stringw(iniFileStructure.at(i).settings.at(j).settingName.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
+            thisTable->setCellText(j,1,core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
+            thisTable->setCellText(j,2,core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
         }
 
 
