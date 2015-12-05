@@ -158,6 +158,11 @@ int main()
     }
     Lang language(languageFile);
 
+    //set gui skin
+    gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(gui::EGST_WINDOWS_METALLIC   );
+    device->getGUIEnvironment()->setSkin(newskin);
+    newskin->drop();
+
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
