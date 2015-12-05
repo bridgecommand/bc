@@ -11,11 +11,13 @@
 6) Run 'make' to compile the Map Controller, and cd ..
 7) cd to ./editor
 8) Run 'make' to compile the Scenario editor, and cd ..
-9) cd to ./launcher
-10) Run 'make' to compile the launcher, and cd ..
+9) cd to ./iniEditor
+10) Run 'make' to compile the Settings editor, and cd ..
+11) cd to ./launcher
+12) Run 'make' to compile the launcher, and cd ..
 
 Running
-11) Run ./bcLauncher to start the simulator.
+13) Run ./bcLauncher to start the simulator.
 
 To build on Mac:
 ================
@@ -27,7 +29,8 @@ To build on Mac:
 5) Run 'make' to compile Bridge Command
 6) cd to ./launcher, run 'make', and cd ..
 7) cd to ./controller and run 'make', and cd ..
-8) cd to ./editor and run 'make'
+8) cd to ./editor and run 'make', and cd ..
+9) cd to ./iniEditor and run 'make'
 
 Running
-9) Run the BridgeCommand app
+10) Run the BridgeCommand app
