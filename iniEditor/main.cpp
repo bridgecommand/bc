@@ -38,8 +38,9 @@ struct IniFileTab {
     std::vector<IniFileEntry> settings;
 };
 
-void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
+void saveFile(IrrlichtDevice* device, std::string iniFilename, gui::IGUITabControl* tabbedPane) {
 
+    bool successSaving = false;
     std::ofstream file (iniFilename.c_str());
     if (file.is_open())
     {
@@ -73,7 +74,12 @@ void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
             //Collate these
             //Save (or warn if not possible)
         }
+    if (file.good()) {successSaving=true;}
     file.close();
+    }
+
+    if (successSaving) {
+        device->closeDevice();
     }
 }
 
@@ -81,14 +87,16 @@ void saveFile(std::string iniFilename, gui::IGUITabControl* tabbedPane) {
 class Receiver : public IEventReceiver
 {
 public:
-    Receiver(gui::IGUIEnvironment* environment, gui::IGUITabControl* tabbedPane, std::string iniFilename)
+    Receiver(IrrlichtDevice* device, gui::IGUIEnvironment* environment, gui::IGUITabControl* tabbedPane, std::string iniFilename)
     {
         this->environment = environment;
         this->tabbedPane = tabbedPane;
         this->iniFilename = iniFilename;
+        this->device = device;
     }
 
 private:
+    IrrlichtDevice* device;
     gui::IGUIEnvironment* environment;
     core::position2di mousePos;
     irr::gui::IGUIEditBox* valueEntryBox = 0;
@@ -126,7 +134,7 @@ private:
                 if (id == SAVE_BUTTON) {
 
                     //Save to the ini file
-                    saveFile(iniFilename,tabbedPane);
+                    saveFile(device,iniFilename,tabbedPane);
 
                 }
 
@@ -170,6 +178,12 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 
 int main (int argc, char ** argv)
 {
+
+    //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument.
+    std::string iniFilename = "bc5.ini";
+    if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
+        iniFilename = "map.ini";
+    }
 
     //Mac OS:
     //Find starting folder
@@ -220,8 +234,7 @@ int main (int argc, char ** argv)
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
     std::cout << "User folder is " << userFolder << std::endl;
-    //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
+
 
     //Copy into userdir if not already there
     if (!Utilities::pathExists(userFolder + iniFilename)) {
@@ -348,6 +361,7 @@ int main (int argc, char ** argv)
         thisTable->addColumn(language.translate("description").c_str());
         thisTable->setColumnWidth(0,150);
         thisTable->setColumnWidth(2,2000);
+        thisTable->setToolTipText(language.translate("doubleClick").c_str());
 
         for (int j = 0; j<iniFileStructure.at(i).settings.size(); j++) {
             thisTable->addRow(j);
@@ -360,7 +374,7 @@ int main (int argc, char ** argv)
 
     }
 
-    Receiver receiver(environment, tabbedPane, iniFilename);
+    Receiver receiver(device, environment, tabbedPane, iniFilename);
     device->setEventReceiver(&receiver);
 
     while (device->run()) {

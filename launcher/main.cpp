@@ -25,6 +25,8 @@ using namespace irr;
 const irr::s32 BC_BUTTON = 1;
 const irr::s32 MC_BUTTON = 2;
 const irr::s32 ED_BUTTON = 3;
+const irr::s32 INI_BC_BUTTON = 4;
+const irr::s32 INI_MC_BUTTON = 5;
 
 //Event receiver: This does the actual launching
 class Receiver : public IEventReceiver
@@ -76,6 +78,35 @@ public:
                     #endif
                     #endif
                 }
+
+                if (id == INI_BC_BUTTON) {
+                    #ifdef _WIN32
+                        execl("./iniEditor.exe", "iniEditor.exe", NULL);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("./bcIniEditor", "bcIniEditor", NULL);
+                    #endif
+                    #endif
+                }
+
+                if (id == INI_MC_BUTTON) {
+                    #ifdef _WIN32
+                        execl("./iniEditor.exe", "iniEditor.exe", "-M", NULL);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("./bcIniEditor", "bcIniEditor", "-M", NULL);
+                    #endif
+                    #endif
+                }
+
             }
         }
         return false;
@@ -106,7 +137,7 @@ int main (int argc, char ** argv)
 	#endif
 
     u32 graphicsWidth = 200;
-    u32 graphicsHeight = 300;
+    u32 graphicsHeight = 400;
     u32 graphicsDepth = 32;
     bool fullScreen = false;
 
@@ -138,6 +169,8 @@ int main (int argc, char ** argv)
     irr::gui::IGUIButton* launchBC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,10,190,90),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
     irr::gui::IGUIButton* launchED = device->getGUIEnvironment()->addButton(core::rect<s32>(10,110,190,190),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
     irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,210,190,290),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,310,90,390),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(core::rect<s32>(110,310,190,390),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);
