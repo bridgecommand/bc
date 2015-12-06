@@ -62,6 +62,7 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a language.txt BridgeCommand.app/Contents/Resources/language.txt
 	cp -a languageController.txt BridgeCommand.app/Contents/Resources/languageController.txt
 	cp -a languageLauncher.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
+	cp -a languageIniEditor.txt BridgeCommand.app/Contents/Resources/languageIniEditor.txt
 endif
 
 clean:

@@ -203,8 +203,8 @@ int main (int argc, char ** argv)
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-    //change up from BridgeCommand.app/Contents/MacOS to ../Resources
-    exeFolderPath.append("/../Resources");
+    //change up from BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
+    exeFolderPath.append("/../../../../Resources");
     //change to this path now
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
