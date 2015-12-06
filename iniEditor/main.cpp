@@ -20,6 +20,11 @@
 #include <sys/stat.h>
 #endif // _WIN32
 
+//Mac OS:
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif //__APPLE__
+
 // Irrlicht Namespaces
 using namespace irr;
 
