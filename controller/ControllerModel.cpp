@@ -150,6 +150,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
     irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
+    tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
     irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2 + mapOffsetX;
