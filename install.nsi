@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 1"
-!define OUTPUTFILE "bc50b1_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b1"
-!define SMFOLDER "Bridge Command 5.0 Beta 1"
-!define REGKEY "BridgeCommand5.0b1"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 2"
+!define OUTPUTFILE "bc50b2_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b2"
+!define SMFOLDER "Bridge Command 5.0 Beta 2"
+!define REGKEY "BridgeCommand5.0b2"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -62,6 +62,7 @@ SetShellVarContext all
 
   ; Remove files and uninstaller
   RMDir /r "$INSTDIR\controller"
+  RMDir /r "$INSTDIR\iniEditor"
   RMDir /r "$INSTDIR\editor"
   RMDir /r "$INSTDIR\Models"  
   RMDir /r "$INSTDIR\Scenarios"
@@ -146,6 +147,7 @@ SetShellVarContext all
   Delete "$INSTDIR\BridgeCommand.exe"
   Delete "$INSTDIR\controller.exe"
   Delete "$INSTDIR\editor.exe"
+  Delete "$INSTDIR\iniEditor.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
@@ -154,6 +156,7 @@ SetShellVarContext all
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\languageLauncher.txt"
+  Delete "$INSTDIR\languageIniEditor.txt"
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
   Delete "$INSTDIR\map.ini"

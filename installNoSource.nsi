@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 1"
-!define OUTPUTFILE "bc50b1_setup_noSource.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b1"
-!define SMFOLDER "Bridge Command 5.0 Beta 1"
-!define REGKEY "BridgeCommand5.0b1"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 2"
+!define OUTPUTFILE "bc50b2_setup_noSource.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b2"
+!define SMFOLDER "Bridge Command 5.0 Beta 2"
+!define REGKEY "BridgeCommand5.0b2"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x *.cpp /x *.hpp /x *.h /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x editor /x launcher /x libs /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x *.cpp /x *.hpp /x *.h /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x editor /x launcher /x iniEditor /x libs /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
@@ -73,12 +73,14 @@ SetShellVarContext all
   Delete "$INSTDIR\BridgeCommand.exe"
   Delete "$INSTDIR\controller.exe"
   Delete "$INSTDIR\editor.exe"
+  Delete "$INSTDIR\iniEditor.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\languageLauncher.txt"
+  Delete "$INSTDIR\languageIniEditor.txt"
   Delete "$INSTDIR\map.ini"
   Delete "$INSTDIR\README"
   Delete "$INSTDIR\Icon.ico"
