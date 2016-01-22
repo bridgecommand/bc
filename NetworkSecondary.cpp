@@ -23,11 +23,11 @@
 #include "Utilities.hpp"
 #include "Constants.hpp"
 
-NetworkSecondary::NetworkSecondary(SimulationModel* model, int port)
+NetworkSecondary::NetworkSecondary(int port)
 {
     ENetAddress address;
 
-    this->model = model;
+    model=0; //Not linked at the moment
 
     accelAdjustment = 0;
     previousTimeError = 0;
@@ -68,8 +68,18 @@ void NetworkSecondary::connectToServer(std::string hostnames)
     //Don't need to do anything
 }
 
+void NetworkSecondary::setModel(SimulationModel* model) //This MUST be called before update()
+{
+    this->model = model;
+}
+
 void NetworkSecondary::update()
 {
+
+    if (model==0) {
+        std::cout << "Network not linked to model" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {

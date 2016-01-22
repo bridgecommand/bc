@@ -233,8 +233,17 @@ int main()
     //create GUI
     GUIMain guiMain(device, &language);
 
+    //Set up networking (this will get a pointer to the model later)
+    //Create networking, linked to model, choosing whether to use main or secondary network mode
+    Network* network = Network::createNetwork(secondary, udpPort);
+    //Network network(&model);
+    network->connectToServer(hostname);
+
     //Create simulation model
     SimulationModel model(device, smgr, &guiMain, scenarioPath + scenarioName, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
+
+    //Give the network class a pointer to the model
+    network->setModel(&model);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -242,11 +251,6 @@ int main()
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
     device->setEventReceiver(&receiver);
-
-    //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(&model, secondary, udpPort);
-    //Network network(&model);
-    network->connectToServer(hostname);
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName);

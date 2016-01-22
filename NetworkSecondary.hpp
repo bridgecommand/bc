@@ -29,10 +29,11 @@ class SimulationModel;
 class NetworkSecondary : public Network
 {
 public:
-    NetworkSecondary(SimulationModel* model, int port);
+    NetworkSecondary(int port);
     ~NetworkSecondary();
 
     void connectToServer(std::string hostnames);
+    void setModel(SimulationModel* model);
     void update();
 
 private:

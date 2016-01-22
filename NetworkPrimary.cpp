@@ -24,11 +24,10 @@
 #include <cstdio>
 #include <vector>
 
-NetworkPrimary::NetworkPrimary(SimulationModel* model, int port) //Constructor
+NetworkPrimary::NetworkPrimary(int port) //Constructor
 {
 
-    //link to model so network can interact with model
-    this->model = model; //Link to the model
+    model=0; //Not linked at the moment
     this->port = port;
 
     //start networking
@@ -104,6 +103,11 @@ void NetworkPrimary::connectToServer(std::string hostnames)
     }
 }
 
+void NetworkPrimary::setModel(SimulationModel* model) //This MUST be called before update()
+{
+    this->model = model;
+}
+
 void NetworkPrimary::update()
 {
     receiveNetwork();
@@ -113,6 +117,10 @@ void NetworkPrimary::update()
 void NetworkPrimary::receiveNetwork()
 {
 
+    if (model==0) {
+        std::cout << "Network not linked to model" << std::endl;
+        exit(EXIT_FAILURE);
+    }
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 

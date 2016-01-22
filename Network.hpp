@@ -28,8 +28,9 @@ class Network
 {
     public:
     //Factory method
-    static Network* createNetwork(SimulationModel* model, bool secondary, int port); //remember to use 'delete' later.
+    static Network* createNetwork(bool secondary, int port); //remember to use 'delete' later.
     virtual void connectToServer(std::string hostnames) = 0;
+    virtual void setModel(SimulationModel* model) = 0;
     virtual void update() = 0;
     virtual ~Network();
 };
