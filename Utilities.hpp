@@ -25,6 +25,8 @@
 #include <vector>
 #include <limits>
 
+#include "ScenarioDataStructure.hpp"
+
 namespace Utilities
 {
     void to_lower(std::string& toConvert);
@@ -38,6 +40,7 @@ namespace Utilities
     std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Bridge Command/ on windows)
     std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Bridge Command/VERSIONUMBER/ on windows)
     bool pathExists(std::string filePath);
+    ScenarioData getScenarioDataFromFile(std::string scenarioPath); //Read a scenario from ini files
 
     template <typename T>
     T lexical_cast(std::string in) //Special case for string so we can check for inf

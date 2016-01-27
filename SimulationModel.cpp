@@ -21,7 +21,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, std::string scenarioPath, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -41,27 +41,24 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Set loop number to zero
         loopNumber = 0;
 
-        //Read world file name from scenario:
-        std::string environmentIniFilename = scenarioPath;
-        environmentIniFilename.append("/environment.ini");
-        worldName = IniFile::iniFileToString(environmentIniFilename,"Setting");
-        irr::f32 startTime = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
-        irr::u32 startDay=IniFile::iniFileTou32(environmentIniFilename,"StartDay");
-        irr::u32 startMonth=IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
-        irr::u32 startYear=IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+        worldName = scenarioData.worldName;
+        irr::f32 startTime = scenarioData.startTime;
+        irr::u32 startDay=scenarioData.startDay;
+        irr::u32 startMonth=scenarioData.startMonth;
+        irr::u32 startYear=scenarioData.startYear;
 
         //load the sun times
-        irr::f32 sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
-        irr::f32 sunSet  = IniFile::iniFileTof32(environmentIniFilename,"SunSet" );
+        irr::f32 sunRise = scenarioData.sunRise;
+        irr::f32 sunSet  = scenarioData.sunSet;
         if(sunRise==0.0) {sunRise=6;}
         if(sunSet==0.0) {sunSet=18;}
 
         //load the weather:
         //Fixme: add in wind direction etc
-        weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
-        rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
-        visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange"); //In Nm
-        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;}
+        weather = scenarioData.weather;
+        rainIntensity = scenarioData.rainIntensity;
+        visibilityRange = scenarioData.visibilityRange;
+        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
 
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
@@ -109,7 +106,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioPath, smgr, this, &terrain);
+        ownShip.load(scenarioData.ownShipData, smgr, this, &terrain);
         if(secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
@@ -145,7 +142,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
 
         //Load other ships
-        otherShips.load(scenarioPath,scenarioTime,secondary,smgr,this);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,secondary,smgr,this);
 
         //Load buoys
         buoys.load(worldPath, smgr, this);

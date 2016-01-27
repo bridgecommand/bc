@@ -26,12 +26,13 @@
 
 //Forward declarations
 class SimulationModel;
+class OwnShipData;
 
 class OwnShip : public Ship
 {
     public:
 
-        void load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain);
+        void load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::string getRadarConfigFile() const;

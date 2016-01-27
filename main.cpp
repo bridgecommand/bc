@@ -19,6 +19,7 @@
 #include "irrlicht.h"
 
 #include "GUIMain.hpp"
+#include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
 #include "MyEventReceiver.hpp"
@@ -239,8 +240,11 @@ int main()
     //Network network(&model);
     network->connectToServer(hostname);
 
+    //Read in scenario data (work in progress)
+    ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName);
+
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioPath + scenarioName, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
+    SimulationModel model(device, smgr, &guiMain, scenarioData, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
@@ -305,11 +309,6 @@ int main()
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
         smgr->drawAll();
-
-        //add in a delay to simulate a slow computer
-        //if (secondary) {
-        //    Sleep(150);
-        //}
 
         //gui
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui

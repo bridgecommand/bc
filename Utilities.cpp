@@ -16,11 +16,13 @@
 
 #include "Utilities.hpp"
 #include "Constants.hpp"
+#include "IniFile.hpp"
 
 #include <algorithm>
 #include <locale>
 #include <sstream>
 #include <sys/stat.h>
+#include <iostream> //For debugging
 
 #ifndef _WIN32
     #ifdef __APPLE__
@@ -197,7 +199,67 @@ namespace Utilities
             return false;
         }
     }
-
     //Note for dir check - strip trailing slash
 
+    ScenarioData getScenarioDataFromFile(std::string scenarioPath)  //Read a scenario from ini files
+    {
+        ScenarioData scenarioData;
+
+        std::string environmentIniFilename = scenarioPath;
+        environmentIniFilename.append("/environment.ini");
+        scenarioData.worldName          = IniFile::iniFileToString(environmentIniFilename,"Setting");
+        scenarioData.startTime          = IniFile::iniFileTof32(environmentIniFilename,"StartTime");
+        scenarioData.startDay           = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+        scenarioData.startMonth         = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+        scenarioData.startYear          = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+        scenarioData.sunRise            = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+        scenarioData.sunSet             = IniFile::iniFileTof32(environmentIniFilename,"SunSet" );
+        scenarioData.weather            = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+        scenarioData.rainIntensity      = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+        scenarioData.visibilityRange    = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange"); //In Nm
+
+        std::string scenarioOwnShipFilename = scenarioPath;
+        scenarioOwnShipFilename.append("/ownship.ini");
+        scenarioData.ownShipData.ownShipName    = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
+        scenarioData.ownShipData.initialSpeed   = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed");
+        scenarioData.ownShipData.initialLong    = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong");
+        scenarioData.ownShipData.initialLat     = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat");
+        scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
+
+        std::string scenarioOtherShipsFilename = scenarioPath;
+        scenarioOtherShipsFilename.append("/othership.ini");
+        //Find number of other ships
+        irr::u32 numberOfOtherShips;
+        numberOfOtherShips = IniFile::iniFileTou32(scenarioOtherShipsFilename,"Number");
+
+        for(irr::u32 i=1;i<=numberOfOtherShips;i++)
+        {
+            OtherShipData thisOtherShip;
+            thisOtherShip.shipName    = IniFile::iniFileToString(scenarioOtherShipsFilename,IniFile::enumerate1("Type",i));
+            thisOtherShip.initialLong = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLong",i));
+            thisOtherShip.initialLat  = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLat",i));
+
+            irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
+            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                //go through each leg (if any), and load
+                LegData currentLeg;
+                currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                currentLeg.speed = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                currentLeg.distance = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                thisOtherShip.legs.push_back(currentLeg);
+            }
+            scenarioData.otherShipsData.push_back(thisOtherShip);
+        }
+
+        //std::cout << "Scenario loader: "  << scenarioData.otherShipsData.size() << " other ships loaded." << std::endl;
+
+        /*
+
+        //Read world file name from scenario:
+        //load the sun times
+
+        */
+
+        return scenarioData;
+    }
 }

@@ -19,6 +19,7 @@
 
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
+#include "ScenarioDataStructure.hpp"
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
@@ -27,23 +28,19 @@
 
 using namespace irr;
 
-void OwnShip::load(const std::string& scenarioName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain)
+void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain)
 {
     //Store reference to terrain
     this->terrain = terrain;
 
-    //construct scenario ownship.ini filename
-    std::string scenarioOwnShipFilename = scenarioName;
-    scenarioOwnShipFilename.append("/ownship.ini");
-
     //Load from ownShip.ini file
-    std::string ownShipName = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
+    std::string ownShipName = ownShipData.ownShipName;
     //Get initial position and heading, and set these
-    spd = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed")*KTS_TO_MPS;
-    xPos = model->longToX(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong"));
+    spd = ownShipData.initialSpeed*KTS_TO_MPS;
+    xPos = model->longToX(ownShipData.initialLong);
     yPos = 0;
-    zPos = model->latToZ(IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat"));
-    hdg = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialBearing");
+    zPos = model->latToZ(ownShipData.initialLat);
+    hdg = ownShipData.initialBearing;
 
 
     std::string basePath = "Models/Ownship/" + ownShipName + "/";

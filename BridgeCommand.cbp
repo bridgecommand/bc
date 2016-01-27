@@ -74,6 +74,7 @@
 		<Unit filename="RealisticWater.h" />
 		<Unit filename="ScenarioChoice.cpp" />
 		<Unit filename="ScenarioChoice.hpp" />
+		<Unit filename="ScenarioDataStructure.hpp" />
 		<Unit filename="Ship.cpp" />
 		<Unit filename="Ship.hpp" />
 		<Unit filename="SimulationModel.cpp" />
