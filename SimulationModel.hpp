@@ -24,16 +24,15 @@
 
 #include "irrlicht.h"
 
-//TODO: Change most of these to forward declarations and include in .cpp files?
+//Forward declarations
+class ScenarioData;
+class GUIMain;
 
-#include "ScenarioDataStructure.hpp"
-#include "GUIMain.hpp"
 #include "Terrain.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
 #include "Rain.hpp"
 #include "Tide.hpp"
-#include "Sky.hpp"
 #include "Buoys.hpp"
 #include "OtherShips.hpp"
 #include "LandObjects.hpp"
@@ -42,7 +41,6 @@
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
-#include "IniFile.hpp" //For ini handling: confirm if this is needed
 
 class SimulationModel //Start of the 'Model' part of MVC
 {

@@ -21,6 +21,7 @@
 #include "IniFile.hpp"
 #include "RadarData.hpp"
 #include "SimulationModel.hpp"
+#include "ScenarioDataStructure.hpp"
 
 #include <iostream> //debugging
 

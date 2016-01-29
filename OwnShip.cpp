@@ -20,6 +20,7 @@
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
+#include "Terrain.hpp"
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"

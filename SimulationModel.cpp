@@ -15,8 +15,17 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "SimulationModel.hpp"
+
+#include "ScenarioDataStructure.hpp"
+#include "GUIMain.hpp"
+#include "Terrain.hpp"
+#include "Sky.hpp"
+#include "Buoys.hpp"
+
+#include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
+
 //#include <ctime>
 
 using namespace irr;

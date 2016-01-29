@@ -22,11 +22,11 @@
 #include <vector>
 
 #include "Ship.hpp"
-#include "Terrain.hpp"
 
 //Forward declarations
 class SimulationModel;
 class OwnShipData;
+class Terrain;
 
 class OwnShip : public Ship
 {
