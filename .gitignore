@@ -1,0 +1,4 @@
+*.o
+*.depend
+*.layout
+Thumbs.db
