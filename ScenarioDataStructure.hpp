@@ -21,32 +21,53 @@
 #include <vector>
 #include "irrlicht.h"
 
-struct OwnShipData {
+//These classes are used as structures to hold a scenario definition, and therefore have all members as public.
+//Methods for serialisation and deserialisation are included for utility
+
+class OwnShipData {
+    public:
     std::string ownShipName;
     irr::f32 initialSpeed, initialLong, initialLat, initialBearing;
+
     OwnShipData():initialSpeed(0),initialLong(0),initialLat(0), initialBearing(0){}
+    std::string serialise();
+    void deserialise(std::string data);
 };
 
-struct LegData {
+class LegData {
+    public:
     irr::f32 bearing, speed, distance;
+
     LegData():bearing(0),speed(0),distance(0){}
+
+    std::string serialise();
+    void deserialise(std::string data);
 };
 
-struct OtherShipData {
+class OtherShipData {
+    public:
     std::string shipName;
     irr::f32 initialLong, initialLat;
     std::vector<LegData> legs;
+
     OtherShipData():initialLong(0),initialLat(0){}
+
+    std::string serialise();
+    void deserialise(std::string data);
 };
 
-
-struct ScenarioData {
+class ScenarioData {
+    public:
     std::string worldName;
     irr::f32 startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange;
     irr::u32 startDay, startMonth, startYear;
     OwnShipData ownShipData;
     std::vector<OtherShipData> otherShipsData;
+
     ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0){}
+
+    std::string serialise();
+    void deserialise(std::string data);
 };
 
 #endif

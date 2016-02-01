@@ -243,6 +243,12 @@ int main()
     //Read in scenario data (work in progress)
     ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName);
 
+    /*
+    //Test with hardcoding
+    ScenarioData scenarioData;
+    scenarioData.deserialise("SCN1#SimpleEstuary#18#9#11#2015#6#18#1#0.5#0.1#Protis,15,-9.98397,50.0206,10#Yacht|-9.9835|50.0352|110?12?0.3/130?12?0.0005/150?12?0.0005/170?12?0.0005/185?12?0.73/185?0?0.1,waverley|-9.98378|50.023|5?8?0.8/45?8?10,Yacht_Sinking|-9.9905|50.0302|45?0?1,Yacht|-9.98446|50.0271|180?5?0.25/177?5?0.25/183?5?0.5/220?5?0.1/270?2?0.1,Protis|-9.98368|50.0324|181?15?0.5/175?15?0.25/125?15?0.28");
+    */
+
     //Create simulation model
     SimulationModel model(device, smgr, &guiMain, scenarioData, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
 
