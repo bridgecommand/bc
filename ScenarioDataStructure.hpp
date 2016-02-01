@@ -58,7 +58,7 @@ class OtherShipData {
 
 class ScenarioData {
     public:
-    std::string worldName;
+    std::string scenarioName, worldName;
     irr::f32 startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange;
     irr::u32 startDay, startMonth, startYear;
     OwnShipData ownShipData;

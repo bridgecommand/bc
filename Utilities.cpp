@@ -201,9 +201,11 @@ namespace Utilities
     }
     //Note for dir check - strip trailing slash
 
-    ScenarioData getScenarioDataFromFile(std::string scenarioPath)  //Read a scenario from ini files
+    ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName)  //Read a scenario from ini files
     {
         ScenarioData scenarioData;
+
+        scenarioData.scenarioName = scenarioName;
 
         std::string environmentIniFilename = scenarioPath;
         environmentIniFilename.append("/environment.ini");

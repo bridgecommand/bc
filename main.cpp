@@ -241,7 +241,8 @@ int main()
     network->connectToServer(hostname);
 
     //Read in scenario data (work in progress)
-    ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName);
+    ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
+    std::string serialisedScenarioData = scenarioData.serialise();
 
     /*
     //Test with hardcoding

@@ -38,8 +38,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         driver = scene->getVideoDriver();
         guiMain = gui;
 
-        //store scenario name
-        this->scenarioName = scenarioName;
+        //Store a serialised form of the scenario loaded, as we may want to send this over the network
+        serialisedScenarioData = scenarioData.serialise();
+
+        scenarioName = scenarioData.scenarioName;
 
         //store if we're running in secondary mode
         this->secondary = secondary;
@@ -548,6 +550,11 @@ SimulationModel::~SimulationModel()
     irr::u32 SimulationModel::getLoopNumber() const
     {
         return loopNumber;
+    }
+
+    std::string SimulationModel::getSerialisedScenario() const
+    {
+        return serialisedScenarioData;
     }
 
     std::string SimulationModel::getScenarioName() const

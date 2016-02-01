@@ -130,6 +130,7 @@ public:
     void updateViewport(irr::f32 aspect);
     void toggleZoom();
     irr::u32 getLoopNumber() const;
+    std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
     void update();
@@ -181,6 +182,7 @@ private:
     //store useful information
     std::string scenarioName;
     std::string worldName;
+    std::string serialisedScenarioData;
 
 };
 #endif

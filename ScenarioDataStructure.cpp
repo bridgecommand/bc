@@ -108,6 +108,8 @@ std::string ScenarioData::serialise()
 {
     std::string serialised = "SCN1"; //Scenario data, serialised format 1
     serialised.append("#");
+    serialised.append(scenarioName);
+    serialised.append("#");
     serialised.append(worldName);
     serialised.append("#");
     serialised.append(Utilities::lexical_cast<std::string>(startTime));
@@ -143,22 +145,23 @@ void ScenarioData::deserialise(std::string data)
 {
 
     std::vector<std::string> splitData = Utilities::split(data,'#');
-    if (splitData.size() == 13) {
+    if (splitData.size() == 14) {
         //note that splitData.at(0) is the version of the serialised data format
-        worldName = splitData.at(1);
-        startTime = Utilities::lexical_cast<irr::f32>(splitData.at(2));
-        startDay = Utilities::lexical_cast<irr::u32>(splitData.at(3));
-        startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-        startYear = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-        sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(6));
-        sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(7));
-        weather = Utilities::lexical_cast<irr::f32>(splitData.at(8));
-        rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(9));
-        visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(10));
-        ownShipData.deserialise(splitData.at(11));
+        scenarioName = splitData.at(1);
+        worldName = splitData.at(2);
+        startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
+        startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
+        startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
+        startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
+        sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
+        sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
+        weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
+        rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
+        visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
+        ownShipData.deserialise(splitData.at(12));
         //clear any existing legs data
         otherShipsData.clear();
-        std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(12),',');
+        std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(13),',');
         for(int i=0; i<otherShipsVector.size(); i++) {
             OtherShipData tempOther;
             tempOther.deserialise(otherShipsVector.at(i));
