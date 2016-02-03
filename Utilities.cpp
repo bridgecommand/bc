@@ -17,6 +17,7 @@
 #include "Utilities.hpp"
 #include "Constants.hpp"
 #include "IniFile.hpp"
+#include "ScenarioDataStructure.hpp"
 
 #include <algorithm>
 #include <locale>

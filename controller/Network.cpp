@@ -75,15 +75,13 @@ std::string Network::findWorldName()
             std::string receivedString(tempString);
 
             //Basic checks
-            if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
-                if (receivedString.substr(0,2).compare("SC") == 0 ) { //Check if it starts with SC
-                    //Strip 'SC'
-                    receivedString = receivedString.substr(2,receivedString.length()-2);
+            if (receivedString.length() > 4) { //Check if more than 2 chars long, ie we have at least some data
+                if (receivedString.substr(0,4).compare("SCN1") == 0 ) { //Check if it starts with SC
 
                     //Find world model from this
-                    std::vector<std::string> receivedData = Utilities::split(receivedString,'|');
-                    if (receivedData.size() >= 2) {
-                        worldName = receivedData.at(1);
+                    std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
+                    if (receivedData.size() > 2) {
+                        worldName = receivedData.at(2);
                     }
                 }
             }

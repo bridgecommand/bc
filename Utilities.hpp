@@ -25,7 +25,9 @@
 #include <vector>
 #include <limits>
 
-#include "ScenarioDataStructure.hpp"
+//#include "ScenarioDataStructure.hpp"
+//Forward declaration
+class ScenarioData;
 
 namespace Utilities
 {
