@@ -118,6 +118,13 @@ namespace Utilities
         while (std::getline(ss, item, delim)) {
             splitStrings.push_back(item);
         }
+        //Special case - if the final character is the delimitor, add an empty string at the end
+        if (inputString.length() > 0) {
+            if (inputString.at(inputString.length()-1) == delim ) {
+                splitStrings.push_back("");
+            }
+        }
+
         return splitStrings;
     }
 

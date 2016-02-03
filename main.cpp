@@ -241,7 +241,19 @@ int main()
     network->connectToServer(hostname);
 
     //Read in scenario data (work in progress)
-    ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
+    ScenarioData scenarioData;
+    if (!secondary) {
+        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
+    } else {
+        //If in secondary mode, get scenario information from the server
+        std::string receivedSerialisedScenarioData;
+        while (receivedSerialisedScenarioData.empty()) {
+            network->getScenarioFromNetwork(receivedSerialisedScenarioData);
+            device->run();
+            std::cout << "In main: " << receivedSerialisedScenarioData << std::endl;
+        }
+        scenarioData.deserialise(receivedSerialisedScenarioData);
+    }
     std::string serialisedScenarioData = scenarioData.serialise();
 
     /*

@@ -103,6 +103,11 @@ void NetworkPrimary::connectToServer(std::string hostnames)
     }
 }
 
+void NetworkPrimary::getScenarioFromNetwork(std::string& dataString)
+{
+    //Not used by primary
+}
+
 void NetworkPrimary::setModel(SimulationModel* model) //This MUST be called before update()
 {
     this->model = model;
@@ -233,8 +238,8 @@ void NetworkPrimary::receiveNetwork()
 void NetworkPrimary::sendNetwork()
 {
     std::string stringToSend;
-    if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SC' message
-        stringToSend = generateSendStringSC();
+    if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
+        stringToSend = generateSendStringScn();
     } else if ( model->getLoopNumber() % 3 == 0 ) { //every 3rd loop, send the main BC message
         stringToSend = generateSendString();
     }
@@ -255,8 +260,9 @@ void NetworkPrimary::sendNetwork()
 
 std::string NetworkPrimary::generateSendString()
 {
-    /* Get data from model */
-    //std::string stringToSend = Utilities::lexical_cast<std::string>(model->getHeading());
+    // Get data from model
+    //Note that in each 'for' loop, we only add the terminator if it isn't the last in the list
+
     std::string stringToSend = "BC";
     //0 Time:
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp())); //Current timestamp
@@ -318,10 +324,10 @@ std::string NetworkPrimary::generateSendString()
             stringToSend.append(Utilities::lexical_cast<std::string>(it->speed));
             stringToSend.append(":");
             stringToSend.append(Utilities::lexical_cast<std::string>(it->startTime));
-            stringToSend.append("/");
+            if (it!= (legs.end()-1)) {stringToSend.append("/");}
         }
 
-        stringToSend.append("|");
+        if (number < model->getNumberOfOtherShips()-1) {stringToSend.append("|");}
     }
     stringToSend.append("#");
 
@@ -330,7 +336,7 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getBuoyPosX(number)));
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getBuoyPosZ(number)));
-        stringToSend.append("|");
+        if (number < model->getNumberOfBuoys()-1) {stringToSend.append("|");}
     }
     stringToSend.append("#");
 
@@ -361,18 +367,13 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append("#");
 
     //10 Multiplayer request here (Not used)
-    stringToSend.append("0#");
+    stringToSend.append("0");
 
     return stringToSend;
 }
 
-std::string NetworkPrimary::generateSendStringSC()
+std::string NetworkPrimary::generateSendStringScn()
 {
-    std::string stringToSend = "SC";
-    stringToSend.append(model->getScenarioName());
-    stringToSend.append("|");
-    stringToSend.append(model->getWorldName());
-    stringToSend.append("|");
-    //todo: Add rest of records here
+    std::string stringToSend = model->getSerialisedScenario();
     return stringToSend;
 }

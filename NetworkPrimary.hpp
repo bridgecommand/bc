@@ -33,6 +33,7 @@ public:
     ~NetworkPrimary();
 
     void connectToServer(std::string hostnames);
+    void getScenarioFromNetwork(std::string& dataString);
     void setModel(SimulationModel* model);
     void update();
 
@@ -44,7 +45,7 @@ private:
     ENetEvent event;
 
     std::string generateSendString(); //Prepare then normal data message to send
-    std::string generateSendStringSC(); //Prepare the 'SC' message, with scenario information
+    std::string generateSendStringScn(); //Prepare the 'Scn' message, with scenario information
     void sendNetwork();
     void receiveNetwork();
 

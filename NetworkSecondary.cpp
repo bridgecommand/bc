@@ -68,6 +68,29 @@ void NetworkSecondary::connectToServer(std::string hostnames)
     //Don't need to do anything
 }
 
+void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not used by primary
+{
+     if (enet_host_service (server, & event, 1000) > 0) { //Wait 1s for event
+        if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
+
+            //receive it
+            char tempString[2048]; //Fixme: Think if this is long enough
+            snprintf(tempString,2048,"%s",event.packet -> data);
+            std::string receivedString(tempString);
+
+            //Basic checks
+            if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
+                if (receivedString.substr(0,4).compare("SCN1") == 0 ) { //Check if it starts with SCN1
+                    //If valid, use this string
+                    dataString = receivedString;
+                }
+            }
+        }
+        /* Clean up the packet now that we're done using it. */
+        enet_packet_destroy (event.packet);
+     }
+}
+
 void NetworkSecondary::setModel(SimulationModel* model) //This MUST be called before update()
 {
     this->model = model;

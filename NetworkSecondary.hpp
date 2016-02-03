@@ -33,6 +33,7 @@ public:
     ~NetworkSecondary();
 
     void connectToServer(std::string hostnames);
+    void getScenarioFromNetwork(std::string& dataString);
     void setModel(SimulationModel* model);
     void update();
 

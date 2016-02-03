@@ -17,6 +17,8 @@
 #include "ScenarioDataStructure.hpp"
 #include "Utilities.hpp"
 
+#include <iostream> //Debuggung
+
 //Serialisers:
 //Separators (largest first: # , | / ?
 
@@ -145,6 +147,7 @@ void ScenarioData::deserialise(std::string data)
 {
 
     std::vector<std::string> splitData = Utilities::split(data,'#');
+    std::cout << "splitData.size() " << splitData.size() << std::endl;
     if (splitData.size() == 14) {
         //note that splitData.at(0) is the version of the serialised data format
         scenarioName = splitData.at(1);

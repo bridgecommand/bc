@@ -23,7 +23,7 @@ class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID);
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected() const;
@@ -32,6 +32,7 @@ private:
 
     irr::gui::IGUIListBox* scenarioListBox;
     irr::gui::IGUIStaticText* hostnameText;
+    irr::gui::IGUIStaticText* scenarioText;
     irr::gui::IGUIEditBox* hostnameBox;
     irr::s32 listBoxID;
     irr::s32 okButtonID;

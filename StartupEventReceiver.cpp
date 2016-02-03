@@ -20,9 +20,10 @@
 
 using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
+		this->scenarioText = scenarioText;
 		this->hostnameText = hostnameText;
 		this->hostnameBox = hostnameBox;
 		this->listBoxID = listBoxID;
@@ -48,9 +49,13 @@ using namespace irr;
             {
                 //Check state, and set hostname box and text visible
                 if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
+                    scenarioListBox->setVisible(false);
+                    scenarioText->setVisible(false);
                     hostnameBox->setVisible(false);
                     hostnameText->setVisible(false);
                 } else {
+                    scenarioListBox->setVisible(true);
+                    scenarioText->setVisible(true);
                     hostnameBox->setVisible(true);
                     hostnameText->setVisible(true);
                 }

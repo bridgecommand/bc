@@ -72,7 +72,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui->setFocus(scenarioListBox);
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,hostnameText,hostnameBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX);
     device->setEventReceiver(&startupReceiver);
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
@@ -90,8 +90,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         exit(EXIT_FAILURE); //No scenario loaded
     }
 
-    //Use selected scenario
-    scenarioName = scenarioList[startupReceiver.getScenarioSelected()]; //scenarioName is a pass by reference return value
     //Get hostname, and convert from wchar_t* to wstring to string
     std::wstring wHostname = std::wstring(hostnameBox->getText());
     std::string sHostname(wHostname.begin(), wHostname.end());
@@ -99,6 +97,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Check if 'secondary' mode is selected
     secondary = secondaryCheckbox->isChecked(); //secondary is a pass by reference return value
+
+    if (!secondary) {
+        //Use selected scenario - don't need this in secondary mode
+        scenarioName = scenarioList[startupReceiver.getScenarioSelected()]; //scenarioName is a pass by reference return value
+    }
 
     //Clean up
     scenarioListBox->remove(); scenarioListBox = 0;
