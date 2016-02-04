@@ -20,6 +20,7 @@
 #include <string>
 
 #include "libs/enet/enet.h"
+#include "OperatingModeEnum.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -28,7 +29,7 @@ class Network
 {
     public:
     //Factory method
-    static Network* createNetwork(bool secondary, int port); //remember to use 'delete' later.
+    static Network* createNetwork(OperatingMode::Mode mode, int port); //remember to use 'delete' later.
     virtual void connectToServer(std::string hostnames) = 0;
     virtual void setModel(SimulationModel* model) = 0;
     virtual void getScenarioFromNetwork(std::string& dataString) = 0; //Not used by primary

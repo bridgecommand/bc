@@ -29,6 +29,7 @@
 #include "Lang.hpp"
 #include "NMEA.hpp"
 #include "Utilities.hpp"
+#include "OperatingModeEnum.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -220,9 +221,9 @@ int main()
         scenarioPath = userFolder + scenarioPath;
     }
 
-    bool secondary = false;
+    OperatingMode::Mode mode = OperatingMode::Normal;
     ScenarioChoice scenarioChoice(device,&language);
-    scenarioChoice.chooseScenario(scenarioName, hostname, secondary, scenarioPath);
+    scenarioChoice.chooseScenario(scenarioName, hostname, mode, scenarioPath);
 
     u32 creditsStartTime = device->getTimer()->getRealTime();
 
@@ -236,13 +237,13 @@ int main()
 
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(secondary, udpPort);
+    Network* network = Network::createNetwork(mode, udpPort);
     //Network network(&model);
     network->connectToServer(hostname);
 
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
-    if (!secondary) {
+    if (mode == OperatingMode::Normal) {
         scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
     } else {
         //If in secondary mode, get scenario information from the server
@@ -263,7 +264,7 @@ int main()
     */
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioData, secondary, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
+    SimulationModel model(device, smgr, &guiMain, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

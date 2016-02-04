@@ -41,13 +41,14 @@ class GUIMain;
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
+#include "OperatingModeEnum.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -139,7 +140,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
-    bool secondary; //Are we in secondary mode?
+    OperatingMode::Mode mode; //What mode are we in
     irr::f32 viewAngle;
     irr::video::IImage* radarImage;
     //irr::f32 accelerator;

@@ -19,6 +19,7 @@
 
 #include "irrlicht.h"
 #include "Lang.hpp"
+#include "OperatingModeEnum.hpp"
 #include <string>
 
 class GUIMain //Create, build and update GUI

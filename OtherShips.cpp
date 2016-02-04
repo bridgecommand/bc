@@ -37,7 +37,7 @@ OtherShips::~OtherShips()
     //dtor
 }
 
-void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, bool secondary, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model)
 {
 
     for(u32 i=0;i<otherShipsData.size();i++)
@@ -51,7 +51,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Load leg information
         std::vector<Leg> legs;
         irr::f32 legStartTime = scenarioStartTime;
-        if (!secondary) { //Don't load leg information in secondary mode
+        if (mode==OperatingMode::Normal) { //Only load leg information in normal mode
             for(irr::u32 j=0; j<otherShipsData.at(i).legs.size(); j++){
                 //go through each leg (if any), and load
                 Leg currentLeg;

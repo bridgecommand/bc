@@ -19,6 +19,7 @@
 
 #include "irrlicht.h"
 #include "Lang.hpp"
+#include "OperatingModeEnum.hpp"
 #include <string>
 #include <vector>
 
@@ -26,7 +27,7 @@ class ScenarioChoice
 {
 public:
     ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    void chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary, std::string scenarioPath);
+    void chooseScenario(std::string& scenarioName, std::string& hostname, OperatingMode::Mode& mode, std::string scenarioPath);
 
 private:
     void getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath);

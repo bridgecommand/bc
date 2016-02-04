@@ -29,7 +29,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, bool& secondary, std::string scenarioPath)
+void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, OperatingMode::Mode& mode, std::string scenarioPath)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -96,9 +96,10 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     hostname = sHostname; //hostname is a pass by reference return value
 
     //Check if 'secondary' mode is selected
-    secondary = secondaryCheckbox->isChecked(); //secondary is a pass by reference return value
+    if(secondaryCheckbox->isChecked())
+        {mode = OperatingMode::Secondary;}
 
-    if (!secondary) {
+    if (mode == OperatingMode::Normal) {
         //Use selected scenario - don't need this in secondary mode
         scenarioName = scenarioList[startupReceiver.getScenarioSelected()]; //scenarioName is a pass by reference return value
     }

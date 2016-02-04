@@ -30,7 +30,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, bool secondary, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
     {
         //get reference to scene manager
         device = dev;
@@ -43,8 +43,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         scenarioName = scenarioData.scenarioName;
 
-        //store if we're running in secondary mode
-        this->secondary = secondary;
+        //store what mode we're in
+        this->mode = mode;
 
         //store default view angle
         this->viewAngle = viewAngle;
@@ -118,7 +118,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Load own ship model.
         ownShip.load(scenarioData.ownShipData, smgr, this, &terrain);
-        if(secondary) {
+        if(mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
 
@@ -128,7 +128,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         }
 
         //Tell gui to hide all ship controls if in secondary mode
-        if (secondary) {
+        if (mode == OperatingMode::Secondary) {
             gui->hideEngineAndRudder();
         }
 
@@ -153,7 +153,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
 
         //Load other ships
-        otherShips.load(scenarioData.otherShipsData,scenarioTime,secondary,smgr,this);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,mode,smgr,this);
 
         //Load buoys
         buoys.load(worldPath, smgr, this);
