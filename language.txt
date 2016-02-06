@@ -6,6 +6,7 @@ changed to UTF-8, for proper portability!
 ok="OK"
 scnChoose="Please choose a scenario:"
 secondary="Use as secondary display"
+multiplayer="Multiplayer mode"
 hostname="Optional: Hostname (PC name) for controller/secondary display.\nMultiple entries can be comma separated."
 loadingmsg="Loading scenario..."
 

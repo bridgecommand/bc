@@ -29,7 +29,7 @@ class SimulationModel;
 class NetworkSecondary : public Network
 {
 public:
-    NetworkSecondary(int port);
+    NetworkSecondary(int port, OperatingMode::Mode mode);
     ~NetworkSecondary();
 
     void connectToServer(std::string hostnames);
@@ -45,6 +45,7 @@ private:
 
     ENetHost * server;
     ENetEvent event;
+    OperatingMode::Mode mode;
 
     void receiveMessage();
 

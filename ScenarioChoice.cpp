@@ -54,8 +54,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
     gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.32*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.30*sh,0.80*su,0.33*sh));
+    gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
+    gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
+
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
 
     //add credits text
     //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
@@ -72,7 +75,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui->setFocus(scenarioListBox);
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX);
     device->setEventReceiver(&startupReceiver);
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
@@ -96,8 +99,13 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     hostname = sHostname; //hostname is a pass by reference return value
 
     //Check if 'secondary' mode is selected
-    if(secondaryCheckbox->isChecked())
-        {mode = OperatingMode::Secondary;}
+    if(secondaryCheckbox->isChecked()) {
+        mode = OperatingMode::Secondary;
+    } else if (multiplayerCheckbox->isChecked()) {
+        mode = OperatingMode::Multiplayer;
+    } else {
+        mode = OperatingMode::Normal;
+    }
 
     if (mode == OperatingMode::Normal) {
         //Use selected scenario - don't need this in secondary mode
@@ -111,6 +119,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     instruction->remove(); instruction=0;
     secondaryText->remove(); secondaryText=0;
     secondaryCheckbox->remove(); secondaryCheckbox=0;
+    multiplayerCheckbox->remove();multiplayerCheckbox=0;
+    multiplayerText->remove();multiplayerText=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
     //creditsText->remove(); creditsText=0;

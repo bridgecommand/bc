@@ -32,7 +32,7 @@ Network::~Network() //Virtual destructor
 Network* Network::createNetwork(OperatingMode::Mode mode, int port) //Factory class, create a primary or secondary network object, and return a pointer
 {
     if (mode != OperatingMode::Normal) {
-        return new NetworkSecondary(port);
+        return new NetworkSecondary(port, mode);
     } else {
         return new NetworkPrimary(port);
     }

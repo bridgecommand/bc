@@ -40,7 +40,8 @@ private:
     {
         GUI_ID_SCENARIO_LISTBOX = 101,
         GUI_ID_OK_BUTTON,
-        GUI_ID_SECONDARY_CHECKBOX
+        GUI_ID_SECONDARY_CHECKBOX,
+        GUI_ID_MULTIPLAYER_CHECKBOX
     };
 
 };

@@ -20,15 +20,18 @@
 
 using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->scenarioText = scenarioText;
 		this->hostnameText = hostnameText;
 		this->hostnameBox = hostnameBox;
+		this->secondaryBox = secondaryBox;
+		this->multiplayerBox = multiplayerBox;
 		this->listBoxID = listBoxID;
 		this->okButtonID = okButtonID;
 		this->secondaryBoxID = secondaryBoxID;
+		this->multiplayerBoxID = multiplayerBoxID;
 		scenarioSelected = -1; //Set as initially invalid
 	}
 
@@ -45,19 +48,27 @@ using namespace irr;
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_CHECKBOX_CHANGED && id == secondaryBoxID)
-            {
-                //Check state, and set hostname box and text visible
-                if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
-                    scenarioListBox->setVisible(false);
-                    scenarioText->setVisible(false);
-                    hostnameBox->setVisible(false);
-                    hostnameText->setVisible(false);
-                } else {
-                    scenarioListBox->setVisible(true);
-                    scenarioText->setVisible(true);
-                    hostnameBox->setVisible(true);
-                    hostnameText->setVisible(true);
+            if (event.GUIEvent.EventType==gui::EGET_CHECKBOX_CHANGED) {
+                if (id == secondaryBoxID || id == multiplayerBoxID) {
+                    //Check state, and set hostname box and text visible
+                    if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
+                        scenarioListBox->setVisible(false);
+                        scenarioText->setVisible(false);
+                        hostnameBox->setVisible(false);
+                        hostnameText->setVisible(false);
+                    } else {
+                        scenarioListBox->setVisible(true);
+                        scenarioText->setVisible(true);
+                        hostnameBox->setVisible(true);
+                        hostnameText->setVisible(true);
+                    }
+                }
+                //Only one check box should be on
+                if (id == secondaryBoxID) {
+                    multiplayerBox->setChecked(false);
+                }
+                if (id == multiplayerBoxID) {
+                    secondaryBox->setChecked(false);
                 }
             }
 		}

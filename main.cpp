@@ -251,7 +251,6 @@ int main()
         while (receivedSerialisedScenarioData.empty()) {
             network->getScenarioFromNetwork(receivedSerialisedScenarioData);
             device->run();
-            std::cout << "In main: " << receivedSerialisedScenarioData << std::endl;
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
