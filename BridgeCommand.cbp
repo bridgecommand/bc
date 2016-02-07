@@ -57,6 +57,7 @@
 		<Unit filename="NetworkPrimary.hpp" />
 		<Unit filename="NetworkSecondary.cpp" />
 		<Unit filename="NetworkSecondary.hpp" />
+		<Unit filename="OperatingModeEnum.hpp" />
 		<Unit filename="OtherShip.cpp" />
 		<Unit filename="OtherShip.hpp" />
 		<Unit filename="OtherShips.cpp" />

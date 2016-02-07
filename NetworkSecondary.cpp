@@ -25,6 +25,12 @@
 
 NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode)
 {
+    if (enet_initialize () != 0)
+    {
+        std::cout << "An error occurred while initializing ENet." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     ENetAddress address;
 
     this->mode = mode;
