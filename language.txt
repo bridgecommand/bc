@@ -19,7 +19,6 @@ depth="Depth: "
 zoom="Zoom"
 range="Range: "
 ebl="EBL: "
-deg="°"
 minSymbol="'"
 bearing="Brg"
 
@@ -52,4 +51,4 @@ showinterface="Show"
 hideinterface="Hide"
 
 fps="FPS: "
-
+deg="°"
