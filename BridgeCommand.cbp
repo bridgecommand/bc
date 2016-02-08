@@ -17,7 +17,7 @@
 				</Linker>
 			</Target>
 			<Target title="Linux">
-				<Option output="BridgeCommand" prefix_auto="1" extension_auto="1" />
+				<Option output="bridgecommand" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
