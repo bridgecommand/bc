@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MultiplayerHub" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Windows">
+				<Option output="../multiPlayerHub" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Linker>
+					<Add option="../libs/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
+					<Add library="ws2_32" />
+					<Add library="Winmm" />
+				</Linker>
+			</Target>
+			<Target title="Linux">
+				<Option output="../multiPlayerHub" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Linker>
+					<Add option="-L../libs/Irrlicht/irrlicht-1.8.1/lib/Linux" />
+					<Add library="Irrlicht" />
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add library="Xext" />
+					<Add library="X11" />
+					<Add library="Xcursor" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
+		</Compiler>
+		<Unit filename="../IniFile.cpp" />
+		<Unit filename="../IniFile.hpp" />
+		<Unit filename="../ScenarioDataStructure.cpp" />
+		<Unit filename="../ScenarioDataStructure.hpp" />
+		<Unit filename="../Utilities.cpp" />
+		<Unit filename="../Utilities.hpp" />
+		<Unit filename="../libs/enet/callbacks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/callbacks.h" />
+		<Unit filename="../libs/enet/compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/enet.h" />
+		<Unit filename="../libs/enet/host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/list.h" />
+		<Unit filename="../libs/enet/packet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/peer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/protocol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/protocol.h" />
+		<Unit filename="../libs/enet/time.h" />
+		<Unit filename="../libs/enet/types.h" />
+		<Unit filename="../libs/enet/unix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/unix.h" />
+		<Unit filename="../libs/enet/utility.h" />
+		<Unit filename="../libs/enet/win32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../libs/enet/win32.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
