@@ -228,6 +228,14 @@ void NetworkPrimary::receiveNetwork()
                         //model->setHeading(angle);
                     } //At least one command
                 } //Check received message starts with MC
+
+
+                /*//Testing only: Echo MPF returns
+                if (receivedString.substr(0,3).compare("MPF") == 0 ) { //Check if it starts with MC
+                    std::cout << "Received multiplayer string:" <<receivedString <<std::endl;
+                }*/
+
+
             } //Check message at least 3 characters
 
             enet_packet_destroy (event.packet);

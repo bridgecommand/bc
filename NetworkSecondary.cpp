@@ -223,6 +223,24 @@ void NetworkSecondary::receiveMessage()
                 //Todo: Get weather, rain, viewpoint.
                 //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)
 
+                //If in multiplayer mode, send back a message with our position and heading
+                if (mode==OperatingMode::Multiplayer) {
+
+                    std::string multiplayerFeedback = "MPF";
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosX()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getHeading()));
+
+                    //Send back to event.peer
+                    ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
+                    if (packet!=0) {
+                        enet_peer_send (event.peer, 0, packet);
+                        enet_host_flush (server);
+                    }
+                }
+
             } //Check for right number of elements in received data
         } //Check received message starts with BC
     } //Check message at least 3 characters
