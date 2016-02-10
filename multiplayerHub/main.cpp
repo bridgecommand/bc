@@ -21,6 +21,7 @@
 // Include the Irrlicht header
 #include "irrlicht.h"
 #include "../Utilities.hpp"
+#include "Network.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -66,6 +67,17 @@ int main()
         Use this to update internal model
         Send out update to each pc, including other ship positions
     */
+
+
+
+    std::string hostnames;
+    std::cout << "Please enter comma separated list of multiplayer PC host names:" << std::endl;
+    std::cin >> hostnames;
+
+    int port = 18304; //TODO: Read in from ini file
+
+    Network network(port);
+    network.connectToServer(hostnames);
 
 
     return(0);
