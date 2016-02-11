@@ -256,6 +256,8 @@ int main()
     }
     std::string serialisedScenarioData = scenarioData.serialise();
 
+    std::cout << "Scenario: " << serialisedScenarioData << std::endl;
+
     /*
     //Test with hardcoding
     ScenarioData scenarioData;

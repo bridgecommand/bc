@@ -79,6 +79,12 @@ int main()
     Network network(port);
     network.connectToServer(hostnames);
 
+    //Send initial scenario information (reliable packet)
+    network.sendString("SCN1#a) Buoyage#SimpleEstuary#11#6#11#2010#6#18#1#0.5#4#Waverley,10,-9.98083,50.0388,180#Waverley|-9.983|50.029|20?12?10",true,0);
+
+    //Send initial scenario update
+
+    //Start main loop, listening for updates from PCs and sending out scenario update
 
     return(0);
 

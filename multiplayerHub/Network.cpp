@@ -90,6 +90,7 @@ void Network::connectToServer(std::string hostnames)
         /* Wait up to 1 second for the connection attempt to succeed. */
         if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
+            peers.push_back(peer);
         } else {
             /* Either the 1 second is up or a disconnect event was */
             /* received. Reset the peer in the event the 1 second */
@@ -100,6 +101,32 @@ void Network::connectToServer(std::string hostnames)
     }
 }
 
+void Network::sendString(std::string stringToSend, bool reliable, unsigned int peerNumber)
+{
+    if (peerNumber < peers.size()) {
+
+        int reliableFlag;
+        if(reliable) {
+            reliableFlag = ENET_PACKET_FLAG_RELIABLE;
+        } else {
+            reliableFlag = 0;
+        }
+
+        if (stringToSend.length() > 0) {
+            ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
+            strlen (stringToSend.c_str()) + 1,
+            reliableFlag); //Flag
+
+            // Send the packet to peer over channel id 0.
+            enet_peer_send(peers.at(peerNumber), 0, packet);
+
+            // One could just use enet_host_service() instead.
+            enet_host_flush (client);
+        }
+    }
+}
+
+/*
 
 void Network::update()
 {
@@ -143,15 +170,14 @@ void Network::sendNetwork()
     std::string stringToSend = generateSendString();
 
     if (stringToSend.length() > 0) {
-        /* Create a packet */
         ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
         strlen (stringToSend.c_str()) + 1,
-        /*ENET_PACKET_FLAG_RELIABLE*/0);
+        0); //Flag
 
-        /* Send the packet to all connected peers over channel id 0. */
+        // Send the packet to all connected peers over channel id 0.
         enet_host_broadcast(client, 0, packet);
 
-        /* One could just use enet_host_service() instead. */
+        // One could just use enet_host_service() instead.
         enet_host_flush (client);
     }
 }
@@ -163,7 +189,6 @@ std::string Network::generateSendString()
 
     std::string stringToSend = "BC";
 
-    /*
     //0 Time:
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getTimestamp())); //Current timestamp
     stringToSend.append(",");
@@ -268,7 +293,7 @@ std::string Network::generateSendString()
 
     //10 Multiplayer request here (Not used)
     stringToSend.append("0");
-    */
+
     return stringToSend;
 }
 
@@ -278,3 +303,5 @@ std::string Network::generateSendStringScn()
     std::string stringToSend = "";//model->getSerialisedScenario();
     return stringToSend;
 }
+
+*/

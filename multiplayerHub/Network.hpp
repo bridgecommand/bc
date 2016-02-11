@@ -18,6 +18,7 @@
 #define __NETWORK_HPP_INCLUDED__
 
 #include <string>
+#include <vector>
 
 #include "../libs/enet/enet.h"
 
@@ -26,20 +27,16 @@ class Network
 public:
     Network(int port);
     ~Network();
-
     void connectToServer(std::string hostnames);
-    void update();
+
+    void sendString(std::string stringToSend, bool reliable, unsigned int peerNumber);
 
 private:
     int port;
 
     ENetHost* client; //One client
     ENetEvent event;
-
-    std::string generateSendString(); //Prepare then normal data message to send
-    std::string generateSendStringScn(); //Prepare the 'Scn' message, with scenario information
-    void sendNetwork();
-    void receiveNetwork();
+    std::vector<ENetPeer*> peers;
 
 };
 
