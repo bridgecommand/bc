@@ -81,7 +81,7 @@ void Network::connectToServer(std::string hostnames)
         address.port = port;
         /* Initiate the connection, allocating the two channels 0 and 1. */
         peer = enet_host_connect (client, & address, 2, 0);
-        //Note we don't store peer pointer, as we broadcast to all connected peers. TODO - Change this for multiplayer!
+
         if (peer == NULL)
         {
             std::cout << "No available peers for initiating an ENet connection." << std::endl;
@@ -90,7 +90,9 @@ void Network::connectToServer(std::string hostnames)
         /* Wait up to 1 second for the connection attempt to succeed. */
         if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
             std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
+            //Store peer, and initialise the vector of latest strings received
             peers.push_back(peer);
+            latestMessageFromPeer.push_back("");
         } else {
             /* Either the 1 second is up or a disconnect event was */
             /* received. Reset the peer in the event the 1 second */
@@ -99,6 +101,11 @@ void Network::connectToServer(std::string hostnames)
             std::cout << "ENet connection failed to:\"" << thisHostname << "\"" << std::endl;
         }
     }
+}
+
+unsigned int Network::getNumberOfPeers()
+{
+    return peers.size();
 }
 
 void Network::sendString(std::string stringToSend, bool reliable, unsigned int peerNumber)
@@ -123,6 +130,38 @@ void Network::sendString(std::string stringToSend, bool reliable, unsigned int p
             // One could just use enet_host_service() instead.
             enet_host_flush (client);
         }
+    }
+}
+
+void Network::listenForMessages()
+{
+    while (enet_host_service (client, & event, 10) > 0) {
+        if (event.type==ENET_EVENT_TYPE_RECEIVE) {
+
+            //Convert into a string, max length 2048
+            char tempString[2048]; //Fixme: Think if this is long enough
+            snprintf(tempString,2048,"%s",event.packet -> data);
+            std::string receivedString(tempString);
+
+            //check which peer, if any it came from
+            for(unsigned int i=0; i<peers.size(); i++) {
+                if (event.peer==peers.at(i)) {
+                    if (i<latestMessageFromPeer.size()) {
+                        latestMessageFromPeer.at(i) = receivedString;
+                    }
+                }
+            }
+            enet_packet_destroy (event.packet);
+        }
+    }
+}
+
+std::string Network::getLatestMessage(unsigned int peerNumber)
+{
+    if (peerNumber < latestMessageFromPeer.size()) {
+        return latestMessageFromPeer.at(peerNumber);
+    } else {
+        return "";
     }
 }
 

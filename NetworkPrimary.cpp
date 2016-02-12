@@ -300,7 +300,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getCOG()));
     stringToSend.append("#");
 
-    //2 Numbers: Number Other, Number Controlled, Number buoys, Number MOB #
+    //2 Numbers: Number Other, Number buoys, Number MOB #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfOtherShips()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfBuoys()));

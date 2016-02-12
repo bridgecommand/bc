@@ -28,8 +28,12 @@ public:
     Network(int port);
     ~Network();
     void connectToServer(std::string hostnames);
+    unsigned int getNumberOfPeers();
 
     void sendString(std::string stringToSend, bool reliable, unsigned int peerNumber);
+    void listenForMessages();
+    std::string getLatestMessage(unsigned int peerNumber);
+
 
 private:
     int port;
@@ -37,6 +41,7 @@ private:
     ENetHost* client; //One client
     ENetEvent event;
     std::vector<ENetPeer*> peers;
+    std::vector<std::string> latestMessageFromPeer;
 
 };
 

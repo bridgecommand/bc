@@ -71,7 +71,7 @@ int main()
 
 
     std::string hostnames;
-    std::cout << "Please enter comma separated list of multiplayer PC host names:" << std::endl;
+    std::cout << "Please enter comma separated list of multiplayer PC hostnames:" << std::endl;
     std::cin >> hostnames;
 
     int port = 18304; //TODO: Read in from ini file
@@ -79,12 +79,54 @@ int main()
     Network network(port);
     network.connectToServer(hostnames);
 
+    unsigned int numberOfPeers = network.getNumberOfPeers();
+
+    std::cout << "Connected to " << numberOfPeers << " Bridge Command peers." << std::endl;
+
     //Send initial scenario information (reliable packet)
+    //TESTING ONLY
     network.sendString("SCN1#a) Buoyage#SimpleEstuary#11#6#11#2010#6#18#1#0.5#4#Waverley,10,-9.98083,50.0388,180#Waverley|-9.983|50.029|20?12?10",true,0);
 
     //Send initial scenario update
+    //TODO: Implement
 
-    //Start main loop, listening for updates from PCs and sending out scenario update
+    //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
+    while(true) {
+
+        //Do time handling here.
+
+        //for each peer
+        for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
+            network.sendString("BC0#1#2#3#4#5#6#7#8#9#10",false,thisPeer); //TESTING ONLY
+
+            /*
+            For multiplayer, only actually uses info from records 0 (time), 2 (Number of entities) & 3 (Other ship info). BC Checks number of entries, so just need dummies
+            Format is (with added newlines):
+            BC
+
+            (0) timestamp (unix), timestamp of start of first scenario day,
+            time since start of first scenario day (float), accelerator#
+
+            (1, own ship data not used in multiplayer, so can leave as 0#)
+            Pos x, Pos z, heading, rate of turn, pitch, roll, SOG (knots), COG#
+
+            (2) Number other, number buoys, number MOB (0)#
+
+            (3) For each Other, terminated with '#' at end of list
+                PosX,PosZ,Heading,speed (kts),0(SART), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
+
+            Records 4 to 10 not used (separate with '#')
+
+
+            */
+
+            network.listenForMessages();
+            std::string receivedMessage = network.getLatestMessage(thisPeer);
+            if (!receivedMessage.empty()) {
+                //Do stuff with received message
+            }
+        } //End of loop for each peer
+    } //End of main loop
 
     return(0);
 
