@@ -21,7 +21,9 @@
 // Include the Irrlicht header
 #include "irrlicht.h"
 #include "../Utilities.hpp"
+#include "../ScenarioDataStructure.hpp"
 #include "Network.hpp"
+
 
 //Mac OS:
 #ifdef __APPLE__
@@ -83,11 +85,82 @@ int main()
 
     std::cout << "Connected to " << numberOfPeers << " Bridge Command peers." << std::endl;
 
-    //Send initial scenario information (reliable packet)
-    //TESTING ONLY
-    network.sendString("SCN1#a) Buoyage#SimpleEstuary#11#6#11#2010#6#18#1#0.5#4#Waverley,10,-9.98083,50.0388,180#Waverley|-9.983|50.029|20?12?10",true,0);
+    //Choose scenario
+    std::string scenarioName = "";
+    //Scenario path - default to user dir if it exists
+    std::string scenarioPath = "Scenarios/";
+    if (Utilities::pathExists(userFolder + scenarioPath)) {
+        scenarioPath = userFolder + scenarioPath;
+    }
 
-    //Send initial scenario update
+    std::cout << "Please enter scenario name:" << std::endl;
+    std::cin >> scenarioName;
+
+    //Load overall scenario information
+    ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
+
+    //Get time information and initialise
+    /*
+            irr::f32 startTime = scenarioData.startTime;
+        irr::u32 startDay=scenarioData.startDay;
+        irr::u32 startMonth=scenarioData.startMonth;
+        irr::u32 startYear=scenarioData.startYear;
+
+        //load the sun times
+        irr::f32 sunRise = scenarioData.sunRise;
+        irr::f32 sunSet  = scenarioData.sunSet;
+        if(sunRise==0.0) {sunRise=6;}
+        if(sunSet==0.0) {sunSet=18;}
+
+        //load the weather:
+        //Fixme: add in wind direction etc
+        weather = scenarioData.weather;
+        rainIntensity = scenarioData.rainIntensity;
+        visibilityRange = scenarioData.visibilityRange;
+        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
+
+        //Fixme: Think about time zone handling
+        //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
+        scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+
+        //set internal scenario time to start
+        scenarioTime = startTime * SECONDS_IN_HOUR;
+    */
+
+    //for each peer, build basic scenario information (own ship, other ships, excluding this one)
+    std::vector<ScenarioData> peerScenarioData;
+    for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
+        //Own ship data gets populated from other ship (including 1st leg if it exists
+        if (masterScenarioData.otherShipsData.size() > thisPeer) {
+
+            ScenarioData thisPeerData  = masterScenarioData;
+
+            thisPeerData.ownShipData.ownShipName = thisPeerData.otherShipsData.at(thisPeer).shipName;
+            thisPeerData.ownShipData.initialLat = thisPeerData.otherShipsData.at(thisPeer).initialLat;
+            thisPeerData.ownShipData.initialLong = thisPeerData.otherShipsData.at(thisPeer).initialLong;
+            if (thisPeerData.otherShipsData.at(thisPeer).legs.size()>0) {
+                thisPeerData.ownShipData.initialSpeed = thisPeerData.otherShipsData.at(thisPeer).legs.at(0).speed;
+                thisPeerData.ownShipData.initialBearing = thisPeerData.otherShipsData.at(thisPeer).legs.at(0).bearing;
+            } else {
+                thisPeerData.ownShipData.initialSpeed = 0;
+                thisPeerData.ownShipData.initialBearing = 0;
+            }
+            //remove thisPeerData.otherShipsData.at(thisPeer)
+            thisPeerData.otherShipsData.erase(thisPeerData.otherShipsData.begin()+thisPeer);
+
+            //Send initial scenario information (reliable packet)
+            network.sendString(thisPeerData.serialise(),true,thisPeer);
+
+            //Store the data for this peer
+            peerScenarioData.push_back(thisPeerData);
+
+        } else {
+            std::cout << "More Bridge Command peers than ships available from scenario." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    //Send initial scenario update (BC)
     //TODO: Implement
 
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
