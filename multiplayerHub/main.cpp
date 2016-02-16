@@ -17,10 +17,12 @@
 // main.cpp
 
 #include <iostream>
+#include <chrono>
 
 // Include the Irrlicht header
 #include "irrlicht.h"
 #include "../Utilities.hpp"
+#include "../Constants.hpp"
 #include "../ScenarioDataStructure.hpp"
 #include "Network.hpp"
 
@@ -100,32 +102,24 @@ int main()
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
 
     //Get time information and initialise
-    /*
-            irr::f32 startTime = scenarioData.startTime;
-        irr::u32 startDay=scenarioData.startDay;
-        irr::u32 startMonth=scenarioData.startMonth;
-        irr::u32 startYear=scenarioData.startYear;
+    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+    uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+    uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
-        //load the sun times
-        irr::f32 sunRise = scenarioData.sunRise;
-        irr::f32 sunSet  = scenarioData.sunSet;
-        if(sunRise==0.0) {sunRise=6;}
-        if(sunSet==0.0) {sunSet=18;}
+    std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> previousTime = currentTime;
 
-        //load the weather:
-        //Fixme: add in wind direction etc
-        weather = scenarioData.weather;
-        rainIntensity = scenarioData.rainIntensity;
-        visibilityRange = scenarioData.visibilityRange;
-        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
+    //irr::u32 currentTime = millisecs(); //Computer clock time (ms)
+    //irr::u32 previousTime = currentTime; //Computer clock time (ms)
+    irr::f32 accelerator = 1.0;
 
-        //Fixme: Think about time zone handling
-        //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
-        scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+    //Fixme: Think about time zone handling
+    //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
+    scenarioOffsetTime = Utilities::dmyToTimestamp(masterScenarioData.startDay,masterScenarioData.startMonth,masterScenarioData.startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+    scenarioTime = masterScenarioData.startTime * SECONDS_IN_HOUR; //set internal scenario time to start
+    absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
 
-        //set internal scenario time to start
-        scenarioTime = startTime * SECONDS_IN_HOUR;
-    */
+
 
     //for each peer, build basic scenario information (own ship, other ships, excluding this one)
     std::vector<ScenarioData> peerScenarioData;
@@ -167,6 +161,17 @@ int main()
     while(true) {
 
         //Do time handling here.
+        currentTime = std::chrono::system_clock::now();
+        std::chrono::duration<float> elapsedTime = currentTime-previousTime;
+        previousTime = currentTime;
+
+        float deltaTime = accelerator*(std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime)).count()/1000.0;
+
+        scenarioTime += deltaTime;
+        absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
+
+        std::cout << "Time: " << absoluteTime << std::endl;
+
 
         //for each peer
         for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
