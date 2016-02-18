@@ -83,6 +83,8 @@
 		<Unit filename="../libs/enet/win32.h" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="ShipPositions.cpp" />
+		<Unit filename="ShipPositions.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

@@ -25,12 +25,29 @@
 #include "../Constants.hpp"
 #include "../ScenarioDataStructure.hpp"
 #include "Network.hpp"
+#include "ShipPositions.hpp"
 
 
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
+
+std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 scenarioTime, irr::f32 accelerator)
+{
+    //timestamp (unix),
+    //timestamp of start of first scenario day,
+    //time since start of first scenario day (float),
+    //accelerator#
+    std::string timeString = Utilities::lexical_cast<std::string>(absoluteTime);
+    timeString.append(",");
+    timeString.append(Utilities::lexical_cast<std::string>(offsetTime));
+    timeString.append(",");
+    timeString.append(Utilities::lexical_cast<std::string>(scenarioTime));
+    timeString.append(",");
+    timeString.append(Utilities::lexical_cast<std::string>(accelerator));
+    return timeString;
+}
 
 int main()
 {
@@ -101,6 +118,15 @@ int main()
     //Load overall scenario information
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
 
+    irr::u32 numberOfOtherShips;
+    if (masterScenarioData.otherShipsData.size() > 0) {
+        numberOfOtherShips = masterScenarioData.otherShipsData.size()-1;
+    } else {
+        numberOfOtherShips = 0;
+    }
+
+    ShipPositions shipPositionData(numberOfOtherShips+1);
+
     //Get time information and initialise
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
@@ -118,8 +144,6 @@ int main()
     scenarioOffsetTime = Utilities::dmyToTimestamp(masterScenarioData.startDay,masterScenarioData.startMonth,masterScenarioData.startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
     scenarioTime = masterScenarioData.startTime * SECONDS_IN_HOUR; //set internal scenario time to start
     absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
-
-
 
     //for each peer, build basic scenario information (own ship, other ships, excluding this one)
     std::vector<ScenarioData> peerScenarioData;
@@ -154,9 +178,6 @@ int main()
         }
     }
 
-    //Send initial scenario update (BC)
-    //TODO: Implement
-
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
     while(true) {
 
@@ -172,10 +193,61 @@ int main()
 
         std::cout << "Time: " << absoluteTime << std::endl;
 
+        std::string timeString = makeTimeString(absoluteTime,scenarioOffsetTime,scenarioTime,accelerator);
 
         //for each peer
         for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
-            network.sendString("BC0#1#2#3#4#5#6#7#8#9#10",false,thisPeer); //TESTING ONLY
+
+            std::string stringToSend = "BC";
+
+            //0: Time info
+            stringToSend.append(timeString);
+            stringToSend.append("#");
+
+            //1: Own ship info: Not used
+            stringToSend.append("0#");
+
+            //2: Number of other ships: Size of master other ships list -1, as we don't count the one being used as our own ship
+            stringToSend.append(Utilities::lexical_cast<std::string>(numberOfOtherShips));
+            stringToSend.append(",");
+            stringToSend.append("0,0#"); //Number of buoys and MOB, values not used
+
+            //3: Info on each other ship
+            //For each Other, terminated with '#' at end of list
+            //    PosX,PosZ,Heading,speed (kts),0(SART), 0 (Number of legs, 0 as we don't need leg info in multiplayer)|
+            std::string otherShipsString;
+            for(unsigned int i = 0; i < (numberOfOtherShips+1); i++) {
+                if (i!=thisPeer) {
+                    irr::f32 thisOtherShipX = 0;
+                    irr::f32 thisOtherShipZ = 0;
+                    irr::f32 thisOtherShipSpeed = 0;
+                    irr::f32 thisOtherShipBearing = 0;
+                    shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipX));
+                    otherShipsString.append(",");
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipZ));
+                    otherShipsString.append(",");
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipBearing));
+                    otherShipsString.append(",");
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipSpeed));
+                    otherShipsString.append(",");
+                    otherShipsString.append("0,0,0"); //SART enabled, number of legs,leg info
+                    otherShipsString.append("|"); //End of other ship record
+                }
+            }
+            //strip trailing '|' if present
+            if(otherShipsString.length()>0) {
+                otherShipsString = otherShipsString.substr(0,otherShipsString.length()-1);
+            }
+            stringToSend.append(otherShipsString);
+            stringToSend.append("#");
+
+            //Remaining entries need to be present, but values aren't used
+            stringToSend.append("4#5#6#7#8#9#10");
+
+            std::cout << stringToSend << std::endl;
+
+            network.sendString(stringToSend,false,thisPeer);
 
             /*
             For multiplayer, only actually uses info from records 0 (time), 2 (Number of entities) & 3 (Other ship info). BC Checks number of entries, so just need dummies
