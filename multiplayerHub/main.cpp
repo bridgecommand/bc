@@ -222,7 +222,9 @@ int main()
                     irr::f32 thisOtherShipZ = 0;
                     irr::f32 thisOtherShipSpeed = 0;
                     irr::f32 thisOtherShipBearing = 0;
+
                     shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipX));
                     otherShipsString.append(",");
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipZ));
@@ -272,8 +274,18 @@ int main()
 
             network.listenForMessages();
             std::string receivedMessage = network.getLatestMessage(thisPeer);
-            if (!receivedMessage.empty()) {
-                //Do stuff with received message
+            if (receivedMessage.length() > 3 && receivedMessage.substr(0,3) == "MPF") { //Starts with 'MPF' for multiplayer feedback
+                receivedMessage = receivedMessage.substr(3,receivedMessage.length()-3); //Strip 'MPF'
+                std::vector<std::string> splitMessage = Utilities::split(receivedMessage,'#');
+                //Store information
+                if (splitMessage.size() == 5) {
+                    irr::f32 thisOtherShipX = Utilities::lexical_cast<irr::f32>(splitMessage.at(0));
+                    irr::f32 thisOtherShipZ = Utilities::lexical_cast<irr::f32>(splitMessage.at(1));
+                    irr::f32 thisOtherShipBearing = Utilities::lexical_cast<irr::f32>(splitMessage.at(2));
+                    irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(3));
+                    irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
+                    shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+                }
             }
         } //End of loop for each peer
     } //End of main loop

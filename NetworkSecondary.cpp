@@ -234,6 +234,8 @@ void NetworkSecondary::receiveMessage()
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getHeading()));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
 
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
