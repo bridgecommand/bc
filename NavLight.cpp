@@ -116,7 +116,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
         f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
         u32 positionInSequence = timeInSequence;
         if (positionInSequence>=sequenceLength) {positionInSequence = sequenceLength-1;} //Should not be required, but double check we're not off the end of the sequence
-        if (sequence[positionInSequence] == 'D') {
+        if (sequence[positionInSequence] == 'D' || sequence[positionInSequence] == 'd') {
             lightNode->setVisible(false);
         }
     }

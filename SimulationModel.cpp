@@ -604,6 +604,9 @@ SimulationModel::~SimulationModel()
         //update buoys (for lights)
         buoys.update(deltaTime,scenarioTime,tideHeight,lightLevel);
 
+        //Update land lights
+        landLights.update(deltaTime,scenarioTime,lightLevel);
+
         //std::cout << tideHeight << std::endl;
 
         //update own ship
