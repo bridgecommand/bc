@@ -98,7 +98,7 @@ void Network::connectToServer(std::string hostnames)
             /* received. Reset the peer in the event the 1 second */
             /* had run out without any significant event. */
             enet_peer_reset (peer);
-            std::cout << "ENet connection failed to:\"" << thisHostname << "\"" << std::endl;
+            std::cout << "ENet connection failed to:" << thisHostname << std::endl;
         }
     }
 }
