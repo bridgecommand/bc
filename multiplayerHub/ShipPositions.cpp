@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ShipPositions.hpp"
+#include "../Constants.hpp"
 
 ShipPositions::ShipPositions(unsigned int numberOfShips)
 {
@@ -38,11 +39,17 @@ void ShipPositions::setShipPosition(unsigned int shipNumber, irr::f32 scenarioTi
 void ShipPositions::getShipPosition(const unsigned int& shipNumber, const irr::f32& scenarioTime, irr::f32& positionX, irr::f32& positionZ, irr::f32& speed, irr::f32& bearing)
 {
     if (shipNumber < shipData.size()) {
-        //TODO: Extrapolate from recorded time to get result for this scenarioTime
+        //Extrapolate from last recorded point
         speed = shipData.at(shipNumber).speed;
-        positionX = shipData.at(shipNumber).positionX;
-        positionZ = shipData.at(shipNumber).positionZ;
         bearing = shipData.at(shipNumber).bearing;
+
+        irr::f32 deltaTime = scenarioTime - shipData.at(shipNumber).timeStored;
+        irr::f32 deltaX = deltaTime*speed*KTS_TO_MPS*sin(RAD_IN_DEG*bearing);
+        irr::f32 deltaZ = deltaTime*speed*KTS_TO_MPS*cos(RAD_IN_DEG*bearing);
+
+        positionX = shipData.at(shipNumber).positionX + deltaX;
+        positionZ = shipData.at(shipNumber).positionZ + deltaZ;
+
     } else {
         speed = 0;
         positionX = 0;
