@@ -247,7 +247,7 @@ int main()
             //Remaining entries need to be present, but values aren't used
             stringToSend.append("4#5#6#7#8#9#10");
 
-            std::cout << stringToSend << std::endl;
+            //std::cout << stringToSend << std::endl;
 
             network.sendString(stringToSend,false,thisPeer);
 
