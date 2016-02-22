@@ -184,10 +184,13 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 int main (int argc, char ** argv)
 {
 
-    //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument.
+    //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H.
     std::string iniFilename = "bc5.ini";
     if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
         iniFilename = "map.ini";
+    }
+    if ((argc>1)&&(strcmp(argv[1],"-H")==0)) {
+        iniFilename = "mph.ini";
     }
 
     //Mac OS:
