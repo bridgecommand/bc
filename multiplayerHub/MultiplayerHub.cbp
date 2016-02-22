@@ -41,6 +41,8 @@
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../IniFile.cpp" />
 		<Unit filename="../IniFile.hpp" />
+		<Unit filename="../Lang.cpp" />
+		<Unit filename="../Lang.hpp" />
 		<Unit filename="../ScenarioDataStructure.cpp" />
 		<Unit filename="../ScenarioDataStructure.hpp" />
 		<Unit filename="../Utilities.cpp" />
@@ -83,8 +85,12 @@
 		<Unit filename="../libs/enet/win32.h" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="ScenarioChoice.cpp" />
+		<Unit filename="ScenarioChoice.hpp" />
 		<Unit filename="ShipPositions.cpp" />
 		<Unit filename="ShipPositions.hpp" />
+		<Unit filename="StartupEventReceiver.cpp" />
+		<Unit filename="StartupEventReceiver.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

@@ -25,6 +25,8 @@
 #include "../Constants.hpp"
 #include "../IniFile.hpp"
 #include "../ScenarioDataStructure.hpp"
+#include "../Lang.hpp"
+#include "ScenarioChoice.hpp"
 #include "Network.hpp"
 #include "ShipPositions.hpp"
 
@@ -90,23 +92,64 @@ int main()
         Send out update to each pc, including other ship positions
     */
 
-
-
-    std::string hostnames;
-    std::cout << "Please enter comma separated list of multiplayer PC hostnames:" << std::endl;
-    std::cin >> hostnames;
-
     //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
+    std::string iniFilename = "mph.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
 
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-    if (port == 0) {
-        port = 18304;
+
+    //Sensible defaults if not set
+    if (graphicsWidth==0) {graphicsWidth=800;}
+    if (graphicsHeight==0) {graphicsHeight=600;}
+    if (graphicsDepth==0) {graphicsDepth=32;}
+    if (port == 0) {port = 18304;}
+
+
+    //Startup irrlicht
+    //create device
+    irr::SIrrlichtCreationParameters deviceParameters;
+    deviceParameters.DriverType = irr::video::EDT_OPENGL;
+    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.Bits = graphicsDepth;
+    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
+    device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::scene::ISceneManager* smgr = device->getSceneManager();
+
+    //Chdir back on OSX
+    //Mac OS:
+	#ifdef __APPLE__
+    chdir(exeFolderPath.c_str());
+	#endif
+
+    //Set font : Todo - make this configurable
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    if (font == 0) {
+        std::cout << "Could not load font, using default" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
     }
+
+    Lang language("languageMultiplayer.txt");
+
+    //Get user input for hostnames and scenario name
+    std::string hostnames;
+    std::string scenarioName;
+    //Scenario path - default to user dir if it exists
+    std::string scenarioPath = "Scenarios/";
+    if (Utilities::pathExists(userFolder + scenarioPath)) {
+        scenarioPath = userFolder + scenarioPath;
+    }
+    ScenarioChoice scenarioChoice(device,&language);
+    scenarioChoice.chooseScenario(scenarioName,hostnames,scenarioPath);
+
 
     Network network(port);
     network.connectToServer(hostnames);
@@ -115,16 +158,6 @@ int main()
 
     std::cout << "Connected to " << numberOfPeers << " Bridge Command peers." << std::endl;
 
-    //Choose scenario
-    std::string scenarioName = "";
-    //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "Scenarios/";
-    if (Utilities::pathExists(userFolder + scenarioPath)) {
-        scenarioPath = userFolder + scenarioPath;
-    }
-
-    std::cout << "Please enter scenario name:" << std::endl;
-    std::cin >> scenarioName;
 
     //Load overall scenario information
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
@@ -190,7 +223,8 @@ int main()
     }
 
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
-    while(true) {
+    while(device->run())
+    {
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
@@ -202,7 +236,8 @@ int main()
         scenarioTime += deltaTime;
         absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
 
-        std::cout << "Time: " << absoluteTime << std::endl;
+        //std::cout << "Time: " << absoluteTime << std::endl;
+        sleep(1); //Todo: Make a better way of pausing so we don't flood clients with data!
 
         std::string timeString = makeTimeString(absoluteTime,scenarioOffsetTime,scenarioTime,accelerator);
 
@@ -299,6 +334,11 @@ int main()
                 }
             }
         } //End of loop for each peer
+
+        driver->beginScene();
+        smgr->drawAll();
+        driver->endScene();
+
     } //End of main loop
 
     return(0);

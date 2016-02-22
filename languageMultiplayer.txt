@@ -1,0 +1,8 @@
+Multiplayer Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+This file currently must be saved in ANSI (Windows-1252) format. In the future this should be
+changed to UTF-8, for proper portability!
+
+scnChoose="Please choose a scenario:"
+hostname="Hostname (PC name) for each player.\nEntries should be comma separated."
+
