@@ -23,6 +23,7 @@
 #include "irrlicht.h"
 #include "../Utilities.hpp"
 #include "../Constants.hpp"
+#include "../IniFile.hpp"
 #include "../ScenarioDataStructure.hpp"
 #include "Network.hpp"
 #include "ShipPositions.hpp"
@@ -95,7 +96,17 @@ int main()
     std::cout << "Please enter comma separated list of multiplayer PC hostnames:" << std::endl;
     std::cin >> hostnames;
 
-    int port = 18304; //TODO: Read in from ini file
+    //Read basic ini settings
+    std::string iniFilename = "bc5.ini";
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+
+    int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    if (port == 0) {
+        port = 18304;
+    }
 
     Network network(port);
     network.connectToServer(hostnames);
