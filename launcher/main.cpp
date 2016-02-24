@@ -86,7 +86,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ed.app/Contents/MacOS/mh", "mh", NULL);
+                        execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./multiPlayerHub", "multiPlayerHub", NULL);
