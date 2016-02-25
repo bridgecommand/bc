@@ -222,9 +222,17 @@ int main()
         }
     }
 
+    //Add some simple information to the GUI, so the user knows it's running
+    //Add text, which will list connected peers, and current time.
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
+    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.99*sh),true);
+
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
     while(device->run())
     {
+
+        driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
@@ -335,8 +343,47 @@ int main()
             }
         } //End of loop for each peer
 
-        driver->beginScene();
+
+        //TODO:
+        //Update gui time here, using Utilities::timestampToString(absoluteTime)
+        std::string displayTime = Utilities::timestampToString(absoluteTime);
+        irr::core::stringw displayText = language.translate("time");
+        displayText.append(L" ");
+        displayText.append(irr::core::stringw(displayTime.c_str()));
+        displayText.append(L"\n\n");
+        for(unsigned int i = 0; i<numberOfPeers; i++ ) {
+            irr::f32 thisOtherShipX = 0;
+            irr::f32 thisOtherShipZ = 0;
+            irr::f32 thisOtherShipSpeed = 0;
+            irr::f32 thisOtherShipBearing = 0;
+
+            shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+            std::string thisShipNumber = Utilities::lexical_cast<std::string>(i+1);
+            std::string stringSpeed = Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS);
+            std::string stringHeading = Utilities::lexical_cast<std::string>(thisOtherShipBearing);
+            irr::core::stringw thisShipInfo = language.translate("ship");
+            thisShipInfo.append(L": ");
+            thisShipInfo.append(irr::core::stringw(thisShipNumber.c_str()));
+            thisShipInfo.append(L"\n");
+            thisShipInfo.append(language.translate("speed"));
+            thisShipInfo.append(L" ");
+            thisShipInfo.append(irr::core::stringw(stringSpeed.c_str()));
+            thisShipInfo.append(L" ");
+            thisShipInfo.append(language.translate("knots"));
+            thisShipInfo.append(L" ");
+            thisShipInfo.append(language.translate("heading"));
+            thisShipInfo.append(L" ");
+            thisShipInfo.append(irr::core::stringw(stringHeading.c_str()));
+            thisShipInfo.append(L"\n");
+
+            displayText.append(thisShipInfo);
+        }
+
+
+        text->setText(displayText.c_str());
+
         smgr->drawAll();
+        device->getGUIEnvironment()->drawAll();
         driver->endScene();
 
     } //End of main loop

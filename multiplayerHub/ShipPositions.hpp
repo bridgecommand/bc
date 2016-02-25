@@ -23,7 +23,7 @@
 
 struct ShipPosition {
     public:
-    irr::f32 speed, positionX, positionZ, bearing, timeStored;
+    irr::f32 speed, positionX, positionZ, bearing, timeStored; //Speed in m/s
     ShipPosition():speed(0),positionX(0),positionZ(0), bearing(0), timeStored(0){}
 };
 

@@ -5,4 +5,10 @@ changed to UTF-8, for proper portability!
 
 scnChoose="Please choose a scenario:"
 hostname="Hostname (PC name) for each player.\nEntries should be comma separated."
+ok="Ok"
+time="Time:"
+ship="Ship"
+speed="Speed:"
+knots="Kts"
+heading="Heading"
 

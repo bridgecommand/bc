@@ -44,8 +44,8 @@ void ShipPositions::getShipPosition(const unsigned int& shipNumber, const irr::f
         bearing = shipData.at(shipNumber).bearing;
 
         irr::f32 deltaTime = scenarioTime - shipData.at(shipNumber).timeStored;
-        irr::f32 deltaX = deltaTime*speed*KTS_TO_MPS*sin(RAD_IN_DEG*bearing);
-        irr::f32 deltaZ = deltaTime*speed*KTS_TO_MPS*cos(RAD_IN_DEG*bearing);
+        irr::f32 deltaX = deltaTime*speed*sin(RAD_IN_DEG*bearing);
+        irr::f32 deltaZ = deltaTime*speed*cos(RAD_IN_DEG*bearing);
 
         positionX = shipData.at(shipNumber).positionX + deltaX;
         positionZ = shipData.at(shipNumber).positionZ + deltaZ;
