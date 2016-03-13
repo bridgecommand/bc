@@ -131,7 +131,15 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
             const io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)
                 //std::cout << fileName.c_str() << std::endl;
-                scenarioList.push_back(fileName.c_str());
+
+                //Check if name ends with "_mp" for multiplayer:
+                if (fileName.size() >= 3) {
+                    const io::path endChars = fileName.subString(fileName.size()-3,3,true);
+                    if (endChars == io::path("_mp")) {
+                        scenarioList.push_back(fileName.c_str());
+                    }
+                }
+
             }
         }
     }
