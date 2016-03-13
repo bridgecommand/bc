@@ -59,8 +59,10 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a World BridgeCommand.app/Contents/Resources/World
 	cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 	cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
+	cp -a mph.ini BridgeCommand.app/Contents/Resources/mph.ini
 	cp -a language.txt BridgeCommand.app/Contents/Resources/language.txt
 	cp -a languageController.txt BridgeCommand.app/Contents/Resources/languageController.txt
+	cp -a languageMultiplayer.txt BridgeCommand.app/Contents/Resources/languageMultiplayer.txt 
 	cp -a languageLauncher.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
 	cp -a languageIniEditor.txt BridgeCommand.app/Contents/Resources/languageIniEditor.txt
 endif
