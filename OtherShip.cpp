@@ -42,6 +42,15 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
         basePath = userFolder + basePath;
     }
 
+    //Fall back to loading from own ship folder if it doesn't exist in Otherships (useful for multiplayer)
+    if (!Utilities::pathExists(basePath)) {
+        basePath = "Models/Ownship/" + name + "/";
+        //Read model from user dir if it exists there.
+        if (Utilities::pathExists(userFolder + basePath)) {
+            basePath = userFolder + basePath;
+        }
+    }
+
     //Load from individual boat.ini file
     std::string iniFilename = basePath + "boat.ini";
 
