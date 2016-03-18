@@ -355,7 +355,7 @@ int main (int argc, char ** argv)
 
     //Create data structures to hold own ship, other ship and buoy data
     GeneralData generalData;
-    OwnShipData ownShipData;
+    OwnShipEditorData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipEditorData> otherShipsData;
 

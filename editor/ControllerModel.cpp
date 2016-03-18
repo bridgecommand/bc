@@ -27,7 +27,7 @@
 #endif // _WIN32
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
 {
 
     this->gui = gui;

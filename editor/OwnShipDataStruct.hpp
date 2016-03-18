@@ -20,7 +20,7 @@
 #include "irrlicht.h"
 #include "ShipDataStruct.hpp"
 
-struct OwnShipData : public ShipData //To hold information about a ship's position and heading
+struct OwnShipEditorData : public ShipData //To hold information about a ship's position and heading
 {
     irr::f32 initialSpeed;
 };
