@@ -357,7 +357,7 @@ int main (int argc, char ** argv)
     GeneralData generalData;
     OwnShipData ownShipData;
     std::vector<PositionData> buoysData;
-    std::vector<OtherShipData> otherShipsData;
+    std::vector<OtherShipEditorData> otherShipsData;
 
     //Make default name the first in the list, in case it isn't set by an update later
     if (ownShipTypes.size() > 0) {
@@ -405,7 +405,6 @@ int main (int argc, char ** argv)
         if(generalData.sunRiseTime==0.0) {generalData.sunRiseTime=6;}
         if(generalData.sunSetTime==0.0) {generalData.sunSetTime=18;}
 
-
         //Load own ship information
         ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
         ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
@@ -418,7 +417,7 @@ int main (int argc, char ** argv)
         for(u32 i=1;i<=numberOfOtherShips;i++) {
 
             //Temporary structure to load data
-            OtherShipData thisShip;
+            OtherShipEditorData thisShip;
 
             //Get initial position
             thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
@@ -445,6 +444,7 @@ int main (int argc, char ** argv)
                 legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
             }
             //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+
             Leg stopLeg;
             stopLeg.bearing=0;
             stopLeg.speed=0;
@@ -454,6 +454,8 @@ int main (int argc, char ** argv)
 
             //Add to array.
             otherShipsData.push_back(thisShip);
+
+
         }
 
     }
