@@ -31,7 +31,7 @@
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes);
+    GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes, bool multiplayer);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {

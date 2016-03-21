@@ -25,7 +25,7 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes)
+GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes, bool multiplayer)
 {
     this->device = device;
     guienv = device->getGUIEnvironment();
@@ -188,6 +188,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     //These get updated in updateGuiData
     mapCentreX = 0;
     mapCentreZ = 0;
+
+    //Add an info box if in multiplayer mode
+    if (multiplayer) {
+        guienv->addMessageBox(L"",language->translate("multiplayerinfo").c_str());
+    }
 
 }
 

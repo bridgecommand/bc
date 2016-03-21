@@ -79,7 +79,7 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
     fileList->drop();
 }
 
-void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, Lang* language, std::string userFolder)
+void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
 //Will fill one of worldName of scenarioName, depending on user's selection.
 {
 
@@ -111,7 +111,8 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
 
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
     irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.545*su,0.200*sh,0.920*su,0.80*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.545*su,0.200*sh,0.920*su,0.60*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUICheckBox* multiplayerBox = device->getGUIEnvironment()->addCheckBox(false,core::rect<s32>(0.545*su,0.700*sh,0.920*su,0.730*sh),scnWorldChoiceWindow,-1,language->translate("multiplayer").c_str());
     irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),core::rect<s32>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),core::rect<s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
@@ -148,6 +149,27 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
         driver->endScene();
     }
 
+    irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
+    if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
+        scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
+
+        //check if name ends in _mp, and if so, record that this is a multiplayer scenario
+        multiplayer = false;
+        if (scenarioName.length() >= 3) {
+            std::string endChars = scenarioName.substr(scenarioName.length()-3,3);
+            if (endChars == "_mp" || endChars == "_MP") {
+                multiplayer = true;
+            }
+        }
+    }
+
+    irr::s32 selectedWorld = startupReceiver.getWorldSelected();
+    if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
+        worldName = worldDirList.at(selectedWorld);
+        multiplayer = multiplayerBox->isChecked();
+    }
+    //Store multiplayer status if new scenario
+
     //Clean up
     scenarioText->remove();
     worldText->remove();
@@ -155,17 +177,10 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     worldListBox->remove();
     scenarioOK->remove();
     worldOK->remove();
+    multiplayerBox->remove();
     scnWorldChoiceWindow->remove();
+    device->setEventReceiver(0);
 
-    irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
-    if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
-        scenarioName = scenarioDirList.at(selectedScenario);
-    }
-
-    irr::s32 selectedWorld = startupReceiver.getWorldSelected();
-    if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
-        worldName = worldDirList.at(selectedWorld);
-    }
 }
 
 int copyDir(std::string source, std::string dest)
@@ -311,11 +326,16 @@ int main (int argc, char ** argv)
     //Query which scenario or world to start with
     std::string worldName;
     std::string scenarioName;
-    findWhatToLoad(device, worldName, scenarioName, &language, userFolder); //worldName or scenarioName updated by reference
+    bool multiplayer;
+    findWhatToLoad(device, worldName, scenarioName, multiplayer, &language, userFolder); //worldName or scenarioName updated by reference
     //check that one of worldName and scenarioName have been set
     if (worldName.length() == 0 && scenarioName.length() == 0) {
         std::cout << "Failed to select a scenario or world model to use" << std::endl;
         exit(EXIT_FAILURE);
+    }
+
+    if (multiplayer) {
+        std::cout << "Multiplayer mode" << std::endl;
     }
 
     //if worldName isn't set, we need to find it from the scenario.
@@ -341,15 +361,22 @@ int main (int argc, char ** argv)
     //Get a list of available boat models (own and other ships)
     std::vector<std::string> ownShipTypes;
     std::vector<std::string> otherShipTypes;
+
+    std::string otherShipModelPath;
     std::string ownShipModelPath = "Models/Ownship/";
-    std::string otherShipModelPath = "Models/Othership/";
+    if (multiplayer) {
+        otherShipModelPath = "Models/Ownship/"; //If in multiplayer mode, use own ship list for both own and others
+    } else {
+        otherShipModelPath = "Models/Othership/";
+    }
+
     if (Utilities::pathExists(userFolder + ownShipModelPath)) {ownShipModelPath = userFolder + ownShipModelPath;}
     if (Utilities::pathExists(userFolder + otherShipModelPath)) {otherShipModelPath = userFolder + otherShipModelPath;}
     getDirectoryList(device,ownShipTypes,ownShipModelPath);
     getDirectoryList(device,otherShipTypes,otherShipModelPath);
 
     //GUI class
-    GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes);
+    GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes, multiplayer);
 
     //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
 
@@ -358,6 +385,11 @@ int main (int argc, char ** argv)
     OwnShipEditorData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipEditorData> otherShipsData;
+
+    //Change default scenario name if in multiplayer mode
+    if (multiplayer) {
+        generalData.scenarioName.append("_mp");
+    }
 
     //Make default name the first in the list, in case it isn't set by an update later
     if (ownShipTypes.size() > 0) {
