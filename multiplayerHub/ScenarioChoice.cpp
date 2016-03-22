@@ -48,11 +48,13 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
 
     gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),core::rect<s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
-    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
+    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.20*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.32*su,0.40*sh,0.98*su,0.50*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.32*su,0.13*sh,0.98*su, 0.22*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",core::rect<s32>(0.32*su,0.20*sh,0.98*su,0.23*sh));
+
+    gui::IGUIStaticText* instructionText = gui->addStaticText(language->translate("startupInstructions").c_str(),core::rect<s32>(0.32*su,0.26*sh,0.98*su, 0.32*sh));
 
     //add credits text
     //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
@@ -101,6 +103,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     instruction->remove(); instruction=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
+    instructionText->remove();instructionText=0;
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.
 

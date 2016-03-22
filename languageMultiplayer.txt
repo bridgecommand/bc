@@ -11,4 +11,5 @@ ship="Ship"
 speed="Speed:"
 knots="Kts"
 heading="Heading"
+startupInstructions="Please ensure each player has started Bridge Command first, then start the scenario by clicking OK below."
 
