@@ -191,7 +191,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     //Add an info box if in multiplayer mode
     if (multiplayer) {
-        guienv->addMessageBox(L"",language->translate("multiplayerinfo").c_str());
+        irr::gui::IGUIWindow* multiplayerInstructions = guienv->addMessageBox(L"",language->translate("multiplayerinfo").c_str());
     }
 
 }
