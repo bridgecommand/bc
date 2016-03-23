@@ -35,6 +35,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     u32 sh = driver->getScreenSize().Height;
 
     this->language = language;
+    this->multiplayer = multiplayer;
 
     //gui
 
@@ -114,6 +115,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     guienv->addStaticText(language->translate("scenario").c_str(),core::rect<s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
     scenarioName = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
     overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),core::rect<s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
+
+    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),core::rect<s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
+    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),core::rect<s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
 
     apply = guienv->addButton(core::rect<s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
     save = guienv->addButton(core::rect<s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
@@ -315,13 +319,35 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
         scenarioName->setText(core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
     }
-    if (scenarioInfo.willOverwrite) {
-        //Show in red if it will overwrite an existing scenario
-        scenarioName->setOverrideColor(video::SColor(255, 255, 0, 0));
-        overwriteWarning->setVisible(true);
+
+    //Initially set name colour as default, unless a warning is shown
+    scenarioName->enableOverrideColor(false);
+
+    //Check and warn about name validitiy for multiplayer
+    if (multiplayer && ! scenarioInfo.multiplayerName) {
+        //Name needs to have _mp at end
+        scenarioName->setOverrideColor(video::SColor(255, 255, 165, 0)); //Highlight in orange
+        //Show relevant warning
+        multiplayerNameWarning->setVisible(true);
+        notMultiplayerNameWarning->setVisible(false);
+    } else if (!multiplayer && scenarioInfo.multiplayerName) {
+        //Name needs not to have _mp at end
+        scenarioName->setOverrideColor(video::SColor(255, 255, 165, 0)); //Highlight in orange
+        //Show relevant warning
+        notMultiplayerNameWarning->setVisible(true);
+        multiplayerNameWarning->setVisible(false);
     } else {
-        scenarioName->enableOverrideColor(false);
-        overwriteWarning->setVisible(false);
+        //Name ok for multiplayer status - hide warnings
+        multiplayerNameWarning->setVisible(false);
+        notMultiplayerNameWarning->setVisible(false);
+    }
+
+    //Check and warn about scenario overwriting
+    if (scenarioInfo.willOverwrite) {
+        scenarioName->setOverrideColor(video::SColor(255, 255, 0, 0)); //Highlight in red
+        overwriteWarning->setVisible(true); //Show warning
+    } else {
+        overwriteWarning->setVisible(false); //Hide warning
     }
 
     //End of duplicated section

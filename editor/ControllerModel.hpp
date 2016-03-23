@@ -50,7 +50,7 @@ public:
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void setScenarioData(GeneralData newData); //To be called from event receiver
-    void checkOverwrite(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
+    void checkName(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
 
     void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
     void deleteLeg(irr::s32 ship, irr::s32 index);

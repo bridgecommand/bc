@@ -515,7 +515,7 @@ int main (int argc, char ** argv)
     }
 
     //Check if pre-set scenario name will cause an overwrite when saved
-    controller.checkOverwrite();
+    controller.checkName();
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain/*, &network*/);

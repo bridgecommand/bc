@@ -41,7 +41,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     this->generalData = generalData;
     this->worldName = worldName;
 
-    checkOverwrite();//Check if the scenario name (preset in generalData) will cause an overwrite, and if so, set flag in generalData
+    checkName();//Check if the scenario name (preset in generalData) will cause an overwrite, and if so, set flag in generalData
 
     unscaledMap = 0;
     scaledMap = 0;
@@ -252,10 +252,10 @@ void ControllerModel::setScenarioData(GeneralData newData)
 {
     *generalData=newData;
     recalculateLegTimes(); //These need to be updated to match new startTime.
-    checkOverwrite(); //Check if the scenario name chosen will cause overwrite, and if so, set flag.
+    checkName(); //Check if the scenario name chosen will cause overwrite, and if so, set flag.
 }
 
-void ControllerModel::checkOverwrite() //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
+void ControllerModel::checkName() //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
 {
     //Find path to scenario folder
     std::string userFolder = Utilities::getUserDir();
@@ -272,6 +272,16 @@ void ControllerModel::checkOverwrite() //Check if the scenario name chosen will 
     } else {
         generalData->willOverwrite=false;
     }
+
+    //Check if a valid multiplayer name
+    generalData->multiplayerName=false;
+    if (generalData->scenarioName.length() >= 3) {
+        std::string endChars = generalData->scenarioName.substr(generalData->scenarioName.length()-3,3);
+        if (endChars == "_mp" || endChars == "_MP") {
+            generalData->multiplayerName = true;
+        }
+    }
+
 }
 
 void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)  //Change othership (or ownship) course, speed etc.

@@ -123,6 +123,8 @@ private:
     irr::gui::IGUIComboBox* rain;
     irr::gui::IGUIEditBox* scenarioName;
     irr::gui::IGUIStaticText* overwriteWarning;
+    irr::gui::IGUIStaticText* notMultiplayerNameWarning;
+    irr::gui::IGUIStaticText* multiplayerNameWarning;
     irr::gui::IGUIButton* apply;
     irr::gui::IGUIButton* save;
 
@@ -131,6 +133,7 @@ private:
     irr::f32 mapCentreZ;
 
     bool editBoxesNeedUpdating;
+    bool multiplayer;
 
     GeneralData oldScenarioInfo; //Keep a copy of the data we have already displayed, so the dialog boxes only get updated when needed
 
