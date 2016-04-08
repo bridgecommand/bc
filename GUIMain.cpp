@@ -36,10 +36,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         this->language = language;
 
         //gui - add scroll bars for speed and heading control directly
-        //Todo: Switch these to outline scroll bars as well (and test!)
-        hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh), 0, GUI_ID_HEADING_SCROLL_BAR);
+        hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
         hdgScrollbar->setMax(360);
-        spdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh), 0, GUI_ID_SPEED_SCROLL_BAR);
+        spdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_SPEED_SCROLL_BAR,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh));
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
         //Hide speed/heading bars normally
         hdgScrollbar->setVisible(false);
@@ -65,14 +64,16 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiSpeed = 0;
 
         //Add weather scroll bar
-        weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
+        //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
+        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
         //Add rain scroll bar
-        rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
+        //rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
+        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -80,7 +81,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rainScrollbar->setToolTipText(language->translate("rain").c_str());
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
-        visibilityScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
+        //visibilityScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
+        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -145,9 +147,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         portScrollbar->drop();
         stbdScrollbar->drop();
         rudderScrollbar->drop();
+
+        weatherScrollbar->drop();
+        visibilityScrollbar->drop();
+        rainScrollbar->drop();
+
         radarGainScrollbar->drop();
         radarClutterScrollbar->drop();
         radarRainScrollbar->drop();
+
+        hdgScrollbar->drop();
+        spdScrollbar->drop();
     }
 
     bool GUIMain::getShowInterface() const
