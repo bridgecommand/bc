@@ -26,6 +26,7 @@ class GUIMain //Create, build and update GUI
 {
 public:
     GUIMain(irr::IrrlichtDevice* device, Lang* language);
+    ~GUIMain();
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {

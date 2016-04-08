@@ -18,6 +18,9 @@
 
 #include "Constants.hpp"
 #include "Utilities.hpp"
+#include "OutlineScrollBar.h"
+#include "ScrollDial.h"
+
 
 using namespace irr;
 
@@ -33,6 +36,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         this->language = language;
 
         //gui - add scroll bars for speed and heading control directly
+        //Todo: Switch these to outline scroll bars as well (and test!)
         hdgScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh), 0, GUI_ID_HEADING_SCROLL_BAR);
         hdgScrollbar->setMax(360);
         spdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh), 0, GUI_ID_SPEED_SCROLL_BAR);
@@ -42,15 +46,15 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         spdScrollbar->setVisible(false);
 
         //Add engine and rudder bars
-        portScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh), 0, GUI_ID_PORT_SCROLL_BAR);
+        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
-        stbdScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh), 0, GUI_ID_STBD_SCROLL_BAR);
+        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh));
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
-        rudderScrollbar = guienv->addScrollBar(true,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh), 0, GUI_ID_RUDDER_SCROLL_BAR);
+        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh));
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
@@ -101,9 +105,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.110*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.120*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
-        radarGainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.060*su,0.010*sh,0.085*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar = guienv->addScrollBar(false, core::rect<s32>(0.085*su,0.010*sh,0.110*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar = guienv->addScrollBar(false,    core::rect<s32>(0.110*su,0.010*sh,0.135*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarGainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.085*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.130*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.175*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
@@ -132,6 +137,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
+    }
+
+    GUIMain::~GUIMain()
+    {
+        //Drop scroll bars created with 'new'
+        portScrollbar->drop();
+        stbdScrollbar->drop();
+        rudderScrollbar->drop();
+        radarGainScrollbar->drop();
+        radarClutterScrollbar->drop();
+        radarRainScrollbar->drop();
     }
 
     bool GUIMain::getShowInterface() const

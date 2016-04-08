@@ -76,6 +76,8 @@
 		<Unit filename="OtherShip.hpp" />
 		<Unit filename="OtherShips.cpp" />
 		<Unit filename="OtherShips.hpp" />
+		<Unit filename="OutlineScrollBar.cpp" />
+		<Unit filename="OutlineScrollBar.h" />
 		<Unit filename="OwnShip.cpp" />
 		<Unit filename="OwnShip.hpp" />
 		<Unit filename="RadarCalculation.cpp" />
@@ -91,6 +93,8 @@
 		<Unit filename="ScenarioChoice.hpp" />
 		<Unit filename="ScenarioDataStructure.cpp" />
 		<Unit filename="ScenarioDataStructure.hpp" />
+		<Unit filename="ScrollDial.cpp" />
+		<Unit filename="ScrollDial.h" />
 		<Unit filename="Ship.cpp" />
 		<Unit filename="Ship.hpp" />
 		<Unit filename="SimulationModel.cpp" />
