@@ -45,11 +45,17 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         spdScrollbar->setVisible(false);
 
         //Add engine and rudder bars
-        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
+        portText = guienv->addStaticText(language->translate("portEngine").c_str(),core::rect<s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));//I18n
+        portText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        portText->setOverrideColor(video::SColor(255,128,0,0));
+        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.68*sh, 0.04*su, 0.99*sh));
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
-        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh));
+        stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),core::rect<s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));//I18n
+        stbdText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        stbdText->setOverrideColor(video::SColor(255,0,128,0));
+        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.68*sh, 0.08*su, 0.99*sh));
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
@@ -186,12 +192,15 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     void GUIMain::hideStbdEngineBar()
     {
         stbdScrollbar->setVisible(false);
+        stbdText->setVisible(false);
     }
 
     void GUIMain::hideEngineAndRudder()
     {
         stbdScrollbar->setVisible(false);
         portScrollbar->setVisible(false);
+        stbdText->setVisible(false);
+        portText->setVisible(false);
         rudderScrollbar->setVisible(false);
     }
 
@@ -212,6 +221,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rainScrollbar->setVisible(showInterface);
         visibilityScrollbar->setVisible(showInterface);
         radarText->setVisible(showInterface);
+        stbdText->setVisible(showInterface); //FIXME: Make sure this is only shown if we have two engines
+        portText->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);

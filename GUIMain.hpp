@@ -75,6 +75,8 @@ private:
     irr::gui::IGUIScrollBar* portScrollbar;
     irr::gui::IGUIScrollBar* stbdScrollbar;
     irr::gui::IGUIScrollBar* rudderScrollbar;
+    irr::gui::IGUIStaticText* portText;
+    irr::gui::IGUIStaticText* stbdText;
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIButton* pausedButton;

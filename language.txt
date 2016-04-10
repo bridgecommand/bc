@@ -22,6 +22,9 @@ ebl="EBL: "
 minSymbol="'"
 bearing="Brg"
 
+portEngine="Port\nEng"
+stbdEngine="Stbd\nEng"
+
 radarMainTab="Main"
 radarEBLVRMTab="EBL\nVRM"
 radarPITab="PI"
