@@ -19,10 +19,10 @@ namespace gui
 //! constructor
 OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
-				core::rect<s32> rectangle, bool noclip)
+				core::rect<s32> rectangle, core::array<s32> ticMarks, bool noclip)
 	: IGUIScrollBar(environment, parent, id, rectangle), Dragging(false), Horizontal(horizontal),
 	Pos(0), DrawPos(0),
-	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0)
+	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0), ticMarks(ticMarks)
 {
 	#ifdef _DEBUG
 	setDebugName("OutlineScrollBar");
@@ -37,6 +37,12 @@ OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment
 	setTabOrder(-1);
 
 	setPos(0);
+
+	//Initially hardcoded for testing
+	ticMarks.push_back(-10);
+	ticMarks.push_back(0);
+	ticMarks.push_back(10);
+
 }
 
 
@@ -234,25 +240,43 @@ void OutlineScrollBar::draw()
             endPoint.X = startPoint.X;
             startPoint.Y = AbsoluteRect.UpperLeftCorner.Y;
             endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
-
-			//SliderRect.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X + DrawPos - 1;
-			//SliderRect.LowerRightCorner.X = SliderRect.UpperLeftCorner.X + 2;
 		}
 		else
 		{
-			//SliderRect.UpperLeftCorner.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos - 1;
-			//SliderRect.LowerRightCorner.Y = SliderRect.UpperLeftCorner.Y + 2;
-
 			startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos;
             endPoint.Y = startPoint.Y;
             startPoint.X = AbsoluteRect.UpperLeftCorner.X;
             endPoint.X = AbsoluteRect.LowerRightCorner.X;
-
 		}
 
-		//skin->draw3DButtonPaneStandard(this, SliderRect, &AbsoluteClippingRect);
-		//Environment->getVideoDriver()->draw2DRectangle(video::SColor(skinAlpha,0,0,0),SliderRect,&AbsoluteClippingRect);
 		Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
+
+		//draw tic marks
+		for (int i = 0; i<ticMarks.size();i++) {
+            if (Horizontal)
+            {
+                f32 f = RelativeRect.getWidth() / range();
+                s32 ticPos = (s32)(( ticMarks[i] - Min ) * f);
+
+                startPoint.X = AbsoluteRect.UpperLeftCorner.X + ticPos;
+                endPoint.X = startPoint.X;
+
+                startPoint.Y = 0.75*AbsoluteRect.UpperLeftCorner.Y + 0.25*AbsoluteRect.LowerRightCorner.Y;
+                endPoint.Y = 0.25*AbsoluteRect.UpperLeftCorner.Y + 0.75*AbsoluteRect.LowerRightCorner.Y;
+            }
+            else
+            {
+                f32 f = RelativeRect.getHeight()/ range();
+                s32 ticPos = (s32)(( ticMarks[i] - Min ) * f);
+
+                startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + ticPos;
+                endPoint.Y = startPoint.Y;
+
+                startPoint.X = 0.75*AbsoluteRect.UpperLeftCorner.X + 0.25*AbsoluteRect.LowerRightCorner.X;
+                endPoint.X = 0.25*AbsoluteRect.UpperLeftCorner.X + 0.75*AbsoluteRect.LowerRightCorner.X;
+            }
+            Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
+        }
 	}
 
 	// draw buttons

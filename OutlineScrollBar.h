@@ -18,7 +18,7 @@ namespace gui
 
 		//! constructor
 		OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, core::rect<s32> rectangle,
+			IGUIElement* parent, s32 id, core::rect<s32> rectangle, core::array<s32> ticMarks=core::array<s32>(),
 			bool noclip=false);
 
 		//! destructor
@@ -96,6 +96,8 @@ namespace gui
 		s32 DesiredPos;
 		//u32 LastChange;
 		video::SColor CurrentIconColor;
+
+		core::array<s32> ticMarks;
 
 		f32 range () const { return (f32) ( Max - Min ); }
 	};

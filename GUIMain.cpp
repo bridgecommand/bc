@@ -48,21 +48,27 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         spdScrollbar->setVisible(false);
 
         //Add engine and rudder bars
-        portText = guienv->addStaticText(language->translate("portEngine").c_str(),core::rect<s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));//I18n
+        core::array<s32> rudderTics; rudderTics.push_back(-25);rudderTics.push_back(-20);rudderTics.push_back(-15);rudderTics.push_back(-10);rudderTics.push_back(-5);
+        rudderTics.push_back(0);rudderTics.push_back(5);rudderTics.push_back(10);rudderTics.push_back(15);rudderTics.push_back(20);rudderTics.push_back(25);
+
+        core::array<s32> engineTics; engineTics.push_back(-80);engineTics.push_back(-60);engineTics.push_back(-40);engineTics.push_back(-20);
+        engineTics.push_back(0);engineTics.push_back(20);engineTics.push_back(40);engineTics.push_back(60);engineTics.push_back(80);
+
+        portText = guienv->addStaticText(language->translate("portEngine").c_str(),core::rect<s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
         portText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         portText->setOverrideColor(video::SColor(255,128,0,0));
-        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.68*sh, 0.04*su, 0.99*sh));
+        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.68*sh, 0.04*su, 0.99*sh),engineTics);
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
-        stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),core::rect<s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));//I18n
+        stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),core::rect<s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));
         stbdText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         stbdText->setOverrideColor(video::SColor(255,0,128,0));
-        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.68*sh, 0.08*su, 0.99*sh));
+        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.68*sh, 0.08*su, 0.99*sh),engineTics);
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
-        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh));
+        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics);
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
