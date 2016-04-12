@@ -124,7 +124,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Tell gui to hide the second engine scroll bar if we have a single engine
         if (ownShip.isSingleEngine()) {
-            gui->hideStbdEngineBar();
+            gui->setSingleEngine();
         }
 
         //Tell gui to hide all ship controls if in secondary mode

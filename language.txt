@@ -24,6 +24,7 @@ bearing="Brg"
 
 portEngine="Port\nEng"
 stbdEngine="Stbd\nEng"
+engine="Engine"
 
 radarMainTab="Main"
 radarEBLVRMTab="EBL\nVRM"

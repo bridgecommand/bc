@@ -35,6 +35,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         this->language = language;
 
+        //default to double engine in gui
+        singleEngine = false;
+
         //gui - add scroll bars for speed and heading control directly
         hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
         hdgScrollbar->setMax(360);
@@ -189,10 +192,23 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         updateVisibility();
     }
 
-    void GUIMain::hideStbdEngineBar()
+    void GUIMain::setSingleEngine()
     {
+        singleEngine = true; //Used to choose what to show/hide later if we change visibility
         stbdScrollbar->setVisible(false);
         stbdText->setVisible(false);
+
+        //Get max extent of both engine scroll bars
+        core::vector2d<s32> lowerRight = stbdScrollbar->getRelativePosition().LowerRightCorner;
+        core::vector2d<s32> upperLeft = portScrollbar->getRelativePosition().UpperLeftCorner;
+        portScrollbar->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
+
+        //Change text from 'portEngine' to 'engine', and use all space
+        portText->setText(language->translate("engine").c_str());
+        portText->enableOverrideColor(false);
+        lowerRight = stbdText->getRelativePosition().LowerRightCorner;
+        upperLeft = portText->getRelativePosition().UpperLeftCorner;
+        portText->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
     }
 
     void GUIMain::hideEngineAndRudder()
@@ -221,7 +237,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rainScrollbar->setVisible(showInterface);
         visibilityScrollbar->setVisible(showInterface);
         radarText->setVisible(showInterface);
-        stbdText->setVisible(showInterface); //FIXME: Make sure this is only shown if we have two engines
+        stbdText->setVisible(showInterface && !singleEngine);
         portText->setVisible(showInterface);
 
         //Items to show if we're not
