@@ -19,10 +19,11 @@ namespace gui
 //! constructor
 OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
-				core::rect<s32> rectangle, core::array<s32> ticMarks, bool noclip)
+				core::rect<s32> rectangle, core::array<s32> shortTicMarks, core::array<s32> longTicMarks)
 	: IGUIScrollBar(environment, parent, id, rectangle), Dragging(false), Horizontal(horizontal),
 	Pos(0), DrawPos(0),
-	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0), ticMarks(ticMarks)
+	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0),
+	shortTicMarks(shortTicMarks), longTicMarks(longTicMarks)
 {
 	#ifdef _DEBUG
 	setDebugName("OutlineScrollBar");
@@ -30,18 +31,13 @@ OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment
 
 //	refreshControls();
 
-	setNotClipped(noclip);
+	//setNotClipped(noclip);
 
 	// this element can be tabbed to
 	setTabStop(true);
 	setTabOrder(-1);
 
 	setPos(0);
-
-	//Initially hardcoded for testing
-	ticMarks.push_back(-10);
-	ticMarks.push_back(0);
-	ticMarks.push_back(10);
 
 }
 
@@ -252,28 +248,53 @@ void OutlineScrollBar::draw()
 		Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
 
 		//draw tic marks
-		for (int i = 0; i<ticMarks.size();i++) {
+		for (int i = 0; i<shortTicMarks.size();i++) {
             if (Horizontal)
             {
                 f32 f = RelativeRect.getWidth() / range();
-                s32 ticPos = (s32)(( ticMarks[i] - Min ) * f);
+                s32 ticPos = (s32)(( shortTicMarks[i] - Min ) * f);
 
                 startPoint.X = AbsoluteRect.UpperLeftCorner.X + ticPos;
                 endPoint.X = startPoint.X;
 
-                startPoint.Y = 0.75*AbsoluteRect.UpperLeftCorner.Y + 0.25*AbsoluteRect.LowerRightCorner.Y;
-                endPoint.Y = 0.25*AbsoluteRect.UpperLeftCorner.Y + 0.75*AbsoluteRect.LowerRightCorner.Y;
+                startPoint.Y = 0.6*AbsoluteRect.UpperLeftCorner.Y + 0.4*AbsoluteRect.LowerRightCorner.Y;
+                endPoint.Y   = 0.4*AbsoluteRect.UpperLeftCorner.Y + 0.6*AbsoluteRect.LowerRightCorner.Y;
             }
             else
             {
                 f32 f = RelativeRect.getHeight()/ range();
-                s32 ticPos = (s32)(( ticMarks[i] - Min ) * f);
+                s32 ticPos = (s32)(( shortTicMarks[i] - Min ) * f);
 
                 startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + ticPos;
                 endPoint.Y = startPoint.Y;
 
-                startPoint.X = 0.75*AbsoluteRect.UpperLeftCorner.X + 0.25*AbsoluteRect.LowerRightCorner.X;
-                endPoint.X = 0.25*AbsoluteRect.UpperLeftCorner.X + 0.75*AbsoluteRect.LowerRightCorner.X;
+                startPoint.X = 0.6*AbsoluteRect.UpperLeftCorner.X + 0.4*AbsoluteRect.LowerRightCorner.X;
+                endPoint.X   = 0.4*AbsoluteRect.UpperLeftCorner.X + 0.6*AbsoluteRect.LowerRightCorner.X;
+            }
+            Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
+        }
+        for (int i = 0; i<longTicMarks.size();i++) {
+            if (Horizontal)
+            {
+                f32 f = RelativeRect.getWidth() / range();
+                s32 ticPos = (s32)(( longTicMarks[i] - Min ) * f);
+
+                startPoint.X = AbsoluteRect.UpperLeftCorner.X + ticPos;
+                endPoint.X = startPoint.X;
+
+                startPoint.Y = 0.8*AbsoluteRect.UpperLeftCorner.Y + 0.2*AbsoluteRect.LowerRightCorner.Y;
+                endPoint.Y   = 0.2*AbsoluteRect.UpperLeftCorner.Y + 0.8*AbsoluteRect.LowerRightCorner.Y;
+            }
+            else
+            {
+                f32 f = RelativeRect.getHeight()/ range();
+                s32 ticPos = (s32)(( longTicMarks[i] - Min ) * f);
+
+                startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + ticPos;
+                endPoint.Y = startPoint.Y;
+
+                startPoint.X = 0.8*AbsoluteRect.UpperLeftCorner.X + 0.2*AbsoluteRect.LowerRightCorner.X;
+                endPoint.X   = 0.2*AbsoluteRect.UpperLeftCorner.X + 0.8*AbsoluteRect.LowerRightCorner.X;
             }
             Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
         }
