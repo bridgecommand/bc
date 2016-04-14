@@ -49,11 +49,49 @@ if (!IsVisible)
 	//Find the centre point
 	core::vector2d<s32> centrePoint = AbsoluteRect.getCenter();
 
+    //Find integer angles within +- angleRange degrees of heading
 
-	//Temp: Just draw the value
-	font->draw(core::stringw(heading),core::rect<s32>(centrePoint,core::vector2d<s32>(100,100)),video::SColor(skinAlpha,0,0,0),false,false);
+    s32 angleRange = 20;
 
+    s32 minAngle = ceil(heading - angleRange);
+    s32 maxAngle = floor(heading + angleRange);
 
+    f32 pxPerDegree = (f32)AbsoluteRect.getWidth()/(f32)(angleRange*2);
+
+    //Draw tics
+    core::vector2d<s32> startPoint;
+	core::vector2d<s32> endPoint;
+
+    for (int ticAng = minAngle; ticAng<= maxAngle; ticAng++) {
+        startPoint.X = centrePoint.X + pxPerDegree*(ticAng-heading);
+        endPoint.X = startPoint.X;
+        endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
+
+        //Make tic length depend on whether it's a multiple of 10, 5 or other
+        if (ticAng % 10 == 0) {
+            startPoint.Y = 0.5*centrePoint.Y + 0.5*AbsoluteRect.UpperLeftCorner.Y;
+
+            //Draw position
+            s32 displayAng = ticAng;
+            if (displayAng < 0) {displayAng+=360;}
+            if (displayAng > 359) {displayAng-=360;}
+            font->draw(core::stringw(displayAng),core::rect<s32>(startPoint.X - 100, AbsoluteRect.UpperLeftCorner.Y, startPoint.X + 100, AbsoluteRect.LowerRightCorner.Y),video::SColor(skinAlpha,0,0,0),true,false,&AbsoluteRect);
+
+        } else if (ticAng % 5 == 0) {
+            startPoint.Y = centrePoint.Y;
+        } else {
+            startPoint.Y = 0.5*centrePoint.Y + 0.5*AbsoluteRect.LowerRightCorner.Y;
+        }
+
+        Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
+    }
+
+    //Draw a centre line
+    startPoint.X = centrePoint.X;
+    startPoint.Y = AbsoluteRect.UpperLeftCorner.Y;
+    endPoint.X = centrePoint.X;
+    endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
+    Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
 
 }
 
