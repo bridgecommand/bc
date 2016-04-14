@@ -21,7 +21,6 @@
 #include "OutlineScrollBar.h"
 #include "ScrollDial.h"
 
-
 using namespace irr;
 
 GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
@@ -79,6 +78,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.61*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
+
+        //Add heading indicator
+        headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),core::rect<s32>(0.10*su,0.800*sh,0.44*su,0.850*sh));
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
@@ -175,6 +177,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         hdgScrollbar->drop();
         spdScrollbar->drop();
+
+        headingIndicator->drop();
     }
 
     bool GUIMain::getShowInterface() const
@@ -304,6 +308,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         guiLat = lat;
         guiLong = longitude;
         guiHeading = hdg; //Heading in degrees
+        headingIndicator->setHeading(guiHeading);
         viewHdg = viewAngle+hdg;
         viewElev = viewElevationAngle;
         while (viewHdg>=360) {viewHdg-=360;}

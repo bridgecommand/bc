@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
+#include "HeadingIndicator.h"
 #include <string>
 
 class GUIMain //Create, build and update GUI
@@ -93,6 +94,7 @@ private:
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
+    irr::gui::HeadingIndicator* headingIndicator;
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
     irr::gui::IGUIButton* binosButton;
