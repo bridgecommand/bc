@@ -46,6 +46,8 @@
 		<Unit filename="Constants.hpp" />
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
+		<Unit filename="HeadingIndicator.cpp" />
+		<Unit filename="HeadingIndicator.h" />
 		<Unit filename="IniFile.cpp" />
 		<Unit filename="IniFile.hpp" />
 		<Unit filename="LandLights.cpp" />
