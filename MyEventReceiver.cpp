@@ -146,7 +146,7 @@ using namespace irr;
 
                 if (id == GUIMain::GUI_ID_BINOS_INTERFACE_BUTTON)
                 {
-                    model->toggleZoom();
+                    model->setZoom(((gui::IGUIButton*)event.GUIEvent.Caller)->isPressed());
                 }
 
                 if (id == GUIMain::GUI_ID_RADAR_EBL_LEFT_BUTTON)

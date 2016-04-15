@@ -531,12 +531,12 @@ SimulationModel::~SimulationModel()
         radarCamera.setActive();
     }
 
-    void SimulationModel::toggleZoom()
+    void SimulationModel::setZoom(bool zoomOn)
     {
-        if (zoom > 1) {
-            zoom = 1;
-        } else {
+        if (zoomOn) {
             zoom = 7.0; //Binoculars magnification
+        } else {
+            zoom = 1.0;
         }
         camera.setHFOV(core::degToRad(viewAngle)/zoom);
     }

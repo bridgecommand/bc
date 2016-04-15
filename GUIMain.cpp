@@ -153,6 +153,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
         //binoculars button
         binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.92*sh,0.19*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton->setIsPushButton(true);
 
         //Take bearing button
         bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());

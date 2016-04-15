@@ -129,7 +129,7 @@ public:
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);
-    void toggleZoom();
+    void setZoom(bool zoomOn);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
