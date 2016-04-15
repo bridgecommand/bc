@@ -323,6 +323,10 @@ int main (int argc, char ** argv)
 	//Check if user scenario dir exists. If not, try to copy scenarios into the user dir.
     checkUserScenarioDir();
 
+    //Flush old key/clicks etc, with a 0.2s pause
+    device->sleep(200);
+    device->clearSystemMessages();
+
     //Query which scenario or world to start with
     std::string worldName;
     std::string scenarioName;
