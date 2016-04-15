@@ -58,14 +58,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         portText = guienv->addStaticText(language->translate("portEngine").c_str(),core::rect<s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
         portText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         portText->setOverrideColor(video::SColor(255,128,0,0));
-        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.68*sh, 0.04*su, 0.99*sh),engineTics,centreTic);
+        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.675*sh, 0.04*su, 0.99*sh),engineTics,centreTic);
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
         stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),core::rect<s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));
         stbdText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         stbdText->setOverrideColor(video::SColor(255,0,128,0));
-        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.68*sh, 0.08*su, 0.99*sh),engineTics,centreTic);
+        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.675*sh, 0.08*su, 0.99*sh),engineTics,centreTic);
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
@@ -75,12 +75,12 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         rudderScrollbar->setPos(0);
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.61*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 
         //Add heading indicator
-        headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),core::rect<s32>(0.10*su,0.800*sh,0.44*su,0.850*sh));
+        headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),core::rect<s32>(0.10*su,0.630*sh,0.44*su,0.680*sh));
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
@@ -251,6 +251,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarText->setVisible(showInterface);
         stbdText->setVisible(showInterface && !singleEngine);
         portText->setVisible(showInterface);
+        headingIndicator->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
@@ -357,9 +358,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         u8 lonDegrees = (int) displayLong;
 
         //update heading display element
-        core::stringw displayText = language->translate("hdg");
-        displayText.append(f32To1dp(guiHeading).c_str());
-        displayText.append(L"\n");
+        core::stringw displayText;
 
         if (hasGPS) {
             displayText.append(language->translate("pos"));
