@@ -1,7 +1,7 @@
 Bridge Command Language file. To translate, please change the part after the 'equals' symbol
 The characters \n will be replaced with a line break, so multiple lines of text are possible
-This file currently must be saved in ANSI (Windows-1252) format. In the future this should be
-changed to UTF-8, for proper portability!
+
+This file must be saved with UTF-8 encoding.
 
 ok="OK"
 scnChoose="Please choose a scenario:"
@@ -55,4 +55,4 @@ showinterface="Show"
 hideinterface="Hide"
 
 fps="FPS: "
-deg="°"
+deg="Â°"

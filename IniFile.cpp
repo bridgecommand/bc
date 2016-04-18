@@ -19,6 +19,7 @@
 #include <fstream> //for ini loading
 #include <string> //for ini loading
 #include <iostream>
+#include <codecvt>
 #include "Utilities.hpp" //for ini loading
 
 // Irrlicht Namespaces
@@ -124,6 +125,9 @@ namespace IniFile
 
         //FIXME: Need to set UTF-8 locale here for file wifstream (required <codecvt> not included in libstdc++ currently, so can't do this at the moment!?
         //Currently seems to work for ANSI files (?But may depend on user's locale?)
+
+        //file.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+        file.imbue(std::locale("en_US.UTF8"));
 
         std::wstring valuePart = L"";
         if (file.is_open())

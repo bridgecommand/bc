@@ -33,6 +33,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add directory="./libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Compiler>
 		<Unit filename="Angles.cpp" />
