@@ -123,11 +123,12 @@ namespace IniFile
     {
         std::wifstream file (fileName.c_str());
 
-        //FIXME: Need to set UTF-8 locale here for file wifstream (required <codecvt> not included in libstdc++ currently, so can't do this at the moment!?
-        //Currently seems to work for ANSI files (?But may depend on user's locale?)
-
-        //file.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+        //Set UTF-8 or closest equivalent (on Windows)
+        #ifdef _WIN32
+        file.imbue(std::locale("english_us.65001")); //TODO: Test on Windows
+        #else
         file.imbue(std::locale("en_US.UTF8"));
+        #endif
 
         std::wstring valuePart = L"";
         if (file.is_open())
