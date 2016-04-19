@@ -14,17 +14,16 @@ BinPath = ..
 # general compiler settings (might need to be set when compiling the lib, too)
 # preprocessor flags, e.g. defines and include paths
 UNAME_S := $(shell uname -s)
-USERCPPFLAGS = -I../libs/enet/enet-1.3.11/include
+USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
 else
 USERCXXFLAGS = -O3 -ffast-math
 endif
-#USERCXXFLAGS = -g -Wall
 # linker flags such as additional libraries and link paths
 ifeq ($(UNAME_S),Darwin)
-USERLDFLAGS =  -L../libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+USERLDFLAGS = -stdlib=libc++ -L../libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 else
 USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 endif
