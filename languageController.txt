@@ -1,7 +1,7 @@
 Map Controller Language file. To translate, please change the part after the 'equals' symbol
 The characters \n will be replaced with a line break, so multiple lines of text are possible
 
-This file must be saved with UTF-8 encoding.
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
 
 waiting = "Waiting..."
 startBC = "Please start the Bridge Command session"
@@ -54,4 +54,4 @@ multiplayer="Multiplayer mode?"
 multiplayerinfo="Editing a multiplayer scenario:\n\nThe 'own ship' entry will be ignored.\n\nEach 'other ship' is used in order by the multiplayer clients as their ship. Add one leg for each ship to set the initial speed and direction."
 multiplayerNeedsMP="Multiplayer scenario name must end in _mp"
 nonMultiplayerNoMP="Non-multiplayer scenario name must not end in _mp"
-deg="\B0"
+deg="°"
