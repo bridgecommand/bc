@@ -19,8 +19,10 @@
 #include <fstream> //for ini loading
 #include <string> //for ini loading
 #include <iostream>
-#include <codecvt>
 #include "Utilities.hpp" //for ini loading
+#ifndef _WIN32
+#include <codecvt> //For UTF-8 reading
+#endif // _WIN32
 
 // Irrlicht Namespaces
 using namespace irr;
@@ -77,6 +79,12 @@ namespace IniFile
     std::string iniFileToString(std::string fileName, std::string command)
     {
         std::ifstream file (fileName.c_str());
+
+        //Set UTF-8 on Linux/OSX etc
+        #ifndef _WIN32
+        file.imbue(std::locale("en_US.UTF8"));
+        #endif
+
         std::string valuePart = "";
         if (file.is_open())
         {
@@ -123,10 +131,8 @@ namespace IniFile
     {
         std::wifstream file (fileName.c_str());
 
-        //Set UTF-8 or closest equivalent (on Windows)
-        #ifdef _WIN32
-        file.imbue(std::locale("english_us.65001")); //TODO: Test on Windows
-        #else
+        //Set UTF-8 on Linux/OSX etc
+        #ifndef _WIN32
         file.imbue(std::locale("en_US.UTF8"));
         #endif
 
