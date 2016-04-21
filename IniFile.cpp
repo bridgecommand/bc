@@ -82,7 +82,11 @@ namespace IniFile
 
         //Set UTF-8 on Linux/OSX etc
         #ifndef _WIN32
-        file.imbue(std::locale("en_US.UTF8"));
+        try {
+            file.imbue(std::locale("en_US.UTF8"));
+        } catch (const std::runtime_error& runtimeError) {
+            file.imbue(std::locale(""));
+        }
         #endif
 
         std::string valuePart = "";
@@ -133,7 +137,11 @@ namespace IniFile
 
         //Set UTF-8 on Linux/OSX etc
         #ifndef _WIN32
-        file.imbue(std::locale("en_US.UTF8"));
+        try {
+            file.imbue(std::locale("en_US.UTF8"));
+        } catch (const std::runtime_error& runtimeError) {
+            file.imbue(std::locale(""));
+        }
         #endif
 
         std::wstring valuePart = L"";
