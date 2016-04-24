@@ -18,7 +18,7 @@
 				</Linker>
 			</Target>
 			<Target title="Linux">
-				<Option output="../scenarioEditor" prefix_auto="1" extension_auto="1" />
+				<Option output="../bridgecommand-ed" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />

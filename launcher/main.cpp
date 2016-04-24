@@ -50,7 +50,7 @@ public:
                         execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand", "bridgecommand", NULL);
+                        execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
                     #endif
                     #endif
                 }
@@ -63,7 +63,7 @@ public:
                         execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./mapController", "mapController", NULL);
+                        execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
                     #endif
                     #endif
                 }
@@ -76,7 +76,7 @@ public:
                         execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./scenarioEditor", "scenarioEditor", NULL);
+                        execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
                     #endif
                     #endif
                 }
@@ -89,7 +89,7 @@ public:
                         execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./multiPlayerHub", "multiPlayerHub", NULL);
+                        execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
                     #endif
                     #endif
                 }
@@ -103,7 +103,7 @@ public:
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bcIniEditor", "bcIniEditor", NULL);
+                        execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
                     #endif
                     #endif
                 }
@@ -116,7 +116,7 @@ public:
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bcIniEditor", "bcIniEditor", "-M", NULL);
+                        execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
                     #endif
                     #endif
                 }
@@ -129,7 +129,7 @@ public:
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bcIniEditor", "bcIniEditor", "-H", NULL);
+                        execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
                     #endif
                     #endif
                 }

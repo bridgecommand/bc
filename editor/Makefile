@@ -3,7 +3,7 @@
 # and be sure that CXX is set to a valid compiler
 
 # Name of the executable created (.exe will be added automatically if necessary)
-Target := scenarioEditor
+Target := bridgecommand-ed
 # List of source files, separated by spaces
 Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ControllerModel.cpp EventReceiver.cpp GUI.cpp StartupEventReceiver.cpp
 # Path to Irrlicht directory, should contain include/ and lib/

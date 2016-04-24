@@ -5,11 +5,7 @@
 UNAME_S := $(shell uname -s)
 
 # Name of the executable created (.exe will be added automatically if necessary)
-ifeq ($(UNAME_S),Darwin)
-Target := multiPlayerHub.bin
-else
-Target := multiPlayerHub
-endif
+Target := bridgecommand-mh
 
 # List of source files, separated by spaces
 Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ../ScenarioDataStructure.cpp Network.cpp ScenarioChoice.cpp ShipPositions.cpp StartupEventReceiver.cpp ../libs/enet/callbacks.c ../libs/enet/compress.c ../libs/enet/host.c ../libs/enet/list.c ../libs/enet/packet.c ../libs/enet/peer.c ../libs/enet/protocol.c ../libs/enet/unix.c ../libs/enet/win32.c
