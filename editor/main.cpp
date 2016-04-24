@@ -22,6 +22,7 @@
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
+#include <unistd.h>
 #endif //__APPLE__
 
 //Includes for copying scenario files
