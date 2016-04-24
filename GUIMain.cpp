@@ -112,7 +112,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //add tab control for radar
         radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
-        irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
+        //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
         //irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
         //irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
@@ -126,9 +126,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.110*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.120*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
-        radarGainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.085*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.130*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.175*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarGainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.2000*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
 
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
@@ -137,10 +137,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarClutterScrollbar->setToolTipText(language->translate("clutter").c_str());
         radarRainScrollbar->setToolTipText(language->translate("rain").c_str());
 
-        eblLeftButton = guienv->addButton(core::rect<s32>(0.025*su,0.100*sh,0.092*su,0.130*sh),radarEBLTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
-        eblRightButton = guienv->addButton(core::rect<s32>(0.158*su,0.100*sh,0.225*su,0.130*sh),radarEBLTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
-        eblUpButton = guienv->addButton(core::rect<s32>(0.092*su,0.070*sh,0.158*su,0.100*sh),radarEBLTab,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
-        eblDownButton = guienv->addButton(core::rect<s32>(0.092*su,0.130*sh,0.158*su,0.160*sh),radarEBLTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
+        eblLeftButton = guienv->addButton(core::rect<s32>(0.060*su,0.160*sh,0.115*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
+        eblRightButton = guienv->addButton(core::rect<s32>(0.170*su,0.160*sh,0.225*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
+        eblUpButton = guienv->addButton(core::rect<s32>(0.115*su,0.130*sh,0.170*su,0.160*sh),mainRadarTab,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
+        eblDownButton = guienv->addButton(core::rect<s32>(0.115*su,0.190*sh,0.170*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
