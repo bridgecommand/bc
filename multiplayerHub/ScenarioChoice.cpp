@@ -70,6 +70,10 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     //select list box as active, so user can use up/down arrows without needing to click
     gui->setFocus(scenarioListBox);
 
+    //Flush old key/clicks etc, with a 0.2s pause
+    device->sleep(200);
+    device->clearSystemMessages();
+
     //Link to our event receiver
     StartupEventReceiver startupReceiver(scenarioListBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON);
     device->setEventReceiver(&startupReceiver);
