@@ -24,11 +24,12 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Compiler>
 		<Linker>
-			<Add library="..\libs\Irrlicht\irrlicht-1.8.1\lib\Win32-gcc\libIrrlicht.a" />
+			<Add library="../libs/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
 			<Add directory="../libs/Irrlicht/irrlicht-1.8.1/include" />
 		</Linker>
 		<Unit filename="../IniFile.cpp" />
