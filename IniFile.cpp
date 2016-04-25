@@ -84,7 +84,10 @@ namespace IniFile
         #ifndef _WIN32
         try {
             #ifdef __APPLE__
-            setlocale(LC_CTYPE, "UTF-8");
+            char* thisLocale = setlocale(LC_ALL, "");
+            if (thisLocale) {
+                file.imbue(std::locale(thisLocale));
+            }
             #else
             file.imbue(std::locale("en_US.UTF8"));
             #endif
@@ -143,7 +146,10 @@ namespace IniFile
         #ifndef _WIN32
         try {
             #ifdef __APPLE__
-            setlocale(LC_CTYPE, "UTF-8");
+            char* thisLocale = setlocale(LC_ALL, "");
+            if (thisLocale) {
+                file.imbue(std::locale(thisLocale));
+            }
             #else
             file.imbue(std::locale("en_US.UTF8"));
             #endif
