@@ -35,6 +35,10 @@ irr::core::stringw Lang::translate(std::string phraseName)
     //Fall back
     if (translatedPhrase==L"") {
         translatedPhrase = wphraseName;
+        //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
+        if (phraseName == "deg") {
+            translatedPhrase = L"°";
+        }
     }
 
     //Convert '\n' characters within string to a newline - based on http://stackoverflow.com/a/24315631

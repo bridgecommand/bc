@@ -55,4 +55,4 @@ showinterface="Show"
 hideinterface="Hide"
 
 fps="FPS: "
-deg="°"
+
