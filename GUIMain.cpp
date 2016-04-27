@@ -130,6 +130,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.2000*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
 
+        (guienv->addStaticText(language->translate("gain").c_str(),core::rect<s32>(0.0600*su,0.070*sh,0.1100*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("clutter").c_str(),core::rect<s32>(0.1165*su,0.070*sh,0.1675*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.1750*su,0.070*sh,0.2250*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
