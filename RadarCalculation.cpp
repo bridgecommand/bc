@@ -259,13 +259,13 @@ void RadarCalculation::decreaseEBLBrg()
     }
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime)
 {
-    scan(terrain, ownShip, buoys, otherShips, weather, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    scan(terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     render(radarImage); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime)
 {
     core::vector3df position = ownShip.getPosition();
 
@@ -394,7 +394,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             }
 
             //Add radar noise
-            scanArray[currentScanAngle][currentStep] += radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,0); //FIXME: Needs rain intensity and wind direction
+            scanArray[currentScanAngle][currentStep] += radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,rain); //FIXME: Needs rain intensity and wind direction
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
 
