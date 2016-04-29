@@ -137,9 +137,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
-        radarGainScrollbar->setToolTipText(language->translate("gain").c_str());
-        radarClutterScrollbar->setToolTipText(language->translate("clutter").c_str());
-        radarRainScrollbar->setToolTipText(language->translate("rain").c_str());
 
         eblLeftButton = guienv->addButton(core::rect<s32>(0.060*su,0.160*sh,0.115*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
         eblRightButton = guienv->addButton(core::rect<s32>(0.170*su,0.160*sh,0.225*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
