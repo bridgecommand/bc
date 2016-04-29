@@ -48,6 +48,10 @@
 		<Unit filename="../Leg.hpp" />
 		<Unit filename="../Utilities.cpp" />
 		<Unit filename="../Utilities.hpp" />
+		<Unit filename="../icon.rc">
+			<Option compilerVar="WINDRES" />
+			<Option target="Windows" />
+		</Unit>
 		<Unit filename="../libs/enet/callbacks.c">
 			<Option compilerVar="CC" />
 		</Unit>

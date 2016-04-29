@@ -245,7 +245,11 @@ int main()
         absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
 
         //std::cout << "Time: " << absoluteTime << std::endl;
+        #ifdef _WIN32
+        Sleep(1000);
+        #else
         sleep(1); //Todo: Make a better way of pausing so we don't flood clients with data!
+        #endif
 
         std::string timeString = makeTimeString(absoluteTime,scenarioOffsetTime,scenarioTime,accelerator);
 

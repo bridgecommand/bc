@@ -44,6 +44,10 @@
 		<Unit filename="../Lang.hpp" />
 		<Unit filename="../Utilities.cpp" />
 		<Unit filename="../Utilities.hpp" />
+		<Unit filename="../icon.rc">
+			<Option compilerVar="WINDRES" />
+			<Option target="Windows" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
