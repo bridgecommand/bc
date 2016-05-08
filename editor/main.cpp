@@ -26,10 +26,10 @@
 #endif //__APPLE__
 
 //Includes for copying scenario files
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <Shellapi.h>
-#endif // WIN32
+#endif // _WIN32
 #ifdef __APPLE__
 #include <copyfile.h>
 #include <sys/stat.h>
@@ -189,7 +189,7 @@ int copyDir(std::string source, std::string dest)
 
     //Copy contents of source dir into dest dir, creating dest recursively if needed.
 
-    #ifdef WIN32
+    #ifdef _WIN32
     source.append(1,'\0'); //Add an extra null to end of string
     dest.append(1,'\0');
     replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
@@ -201,7 +201,7 @@ int copyDir(std::string source, std::string dest)
     fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 
     return SHFileOperation(&fileOp);
-    #endif // WIN32
+    #endif // _WIN32
 
     #ifdef __APPLE__
     copyfile_state_t s;
@@ -223,13 +223,13 @@ void checkUserScenarioDir(void)
     std::string userFolder = Utilities::getUserDir();
 
     std::string scenarioPath = "Scenarios";
+
     if (!Utilities::pathExists(userFolder + scenarioPath)) {
 
-
-        #ifdef WIN32
+        #ifdef _WIN32
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
         copyDir("Scenarios", userFolder + scenarioPath);
-        #endif // WIN32
+        #endif // _WIN32
 
         #ifdef __APPLE__
         //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
