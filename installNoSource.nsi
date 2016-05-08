@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 2"
-!define OUTPUTFILE "bc50b2_setup_noSource.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b2"
-!define SMFOLDER "Bridge Command 5.0 Beta 2"
-!define REGKEY "BridgeCommand5.0b2"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 3"
+!define OUTPUTFILE "bc50b3_setup_noSource.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b3"
+!define SMFOLDER "Bridge Command 5.0 Beta 3"
+!define REGKEY "BridgeCommand5.0b3"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,10 +37,10 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x *.cpp /x *.hpp /x *.h /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x editor /x launcher /x iniEditor /x libs /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
-  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
+  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bridgecommand.exe"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 ; Write the uninstall keys for Windows
@@ -69,22 +69,24 @@ SetShellVarContext all
   
   Delete "$INSTDIR\bc5.ini"
   Delete "$INSTDIR\LICENSE.txt"
-  Delete "$INSTDIR\libenet.dll"
-  Delete "$INSTDIR\BridgeCommand.exe"
-  Delete "$INSTDIR\controller.exe"
-  Delete "$INSTDIR\editor.exe"
-  Delete "$INSTDIR\iniEditor.exe"
+  Delete "$INSTDIR\bridgecommand.exe"
+  Delete "$INSTDIR\bridgecommand-bc.exe"
+  Delete "$INSTDIR\bridgecommand-mc.exe"
+  Delete "$INSTDIR\bridgecommand-mh.exe"
+  Delete "$INSTDIR\bridgecommand-ed.exe"
+  Delete "$INSTDIR\bridgecommand-ini.exe"
+  Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
-  Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\languageLauncher.txt"
   Delete "$INSTDIR\languageIniEditor.txt"
+  Delete "$INSTDIR\languageMultiplayer.txt"
+  Delete "$INSTDIR\mph.ini"
   Delete "$INSTDIR\map.ini"
   Delete "$INSTDIR\README"
   Delete "$INSTDIR\Icon.ico"
-  Delete "$INSTDIR\launcher.exe"
 
   ; Remove shortcuts, if any
   ;Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"

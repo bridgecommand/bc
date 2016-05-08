@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 2"
-!define OUTPUTFILE "bc50b2_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b2"
-!define SMFOLDER "Bridge Command 5.0 Beta 2"
-!define REGKEY "BridgeCommand5.0b2"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 3"
+!define OUTPUTFILE "bc50b3_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b3"
+!define SMFOLDER "Bridge Command 5.0 Beta 3"
+!define REGKEY "BridgeCommand5.0b3"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,10 +37,10 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x EnetServer /x BridgeCommand.app /x MapController.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.o /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
-  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\launcher.exe"
+  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bridgecommand.exe"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 ; Write the uninstall keys for Windows
@@ -71,6 +71,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\libs"
   RMDir /r "$INSTDIR\shaders"
   RMDir /r "$INSTDIR\launcher"
+  RMDir /r "$INSTDIR\multiplayerHub"
 
   Delete "$INSTDIR\Leg.hpp"
   Delete "$INSTDIR\Sky.hpp"
@@ -142,21 +143,24 @@ SetShellVarContext all
   Delete "$INSTDIR\RealisticWater.h" 
   Delete "$INSTDIR\RealisticWater.cpp"
   Delete "$INSTDIR\LICENSE.txt"
-  Delete "$INSTDIR\libenet.dll"
   Delete "$INSTDIR\BridgeCommand.depend"
-  Delete "$INSTDIR\BridgeCommand.exe"
-  Delete "$INSTDIR\controller.exe"
-  Delete "$INSTDIR\editor.exe"
-  Delete "$INSTDIR\iniEditor.exe"
+  Delete "$INSTDIR\bridgecommand.exe"
+  Delete "$INSTDIR\bridgecommand-bc.exe"
+  Delete "$INSTDIR\bridgecommand-mc.exe"
+  Delete "$INSTDIR\bridgecommand-mh.exe"
+  Delete "$INSTDIR\bridgecommand-ed.exe"
+  Delete "$INSTDIR\bridgecommand-ini.exe"
+  Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\uninstall.exe"
-  Delete "$INSTDIR\IniEditor.exe"
   Delete "$INSTDIR\Makefile"
   Delete "$INSTDIR\CompilingLinuxAndMac.txt"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
   Delete "$INSTDIR\languageLauncher.txt"
   Delete "$INSTDIR\languageIniEditor.txt"
+  Delete "$INSTDIR\languageMultiplayer.txt"
+  Delete "$INSTDIR\mph.ini"
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
   Delete "$INSTDIR\map.ini"
@@ -166,7 +170,16 @@ SetShellVarContext all
   Delete "$INSTDIR\Rain.hpp"
   Delete "$INSTDIR\README"
   Delete "$INSTDIR\Icon.ico"
-  Delete "$INSTDIR\launcher.exe"
+  Delete "$INSTDIR\icon.rc"
+  Delete "$INSTDIR\HeadingIndicator.cpp"
+  Delete "$INSTDIR\HeadingIndicator.h"
+  Delete "$INSTDIR\OperatingModeEnum.hpp"
+  Delete "$INSTDIR\OutlineScrollBar.cpp"
+  Delete "$INSTDIR\OutlineScrollBar.h"
+  Delete "$INSTDIR\ScenarioDataStructure.cpp"
+  Delete "$INSTDIR\ScenarioDataStructure.hpp"
+  Delete "$INSTDIR\ScrollDial.cpp"
+  Delete "$INSTDIR\ScrollDial.h"
 
   ; Remove shortcuts, if any
   ;Delete "$SMPROGRAMS\${SMFOLDER}\Settings\*.*"
