@@ -48,7 +48,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     //Add ship selector drop down
     shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
-    shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
     guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
 
     //Add selectors to allow changing own and other ships (only one visible at a time)
@@ -539,22 +538,32 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
 
 //Update drop down menus for ships and legs
-    if(shipSelector->getItemCount() != otherShips.size() + 1) {
-        shipSelector->clear();
 
-        //add own ship (at index 0)
-        shipSelector->addItem(language->translate("own").c_str());
-
-        //Add other ships (at index 1,2,...)
-        for(u32 i = 0; i<otherShips.size(); i++) {
-            core::stringw otherShipLabel(core::stringw(i+1));
-            otherShipLabel.append(L" ");
-            otherShipLabel.append(otherShips.at(i).name.c_str());
-            shipSelector->addItem(otherShipLabel.c_str());
+    //Update text in ship selector list. If a new item, make sure it's selected
+    irr::s32 shipSelectorSelection = shipSelector->getSelected();
+    bool changedShipSelectorLength = (shipSelector->getItemCount() != otherShips.size() + 1);
+    bool initialiseList = (shipSelector->getItemCount() == 0); //If there were no items in list, then we're populating it for the first time (we'll use this to select the first item)
+    shipSelector->clear();
+    shipSelector->addItem(language->translate("own").c_str()); //add own ship (at index 0)
+    for(u32 i = 0; i<otherShips.size(); i++) { //Add other ships (at index 1,2,...)
+        core::stringw otherShipLabel(core::stringw(i+1));
+        otherShipLabel.append(L" ");
+        otherShipLabel.append(otherShips.at(i).name.c_str());
+        shipSelector->addItem(otherShipLabel.c_str());
+    }
+    //Set selection
+    if (changedShipSelectorLength) {
+        //Select the first item if new, or the last one if it's just been added to the existing list
+        if (initialiseList) {
+            shipSelector->setSelected(0);
+        } else {
+            shipSelector->setSelected(shipSelector->getItemCount()-1); //Select the newly added item (I think that the 'trigger gui event' should make sure that the model selection follows suit
         }
         manuallyTriggerGUIEvent((gui::IGUIElement*)shipSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
-
-    } //If different number of ships to show
+    } else {
+        //Re-select previously selected item
+        shipSelector->setSelected(shipSelectorSelection);
+    }
 
     //Find number of legs for selected ship if known
     irr::u32 selectedShipNoLegs = 0;
