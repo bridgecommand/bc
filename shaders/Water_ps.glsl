@@ -131,7 +131,7 @@ void main()
 	*/
 
     //vec4 combinedColor = refractiveColor * fresnelTerm + reflectiveColor * (1.0 - fresnelTerm);
-    vec4 combinedColor = reflectiveColor;
+    vec4 combinedColor = reflectiveColor * 0.25; //0.25 to reduce the total reflective brightness
 
 	vec4 finalColor = ColorBlendFactor * ambientColor + (1.0 - ColorBlendFactor) * combinedColor;
 
