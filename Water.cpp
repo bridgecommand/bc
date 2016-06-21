@@ -42,6 +42,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advance
         realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
         realisticWater->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         realisticWater->setWaveHeight(weather);
+        realisticWater->setWaveLength(std::max(0.01,weather/10.0));
     } else {
         irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
@@ -89,7 +90,7 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
     if (advancedWater) {
         realisticWater->setPosition(core::vector3df(0,tideHeight,0));
         realisticWater->setWaveHeight(weather);
-        realisticWater->setWaveLength(0.2);
+        realisticWater->setWaveLength(std::max(0.01,weather/10.0));
         f32 lightIntensity = lightLevel/256.0;
         realisticWater->setLightIntensity(lightIntensity);
     } else {

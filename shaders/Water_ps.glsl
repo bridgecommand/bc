@@ -131,7 +131,7 @@ void main()
 	*/
 
     //vec4 combinedColor = refractiveColor * fresnelTerm + reflectiveColor * (1.0 - fresnelTerm);
-    vec4 combinedColor = reflectiveColor * 0.25; //0.25 to reduce the total reflective brightness
+    vec4 combinedColor = reflectiveColor * clamp(1.0 - WaveHeight/12.0,0.0,1.0); //Wave height should be 0-12. Make 'shiny' at low wave height, dropping as sea state increases
 
 	vec4 finalColor = ColorBlendFactor * ambientColor + (1.0 - ColorBlendFactor) * combinedColor;
 
