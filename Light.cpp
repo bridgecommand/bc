@@ -43,16 +43,19 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
     lightLevel = 0;
 
     ambientColor = video::SColor(255,64,64,64);
-
     smgr->setAmbientLight(ambientColor);
-    //add a directional light
-    //scene::ILightSceneNode* light = smgr->addLightSceneNode( ownShip.getSceneNode(), core::vector3df(0,400,-200), video::SColorf(0.3f,0.3f,0.3f), 100000.0f, 1 );
-    //Probably set this as an ELT_DIRECTIONAL light, to set an 'infinitely' far light with constant direction.
 
+    //add a directional light
     directionalLight = smgr->addLightSceneNode();
-    //directionalLight->setLightType(video::ELT_DIRECTIONAL);
-    directionalLight->setLightType(video::ELT_POINT);
-    //directionalLight = smgr->addSphereSceneNode(0.5);
+    directionalLight->setLightType(video::ELT_DIRECTIONAL);
+    directionalLight->setRotation(core::vector3df(30,0,0)); //Light from South, 30 deg above horizon
+    //Set non-varying light data
+    irr::video::SLight lightData = directionalLight->getLightData();
+    lightData.AmbientColor = video::SColor(255,0,0,0);
+    lightData.SpecularColor = video::SColor(255,0,0,0);
+    lightData.Radius = 50000;
+    directionalLight->setLightData(lightData);
+
 }
 
 void Light::update(irr::f32 scenarioTime)
@@ -80,23 +83,10 @@ void Light::update(irr::f32 scenarioTime)
     smgr->setAmbientLight(ambientColor);
 
     //Update the directional light
-    irr::video::SLight lightData;
-    lightData.DiffuseColor = ambientColor;
-    lightData.AmbientColor = video::SColor(255,0,0,0);
-    lightData.SpecularColor = video::SColor(255,0,0,0);
-    lightData.Radius = 50000;
-
+    irr::video::SLight lightData = directionalLight->getLightData();
+    //lightData.DiffuseColor = ambientColor;
+    lightData.DiffuseColor = video::SColor(255,10,10,10);
     directionalLight->setLightData(lightData);
-
-    parent->updateAbsolutePosition();
-    core::vector3df lightPosition = parent->getAbsolutePosition();
-    lightPosition.Y += 5000;
-    lightPosition.Z -= 5000;
-    directionalLight->setPosition(lightPosition);
-
-    /*Ideally we should use a directional light, not a point light far away,
-    but it wasn't obvious how to set it's direction (one of scene node rotation
-    or position, but didn't seem to be as expected) */
 
 }
 
