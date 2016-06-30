@@ -84,8 +84,7 @@ void Light::update(irr::f32 scenarioTime)
 
     //Update the directional light
     irr::video::SLight lightData = directionalLight->getLightData();
-    //lightData.DiffuseColor = ambientColor;
-    lightData.DiffuseColor = video::SColor(255,10,10,10);
+    lightData.DiffuseColor = ambientColor;
     directionalLight->setLightData(lightData);
 
 }
