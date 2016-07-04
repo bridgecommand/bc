@@ -45,6 +45,8 @@
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
 		<Unit filename="Constants.hpp" />
+		<Unit filename="DefaultEventReceiver.cpp" />
+		<Unit filename="DefaultEventReceiver.hpp" />
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
 		<Unit filename="HeadingIndicator.cpp" />

@@ -18,6 +18,7 @@
 // Include the Irrlicht header
 #include "irrlicht.h"
 
+#include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
@@ -139,6 +140,10 @@ int main()
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
 
+    std::vector<std::string> logMessages;
+    DefaultEventReceiver defReceiver(&logMessages);
+    device->setEventReceiver(&defReceiver);
+
     smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
     #ifdef __APPLE__
@@ -162,43 +167,6 @@ int main()
 
     //set gui skin and 'flatten' this
     gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(gui::EGST_WINDOWS_METALLIC   );
-    video::SColor guiEdgeColour(255,128,128,128);
-    video::SColor guiFaceColour(255,192,192,192);
-    video::SColor red(255,255,0,0);
-    video::SColor green(255,0,255,0);
-    video::SColor blue(255,0,0,255);
-    video::SColor black(255,0,0,0);
-    video::SColor white(255,255,255,255);
-    video::SColor grey(255,128,128,128);
-
-//Not used
-//    newskin->setColor(gui::EGDC_ACTIVE_BORDER,red);
-//    newskin->setColor(gui::EGDC_ACTIVE_CAPTION,red);
-//    newskin->setColor(gui::EGDC_APP_WORKSPACE,red);
-
-//    newskin->setColor(gui::EGDC_3D_DARK_SHADOW,red); //Colour dominating bottom and border of buttons
-//    newskin->setColor(gui::EGDC_3D_SHADOW,red); //Colour on left and top border of buttons and buttons
-//    newskin->setColor(gui::EGDC_3D_LIGHT,red);
-//    newskin->setColor(gui::EGDC_3D_HIGH_LIGHT,red);
-//    newskin->setColor(gui::EGDC_3D_FACE,red);
-
-//    newskin->setColor(gui::EGDC_BUTTON_TEXT,red); //General text colour
-//    newskin->setColor(gui::EGDC_GRAY_TEXT,red);
-//    newskin->setColor(gui::EGDC_HIGH_LIGHT,red);
-//    newskin->setColor(gui::EGDC_HIGH_LIGHT_TEXT,red);
-//    newskin->setColor(gui::EGDC_INACTIVE_BORDER,red);
-//    newskin->setColor(gui::EGDC_INACTIVE_CAPTION,red);
-//    newskin->setColor(gui::EGDC_TOOLTIP,red);
-//    newskin->setColor(gui::EGDC_TOOLTIP_BACKGROUND,red);
-//    newskin->setColor(gui::EGDC_SCROLLBAR,red);
-//    newskin->setColor(gui::EGDC_WINDOW,red);
-//    newskin->setColor(gui::EGDC_WINDOW_SYMBOL,red);
-//    newskin->setColor(gui::EGDC_ICON,red);
-//    newskin->setColor(gui::EGDC_ICON_HIGH_LIGHT,red);
-//    newskin->setColor(gui::EGDC_GRAY_WINDOW_SYMBOL,red);
-//    newskin->setColor(gui::EGDC_EDITABLE,red);
-//    newskin->setColor(gui::EGDC_GRAY_EDITABLE,red);
-//    newskin->setColor(gui::EGDC_FOCUSED_EDITABLE,red);
 
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
@@ -233,7 +201,7 @@ int main()
     std::srand(device->getTimer()->getTime());
 
     //create GUI
-    GUIMain guiMain(device, &language);
+    GUIMain guiMain(device, &language, &logMessages);
 
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
@@ -274,7 +242,7 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis);
+    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model

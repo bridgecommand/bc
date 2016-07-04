@@ -18,6 +18,8 @@
 #define __MYEVENTRECEIVER_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include <string>
+#include <vector>
 
 //forward declarations
 class GUIMain;
@@ -27,7 +29,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis);
+    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -49,6 +51,7 @@ private:
     irr::u32 portJoystickAxis;
     irr::u32 stbdJoystickAxis;
     irr::u32 rudderJoystickAxis;
+    std::vector<std::string>* logMessages;
 
 };
 

@@ -80,6 +80,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Link to our event receiver
     StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX);
+    irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
@@ -128,7 +129,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
     //creditsText->remove(); creditsText=0;
-    device->setEventReceiver(0); //Remove link to startup event receiver, as this will be destroyed.
+    device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using
 
     //Show loading message
     irr::core::stringw creditsText = language->translate("loadingmsg");

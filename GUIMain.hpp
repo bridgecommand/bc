@@ -21,12 +21,13 @@
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
+#include <vector>
 #include <string>
 
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device, Lang* language);
+    GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages);
     ~GUIMain();
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
@@ -52,7 +53,8 @@ public:
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
-        GUI_ID_BEARING_INTERFACE_BUTTON
+        GUI_ID_BEARING_INTERFACE_BUTTON,
+        GUI_ID_SHOW_LOG_BUTTON
     };
 
     bool getShowInterface() const;
@@ -63,6 +65,7 @@ public:
     void hideEngineAndRudder(); //Used for secondary mode
     void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
     void updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused,  bool collided);
+    void showLogWindow();
     void drawGUI();
 
 
@@ -100,6 +103,9 @@ private:
     irr::gui::IGUIButton* binosButton;
     irr::gui::IGUIButton* bearingButton;
 
+    irr::u32 su;
+    irr::u32 sh;
+
     irr::f32 guiLat;
     irr::f32 guiLong;
     irr::f32 guiHeading;
@@ -124,6 +130,7 @@ private:
     bool hasGPS;
 
     Lang* language;
+    std::vector<std::string>* logMessages;
 
     void updateVisibility();
     void draw2dRadar();

@@ -23,16 +23,17 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
+GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages)
     {
         this->device = device;
         guienv = device->getGUIEnvironment();
 
         video::IVideoDriver* driver = device->getVideoDriver();
-        u32 su = driver->getScreenSize().Width;
-        u32 sh = driver->getScreenSize().Height;
+        su = driver->getScreenSize().Width;
+        sh = driver->getScreenSize().Height;
 
         this->language = language;
+        this->logMessages = logMessages;
 
         //default to double engine in gui
         singleEngine = false;
@@ -159,6 +160,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         //Take bearing button
         bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
+
+        //Show internal log window button
+        guienv->addButton(core::rect<s32>(0.01*su,0.01*sh,0.06*su,0.06*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
     }
 
@@ -328,6 +332,23 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
         this->guiRadarEBLRangeNm = guiRadarEBLRangeNm;
     }
 
+    void GUIMain::showLogWindow()
+    {
+        gui::IGUIWindow* logWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.05*sh,0.99*su,0.99*sh));
+        gui::IGUIListBox* logText = guienv->addListBox(core::rect<s32>(0.03*su,0.05*sh,0.95*su,0.91*sh),logWindow);
+
+        if (logWindow && logText && logMessages) {
+
+            logText->setDrawBackground(true);
+
+            for (int i = 0; i<logMessages->size(); i++) {
+                std::string logTextString = logMessages->at(i);
+                logText->addItem(core::stringw(logTextString.c_str()).c_str());
+            }
+        }
+
+    }
+
     void GUIMain::drawGUI()
     {
         //Remove big paused button when the simulation is started.
@@ -444,8 +465,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     void GUIMain::draw2dRadar()
     {
-        u32 su = device->getVideoDriver()->getScreenSize().Width;
-        u32 sh = device->getVideoDriver()->getScreenSize().Height;
         s32 centreX = su-0.2*sh;
         s32 centreY = 0.8*sh;
         s32 deltaX = 0.2*sh*sin(core::DEGTORAD*guiHeading);
@@ -477,8 +496,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     void GUIMain::draw2dBearing()
     {
-        u32 su = device->getVideoDriver()->getScreenSize().Width;
-        u32 sh = device->getVideoDriver()->getScreenSize().Height;
 
         //make cross hairs
         s32 screenCentreX = 0.5*su;
@@ -508,8 +525,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     void GUIMain::drawCollisionWarning()
     {
-        u32 su = device->getVideoDriver()->getScreenSize().Width;
-        u32 sh = device->getVideoDriver()->getScreenSize().Height;
         s32 screenCentreX = 0.5*su;
         s32 screenCentreY;
         if (showInterface) {

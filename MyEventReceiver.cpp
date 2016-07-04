@@ -23,7 +23,7 @@
 
 using namespace irr;
 
-    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis) //Constructor
+    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI (Not currently used!)
@@ -37,6 +37,8 @@ using namespace irr;
 		this->stbdJoystickAxis=stbdJoystickAxis;
 		this->rudderJoystickAxis=rudderJoystickAxis;
 
+		this->logMessages = logMessages;
+
         //assume mouse buttons not pressed initially
         leftMouseDown = false;
         rightMouseDown = false;
@@ -44,6 +46,14 @@ using namespace irr;
 
     bool MyEventReceiver::OnEvent(const SEvent& event)
 	{
+
+        //From log
+        if (event.EventType == EET_LOG_TEXT_EVENT) {
+            //Store these in a global log.
+            std::string eventText(event.LogEvent.Text);
+            logMessages->push_back(eventText);
+            return true;
+        }
 
         //From mouse - keep track of button press state
         if (event.EventType == EET_MOUSE_INPUT_EVENT) {
@@ -167,6 +177,11 @@ using namespace irr;
                 if (id == GUIMain::GUI_ID_RADAR_EBL_DOWN_BUTTON)
                 {
                     model->decreaseRadarEBLRange();
+                }
+
+                if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)
+                {
+                    gui->showLogWindow();
                 }
 
             } //Button clicked
