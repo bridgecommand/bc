@@ -136,7 +136,7 @@ void RealisticWaterSceneNode::OnAnimate(u32 timeMs)
 	_time = timeMs;
 
 	//fixes glitches with incomplete refraction
-	const f32 CLIP_PLANE_OFFSET_Y = 0.0f;
+	const f32 CLIP_PLANE_OFFSET_Y = 1.0f;
 
 	if (IsVisible)
 	{

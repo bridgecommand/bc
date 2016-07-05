@@ -162,7 +162,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         bearingButton->setIsPushButton(true);
 
         //Show internal log window button
-        guienv->addButton(core::rect<s32>(0.01*su,0.01*sh,0.06*su,0.06*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.92*sh,0.26*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
     }
 
@@ -258,6 +258,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         stbdText->setVisible(showInterface && !singleEngine);
         portText->setVisible(showInterface);
         headingIndicator->setVisible(showInterface);
+        pcLogButton->setVisible(showInterface);
 
         //Items to show if we're not
         showInterfaceButton->setVisible(!showInterface);
@@ -334,8 +335,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     void GUIMain::showLogWindow()
     {
-        gui::IGUIWindow* logWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.05*sh,0.99*su,0.99*sh));
-        gui::IGUIListBox* logText = guienv->addListBox(core::rect<s32>(0.03*su,0.05*sh,0.95*su,0.91*sh),logWindow);
+        gui::IGUIWindow* logWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.99*su,0.99*sh));
+        gui::IGUIListBox* logText = guienv->addListBox(core::rect<s32>(0.03*su,0.05*sh,0.95*su,0.95*sh),logWindow);
 
         if (logWindow && logText && logMessages) {
 

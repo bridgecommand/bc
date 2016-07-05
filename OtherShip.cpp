@@ -266,8 +266,6 @@ void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr
                 newLeg.distance = distance;
                 newLeg.startTime = scenarioTime;
 
-                //std::cout << "A" << std::endl;
-
                 legs.insert(legs.end()-1, newLeg); //Insert before final leg
             }
         //else check that the 'after' leg is current or future
@@ -277,8 +275,6 @@ void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr
             newLeg.speed = speed;
             newLeg.distance = distance;
             newLeg.startTime = legs.at(afterLegNumber + 1).startTime; //This leg starts when the next leg would have started
-
-            //std::cout << "B" << std::endl;
 
             legs.insert(legs.begin()+afterLegNumber+1, newLeg); //Insert leg
         }
@@ -291,12 +287,6 @@ void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr
 
 
     } //Check leg exists & can be changed
-
-    //Display leg
-    //std::cout << "Legs after add" << std::endl;
-    //for (int i = 0; i < legs.size(); i++) {
-    //    std::cout << "Leg " << i << " Speed " << legs.at(i).speed << " Bearing " << legs.at(i).bearing << " Distance " << legs.at(i).distance << " Start " << legs.at(i).startTime << std::endl;
-    //}
 
 }
 

@@ -290,7 +290,6 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
     const irr::f32 RADAR_RPM = 25; //Todo: Make a ship parameter
     const irr::f32 RPMtoDEGPERSECOND = 6;
     irr::u32 scansPerLoop = RADAR_RPM*RPMtoDEGPERSECOND*deltaTime/(irr::f32)scanAngleStep + (irr::f32)rand()/RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
-    //std::cout << "Scans per loop: " << scansPerLoop << " " << deltaTime <<std::endl;
 
     if (scansPerLoop > 10) {scansPerLoop=10;} //Limit to reasonable bounds
     for(u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section

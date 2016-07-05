@@ -195,8 +195,6 @@ int main()
 
     u32 creditsStartTime = device->getTimer()->getRealTime();
 
-    //std::cout << "Chosen " << scenarioName << " with " << hostname << std::endl;
-
     //seed random number generator
     std::srand(device->getTimer()->getTime());
 

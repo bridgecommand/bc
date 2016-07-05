@@ -93,7 +93,6 @@ void Rain::applyTextures() {
         //Round one up and one down so we can get half step rain intensity level.
         u8 texture1 = Utilities::round(rainIntensity+0.25);
         u8 texture2 = Utilities::round(rainIntensity-0.25);
-        //std::cout << "Texture " << texture1 << " " << texture2 << std::endl;
         rainNode1->setMaterialTexture(0,rainTextures.at(texture1));
         rainNode2->setMaterialTexture(0,rainTextures.at(texture2));
     }

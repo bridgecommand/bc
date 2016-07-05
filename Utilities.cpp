@@ -261,8 +261,6 @@ namespace Utilities
             scenarioData.otherShipsData.push_back(thisOtherShip);
         }
 
-        //std::cout << "Scenario loader: "  << scenarioData.otherShipsData.size() << " other ships loaded." << std::endl;
-
         /*
 
         //Read world file name from scenario:

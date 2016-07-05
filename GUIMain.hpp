@@ -102,6 +102,7 @@ private:
     irr::gui::IGUIButton* hideInterfaceButton;
     irr::gui::IGUIButton* binosButton;
     irr::gui::IGUIButton* bearingButton;
+    irr::gui::IGUIButton* pcLogButton;
 
     irr::u32 su;
     irr::u32 sh;
