@@ -41,6 +41,11 @@
 #include <mach-o/dyld.h>
 #endif
 
+//Global definition for ini logger
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 // Irrlicht Namespaces
 using namespace irr;
 
@@ -141,6 +146,9 @@ int main()
     std::vector<std::string> logMessages;
     DefaultEventReceiver defReceiver(&logMessages);
     device->setEventReceiver(&defReceiver);
+
+    //Tell the Ini routine the logger address
+    IniFile::irrlichtLogger = device->getLogger();
 
     device->getLogger()->log("User folder is:");
     device->getLogger()->log(userFolder.c_str());
