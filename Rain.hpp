@@ -27,7 +27,7 @@ public:
 
     Rain();
     ~Rain();
-    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent);
+    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev);
     void update(irr::f32 scenarioTime);
     void setIntensity(irr::f32 intensity);
 

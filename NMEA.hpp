@@ -17,6 +17,7 @@
 #ifndef __NMEA_HPP_INCLUDED__
 #define __NMEA_HPP_INCLUDED__
 
+#include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
 #include <string>
 
@@ -27,12 +28,13 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName);
+    NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
 
 private:
+    irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
     std::string messageToSend;

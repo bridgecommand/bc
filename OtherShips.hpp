@@ -36,7 +36,7 @@ class OtherShips
     public:
         OtherShips();
         virtual ~OtherShips();
-        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model);
+        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;

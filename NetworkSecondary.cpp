@@ -23,13 +23,15 @@
 #include "Utilities.hpp"
 #include "Constants.hpp"
 
-NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode)
+NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::IrrlichtDevice* dev)
 {
     if (enet_initialize () != 0)
     {
-        std::cout << "An error occurred while initializing ENet." << std::endl;
+        std::cerr << "An error occurred while initializing ENet." << std::endl;
         exit(EXIT_FAILURE);
     }
+
+    device = dev;
 
     ENetAddress address;
 
@@ -42,7 +44,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode)
 
     if (enet_initialize () != 0)
     {
-        std::cout << "An error occurred while initializing ENet.\n";
+        std::cerr << "An error occurred while initializing ENet.\n";
         exit(EXIT_FAILURE);
     }
 
@@ -59,7 +61,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode)
     0 /* assume any amount of outgoing bandwidth */);
     if (server == NULL)
     {
-        std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
+        std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
         exit (EXIT_FAILURE);
     }
 }
@@ -68,7 +70,7 @@ NetworkSecondary::~NetworkSecondary()
 {
     enet_host_destroy(server);
     enet_deinitialize();
-    std::cout << "Shut down enet\n";
+    device->getLogger()->log("Shut down enet");
 }
 
 void NetworkSecondary::connectToServer(std::string hostnames)
@@ -108,7 +110,7 @@ void NetworkSecondary::update()
 {
 
     if (model==0) {
-        std::cout << "Network not linked to model" << std::endl;
+        std::cerr << "Network not linked to model" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -169,7 +171,7 @@ void NetworkSecondary::receiveMessage()
                         //Big time difference, so reset
                         model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
                         accelAdjustment = 0;
-                        std::cout << "Resetting time alignment" << std::endl;
+                        device->getLogger()->log("Resetting time alignment");
                     } else { //Adjust accelerator to maintain time alignment
                         accelAdjustment += timeError*0.01; //Integral only at the moment
                         //Check for zero crossing, and reset

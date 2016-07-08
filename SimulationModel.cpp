@@ -87,7 +87,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         if (worldName == "") {
             //Could not load world name from scenario, so end here
             //ToDo: Tell user problem
-            std::cout << "World model name not defined" << std::endl;
+            std::cerr << "World model name not defined" << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -117,7 +117,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioData.ownShipData, smgr, this, &terrain);
+        ownShip.load(scenarioData.ownShipData, smgr, this, &terrain, device);
         if(mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
@@ -153,13 +153,13 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
 
         //Load other ships
-        otherShips.load(scenarioData.otherShipsData,scenarioTime,mode,smgr,this);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,mode,smgr,this,device);
 
         //Load buoys
-        buoys.load(worldPath, smgr, this);
+        buoys.load(worldPath, smgr, this,device);
 
         //Load land objects
-        landObjects.load(worldPath, smgr, this, terrain);
+        landObjects.load(worldPath, smgr, this, terrain, device);
 
         //Load land lights
         landLights.load(worldPath, smgr, this, terrain);
@@ -168,7 +168,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         tide.load(worldPath);
 
         //Load rain
-        rain.load(smgr, camera.getSceneNode());
+        rain.load(smgr, camera.getSceneNode(), device);
 
         //make a radar screen, setting parent and offset from own ship
         core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
@@ -637,7 +637,13 @@ SimulationModel::~SimulationModel()
             //Change stored offset
             offsetPosition.X -= deltaX;
             offsetPosition.Z -= deltaZ;
-            std::cout << "Normalised, offset X: " << offsetPosition.X << " Z: " << offsetPosition.Z <<std::endl;
+
+            std::string normalisedLogMessage = "Normalised, offset X: ";
+            normalisedLogMessage.append(Utilities::lexical_cast<std::string>(offsetPosition.X));
+            normalisedLogMessage.append(" Z: ");
+            normalisedLogMessage.append(Utilities::lexical_cast<std::string>(offsetPosition.Z));
+            device->getLogger()->log(normalisedLogMessage.c_str());
+
         }
 
 

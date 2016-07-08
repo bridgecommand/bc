@@ -103,7 +103,6 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     f32 relativeAngleDeg = (viewPosition-lightPosition).getHorizontalAngle().Y; //Degrees: Angle from the light to viewpoint.
     f32 parentAngleDeg = lightNode->getParent()->getRotation().Y;
     f32 localRelativeAngleDeg = relativeAngleDeg-parentAngleDeg; //Angle from light to viewpoint, relative to light's parent coordinate system.
-    //std::cout << relativeAngleDeg << " " <<  parentAngleDeg << " " << localRelativeAngleDeg <<std::endl;
     if (!Angles::isAngleBetween(localRelativeAngleDeg,startAngle,endAngle)) {
         lightNode->setVisible(false);
     }
@@ -122,7 +121,6 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     }
 
     //set transparency dependent on light level, only changing if required, as this is a slow operation
-    //std::cout << lightLevel << std::endl;
     u16 requiredAlpha = 255-lightLevel;
     if (requiredAlpha != currentAlpha) {
         setAlpha((u8)requiredAlpha, lightNode->getMaterial(0).getTexture(0));

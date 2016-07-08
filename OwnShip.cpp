@@ -29,10 +29,13 @@
 
 using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain)
+void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //Store reference to terrain
     this->terrain = terrain;
+
+    //reference to device (for logging etc)
+    device=dev;
 
     //Load from ownShip.ini file
     std::string ownShipName = ownShipData.ownShipName;
@@ -101,7 +104,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     if (propellorSpacing==0) {
         singleEngine=true;
         maxForce *= 0.5; //Internally simulated with two equal engines, so halve the value
-        std::cout << "Single engine" << std::endl;
+        device->getLogger()->log("Single engine");
     } else {
         singleEngine=false;
     }
@@ -138,7 +141,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //camera offset (in unscaled and uncorrected ship coords)
     irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
     if (numberOfViews==0) {
-        std::cout << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
+        std::cerr << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
         exit(EXIT_FAILURE);
     }
     for(u32 i=1;i<=numberOfViews;i++) {
@@ -157,8 +160,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Make mesh scene node
     if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue
-        std::cout << "Failed to load own ship model " << ownShipFullPath << std::endl;
-        shipMesh = smgr->addSphereMesh("Dummy");
+        device->getLogger()->log("Failed to load own ship model:");
+        device->getLogger()->log(ownShipFullPath.c_str());
+        shipMesh = smgr->addSphereMesh("Dummy name");
     }
     //smgr->getMeshManipulator()->transform(shipMesh,transformMatrix); //FIXME: This seems to 'explode' some models, (assembled with animation?)
     ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));

@@ -26,7 +26,7 @@
 
 using namespace irr;
 
-OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr)
+OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -77,7 +77,8 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //add to scene node
 	if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue
-        std::cout << "Failed to load other ship model " << shipFullPath << std::endl;
+        dev->getLogger()->log("Failed to load other ship model:");
+        dev->getLogger()->log(shipFullPath.c_str());
         shipMesh = smgr->addSphereMesh("Dummy");
     }
     ship = smgr->addAnimatedMeshSceneNode( shipMesh, 0, -1);
@@ -243,12 +244,6 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
 
 void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
 {
-
-    //Display leg
-    //std::cout << "Legs before add" << std::endl;
-    //for (int i = 0; i < legs.size(); i++) {
-    //    std::cout << "Leg " << i << " Speed " << legs.at(i).speed << " Bearing " << legs.at(i).bearing << " Distance " << legs.at(i).distance << " Start " << legs.at(i).startTime << std::endl;
-    //}
 
     //Check if leg is reasonable, and is before the 'stop leg'
     //A special case allows afterLegNumber to equal -1, for when only a single 'stop leg' exists

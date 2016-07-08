@@ -41,6 +41,7 @@ private:
     GUIMain* gui;
     bool leftMouseDown;
     bool rightMouseDown;
+    irr::IrrlichtDevice* device;
     irr::s32 scrollBarPosSpeed;
     irr::s32 scrollBarPosHeading;
     irr::core::array<irr::SJoystickInfo> joystickInfo;

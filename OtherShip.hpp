@@ -32,7 +32,7 @@ class RadarData;
 class OtherShip : public Ship
 {
     public:
-        OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr);
+        OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         //virtual ~OtherShip();
 
         irr::f32 getHeight() const;

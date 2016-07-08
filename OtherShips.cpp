@@ -37,7 +37,7 @@ OtherShips::~OtherShips()
     //dtor
 }
 
-void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
 {
 
     for(u32 i=0;i<otherShipsData.size();i++)
@@ -78,7 +78,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         }
 
         //Create otherShip and load into vector
-        otherShips.push_back(OtherShip (otherShipName,core::vector3df(shipX,0.0f,shipZ),legs,smgr));
+        otherShips.push_back(OtherShip (otherShipName,core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
     }
 
 }

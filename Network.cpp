@@ -29,11 +29,11 @@ Network::~Network() //Virtual destructor
 {
 }
 
-Network* Network::createNetwork(OperatingMode::Mode mode, int port) //Factory class, create a primary or secondary network object, and return a pointer
+Network* Network::createNetwork(OperatingMode::Mode mode, int port, irr::IrrlichtDevice* dev) //Factory class, create a primary or secondary network object, and return a pointer
 {
     if (mode != OperatingMode::Normal) {
-        return new NetworkSecondary(port, mode);
+        return new NetworkSecondary(port, mode, dev);
     } else {
-        return new NetworkPrimary(port);
+        return new NetworkPrimary(port, dev);
     }
 }

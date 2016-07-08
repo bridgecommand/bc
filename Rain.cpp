@@ -26,7 +26,7 @@ Rain::Rain() {
 Rain::~Rain() {
 }
 
-void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent)
+void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev)
 {
     //Make rain
     this->parent = parent;
@@ -46,7 +46,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent)
         rainNode2->setScale(core::vector3df(6.0,5.0,6.0));
     } else {
         //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
-        std::cout << "Failed to load rain mesh (rain.x)" <<std::endl;
+        dev->getLogger()->log("Failed to load rain mesh (rain.x)");
         rainNode1 = smgr->addEmptySceneNode();
         rainNode2 = smgr->addEmptySceneNode();
     }

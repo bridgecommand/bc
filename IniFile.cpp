@@ -76,9 +76,13 @@ namespace IniFile
         return str.substr(strBegin, strRange);
     }
 
-    std::string iniFileToString(std::string fileName, std::string command)
+    std::string iniFileToString(std::string fileName, std::string command, std::string* successMessage)
     {
         std::ifstream file (fileName.c_str());
+
+        if (successMessage) {
+            *successMessage = "";
+        }
 
         //Set UTF-8 on Linux/OSX etc
         #ifndef _WIN32
@@ -129,7 +133,10 @@ namespace IniFile
             }
             file.close();
         } else {
-            std::cout << "Unable to open file " << fileName << std::endl;
+            if (successMessage) {
+                *successMessage = "Unable to open file ";
+                successMessage->append(fileName);
+            }
         }//
 
         //trim whitespace and " characters if present
@@ -138,9 +145,13 @@ namespace IniFile
         return valuePart;
     }
 
-    std::wstring iniFileToWString(std::string fileName, std::wstring command)
+    std::wstring iniFileToWString(std::string fileName, std::wstring command, std::string* successMessage)
     {
         std::wifstream file (fileName.c_str());
+
+        if (successMessage) {
+            *successMessage = "";
+        }
 
         //Set UTF-8 on Linux/OSX etc
         #ifndef _WIN32
@@ -190,8 +201,13 @@ namespace IniFile
 
             }
             file.close();
+        } else {
+            if (successMessage) {
+                *successMessage = "Unable to open file ";
+                successMessage->append(fileName);
+            }
         }
-        else ;//std::cout << "Unable to open file " << fileName << std::endl;
+
 
         //trim whitespace and " characters if present
         valuePart = trim(valuePart);
@@ -200,19 +216,19 @@ namespace IniFile
     }
 
     //Load unsigned integer from an ini file
-    u32 iniFileTou32(std::string fileName, std::string command)
+    u32 iniFileTou32(std::string fileName, std::string command, std::string* successMessage)
     {
         u32 result = 0;
-        std::string valueString = iniFileToString(fileName, command); //Get the value as a string
+        std::string valueString = iniFileToString(fileName, command, successMessage); //Get the value as a string
         result = core::strtoul10(valueString.c_str()); //Convert this into an unsigned int
         return result;
     }
 
     //Load float from an ini file
-    f32 iniFileTof32(std::string fileName, std::string command)
+    f32 iniFileTof32(std::string fileName, std::string command, std::string* successMessage)
     {
         f32 result = 0;
-        std::string valueString = iniFileToString(fileName, command); //Get the value as a string
+        std::string valueString = iniFileToString(fileName, command, successMessage); //Get the value as a string
         result = core::fast_atof(valueString.c_str()); //Convert this into a float
         return result;
     }

@@ -32,7 +32,7 @@ class OwnShip : public Ship
 {
     public:
 
-        void load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain);
+        void load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::string getRadarConfigFile() const;
@@ -57,6 +57,7 @@ class OwnShip : public Ship
 
     protected:
     private:
+        irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
         Terrain* terrain;

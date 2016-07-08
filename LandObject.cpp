@@ -22,7 +22,7 @@
 
 using namespace irr;
 
-LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr)
+LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/LandObject/" + name + "/";
@@ -54,7 +54,8 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 	//add to scene node
 	if (objectMesh==0) {
         //Failed to load mesh - load with dummy and continue
-        std::cout << "Failed to load land object model " << objectFullPath << std::endl;
+        dev->getLogger()->log("Failed to load land object model:");
+        dev->getLogger()->log(objectFullPath.c_str());
         landObject = smgr->addCubeSceneNode(0.1);
     } else {
         landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location );

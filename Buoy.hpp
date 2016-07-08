@@ -27,7 +27,7 @@ class RadarData;
 class Buoy
 {
     public:
-        Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr);
+        Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);

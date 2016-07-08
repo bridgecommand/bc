@@ -35,7 +35,7 @@ Buoys::~Buoys()
     //dtor
 }
 
-void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model)
+void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
 {
     //get buoy.ini filename
     std::string scenarioBuoyFilename = worldName;
@@ -60,7 +60,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
 
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),rcs,smgr));
+        buoys.push_back(Buoy (buoyName.c_str(),core::vector3df(buoyX,0.0f,buoyZ),rcs,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();

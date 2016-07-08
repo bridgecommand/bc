@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include "irrlicht.h"
 #include "libs/enet/enet.h"
 #include "OperatingModeEnum.hpp"
 
@@ -29,7 +30,7 @@ class Network
 {
     public:
     //Factory method
-    static Network* createNetwork(OperatingMode::Mode mode, int port); //remember to use 'delete' later.
+    static Network* createNetwork(OperatingMode::Mode mode, int port, irr::IrrlichtDevice* dev); //remember to use 'delete' later.
     virtual void connectToServer(std::string hostnames) = 0;
     virtual void setModel(SimulationModel* model) = 0;
     virtual void getScenarioFromNetwork(std::string& dataString) = 0; //Not used by primary

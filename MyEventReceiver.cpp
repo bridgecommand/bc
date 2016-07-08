@@ -30,6 +30,9 @@ using namespace irr;
 		scrollBarPosSpeed = 0;
 		scrollBarPosHeading = 0;
 
+		//store device
+		device = dev;
+
 		//set up joystick if present
 		dev->activateJoysticks(joystickInfo);
 		previousJoystickLoaded = false;
@@ -66,7 +69,6 @@ using namespace irr;
         if (event.EventType == EET_GUI_EVENT)
 		{
 			s32 id = event.GUIEvent.Caller->getID();
-			//std::cout << "GUI event from " << id << std::endl;
             if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED)
             {
 
@@ -322,7 +324,7 @@ using namespace irr;
                     }
                 }
             } else {
-                std::cout << "Trying to use non-existent joystick axis." << std::endl;
+                device->getLogger()->log("Trying to use non-existent joystick axis.");
             }
 
         }

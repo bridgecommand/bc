@@ -24,7 +24,7 @@
 
 using namespace irr;
 
-Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr)
+Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -58,7 +58,8 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 	//add to scene node
 	if (buoyMesh==0) {
         //Failed to load mesh - load with dummy and continue
-        std::cout << "Failed to load buoy model " << buoyFullPath << std::endl;
+        dev->getLogger()->log("Failed to load buoy model:");
+        dev->getLogger()->log(buoyFullPath.c_str());
         buoy = smgr->addCubeSceneNode(0.1);
     } else {
         buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );

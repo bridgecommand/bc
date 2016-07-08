@@ -24,11 +24,12 @@
 #include <cstdio>
 #include <vector>
 
-NetworkPrimary::NetworkPrimary(int port) //Constructor
+NetworkPrimary::NetworkPrimary(int port, irr::IrrlichtDevice* dev) //Constructor
 {
 
     model=0; //Not linked at the moment
     this->port = port;
+    device = dev;
 
     //start networking
     if (enet_initialize () != 0) {
@@ -42,13 +43,12 @@ NetworkPrimary::NetworkPrimary(int port) //Constructor
     57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */, //Todo: Think about bandwidth limits
     14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
     if (client == NULL) {
-        std::cout << "An error occurred while trying to create an ENet client host." << std::endl;
-        exit (EXIT_FAILURE);
+        std::cerr << "An error occurred while trying to create an ENet client host." << std::endl;
+        exit (EXIT_FAILURE); //TODO: Think if this is the best way to handle failure
     }
 
-    std::cout << "Started enet\n";
+    device->getLogger()->log("Started enet.");
 
-    //TODO: Think if this is the best way to handle failure
 }
 
 NetworkPrimary::~NetworkPrimary() //Destructor
@@ -57,7 +57,7 @@ NetworkPrimary::~NetworkPrimary() //Destructor
     enet_host_destroy(client);
     enet_deinitialize();
 
-    std::cout << "Shut down enet\n";
+    device->getLogger()->log("Shut down enet");
 }
 
 void NetworkPrimary::connectToServer(std::string hostnames)
@@ -87,18 +87,22 @@ void NetworkPrimary::connectToServer(std::string hostnames)
         //Note we don't store peer pointer, as we broadcast to all connected peers.
         if (peer == NULL)
         {
-            std::cout << "No available peers for initiating an ENet connection." << std::endl;
+            std::cerr << "No available peers for initiating an ENet connection." << std::endl;
             exit (EXIT_FAILURE);
         }
         /* Wait up to 1 second for the connection attempt to succeed. */
         if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-            std::cout << "ENet connection succeeded to: " << thisHostname << std::endl;
+            //std::string logMessage = "ENet connection succeeded to: ";
+            //logMessage.append(thisHostname);
+            device->getLogger()->log("ENet connection succeeded to:");
+            device->getLogger()->log(thisHostname.c_str());
         } else {
             /* Either the 1 second is up or a disconnect event was */
             /* received. Reset the peer in the event the 1 second */
             /* had run out without any significant event. */
             enet_peer_reset (peer);
-            std::cout << "ENet connection failed to: " << thisHostname << std::endl;
+            device->getLogger()->log("ENet connection failed to:");
+            device->getLogger()->log(thisHostname.c_str());
         }
     }
 }
@@ -123,7 +127,7 @@ void NetworkPrimary::receiveNetwork()
 {
 
     if (model==0) {
-        std::cout << "Network not linked to model" << std::endl;
+        std::cerr << "Network not linked to model" << std::endl;
         exit(EXIT_FAILURE);
     }
     if (enet_host_service (client, & event, 10) > 0) {
@@ -150,8 +154,6 @@ void NetworkPrimary::receiveNetwork()
 
                             std::string thisCommand = *it;
 
-                            //std::cout << "Received: " << thisCommand << std::endl;
-
                             //Check what sort of command
                             if (thisCommand.length() > 2) {
                                 if (thisCommand.substr(0,2).compare("CL") == 0) {
@@ -159,7 +161,6 @@ void NetworkPrimary::receiveNetwork()
                                     std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                     if (parts.size() == 6) {
                                         //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
-                                        //std::cout << "Change leg command received" << std::endl;
                                         int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                         int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                         irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
@@ -172,7 +173,6 @@ void NetworkPrimary::receiveNetwork()
                                     std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                     if (parts.size() == 6) {
                                         //6 elements in 'Add leg' command: CL,shipNo,afterLegNo,bearing,speed,distance
-                                        //std::cout << "Add leg command received" << std::endl;
                                         int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                         int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                         irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
@@ -228,13 +228,6 @@ void NetworkPrimary::receiveNetwork()
                         //model->setHeading(angle);
                     } //At least one command
                 } //Check received message starts with MC
-
-
-                /*//Testing only: Echo MPF returns
-                if (receivedString.substr(0,3).compare("MPF") == 0 ) { //Check if it starts with MC
-                    std::cout << "Received multiplayer string:" <<receivedString <<std::endl;
-                }*/
-
 
             } //Check message at least 3 characters
 

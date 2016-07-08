@@ -36,7 +36,7 @@ LandObjects::~LandObjects()
     //dtor
 }
 
-void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain)
+void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain, irr::IrrlichtDevice* dev)
 {
     //get landObject.ini filename
     std::string scenarioLandObjectFilename = worldName;
@@ -46,8 +46,6 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     u32 numberOfObjects;
     numberOfObjects = IniFile::iniFileTou32(scenarioLandObjectFilename,"Number");
     for(u32 currentObject=1;currentObject<=numberOfObjects;currentObject++) {
-
-        //std::cout << "Loading land object " << currentObject << std::endl;
 
         //Get Object type and construct filename
         std::string objectName = IniFile::iniFileToString(scenarioLandObjectFilename,IniFile::enumerate1("Type",currentObject));
@@ -64,7 +62,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
 
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),core::vector3df(objectX,objectY,objectZ),rotation,smgr));
+        landObjects.push_back(LandObject (objectName.c_str(),core::vector3df(objectX,objectY,objectZ),rotation,smgr,dev));
 
     }
 }

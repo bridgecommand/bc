@@ -32,7 +32,7 @@ class LandObjects
     public:
         LandObjects();
         virtual ~LandObjects();
-        void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain);
+        void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain, irr::IrrlichtDevice* dev);
         irr::u32 getNumber() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 

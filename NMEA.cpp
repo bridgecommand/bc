@@ -21,10 +21,11 @@
 #include <iostream>
 #include <string>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevice* dev) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
+    device = dev; //Store pointer to irrlicht device
 
     maxMessages=6;
 
@@ -40,10 +41,10 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName) //Constructor
             mySerialPort.setTimeout(timeout);
 
             mySerialPort.open();
-            std::cout << "Serial port opened." << std::endl;
+            device->getLogger()->log("Serial port opened.");
 
         } catch (std::exception const& e) {
-            std::cout << e.what() <<std::endl;
+            device->getLogger()->log(e.what());
         }
     }
 
@@ -54,11 +55,11 @@ NMEA::~NMEA()
 
     //Shut down serial port here
     if (mySerialPort.isOpen()) {
-        std::cout << "Closing serial port" << std::endl;
+        device->getLogger()->log("Closing serial port");
         try {
             mySerialPort.close();
         } catch (std::exception const& e) {
-            std::cout << e.what() <<std::endl;
+            device->getLogger()->log(e.what());
         }
     }
 

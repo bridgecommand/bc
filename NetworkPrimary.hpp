@@ -29,7 +29,7 @@ class SimulationModel;
 class NetworkPrimary : public Network
 {
 public:
-    NetworkPrimary(int port);
+    NetworkPrimary(int port, irr::IrrlichtDevice* dev);
     ~NetworkPrimary();
 
     void connectToServer(std::string hostnames);
@@ -39,6 +39,7 @@ public:
 
 private:
     SimulationModel* model;
+    irr::IrrlichtDevice* device;
     int port;
 
     ENetHost* client; //One client

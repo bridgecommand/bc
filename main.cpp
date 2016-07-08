@@ -70,8 +70,6 @@ int main()
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
-    std::cout << "User folder is " << userFolder << std::endl;
-
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
     //Use local ini file if it exists
@@ -144,6 +142,9 @@ int main()
     DefaultEventReceiver defReceiver(&logMessages);
     device->setEventReceiver(&defReceiver);
 
+    device->getLogger()->log("User folder is:");
+    device->getLogger()->log(userFolder.c_str());
+
     smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
     #ifdef __APPLE__
@@ -152,8 +153,9 @@ int main()
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
+        std::cerr << "Could not get filesystem:" << std::endl;
         exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
-        std::cout << "Could not get filesystem" << std::endl;
+
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
@@ -174,7 +176,7 @@ int main()
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
+        device->getLogger()->log("Could not load font, using default");
     } else {
         //set skin default font
         device->getGUIEnvironment()->getSkin()->setFont(font);
@@ -203,7 +205,7 @@ int main()
 
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(mode, udpPort);
+    Network* network = Network::createNetwork(mode, udpPort, device);
     //Network network(&model);
     network->connectToServer(hostname);
 
@@ -222,13 +224,7 @@ int main()
     }
     std::string serialisedScenarioData = scenarioData.serialise();
 
-    std::cout << "Scenario: " << serialisedScenarioData << std::endl;
-
-    /*
-    //Test with hardcoding
-    ScenarioData scenarioData;
-    scenarioData.deserialise("SCN1#SimpleEstuary#18#9#11#2015#6#18#1#0.5#0.1#Protis,15,-9.98397,50.0206,10#Yacht|-9.9835|50.0352|110?12?0.3/130?12?0.0005/150?12?0.0005/170?12?0.0005/185?12?0.73/185?0?0.1,waverley|-9.98378|50.023|5?8?0.8/45?8?10,Yacht_Sinking|-9.9905|50.0302|45?0?1,Yacht|-9.98446|50.0271|180?5?0.25/177?5?0.25/183?5?0.5/220?5?0.1/270?2?0.1,Protis|-9.98368|50.0324|181?15?0.5/175?15?0.25/125?15?0.28");
-    */
+    //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
     //Create simulation model
     SimulationModel model(device, smgr, &guiMain, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
@@ -244,7 +240,7 @@ int main()
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model
-    NMEA nmea(&model, serialPortName);
+    NMEA nmea(&model, serialPortName, device);
 
     //check enough time has elapsed to show the credits screen (15s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 15000) {
@@ -304,10 +300,10 @@ int main()
 
     }
 
-    device->drop();
     //networking should be stopped (presumably with destructor when it goes out of scope?)
-    std::cout << "About to stop network" << std::endl;
+    device->getLogger()->log("About to stop network");
     delete network;
 
+    device->drop();
     return(0);
 }

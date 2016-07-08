@@ -42,8 +42,6 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
     //normalise angle
     angle = normaliseAngle(angle);
 
-    //std::cout << angle << " " << startAng << " " << endAng << std::endl;
-
     if(endAng <= 360) { //Simple case
         return (angle >= startAng && angle <=endAng);
     } else { //End angle > 360

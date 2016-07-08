@@ -29,7 +29,7 @@ class SimulationModel;
 class NetworkSecondary : public Network
 {
 public:
-    NetworkSecondary(int port, OperatingMode::Mode mode);
+    NetworkSecondary(int port, OperatingMode::Mode mode, irr::IrrlichtDevice* dev);
     ~NetworkSecondary();
 
     void connectToServer(std::string hostnames);
@@ -39,6 +39,7 @@ public:
 
 private:
     SimulationModel* model;
+    irr::IrrlichtDevice* device;
 
     float accelAdjustment;
     float previousTimeError;
