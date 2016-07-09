@@ -130,8 +130,9 @@ namespace IniFile
             file.close();
         } else {
             if (irrlichtLogger) {
-                irrlichtLogger->log("Unable to open file:");
-                irrlichtLogger->log(fileName.c_str());
+                std::string logMessage = "Unable to open file: ";
+                logMessage.append(fileName);
+                irrlichtLogger->log(logMessage.c_str());
             } else {
                 std::cout << "Unable to open file " << fileName << std::endl;
             }
@@ -197,8 +198,9 @@ namespace IniFile
             file.close();
         } else {
             if (irrlichtLogger) {
-                irrlichtLogger->log("Unable to open file:");
-                irrlichtLogger->log(fileName.c_str());
+                std::string logMessage = "Unable to open file: ";
+                logMessage.append(fileName);
+                irrlichtLogger->log(logMessage.c_str());
             } else {
                 std::cout << "Unable to open file " << fileName << std::endl;
             }

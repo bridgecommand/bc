@@ -33,8 +33,24 @@ using namespace irr;
 		//store device
 		device = dev;
 
-		//set up joystick if present
+		//set up joystick if present, and inform user what's available
 		dev->activateJoysticks(joystickInfo);
+
+		//Tell user about joysticks via the log
+		dev->getLogger()->log(""); //add a blank line
+		std::string joystickInfoMessage = "Number of joysticks detected: ";
+		joystickInfoMessage.append(std::string(core::stringc(joystickInfo.size()).c_str()));
+		dev->getLogger()->log(joystickInfoMessage.c_str());
+        for(uint i = 0; i<joystickInfo.size(); i++) {
+            //Print out name and number of each joystick
+            joystickInfoMessage = "Joystick number: ";
+            joystickInfoMessage.append(core::stringc(i).c_str());
+            joystickInfoMessage.append(", Name: ");
+            joystickInfoMessage.append(std::string(joystickInfo[i].Name.c_str()));
+            dev->getLogger()->log(joystickInfoMessage.c_str());
+        }
+        dev->getLogger()->log(""); //add a blank line
+
 		previousJoystickLoaded = false;
 		this->portJoystickAxis=portJoystickAxis;
 		this->stbdJoystickAxis=stbdJoystickAxis;

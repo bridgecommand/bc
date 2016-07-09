@@ -313,5 +313,9 @@ int main()
     delete network;
 
     device->drop();
+
+    //Todo: Think if we want to allow user to dump out log messages here
+    //(in logMessages, a vector of strings)
+
     return(0);
 }
