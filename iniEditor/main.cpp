@@ -31,6 +31,11 @@ using namespace irr;
 
 const irr::s32 SAVE_BUTTON = 1;
 
+//Set up global for ini reader to have access to irrlicht logger if needed.
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 //Structures to hold ini file contents
 struct IniFileEntry {
     std::string settingName;

@@ -23,7 +23,7 @@
 
 using namespace irr;
 
-    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, std::vector<std::string>* logMessages) //Constructor
+    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI (Not currently used!)
@@ -51,10 +51,17 @@ using namespace irr;
         }
         dev->getLogger()->log(""); //add a blank line
 
-		previousJoystickLoaded = false;
 		this->portJoystickAxis=portJoystickAxis;
 		this->stbdJoystickAxis=stbdJoystickAxis;
 		this->rudderJoystickAxis=rudderJoystickAxis;
+		this->portJoystickNo=portJoystickNo;
+		this->stbdJoystickNo=stbdJoystickNo;
+		this->rudderJoystickNo=rudderJoystickNo;
+
+		//Indicate that previous joystick information hasn't been initialised
+		previousJoystickPort = INFINITY;
+		previousJoystickStbd = INFINITY;
+		previousJoystickRudder = INFINITY;
 
 		this->logMessages = logMessages;
 
@@ -302,46 +309,73 @@ using namespace irr;
 
 		//From joystick (actually polled, once per run():
         if (event.EventType == EET_JOYSTICK_INPUT_EVENT) {
-            u32 numberOfAxes = event.JoystickEvent.NUMBER_OF_AXES;
+
+
+            irr::f32 newJoystickPort = previousJoystickPort;
+            irr::f32 newJoystickStbd = previousJoystickStbd;
+            irr::f32 newJoystickRudder = previousJoystickRudder;
+
+            u8 thisJoystick = event.JoystickEvent.Joystick;
+            s16 thisAxis = *event.JoystickEvent.Axis;
+
+            //Check which type we correspond to
+            if (thisJoystick == portJoystickNo && thisAxis == portJoystickAxis) {
+                newJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;
+                //If previous value is NAN, store current value in previous and current, otherwise only in current
+                if (previousJoystickPort==INFINITY) {
+                    previousJoystickPort = newJoystickPort;
+                }
+            }
+            if (thisJoystick == stbdJoystickNo && thisAxis == stbdJoystickAxis) {
+                newJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;
+                //If previous value is NAN, store current value in previous and current, otherwise only in current
+                if (previousJoystickStbd==INFINITY) {
+                    previousJoystickStbd = newJoystickStbd;
+                }
+            }
+            if (thisJoystick == rudderJoystickNo && thisAxis == rudderJoystickAxis) {
+                newJoystickRudder = event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;
+                //If previous value is NAN, store current value in previous and current, otherwise only in current
+                if (previousJoystickRudder==INFINITY) {
+                    previousJoystickRudder = newJoystickRudder;
+                }
+            }
+
+
             //Do joystick stuff here
             //Todo: track joystick changes, so if not changing, the GUI inputs are used - partially implemented but need to check for jitter etc
             //Todo: Also implement multiplier/offset and joystick map.
             //FIXME: Note that Irrlicht does not have joystick handling on MacOS
-            if (numberOfAxes>portJoystickAxis && numberOfAxes>stbdJoystickAxis && numberOfAxes>rudderJoystickAxis ) { //check required axes exist on this joystick
-                if (!previousJoystickLoaded) { //Load initial joystick values, so we can detect a change
-                    previousJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;
-                    previousJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;
-                    previousJoystickRudder = 30.0*event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;
-                    previousJoystickLoaded=true;
-                } else { //Normal running
-                    //Get current joystick inputs
-                    f32 newJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;//+-1 from axis range -32768 to 32767
-                    f32 newJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;//+-1
-                    f32 newJoystickRudder = 30.0*event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;//+-30 from axis range -32768 to 32767
 
-                    //check if any have changed
-                    bool joystickChanged = false;
-                    f32 portChange = fabs(newJoystickPort - previousJoystickPort);
-                    f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
-                    f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
-                    if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01)
-                    {
-                        joystickChanged = true;
-                    }
-
-                    //If any have changed, use all
-                    if (joystickChanged) {
-                        model->setPortEngine(newJoystickPort);
-                        model->setStbdEngine(newJoystickStbd);
-                        model->setRudder(newJoystickRudder);
-                        previousJoystickPort=newJoystickPort;
-                        previousJoystickStbd=newJoystickStbd;
-                        previousJoystickRudder=newJoystickRudder;
-                    }
-                }
-            } else {
-                device->getLogger()->log("Trying to use non-existent joystick axis.");
+            //check if any have changed
+            bool joystickChanged = false;
+            f32 portChange = fabs(newJoystickPort - previousJoystickPort);
+            f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
+            f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
+            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01)
+            {
+                joystickChanged = true;
             }
+
+            //If any have changed, use all (iff non-infinite)
+            if (joystickChanged) {
+                if (newJoystickPort<INFINITY) {
+                    model->setPortEngine(newJoystickPort);
+                    previousJoystickPort=newJoystickPort;
+                }
+
+                if (newJoystickStbd<INFINITY) {
+                    model->setStbdEngine(newJoystickStbd);
+                    previousJoystickStbd=newJoystickStbd;
+                }
+
+                if (newJoystickRudder<INFINITY) {
+                    model->setRudder(newJoystickRudder);
+                    previousJoystickRudder=newJoystickRudder;
+                }
+
+            }
+
 
         }
 

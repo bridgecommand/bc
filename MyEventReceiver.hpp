@@ -29,7 +29,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, std::vector<std::string>* logMessages);
+    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -45,13 +45,17 @@ private:
     irr::s32 scrollBarPosSpeed;
     irr::s32 scrollBarPosHeading;
     irr::core::array<irr::SJoystickInfo> joystickInfo;
+
     irr::f32 previousJoystickPort;
     irr::f32 previousJoystickStbd;
     irr::f32 previousJoystickRudder;
-    bool previousJoystickLoaded;
+
     irr::u32 portJoystickAxis;
     irr::u32 stbdJoystickAxis;
     irr::u32 rudderJoystickAxis;
+    irr::u32 portJoystickNo;
+    irr::u32 stbdJoystickNo;
+    irr::u32 rudderJoystickNo;
     std::vector<std::string>* logMessages;
 
 };
