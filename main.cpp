@@ -35,6 +35,7 @@
 #include <cstdlib> //For rand(), srand()
 #include <vector>
 #include <sstream>
+#include <fstream> //To save to log
 
 //Mac OS:
 #ifdef __APPLE__
@@ -318,8 +319,18 @@ int main()
 
     device->drop();
 
-    //Todo: Think if we want to allow user to dump out log messages here
-    //(in logMessages, a vector of strings)
+    //Save log messages to user directory, into log.txt, overwrite old file with that name
+    std::ofstream logFile;
+    logFile.open(userFolder + "log.txt");
+    for (uint i=0;i<logMessages.size();i++) {
+        if (logFile.good()) {
+            //Check we're not creating an excessively long file
+            if (i<=1000 && logMessages.at(i).length() <=1000) {
+                logFile << logMessages.at(i) << std::endl;
+            }
+        }
+    }
 
+    //End
     return(0);
 }
