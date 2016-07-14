@@ -22,6 +22,11 @@
 // Irrlicht Namespaces
 using namespace irr;
 
+//Global definition for ini logger
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 const irr::s32 BC_BUTTON = 1;
 const irr::s32 MC_BUTTON = 2;
 const irr::s32 ED_BUTTON = 3;

@@ -36,6 +36,11 @@
 #include <mach-o/dyld.h>
 #endif
 
+//Set up global for ini reader to have access to irrlicht logger if needed.
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 scenarioTime, irr::f32 accelerator)
 {
     //timestamp (unix),

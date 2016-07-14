@@ -231,6 +231,14 @@ int main (int argc, char ** argv)
 
     gui::IGUIEnvironment* environment = device->getGUIEnvironment();
 
+    //Set gui colours
+    gui::IGUISkin* skin = environment->getSkin();
+
+    skin->setColor(gui::EGDC_3D_DARK_SHADOW ,video::SColor(255,128,128,128));
+    skin->setColor(gui::EGDC_3D_SHADOW ,video::SColor(255,190,190,190));
+    skin->setColor(gui::EGDC_3D_FACE ,video::SColor(255,235,235,235));
+    skin->setColor(gui::EGDC_3D_LIGHT ,video::SColor(255,255,255,255));
+
     core::dimension2d<u32> screenSize = driver->getScreenSize();
     u32 width = screenSize.Width;
     u32 height = screenSize.Height;

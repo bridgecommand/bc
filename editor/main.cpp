@@ -43,6 +43,11 @@
 // Irrlicht Namespaces
 using namespace irr;
 
+//Set up global for ini reader to have access to irrlicht logger if needed.
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 //To do: Utility function to find scenario list
 void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, std::string path) {
 

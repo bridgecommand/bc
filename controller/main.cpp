@@ -22,6 +22,11 @@
 // Irrlicht Namespaces
 using namespace irr;
 
+//Set up global for ini reader to have access to irrlicht logger if needed.
+namespace IniFile {
+    irr::ILogger* irrlichtLogger = 0;
+}
+
 int main (int argc, char ** argv)
 {
 
