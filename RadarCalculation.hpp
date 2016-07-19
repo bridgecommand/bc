@@ -28,6 +28,28 @@ class Terrain;
 class OwnShip;
 class Buoys;
 class OtherShips;
+class RadarData;
+
+enum ARPA_CONTACT_TYPE {
+    CONTACT_NORMAL,
+    CONTACT_MANUAL
+};
+
+struct ARPAScan {
+    //ARPA scan information based on the assumption that the own ship position is well known
+    irr::f32 x; //Absolute metres
+    irr::f32 z; //Absolute metres
+    irr::f64 timeStamp; //Timestamp in seconds
+    irr::f32 estimatedRCS; //Estimated radar cross section
+    irr::f32 rangeNm; //Reference only
+    irr::f32 bearingDeg; //For reference only
+};
+
+struct ARPAContact {
+    std::vector<ARPAScan> scans;
+    ARPA_CONTACT_TYPE contactType;
+    RadarData* contact;
+};
 
 class RadarCalculation
 {
@@ -56,6 +78,7 @@ class RadarCalculation
         std::vector<std::vector<irr::f32> > scanArray;
         std::vector<std::vector<irr::f32> > scanArrayAmplified;
         std::vector<std::vector<irr::f32> > scanArrayAmplifiedPrevious;
+        std::vector<ARPAContact> arpaContacts;
         irr::f32 radarGain;
         irr::f32 radarRainClutterReduction;
         irr::f32 radarSeaClutterReduction;

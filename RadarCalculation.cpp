@@ -116,7 +116,7 @@ void RadarCalculation::load(std::string radarConfigFile)
         radarRangeIndex=numberOfRadarRanges/2;
 
         //Radar angular resolution (integer degree)
-        scanAngleStep=IniFile::iniFileTof32(radarConfigFile,"radar_sensitivity");
+        scanAngleStep=IniFile::iniFileTou32(radarConfigFile,"radar_sensitivity");
         if (scanAngleStep < 1 || scanAngleStep > 180) {scanAngleStep = 2;}
 
         //Radar scanner height (Metres)
@@ -317,25 +317,58 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             //get adjustment of height for earth's curvature
             f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
 
+            //Calculate noise
+            f32 localNoise = radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,rain); //FIXME: Needs rain intensity and wind direction
+
             //Scan other contacts here
             //Fixme: Implementation needs completing later for ARPA to check if contact is detectable against clutter
-            for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
-                f32 contactHeightAboveLine = (it->height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
+            //for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
+            for(int thisContact = 0; thisContact<radarData.size(); thisContact++) {
+                f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
                     //Start of B3D code
-                    if ((it->range >= minCellRange && it->range <= maxCellRange) || (it->minRange >= minCellRange && it->minRange <= maxCellRange) || (it->maxRange >= minCellRange && it->maxRange <= maxCellRange) || (it->minRange < minCellRange && it->maxRange > maxCellRange)) {//Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
-                        if ((Angles::isAngleBetween(it->angle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(it->minAngle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(it->maxAngle,minCellAngle,maxCellAngle)) || ( Angles::normaliseAngle(it->minAngle-minCellAngle) > 270 && Angles::normaliseAngle(it->maxAngle-maxCellAngle) < 90)) {//Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
+                    if ((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) || (radarData.at(thisContact).minRange >= minCellRange && radarData.at(thisContact).minRange <= maxCellRange) || (radarData.at(thisContact).maxRange >= minCellRange && radarData.at(thisContact).maxRange <= maxCellRange) || (radarData.at(thisContact).minRange < minCellRange && radarData.at(thisContact).maxRange > maxCellRange)) {//Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
+                        if ((Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(radarData.at(thisContact).minAngle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(radarData.at(thisContact).maxAngle,minCellAngle,maxCellAngle)) || ( Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90)) {//Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
 
-                            irr::f32 rangeAtCellMin = rangeAtAngle(minCellAngle,it->relX,it->relZ,it->heading);
-                            irr::f32 rangeAtCellMax = rangeAtAngle(maxCellAngle,it->relX,it->relZ,it->heading);
+                            irr::f32 rangeAtCellMin = rangeAtAngle(minCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
+                            irr::f32 rangeAtCellMax = rangeAtAngle(maxCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
 
                             //check if the contact intersects this exact cell, if its extremes overlap it
                             //Also check if the target centre is in the cell, or the extended target spans the cell (ie RangeAtCellMin less than minCellRange and rangeAtCellMax greater than maxCellRange and vice versa)
-                            if ((((it->range >= minCellRange && it->range <= maxCellRange) && (Angles::isAngleBetween(it->angle,minCellAngle,maxCellAngle))) || (rangeAtCellMin >= minCellRange && rangeAtCellMin <= maxCellRange) || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange) || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange) || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))){
+                            if ((((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) && (Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle))) || (rangeAtCellMin >= minCellRange && rangeAtCellMin <= maxCellRange) || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange) || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange) || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))){
 
-                                irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * it->rcs;
+                                irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanAngle][currentStep] += radarEchoStrength;
+
+                                if (radarEchoStrength*2 > localNoise) {
+                                    //Contact is detectable in noise
+                                    //std::cout << "Contact at range " << (radarData.at(thisContact).range)/M_IN_NM << " and bearing " << radarData.at(thisContact).angle << " is detectable." << std::endl;
+
+                                    //Iterate through arpaContacts array, checking if this contact is in the list (by checking 'it' vs 'contact'
+                                    //If not in list, add, and add this scan
+                                    //Otherwise, just add scan (if not already added in the last minute)
+
+
+
+                                    int existingArpaContact=-1;
+                                    for (int j = 0; j<arpaContacts.size(); j++) {
+                                        if (arpaContacts.at(j).contact == &radarData[thisContact]) {
+                                            existingArpaContact = j;
+                                        }
+                                    }
+                                    //If it doesn't exist, add it, and make i point to it
+                                    if (existingArpaContact<0) {
+                                        ARPAContact newContact;
+                                        newContact.contact = &radarData[thisContact];
+                                        newContact.contactType=CONTACT_NORMAL;
+                                        arpaContacts.push_back(newContact);
+                                        existingArpaContact = arpaContacts.size()-1;
+                                        std::cout << "Adding contact " << existingArpaContact << std::endl;
+                                    }
+
+                                }
+
                                 /*
                                 ;check how visible against noise/clutter. If visible, record as detected for ARPA tracking
                                 If radarEchoStrength#*2 > radarNoiseValueNoBlock(radarNoiseLevel#, radarSeaClutter#, radarRainClutter#, weather#, AllRadarTargets(i)\range, rainIntensity)
@@ -367,9 +400,9 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
                                 EndIf
                                 */
                                 //if a target entirely covers the angle of a cell, then use its blocking height and increase radarHeight, so it blocks reflections from behind
-                                if ( Angles::normaliseAngle(it->minAngle-minCellAngle) > 270 && Angles::normaliseAngle(it->maxAngle-maxCellAngle) < 90) {
+                                if ( Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90) {
                                     //reset scanSlope to new value if the solid height is higher
-                                    scanSlope = std::max(scanSlope,(it->solidHeight-radarScannerHeight-dropWithCurvature)/localRange);
+                                    scanSlope = std::max(scanSlope,(radarData.at(thisContact).solidHeight-radarScannerHeight-dropWithCurvature)/localRange);
 
                                 }
                             }
@@ -393,7 +426,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             }
 
             //Add radar noise
-            scanArray[currentScanAngle][currentStep] += radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,rain); //FIXME: Needs rain intensity and wind direction
+            scanArray[currentScanAngle][currentStep] += localNoise;
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
 
