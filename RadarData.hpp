@@ -36,6 +36,7 @@ struct RadarData {
     irr::f32 maxAngle;
     irr::f32 rcs;
     irr::f32 solidHeight;
+    void* contact;
 
     bool hidden;
     std::string racon; //Racon code if set
@@ -61,7 +62,8 @@ struct RadarData {
         hidden(false),
         racon(""),
         raconOffsetTime(0),
-        SART(false)
+        SART(false),
+        contact(0)
         {}
 
 };

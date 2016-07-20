@@ -39,7 +39,7 @@ struct ARPAScan {
     //ARPA scan information based on the assumption that the own ship position is well known
     irr::f32 x; //Absolute metres
     irr::f32 z; //Absolute metres
-    irr::f64 timeStamp; //Timestamp in seconds
+    uint64_t timeStamp; //Timestamp in seconds
     irr::f32 estimatedRCS; //Estimated radar cross section
     irr::f32 rangeNm; //Reference only
     irr::f32 bearingDeg; //For reference only
@@ -48,7 +48,7 @@ struct ARPAScan {
 struct ARPAContact {
     std::vector<ARPAScan> scans;
     ARPA_CONTACT_TYPE contactType;
-    RadarData* contact;
+    void* contact;
 };
 
 class RadarCalculation
@@ -72,7 +72,7 @@ class RadarCalculation
         void decreaseEBLRange();
         void increaseEBLBrg();
         void decreaseEBLBrg();
-        void update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime);
+        void update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
 
     private:
         std::vector<std::vector<irr::f32> > scanArray;
@@ -100,7 +100,7 @@ class RadarCalculation
         irr::video::SColor radarForegroundColour;
 
         std::vector<irr::f32> radarRangeNm;
-        void scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime);
+        void scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
         void render(irr::video::IImage * radarImage);
         irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);

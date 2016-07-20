@@ -163,6 +163,8 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.raconOffsetTime=0.0;
     radarData.SART=false;
 
+    radarData.contact = (void*)this;
+
     return radarData;
 }
 

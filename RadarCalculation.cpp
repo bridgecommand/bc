@@ -259,15 +259,20 @@ void RadarCalculation::decreaseEBLBrg()
     }
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
-    scan(terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     render(radarImage); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime)
+void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
     core::vector3df position = ownShip.getPosition();
+    //Get absolute position relative to SW corner of world model
+    core::vector3d<irr::s64> absolutePosition = offsetPosition;
+    offsetPosition.X += position.X;
+    offsetPosition.Y += position.Y;
+    offsetPosition.Z += position.Z;
 
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
@@ -343,29 +348,40 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
 
                                 if (radarEchoStrength*2 > localNoise) {
                                     //Contact is detectable in noise
-                                    //std::cout << "Contact at range " << (radarData.at(thisContact).range)/M_IN_NM << " and bearing " << radarData.at(thisContact).angle << " is detectable." << std::endl;
 
-                                    //Iterate through arpaContacts array, checking if this contact is in the list (by checking 'it' vs 'contact'
-                                    //If not in list, add, and add this scan
-                                    //Otherwise, just add scan (if not already added in the last minute)
-
-
-
+                                    //Iterate through arpaContacts array, checking if this contact is in the list (by checking the if the 'contact' pointer is to the same underlying ship/buoy)
                                     int existingArpaContact=-1;
                                     for (int j = 0; j<arpaContacts.size(); j++) {
-                                        if (arpaContacts.at(j).contact == &radarData[thisContact]) {
+                                        if (arpaContacts.at(j).contact == radarData.at(thisContact).contact) {
                                             existingArpaContact = j;
                                         }
                                     }
-                                    //If it doesn't exist, add it, and make i point to it
+                                    //If it doesn't exist, add it, and make existingArpaContact point to it
                                     if (existingArpaContact<0) {
                                         ARPAContact newContact;
-                                        newContact.contact = &radarData[thisContact];
+                                        newContact.contact = radarData.at(thisContact).contact;
                                         newContact.contactType=CONTACT_NORMAL;
                                         arpaContacts.push_back(newContact);
                                         existingArpaContact = arpaContacts.size()-1;
                                         std::cout << "Adding contact " << existingArpaContact << std::endl;
                                     }
+                                    //Add this scan (if not already scanned in the last X seconds
+                                    size_t scansSize = arpaContacts.at(existingArpaContact).scans.size();
+                                    if (scansSize==0 || absoluteTime > 10 + arpaContacts.at(existingArpaContact).scans.at(scansSize-1).timeStamp) {
+                                        ARPAScan newScan;
+                                        newScan.timeStamp = absoluteTime;
+                                        //TODO: Add noise/uncertainty
+                                        newScan.bearingDeg = radarData.at(thisContact).angle;
+                                        newScan.rangeNm = radarData.at(thisContact).range / M_IN_NM;
+                                        newScan.x = absolutePosition.X + radarData.at(thisContact).relX;
+                                        newScan.z = absolutePosition.Z + radarData.at(thisContact).relZ;
+                                        newScan.estimatedRCS = 100;//Todo: Implement
+
+                                        arpaContacts.at(existingArpaContact).scans.push_back(newScan);
+                                        std::cout << "ARPA update on " << existingArpaContact << std::endl;
+
+                                    }
+
 
                                 }
 
