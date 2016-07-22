@@ -45,10 +45,22 @@ struct ARPAScan {
     irr::f32 bearingDeg; //For reference only
 };
 
+struct ARPAEstimatedState {
+    bool ignored; // E.g. if detected as static and a small RCS or a buoy. (Should be overridable by user)
+    irr::f32 absVectorX; //Estimated X speed (m/s)
+    irr::f32 absVectorZ; //Estimated Z speed (m/s)
+    irr::f32 absHeading; //Estimated heading (deg)
+    //Also to implement
+    //Distance of CPA
+    //Time to CPA
+};
+
 struct ARPAContact {
     std::vector<ARPAScan> scans;
     ARPA_CONTACT_TYPE contactType;
     void* contact;
+    irr::u32 displayID;
+    ARPAEstimatedState estimate;
 };
 
 class RadarCalculation
@@ -101,10 +113,11 @@ class RadarCalculation
 
         std::vector<irr::f32> radarRangeNm;
         void scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
+        void updateARPA(irr::core::vector3d<irr::s64> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
-        void render(irr::video::IImage * radarImage);
+        void render(irr::video::IImage * radarImage, irr::f32 ownShipHeading, bool headUp, bool stabilised);
         irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);
-        void drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue);
+        void drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading, bool headUp);
 
 };
 

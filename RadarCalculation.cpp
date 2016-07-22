@@ -262,11 +262,15 @@ void RadarCalculation::decreaseEBLBrg()
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
-    render(radarImage); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+    updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
+    render(radarImage, ownShip.getHeading(), false, false); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
+
+    const irr::u32 SECONDS_BETWEEN_SCANS = 20;
+
     core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
     core::vector3d<irr::s64> absolutePosition = offsetPosition;
@@ -303,7 +307,6 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Clear old value
-            scanArrayAmplifiedPrevious[currentScanAngle][currentStep]=scanArrayAmplified[currentScanAngle][currentStep];
             scanArray[currentScanAngle][currentStep] = 0.0;
 
             //Get location of area being scanned
@@ -346,6 +349,7 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
                                 scanArray[currentScanAngle][currentStep] += radarEchoStrength;
 
+                                //Start ARPA section
                                 if (radarEchoStrength*2 > localNoise) {
                                     //Contact is detectable in noise
 
@@ -361,13 +365,21 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
                                         ARPAContact newContact;
                                         newContact.contact = radarData.at(thisContact).contact;
                                         newContact.contactType=CONTACT_NORMAL;
+                                        newContact.displayID = 0; //Initially not displayed
+
+                                        //Zeros for estimated state
+                                        newContact.estimate.ignored = false;
+                                        newContact.estimate.absVectorX = 0;
+                                        newContact.estimate.absVectorZ = 0;
+                                        newContact.estimate.absHeading = 0;
+
                                         arpaContacts.push_back(newContact);
                                         existingArpaContact = arpaContacts.size()-1;
                                         std::cout << "Adding contact " << existingArpaContact << std::endl;
                                     }
                                     //Add this scan (if not already scanned in the last X seconds
                                     size_t scansSize = arpaContacts.at(existingArpaContact).scans.size();
-                                    if (scansSize==0 || absoluteTime > 10 + arpaContacts.at(existingArpaContact).scans.at(scansSize-1).timeStamp) {
+                                    if (scansSize==0 || absoluteTime > SECONDS_BETWEEN_SCANS + arpaContacts.at(existingArpaContact).scans.at(scansSize-1).timeStamp) {
                                         ARPAScan newScan;
                                         newScan.timeStamp = absoluteTime;
                                         //TODO: Add noise/uncertainty
@@ -383,7 +395,8 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
                                     }
 
 
-                                }
+                                } //End ARPA Section
+                                //Todo: Also check for contacts beyond the current scan range.
 
                                 /*
                                 ;check how visible against noise/clutter. If visible, record as detected for ARPA tracking
@@ -476,9 +489,18 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
             currentScanAngle=0;
         }
     } //End of repeatable scan section
+
 }
 
-void RadarCalculation::render(irr::video::IImage * radarImage)
+void RadarCalculation::updateARPA(irr::core::vector3d<irr::s64> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+{
+    //Based on scans data in arpaContacts, estimate current speed, heading and position
+
+
+
+}
+
+void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipHeading, bool headUp, bool stabilised)
 {
     //*************************
     //generate image from array
@@ -507,25 +529,35 @@ void RadarCalculation::render(irr::video::IImage * radarImage)
 
         for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
-            //If the sector has changed, draw it
-            if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep])
+            //If the sector has changed, draw it. If we're stabilising the picture, need to re-draw all in case the ship's head has changed
+            if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep] || stabilised)
             {
+
                 f32 pixelColour=scanArrayAmplified[scanAngle][currentStep];
+
                 if (pixelColour>1.0) {pixelColour = 1.0;}
                 if (pixelColour<0)   {pixelColour =   0;}
 
                 //Interpolate colour between foreground and background
                 irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
 
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue());
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading, headUp);
+
+                //Store what we've just plotted, so we don't need to re-plot if unchanged
+                scanArrayAmplifiedPrevious[scanAngle][currentStep]=scanArrayAmplified[scanAngle][currentStep];
             }
         }
     }
 }
 
-void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)
+void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading, bool headUp)
 //draw a bounded sector
 {
+    if (headUp) {
+        startAngle -= ownShipHeading;
+        endAngle -= ownShipHeading;
+    }
+
     //find the corner points (Fixme: Not quite right when the extreme point is on the outer curve)
     irr::f32 sinStartAngle = std::sin(irr::core::DEGTORAD*startAngle);
     irr::f32 cosStartAngle = std::cos(irr::core::DEGTORAD*startAngle);
