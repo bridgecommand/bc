@@ -124,8 +124,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
 
-        increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.110*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
-        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.120*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.070*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.080*sh,0.055*su,0.140*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+
+        //Mode buttons: Todo - Implement ID
+        northButton = guienv->addButton(core::rect<s32>(0.005*su,0.150*sh,0.055*su,0.180*sh),mainRadarTab,GUI_ID_RADAR_NORTH_BUTTON,language->translate("nUp").c_str());
+        courseButton = guienv->addButton(core::rect<s32>(0.005*su,0.180*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_COURSE_BUTTON,language->translate("cUp").c_str());
+        headButton = guienv->addButton(core::rect<s32>(0.005*su,0.210*sh,0.055*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_HEAD_BUTTON,language->translate("hUp").c_str());
 
         radarGainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);

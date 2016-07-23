@@ -47,6 +47,9 @@ public:
         GUI_ID_RADAR_EBL_RIGHT_BUTTON,
         GUI_ID_RADAR_EBL_UP_BUTTON,
         GUI_ID_RADAR_EBL_DOWN_BUTTON,
+        GUI_ID_RADAR_NORTH_BUTTON,
+        GUI_ID_RADAR_COURSE_BUTTON,
+        GUI_ID_RADAR_HEAD_BUTTON,
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_VISIBILITY_SCROLL_BAR,
@@ -91,6 +94,9 @@ private:
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIButton* increaseRangeButton;
     irr::gui::IGUIButton* decreaseRangeButton;
+    irr::gui::IGUIButton* northButton;
+    irr::gui::IGUIButton* courseButton;
+    irr::gui::IGUIButton* headButton;
     irr::gui::IGUIScrollBar* radarGainScrollbar;
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
     irr::gui::IGUIScrollBar* radarRainScrollbar;

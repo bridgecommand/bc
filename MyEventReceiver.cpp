@@ -204,6 +204,20 @@ using namespace irr;
                     model->decreaseRadarEBLRange();
                 }
 
+                //Radar mode buttons
+                if (id == GUIMain::GUI_ID_RADAR_NORTH_BUTTON)
+                {
+                    model->setRadarNorthUp();
+                }
+                if (id == GUIMain::GUI_ID_RADAR_COURSE_BUTTON)
+                {
+                    model->setRadarCourseUp();
+                }
+                if (id == GUIMain::GUI_ID_RADAR_HEAD_BUTTON)
+                {
+                    model->setRadarHeadUp();
+                }
+
                 if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)
                 {
                     gui->showLogWindow();

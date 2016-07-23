@@ -126,6 +126,9 @@ public:
     void decreaseRadarEBLRange();
     void increaseRadarEBLBrg();
     void decreaseRadarEBLBrg();
+    void setRadarNorthUp();
+    void setRadarCourseUp();
+    void setRadarHeadUp();
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

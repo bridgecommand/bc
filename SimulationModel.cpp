@@ -521,6 +521,21 @@ SimulationModel::~SimulationModel()
     void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
     void SimulationModel::decreaseRadarEBLBrg() {radarCalculation.decreaseEBLBrg();}
 
+    void SimulationModel::setRadarNorthUp()
+    {
+        radarCalculation.setNorthUp();
+    }
+
+    void SimulationModel::setRadarCourseUp()
+    {
+        radarCalculation.setCourseUp();
+    }
+
+    void SimulationModel::setRadarHeadUp()
+    {
+        radarCalculation.setHeadUp();
+    }
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();

@@ -44,6 +44,10 @@ RadarCalculation::RadarCalculation()
 
     EBLLastUpdated = clock();
 
+    //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
+    headUp = false;
+    stabilised = false;
+
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
@@ -259,11 +263,32 @@ void RadarCalculation::decreaseEBLBrg()
     }
 }
 
+void RadarCalculation::setNorthUp()
+{
+    //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
+    headUp = false;
+    stabilised = false;
+}
+
+void RadarCalculation::setCourseUp()
+{
+    //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
+    headUp = true;
+    stabilised = true;
+}
+
+void RadarCalculation::setHeadUp()
+{
+    //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
+    headUp = true;
+    stabilised = false;
+}
+
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-    render(radarImage, ownShip.getHeading(), false, false); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+    render(radarImage, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
@@ -500,7 +525,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<irr::s64> offsetPosition, 
 
 }
 
-void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipHeading, bool headUp, bool stabilised)
+void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipHeading)
 {
     //*************************
     //generate image from array
@@ -541,7 +566,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipH
                 //Interpolate colour between foreground and background
                 irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
 
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading, headUp);
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading);
 
                 //Store what we've just plotted, so we don't need to re-plot if unchanged
                 scanArrayAmplifiedPrevious[scanAngle][currentStep]=scanArrayAmplified[scanAngle][currentStep];
@@ -550,7 +575,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipH
     }
 }
 
-void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading, bool headUp)
+void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading)
 //draw a bounded sector
 {
     if (headUp) {
