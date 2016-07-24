@@ -26,7 +26,7 @@ using namespace irr;
     MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI (Not currently used!)
+		this->gui = gui; //Link to GUI (Not currently used, all comms through model)
 		scrollBarPosSpeed = 0;
 		scrollBarPosHeading = 0;
 

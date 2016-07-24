@@ -87,6 +87,7 @@ class RadarCalculation
         void setNorthUp();
         void setCourseUp();
         void setHeadUp();
+        bool getHeadUp() const; //Head or course up
         void update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
 
     private:

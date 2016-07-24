@@ -169,6 +169,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //Show internal log window button
         pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.92*sh,0.26*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
+
     }
 
     GUIMain::~GUIMain()
@@ -303,7 +304,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided)
+    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided, bool headUp)
     {
         //Update scroll bars
         hdgScrollbar->setPos(Utilities::round(hdg));
@@ -333,8 +334,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guiPaused = paused;
         guiCollided = collided;
 
+        radarHeadUp = headUp;
+
         //update EBL Data
         this->guiRadarEBLBrg = guiRadarEBLBrg;
+        if (radarHeadUp) {
+            this->guiRadarEBLBrg -= guiHeading;
+        }
         this->guiRadarEBLRangeNm = guiRadarEBLRangeNm;
     }
 
@@ -433,6 +439,12 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         dataDisplay->setText(displayText.c_str());
 
         //add radar text (reuse the displayText)
+        f32 displayEBLBearing = guiRadarEBLBrg;
+        if (radarHeadUp) {
+            displayEBLBearing += guiHeading;
+        }
+        while (displayEBLBearing>=360) {displayEBLBearing-=360;}
+        while (displayEBLBearing<0) {displayEBLBearing+=360;}
         displayText = language->translate("range");
         displayText.append(f32To1dp(guiRadarRangeNm).c_str());
         displayText.append(language->translate("nm"));
@@ -441,7 +453,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         displayText.append(f32To2dp(guiRadarEBLRangeNm).c_str());
         displayText.append(language->translate("nm"));
         displayText.append(L"/");
-        displayText.append(f32To1dp(guiRadarEBLBrg).c_str());
+        displayText.append(f32To1dp(displayEBLBearing).c_str());
         displayText.append(language->translate("deg"));
         radarText->setText(displayText.c_str());
 
@@ -473,15 +485,26 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     {
         s32 centreX = su-0.2*sh;
         s32 centreY = 0.8*sh;
-        s32 deltaX = 0.2*sh*sin(core::DEGTORAD*guiHeading);
-        s32 deltaY = -0.2*sh*cos(core::DEGTORAD*guiHeading);
+        f32 radarHeadingIndicator;
+        if (radarHeadUp) {
+            radarHeadingIndicator = 0;
+        } else {
+            radarHeadingIndicator = guiHeading;
+        }
+        s32 deltaX = 0.2*sh*sin(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaY = -0.2*sh*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> radarCentre (centreX,centreY);
         core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
         device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255)); //Todo: Make these configurable
 
         //draw a look direction line
-        s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*viewHdg);
-        s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*viewHdg);
+        if (radarHeadUp) {
+            radarHeadingIndicator = viewHdg - guiHeading;
+        } else {
+            radarHeadingIndicator = viewHdg;
+        }
+        s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
         device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0)); //Todo: Make these configurable
