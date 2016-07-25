@@ -329,7 +329,7 @@ int main()
     //Save log messages to user directory, into log.txt, overwrite old file with that name
     std::ofstream logFile;
     logFile.open(userFolder + "log.txt");
-    for (uint i=0;i<logMessages.size();i++) {
+    for (unsigned int i=0;i<logMessages.size();i++) {
         if (logFile.good()) {
             //Check we're not creating an excessively long file
             if (i<=1000 && logMessages.at(i).length() <=1000) {

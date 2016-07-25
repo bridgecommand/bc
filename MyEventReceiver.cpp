@@ -41,7 +41,7 @@ using namespace irr;
 		std::string joystickInfoMessage = "Number of joysticks detected: ";
 		joystickInfoMessage.append(std::string(core::stringc(joystickInfo.size()).c_str()));
 		dev->getLogger()->log(joystickInfoMessage.c_str());
-        for(uint i = 0; i<joystickInfo.size(); i++) {
+        for(unsigned int i = 0; i<joystickInfo.size(); i++) {
             //Print out name and number of each joystick
             joystickInfoMessage = "Joystick number: ";
             joystickInfoMessage.append(core::stringc(i).c_str());
