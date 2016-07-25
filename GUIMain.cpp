@@ -38,6 +38,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //default to double engine in gui
         singleEngine = false;
 
+        //Default to small radar display
+        radarLarge = false;
+
         //gui - add scroll bars for speed and heading control directly
         hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
         hdgScrollbar->setMax(360);
@@ -124,13 +127,19 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
 
+        //Buttons for full or small radar
+        bigRadarButton = guienv->addButton(core::rect<s32>(0.000*su,0.000*sh,0.10*su,0.10*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
+        smallRadarButton = guienv->addButton(core::rect<s32>(0.000*su,0.000*sh,0.10*su,0.10*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
+        smallRadarButton->setVisible(radarLarge);
+        bigRadarButton->setVisible(!radarLarge);
+
         increaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.010*sh,0.055*su,0.070*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         decreaseRangeButton = guienv->addButton(core::rect<s32>(0.005*su,0.080*sh,0.055*su,0.140*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
         //Mode buttons: Todo - Implement ID
-        northButton = guienv->addButton(core::rect<s32>(0.005*su,0.150*sh,0.055*su,0.180*sh),mainRadarTab,GUI_ID_RADAR_NORTH_BUTTON,language->translate("nUp").c_str());
-        courseButton = guienv->addButton(core::rect<s32>(0.005*su,0.180*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_COURSE_BUTTON,language->translate("cUp").c_str());
-        headButton = guienv->addButton(core::rect<s32>(0.005*su,0.210*sh,0.055*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_HEAD_BUTTON,language->translate("hUp").c_str());
+        northButton = guienv->addButton(core::rect<s32>(0.005*su,0.150*sh,0.055*su,0.180*sh),mainRadarTab,GUI_ID_RADAR_NORTH_BUTTON,language->translate("northUp").c_str());
+        courseButton = guienv->addButton(core::rect<s32>(0.005*su,0.180*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_COURSE_BUTTON,language->translate("courseUp").c_str());
+        headButton = guienv->addButton(core::rect<s32>(0.005*su,0.210*sh,0.055*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_HEAD_BUTTON,language->translate("headUp").c_str());
 
         radarGainScrollbar    = new gui::ScrollDial(core::vector2d<s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
@@ -214,6 +223,18 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     {
         showInterface = false;
         updateVisibility();
+    }
+
+    void GUIMain::setLargeRadar(bool radarState)
+    {
+        radarLarge = radarState;
+        bigRadarButton->setVisible(!radarState);
+        smallRadarButton->setVisible(radarState);
+    }
+
+    bool GUIMain::getLargeRadar() const
+    {
+        return radarLarge;
     }
 
     void GUIMain::setSingleEngine()
@@ -483,16 +504,28 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
     void GUIMain::draw2dRadar()
     {
-        s32 centreX = su-0.2*sh;
-        s32 centreY = 0.8*sh;
+        s32 centreX;
+        s32 centreY;
+        s32 radius;
+
+        if (radarLarge) {
+            centreX = 0.3*sh;
+            centreY = 0.3*sh;
+            radius = 0.3*sh;
+        } else {
+            centreX = su-0.2*sh;
+            centreY = 0.8*sh;
+            radius = 0.2*sh;
+        }
+
         f32 radarHeadingIndicator;
         if (radarHeadUp) {
             radarHeadingIndicator = 0;
         } else {
             radarHeadingIndicator = guiHeading;
         }
-        s32 deltaX = 0.2*sh*sin(core::DEGTORAD*radarHeadingIndicator);
-        s32 deltaY = -0.2*sh*cos(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaX = radius*sin(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaY = -1*radius*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> radarCentre (centreX,centreY);
         core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
         device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255)); //Todo: Make these configurable
@@ -503,20 +536,20 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         } else {
             radarHeadingIndicator = viewHdg;
         }
-        s32 deltaXView = 0.2*sh*sin(core::DEGTORAD*radarHeadingIndicator);
-        s32 deltaYView = -0.2*sh*cos(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaXView = radius*sin(core::DEGTORAD*radarHeadingIndicator);
+        s32 deltaYView = -1*radius*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
         device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0)); //Todo: Make these configurable
 
         //draw an EBL line
-        s32 deltaXEBL = 0.2*sh*sin(core::DEGTORAD*guiRadarEBLBrg);
-        s32 deltaYEBL = -0.2*sh*cos(core::DEGTORAD*guiRadarEBLBrg);
+        s32 deltaXEBL = radius*sin(core::DEGTORAD*guiRadarEBLBrg);
+        s32 deltaYEBL = -1*radius*cos(core::DEGTORAD*guiRadarEBLBrg);
         core::position2d<s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
         device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
-            irr::f32 eblRangePx = 0.2*sh*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
+            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle

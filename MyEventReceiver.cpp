@@ -169,6 +169,16 @@ using namespace irr;
                     model->decreaseRadarRange();
                 }
 
+                if (id == GUIMain::GUI_ID_BIG_RADAR_BUTTON)
+                {
+                    gui->setLargeRadar(true);
+                }
+
+                if (id == GUIMain::GUI_ID_SMALL_RADAR_BUTTON)
+                {
+                    gui->setLargeRadar(false);
+                }
+
                 if (id == GUIMain::GUI_ID_SHOW_INTERFACE_BUTTON)
                 {
                     gui->show2dInterface();

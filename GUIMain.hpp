@@ -38,6 +38,8 @@ public:
         GUI_ID_STBD_SCROLL_BAR,
         GUI_ID_RUDDER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
+        GUI_ID_BIG_RADAR_BUTTON,
+        GUI_ID_SMALL_RADAR_BUTTON,
         GUI_ID_RADAR_INCREASE_BUTTON,
         GUI_ID_RADAR_DECREASE_BUTTON,
         GUI_ID_RADAR_GAIN_SCROLL_BAR,
@@ -64,6 +66,8 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    void setLargeRadar(bool radarState);
+    bool getLargeRadar() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
     void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
@@ -86,6 +90,8 @@ private:
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIButton* pausedButton;
+    irr::gui::IGUIButton* bigRadarButton;
+    irr::gui::IGUIButton* smallRadarButton;
     irr::gui::IGUIButton* eblLeftButton;
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
@@ -126,6 +132,7 @@ private:
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
     bool radarHeadUp;
+    bool radarLarge;
     std::string guiTime;
     bool singleEngine;
     bool guiPaused;

@@ -284,27 +284,34 @@ int main()
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(true, true, video::SColor(0,128,128,128));
 
+        bool fullScreenRadar = guiMain.getLargeRadar();
+
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {
             //Fixme: May want to re-introduce this
             //realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
-            driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+            if (fullScreenRadar) {
+                driver->setViewPort(core::rect<s32>(0,0,graphicsHeight3d,graphicsHeight3d));
+            } else {
+                driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+            }
             model.setRadarCameraActive();
             smgr->drawAll();
             //realisticWater->setVisible(true);
         }
 
         //3d view portion
-        if (guiMain.getShowInterface()) {
-            driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
-            model.updateViewport(aspect3d);
-        } else {
-            driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
-            model.updateViewport(aspect);
-        }
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
-
-        smgr->drawAll();
+        if (!fullScreenRadar) {
+            if (guiMain.getShowInterface()) {
+                driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+                model.updateViewport(aspect3d);
+            } else {
+                driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
+                model.updateViewport(aspect);
+            }
+            smgr->drawAll();
+        }
 
         //gui
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
