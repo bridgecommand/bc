@@ -255,8 +255,8 @@ int main()
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName, device);
 
-    //check enough time has elapsed to show the credits screen (15s)
-    while(device->getTimer()->getRealTime() - creditsStartTime < 15000) {
+    //check enough time has elapsed to show the credits screen (5s)
+    while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
         device->run();
     }
     //remove credits here
@@ -287,11 +287,11 @@ int main()
         bool fullScreenRadar = guiMain.getLargeRadar();
 
         //radar view portion
-        if (graphicsHeight>graphicsHeight3d && guiMain.getShowInterface()) {
+        if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
             //Fixme: May want to re-introduce this
             //realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
             if (fullScreenRadar) {
-                driver->setViewPort(core::rect<s32>(0,0,graphicsHeight3d,graphicsHeight3d));
+                driver->setViewPort(core::rect<s32>(0.09*graphicsWidth,0,graphicsHeight*0.85+0.09*graphicsWidth,graphicsHeight*0.85));
             } else {
                 driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
             }

@@ -146,6 +146,14 @@ private:
     Lang* language;
     std::vector<std::string>* logMessages;
 
+    //Different locations for heading indicator depending on GUI visibility
+    irr::core::rect<irr::s32> stdHdgIndicatorPos;
+    irr::core::rect<irr::s32> altHdgIndicatorPos;
+    irr::core::rect<irr::s32> stdRadarTabPos;
+    irr::core::rect<irr::s32> altRadarTabPos;
+    irr::core::rect<irr::s32> stdRadarTextPos;
+    irr::core::rect<irr::s32> altRadarTextPos;
+
     void updateVisibility();
     void draw2dRadar();
     void draw2dBearing();

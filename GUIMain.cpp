@@ -84,7 +84,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guiSpeed = 0;
 
         //Add heading indicator
-        headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),core::rect<s32>(0.10*su,0.630*sh,0.44*su,0.680*sh));
+        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
+        altHdgIndicatorPos = core::rect<s32>(0.09*su,0.900*sh,0.45*su,0.950*sh);
+        headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
@@ -114,7 +116,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //add radar buttons
         //add tab control for radar
-        radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
+        stdRadarTabPos = core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh);
+        altRadarTabPos = core::rect<s32>(0.748*su,0.695*sh,0.990*su,0.990*sh);
+        radarTabControl = guienv->addTabControl(stdRadarTabPos,0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
@@ -125,11 +129,15 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        radarText = guienv->addStaticText(L"",core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
+        stdRadarTextPos = core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh);
+        altRadarTextPos = core::rect<s32>(0.753*su,0.610*sh,0.983*su,0.690*sh);
+        radarText = guienv->addStaticText(L"",stdRadarTextPos,true,true,0,-1,true);
 
         //Buttons for full or small radar
-        bigRadarButton = guienv->addButton(core::rect<s32>(0.000*su,0.000*sh,0.10*su,0.10*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
-        smallRadarButton = guienv->addButton(core::rect<s32>(0.000*su,0.000*sh,0.10*su,0.10*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
+        bigRadarButton = guienv->addButton(core::rect<s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
+        smallRadarButton = guienv->addButton(core::rect<s32>(0.010*su,0.010*sh,0.030*su,0.040*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
+        bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
+        smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
         smallRadarButton->setVisible(radarLarge);
         bigRadarButton->setVisible(!radarLarge);
 
@@ -275,20 +283,36 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
-        radarTabControl->setVisible(showInterface);
+        radarTabControl->setVisible(showInterface||radarLarge);
+        radarText->setVisible(showInterface||radarLarge);
+        headingIndicator->setVisible(showInterface || radarLarge);
+
         dataDisplay->setVisible(showInterface);
-        hideInterfaceButton->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
         rainScrollbar->setVisible(showInterface);
         visibilityScrollbar->setVisible(showInterface);
-        radarText->setVisible(showInterface);
-        stbdText->setVisible(showInterface && !singleEngine);
-        portText->setVisible(showInterface);
-        headingIndicator->setVisible(showInterface);
         pcLogButton->setVisible(showInterface);
 
-        //Items to show if we're not
-        showInterfaceButton->setVisible(!showInterface);
+        portText->setVisible(showInterface);
+        stbdText->setVisible(showInterface && !singleEngine);
+
+        //Items not to show if we're on full screen radar
+        binosButton->setVisible(!radarLarge);
+        bearingButton->setVisible(!radarLarge);
+        hideInterfaceButton->setVisible(showInterface && !radarLarge);
+        showInterfaceButton->setVisible(!showInterface && !radarLarge);
+
+        //Move gui elements for radar if on largescreen radar
+        if (!radarLarge) {
+            headingIndicator->setRelativePosition(stdHdgIndicatorPos);
+            radarTabControl->setRelativePosition(stdRadarTabPos);
+            radarText->setRelativePosition(stdRadarTextPos);
+        } else {
+            headingIndicator->setRelativePosition(altHdgIndicatorPos);
+            radarTabControl->setRelativePosition(altRadarTabPos);
+            radarText->setRelativePosition(altRadarTextPos);
+        }
+
     }
 
     std::wstring GUIMain::f32To1dp(irr::f32 value)
@@ -492,7 +516,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guienv->drawAll();
 
         //draw the heading line on the radar
-        if (showInterface) {
+        if (showInterface || radarLarge) {
             draw2dRadar();
         }
 
@@ -509,9 +533,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         s32 radius;
 
         if (radarLarge) {
-            centreX = 0.3*sh;
-            centreY = 0.3*sh;
-            radius = 0.3*sh;
+            centreX = 0.09*su+0.425*sh;
+            centreY = 0.425*sh;
+            radius = 0.425*sh;
         } else {
             centreX = su-0.2*sh;
             centreY = 0.8*sh;

@@ -49,6 +49,10 @@ eblLeft="EBL -"
 eblRight="EBL +"
 eblUp="VRM +"
 eblDown="VRM -"
+bigRadar="^"
+smallRadar="v"
+fullScreenRadar="Full screen radar"
+minimiseRadar="Small radar"
 
 nm=" Nm"
 
