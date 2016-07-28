@@ -59,7 +59,8 @@ public:
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
         GUI_ID_BEARING_INTERFACE_BUTTON,
-        GUI_ID_SHOW_LOG_BUTTON
+        GUI_ID_SHOW_LOG_BUTTON,
+        GUI_ID_CLOSE_BOX
     };
 
     bool getShowInterface() const;
@@ -68,6 +69,7 @@ public:
     void hide2dInterface();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
+    irr::core::rect<irr::s32> getLargeRadarRect() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
     void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
@@ -133,6 +135,10 @@ private:
     irr::f32 guiRadarEBLRangeNm;
     bool radarHeadUp;
     bool radarLarge;
+    irr::core::rect<irr::s32> radarLargeRect;
+    irr::s32 largeRadarScreenCentreX;
+    irr::s32 largeRadarScreenCentreY;
+    irr::s32 largeRadarScreenRadius;
     std::string guiTime;
     bool singleEngine;
     bool guiPaused;

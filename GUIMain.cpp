@@ -40,6 +40,23 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Default to small radar display
         radarLarge = false;
+        //Find available 4:3 rectangle to fit in area for large radar display
+        s32 availableWidth  = (0.99-0.09)*su;
+        s32 availableHeight = (0.95-0.01)*sh;
+        if (availableWidth/(float)availableHeight > 4.0/3.0) {
+            s32 activeWidth = availableHeight * 4.0/3.0;
+            s32 activeHeight = availableHeight;
+            radarLargeRect = core::rect<s32>(0.09*su + (availableWidth-activeWidth)/2, 0.01*sh, 0.09*su + activeWidth + (availableWidth-activeWidth)/2, 0.01+activeHeight);
+        } else {
+            s32 activeWidth = availableWidth;
+            s32 activeHeight = availableWidth * 3.0/4.0;
+            radarLargeRect = core::rect<s32>(0.09*su, 0.01*sh+(availableHeight-activeHeight)/2, 0.09*su + activeWidth, 0.01+activeHeight+(availableHeight-activeHeight)/2);
+        }
+        //Find radar screen centre X, Y and radius
+        largeRadarScreenRadius = (radarLargeRect.LowerRightCorner.Y-radarLargeRect.UpperLeftCorner.Y)/2;
+        largeRadarScreenCentreX = radarLargeRect.UpperLeftCorner.X + largeRadarScreenRadius;
+        largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarLargeRect.UpperLeftCorner.Y)/2;
+        largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
 
         //gui - add scroll bars for speed and heading control directly
         hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
@@ -117,7 +134,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //add radar buttons
         //add tab control for radar
         stdRadarTabPos = core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh);
-        altRadarTabPos = core::rect<s32>(0.748*su,0.695*sh,0.990*su,0.990*sh);
+        altRadarTabPos = core::rect<s32>(radarLargeRect.LowerRightCorner.X - 0.01*su - 0.242*su,radarLargeRect.LowerRightCorner.Y - 0.01*sh-0.295*sh,radarLargeRect.LowerRightCorner.X - 0.01*su,radarLargeRect.LowerRightCorner.Y - 0.01*sh);
         radarTabControl = guienv->addTabControl(stdRadarTabPos,0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
@@ -130,12 +147,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
         stdRadarTextPos = core::rect<s32>(0.460*su,0.610*sh,0.690*su,0.690*sh);
-        altRadarTextPos = core::rect<s32>(0.753*su,0.610*sh,0.983*su,0.690*sh);
+        altRadarTextPos = core::rect<s32>(altRadarTabPos.UpperLeftCorner.X,altRadarTabPos.UpperLeftCorner.Y - 0.09*sh,altRadarTabPos.LowerRightCorner.X,altRadarTabPos.UpperLeftCorner.Y - 0.01*sh);
         radarText = guienv->addStaticText(L"",stdRadarTextPos,true,true,0,-1,true);
 
         //Buttons for full or small radar
         bigRadarButton = guienv->addButton(core::rect<s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
-        smallRadarButton = guienv->addButton(core::rect<s32>(0.010*su,0.010*sh,0.030*su,0.040*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
+        s32 smallRadarButtonLeft = radarLargeRect.UpperLeftCorner.X + 0.01*su;
+        s32 smallRadarButtonTop = radarLargeRect.UpperLeftCorner.Y + 0.01*sh;
+        smallRadarButton = guienv->addButton(core::rect<s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
         smallRadarButton->setVisible(radarLarge);
@@ -245,6 +264,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         return radarLarge;
     }
 
+    irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
+    {
+        return core::rect<s32>(largeRadarScreenCentreX - largeRadarScreenRadius, largeRadarScreenCentreY - largeRadarScreenRadius, largeRadarScreenCentreX + largeRadarScreenRadius, largeRadarScreenCentreY + largeRadarScreenRadius);
+    }
+
     void GUIMain::setSingleEngine()
     {
         singleEngine = true; //Used to choose what to show/hide later if we change visibility
@@ -285,8 +309,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //Items to show if we're showing interface
         radarTabControl->setVisible(showInterface||radarLarge);
         radarText->setVisible(showInterface||radarLarge);
-        headingIndicator->setVisible(showInterface || radarLarge);
 
+        headingIndicator->setVisible(showInterface);
         dataDisplay->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
         rainScrollbar->setVisible(showInterface);
@@ -533,13 +557,18 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         s32 radius;
 
         if (radarLarge) {
-            centreX = 0.09*su+0.425*sh;
-            centreY = 0.425*sh;
-            radius = 0.425*sh;
+            centreX = largeRadarScreenCentreX;
+            centreY = largeRadarScreenCentreY;
+            radius = largeRadarScreenRadius;
         } else {
             centreX = su-0.2*sh;
             centreY = 0.8*sh;
             radius = 0.2*sh;
+        }
+
+        //If full screen radar, draw a 4:3 box around the radar display area
+        if (radarLarge) {
+            device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,video::SColor(255,0,0,0));
         }
 
         f32 radarHeadingIndicator;

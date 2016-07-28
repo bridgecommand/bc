@@ -291,7 +291,7 @@ int main()
             //Fixme: May want to re-introduce this
             //realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
             if (fullScreenRadar) {
-                driver->setViewPort(core::rect<s32>(0.09*graphicsWidth,0,graphicsHeight*0.85+0.09*graphicsWidth,graphicsHeight*0.85));
+                driver->setViewPort(guiMain.getLargeRadarRect());
             } else {
                 driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
             }
@@ -337,6 +337,11 @@ int main()
             }
         }
     }
+
+    //Debug - dump log
+    //for (unsigned int i=0;i<logMessages.size();i++) {
+    //    std::cout << logMessages.at(i) << std::endl;
+    //}
 
     //End
     return(0);

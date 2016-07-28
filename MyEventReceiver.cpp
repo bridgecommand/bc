@@ -153,6 +153,12 @@ using namespace irr;
                   }
             }
 
+            if (event.GUIEvent.EventType==gui::EGET_MESSAGEBOX_OK) {
+                if (id == GUIMain::GUI_ID_CLOSE_BOX) {
+                    device->closeDevice(); //Confirm shutdown.
+                }
+            }
+
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
                 if (id == GUIMain::GUI_ID_START_BUTTON)
                 {
@@ -244,6 +250,7 @@ using namespace irr;
         if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 		{
 
+
             if (event.KeyInput.Shift) {
                 //Shift down
 
@@ -324,6 +331,13 @@ using namespace irr;
                     //toggle full screen 3d
                     case KEY_KEY_F:
                         gui->toggleShow2dInterface();
+                        break;
+
+                    //Quit with esc
+                    case KEY_ESCAPE:
+                        device->sleep(500);
+                        device->clearSystemMessages();
+                        device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
                         break;
 
                     default:
