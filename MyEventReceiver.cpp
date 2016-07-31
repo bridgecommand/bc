@@ -358,31 +358,31 @@ using namespace irr;
             irr::f32 newJoystickRudder = previousJoystickRudder;
 
             u8 thisJoystick = event.JoystickEvent.Joystick;
-            s16 thisAxis = *event.JoystickEvent.Axis;
+            for (s16 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
 
-            //Check which type we correspond to
-            if (thisJoystick == portJoystickNo && thisAxis == portJoystickAxis) {
-                newJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;
-                //If previous value is NAN, store current value in previous and current, otherwise only in current
-                if (previousJoystickPort==INFINITY) {
-                    previousJoystickPort = newJoystickPort;
+                //Check which type we correspond to
+                if (thisJoystick == portJoystickNo && thisAxis == portJoystickAxis) {
+                    newJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;
+                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    if (previousJoystickPort==INFINITY) {
+                        previousJoystickPort = newJoystickPort;
+                    }
+                }
+                if (thisJoystick == stbdJoystickNo && thisAxis == stbdJoystickAxis) {
+                    newJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;
+                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    if (previousJoystickStbd==INFINITY) {
+                        previousJoystickStbd = newJoystickStbd;
+                    }
+                }
+                if (thisJoystick == rudderJoystickNo && thisAxis == rudderJoystickAxis) {
+                    newJoystickRudder = 30*event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;
+                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    if (previousJoystickRudder==INFINITY) {
+                        previousJoystickRudder = newJoystickRudder;
+                    }
                 }
             }
-            if (thisJoystick == stbdJoystickNo && thisAxis == stbdJoystickAxis) {
-                newJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;
-                //If previous value is NAN, store current value in previous and current, otherwise only in current
-                if (previousJoystickStbd==INFINITY) {
-                    previousJoystickStbd = newJoystickStbd;
-                }
-            }
-            if (thisJoystick == rudderJoystickNo && thisAxis == rudderJoystickAxis) {
-                newJoystickRudder = event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;
-                //If previous value is NAN, store current value in previous and current, otherwise only in current
-                if (previousJoystickRudder==INFINITY) {
-                    previousJoystickRudder = newJoystickRudder;
-                }
-            }
-
 
             //Do joystick stuff here
             //Todo: track joystick changes, so if not changing, the GUI inputs are used - partially implemented but need to check for jitter etc
