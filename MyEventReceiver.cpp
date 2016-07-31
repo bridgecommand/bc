@@ -333,8 +333,10 @@ using namespace irr;
                         gui->toggleShow2dInterface();
                         break;
 
-                    //Quit with esc
+                    //Quit with esc or F4 (for alt-F4)
                     case KEY_ESCAPE:
+                    case KEY_F4:
+                        model->setAccelerator(0.0);
                         device->sleep(500);
                         device->clearSystemMessages();
                         device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
