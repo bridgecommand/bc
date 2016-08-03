@@ -222,7 +222,7 @@ void ScrollDial::draw()
 
     core::vector2d<s32> absoluteCentre(centre.X + offsetX, centre.Y + offsetY);
 
-	Environment->getVideoDriver()->draw2DPolygon(absoluteCentre,radius,video::SColor(skinAlpha,128,128,128),30);
+	Environment->getVideoDriver()->draw2DPolygon(absoluteCentre,radius,video::SColor(skinAlpha,0,0,0),30);
 
 	SliderRect = AbsoluteRect;
 

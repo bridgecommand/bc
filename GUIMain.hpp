@@ -21,6 +21,7 @@
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
+#include "GUIRectangle.hpp"
 #include <vector>
 #include <string>
 
@@ -99,14 +100,16 @@ private:
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
     irr::gui::IGUITabControl* radarTabControl;
-    irr::gui::IGUIButton* increaseRangeButton;
-    irr::gui::IGUIButton* decreaseRangeButton;
-    irr::gui::IGUIButton* northButton;
-    irr::gui::IGUIButton* courseButton;
-    irr::gui::IGUIButton* headButton;
     irr::gui::IGUIScrollBar* radarGainScrollbar;
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
     irr::gui::IGUIScrollBar* radarRainScrollbar;
+
+    //irr::gui::IGUIElement* largeRadarGUIParent; //Parent to make it easier to show/hide large radar gui
+    irr::gui::IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
+    irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
+    irr::gui::IGUIScrollBar* radarClutterScrollbar2; //For large radar
+    irr::gui::IGUIScrollBar* radarRainScrollbar2; //For large radar
+
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
@@ -155,10 +158,6 @@ private:
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;
     irr::core::rect<irr::s32> altHdgIndicatorPos;
-    irr::core::rect<irr::s32> stdRadarTabPos;
-    irr::core::rect<irr::s32> altRadarTabPos;
-    irr::core::rect<irr::s32> stdRadarTextPos;
-    irr::core::rect<irr::s32> altRadarTextPos;
 
     void updateVisibility();
     void draw2dRadar();

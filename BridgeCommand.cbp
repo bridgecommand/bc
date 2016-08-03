@@ -49,6 +49,8 @@
 		<Unit filename="DefaultEventReceiver.hpp" />
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
+		<Unit filename="GUIRectangle.cpp" />
+		<Unit filename="GUIRectangle.hpp" />
 		<Unit filename="HeadingIndicator.cpp" />
 		<Unit filename="HeadingIndicator.h" />
 		<Unit filename="IniFile.cpp" />
