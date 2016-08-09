@@ -109,6 +109,11 @@ private:
     irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarClutterScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarRainScrollbar2; //For large radar
+    irr::gui::IGUIButton* eblLeftButton2;
+    irr::gui::IGUIButton* eblRightButton2;
+    irr::gui::IGUIButton* eblUpButton2;
+    irr::gui::IGUIButton* eblDownButton2;
+    irr::gui::IGUIStaticText* radarText2;
 
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;

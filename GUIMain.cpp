@@ -52,10 +52,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
             s32 activeHeight = availableWidth * 3.0/4.0;
             radarLargeRect = core::rect<s32>(0.09*su, 0.01*sh+(availableHeight-activeHeight)/2, 0.09*su + activeWidth, 0.01+activeHeight+(availableHeight-activeHeight)/2);
         }
+        //For brevity, store large radar window width and top left corner.
+        s32 radarSu = radarLargeRect.getWidth();
+        core::vector2d<s32> radarTL = radarLargeRect.UpperLeftCorner;
         //Find radar screen centre X, Y and radius
-        largeRadarScreenRadius = (radarLargeRect.LowerRightCorner.Y-radarLargeRect.UpperLeftCorner.Y)/2;
-        largeRadarScreenCentreX = radarLargeRect.UpperLeftCorner.X + largeRadarScreenRadius;
-        largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarLargeRect.UpperLeftCorner.Y)/2;
+        largeRadarScreenRadius = (radarLargeRect.LowerRightCorner.Y-radarTL.Y)/2;
+        largeRadarScreenCentreX = radarTL.X + largeRadarScreenRadius;
+        largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarTL.Y)/2;
         largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
 
         //gui - add scroll bars for speed and heading control directly
@@ -148,8 +151,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Buttons for full or small radar
         bigRadarButton = guienv->addButton(core::rect<s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
-        s32 smallRadarButtonLeft = radarLargeRect.UpperLeftCorner.X + 0.01*su;
-        s32 smallRadarButtonTop = radarLargeRect.UpperLeftCorner.Y + 0.01*sh;
+        s32 smallRadarButtonLeft = radarTL.X + 0.01*su;
+        s32 smallRadarButtonTop = radarTL.Y + 0.01*sh;
         smallRadarButton = guienv->addButton(core::rect<s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
@@ -172,28 +175,38 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
 
-
-
-        //largeRadarGUIParent = new irr::gui::IGUIElement(gui::EGUIET_ELEMENT,guienv,guienv->getRootGUIElement(),-1,core::rect<s32>(0,0,su,sh));
-        //TODO: Test, and make sure it gets deleted
-        //Controls for large radar window
-        largeRadarControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarLargeRect.UpperLeftCorner.X+0.770*radarLargeRect.getWidth(),radarLargeRect.UpperLeftCorner.Y+0.020*radarLargeRect.getWidth(),radarLargeRect.UpperLeftCorner.X+0.980*radarLargeRect.getWidth(),radarLargeRect.UpperLeftCorner.Y+0.730*radarLargeRect.getWidth()));
-        radarGainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.040*radarLargeRect.getWidth(),0.040*radarLargeRect.getWidth()),0.03*radarLargeRect.getWidth(),guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
-        radarClutterScrollbar2 = new gui::ScrollDial(core::vector2d<s32>(0.110*radarLargeRect.getWidth(),0.040*radarLargeRect.getWidth()),0.03*radarLargeRect.getWidth(),guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
-        radarRainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.170*radarLargeRect.getWidth(),0.040*radarLargeRect.getWidth()),0.03*radarLargeRect.getWidth(),guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
-
-
-        //largeRadarGUIParent->setVisible(false);
-
-        //TODO: Add text
-        radarGainScrollbar2->setSmallStep(2);
-        radarClutterScrollbar2->setSmallStep(2);
-        radarRainScrollbar2->setSmallStep(2);
-
         eblLeftButton = guienv->addButton(core::rect<s32>(0.060*su,0.160*sh,0.115*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
         eblRightButton = guienv->addButton(core::rect<s32>(0.170*su,0.160*sh,0.225*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
         eblUpButton = guienv->addButton(core::rect<s32>(0.115*su,0.130*sh,0.170*su,0.160*sh),mainRadarTab,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
         eblDownButton = guienv->addButton(core::rect<s32>(0.115*su,0.190*sh,0.170*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
+
+        //Controls for large radar window
+        largeRadarControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.770*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.980*radarSu,radarTL.Y+0.730*radarSu));
+        radarGainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.040*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
+        radarClutterScrollbar2 = new gui::ScrollDial(core::vector2d<s32>(0.105*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
+        radarRainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.170*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+
+        radarGainScrollbar2->setSmallStep(2);
+        radarClutterScrollbar2->setSmallStep(2);
+        radarRainScrollbar2->setSmallStep(2);
+
+        (guienv->addStaticText(language->translate("gain").c_str(),core::rect<s32>(0.010*radarSu,0.070*radarSu,0.070*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("clutter").c_str(),core::rect<s32>(0.075*radarSu,0.070*radarSu,0.135*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.140*radarSu,0.070*radarSu,0.200*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+
+        guienv->addButton(core::rect<s32>(0.025*radarSu,0.110*radarSu,0.085*radarSu,0.160*radarSu),largeRadarControls,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        guienv->addButton(core::rect<s32>(0.025*radarSu,0.165*radarSu,0.085*radarSu,0.210*radarSu),largeRadarControls,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+
+        guienv->addButton(core::rect<s32>(0.125*radarSu,0.110*radarSu,0.190*radarSu,0.140*radarSu),largeRadarControls,GUI_ID_RADAR_NORTH_BUTTON,language->translate("northUp").c_str());
+        guienv->addButton(core::rect<s32>(0.125*radarSu,0.145*radarSu,0.190*radarSu,0.175*radarSu),largeRadarControls,GUI_ID_RADAR_COURSE_BUTTON,language->translate("courseUp").c_str());
+        guienv->addButton(core::rect<s32>(0.125*radarSu,0.180*radarSu,0.190*radarSu,0.210*radarSu),largeRadarControls,GUI_ID_RADAR_HEAD_BUTTON,language->translate("headUp").c_str());
+
+        eblLeftButton2 = guienv->addButton(core::rect<s32>(0.025*radarSu,0.245*radarSu,0.080*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
+        eblRightButton2 = guienv->addButton(core::rect<s32>(0.135*radarSu,0.245*radarSu,0.190*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
+        eblUpButton2 = guienv->addButton(core::rect<s32>(0.080*radarSu,0.215*radarSu,0.135*radarSu,0.245*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
+        eblDownButton2 = guienv->addButton(core::rect<s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
+
+        radarText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.695*radarSu),true,true,largeRadarControls,-1,true);
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
@@ -550,7 +563,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         displayText.append(L"/");
         displayText.append(f32To1dp(displayEBLBearing).c_str());
         displayText.append(language->translate("deg"));
-        radarText->setText(displayText.c_str());
+        radarText ->setText(displayText.c_str());
+        radarText2->setText(displayText.c_str());
 
         //add a collision warning
         if (guiCollided) {
@@ -562,6 +576,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         if (eblDownButton->isPressed()) {manuallyTriggerClick(eblDownButton);}
         if (eblLeftButton->isPressed()) {manuallyTriggerClick(eblLeftButton);}
         if (eblRightButton->isPressed()) {manuallyTriggerClick(eblRightButton);}
+
+        if (eblUpButton2->isPressed()) {manuallyTriggerClick(eblUpButton2);}
+        if (eblDownButton2->isPressed()) {manuallyTriggerClick(eblDownButton2);}
+        if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
+        if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
 
         guienv->drawAll();
 
