@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h> //for uint64_t
 
 #include <ctime> //To check time elapsed between changing EBL when button held down
 

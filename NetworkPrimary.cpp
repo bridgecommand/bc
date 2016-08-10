@@ -72,7 +72,7 @@ void NetworkPrimary::connectToServer(std::string hostnames)
     }
 
     //Set up a peer for each hostname
-    for (int i = 0; i<multipleHostnames.size(); i++) {
+    for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
         ENetAddress address;
         ENetPeer* peer;
 
@@ -302,7 +302,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append("#");
 
     //3 Each 'Other' (Pos X (abs), Pos Z, angle, SART |) #
-    for(int number = 0; number < model->getNumberOfOtherShips(); number++ ) {
+    for(int number = 0; number < (int)model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosZ(number)));
@@ -328,16 +328,16 @@ std::string NetworkPrimary::generateSendString()
             if (it!= (legs.end()-1)) {stringToSend.append("/");}
         }
 
-        if (number < model->getNumberOfOtherShips()-1) {stringToSend.append("|");}
+        if (number < (int)model->getNumberOfOtherShips()-1) {stringToSend.append("|");}
     }
     stringToSend.append("#");
 
     //4 Each Buoy
-    for(int number = 0; number < model->getNumberOfBuoys(); number++ ) {
+    for(int number = 0; number < (int)model->getNumberOfBuoys(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getBuoyPosX(number)));
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getBuoyPosZ(number)));
-        if (number < model->getNumberOfBuoys()-1) {stringToSend.append("|");}
+        if (number < (int)model->getNumberOfBuoys()-1) {stringToSend.append("|");}
     }
     stringToSend.append("#");
 

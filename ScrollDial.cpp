@@ -330,7 +330,7 @@ void ScrollDial::setMax(s32 max)
 	if ( Min > Max )
 		Min = Max;
 
-	bool enable = core::isnotzero ( range() );
+//	bool enable = core::isnotzero ( range() );
 	setPos(Pos);
 }
 
@@ -349,7 +349,7 @@ void ScrollDial::setMin(s32 min)
 		Max = Min;
 
 
-	bool enable = core::isnotzero ( range() );
+//	bool enable = core::isnotzero ( range() );
 	setPos(Pos);
 }
 

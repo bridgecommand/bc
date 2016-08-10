@@ -52,7 +52,7 @@ std::string OtherShipData::serialise()
     serialised.append("|");
     serialised.append(Utilities::lexical_cast<std::string>(initialLat));
     serialised.append("|");
-    for(int i=0;i<legs.size();i++) {
+    for(unsigned int i=0;i<legs.size();i++) {
         serialised.append(legs.at(i).serialise());
         if (i+1<legs.size()) { //Add terminating mark if not the last
             serialised.append("/");
@@ -71,7 +71,7 @@ void OtherShipData::deserialise(std::string data)
         //clear any existing legs data
         legs.clear();
         std::vector<std::string> legsVector = Utilities::split(splitData.at(3),'/');
-        for(int i=0; i<legsVector.size(); i++) {
+        for(unsigned int i=0; i<legsVector.size(); i++) {
             LegData tempLeg;
             tempLeg.deserialise(legsVector.at(i));
             legs.push_back(tempLeg);
@@ -134,7 +134,7 @@ std::string ScenarioData::serialise()
     serialised.append("#");
     serialised.append(ownShipData.serialise());
     serialised.append("#");
-    for(int i=0;i<otherShipsData.size();i++) {
+    for(unsigned int i=0;i<otherShipsData.size();i++) {
         serialised.append(otherShipsData.at(i).serialise());
         if (i+1<otherShipsData.size()) { //Add terminating mark if not the last
             serialised.append(",");
@@ -164,7 +164,7 @@ void ScenarioData::deserialise(std::string data)
         //clear any existing legs data
         otherShipsData.clear();
         std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(13),',');
-        for(int i=0; i<otherShipsVector.size(); i++) {
+        for(unsigned int i=0; i<otherShipsVector.size(); i++) {
             OtherShipData tempOther;
             tempOther.deserialise(otherShipsVector.at(i));
             otherShipsData.push_back(tempOther);

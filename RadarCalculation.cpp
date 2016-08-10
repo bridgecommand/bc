@@ -109,7 +109,7 @@ void RadarCalculation::load(std::string radarConfigFile)
         //Load from file, but check plausibility where required
 
         //Use numberOfRadarRanges, which we know is at least 1, to fill the radarRangeNm vector
-        for (int i = 1; i <= numberOfRadarRanges; i++) {
+        for (unsigned int i = 1; i <= numberOfRadarRanges; i++) {
             irr::f32 thisRadarRange = IniFile::iniFileTof32(radarConfigFile,IniFile::enumerate1("RadarRange",i));
             if (thisRadarRange<=0) {thisRadarRange = 1;} //Check value is reasonable
             radarRangeNm.push_back(thisRadarRange);
@@ -361,7 +361,7 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
             //Scan other contacts here
             //Fixme: Implementation needs completing later for ARPA to check if contact is detectable against clutter
             //for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
-            for(int thisContact = 0; thisContact<radarData.size(); thisContact++) {
+            for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
                 f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
@@ -385,7 +385,7 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
 
                                     //Iterate through arpaContacts array, checking if this contact is in the list (by checking the if the 'contact' pointer is to the same underlying ship/buoy)
                                     int existingArpaContact=-1;
-                                    for (int j = 0; j<arpaContacts.size(); j++) {
+                                    for (unsigned int j = 0; j<arpaContacts.size(); j++) {
                                         if (arpaContacts.at(j).contact == radarData.at(thisContact).contact) {
                                             existingArpaContact = j;
                                         }

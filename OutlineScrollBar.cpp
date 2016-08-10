@@ -248,7 +248,7 @@ void OutlineScrollBar::draw()
 		Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
 
 		//draw tic marks
-		for (int i = 0; i<shortTicMarks.size();i++) {
+		for (unsigned int i = 0; i<shortTicMarks.size();i++) {
             if (Horizontal)
             {
                 f32 f = RelativeRect.getWidth() / range();
@@ -273,7 +273,7 @@ void OutlineScrollBar::draw()
             }
             Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
         }
-        for (int i = 0; i<longTicMarks.size();i++) {
+        for (unsigned int i = 0; i<longTicMarks.size();i++) {
             if (Horizontal)
             {
                 f32 f = RelativeRect.getWidth() / range();
@@ -401,7 +401,6 @@ void OutlineScrollBar::setMax(s32 max)
 	if ( Min > Max )
 		Min = Max;
 
-	bool enable = core::isnotzero ( range() );
 	setPos(Pos);
 }
 
@@ -419,8 +418,6 @@ void OutlineScrollBar::setMin(s32 min)
 	if ( Max < Min )
 		Max = Min;
 
-
-	bool enable = core::isnotzero ( range() );
 	setPos(Pos);
 }
 

@@ -133,9 +133,12 @@ void NetworkSecondary::update()
 
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
-                printf ("%s disconected.\n", event.peer -> data);
+                printf ("%s disconected.\n", (char*)event.peer -> data);
                 /* Reset the peer's client information. */
                 event.peer -> data = NULL;
+                break;
+            default:
+                break;
         }
     }
 }

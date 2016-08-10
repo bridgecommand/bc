@@ -461,7 +461,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
             logText->setDrawBackground(true);
 
-            for (int i = 0; i<logMessages->size(); i++) {
+            for (unsigned int i = 0; i<logMessages->size(); i++) {
                 std::string logTextString = logMessages->at(i);
                 logText->addItem(core::stringw(logTextString.c_str()).c_str());
             }

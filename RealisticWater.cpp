@@ -27,9 +27,9 @@
 RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneManager, f32 width, f32 height,
 												 const irr::core::stringc& resourcePath, core::dimension2du renderTargetSize,
 												 scene::ISceneNode* parent, s32 id):
-	scene::ISceneNode(parent, sceneManager, id), _time(0),
-	_size(width, height), _sceneManager(sceneManager), /*_refractionMap(NULL),*/ _reflectionMap(NULL),
-	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waveLength(0.1f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.8f), _camera(NULL)
+	scene::ISceneNode(parent, sceneManager, id),
+	_camera(NULL), _sceneManager(sceneManager), _size(width, height), /*_refractionMap(NULL),*/ _reflectionMap(NULL),
+	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waveLength(0.1f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.8f), _time(0)
 {
 	_videoDriver = sceneManager->getVideoDriver();
 
@@ -249,7 +249,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	f32 time = _time / 3000000.0f; //Arbitrary units
 	core::vector3df cameraPosition = _sceneManager->getActiveCamera()->getPosition();
 
-	bool fogEnabled = getMaterial(0).getFlag(video::EMF_FOG_ENABLE);
+//	bool fogEnabled = getMaterial(0).getFlag(video::EMF_FOG_ENABLE);
 	irr::video::SColor color;
 	irr::video::E_FOG_TYPE fogType;
 	f32 start;
@@ -288,7 +288,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	{
 		int var0 = 0;
 		int var1 = 1;
-		int var2 = 2;
+//		int var2 = 2;
 
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR == 9)
 		services->setPixelShaderConstant(services->getVertexShaderConstantID("WaterBump"), &var0, 1);

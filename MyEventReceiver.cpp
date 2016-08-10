@@ -358,7 +358,7 @@ using namespace irr;
             irr::f32 newJoystickRudder = previousJoystickRudder;
 
             u8 thisJoystick = event.JoystickEvent.Joystick;
-            for (s16 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
+            for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
 
                 //Check which type we correspond to
                 if (thisJoystick == portJoystickNo && thisAxis == portJoystickAxis) {

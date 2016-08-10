@@ -134,7 +134,7 @@ irr::u32 Buoys::getNumber() const
 
 irr::core::vector3df Buoys::getPosition(int number) const
 {
-    if (number < buoys.size()) {
+    if (number < (int)buoys.size()) {
         return buoys.at(number).getPosition();
     } else {
         return irr::core::vector3df(0,0,0);

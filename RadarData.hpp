@@ -59,11 +59,11 @@ struct RadarData {
         maxAngle(0),
         rcs(0),
         solidHeight(0),
+        contact(0),
         hidden(false),
         racon(""),
         raconOffsetTime(0),
-        SART(false),
-        contact(0)
+        SART(false)
         {}
 
 };
