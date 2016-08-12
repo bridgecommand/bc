@@ -24,6 +24,7 @@
 #include <ctime>
 #include <vector>
 #include <limits>
+#include <type_traits>
 
 //#include "ScenarioDataStructure.hpp"
 //Forward declaration
@@ -58,7 +59,11 @@ namespace Utilities
             in.compare("+INFINITY")==0
         ) {
             //+inf
-            var = (T)std::numeric_limits<float>::infinity();
+            if (std::is_floating_point<T>::value) {
+                var = (T)std::numeric_limits<float>::infinity();
+            } else {
+                var = std::numeric_limits<T>::max();
+            }
         } else if (
             in.compare("-inf")==0 ||
             in.compare("-INF")==0 ||
@@ -66,7 +71,12 @@ namespace Utilities
             in.compare("-INFINITY")==0
         ) {
            //-inf
-           var = (T)-std::numeric_limits<float>::infinity();;
+           if (std::is_floating_point<T>::value) {
+                var = -(T)std::numeric_limits<float>::infinity();
+            } else {
+                var = std::numeric_limits<T>::lowest();
+            }
+
         } else {
             std::stringstream iss;
             iss << in;
