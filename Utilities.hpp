@@ -58,7 +58,7 @@ namespace Utilities
             in.compare("+INFINITY")==0
         ) {
             //+inf
-            var = std::numeric_limits<float>::infinity();
+            var = (T)std::numeric_limits<float>::infinity();
         } else if (
             in.compare("-inf")==0 ||
             in.compare("-INF")==0 ||
@@ -66,7 +66,7 @@ namespace Utilities
             in.compare("-INFINITY")==0
         ) {
            //-inf
-           var = -std::numeric_limits<float>::infinity();;
+           var = (T)-std::numeric_limits<float>::infinity();;
         } else {
             std::stringstream iss;
             iss << in;
