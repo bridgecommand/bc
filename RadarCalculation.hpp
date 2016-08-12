@@ -102,6 +102,7 @@ class RadarCalculation
         irr::u32 currentScanAngle; //Note that this MUST be an integer, as the angle is used to look up values in radar scan arrays
         irr::u32 scanAngleStep; //Should also be an integer, as the angle being incremented is an integer
         irr::u32 rangeResolution;
+        irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres
         irr::u32 radarRangeIndex;
         irr::f32 radarScannerHeight;
         //parameters for noise behaviour

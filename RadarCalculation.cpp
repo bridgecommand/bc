@@ -95,6 +95,8 @@ void RadarCalculation::load(std::string radarConfigFile)
         radarSeaClutter = 0.000000001;
         radarRainClutter = 0.00001;
 
+        rangeSensitivity = 20;
+
         radarBackgroundColour.setAlpha(255);
         radarBackgroundColour.setRed(0);
         radarBackgroundColour.setGreen(0);
@@ -129,11 +131,12 @@ void RadarCalculation::load(std::string radarConfigFile)
         //Noise parameters
         radarNoiseLevel = IniFile::iniFileTof32(radarConfigFile,"radar_noise");
         radarSeaClutter = IniFile::iniFileTof32(radarConfigFile,"radar_sea_clutter");
-        radarRainClutter =IniFile::iniFileTof32(radarConfigFile,"radar_rain_clutter");
+        radarRainClutter=IniFile::iniFileTof32(radarConfigFile,"radar_rain_clutter");
+        rangeSensitivity = IniFile::iniFileTof32(radarConfigFile,"radar_range_sensitivity");
         if (radarNoiseLevel < 0) {radarNoiseLevel = 0.000000000005;}
         if (radarSeaClutter < 0) {radarSeaClutter = 0.000000001;}
         if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
-
+        if (rangeSensitivity< 0) {rangeSensitivity=20;}
         radarBackgroundColour.setAlpha(255);
         radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar_bg_red"));
         radarBackgroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar_bg_green"));
@@ -412,9 +415,14 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
                                     if (scansSize==0 || absoluteTime > SECONDS_BETWEEN_SCANS + arpaContacts.at(existingArpaContact).scans.at(scansSize-1).timeStamp) {
                                         ARPAScan newScan;
                                         newScan.timeStamp = absoluteTime;
-                                        //TODO: Add noise/uncertainty
-                                        newScan.bearingDeg = radarData.at(thisContact).angle;
-                                        newScan.rangeNm = radarData.at(thisContact).range / M_IN_NM;
+
+                                        //Add noise/uncertainty
+                                        irr::f32 angleUncertainty = scanAngleStep/2.0 * (2.0*(irr::f32)rand()/RAND_MAX - 1);
+                                        irr::f32 rangeUncertainty = rangeSensitivity * (2.0*(irr::f32)rand()/RAND_MAX - 1)/M_IN_NM;
+
+                                        newScan.bearingDeg = angleUncertainty + radarData.at(thisContact).angle;
+                                        newScan.rangeNm = rangeUncertainty + radarData.at(thisContact).range / M_IN_NM;
+
                                         newScan.x = absolutePosition.X + radarData.at(thisContact).relX;
                                         newScan.z = absolutePosition.Z + radarData.at(thisContact).relZ;
                                         newScan.estimatedRCS = 100;//Todo: Implement
