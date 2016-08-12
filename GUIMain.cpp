@@ -337,8 +337,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
-        radarTabControl->setVisible(showInterface||radarLarge);
-        radarText->setVisible(showInterface||radarLarge);
+        radarTabControl->setVisible(showInterface);
+        radarText->setVisible(showInterface);
 
         headingIndicator->setVisible(showInterface);
         dataDisplay->setVisible(showInterface);
@@ -360,9 +360,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         smallRadarButton->setVisible(radarLarge);
         largeRadarControls->setVisible(radarLarge);
-
-        radarTabControl->setVisible(!radarLarge);
-        radarText->setVisible(!radarLarge);
 
         //Move gui elements if on largescreen radar
         if (!radarLarge) {
