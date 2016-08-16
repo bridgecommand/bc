@@ -7,7 +7,7 @@ Target := bridgecommand-mc
 # List of source files, separated by spaces
 Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ControllerModel.cpp EventReceiver.cpp GUI.cpp Network.cpp ../libs/enet/callbacks.c ../libs/enet/compress.c ../libs/enet/host.c ../libs/enet/list.c ../libs/enet/packet.c ../libs/enet/peer.c ../libs/enet/protocol.c ../libs/enet/unix.c ../libs/enet/win32.c
 # Path to Irrlicht directory, should contain include/ and lib/
-IrrlichtHome := ../libs/Irrlicht/irrlicht-1.8.1
+IrrlichtHome := ../libs/Irrlicht/irrlicht-1.8.4
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
 BinPath = ..
 
@@ -23,7 +23,7 @@ USERCXXFLAGS = -O3 -ffast-math
 endif
 # linker flags such as additional libraries and link paths
 ifeq ($(UNAME_S),Darwin)
-USERLDFLAGS = -stdlib=libc++ -L../libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/build/Release -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+USERLDFLAGS = -stdlib=libc++ -L../libs/Irrlicht/irrlicht-1.8.4/source/Irrlicht/MacOSX/build/Release -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 else
 USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
 endif

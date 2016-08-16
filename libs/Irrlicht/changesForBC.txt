@@ -1,4 +1,4 @@
-The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1 release:
+The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1/1.8.4 release:
 
 Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
 (CTerrainSceneNode.cpp)
@@ -16,4 +16,4 @@ All changes marked in source with //JAMES
 
 Other changes:
 --------------
-glext.h updated to latest version from Irrlicht trunk (fix for compilation issue on linux)
+glext.h updated to latest version from Irrlicht trunk (fix for compilation issue on linux). Not needed in 1.8.4

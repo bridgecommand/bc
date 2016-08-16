@@ -11,7 +11,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
-					<Add option="./libs/Irrlicht/irrlicht-1.8.1/lib/Win32-gcc/libIrrlicht.a" />
+					<Add option="./libs/Irrlicht/irrlicht-1.8.4/lib/Win32-gcc/libIrrlicht.a" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
 				</Linker>
@@ -21,7 +21,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
-					<Add option="-L./libs/Irrlicht/irrlicht-1.8.1/lib/Linux" />
+					<Add option="-L./libs/Irrlicht/irrlicht-1.8.4/lib/Linux" />
 					<Add library="Irrlicht" />
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
@@ -34,7 +34,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
-			<Add directory="./libs/Irrlicht/irrlicht-1.8.1/include" />
+			<Add directory="./libs/Irrlicht/irrlicht-1.8.4/include" />
 		</Compiler>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />

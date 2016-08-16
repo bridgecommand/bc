@@ -1,8 +1,8 @@
 ﻿To build on linux:
 ==================
 
-1) Change directory to ./libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht
-2) Run 'make' to compile irrlicht (1.8.1 plus minor changes for Bridge Command)
+1) Change directory to ./libs/Irrlicht/irrlicht-1.8.4/source/Irrlicht
+2) Run 'make' to compile irrlicht (1.8.4 plus minor changes for Bridge Command)
 3) cd back to this directory
 4) Run 'make' to compile Bridge Command
 (Additional steps are optional to build the additional programs - you can now run ./bridgecommand-bc)
@@ -23,7 +23,7 @@ To build on Mac:
 ================
 
 1) Ensure you have XCode installed (required to compile programs on Mac)
-2) Change directory to ./libs/Irrlicht/irrlicht-1.8.1/source/Irrlicht/MacOSX/
+2) Change directory to ./libs/Irrlicht/irrlicht-1.8.4/source/Irrlicht/MacOSX/
 3) Run 'xcodebuild -project MacOSX.xcodeproj' to compile irrlicht
 4) cd back to this directory
 5) Run 'make' to compile Bridge Command
