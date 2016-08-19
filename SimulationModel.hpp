@@ -181,7 +181,7 @@ private:
     bool checkOwnShipCollision();
 
     //Offset position handling
-    irr::core::vector3d<irr::s64> offsetPosition;//Fixme: check size of this
+    irr::core::vector3d<int64_t> offsetPosition;
 
     //store useful information
     std::string scenarioName;

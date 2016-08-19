@@ -292,21 +292,23 @@ bool RadarCalculation::getHeadUp() const//Head or course up
     return headUp;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
     render(radarImage, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
-void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+
+void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
     const irr::u32 SECONDS_BETWEEN_SCANS = 20;
 
     core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
-    core::vector3d<irr::s64> absolutePosition = offsetPosition;
+    core::vector3d<int64_t> absolutePosition = offsetPosition;
     absolutePosition.X += position.X;
     absolutePosition.Y += position.Y;
     absolutePosition.Z += position.Z;
@@ -534,13 +536,13 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
 
 }
 
-void RadarCalculation::updateARPA(irr::core::vector3d<irr::s64> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
     //Own ship absolute position
     core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
-    core::vector3d<irr::s64> absolutePosition = offsetPosition;
+    core::vector3d<int64_t> absolutePosition = offsetPosition;
     absolutePosition.X += position.X;
     absolutePosition.Y += position.Y;
     absolutePosition.Z += position.Z;

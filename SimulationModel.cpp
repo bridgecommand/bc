@@ -188,7 +188,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarCamera.setFarValue(0.3);
 
         //initialise offset
-        offsetPosition = core::vector3d<s64>(0,0,0);
+        offsetPosition = core::vector3d<int64_t>(0,0,0);
 
         //store time
         previousTime = device->getTimer()->getTime();
