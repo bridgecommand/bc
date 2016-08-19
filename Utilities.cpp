@@ -153,10 +153,8 @@ namespace Utilities
                 FSFindFolder( kUserDomain, folderType, kCreateFolder, &ref );
                 FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
                 // You now have ~/Library/Application Support stored in 'path'
-                if (path!=NULL) {
-                    userFolder = path;
-                    userFolder.append("/Bridge Command/");
-                }
+                userFolder = path; //This works as std::string has an operator= method that takes a char[] input.
+                userFolder.append("/Bridge Command/");
             #else
                 //Other posix
                 struct passwd *pw = getpwuid(getuid());
