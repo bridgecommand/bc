@@ -307,9 +307,9 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
     core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
     core::vector3d<irr::s64> absolutePosition = offsetPosition;
-    offsetPosition.X += position.X;
-    offsetPosition.Y += position.Y;
-    offsetPosition.Z += position.Z;
+    absolutePosition.X += position.X;
+    absolutePosition.Y += position.Y;
+    absolutePosition.Z += position.Z;
 
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
@@ -402,13 +402,17 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
 
                                         //Zeros for estimated state
                                         newContact.estimate.ignored = false;
+                                        newContact.estimate.lost = false;
                                         newContact.estimate.absVectorX = 0;
                                         newContact.estimate.absVectorZ = 0;
                                         newContact.estimate.absHeading = 0;
+                                        newContact.estimate.bearing = 0;
+                                        newContact.estimate.range = 0;
+                                        newContact.estimate.speed = 0;
 
                                         arpaContacts.push_back(newContact);
                                         existingArpaContact = arpaContacts.size()-1;
-                                        std::cout << "Adding contact " << existingArpaContact << std::endl;
+                                        //std::cout << "Adding contact " << existingArpaContact << std::endl;
                                     }
                                     //Add this scan (if not already scanned in the last X seconds
                                     size_t scansSize = arpaContacts.at(existingArpaContact).scans.size();
@@ -423,12 +427,12 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
                                         newScan.bearingDeg = angleUncertainty + radarData.at(thisContact).angle;
                                         newScan.rangeNm = rangeUncertainty + radarData.at(thisContact).range / M_IN_NM;
 
-                                        newScan.x = absolutePosition.X + radarData.at(thisContact).relX;
-                                        newScan.z = absolutePosition.Z + radarData.at(thisContact).relZ;
+                                        newScan.x = absolutePosition.X + newScan.rangeNm*M_IN_NM * sin(newScan.bearingDeg*RAD_IN_DEG);
+                                        newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
                                         newScan.estimatedRCS = 100;//Todo: Implement
 
                                         arpaContacts.at(existingArpaContact).scans.push_back(newScan);
-                                        std::cout << "ARPA update on " << existingArpaContact << std::endl;
+                                        //std::cout << "ARPA update on " << existingArpaContact << std::endl;
 
                                     }
 
@@ -532,10 +536,71 @@ void RadarCalculation::scan(irr::core::vector3d<irr::s64> offsetPosition, const 
 
 void RadarCalculation::updateARPA(irr::core::vector3d<irr::s64> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
+
+    //Own ship absolute position
+    core::vector3df position = ownShip.getPosition();
+    //Get absolute position relative to SW corner of world model
+    core::vector3d<irr::s64> absolutePosition = offsetPosition;
+    absolutePosition.X += position.X;
+    absolutePosition.Y += position.Y;
+    absolutePosition.Z += position.Z;
+
     //Based on scans data in arpaContacts, estimate current speed, heading and position
+    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+
+        //Check there are at least two scans, so we can estimate behaviour
+        if (arpaContacts.at(i).scans.size() > 1) {
+
+            //Check if contact lost, if last scanned more than 60 seconds ago
+            if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
+                arpaContacts.at(i).estimate.lost=true;
+                std::cout << "Contact " << i << " lost" << std::endl;
+            } else {
+                /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
+                TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
+                different */
+
+                s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
+                s32 referenceScanIndex = currentScanIndex - 6;
+                if (referenceScanIndex < 0) {
+                    referenceScanIndex = 0;
+                }
+
+                ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
+                ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
+
+                //Find difference in time, position x, position z
+                f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
+                if (deltaTime>0) {
+                    f32 deltaX = currentScanData.x - referenceScanData.x;
+                    f32 deltaZ = currentScanData.z - referenceScanData.z;
+
+                    arpaContacts.at(i).estimate.absVectorX = deltaX/deltaTime; //m/s
+                    arpaContacts.at(i).estimate.absVectorZ = deltaZ/deltaTime; //m/s
+                    arpaContacts.at(i).estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
+                    if (arpaContacts.at(i).estimate.absHeading < 0 ) {
+                        arpaContacts.at(i).estimate.absHeading += 360;
+                    }
+
+                    //Estimated current position:
+                    f32 relX = currentScanData.x - absolutePosition.X + arpaContacts.at(i).estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
+                    f32 relZ = currentScanData.z - absolutePosition.Z + arpaContacts.at(i).estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
+                    arpaContacts.at(i).estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
+                    if (arpaContacts.at(i).estimate.bearing < 0 ) {
+                        arpaContacts.at(i).estimate.bearing += 360;
+                    }
+                    arpaContacts.at(i).estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
+                    arpaContacts.at(i).estimate.speed = std::sqrt(pow(arpaContacts.at(i).estimate.absVectorX,2) + pow(arpaContacts.at(i).estimate.absVectorZ,2))*MPS_TO_KTS;
+
+                    if (arpaContacts.at(i).estimate.speed >= 2) {
+                        std::cout << "Contact " << i << " est speed " << arpaContacts.at(i).estimate.speed << " est heading " << arpaContacts.at(i).estimate.absHeading << " on bearing " << arpaContacts.at(i).estimate.bearing << " at range " << arpaContacts.at(i).estimate.range << " Nm." <<std::endl;
+                    }
 
 
-
+                } //If time between scans > 0
+            } //Contact not lost
+        } //If at least 2 scans
+    } //For loop through arpa contacts
 }
 
 void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipHeading)

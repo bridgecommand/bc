@@ -51,6 +51,10 @@ struct ARPAEstimatedState {
     irr::f32 absVectorX; //Estimated X speed (m/s)
     irr::f32 absVectorZ; //Estimated Z speed (m/s)
     irr::f32 absHeading; //Estimated heading (deg)
+    irr::f32 range; //Estimated current range from own ship (Nm)
+    irr::f32 bearing; //Estimated current bearing from own ship (deg)
+    irr::f32 speed; //Estimated current speed (Kts)
+    bool lost; //True if we last scanned more than a defined time ago.
     //Also to implement
     //Distance of CPA
     //Time to CPA
