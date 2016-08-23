@@ -145,7 +145,8 @@ private:
     irr::scene::ISceneManager* smgr;
     OperatingMode::Mode mode; //What mode are we in
     irr::f32 viewAngle;
-    irr::video::IImage* radarImage;
+    irr::video::IImage* radarImage; //Basic radar image
+    irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
     //irr::f32 accelerator;
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0

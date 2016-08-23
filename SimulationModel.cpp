@@ -175,9 +175,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //Previous offset from camera
         radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
 
-        //make radar image
+        //make radar image - one for the background render, and one with any 2d drawing on top
         radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
         radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImageOverlaid->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
 
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
@@ -198,6 +200,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 SimulationModel::~SimulationModel()
 {
     radarImage->drop(); //We created this with 'create', so drop it when we're finished
+    radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
 }
 
     irr::f32 SimulationModel::longToX(irr::f32 longitude) const
@@ -666,8 +669,8 @@ SimulationModel::~SimulationModel()
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        radarCalculation.update(radarImage,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime);
-        radarScreen.update(radarImage);
+        radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime);
+        radarScreen.update(radarImageOverlaid);
         radarCamera.update();
 
         //check if paused

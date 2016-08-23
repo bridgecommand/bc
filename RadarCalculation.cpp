@@ -293,11 +293,11 @@ bool RadarCalculation::getHeadUp() const//Head or course up
 }
 
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-    render(radarImage, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+    render(radarImage, radarImageOverlaid, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 
@@ -605,11 +605,14 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
     } //For loop through arpa contacts
 }
 
-void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipHeading)
+void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading)
 {
     //*************************
     //generate image from array
     //*************************
+
+    //Todo; Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
+
 
     //Get image size
     u32 bitmapWidth = radarImage->getDimension().Width;
@@ -654,7 +657,30 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::f32 ownShipH
         }
     }
 
-    //Draw ARPA stuff here from arpaContacts
+    //Copy image into overlaid
+    radarImage->copyTo(radarImageOverlaid);
+
+    //Draw ARPA stuff here from arpaContacts, into radarImage
+    for(unsigned int i = 0; i < arpaContacts.size(); i++) {
+        ARPAEstimatedState thisEstimate = arpaContacts.at(i).estimate;
+
+        if (!thisEstimate.ignored && thisEstimate.range <= getRangeNm()*M_IN_NM) {
+            //Contact is in range
+
+            //range in pixels
+            f32 contactRangePx = (f32)bitmapWidth/2.0 * thisEstimate.range/getRangeNm();
+
+
+            //Initially assume north up: TODO: Implement for other cases
+            u32 deltaX = centrePixel + contactRangePx * sin(thisEstimate.bearing*RAD_IN_DEG);
+            u32 deltaY = centrePixel - contactRangePx * cos(thisEstimate.bearing*RAD_IN_DEG);
+
+            //std::cout << "Contact range px: " << contactRangePx << " DX: "  << deltaX << " DY: " << deltaY <<  std::endl;
+
+            radarImageOverlaid->setPixel(deltaX,deltaY,video::SColor(255,255,255,255));
+
+        }
+    }
 
 
 }
