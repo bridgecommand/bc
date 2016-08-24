@@ -78,6 +78,11 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
     this->offset = offset;
 }
 
+void RadarScreen::setRadarDisplayRadius(u32 radiusPx)
+{
+    radarRadiusPx = radiusPx;
+}
+
 void RadarScreen::update(video::IImage* radarImage)
 {
      //link camera rotation to shipNode
@@ -100,6 +105,14 @@ void RadarScreen::update(video::IImage* radarImage)
     }
     //make texture from image and apply to the screen
     radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
+
+    //Scale the texture to get 1:1 image to screen pixel mapping
+    f32 radarTextureScaling=1;
+    if (radarImage->getDimension().Width>0) {
+        radarTextureScaling = (f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
+    }
+    radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.
+
     //Remove old texture if it exists
     if (oldTexture!=0) {
             driver->removeTexture(oldTexture);

@@ -129,6 +129,7 @@ public:
     void setRadarNorthUp();
     void setRadarCourseUp();
     void setRadarHeadUp();
+    void setRadarDisplayRadius(irr::u32 radiusPx);
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

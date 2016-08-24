@@ -93,6 +93,7 @@ class RadarCalculation
         void setCourseUp();
         void setHeadUp();
         bool getHeadUp() const; //Head or course up
+        void setRadarDisplayRadius(irr::u32 radiusPx);
         void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
 
     private:
@@ -120,6 +121,8 @@ class RadarCalculation
         //Radar config
         bool headUp;
         bool stabilised;
+        irr::u32 radarRadiusPx;
+        bool radarScreenStale;
         //colours
         irr::video::SColor radarBackgroundColour;
         irr::video::SColor radarForegroundColour;

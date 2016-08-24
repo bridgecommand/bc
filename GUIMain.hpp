@@ -70,6 +70,7 @@ public:
     void hide2dInterface();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
+    irr::u32 getRadarPixelRadius() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
@@ -147,6 +148,7 @@ private:
     irr::s32 largeRadarScreenCentreX;
     irr::s32 largeRadarScreenCentreY;
     irr::s32 largeRadarScreenRadius;
+    irr::s32 smallRadarScreenRadius;
     std::string guiTime;
     bool singleEngine;
     bool guiPaused;

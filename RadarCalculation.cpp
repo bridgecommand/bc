@@ -59,9 +59,10 @@ RadarCalculation::RadarCalculation()
         for(u32 j = 0; j<rangeResolution; j++) {
             scanArray[i][j] = 0.0;
             scanArrayAmplified[i][j] = 0.0;
-            scanArrayAmplifiedPrevious[i][j] = -1.0;
         }
     }
+
+    radarScreenStale = true;
 
     currentScanAngle=0;
 }
@@ -292,9 +293,29 @@ bool RadarCalculation::getHeadUp() const//Head or course up
     return headUp;
 }
 
+void RadarCalculation::setRadarDisplayRadius(u32 radiusPx)
+{
+    if (radarRadiusPx != radiusPx) { //If changed
+        radarRadiusPx = radiusPx;
+        radarScreenStale=true;
+    }
+}
 
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
+
+    //Reset screen if needed
+    if(radarScreenStale) {
+        radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
+        //Reset 'previous' array so it will all get re-drawn
+        for(u32 i = 0; i<360; i++) {
+            for(u32 j = 0; j<rangeResolution; j++) {
+                scanArrayAmplifiedPrevious[i][j] = -1.0;
+            }
+        }
+        radarScreenStale = false;
+    }
+
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
     render(radarImage, radarImageOverlaid, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
@@ -611,13 +632,10 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     //generate image from array
     //*************************
 
-    //Todo; Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
-
-
-    //Get image size
-    u32 bitmapWidth = radarImage->getDimension().Width;
-    if (radarImage->getDimension().Height != bitmapWidth)
-        {return;} //Check image is square, and return without action if not
+    //Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
+    u32 bitmapWidth = radarRadiusPx*2; //Set width to use - to map GUI radar display diameter in screen pixels
+    if (radarImage->getDimension().Width < bitmapWidth) //Check the image we're rendering into is big enough
+        {return;}
 
     //draw from array to image
     f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)

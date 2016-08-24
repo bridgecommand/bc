@@ -178,12 +178,14 @@ using namespace irr;
                 if (id == GUIMain::GUI_ID_BIG_RADAR_BUTTON)
                 {
                     gui->setLargeRadar(true);
+                    model->setRadarDisplayRadius(gui->getRadarPixelRadius());
                     gui->hide2dInterface();
                 }
 
                 if (id == GUIMain::GUI_ID_SMALL_RADAR_BUTTON)
                 {
                     gui->setLargeRadar(false);
+                    model->setRadarDisplayRadius(gui->getRadarPixelRadius());
                     gui->show2dInterface();
                 }
 

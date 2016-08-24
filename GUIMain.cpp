@@ -21,6 +21,8 @@
 #include "OutlineScrollBar.h"
 #include "ScrollDial.h"
 
+#include <iostream> //for debugging
+
 using namespace irr;
 
 GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages)
@@ -60,6 +62,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         largeRadarScreenCentreX = radarTL.X + largeRadarScreenRadius;
         largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarTL.Y)/2;
         largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
+        smallRadarScreenRadius=0.2*sh;
 
         //gui - add scroll bars for speed and heading control directly
         hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
@@ -292,6 +295,15 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     bool GUIMain::getLargeRadar() const
     {
         return radarLarge;
+    }
+
+    u32 GUIMain::getRadarPixelRadius() const
+    {
+        if (radarLarge) {
+            return largeRadarScreenRadius;
+        } else {
+            return smallRadarScreenRadius;
+        }
     }
 
     irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
@@ -605,8 +617,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         } else {
             centreX = su-0.2*sh;
             centreY = 0.8*sh;
-            radius = 0.2*sh;
+            radius = smallRadarScreenRadius;
         }
+
+        //std::cout << radius*2 << std::endl;
 
         //If full screen radar, draw a 4:3 box around the radar display area
         if (radarLarge) {

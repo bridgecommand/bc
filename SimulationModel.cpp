@@ -26,6 +26,8 @@
 #include "Constants.hpp"
 #include "Utilities.hpp"
 
+#include <cmath>
+
 //#include <ctime>
 
 using namespace irr;
@@ -137,6 +139,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Load the radar with config parameters
         radarCalculation.load(ownShip.getRadarConfigFile());
+        radarCalculation.setRadarDisplayRadius(gui->getRadarPixelRadius());
 
         //set camera zoom to 1
         zoom = 1.0;
@@ -173,11 +176,19 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //make a radar screen, setting parent and offset from own ship
         core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
         //core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //Previous offset from camera
+
         radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
+        radarScreen.setRadarDisplayRadius(gui->getRadarPixelRadius());
 
         //make radar image - one for the background render, and one with any 2d drawing on top
-        radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
-        radarImageOverlaid = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(256, 256)); //Create image for radar calculation to work on
+        //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
+        u32 radarTextureSize = driver->getScreenSize().Height; // Conservative estimate - can't be bigger than screen height.
+        //Find next power of 2 size
+        radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
+
+        //In simulationModel, keep track of the used size, and pass this to gui etc.
+        radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
         radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
         radarImageOverlaid->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
 
@@ -537,6 +548,12 @@ SimulationModel::~SimulationModel()
     void SimulationModel::setRadarHeadUp()
     {
         radarCalculation.setHeadUp();
+    }
+
+    void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
+    {
+        radarCalculation.setRadarDisplayRadius(radiusPx);
+        radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
     void SimulationModel::setMainCameraActive()
