@@ -133,6 +133,7 @@ public:
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);
+    void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
@@ -170,6 +171,7 @@ private:
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;
+    bool isMouseDown; //Updated by the event receiver, used by radar
 
     //Simulation time handling
     irr::u32 currentTime; //Computer clock time

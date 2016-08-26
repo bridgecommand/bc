@@ -62,6 +62,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         largeRadarScreenCentreX = radarTL.X + largeRadarScreenRadius;
         largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarTL.Y)/2;
         largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
+
+        smallRadarScreenCentreX = su-0.2*sh;
+        smallRadarScreenCentreY = 0.8*sh;
         smallRadarScreenRadius=0.2*sh;
 
         //gui - add scroll bars for speed and heading control directly
@@ -304,6 +307,25 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         } else {
             return smallRadarScreenRadius;
         }
+    }
+
+    core::vector2di GUIMain::getCursorPositionRadar() const
+    {
+        //Basic mouse position
+        core::vector2di cursorPosition = device->getCursorControl()->getPosition();
+
+        //Radar screen centre position
+        core::vector2di radarScreenCentre;
+        if (radarLarge) {
+            radarScreenCentre.X = largeRadarScreenCentreX;
+            radarScreenCentre.Y = largeRadarScreenCentreY;
+        } else {
+            radarScreenCentre.X = smallRadarScreenCentreX;
+            radarScreenCentre.Y = smallRadarScreenCentreY;
+        }
+
+        //Return the difference
+        return (cursorPosition-radarScreenCentre);
     }
 
     irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
@@ -615,8 +637,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
             centreY = largeRadarScreenCentreY;
             radius = largeRadarScreenRadius;
         } else {
-            centreX = su-0.2*sh;
-            centreY = 0.8*sh;
+            centreX = smallRadarScreenCentreX;
+            centreY = smallRadarScreenCentreY;
             radius = smallRadarScreenRadius;
         }
 

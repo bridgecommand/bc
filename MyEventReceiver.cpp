@@ -87,6 +87,7 @@ using namespace irr;
             if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {leftMouseDown=false;}
             if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ) {rightMouseDown=true;}
             if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP ) {rightMouseDown=false;}
+            model->setMouseDown(leftMouseDown || rightMouseDown); //Set if either mouse is down
         }
 
         if (event.EventType == EET_GUI_EVENT)

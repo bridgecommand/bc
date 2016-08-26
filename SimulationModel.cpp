@@ -39,6 +39,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         smgr = scene;
         driver = scene->getVideoDriver();
         guiMain = gui;
+        isMouseDown = false;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
         serialisedScenarioData = scenarioData.serialise();
@@ -576,6 +577,10 @@ SimulationModel::~SimulationModel()
         camera.setHFOV(core::degToRad(viewAngle)/zoom);
     }
 
+    void SimulationModel::setMouseDown(bool isMouseDown)
+    {
+        this->isMouseDown = isMouseDown;
+    }
 
     void SimulationModel::updateViewport(irr::f32 aspect)
     {
@@ -686,7 +691,8 @@ SimulationModel::~SimulationModel()
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime);
+        core::vector2di cursorPositionRadar = guiMain->getCursorPositionRadar();
+        radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
         radarScreen.update(radarImageOverlaid);
         radarCamera.update();
 

@@ -301,7 +301,7 @@ void RadarCalculation::setRadarDisplayRadius(u32 radiusPx)
     }
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     //Reset screen if needed
@@ -314,6 +314,14 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
             }
         }
         radarScreenStale = false;
+    }
+
+    //Find position of mouse cursor
+    f32 cursorRangeXNm = (f32)mouseRelPosition.X/(f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
+    f32 cursorRangeYNm = -1.0*(f32)mouseRelPosition.Y/(f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
+    //Check if clicked and in range
+    if (isMouseDown && pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5) <= radarRangeNm.at(radarRangeIndex) ) {
+        std::cout << "Cursor E/W: " << cursorRangeXNm << " N/S:" << cursorRangeYNm << std::endl;
     }
 
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
@@ -577,7 +585,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
             //Check if contact lost, if last scanned more than 60 seconds ago
             if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
                 arpaContacts.at(i).estimate.lost=true;
-                std::cout << "Contact " << i << " lost" << std::endl;
+                //std::cout << "Contact " << i << " lost" << std::endl;
             } else {
                 /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
                 TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
@@ -616,7 +624,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     arpaContacts.at(i).estimate.speed = std::sqrt(pow(arpaContacts.at(i).estimate.absVectorX,2) + pow(arpaContacts.at(i).estimate.absVectorZ,2))*MPS_TO_KTS;
 
                     if (arpaContacts.at(i).estimate.speed >= 2) {
-                        std::cout << "Contact " << i << " est speed " << arpaContacts.at(i).estimate.speed << " est heading " << arpaContacts.at(i).estimate.absHeading << " on bearing " << arpaContacts.at(i).estimate.bearing << " at range " << arpaContacts.at(i).estimate.range << " Nm." <<std::endl;
+                        //std::cout << "Contact " << i << " est speed " << arpaContacts.at(i).estimate.speed << " est heading " << arpaContacts.at(i).estimate.absHeading << " on bearing " << arpaContacts.at(i).estimate.bearing << " at range " << arpaContacts.at(i).estimate.range << " Nm." <<std::endl;
                     }
 
 
