@@ -24,6 +24,7 @@
 #include "Angles.hpp"
 #include "Constants.hpp"
 #include "IniFile.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -698,12 +699,13 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
 
             //Initially assume north up: TODO: Implement for other cases
-            u32 deltaX = centrePixel + contactRangePx * sin(thisEstimate.bearing*RAD_IN_DEG);
-            u32 deltaY = centrePixel - contactRangePx * cos(thisEstimate.bearing*RAD_IN_DEG);
+            s32 deltaX = centrePixel + contactRangePx * sin(thisEstimate.bearing*RAD_IN_DEG);
+            s32 deltaY = centrePixel - contactRangePx * cos(thisEstimate.bearing*RAD_IN_DEG);
 
             //std::cout << "Contact range px: " << contactRangePx << " DX: "  << deltaX << " DY: " << deltaY <<  std::endl;
 
-            radarImageOverlaid->setPixel(deltaX,deltaY,video::SColor(255,255,255,255));
+            drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,255,255,255,255); //Draw circle around contact
+            //drawLine(radarImageOverlaid,deltaX,deltaY,deltaX+10,deltaY+25,255,255,255,255);//Todo; Make a sensible vector (true or rel)
 
         }
     }
@@ -761,8 +763,76 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
                 //if (Angles::isAngleBetween(localAngle,startAngle,endAngle)) {
                 if (Angles::isAngleBetween(core::vector2df(localX,-1*localY),core::vector2df(sinStartAngle,cosStartAngle),core::vector2df(sinEndAngle,cosEndAngle))) {
                     //Plot i,j
-                    radarImage->setPixel(i,j,video::SColor(alpha,red,green,blue));
+                    if (i >= 0 && j >= 0) {radarImage->setPixel(i,j,video::SColor(alpha,red,green,blue));}
                 }
+            }
+        }
+    }
+}
+
+void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
+{
+
+    f32 deltaX = endX - startX;
+    f32 deltaY = endY - startY;
+
+    f32 lengthSum = std::abs(deltaX) + std::abs(deltaY);
+
+    u32 radiusSquared = pow(radarRadiusPx,2);
+
+    if (lengthSum > 0) {
+        for (f32 i = 0; i<=1; i += 1/lengthSum) {
+            s32 thisX = Utilities::round(startX + deltaX * i);
+            s32 thisY = Utilities::round(startY + deltaY * i);
+            //Find distance from centre
+            s32 centreToX = thisX - radarRadiusPx;
+            s32 centreToY = thisY - radarRadiusPx;
+            if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
+                if (thisX >= 0 && thisY >= 0) {
+                    radarImage->setPixel(thisX,thisY,video::SColor(alpha,red,green,blue));
+                }
+            }
+        }
+    } else {
+        s32 thisX = Utilities::round(startX);
+        s32 thisY = Utilities::round(startY);
+        //Find distance from centre
+        s32 centreToX = thisX - radarRadiusPx;
+        s32 centreToY = thisY - radarRadiusPx;
+        if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
+            if (thisX >= 0 && thisY >= 0) {radarImage->setPixel(thisX,thisY,video::SColor(alpha,red,green,blue));}
+        }
+    }
+}
+
+void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 centreX, irr::f32 centreY, irr::f32 radius, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
+{
+    f32 circumference = 2.0 * PI * radius;
+
+    u32 radiusSquared = pow(radarRadiusPx,2);
+
+    if (circumference > 0) {
+        for (f32 i = 0; i<=1; i += 1/circumference) {
+            s32 thisX = Utilities::round(centreX + radius * sin(i*2*PI));
+            s32 thisY = Utilities::round(centreY + radius * cos(i*2*PI));
+            //Find distance from centre
+            s32 centreToX = thisX - radarRadiusPx;
+            s32 centreToY = thisY - radarRadiusPx;
+            if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
+                if (thisX >= 0 && thisY >= 0) {
+                    radarImage->setPixel(thisX,thisY,video::SColor(alpha,red,green,blue));
+                }
+            }
+        }
+    } else {
+        s32 thisX = Utilities::round(centreX);
+        s32 thisY = Utilities::round(centreY);
+        //Find distance from centre
+        s32 centreToX = thisX - radarRadiusPx;
+        s32 centreToY = thisY - radarRadiusPx;
+        if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
+            if (thisX >= 0 && thisY >= 0) {
+                radarImage->setPixel(thisX,thisY,video::SColor(alpha,red,green,blue));
             }
         }
     }
