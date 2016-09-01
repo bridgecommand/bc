@@ -697,10 +697,16 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             //range in pixels
             f32 contactRangePx = (f32)bitmapWidth/2.0 * thisEstimate.range/getRangeNm();
 
+            //Adjust for head up/course up
+            f32 radarOffsetAngle = 0;
+            if (headUp) {
+                radarOffsetAngle = -1*ownShipHeading;
+            }
+
 
             //Initially assume north up: TODO: Implement for other cases
-            s32 deltaX = centrePixel + contactRangePx * sin(thisEstimate.bearing*RAD_IN_DEG);
-            s32 deltaY = centrePixel - contactRangePx * cos(thisEstimate.bearing*RAD_IN_DEG);
+            s32 deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
+            s32 deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
 
             //std::cout << "Contact range px: " << contactRangePx << " DX: "  << deltaX << " DY: " << deltaY <<  std::endl;
 
