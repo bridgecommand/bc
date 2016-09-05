@@ -327,7 +327,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-    render(radarImage, radarImageOverlaid, ownShip.getHeading()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+    render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 
@@ -635,7 +635,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
     } //For loop through arpa contacts
 }
 
-void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading)
+void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed)
 {
     //*************************
     //generate image from array
@@ -704,7 +704,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             }
 
 
-            //Initially assume north up: TODO: Implement for other cases
+            //Find estimated screen location of contact
             s32 deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
             s32 deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
 
@@ -712,6 +712,37 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
             drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,255,255,255,255); //Draw circle around contact
             //drawLine(radarImageOverlaid,deltaX,deltaY,deltaX+10,deltaY+25,255,255,255,255);//Todo; Make a sensible vector (true or rel)
+
+            //draw a vector
+            f32 vectorLengthMinutes = 6; //Todo: Make this adjustable
+            bool trueVectors = false;//Todo: Make this adjustable (true or relative)
+
+            f32 adjustedVectorX = thisEstimate.absVectorX;
+            f32 adjustedVectorZ = thisEstimate.absVectorZ;
+            if (!trueVectors) {
+                adjustedVectorZ -= ownShipSpeed * cos((ownShipHeading)*core::DEGTORAD);
+                adjustedVectorX -= ownShipSpeed * sin((ownShipHeading)*core::DEGTORAD); //ownShipSpeed in m/s
+            }
+
+            //Rotate if in head/course up mode
+            if (headUp) {
+                f32 cosOffsetAngle = cos(-1*radarOffsetAngle*core::DEGTORAD);
+                f32 sinOffsetAngle = sin(-1*radarOffsetAngle*core::DEGTORAD);
+
+                //Implement rotation here
+                f32 newX = adjustedVectorX*cosOffsetAngle - adjustedVectorZ*sinOffsetAngle;
+                f32 newZ = adjustedVectorX*sinOffsetAngle + adjustedVectorZ*cosOffsetAngle;
+
+                adjustedVectorX = newX;
+                adjustedVectorZ = newZ;
+            }
+
+            s32 headingVectorX = Utilities::round(((f32)bitmapWidth/2.0)   * adjustedVectorX * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm())); //Vector length in pixels
+            s32 headingVectorY = Utilities::round(((f32)bitmapWidth/2.0)*-1* adjustedVectorZ * 60 * vectorLengthMinutes / (M_IN_NM * getRangeNm()));
+
+            //std::cout << headingVectorX << " " << headingVectorY << std::endl;
+
+            drawLine(radarImageOverlaid,deltaX,deltaY,deltaX + headingVectorX,deltaY+headingVectorY,255,255,255,255);
 
         }
     }

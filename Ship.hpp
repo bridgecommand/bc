@@ -39,7 +39,7 @@ class Ship
         void setHeading(irr::f32 hdg);
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
-        irr::f32 getSpeed() const;
+        irr::f32 getSpeed() const; //m/s
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         void setPosition(irr::f32 xPos, irr::f32 yPos);
 
