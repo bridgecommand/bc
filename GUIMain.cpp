@@ -147,7 +147,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
         //irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
-        //irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
+        irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
         //irr::gui::IGUITab* radarTrackTab = radarTabControl->addTab(language->translate("radarTrackTab").c_str(),0);
         //irr::gui::IGUITab* radarARPAVectorTab = radarTabControl->addTab(language->translate("radarARPAVectorTab").c_str(),0);
         //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
@@ -213,6 +213,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         eblDownButton2 = guienv->addButton(core::rect<s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         radarText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.695*radarSu),true,true,largeRadarControls,-1,true);
+
+        //Radar ARPA tab and large window controls
+        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(core::rect<s32>(0.005*su,0.010*sh,0.150*su,0.050*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
+        arpaVectorMode->addItem(language->translate("trueArpa").c_str());
+        arpaVectorMode->addItem(language->translate("relArpa").c_str());
+        guienv->addEditBox(L"6",core::rect<s32>(0.155*su,0.010*sh,0.195*su,0.050*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
+        (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.200*su,0.010*sh,0.237*su,0.050*sh),false,true,radarARPATab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());

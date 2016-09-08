@@ -551,6 +551,21 @@ SimulationModel::~SimulationModel()
         radarCalculation.setHeadUp();
     }
 
+    void SimulationModel::setRadarARPARel()
+    {
+        radarCalculation.setRadarARPARel();
+    }
+
+    void SimulationModel::setRadarARPATrue()
+    {
+        radarCalculation.setRadarARPATrue();
+    }
+
+    void SimulationModel::setRadarARPAVectors(irr::f32 vectorMinutes)
+    {
+        radarCalculation.setRadarARPAVectors(vectorMinutes);
+    }
+
     void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
     {
         radarCalculation.setRadarDisplayRadius(radiusPx);

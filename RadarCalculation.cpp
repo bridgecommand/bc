@@ -48,6 +48,8 @@ RadarCalculation::RadarCalculation()
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = false;
     stabilised = false;
+    trueVectors = true;
+    vectorLengthMinutes = 6;
 
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
@@ -292,6 +294,21 @@ void RadarCalculation::setHeadUp()
 bool RadarCalculation::getHeadUp() const//Head or course up
 {
     return headUp;
+}
+
+void RadarCalculation::setRadarARPARel()
+{
+    trueVectors = false;
+}
+
+void RadarCalculation::setRadarARPATrue()
+{
+    trueVectors = true;
+}
+
+void RadarCalculation::setRadarARPAVectors(irr::f32 vectorMinutes)
+{
+    vectorLengthMinutes = vectorMinutes;
 }
 
 void RadarCalculation::setRadarDisplayRadius(u32 radiusPx)
@@ -714,9 +731,6 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             //drawLine(radarImageOverlaid,deltaX,deltaY,deltaX+10,deltaY+25,255,255,255,255);//Todo; Make a sensible vector (true or rel)
 
             //draw a vector
-            f32 vectorLengthMinutes = 6; //Todo: Make this adjustable
-            bool trueVectors = false;//Todo: Make this adjustable (true or relative)
-
             f32 adjustedVectorX = thisEstimate.absVectorX;
             f32 adjustedVectorZ = thisEstimate.absVectorZ;
             if (!trueVectors) {

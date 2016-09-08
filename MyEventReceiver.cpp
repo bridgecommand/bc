@@ -17,9 +17,11 @@
 #include "MyEventReceiver.hpp"
 
 #include <iostream>
+#include <string>
 
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
+#include "Utilities.hpp"
 
 using namespace irr;
 
@@ -246,108 +248,133 @@ using namespace irr;
 
             } //Button clicked
 
+            if (event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED) {
+                if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX)
+                {
+                    s32 selected = ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
+                    if(selected == 0) {
+                        model->setRadarARPATrue();
+                    } else if (selected == 1) {
+                        model->setRadarARPARel();
+                    }
+                }
+
+            }//Combo box
+
+            if ( id==GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX && (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) ) {
+                std::wstring boxWString = std::wstring(((gui::IGUIEditBox*)event.GUIEvent.Caller)->getText());
+                std::string boxString(boxWString.begin(), boxWString.end());
+                f32 value = Utilities::lexical_cast<f32>(boxString);
+                std::cout << value << std::endl;
+
+                model->setRadarARPAVectors(value);
+            }
+
+
         } //GUI Event
 
 
         //From keyboard
-        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
-		{
+        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown) {
+            //Check here that there isn't focus on a GUI edit box. If we are, don't process key inputs here.
+            gui::IGUIElement* focussedElement = device->getGUIEnvironment()->getFocus();
+            if ( !(focussedElement && focussedElement->getType()==gui::EGUIET_EDIT_BOX)) {
 
+                if (event.KeyInput.Shift) {
+                    //Shift down
 
-            if (event.KeyInput.Shift) {
-                //Shift down
+                } else if (event.KeyInput.Control) {
+                    //Ctrl down
 
-            } else if (event.KeyInput.Control) {
-                //Ctrl down
+                    switch(event.KeyInput.Key)
+                    {
+                        //Camera look
+                        case KEY_UP:
+                            model->lookAhead();
+                            break;
+                        case KEY_DOWN:
+                            model->lookAstern();
+                            break;
+                        case KEY_LEFT:
+                            model->lookPort();
+                            break;
+                        case KEY_RIGHT:
+                            model->lookStbd();
+                            break;
+                        default:
+                            //don't do anything
+                            break;
+                    }
 
-                switch(event.KeyInput.Key)
-                {
-                    //Camera look
-                    case KEY_UP:
-                        model->lookAhead();
-                        break;
-                    case KEY_DOWN:
-                        model->lookAstern();
-                        break;
-                    case KEY_LEFT:
-                        model->lookPort();
-                        break;
-                    case KEY_RIGHT:
-                        model->lookStbd();
-                        break;
-                    default:
-                        //don't do anything
-                        break;
-                }
+                } else {
+                    //Shift and Ctrl not down
 
-            } else {
-                //Shift and Ctrl not down
+                    switch(event.KeyInput.Key)
+                    {
+                        //Accelerator
+                        case KEY_KEY_0:
+                            model->setAccelerator(0.0);
+                            break;
+                        case KEY_RETURN:
+                            model->setAccelerator(1.0);
+                            break;
+                        case KEY_KEY_1:
+                            model->setAccelerator(1.0);
+                            break;
+                        case KEY_KEY_2:
+                            model->setAccelerator(2.0);
+                            break;
+                        case KEY_KEY_3:
+                            model->setAccelerator(5.0);
+                            break;
+                        case KEY_KEY_4:
+                            model->setAccelerator(15.0);
+                            break;
+                        case KEY_KEY_5:
+                            model->setAccelerator(30.0);
+                            break;
+                        case KEY_KEY_6:
+                            model->setAccelerator(60.0);
+                            break;
+                        case KEY_KEY_7:
+                            model->setAccelerator(3600.0);
+                            break;
 
-                switch(event.KeyInput.Key)
-                {
-                    //Accelerator
-                    case KEY_KEY_0:
-                        model->setAccelerator(0.0);
-                        break;
-                    case KEY_RETURN:
-                        model->setAccelerator(1.0);
-                        break;
-                    case KEY_KEY_1:
-                        model->setAccelerator(1.0);
-                        break;
-                    case KEY_KEY_2:
-                        model->setAccelerator(2.0);
-                        break;
-                    case KEY_KEY_3:
-                        model->setAccelerator(5.0);
-                        break;
-                    case KEY_KEY_4:
-                        model->setAccelerator(15.0);
-                        break;
-                    case KEY_KEY_5:
-                        model->setAccelerator(30.0);
-                        break;
-                    case KEY_KEY_6:
-                        model->setAccelerator(60.0);
-                        break;
-                    case KEY_KEY_7:
-                        model->setAccelerator(3600.0);
-                        break;
+                        //Camera look
+                        case KEY_UP:
+                            model->lookUp();
+                            break;
+                        case KEY_DOWN:
+                            model->lookDown();
+                            break;
+                        case KEY_LEFT:
+                            model->lookLeft();
+                            break;
+                        case KEY_RIGHT:
+                            model->lookRight();
+                            break;
+                        case KEY_SPACE:
+                            model->changeView();
+                            break;
 
-                    //Camera look
-                    case KEY_UP:
-                        model->lookUp();
-                        break;
-                    case KEY_DOWN:
-                        model->lookDown();
-                        break;
-                    case KEY_LEFT:
-                        model->lookLeft();
-                        break;
-                    case KEY_RIGHT:
-                        model->lookRight();
-                        break;
-                    case KEY_SPACE:
-                        model->changeView();
-                        break;
+                        //toggle full screen 3d
+                        case KEY_KEY_F:
+                            gui->toggleShow2dInterface();
+                            break;
 
-                    //toggle full screen 3d
-                    case KEY_KEY_F:
-                        gui->toggleShow2dInterface();
-                        break;
+                        //Quit with esc or F4 (for alt-F4)
+                        case KEY_ESCAPE:
+                        case KEY_F4:
+                            model->setAccelerator(0.0);
+                            device->sleep(500);
+                            device->clearSystemMessages();
+                            device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
+                            break;
 
-                    //Quit with esc or F4 (for alt-F4)
-                    case KEY_ESCAPE:
-                    case KEY_F4:
-                        model->setAccelerator(0.0);
-                        device->sleep(500);
-                        device->clearSystemMessages();
-                        device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
-                        break;
-
-                    default:
-                        //don't do anything
-                        break;
+                        default:
+                            //don't do anything
+                            break;
+                    }
                 }
             }
 		}
