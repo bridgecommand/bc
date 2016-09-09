@@ -249,7 +249,8 @@ using namespace irr;
             } //Button clicked
 
             if (event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED) {
-                if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX)
+
+                if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX || id == GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX)
                 {
                     s32 selected = ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
                     if(selected == 0) {
@@ -257,17 +258,41 @@ using namespace irr;
                     } else if (selected == 1) {
                         model->setRadarARPARel();
                     }
+
+                    //Set both linked inputs - brute force
+                    gui::IGUIElement* other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_TRUE_REL_BOX,true);
+                    if(other!=0) {
+                        ((gui::IGUIComboBox*)other)->setSelected(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                    }
+                    other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX,true);
+                    if(other!=0) {
+                        ((gui::IGUIComboBox*)other)->setSelected(((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                    }
+
                 }
 
             }//Combo box
 
-            if ( id==GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX && (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) ) {
+            if ( (id==GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX || id==GUIMain::GUI_ID_BIG_ARPA_VECTOR_TIME_BOX) && (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) ) {
                 std::wstring boxWString = std::wstring(((gui::IGUIEditBox*)event.GUIEvent.Caller)->getText());
                 std::string boxString(boxWString.begin(), boxWString.end());
                 f32 value = Utilities::lexical_cast<f32>(boxString);
-                std::cout << value << std::endl;
 
-                model->setRadarARPAVectors(value);
+                if (value > 0 && value <= 60) {
+                    model->setRadarARPAVectors(value);
+                } else {
+                    event.GUIEvent.Caller->setText(L"Invalid");
+                }
+
+                //Set both linked inputs - brute force
+                gui::IGUIElement* other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX,true);
+                if(other!=0) {
+                    other->setText(event.GUIEvent.Caller->getText());
+                }
+                other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_VECTOR_TIME_BOX,true);
+                if(other!=0) {
+                    other->setText(event.GUIEvent.Caller->getText());
+                }
             }
 
 

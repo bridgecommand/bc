@@ -708,6 +708,8 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     for(unsigned int i = 0; i < arpaContacts.size(); i++) {
         ARPAEstimatedState thisEstimate = arpaContacts.at(i).estimate;
 
+        //Todo: Don't draw if unknown (Why are some drawn at own ship position??)
+
         if (!thisEstimate.ignored && thisEstimate.range <= getRangeNm()*M_IN_NM) {
             //Contact is in range
 
