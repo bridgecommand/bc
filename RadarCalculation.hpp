@@ -47,7 +47,7 @@ struct ARPAScan {
 };
 
 struct ARPAEstimatedState {
-    bool ignored; // E.g. if detected as static and a small RCS or a buoy. (Should be overridable by user)
+    bool stationary; // E.g. if detected as static and a small RCS or a buoy.
     irr::f32 absVectorX; //Estimated X speed (m/s)
     irr::f32 absVectorZ; //Estimated Z speed (m/s)
     irr::f32 absHeading; //Estimated heading (deg)
@@ -62,6 +62,8 @@ struct ARPAEstimatedState {
 
 struct ARPAContact {
     std::vector<ARPAScan> scans;
+    irr::f32 totalXMovementEst; //Estimates of total movement (sum of absolutes) in X and Z, to help detect stationary contacts
+    irr::f32 totalZMovementEst;
     ARPA_CONTACT_TYPE contactType;
     void* contact;
     irr::u32 displayID;

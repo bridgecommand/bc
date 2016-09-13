@@ -448,9 +448,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newContact.contact = radarData.at(thisContact).contact;
                                         newContact.contactType=CONTACT_NORMAL;
                                         newContact.displayID = 0; //Initially not displayed
+                                        newContact.totalXMovementEst = 0;
+                                        newContact.totalZMovementEst = 0;
 
                                         //Zeros for estimated state
-                                        newContact.estimate.ignored = false;
+                                        newContact.estimate.stationary = true;
                                         newContact.estimate.lost = false;
                                         newContact.estimate.absVectorX = 0;
                                         newContact.estimate.absVectorZ = 0;
@@ -479,6 +481,12 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newScan.x = absolutePosition.X + newScan.rangeNm*M_IN_NM * sin(newScan.bearingDeg*RAD_IN_DEG);
                                         newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
                                         newScan.estimatedRCS = 100;//Todo: Implement
+
+                                        //Keep track of estimated total movement
+                                        if (scansSize > 0) {
+                                            arpaContacts.at(existingArpaContact).totalXMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).x - newScan.x;
+                                            arpaContacts.at(existingArpaContact).totalZMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).z - newScan.z;
+                                        }
 
                                         arpaContacts.at(existingArpaContact).scans.push_back(newScan);
                                         //std::cout << "ARPA update on " << existingArpaContact << std::endl;
@@ -600,11 +608,25 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
         //Check there are at least two scans, so we can estimate behaviour
         if (arpaContacts.at(i).scans.size() > 1) {
 
+            //Check stationary contacts to see if they've got detectable motion: TODO: Make this better: Should weight based on current range?
+            //TODO: Test this weighting
+            if (arpaContacts.at(i).estimate.stationary) {
+                f32 latestRangeNm =  arpaContacts.at(i).scans.back().rangeNm;
+                if (latestRangeNm < 1) {
+                    latestRangeNm = 1;
+                }
+                f32 weightedMotionX = fabs(arpaContacts.at(i).totalXMovementEst/latestRangeNm);
+                f32 weightedMotionZ = fabs(arpaContacts.at(i).totalZMovementEst/latestRangeNm);
+                if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
+                    arpaContacts.at(i).estimate.stationary = false;
+                }
+            }
+
             //Check if contact lost, if last scanned more than 60 seconds ago
             if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
                 arpaContacts.at(i).estimate.lost=true;
                 //std::cout << "Contact " << i << " lost" << std::endl;
-            } else {
+            } else if (!arpaContacts.at(i).estimate.stationary) {
                 /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
                 TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
                 different */
@@ -708,10 +730,9 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     for(unsigned int i = 0; i < arpaContacts.size(); i++) {
         ARPAEstimatedState thisEstimate = arpaContacts.at(i).estimate;
 
-        //Todo: Don't draw if unknown (Why are some drawn at own ship position??)
 
-        if (!thisEstimate.ignored && thisEstimate.range <= getRangeNm()*M_IN_NM) {
-            //Contact is in range
+        if (!thisEstimate.stationary && thisEstimate.range <= getRangeNm()*M_IN_NM && thisEstimate.range != 0) {
+            //Contact is in range, and not exactly zero, i.e. not valid
 
             //range in pixels
             f32 contactRangePx = (f32)bitmapWidth/2.0 * thisEstimate.range/getRangeNm();
