@@ -221,7 +221,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guienv->addEditBox(L"6",core::rect<s32>(0.155*su,0.010*sh,0.195*su,0.050*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.200*su,0.010*sh,0.237*su,0.050*sh),false,true,radarARPATab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         guienv->addCheckBox(false,core::rect<s32>(0.005*su,0.060*sh,0.025*su,0.080*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
-        //TODO: Add text
+        (guienv->addStaticText(language->translate("ARPAon").c_str(),core::rect<s32>(0.030*su,0.060*sh,0.140*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
 
         //Radar ARPA on big radar screen
         arpaVectorMode = guienv->addComboBox(core::rect<s32>(0.010*radarSu,0.410*radarSu,0.200*radarSu,0.440*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_TRUE_REL_BOX);
@@ -230,7 +230,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guienv->addEditBox(L"6",core::rect<s32>(0.010*radarSu,0.450*radarSu,0.050*radarSu,0.480*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.060*radarSu,0.450*radarSu,0.105*radarSu,0.480*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         guienv->addCheckBox(false,core::rect<s32>(0.010*radarSu,0.490*radarSu,0.030*radarSu,0.510*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
-        //TODO: Add text
+        (guienv->addStaticText(language->translate("ARPAon").c_str(),core::rect<s32>(0.040*radarSu,0.490*radarSu,0.160*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());

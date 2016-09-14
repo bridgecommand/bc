@@ -300,6 +300,10 @@ bool RadarCalculation::getHeadUp() const//Head or course up
 void RadarCalculation::setArpaOn(bool on)
 {
     arpaOn = on;
+    if (!arpaOn) {
+        //Clear arpa scans
+        arpaContacts.clear();
+    }
 }
 
 void RadarCalculation::setRadarARPARel()
@@ -438,7 +442,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                 scanArray[currentScanAngle][currentStep] += radarEchoStrength;
 
                                 //Start ARPA section
-                                if (radarEchoStrength*2 > localNoise) {
+                                if (arpaOn && radarEchoStrength*2 > localNoise) {
                                     //Contact is detectable in noise
 
                                     //Iterate through arpaContacts array, checking if this contact is in the list (by checking the if the 'contact' pointer is to the same underlying ship/buoy)
