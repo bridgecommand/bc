@@ -273,6 +273,23 @@ using namespace irr;
 
             }//Combo box
 
+            if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX) && event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
+                //ARPA on/off checkbox
+                bool boxState = ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
+                model->setArpaOn(boxState);
+
+                //Set both linked inputs - brute force
+                gui::IGUIElement* other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
+                if(other!=0) {
+                    ((gui::IGUICheckBox*)other)->setChecked(boxState);
+                }
+                other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
+                if(other!=0) {
+                    ((gui::IGUICheckBox*)other)->setChecked(boxState);
+                }
+
+            }
+
             if ( (id==GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX || id==GUIMain::GUI_ID_BIG_ARPA_VECTOR_TIME_BOX) && (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) ) {
                 std::wstring boxWString = std::wstring(((gui::IGUIEditBox*)event.GUIEvent.Caller)->getText());
                 std::string boxString(boxWString.begin(), boxWString.end());

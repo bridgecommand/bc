@@ -50,6 +50,7 @@ RadarCalculation::RadarCalculation()
     stabilised = false;
     trueVectors = true;
     vectorLengthMinutes = 6;
+    arpaOn = false;
 
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
@@ -296,6 +297,11 @@ bool RadarCalculation::getHeadUp() const//Head or course up
     return headUp;
 }
 
+void RadarCalculation::setArpaOn(bool on)
+{
+    arpaOn = on;
+}
+
 void RadarCalculation::setRadarARPARel()
 {
     trueVectors = false;
@@ -483,9 +489,12 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newScan.estimatedRCS = 100;//Todo: Implement
 
                                         //Keep track of estimated total movement
-                                        if (scansSize > 0) {
+                                        if (scansSize > 0 && arpaOn) {
                                             arpaContacts.at(existingArpaContact).totalXMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).x - newScan.x;
                                             arpaContacts.at(existingArpaContact).totalZMovementEst += arpaContacts.at(existingArpaContact).scans.at(scansSize-1).z - newScan.z;
+                                        } else {
+                                            arpaContacts.at(existingArpaContact).totalXMovementEst = 0;
+                                            arpaContacts.at(existingArpaContact).totalZMovementEst = 0;
                                         }
 
                                         arpaContacts.at(existingArpaContact).scans.push_back(newScan);
@@ -605,72 +614,84 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
     //Based on scans data in arpaContacts, estimate current speed, heading and position
     for (unsigned int i = 0; i<arpaContacts.size(); i++) {
 
-        //Check there are at least two scans, so we can estimate behaviour
-        if (arpaContacts.at(i).scans.size() > 1) {
+        if (!arpaOn) {
+            //Set all contacts to zero (untracked)
+            arpaContacts.at(i).estimate.stationary = true;
+            arpaContacts.at(i).estimate.lost = false;
+            arpaContacts.at(i).estimate.absVectorX = 0;
+            arpaContacts.at(i).estimate.absVectorZ = 0;
+            arpaContacts.at(i).estimate.absHeading = 0;
+            arpaContacts.at(i).estimate.bearing = 0;
+            arpaContacts.at(i).estimate.range = 0;
+            arpaContacts.at(i).estimate.speed = 0;
+        } else {
+            //Check there are at least two scans, so we can estimate behaviour
+            if (arpaContacts.at(i).scans.size() > 1) {
 
-            //Check stationary contacts to see if they've got detectable motion: TODO: Make this better: Should weight based on current range?
-            //TODO: Test this weighting
-            if (arpaContacts.at(i).estimate.stationary) {
-                f32 latestRangeNm =  arpaContacts.at(i).scans.back().rangeNm;
-                if (latestRangeNm < 1) {
-                    latestRangeNm = 1;
-                }
-                f32 weightedMotionX = fabs(arpaContacts.at(i).totalXMovementEst/latestRangeNm);
-                f32 weightedMotionZ = fabs(arpaContacts.at(i).totalZMovementEst/latestRangeNm);
-                if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
-                    arpaContacts.at(i).estimate.stationary = false;
-                }
-            }
-
-            //Check if contact lost, if last scanned more than 60 seconds ago
-            if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
-                arpaContacts.at(i).estimate.lost=true;
-                //std::cout << "Contact " << i << " lost" << std::endl;
-            } else if (!arpaContacts.at(i).estimate.stationary) {
-                /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
-                TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
-                different */
-
-                s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
-                s32 referenceScanIndex = currentScanIndex - 6;
-                if (referenceScanIndex < 0) {
-                    referenceScanIndex = 0;
+                //Check stationary contacts to see if they've got detectable motion: TODO: Make this better: Should weight based on current range?
+                //TODO: Test this weighting
+                if (arpaContacts.at(i).estimate.stationary) {
+                    f32 latestRangeNm =  arpaContacts.at(i).scans.back().rangeNm;
+                    if (latestRangeNm < 1) {
+                        latestRangeNm = 1;
+                    }
+                    f32 weightedMotionX = fabs(arpaContacts.at(i).totalXMovementEst/latestRangeNm);
+                    f32 weightedMotionZ = fabs(arpaContacts.at(i).totalZMovementEst/latestRangeNm);
+                    if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
+                        arpaContacts.at(i).estimate.stationary = false;
+                    }
                 }
 
-                ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
-                ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
+                //Check if contact lost, if last scanned more than 60 seconds ago
+                if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
+                    arpaContacts.at(i).estimate.lost=true;
+                    //std::cout << "Contact " << i << " lost" << std::endl;
+                } else if (!arpaContacts.at(i).estimate.stationary) {
+                    /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
+                    TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
+                    different */
 
-                //Find difference in time, position x, position z
-                f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
-                if (deltaTime>0) {
-                    f32 deltaX = currentScanData.x - referenceScanData.x;
-                    f32 deltaZ = currentScanData.z - referenceScanData.z;
-
-                    arpaContacts.at(i).estimate.absVectorX = deltaX/deltaTime; //m/s
-                    arpaContacts.at(i).estimate.absVectorZ = deltaZ/deltaTime; //m/s
-                    arpaContacts.at(i).estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
-                    if (arpaContacts.at(i).estimate.absHeading < 0 ) {
-                        arpaContacts.at(i).estimate.absHeading += 360;
+                    s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
+                    s32 referenceScanIndex = currentScanIndex - 6;
+                    if (referenceScanIndex < 0) {
+                        referenceScanIndex = 0;
                     }
 
-                    //Estimated current position:
-                    f32 relX = currentScanData.x - absolutePosition.X + arpaContacts.at(i).estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
-                    f32 relZ = currentScanData.z - absolutePosition.Z + arpaContacts.at(i).estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
-                    arpaContacts.at(i).estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
-                    if (arpaContacts.at(i).estimate.bearing < 0 ) {
-                        arpaContacts.at(i).estimate.bearing += 360;
-                    }
-                    arpaContacts.at(i).estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
-                    arpaContacts.at(i).estimate.speed = std::sqrt(pow(arpaContacts.at(i).estimate.absVectorX,2) + pow(arpaContacts.at(i).estimate.absVectorZ,2))*MPS_TO_KTS;
+                    ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
+                    ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
 
-                    if (arpaContacts.at(i).estimate.speed >= 2) {
-                        //std::cout << "Contact " << i << " est speed " << arpaContacts.at(i).estimate.speed << " est heading " << arpaContacts.at(i).estimate.absHeading << " on bearing " << arpaContacts.at(i).estimate.bearing << " at range " << arpaContacts.at(i).estimate.range << " Nm." <<std::endl;
-                    }
+                    //Find difference in time, position x, position z
+                    f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
+                    if (deltaTime>0) {
+                        f32 deltaX = currentScanData.x - referenceScanData.x;
+                        f32 deltaZ = currentScanData.z - referenceScanData.z;
+
+                        arpaContacts.at(i).estimate.absVectorX = deltaX/deltaTime; //m/s
+                        arpaContacts.at(i).estimate.absVectorZ = deltaZ/deltaTime; //m/s
+                        arpaContacts.at(i).estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
+                        if (arpaContacts.at(i).estimate.absHeading < 0 ) {
+                            arpaContacts.at(i).estimate.absHeading += 360;
+                        }
+
+                        //Estimated current position:
+                        f32 relX = currentScanData.x - absolutePosition.X + arpaContacts.at(i).estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
+                        f32 relZ = currentScanData.z - absolutePosition.Z + arpaContacts.at(i).estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
+                        arpaContacts.at(i).estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
+                        if (arpaContacts.at(i).estimate.bearing < 0 ) {
+                            arpaContacts.at(i).estimate.bearing += 360;
+                        }
+                        arpaContacts.at(i).estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
+                        arpaContacts.at(i).estimate.speed = std::sqrt(pow(arpaContacts.at(i).estimate.absVectorX,2) + pow(arpaContacts.at(i).estimate.absVectorZ,2))*MPS_TO_KTS;
+
+                        if (arpaContacts.at(i).estimate.speed >= 2) {
+                            //std::cout << "Contact " << i << " est speed " << arpaContacts.at(i).estimate.speed << " est heading " << arpaContacts.at(i).estimate.absHeading << " on bearing " << arpaContacts.at(i).estimate.bearing << " at range " << arpaContacts.at(i).estimate.range << " Nm." <<std::endl;
+                        }
 
 
-                } //If time between scans > 0
-            } //Contact not lost
-        } //If at least 2 scans
+                    } //If time between scans > 0
+                } //Contact not lost
+            } //If at least 2 scans
+        } //If ARPA is on
     } //For loop through arpa contacts
 }
 

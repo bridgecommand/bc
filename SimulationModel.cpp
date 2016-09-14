@@ -551,6 +551,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.setHeadUp();
     }
 
+    void SimulationModel::setArpaOn(bool on)
+    {
+        radarCalculation.setArpaOn(on);
+    }
+
     void SimulationModel::setRadarARPARel()
     {
         radarCalculation.setRadarARPARel();
