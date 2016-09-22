@@ -2,4 +2,9 @@
 *.d
 *.depend
 *.layout
+bridgecommand
+bridgecommand-bc
+bridgecommand-ed
+bridgecommand-ini
+bridgecommand-mc
 Thumbs.db
