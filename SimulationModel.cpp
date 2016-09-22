@@ -225,6 +225,22 @@ SimulationModel::~SimulationModel()
         return terrain.latToZ(latitude); //Cascade to terrain
     }
 
+
+
+    // DB Extensions
+    irr::f32 SimulationModel::xToLong(irr::f32 x) const
+    {
+        return terrain.xToLong(x); //Cascade to terrain
+    }
+
+    irr::f32 SimulationModel::zToLat(irr::f32 z) const
+    {
+        return terrain.zToLat(z); //Cascade to terrain
+    }
+    // End of DB Extensions
+
+
+
     void SimulationModel::setSpeed(irr::f32 spd)
     {
          ownShip.setSpeed(spd);
@@ -549,26 +565,6 @@ SimulationModel::~SimulationModel()
     void SimulationModel::setRadarHeadUp()
     {
         radarCalculation.setHeadUp();
-    }
-
-    void SimulationModel::setArpaOn(bool on)
-    {
-        radarCalculation.setArpaOn(on);
-    }
-
-    void SimulationModel::setRadarARPARel()
-    {
-        radarCalculation.setRadarARPARel();
-    }
-
-    void SimulationModel::setRadarARPATrue()
-    {
-        radarCalculation.setRadarARPATrue();
-    }
-
-    void SimulationModel::setRadarARPAVectors(irr::f32 vectorMinutes)
-    {
-        radarCalculation.setRadarARPAVectors(vectorMinutes);
     }
 
     void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)

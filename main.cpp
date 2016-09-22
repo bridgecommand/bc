@@ -1,15 +1,12 @@
 /*   Bridge Command 5.0 Ship Simulator
      Copyright (C) 2014 James Packer
-
      This program is free software; you can redistribute it and/or modify
      it under the terms of the GNU General Public License version 2 as
      published by the Free Software Foundation
-
      This program is distributed in the hope that it will be useful,
      but WITHOUT ANY WARRANTY; without even the implied warranty of
      MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.  See the
      GNU General Public License For more details.
-
      You should have received a copy of the GNU General Public License along
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
@@ -23,7 +20,7 @@
 #include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
-#include "MyEventReceiver.hpp"
+//#include "MyEventReceiver.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -36,6 +33,12 @@
 #include <vector>
 #include <sstream>
 #include <fstream> //To save to log
+
+// TCS Extensions
+#include "VirtualHandles.hpp"
+
+// DB Extensions
+#include "MergeToolSocket.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -249,11 +252,19 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
-    device->setEventReceiver(&receiver);
+    //MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
+    //device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName, device);
+
+    // DB: create MergeToolSocket to provide Data to the MBA-Tracer
+    MergeToolSocket mergeToolSocket;
+    mergeToolSocket.setModel(&model);
+
+    //TCS: create virtual handles connection, linked to model FIXME
+    VirtualHandles virtualHandles;
+    virtualHandles.setModel(&model);
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
@@ -265,11 +276,18 @@ int main()
     //set up timing for NMEA: FIXME: Make this a defined constant
     u32 nextNMEATime = device->getTimer()->getTime()+250;
 
+
     //main loop
     while(device->run())
     {
 
         network->update();
+
+        //TCS: update virtual handles
+        virtualHandles.update();
+
+        //TCS: update mergetool socket
+        mergeToolSocket.update();
 
         //Check if time has elapsed, so we send data once per second.
         if (device->getTimer()->getTime() >= nextNMEATime) {

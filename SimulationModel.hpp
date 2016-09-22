@@ -52,6 +52,10 @@ public:
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
+    // DB Extensions
+    irr::f32 xToLong(irr::f32 x) const;
+    irr::f32 zToLat(irr::f32 z) const;
+
     void setSpeed(irr::f32 spd); //Sets the own ship's speed
     void setHeading(irr::f32 hdg); //Sets the own ship's heading
     irr::f32 getRateOfTurn() const;
@@ -129,10 +133,6 @@ public:
     void setRadarNorthUp();
     void setRadarCourseUp();
     void setRadarHeadUp();
-    void setArpaOn(bool on);
-    void setRadarARPARel();
-    void setRadarARPATrue();
-    void setRadarARPAVectors(irr::f32 vectorMinutes);
     void setRadarDisplayRadius(irr::u32 radiusPx);
     void setMainCameraActive();
     void setRadarCameraActive();
