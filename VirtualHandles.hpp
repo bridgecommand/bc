@@ -7,6 +7,7 @@
 #define __VIRTUALHANDLES_HPP_INCLUDED__
 
 #include <string>
+#include "sio_client.h"
 
 //Forward declarations
 class SimulationModel;
@@ -22,9 +23,11 @@ public:
     void update();
 
 private:
+    sio::client host;
+
     SimulationModel* model;
     void send();
-    void receive();
+    void receive(sio::event &);
 };
 
 #endif

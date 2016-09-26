@@ -45,6 +45,7 @@
 #include <mach-o/dyld.h>
 #endif
 
+
 //Global definition for ini logger
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
@@ -55,6 +56,11 @@ using namespace irr;
 
 int main()
 {
+    #ifdef __WIN32__
+       WORD versionWanted = MAKEWORD(1, 1);
+       WSADATA wsaData;
+       WSAStartup(versionWanted, &wsaData);
+    #endif
 
     //Mac OS:
 	#ifdef __APPLE__

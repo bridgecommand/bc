@@ -6,13 +6,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-//#include <sys/time.h> 
-
-
+#include <sys/types.h>
+//#include <sys/time.h>
 #include "MergeToolSocket.hpp"
+
+#ifdef __WIN32__
+# include <winsock2.h>
+# include <windows.h>
+# include <unistd.h>
+# include <WS2tcpip.h>
+#define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
+#endif
 
 //#include "sio_client.h"
 
@@ -24,9 +31,12 @@ const int DEFAULT_PORT = 5006;
 
 using namespace std;
 
+bool connected = false;
 MergeToolSocket::MergeToolSocket() //Constructor
 {
     model=0; //Not linked at the moment
+    std::cout << "Init MergeToolSocket";
+
     //startServer(DEFAULT_PORT);
 }
 
@@ -55,15 +65,16 @@ bool MergeToolSocket::startServer(int portno){
      serv_addr.sin_addr.s_addr = INADDR_ANY;
      serv_addr.sin_port = htons(portno);
      if (bind(sockfd, (struct sockaddr *) &serv_addr,
-              sizeof(serv_addr)) < 0) 
+              sizeof(serv_addr)) < 0)
               error("ERROR on binding");
      listen(sockfd,5);
      clilen = sizeof(cli_addr);
-     newsockfd = accept(sockfd, 
-                 (struct sockaddr *) &cli_addr, 
+     newsockfd = accept(sockfd,
+                 (struct sockaddr *) &cli_addr,
                  &clilen);
-     if (newsockfd < 0) 
+     if (newsockfd < 0)
           error("ERROR on accept");
+     connected = true;
      /*
      bzero(buffer,256);
      n = read(newsockfd,buffer,255);
@@ -87,13 +98,15 @@ void MergeToolSocket::setModel(SimulationModel* model)
 
 void MergeToolSocket::update()
 {
-    receive();
-    send();
+    if(connected){
+        receive();
+        send();
+    }
 }
 
 void MergeToolSocket::send()
 {
-	/* type: irr::f32 
+	/* type: irr::f32
 	model->getLat()
 	model->getLong()
 	model->getCOG() //FIXME: currently the same as getHeading(), because current is not implemented, yet
@@ -116,9 +129,9 @@ void MergeToolSocket::send()
     gettimeofday(&tv, 0);
     long int ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
     */
-    
+
     std::string msg = ""; // + CMD_UPDATE_ENV_ELEM + to_string(ms) + ";";
-    
+
 
     //ee_WaterSupply_long,8.187772,DOUBLE,;
 
@@ -141,7 +154,7 @@ void MergeToolSocket::send()
 	getOtherShipName
 end for*/
     int numOtherShips = model->getNumberOfOtherShips();
-    
+
 /*		<infElem name="ie_ship1_course_og" dataType="STRING" />
 		<infElem name="ie_ship1_speed_og" dataType="DOUBLE" />
 		<infElem name="ie_ship1_name" dataType="STRING" />
@@ -155,9 +168,9 @@ end for*/
     	msg+= prefix + "_speed_og," + to_string(model->getOtherShipSpeed(i))  + ",DOUBLE,;";
     	//msg+= prefix + "_tcpa;" + to_string(model->TODO(i) + ";"); // TODO
     }
-    
+
     int n = write(newsockfd, msg.c_str() , msg.size());
-    
+
     if (n < 0) error("ERROR writing to socket");
 }
 
