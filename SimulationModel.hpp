@@ -133,6 +133,10 @@ public:
     void setRadarNorthUp();
     void setRadarCourseUp();
     void setRadarHeadUp();
+    void setArpaOn(bool on);
+    void setRadarARPARel();
+    void setRadarARPATrue();
+    void setRadarARPAVectors(irr::f32 vectorMinutes);
     void setRadarDisplayRadius(irr::u32 radiusPx);
     void setMainCameraActive();
     void setRadarCameraActive();

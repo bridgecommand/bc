@@ -68,6 +68,8 @@
 		<Unit filename="Light.hpp" />
 		<Unit filename="MergeToolSocket.cpp" />
 		<Unit filename="MergeToolSocket.hpp" />
+		<Unit filename="MyEventReceiver.cpp" />
+		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="NMEA.cpp" />
 		<Unit filename="NMEA.hpp" />
 		<Unit filename="NavLight.cpp" />

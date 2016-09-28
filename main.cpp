@@ -20,7 +20,7 @@
 #include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
-//#include "MyEventReceiver.hpp"
+#include "MyEventReceiver.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -258,8 +258,8 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    //MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
-    //device->setEventReceiver(&receiver);
+    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
+    device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model
     NMEA nmea(&model, serialPortName, device);
@@ -292,7 +292,7 @@ int main()
         //TCS: update virtual handles
         virtualHandles.update();
 
-        //TCS: update mergetool socket
+        //DB: update mergetool socket
         mergeToolSocket.update();
 
         //Check if time has elapsed, so we send data once per second.

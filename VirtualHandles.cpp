@@ -13,20 +13,27 @@
 #include <string.h>
 
 #include "json.hpp"
-
+#include <iostream>
+#include <sstream>
+#include <exception>
 // for convenience
 using json = nlohmann::json;
 using namespace std;
+using namespace sio;
 
-
-void receive2(sio::event& event){
-
-}
+ double string_to_double( const std::string& s )
+ {
+   std::istringstream i(s);
+   double x;
+   if (!(i >> x))
+     throw 20; // TODO: sinnvolle exception werfens
+   return x;
+ }
 
 VirtualHandles::VirtualHandles() //Constructor
 {
     model=0; //Not linked at the moment
-    host.connect("http://127.0.0.1:8080");
+    host.connect("http://10.53.1.83:8080");
     std::string const msgString = "data";
 
     //typedef std::function<void(event& event)> event_listener;
@@ -56,27 +63,50 @@ void VirtualHandles::setModel(SimulationModel* model)
 {
     this->model = model;
 }
-std::string message2;
 
 void VirtualHandles::update()
 {
     //receive();
     send();
 }
+std::string const nameString = "name";
+std::string const valueString = "value";
+
+void VirtualHandles::sendParameter(string key, double val){
+
+    //cout<<key << ": " << val<< "\n";
+
+    object_message::ptr data = object_message::create();
+    message::ptr name = string_message::create(key);
+    message::ptr value = double_message::create(val);
+
+    data->get_map()[nameString]= name;
+    data->get_map()[valueString]= value;
+    host.socket()->emit("data", data);
+}
+
+std::string const rudderAngle = "rudder-angle-indicator";
+std::string const turnRate = "turn-rate";
+std::string const heading = "heading";
+std::string const rudder = "rudder";
+std::string const echolot = "echolot";
+std::string const gpsSpeed = "gps-speed";
+std::string const gpsCourse = "gps-course";
 
 void VirtualHandles::send()
 {
-    json jMsg;
+    //sio::message const& data =
 
-    jMsg["rudder-angle-indicator"] = to_string(model->getRudder());
-    jMsg["turn-rate"] = to_string(model->getRateOfTurn());
-    jMsg["heading"] = to_string(model->getHeading());
-    jMsg["rudder"] = to_string(model->getRudder());
-    jMsg["echolot"] = to_string(model->getLat());
-    jMsg["gps-speed"] = to_string(model->getSOG());
-    jMsg["gps-course"] = to_string(model->getCOG());
+    //void insert(const std::string & key,message::ptr const& message)
 
 
+    sendParameter(rudderAngle, model->getRudder());
+    sendParameter(turnRate, model->getRateOfTurn());
+    sendParameter(heading, model->getHeading());
+    sendParameter(rudder, model->getRudder());
+    sendParameter(echolot, model->getLat());
+    sendParameter(gpsSpeed, model->getSOG());
+    sendParameter(gpsCourse, model->getCOG());
 
     /* type: irr::f32
     model->getLat()
@@ -92,33 +122,56 @@ void VirtualHandles::send()
     model->getPortEngine() //FIXME: currently commented out in SimulationModel
     model->getStbdEngine() //FIXME: currently commented out in SimulationModel
     */
-    std::string message = jMsg.dump();
-    printf("\nSend message:");
-    printf(message.c_str());
-    host.socket()->emit("data", message);
-    message2 = message;
 }
 
 void VirtualHandles::receive(sio::event& event)
 {
-    std::string msgString = event.get_nsp();
-    printf("\nmsg: ");
-    printf(msgString.c_str());
+    sio::message::ptr const& data = event.get_message();
 
-
-
-    try{
-    auto msgJson = json::parse(message2);
-    //auto msgJson = json::parse(msgString);
-
-        if (msgJson.find("rudder") != msgJson.end() && msgJson["rudder"].is_number()) {
-            double rudder = msgJson["rudder"];
-            model->setRudder(rudder);
-        }
-
-    }catch (const std::invalid_argument& e) {
-        printf("invalid argument");
+    auto m =  data->get_map();
+    for(auto iterator = data->get_map().begin(); iterator != data->get_map().end(); iterator++){
+        if(iterator->second->get_flag()==2){
+        std::cout<<"\n k: " << iterator->first << " ,val:" << iterator->second->get_string();}else{
+        std::cout<<"\n k: " << iterator->first << " ,val:" << iterator->second->get_double();}
     }
+
+    auto nameIterator = m.find("name");
+
+    if(nameIterator != m.end()){
+        // key "name" exists, therefore a "value" must exist as well
+        auto valueIterator = m.find("value");
+
+        std::string name = nameIterator->second->get_string();
+        if(name.compare("rudder") == 0){
+            double rudderVal= valueIterator->second->get_double();
+            model->setRudder(rudderVal);
+        }else if(name.compare("machine-telegraph-left") == 0){
+            string stringVal= valueIterator->second->get_string();
+            try
+            {
+                double val = string_to_double(stringVal);
+                model->setPortEngine(val);
+                cout<<"rec name: " << name << " : " << val << " \n";
+            }
+            catch (exception& e)
+            {
+                cout<<stringVal << " is not a valid value for \"machine-telegraph\" to parse an double";
+            }
+        }else if(name.compare("machine-telegraph-right") == 0){
+            string stringVal= valueIterator->second->get_string();
+            try
+            {
+                double val = string_to_double(stringVal);
+                model->setStbdEngine(val);
+                cout<<"rec name: " << name << " : " << val << " \n";
+            }
+            catch (exception& e)
+            {
+                cout<<stringVal << " is not a valid value for \"machine-telegraph\" to parse an double";
+            }        }else{
+        }
+    }
+
     /* type: irr::f32
     model->setRudder(irr::f32 rudder)
     model->setPortEngine(irr::f32 port)

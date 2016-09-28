@@ -8,7 +8,6 @@
 
 #include <string>
 #include "sio_client.h"
-
 //Forward declarations
 class SimulationModel;
 
@@ -27,6 +26,7 @@ private:
 
     SimulationModel* model;
     void send();
+    void sendParameter(std::string key, double val);
     void receive(sio::event &);
 };
 

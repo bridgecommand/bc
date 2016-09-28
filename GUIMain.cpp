@@ -526,6 +526,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
                 pausedButton->remove();
                 pausedButton = 0;
             }
+            guiPaused = false;
         }
 
         //Convert lat/long into a readable format
