@@ -24,6 +24,7 @@
 #include "Angles.hpp"
 #include "Constants.hpp"
 #include "IniFile.hpp"
+#include "NumberToImage.hpp"
 #include "Utilities.hpp"
 
 #include <iostream>
@@ -51,6 +52,7 @@ RadarCalculation::RadarCalculation()
     trueVectors = true;
     vectorLengthMinutes = 6;
     arpaOn = false;
+    largestARPADisplayId = 0;
 
     //initialise scanArray size (360 x rangeResolution points per scan)
     rangeResolution = 64;
@@ -76,8 +78,10 @@ RadarCalculation::~RadarCalculation()
     //dtor
 }
 
-void RadarCalculation::load(std::string radarConfigFile)
+void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* dev)
 {
+    device = dev;
+
     //Load parameters from the radarConfig file (if it exists)
     irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
     if (numberOfRadarRanges==0) {
@@ -462,6 +466,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newContact.totalZMovementEst = 0;
 
                                         //Zeros for estimated state
+                                        newContact.estimate.displayID = 0;
                                         newContact.estimate.stationary = true;
                                         newContact.estimate.lost = false;
                                         newContact.estimate.absVectorX = 0;
@@ -620,6 +625,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
         if (!arpaOn) {
             //Set all contacts to zero (untracked)
+            arpaContacts.at(i).estimate.displayID = 0;
             arpaContacts.at(i).estimate.stationary = true;
             arpaContacts.at(i).estimate.lost = false;
             arpaContacts.at(i).estimate.absVectorX = 0;
@@ -654,6 +660,11 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
                     TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
                     different */
+
+                    //If ID is 0 (unassigned), set id and increment
+                    if (arpaContacts.at(i).estimate.displayID==0) {
+                        arpaContacts.at(i).estimate.displayID = ++largestARPADisplayId;
+                    }
 
                     s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
                     s32 referenceScanIndex = currentScanIndex - 6;
@@ -704,7 +715,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
                         arpaContacts.at(i).estimate.cpa = contactRange * sin(contactRelAngle*RAD_IN_DEG);
                         arpaContacts.at(i).estimate.tcpa = 60*relDistanceToCPA/relativeSpeed; // (nm / (nm/hr)), so time in hours, converted to minutes
-                        std::cout << "Contact " << i << " CPA: " <<  arpaContacts.at(i).estimate.cpa << " nm in " << arpaContacts.at(i).estimate.tcpa << " minutes" << std::endl;
+                        std::cout << "Contact " << arpaContacts.at(i).estimate.displayID << " CPA: " <<  arpaContacts.at(i).estimate.cpa << " nm in " << arpaContacts.at(i).estimate.tcpa << " minutes" << std::endl;
 
 
                     } //If time between scans > 0
@@ -792,6 +803,15 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
             drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,255,255,255,255); //Draw circle around contact
             //drawLine(radarImageOverlaid,deltaX,deltaY,deltaX+10,deltaY+25,255,255,255,255);//Todo; Make a sensible vector (true or rel)
+
+            //Draw contact's display ID :
+            video::IImage* idNumberImage = NumberToImage::getImage(thisEstimate.displayID,device);
+            //video::IImage* idNumberImage = NumberToImage::getImage(1234567890,device); //FOR TESTING
+            if (idNumberImage) {
+                idNumberImage->copyTo(radarImageOverlaid,core::position2d<s32>(deltaX-10,deltaY-10));
+                //TODO: Change to copyToWithAlpha
+                idNumberImage->drop();
+            }
 
             //draw a vector
             f32 adjustedVectorX;

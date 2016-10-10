@@ -139,7 +139,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
 
         //Load the radar with config parameters
-        radarCalculation.load(ownShip.getRadarConfigFile());
+        radarCalculation.load(ownShip.getRadarConfigFile(),device);
         radarCalculation.setRadarDisplayRadius(gui->getRadarPixelRadius());
 
         //set camera zoom to 1

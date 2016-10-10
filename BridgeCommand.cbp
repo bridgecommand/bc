@@ -78,6 +78,8 @@
 		<Unit filename="NetworkPrimary.hpp" />
 		<Unit filename="NetworkSecondary.cpp" />
 		<Unit filename="NetworkSecondary.hpp" />
+		<Unit filename="NumberToImage.cpp" />
+		<Unit filename="NumberToImage.hpp" />
 		<Unit filename="OperatingModeEnum.hpp" />
 		<Unit filename="OtherShip.cpp" />
 		<Unit filename="OtherShip.hpp" />
