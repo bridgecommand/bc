@@ -66,6 +66,8 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />
+		<Unit filename="MergeToolSocket.cpp" />
+		<Unit filename="MergeToolSocket.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />
 		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="NMEA.cpp" />
@@ -118,12 +120,15 @@
 		<Unit filename="Tide.hpp" />
 		<Unit filename="Utilities.cpp" />
 		<Unit filename="Utilities.hpp" />
+		<Unit filename="VirtualHandles.cpp" />
+		<Unit filename="VirtualHandles.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="icon.rc">
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="json.hpp" />
 		<Unit filename="libs/enet/callbacks.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -170,6 +175,15 @@
 		<Unit filename="libs/serial/src/impl/win.cc" />
 		<Unit filename="libs/serial/src/serial.cc" />
 		<Unit filename="libs/serial/v8stdint.h" />
+		<Unit filename="libs/socket.io-client-cpp/src/internal/sio_client_impl.cpp" />
+		<Unit filename="libs/socket.io-client-cpp/src/internal/sio_client_impl.h" />
+		<Unit filename="libs/socket.io-client-cpp/src/internal/sio_packet.cpp" />
+		<Unit filename="libs/socket.io-client-cpp/src/internal/sio_packet.h" />
+		<Unit filename="libs/socket.io-client-cpp/src/sio_client.cpp" />
+		<Unit filename="libs/socket.io-client-cpp/src/sio_client.h" />
+		<Unit filename="libs/socket.io-client-cpp/src/sio_message.h" />
+		<Unit filename="libs/socket.io-client-cpp/src/sio_socket.cpp" />
+		<Unit filename="libs/socket.io-client-cpp/src/sio_socket.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="shaders/Water_ps.glsl" />
 		<Unit filename="shaders/Water_vs.glsl" />
