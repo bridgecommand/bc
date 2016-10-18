@@ -59,7 +59,7 @@ namespace NumberToImage
             }
 
             if (overallWidth>0) {
-                video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, core::dimension2d<u32>(overallWidth, maxHeight));
+                video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2d<u32>(overallWidth, maxHeight));
                 if (!numberImage) {
                     return 0;
                 }
@@ -69,8 +69,8 @@ namespace NumberToImage
                 u32 nextXStart = 0;
                 for (u32 character = 0; character<length; character++) {
                     if (numberImages[character]) {
-                        numberImages[character]->copyTo(numberImage,core::vector2d<s32>(nextXStart,0));
-                        //TODO: Change to copyToWithAlpha
+                        core::rect<s32> sourceRect = core::rect<s32>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
+                        numberImages[character]->copyToWithAlpha(numberImage,core::vector2d<s32>(nextXStart,0),sourceRect,video::SColor(255,255,255,255));
                         nextXStart += numberImages[character]->getDimension().Width + PADDING_PX;
                         numberImages[character]->drop();
                     }
@@ -79,8 +79,6 @@ namespace NumberToImage
             } else {
                 return 0;
             }
-
-
 
         } else {
             return 0;

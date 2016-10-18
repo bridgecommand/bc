@@ -799,17 +799,15 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             s32 deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
             s32 deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
 
-            //std::cout << "Contact range px: " << contactRangePx << " DX: "  << deltaX << " DY: " << deltaY <<  std::endl;
-
+            //Show contact on screen
             drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,255,255,255,255); //Draw circle around contact
-            //drawLine(radarImageOverlaid,deltaX,deltaY,deltaX+10,deltaY+25,255,255,255,255);//Todo; Make a sensible vector (true or rel)
 
             //Draw contact's display ID :
             video::IImage* idNumberImage = NumberToImage::getImage(thisEstimate.displayID,device);
-            //video::IImage* idNumberImage = NumberToImage::getImage(1234567890,device); //FOR TESTING
+
             if (idNumberImage) {
-                idNumberImage->copyTo(radarImageOverlaid,core::position2d<s32>(deltaX-10,deltaY-10));
-                //TODO: Change to copyToWithAlpha
+                core::rect<s32> sourceRect = core::rect<s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
+                idNumberImage->copyToWithAlpha(radarImageOverlaid,core::position2d<s32>(deltaX-10,deltaY-10),sourceRect,video::SColor(255,255,255,255));
                 idNumberImage->drop();
             }
 

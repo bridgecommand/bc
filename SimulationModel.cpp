@@ -188,8 +188,8 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
 
         //In simulationModel, keep track of the used size, and pass this to gui etc.
-        radarImage = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaid = driver->createImage (video::ECF_R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImage = driver->createImage (video::ECF_A8R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (video::ECF_A8R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
         radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
         radarImageOverlaid->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
 
