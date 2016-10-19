@@ -723,8 +723,17 @@ SimulationModel::~SimulationModel()
         irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
         irr::f32 elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
+        //get radar ARPA data to show
+        irr::u32 numberOfARPAContacts = radarCalculation.getARPAContacts();
+        std::vector<irr::f32> CPAs;
+        std::vector<irr::f32> TCPAs;
+        for(unsigned int i = 0; i<numberOfARPAContacts; i++) {
+            CPAs.push_back(radarCalculation.getARPACPA(i+1)); //i+1 as the user numbering starts at 1, not 0
+            TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
+        }
+
         //send data to gui
-        guiMain->updateGuiData(getLat(), getLong(), ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, visibilityRange, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), Utilities::timestampToString(absoluteTime), paused, collided, radarCalculation.getHeadUp()); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(getLat(), getLong(), ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, visibilityRange, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), CPAs, TCPAs, Utilities::timestampToString(absoluteTime), paused, collided, radarCalculation.getHeadUp()); //Set GUI heading in degrees and speed (in m/s)
     }
 
     bool SimulationModel::checkOwnShipCollision()

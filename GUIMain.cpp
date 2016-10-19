@@ -222,6 +222,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
         guienv->addEditBox(L"6",core::rect<s32>(0.155*su,0.040*sh,0.195*su,0.080*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        //arpaText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.090*sh,0.237*su,0.230*sh),true,true,radarARPATab,-1,true);
+        arpaText = guienv->addEditBox(L"",core::rect<s32>(0.005*su,0.090*sh,0.237*su,0.230*sh),true,radarARPATab);
+        arpaText->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+        arpaText->setAutoScroll(true);
 
         //Radar ARPA on big radar screen
         guienv->addCheckBox(false,core::rect<s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
@@ -231,6 +235,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
         guienv->addEditBox(L"6",core::rect<s32>(0.010*radarSu,0.480*radarSu,0.050*radarSu,0.510*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+        //arpaText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),true,true,largeRadarControls,-1,true);
+        arpaText2 = guienv->addEditBox(L"",core::rect<s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),true,largeRadarControls);
+        arpaText2->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
+        arpaText2->setAutoScroll(true);
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
@@ -456,7 +464,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::string currentTime, bool paused, bool collided, bool headUp)
+    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::vector<irr::f32> CPAs, std::vector<irr::f32> TCPAs, std::string currentTime, bool paused, bool collided, bool headUp)
     {
         //Update scroll bars
         hdgScrollbar->setPos(Utilities::round(hdg));
@@ -499,6 +507,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
             this->guiRadarEBLBrg -= guiHeading;
         }
         this->guiRadarEBLRangeNm = guiRadarEBLRangeNm;
+
+        //Update ARPA data
+        guiCPAs = CPAs;
+        guiTCPAs = TCPAs;
     }
 
     void GUIMain::showLogWindow()
@@ -614,6 +626,27 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         displayText.append(language->translate("deg"));
         radarText ->setText(displayText.c_str());
         radarText2->setText(displayText.c_str());
+
+        //TODO: Use guiCPAs and guiTCPAs to display ARPA data
+        displayText = language->translate("arpa");
+        displayText.append(L"\n");
+        if (guiCPAs.size() == guiTCPAs.size()) {
+            for (unsigned int i = 0; i < guiCPAs.size(); i++) {
+                displayText.append(core::stringw(i+1));
+                displayText.append(L": ");
+                displayText.append(language->translate("cpa"));
+                displayText.append(L": ");
+                displayText.append(f32To2dp(guiCPAs.at(i)).c_str());
+                displayText.append(L" ");
+                displayText.append(language->translate("tcpa"));
+                displayText.append(L": ");
+                displayText.append(f32To2dp(guiTCPAs.at(i)).c_str());
+                displayText.append(L"\n");
+            }
+        }
+        arpaText->setText(displayText.c_str());
+        arpaText2->setText(displayText.c_str());
+
 
         //add a collision warning
         if (guiCollided) {

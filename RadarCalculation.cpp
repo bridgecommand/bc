@@ -307,6 +307,7 @@ void RadarCalculation::setArpaOn(bool on)
     if (!arpaOn) {
         //Clear arpa scans
         arpaContacts.clear();
+        largestARPADisplayId = 0;
     }
 }
 
@@ -331,6 +332,34 @@ void RadarCalculation::setRadarDisplayRadius(u32 radiusPx)
         radarRadiusPx = radiusPx;
         radarScreenStale=true;
     }
+}
+
+irr::u32 RadarCalculation::getARPAContacts() const
+{
+    //Get number of ARPA contacts with a user display ID
+    return largestARPADisplayId;
+}
+
+irr::f32 RadarCalculation::getARPACPA(irr::u32 contactID) const
+{
+    //Get information for a contact by its user display ID (if it exists), in Nm
+    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+        if (arpaContacts.at(i).estimate.displayID == contactID) {
+            return arpaContacts.at(i).estimate.cpa;
+        }
+    }
+    return NAN; //If nothing found
+}
+
+irr::f32 RadarCalculation::getARPATCPA(irr::u32 contactID) const
+{
+    //Get information for a contact by its user display ID (if it exists), in minutes
+    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+        if (arpaContacts.at(i).estimate.displayID == contactID) {
+            return arpaContacts.at(i).estimate.tcpa;
+        }
+    }
+    return NAN; //If nothing found
 }
 
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
@@ -461,7 +490,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         ARPAContact newContact;
                                         newContact.contact = radarData.at(thisContact).contact;
                                         newContact.contactType=CONTACT_NORMAL;
-                                        newContact.displayID = 0; //Initially not displayed
+                                        //newContact.displayID = 0; //Initially not displayed
                                         newContact.totalXMovementEst = 0;
                                         newContact.totalZMovementEst = 0;
 
