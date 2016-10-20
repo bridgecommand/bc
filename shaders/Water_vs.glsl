@@ -29,7 +29,7 @@ uniform mat4	WorldReflectionViewProj;  // World * Reflection View * Projection t
 uniform float	WaveLength;
 
 uniform float	Time;
-uniform float	WindForce;
+//uniform float	WindForce;
 uniform vec2	WindDirection;
 
 // Vertex shader output structure
@@ -48,9 +48,9 @@ void main()
 	gl_Position = pos;
 
 	// calculate vawe coords
-	bumpMapTexCoord = gl_MultiTexCoord0.xy / WaveLength + (Time/WaveLength) * WindForce * WindDirection;
+	bumpMapTexCoord = gl_MultiTexCoord0.xy / WaveLength + (Time/WaveLength) * 20.0 * WindDirection;
 	//Ripples
-	bumpMapTexCoord2 = 10.0*gl_MultiTexCoord0.xy / WaveLength + (10.0*Time/WaveLength) * WindForce * WindDirection;
+	bumpMapTexCoord2 = 100.0*gl_MultiTexCoord0.xy + 200.0*Time*WindDirection; //Constant speed and length
 
 	// refraction texcoords
 	//refractionMapTexCoord.x = 0.5 * (pos.w + pos.x);

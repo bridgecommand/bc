@@ -29,7 +29,7 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 												 scene::ISceneNode* parent, s32 id):
 	scene::ISceneNode(parent, sceneManager, id),
 	_camera(NULL), _sceneManager(sceneManager), _size(width, height), /*_refractionMap(NULL),*/ _reflectionMap(NULL),
-	_windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waveLength(0.1f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.8f), _time(0)
+	_windDirection(0, 1),_waveHeight(0.3f), _waveLength(0.1f), _waterColor(0.32f, 0.40f, 0.40f, 1.0f), _colorBlendFactor(0.8f), _time(0)
 {
 	_videoDriver = sceneManager->getVideoDriver();
 
@@ -264,7 +264,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WorldReflectionViewProj"), worldReflectionViewProj.pointer(), 16);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WaveLength"), &_waveLength, 1);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("Time"), &time, 1);
-	services->setVertexShaderConstant(services->getVertexShaderConstantID("WindForce"), &_windForce, 1);
+//	services->setVertexShaderConstant(services->getVertexShaderConstantID("WindForce"), &_windForce, 1);
 	services->setVertexShaderConstant(services->getVertexShaderConstantID("WindDirection"), &_windDirection.X, 2);
 	services->setPixelShaderConstant(services->getVertexShaderConstantID("CameraPosition"), &cameraPosition.X, 3);
 	services->setPixelShaderConstant(services->getVertexShaderConstantID("WaveHeight"), &_waveHeight, 1);
@@ -275,7 +275,7 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	services->setVertexShaderConstant("WorldReflectionViewProj", worldReflectionViewProj.pointer(), 16);
 	services->setVertexShaderConstant("WaveLength", &_waveLength, 1);
 	services->setVertexShaderConstant("Time", &time, 1);
-	services->setVertexShaderConstant("WindForce", &_windForce, 1);
+//	services->setVertexShaderConstant("WindForce", &_windForce, 1);
 	services->setVertexShaderConstant("WindDirection", &_windDirection.X, 2);
 	services->setPixelShaderConstant("CameraPosition", &cameraPosition.X, 3);
 	services->setPixelShaderConstant("WaveHeight", &_waveHeight, 1);
@@ -308,10 +308,12 @@ void RealisticWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* s
 	}
 }
 
+/*
 void RealisticWaterSceneNode::setWindForce(const f32 windForce)
 {
 	_windForce = windForce;
 }
+*/
 
 void RealisticWaterSceneNode::setWindDirection(const core::vector2df& windDirection)
 {

@@ -49,7 +49,7 @@ public:
 
 	virtual void OnSetConstants(video::IMaterialRendererServices* services, s32 userData);
 
-	void setWindForce(f32 windForce);
+//	void setWindForce(f32 windForce);
 	void setWindDirection(const core::vector2df& windDirection);
 	void setWaveHeight(f32 waveHeight);
 	void setWaveLength(f32 waveLength);
@@ -75,7 +75,7 @@ private:
 	//video::ITexture*				_refractionMap;
 	video::ITexture*				_reflectionMap;
 
-	f32								_windForce;
+//	f32								_windForce;
 	core::vector2df					_windDirection;
 	f32								_waveHeight;
 	f32                             _waveLength;

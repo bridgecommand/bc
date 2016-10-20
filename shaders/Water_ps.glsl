@@ -47,9 +47,10 @@ varying vec3 position3D;
 void main()
 {
 	//bump color
-	vec4 bumpColor = texture2D(WaterBump, bumpMapTexCoord);
+
 	vec4 rippleColor = texture2D(WaterBump, bumpMapTexCoord2);
-	vec2 perturbation = WaveHeight * (0.8*(bumpColor.rg - 0.5) + 0.2*(rippleColor.rg - 0.5));
+	vec4 bumpColor = texture2D(WaterBump, bumpMapTexCoord);
+	vec2 perturbation = WaveHeight*0.5*(bumpColor.rg - 0.5) + 1.0*(rippleColor.rg - 0.5);
 
 	//refraction
 	//vec2 ProjectedRefractionTexCoords = clamp(refractionMapTexCoord.xy / refractionMapTexCoord.z + perturbation, 0.0, 1.0);
