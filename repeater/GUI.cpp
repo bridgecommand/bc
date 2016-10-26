@@ -37,7 +37,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //gui
 
-    heading = new gui::HeadingIndicator(guienv, guienv->getRootGUIElement(), core::rect<s32>(10,10,300,40));
+    heading = new gui::HeadingIndicator(guienv, guienv->getRootGUIElement(), core::rect<s32>(10,10,su-10,10+(su-20)/4));
 
 }
 

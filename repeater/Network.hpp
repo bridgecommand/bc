@@ -24,7 +24,6 @@
 
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
 
 //Forward declarations
 class ControllerModel;

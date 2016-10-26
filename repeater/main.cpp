@@ -4,7 +4,6 @@
 #include <vector>
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
 #include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
@@ -117,8 +116,6 @@ int main (int argc, char ** argv)
     irr::f32 rain = 0; //(0-10)
     irr::f32 visibility = 10.1; //(0.1-10.1)
     ShipData ownShipData;
-    std::vector<PositionData> buoysData;
-    std::vector<OtherShipData> otherShipsData;
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain, &network);

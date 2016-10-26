@@ -25,7 +25,6 @@
 #include "../Lang.hpp"
 #include "../HeadingIndicator.h"
 #include "PositionDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
 
 class GUIMain //Create, build and update GUI
 {
