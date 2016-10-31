@@ -52,7 +52,7 @@ int main (int argc, char ** argv)
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
-    std::string iniFilename = "map.ini";
+    std::string iniFilename = "repeater.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -61,6 +61,10 @@ int main (int argc, char ** argv)
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+
+    if (graphicsWidth == 0 ) {graphicsWidth=640;}
+    if (graphicsHeight == 0 ) {graphicsHeight=480;}
+    if (graphicsDepth == 0 ) {graphicsDepth=32;}
 
     //Load UDP network settings
     u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
@@ -85,7 +89,7 @@ int main (int argc, char ** argv)
 
     //load language
     //load language
-    std::string languageFile = "languageController.txt";
+    std::string languageFile = "languageRepeater.txt";
     if (Utilities::pathExists(userFolder + languageFile)) {
         languageFile = userFolder + languageFile;
     }

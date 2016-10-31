@@ -36,9 +36,15 @@ using namespace irr;
     bool EventReceiver::OnEvent(const SEvent& event)
 	{
 
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
 		{
 			s32 id = event.GUIEvent.Caller->getID();
+			if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
+                gui->setMode(true);
+			}
+			if (id==GUIMain::GUI_ID_REPEATER_CHOICE) {
+                gui->setMode(false);
+			}
         }
 
         return false;

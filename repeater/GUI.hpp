@@ -34,24 +34,12 @@ public:
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
-        GUI_ID_WINDOW = 101,
-        //GUI_ID_WEATHER_WINDOW,
-        GUI_ID_SHIP_COMBOBOX,
-        GUI_ID_LEG_LISTBOX,
-        GUI_ID_COURSE_EDITBOX,
-        GUI_ID_SPEED_EDITBOX,
-        GUI_ID_DISTANCE_EDITBOX,
-        GUI_ID_CHANGE_BUTTON,
-        GUI_ID_CHANGE_COURSESPEED_BUTTON,
-        GUI_ID_ADDLEG_BUTTON,
-        GUI_ID_DELETELEG_BUTTON,
-        GUI_ID_MOVESHIP_BUTTON,
-        GUI_ID_WEATHER_SCROLLBAR,
-        GUI_ID_RAIN_SCROLLBAR,
-        GUI_ID_VISIBILITY_SCROLLBAR
+        GUI_ID_HEADING_CHOICE = 101,
+        GUI_ID_REPEATER_CHOICE
     };
 
     void updateGuiData(irr::f32 time, irr::f32 ownShipHeading);
+    void setMode(bool headingMode);
 
 private:
 
@@ -59,6 +47,12 @@ private:
 
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
+
+    irr::gui::IGUIButton* headingButton;
+    irr::gui::IGUIButton* repeaterButton;
+
+    bool modeChosen;
+    bool showHeadingIndicator;
 
     irr::gui::HeadingIndicator* heading;
 

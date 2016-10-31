@@ -37,7 +37,16 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //gui
 
+    //choice buttons
+    headingButton = guienv->addButton(core::rect<s32>(su*0.1,sh*0.1,su*0.9,sh*0.5),0,GUI_ID_HEADING_CHOICE,language->translate("headingIndicator").c_str());
+    repeaterButton = guienv->addButton(core::rect<s32>(su*0.1,sh*0.5,su*0.9,sh*0.9),0,GUI_ID_REPEATER_CHOICE,language->translate("repeater").c_str());
+
+    //Heading indicator
     heading = new gui::HeadingIndicator(guienv, guienv->getRootGUIElement(), core::rect<s32>(10,10,su-10,10+(su-20)/4));
+    heading->setVisible(false);
+
+    //User hasn't selected what mode to use
+    modeChosen=false;
 
 }
 
@@ -49,14 +58,26 @@ GUIMain::~GUIMain()
 void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading)
 {
 
-    bool showHeadingIndicator = false;
+    if(!modeChosen) {
+        //Show GUI choice buttons only
 
-    if (showHeadingIndicator) {
-        heading->setHeading(ownShipHeading);
+
+    } else if (showHeadingIndicator) {
+
         heading->setVisible(true);
+
+        //hide choice buttons
+        headingButton->setVisible(false);
+        repeaterButton->setVisible(false);
+
+        //Set value
+        heading->setHeading(ownShipHeading);
+
     } else {
 
-        heading->setVisible(false);
+        //hide choice buttons
+        headingButton->setVisible(false);
+        repeaterButton->setVisible(false);
 
         //draw compass rose
         s32 centreX = device->getVideoDriver()->getScreenSize().Width/2;
@@ -75,8 +96,10 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading)
             //set scale of line
             f32 lineStart;
             bool printAngle = false;
+            bool printText = true;
             if (i%45==0) {
                 lineStart = 0.7;
+                printText=true;
             } else if (i%10==0) {
                 lineStart = 0.85;
                 printAngle = true;
@@ -92,14 +115,33 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading)
             s32 endY = centreY + 1.0*yVector*radius;
 
             driver->draw2DLine(core::vector2d<s32>(startX,startY),core::vector2d<s32>(endX,endY),video::SColor(255,255,255,255));
-            if (printAngle) {
-                s32 textWidth = guienv->getSkin()->getFont()->getDimension(core::stringw(i).c_str()).Width;
-                s32 textHeight = guienv->getSkin()->getFont()->getDimension(core::stringw(i).c_str()).Height;
+            if (printAngle || printText) {
+
+                core::stringw text;
+                if (printAngle) {
+                    text = core::stringw(i);
+                } else {
+                    if (i==0) {
+                        text = L"N";
+                    } else if (i==90) {
+                        text = L"E";
+                    } else if (i==180) {
+                        text = L"S";
+                    } else if (i==270) {
+                        text = L"W";
+                    }
+                     else {
+                        text = L"";
+                    }
+                }
+
+                s32 textWidth = guienv->getSkin()->getFont()->getDimension(text.c_str()).Width;
+                s32 textHeight = guienv->getSkin()->getFont()->getDimension(text.c_str()).Height;
                 s32 textStartX = centreX + 0.8*xVector*radius-0.5*textWidth;
                 s32 textEndX = textStartX+textWidth;
                 s32 textStartY = centreY + 0.8*yVector*radius-0.5*textHeight;
                 s32 textEndY = textStartY+textHeight;
-                guienv->getSkin()->getFont()->draw(core::stringw(i),core::rect<s32>(textStartX,textStartY,textEndX,textEndY),video::SColor(255,255,255,255));
+                guienv->getSkin()->getFont()->draw(text,core::rect<s32>(textStartX,textStartY,textEndX,textEndY),video::SColor(255,255,255,255));
             }
         }
 
@@ -109,6 +151,12 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading)
     }
     guienv->drawAll();
 
+}
+
+void GUIMain::setMode(bool headingMode)
+{
+    modeChosen=true;
+    showHeadingIndicator=headingMode;
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)
