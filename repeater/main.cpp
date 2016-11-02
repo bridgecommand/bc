@@ -125,9 +125,11 @@ int main (int argc, char ** argv)
     EventReceiver receiver(device, &controller, &guiMain, &network);
     device->setEventReceiver(&receiver);
 
+    u32 timer = device->getTimer()->getRealTime();
+
     while(device->run()) {
 
-        driver->beginScene(true, true, video::SColor(0,200,200,200));
+        driver->beginScene(true, false, video::SColor(0,200,200,200)); //Don't need to clear Z buffer
 
         //Read in data from network
         network.update(time, ownShipData);
@@ -136,6 +138,13 @@ int main (int argc, char ** argv)
         controller.update(time, ownShipData);
 
         driver->endScene();
+
+        //Pause if faster than 30 fps (33ms)
+        u32 newTimer = device->getTimer()->getRealTime();
+        if (newTimer-timer<33) {
+            device->sleep(33-(newTimer-timer));
+        }
+        timer = newTimer;
     }
 
     return(0);
