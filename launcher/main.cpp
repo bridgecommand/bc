@@ -79,7 +79,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/mc.app/Contents/MacOS/rp", "rp", NULL);
+                        execl("../MacOS/rp.app/Contents/MacOS/rp", "rp", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-rp", "bridgecommand-rp", NULL);

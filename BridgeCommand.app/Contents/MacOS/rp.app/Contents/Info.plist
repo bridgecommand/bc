@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>mc</string>
+	<string>rp</string>
 	<key>CFBundleIdentifier</key>
 	<string>uk.co.bridgecommand.rp</string>
 	<key>LSMinimumSystemVersion</key>
