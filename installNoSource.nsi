@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 3"
-!define OUTPUTFILE "bc50b3_setup_noSource.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b3"
-!define SMFOLDER "Bridge Command 5.0 Beta 3"
-!define REGKEY "BridgeCommand5.0b3"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 4"
+!define OUTPUTFILE "bc50b4_setup_noSource.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b4"
+!define SMFOLDER "Bridge Command 5.0 Beta 4"
+!define REGKEY "BridgeCommand5.0b4"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.depend /x *.layout /x *.cbp /x CompilingLinuxAndMac.txt /x Makefile /x controller /x repeater /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bridgecommand.exe"
@@ -72,6 +72,7 @@ SetShellVarContext all
   Delete "$INSTDIR\bridgecommand.exe"
   Delete "$INSTDIR\bridgecommand-bc.exe"
   Delete "$INSTDIR\bridgecommand-mc.exe"
+  Delete "$INSTDIR\bridgecommand-rp.exe"
   Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\bridgecommand-ed.exe"
   Delete "$INSTDIR\bridgecommand-ini.exe"
@@ -80,11 +81,13 @@ SetShellVarContext all
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
+  Delete "$INSTDIR\languageRepeater.txt"
   Delete "$INSTDIR\languageLauncher.txt"
   Delete "$INSTDIR\languageIniEditor.txt"
   Delete "$INSTDIR\languageMultiplayer.txt"
   Delete "$INSTDIR\mph.ini"
   Delete "$INSTDIR\map.ini"
+  Delete "$INSTDIR\repeater.ini"
   Delete "$INSTDIR\README"
   Delete "$INSTDIR\Icon.ico"
 

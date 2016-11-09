@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 3"
-!define OUTPUTFILE "bc50b3_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b3"
-!define SMFOLDER "Bridge Command 5.0 Beta 3"
-!define REGKEY "BridgeCommand5.0b3"
+!define PROGRAMNAME "Bridge Command 5.0 Beta 4"
+!define OUTPUTFILE "bc50b4_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b4"
+!define SMFOLDER "Bridge Command 5.0 Beta 4"
+!define REGKEY "BridgeCommand5.0b4"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -62,6 +62,7 @@ SetShellVarContext all
 
   ; Remove files and uninstaller
   RMDir /r "$INSTDIR\controller"
+  RMDir /r "$INSTDIR\repeater"
   RMDir /r "$INSTDIR\iniEditor"
   RMDir /r "$INSTDIR\editor"
   RMDir /r "$INSTDIR\Models"  
@@ -147,6 +148,7 @@ SetShellVarContext all
   Delete "$INSTDIR\bridgecommand.exe"
   Delete "$INSTDIR\bridgecommand-bc.exe"
   Delete "$INSTDIR\bridgecommand-mc.exe"
+  Delete "$INSTDIR\bridgecommand-rp.exe"
   Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\bridgecommand-ed.exe"
   Delete "$INSTDIR\bridgecommand-ini.exe"
@@ -157,6 +159,7 @@ SetShellVarContext all
   Delete "$INSTDIR\CompilingLinuxAndMac.txt"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
+  Delete "$INSTDIR\languageRepeater.txt"
   Delete "$INSTDIR\languageLauncher.txt"
   Delete "$INSTDIR\languageIniEditor.txt"
   Delete "$INSTDIR\languageMultiplayer.txt"
@@ -164,8 +167,11 @@ SetShellVarContext all
   Delete "$INSTDIR\Lang.cpp"
   Delete "$INSTDIR\Lang.hpp"
   Delete "$INSTDIR\map.ini"
+  Delete "$INSTDIR\repeater.ini"
   Delete "$INSTDIR\NMEA.cpp"
   Delete "$INSTDIR\NMEA.hpp"
+  Delete "$INSTDIR\NumberToImage.hpp"
+  Delete "$INSTDIR\NumberToImage.cpp"
   Delete "$INSTDIR\Rain.cpp"
   Delete "$INSTDIR\Rain.hpp"
   Delete "$INSTDIR\README"
