@@ -16,7 +16,6 @@
 
 #include "MyEventReceiver.hpp"
 
-#include <iostream>
 #include <string>
 
 #include "GUIMain.hpp"
@@ -75,6 +74,8 @@ using namespace irr;
     bool MyEventReceiver::OnEvent(const SEvent& event)
 	{
 
+
+        //std::cout << "Any event in receiver" << std::endl;
         //From log
         if (event.EventType == EET_LOG_TEXT_EVENT) {
             //Store these in a global log.
@@ -87,7 +88,15 @@ using namespace irr;
         if (event.EventType == EET_MOUSE_INPUT_EVENT) {
             if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {leftMouseDown=true;}
             if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {leftMouseDown=false;}
-            if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ) {rightMouseDown=true;}
+            if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ) {
+                rightMouseDown=true;
+                //Force focus on right click
+                gui::IGUIElement* overElement;
+                overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(core::position2d<s32>(event.MouseInput.X,event.MouseInput.Y));
+                if (overElement) {
+                    device->getGUIEnvironment()->setFocus(overElement);
+                }
+            }
             if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP ) {rightMouseDown=false;}
             model->setMouseDown(leftMouseDown || rightMouseDown); //Set if either mouse is down
         }
