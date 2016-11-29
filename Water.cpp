@@ -52,16 +52,12 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advance
         irr::f32 segmentSize = tileWidth / segments;
 
         //some water (from demo 8)
-        scene::IAnimatedMesh* waterMesh = smgr->addHillPlaneMesh( "myHill",
-                           core::dimension2d<f32>(segmentSize,segmentSize),
-                           core::dimension2d<u32>(segments,segments),
-                           0,
-                           0.0f,
-                           core::dimension2d<f32>(0,0),
-                           core::dimension2d<f32>(10,10));
-
-        waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
+        waterNode = new irr::scene::MovingWaterSceneNode(0.25f,300.0f,10.0f,smgr->getRootSceneNode(),smgr,0);
+        waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+        waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        //waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
         //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
+        /*
         std::vector<irr::scene::ISceneNode*> secondaryWaterNodes;
         secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0,-1*tileWidth)));
         secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 0*tileWidth)));
@@ -75,6 +71,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advance
             (*it)->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
             (*it)->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         }
+        */
 
         waterNode->setPosition(core::vector3df(0,-0.25f,0));
 

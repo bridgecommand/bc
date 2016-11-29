@@ -19,6 +19,7 @@
 
 #include "irrlicht.h"
 #include "RealisticWater.h"
+#include "MovingWater.hpp"
 
 class Water
 {
@@ -37,7 +38,7 @@ class Water
 
         //For fallback water
         irr::f32 tileWidth;
-        irr::scene::ISceneNode* waterNode;
+        irr::scene::MovingWaterSceneNode* waterNode;
 };
 
 #endif

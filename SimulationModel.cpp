@@ -114,6 +114,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         } else {
             detailedWater = false;
         }
+        detailedWater = false; // FIXME: Hardcoded for testing - switching to own water model
         water.load(smgr,weather,detailedWater);
 
         //sky box/dome

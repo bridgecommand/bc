@@ -66,6 +66,8 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />
+		<Unit filename="MovingWater.cpp" />
+		<Unit filename="MovingWater.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />
 		<Unit filename="MyEventReceiver.hpp" />
 		<Unit filename="NMEA.cpp" />
