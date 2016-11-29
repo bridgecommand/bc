@@ -82,9 +82,9 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
 void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 {
 	//std::cout << "In OnAnimate()" << std::endl;
-	if (getMesh() && IsVisible)
+	if (mesh && IsVisible)
 	{
-		const u32 meshBufferCount = getMesh()->getMeshBufferCount();
+		const u32 meshBufferCount = mesh->getMeshBufferCount();
 		const f32 time = timeMs / WaveSpeed;
 
         //JAMES: new for seamless edges between multiple scene nodes
@@ -95,23 +95,24 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
 		for (u32 b=0; b<meshBufferCount; ++b)
 		{
-			const u32 vtxCnt = getMesh()->getMeshBuffer(b)->getVertexCount();
+			const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
 
-			//for (u32 i=0; i<vtxCnt; ++i)
-				//FIXME: IMPLEMENT!
-				//getMesh()->getMeshBuffer(b)->getPosition(i).Y = addWave(
-				//	//OriginalMesh->getMeshBuffer(b)->getPosition(i),                   //JAMES: Replaced
-                //    mesh->getMeshBuffer(b)->getPosition(i)+absolutePositionXZ,    //JAMES: New for seamless edges between multiple scene nodes
-				//	time);
+			for (u32 i=0; i<vtxCnt; ++i)
+				mesh->getMeshBuffer(b)->getPosition(i).Y = addWave(mesh->getMeshBuffer(b)->getPosition(i)+absolutePositionXZ,time);
 
             }// end for all mesh buffers
-		getMesh()->setDirty(scene::EBT_VERTEX);
+		mesh->setDirty(scene::EBT_VERTEX);
 
-		SceneManager->getMeshManipulator()->recalculateNormals(getMesh());
+		SceneManager->getMeshManipulator()->recalculateNormals(mesh);
 	}
 	IMeshSceneNode::OnAnimate(timeMs);
 }
 
+f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
+{
+	return  (sinf(((source.X/WaveLength) + time)) * WaveHeight) +
+            (cosf(((source.Z/WaveLength) + time)) * WaveHeight);
+}
 
 void MovingWaterSceneNode::setMesh(IMesh* mesh)
 {
