@@ -47,12 +47,13 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advance
         irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
         //Set tile width
-        tileWidth = 1000; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-        irr::u32 segments = 20; //How many tiles per segment
+        //FIXME: Hardcoded or defined in multiple places
+        tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
+        irr::u32 segments = 100; //How many tiles per segment
         irr::f32 segmentSize = tileWidth / segments;
 
         //some water (from demo 8)
-        waterNode = new irr::scene::MovingWaterSceneNode(0.25f,300.0f,10.0f,smgr->getRootSceneNode(),smgr,0);
+        waterNode = new irr::scene::MovingWaterSceneNode(0.25f,300.0f,20.0f,smgr->getRootSceneNode(),smgr,0);
         waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
         waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         //waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);

@@ -42,8 +42,8 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 	#endif
 
 	//FIXME: Hardcoded or defined in multiple places
-	irr::f32 tileWidth = 1000; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-    irr::u32 segments = 20; //How many tiles per segment
+	irr::f32 tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
+    irr::u32 segments = 100; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
@@ -52,7 +52,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            0,
                            0.0f,
                            core::dimension2d<f32>(0,0),
-                           core::dimension2d<f32>(10,10));
+                           core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
 
 
 }
@@ -110,7 +110,8 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
 f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
 {
-	return  (sinf(((source.X/WaveLength) + time)) * WaveHeight) +
+	//std::cout << "X: " << source.X << ", Z:" << source.Z << std::endl;
+	return  (0*sinf(((source.X/WaveLength) + time)) * WaveHeight) +
             (cosf(((source.Z/WaveLength) + time)) * WaveHeight);
 }
 
