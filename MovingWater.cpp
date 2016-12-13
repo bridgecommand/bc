@@ -54,6 +54,16 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            core::dimension2d<f32>(0,0),
                            core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
 
+    //For testing, make wireframe
+    for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+    {
+        scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+        if (mb)
+        {
+            mb->getMaterial().setFlag(video::EMF_WIREFRAME, true);
+        }
+    }
+
 
 }
 
@@ -85,7 +95,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	if (mesh && IsVisible)
 	{
 		const u32 meshBufferCount = mesh->getMeshBufferCount();
-		const f32 time = timeMs / WaveSpeed;
+		const f32 time = timeMs / 1000.f;
 
         //JAMES: new for seamless edges between multiple scene nodes
         updateAbsolutePosition();
@@ -111,8 +121,11 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
 {
 	//std::cout << "X: " << source.X << ", Z:" << source.Z << std::endl;
-	return  (0*sinf(((source.X/WaveLength) + time)) * WaveHeight) +
-            (cosf(((source.Z/WaveLength) + time)) * WaveHeight);
+
+	//std::cout << (0+WaveSpeed*time)/(WaveLength*2*core::PI) << std::endl;
+	//std::cout << WaveLength << std::endl;
+	return  (0*sinf(2*core::PI*(source.X - WaveSpeed*time)/WaveLength) * WaveHeight) +
+            (cosf(2*core::PI*(source.Z - WaveSpeed*time)/WaveLength) * WaveHeight);
 }
 
 void MovingWaterSceneNode::setMesh(IMesh* mesh)

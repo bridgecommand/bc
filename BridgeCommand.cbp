@@ -47,6 +47,8 @@
 		<Unit filename="Constants.hpp" />
 		<Unit filename="DefaultEventReceiver.cpp" />
 		<Unit filename="DefaultEventReceiver.hpp" />
+		<Unit filename="FFTWave.cpp" />
+		<Unit filename="FFTWave.hpp" />
 		<Unit filename="GUIMain.cpp" />
 		<Unit filename="GUIMain.hpp" />
 		<Unit filename="GUIRectangle.cpp" />
