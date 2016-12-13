@@ -502,7 +502,7 @@ void cOcean::evaluateWavesFFT(float t) {
 				vertices[index1 + N + Nplus1 * N].ny =  n.y;
 				vertices[index1 + N + Nplus1 * N].nz =  n.z;
 
-				std::cout << "At time " << t << " corner n'=m'=0, height = " << vertices[index1].y << std::endl;
+				//std::cout << "At time " << t << " corner n'=m'=0, height = " << vertices[index1].y << std::endl;
 
 			}
 			if (n_prime == 0) {
@@ -529,6 +529,7 @@ void cOcean::evaluateWavesFFT(float t) {
 	}
 }
 
-void cOcean::render(float t) {
-	evaluateWavesFFT(t);
+vertex_ocean* cOcean::getVertices()
+{
+    return vertices;
 }

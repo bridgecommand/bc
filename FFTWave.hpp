@@ -147,14 +147,14 @@ class cOcean {
 	complex hTilde_0(int n_prime, int m_prime);
 	complex hTilde(float t, int n_prime, int m_prime);
 	complex_vector_normal h_D_and_n(vector2 x, float t);
-	void evaluateWavesFFT(float t);
 
   protected:
   public:
-	cOcean(const int N, const float A, const vector2 w, const float length, bool geometry);
+	cOcean(const int N, const float A, const vector2 w, const float length, const bool geometry);
 	~cOcean();
 
-	void render(float t);
+	void evaluateWavesFFT(float t);
+	vertex_ocean* getVertices();
 };
 
 #endif

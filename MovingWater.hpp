@@ -24,6 +24,8 @@
 
 #include "irrlicht.h"
 
+#include "FFTWave.hpp"
+
 namespace irr
 {
 namespace scene
@@ -73,11 +75,12 @@ namespace scene
 	private:
 
 
-        f32 addWave(const core::vector3df &source, f32 time) const;
+        //f32 addWave(const core::vector3df &source, f32 time) const;
 		f32 WaveLength;
 		f32 WaveSpeed;
 		f32 WaveHeight;
 		IMesh* mesh;
+		cOcean* ocean;
 	};
 
 } // end namespace scene

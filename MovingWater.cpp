@@ -41,10 +41,14 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 	setDebugName("MovingWaterSceneNode");
 	#endif
 
+
+
 	//FIXME: Hardcoded or defined in multiple places
 	irr::f32 tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-    irr::u32 segments = 100; //How many tiles per segment
+    irr::u32 segments = 64; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
+
+    ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth, false);
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
                            core::dimension2d<f32>(segmentSize,segmentSize),
@@ -72,7 +76,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 MovingWaterSceneNode::~MovingWaterSceneNode()
 {
 	// Mesh is dropped in IMeshSceneNode destructor (??? FIXME: Probably not true!)
-
+    delete ocean;
 
 }
 
@@ -94,8 +98,14 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	//std::cout << "In OnAnimate()" << std::endl;
 	if (mesh && IsVisible)
 	{
-		const u32 meshBufferCount = mesh->getMeshBufferCount();
+
 		const f32 time = timeMs / 1000.f;
+
+		//Update the FFT Calculation
+		ocean->evaluateWavesFFT(time);
+		vertex_ocean* vertices = ocean->getVertices();
+
+		const u32 meshBufferCount = mesh->getMeshBufferCount();
 
         //JAMES: new for seamless edges between multiple scene nodes
         updateAbsolutePosition();
@@ -108,7 +118,8 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 			const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
 
 			for (u32 i=0; i<vtxCnt; ++i)
-				mesh->getMeshBuffer(b)->getPosition(i).Y = addWave(mesh->getMeshBuffer(b)->getPosition(i)+absolutePositionXZ,time);
+				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y;
+				//FIXME: Should also link X and Z to get gerstner waves.
 
             }// end for all mesh buffers
 		mesh->setDirty(scene::EBT_VERTEX);
@@ -118,7 +129,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	IMeshSceneNode::OnAnimate(timeMs);
 }
 
-f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
+/*f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
 {
 	//std::cout << "X: " << source.X << ", Z:" << source.Z << std::endl;
 
@@ -127,6 +138,7 @@ f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
 	return  (0*sinf(2*core::PI*(source.X - WaveSpeed*time)/WaveLength) * WaveHeight) +
             (cosf(2*core::PI*(source.Z - WaveSpeed*time)/WaveLength) * WaveHeight);
 }
+*/
 
 void MovingWaterSceneNode::setMesh(IMesh* mesh)
 {
