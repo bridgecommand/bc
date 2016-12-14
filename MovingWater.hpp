@@ -79,6 +79,7 @@ namespace scene
 		f32 WaveLength;
 		f32 WaveSpeed;
 		f32 WaveHeight;
+		f32 tileWidth;
 		IMesh* mesh;
 		cOcean* ocean;
 	};

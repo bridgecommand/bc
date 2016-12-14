@@ -44,8 +44,8 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
 
 	//FIXME: Hardcoded or defined in multiple places
-	irr::f32 tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-    irr::u32 segments = 64; //How many tiles per segment
+	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
+    irr::u32 segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
     ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth, false);
@@ -59,6 +59,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
 
     //For testing, make wireframe
+    /*
     for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
@@ -67,6 +68,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
             mb->getMaterial().setFlag(video::EMF_WIREFRAME, true);
         }
     }
+    */
 
 
 }
@@ -169,10 +171,57 @@ void MovingWaterSceneNode::render()
             // and solid only in solid pass
             driver->setMaterial(material);
             driver->drawMeshBuffer(mb);
+
+
+            core::vector3df basicPosition = AbsoluteTransformation.getTranslation();
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(0,0,tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(0,0,-1*tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            driver->drawMeshBuffer(mb);
+
+
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(tileWidth,0,tileWidth));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,0));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(tileWidth,0,-1*tileWidth));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,-1*tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(tileWidth,0,0));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,-1*tileWidth));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,0));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,tileWidth));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,-1*tileWidth));
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,0));
+            driver->drawMeshBuffer(mb);
+
+            AbsoluteTransformation.setTranslation(basicPosition);
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+
         }
     }
 
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	//driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 }
 
