@@ -175,45 +175,13 @@ void MovingWaterSceneNode::render()
 
             core::vector3df basicPosition = AbsoluteTransformation.getTranslation();
 
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(0,0,tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(0,0,-1*tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            driver->drawMeshBuffer(mb);
-
-
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(tileWidth,0,tileWidth));
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,0));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(tileWidth,0,-1*tileWidth));
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(-1*tileWidth,0,-1*tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(tileWidth,0,0));
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,-1*tileWidth));
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,0));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,tileWidth));
-            driver->drawMeshBuffer(mb);
-
-            AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(tileWidth,0,-1*tileWidth));
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-            setPosition(basicPosition + core::vector3df(-1*tileWidth,0,0));
-            driver->drawMeshBuffer(mb);
+            for (int j = -10; j<=10; j++) {
+                for (int k = -10; k<=10; k++) {
+                    AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(j*tileWidth,0,k*tileWidth));
+                    driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+                    driver->drawMeshBuffer(mb);
+                }
+            }
 
             AbsoluteTransformation.setTranslation(basicPosition);
             driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
