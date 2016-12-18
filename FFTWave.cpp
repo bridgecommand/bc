@@ -29,6 +29,10 @@ SOFTWARE.
 #include <cstdlib> //For rand()
 #include <iostream>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
+
 /*
 cTimer::cTimer() {
 	clock_gettime(CLOCK_REALTIME, &process_start);

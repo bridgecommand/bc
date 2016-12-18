@@ -17,6 +17,8 @@ InstallDir "$PROGRAMFILES\${INSTALLLOCATION}"
 
 LicenseData "LICENSE.txt"
 
+Icon "Icon.ico"
+
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
