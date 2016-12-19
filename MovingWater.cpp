@@ -44,7 +44,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
 
 	//FIXME: Hardcoded or defined in multiple places
-	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
+	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
     irr::u32 segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
