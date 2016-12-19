@@ -58,8 +58,8 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            core::dimension2d<f32>(0,0),
                            core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
 
-    //For testing, make wireframe
     /*
+    //For testing, make wireframe
     for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
@@ -69,6 +69,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
         }
     }
     */
+
 
 
 }
@@ -119,11 +120,19 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 		{
 			const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
 
-			for (u32 i=0; i<vtxCnt; ++i)
+			for (u32 i=0; i<vtxCnt; ++i) {
+				mesh->getMeshBuffer(b)->getPosition(i).X = -1*vertices[i].x; //Swap sign to maintain correct rotation order of vertices: TODO: Look at basic definition of X and Z coordinate system between water and FFTWave
 				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y;
-				//FIXME: Should also link X and Z to get gerstner waves.
+				mesh->getMeshBuffer(b)->getPosition(i).Z = vertices[i].z;
 
-            }// end for all mesh buffers
+				//Set normals (TODO: Check this!)
+				mesh->getMeshBuffer(b)->getNormal(i).X = -1*vertices[i].x;
+				mesh->getMeshBuffer(b)->getNormal(i).Y = vertices[i].y;
+				mesh->getMeshBuffer(b)->getNormal(i).Z = vertices[i].z;
+            }
+
+
+        }// end for all mesh buffers
 		mesh->setDirty(scene::EBT_VERTEX);
 
 		SceneManager->getMeshManipulator()->recalculateNormals(mesh);
@@ -175,6 +184,7 @@ void MovingWaterSceneNode::render()
 
             core::vector3df basicPosition = AbsoluteTransformation.getTranslation();
 
+            //Draw multiple copies of tileable water
             for (int j = -10; j<=10; j++) {
                 for (int k = -10; k<=10; k++) {
                     AbsoluteTransformation.setTranslation(basicPosition + core::vector3df(j*tileWidth,0,k*tileWidth));
