@@ -121,7 +121,6 @@ struct complex_vector_normal {	// structure used with discrete fourier transform
 
 class cOcean {
   private:
-	bool geometry;				// flag to render geometry or surface
 
 	float g;				// gravity constant
 	int N, Nplus1;				// dimension -- N should be a power of 2
@@ -134,8 +133,8 @@ class cOcean {
 	cFFT *fft;				// fast fourier transform
 
 	vertex_ocean *vertices;			// vertices for vertex buffer object
-	unsigned int *indices;			// indicies for vertex buffer object
-	unsigned int indices_count;		// number of indices to render
+	//unsigned int *indices;			// indicies for vertex buffer object
+	//unsigned int indices_count;		// number of indices to render
 
 	//Utility methods
 	float uniformRandomVariable();
@@ -150,7 +149,7 @@ class cOcean {
 
   protected:
   public:
-	cOcean(const int N, const float A, const vector2 w, const float length, const bool geometry);
+	cOcean(const int N, const float A, const vector2 w, const float length);
 	~cOcean();
 
 	void evaluateWavesFFT(float t);

@@ -253,9 +253,9 @@ complex cOcean::gaussianRandomVariable() {
 	return complex(x1 * w, x2 * w);
 }
 
-cOcean::cOcean(const int N, const float A, const vector2 w, const float length, const bool geometry) :
-	g(9.81), geometry(geometry), N(N), Nplus1(N+1), A(A), w(w), length(length),
-	vertices(0), indices(0), h_tilde(0), h_tilde_slopex(0), h_tilde_slopez(0), h_tilde_dx(0), h_tilde_dz(0), fft(0)
+cOcean::cOcean(const int N, const float A, const vector2 w, const float length) :
+	g(9.81), N(N), Nplus1(N+1), A(A), w(w), length(length),
+	vertices(0), h_tilde(0), h_tilde_slopex(0), h_tilde_slopez(0), h_tilde_dx(0), h_tilde_dz(0), fft(0)
 {
 	h_tilde        = new complex[N*N];
 	h_tilde_slopex = new complex[N*N];
@@ -264,7 +264,6 @@ cOcean::cOcean(const int N, const float A, const vector2 w, const float length, 
 	h_tilde_dz     = new complex[N*N];
 	fft            = new cFFT(N);
 	vertices       = new vertex_ocean[Nplus1*Nplus1];
-	indices        = new unsigned int[Nplus1*Nplus1*10];
 
 	int index;
 
@@ -290,37 +289,6 @@ cOcean::cOcean(const int N, const float A, const vector2 w, const float length, 
 			vertices[index].nz = 0.0f;
 		}
 	}
-
-	indices_count = 0;
-	for (int m_prime = 0; m_prime < N; m_prime++) {
-		for (int n_prime = 0; n_prime < N; n_prime++) {
-			index = m_prime * Nplus1 + n_prime;
-
-			if (geometry) {
-				indices[indices_count++] = index;				// lines
-				indices[indices_count++] = index + 1;
-				indices[indices_count++] = index;
-				indices[indices_count++] = index + Nplus1;
-				indices[indices_count++] = index;
-				indices[indices_count++] = index + Nplus1 + 1;
-				if (n_prime == N - 1) {
-					indices[indices_count++] = index + 1;
-					indices[indices_count++] = index + Nplus1 + 1;
-				}
-				if (m_prime == N - 1) {
-					indices[indices_count++] = index + Nplus1;
-					indices[indices_count++] = index + Nplus1 + 1;
-				}
-			} else {
-				indices[indices_count++] = index;				// two triangles
-				indices[indices_count++] = index + Nplus1;
-				indices[indices_count++] = index + Nplus1 + 1;
-				indices[indices_count++] = index;
-				indices[indices_count++] = index + Nplus1 + 1;
-				indices[indices_count++] = index + 1;
-			}
-		}
-	}
 }
 
 cOcean::~cOcean() {
@@ -331,7 +299,6 @@ cOcean::~cOcean() {
 	if (h_tilde_dz)		delete [] h_tilde_dz;
 	if (fft)		delete fft;
 	if (vertices)		delete [] vertices;
-	if (indices)		delete [] indices;
 }
 
 float cOcean::dispersion(int n_prime, int m_prime) {
@@ -370,6 +337,9 @@ complex cOcean::hTilde_0(int n_prime, int m_prime) {
 
 complex cOcean::hTilde(float t, int n_prime, int m_prime) {
 	int index = m_prime * Nplus1 + n_prime;
+
+	//vertices[index].a *= 0.1;
+	//vertices[index].b *= 0.1;
 
 	complex htilde0(vertices[index].a,  vertices[index].b);
 	complex htilde0mkconj(vertices[index]._a, vertices[index]._b);

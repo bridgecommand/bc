@@ -48,7 +48,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
     irr::u32 segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
-    ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth, false);
+    ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth);
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
                            core::dimension2d<f32>(segmentSize,segmentSize),
