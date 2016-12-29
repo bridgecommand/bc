@@ -12,10 +12,10 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
-					<Add library="../libs/Irrlicht/irrlicht-1.8.4/lib/Win32-gcc/libIrrlicht.a" />
+					<Add library="../libs/Irrlicht/irrlicht-svn/lib/Win32-gcc/libIrrlicht.a" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
-					<Add directory="../libs/Irrlicht/irrlicht-1.8.4/include" />
+					<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
 				</Linker>
 			</Target>
 			<Target title="Linux">
@@ -24,7 +24,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
-					<Add option="-L../libs/Irrlicht/irrlicht-1.8.4/lib/Linux" />
+					<Add option="-L../libs/Irrlicht/irrlicht-svn/lib/Linux" />
 					<Add library="Irrlicht" />
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
@@ -38,7 +38,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
-			<Add directory="../libs/Irrlicht/irrlicht-1.8.4/include" />
+			<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
 		</Compiler>
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../HeadingIndicator.cpp" />

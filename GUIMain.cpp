@@ -284,7 +284,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         radarClutterScrollbar2->drop();
         radarRainScrollbar2->drop();
 
-        largeRadarControls->drop();
+        //largeRadarControls->drop();
 
         hdgScrollbar->drop();
         spdScrollbar->drop();
