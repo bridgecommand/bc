@@ -23,7 +23,7 @@
 #include "ShipDataStruct.hpp"
 #include "../Leg.hpp"
 
-struct OtherShipData : public ShipData //To hold information about a ship's position and heading
+struct OtherShipDisplayData : public ShipData //To hold information about a ship's position and heading
 {
     std::vector<Leg> legs;
 };

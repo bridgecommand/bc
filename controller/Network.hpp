@@ -36,7 +36,7 @@ public:
     ~Network();
 
     std::string findWorldName();
-    void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain);
+    void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain);
     void setStringToSend(std::string stringToSend);
 
 private:
@@ -49,11 +49,11 @@ private:
     std::string stringToSend;
     ENetPacket * packet;
 
-    void receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain); //Acts on 'event'
+    void receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain); //Acts on 'event'
     //Subroutines to break down process of extracting data from the received string:
-    void findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain);
+    void findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain);
     void findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData);
-    void findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipData>& otherShipsData);
+    void findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipDisplayData>& otherShipsData);
     void findBuoyPositionData(const std::vector<std::string>& buoysDataString, std::vector<PositionData>& buoysData);
 
     void sendMessage(ENetPeer * peer);
