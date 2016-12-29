@@ -242,19 +242,15 @@ void Network::findOwnShipPositionData(const std::vector<std::string>& positionDa
 void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipDisplayData>& otherShipsData)
 {
     //Ensure otherShipsData vector is the right size
-    while (otherShipsData.size() != otherShipsDataString.size()) {  //TODO:Fixme: Ensure this can't become an infinite loop
+    if (otherShipsData.size() != otherShipsDataString.size()) {
         otherShipsData.resize(otherShipsDataString.size());
     }
-
-    std::cout << "Got here 1" << std::endl;
 
     //Check this has been successful
     if (otherShipsData.size() != otherShipsDataString.size()) {
         std::cout << "Could not resize otherShipsData" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    std::cout << "Got here 2" << std::endl;
 
     for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
         std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
@@ -268,20 +264,15 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
             std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(6),'/');
             if (numberOfLegs == legsDataString.size()) {
                 //Ensure legs vector is the right size
-                std::cout << "Got here 3" << std::endl;
                 if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
                     otherShipsData.at(i).legs.resize(legsDataString.size());
                 }
-
-                std::cout << "Got here 4" << std::endl;
 
                 //Check this has been successful
                 if (otherShipsData.at(i).legs.size() != legsDataString.size()) {
                     std::cout << "Could not resize otherShipsData.at(i).legs" << std::endl;
                     exit(EXIT_FAILURE);
                 }
-
-                std::cout << "Got here 5" << std::endl;
 
                 //Populate the leg data
                 for (irr::u32 j=0; j<legsDataString.size(); j++) {
@@ -295,7 +286,6 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
 
                     }
                 }//Iterate through legs
-                std::cout << "Got here 6" << std::endl;
 
             }//If number of legs matches data received
 
