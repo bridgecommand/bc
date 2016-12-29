@@ -139,7 +139,7 @@ int main (int argc, char ** argv)
     irr::f32 visibility = 10.1; //(0.1-10.1)
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
-    std::vector<OtherShipData> otherShipsData;
+    std::vector<OtherShipDisplayData> otherShipsData;
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain, &network);
