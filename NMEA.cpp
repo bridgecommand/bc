@@ -76,10 +76,10 @@ void NMEA::updateNMEA() {
     int portRPM = Utilities::round(model->getPortEngineRPM());
     int stbdRPM = Utilities::round(model->getStbdEngineRPM());
 
-    f32 lat = model->getLat();
-    f32 lon = model->getLong();
-    f32 cog = model->getCOG();
-    f32 sog = model->getSOG()*MPS_TO_KTS;
+    irr::f32 lat = model->getLat();
+    irr::f32 lon = model->getLong();
+    irr::f32 cog = model->getCOG();
+    irr::f32 sog = model->getSOG()*MPS_TO_KTS;
     char eastWest;
     char northSouth;
     if (lat >= 0) {
@@ -95,10 +95,10 @@ void NMEA::updateNMEA() {
     lat = fabs(lat);
     lon = fabs(lon);
 
-    f32 latMinutes = (lat - (int)lat)*60;
-    f32 lonMinutes = (lon - (int)lon)*60;
-    u8 latDegrees = (int) lat;
-    u8 lonDegrees = (int) lon;
+    irr::f32 latMinutes = (lat - (int)lat)*60;
+    irr::f32 lonMinutes = (lon - (int)lon)*60;
+    irr::u8 latDegrees = (int) lat;
+    irr::u8 lonDegrees = (int) lon;
 
     char messageBuffer[256];
 
@@ -140,7 +140,7 @@ std::string NMEA::addChecksum(std::string messageIn) {
     //Get checksum
     unsigned char checksum=0;
 
-    u8 s = messageIn.length();
+    irr::u8 s = messageIn.length();
     for(int i = 1; i<s; i++) {
         checksum^= messageIn.at(i);
     }

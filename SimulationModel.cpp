@@ -108,14 +108,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         terrain.load(worldPath, smgr);
 
         //add water
-        bool detailedWater;
-        if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET ) && driver->queryFeature(video::EVDF_ARB_GLSL) ) { //Fixme: check exactly what's needed by shader - currently assumes GL
-            detailedWater = true;
-        } else {
-            detailedWater = false;
-        }
-        detailedWater = false; // FIXME: Hardcoded for testing - switching to own water model
-        water.load(smgr,weather,detailedWater);
+        water.load(smgr,weather);
 
         //sky box/dome
         Sky sky (smgr);

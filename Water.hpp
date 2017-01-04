@@ -18,7 +18,6 @@
 #define __WATER_HPP_INCLUDED__
 
 #include "irrlicht.h"
-#include "RealisticWater.h"
 #include "MovingWater.hpp"
 
 class Water
@@ -26,17 +25,10 @@ class Water
     public:
         Water();
         virtual ~Water();
-        void load(irr::scene::ISceneManager* smgr, irr::f32 weather, bool advancedWater);
+        void load(irr::scene::ISceneManager* smgr, irr::f32 weather);
         void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
 
     private:
-
-        bool advancedWater; //If we should use shader based water
-
-        //For shader based water
-        RealisticWaterSceneNode* realisticWater;
-
-        //For fallback water
         irr::f32 tileWidth;
         irr::scene::MovingWaterSceneNode* waterNode;
 };

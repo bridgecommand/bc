@@ -209,7 +209,7 @@ irr::core::stringw ScenarioChoice::getCredits(){
     creditsString.append(L"> Thierry Videlaine\n");
     creditsString.append(L"> NETC (Naval Education and Training Command)\n\n");
     creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
-    creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, the RealisticWaterSceneNode by elvman, and the Serial library by William Woodall.\n\n");
+    creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, the FFTWave implementation by Keith Lantz, and the Serial library by William Woodall.\n\n");
     creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
 
 

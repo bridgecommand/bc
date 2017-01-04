@@ -100,8 +100,6 @@
 		<Unit filename="RadarScreen.hpp" />
 		<Unit filename="Rain.cpp" />
 		<Unit filename="Rain.hpp" />
-		<Unit filename="RealisticWater.cpp" />
-		<Unit filename="RealisticWater.h" />
 		<Unit filename="ScenarioChoice.cpp" />
 		<Unit filename="ScenarioChoice.hpp" />
 		<Unit filename="ScenarioDataStructure.cpp" />
