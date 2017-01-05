@@ -47,8 +47,9 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
 
     //some water (from demo 8)
     waterNode = new irr::scene::MovingWaterSceneNode(0.25f,1.0f,4.0f,smgr->getRootSceneNode(),smgr,0);
-    waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+
+    //waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+    //waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     //waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
     //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
     /*

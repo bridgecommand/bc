@@ -26,6 +26,76 @@
 
 #include "FFTWave.hpp"
 
+//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
+class cubemapConstants : public irr::video::IShaderConstantSetCallBack
+{
+    int matWorldViewProjection;//Identifiers, much faster than string matching...
+    int matViewInverse;
+    int matWorld;
+    int baseMap;
+    int reflectionMap;
+
+    bool firstRun;
+    bool IsOpenGL;//Our constants set callback isn't limited to D3D9
+
+    irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
+
+public:
+    cubemapConstants(bool isGL)
+    {
+        IsOpenGL = isGL;
+        firstRun = true;
+    }
+
+    void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData)
+    {
+        if(firstRun)
+        {
+            firstRun = false;
+
+            driver = services->getVideoDriver();
+            //Looking for our constants IDs...
+            matViewInverse = services->getVertexShaderConstantID("matViewInverse");
+
+            if(IsOpenGL)
+            {
+                baseMap = services->getPixelShaderConstantID("baseMap");
+                reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+            }
+            else
+            {
+                matWorldViewProjection=services->getVertexShaderConstantID("matWorldViewProjection");
+                matWorld = services->getVertexShaderConstantID("matWorld");
+            }
+        }
+
+        //Setting up our constants...
+        irr::core::matrix4 mat;
+
+        mat = driver->getTransform(irr::video::ETS_VIEW);
+        mat.makeInverse();
+        services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
+
+        if(IsOpenGL)
+        {
+            int sampler=0;
+            services->setPixelShaderConstant(baseMap,&sampler,1);
+            sampler=1;
+            services->setPixelShaderConstant(reflectionMap,&sampler,1);
+        }
+        else
+        {
+            mat = driver->getTransform(irr::video::ETS_PROJECTION);
+            mat *= driver->getTransform(irr::video::ETS_VIEW);
+            mat *= driver->getTransform(irr::video::ETS_WORLD);
+            services->setVertexShaderConstant(matWorldViewProjection,mat.pointer(),16);
+
+            mat = driver->getTransform(irr::video::ETS_WORLD);
+            services->setVertexShaderConstant(matWorld,mat.pointer(),16);
+        }
+    }
+}; //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) END
+
 namespace irr
 {
 namespace scene

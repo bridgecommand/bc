@@ -1,3 +1,5 @@
+#version 130
+
 //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723)
     /*Shader for Open GL*/
 

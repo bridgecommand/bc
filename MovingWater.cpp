@@ -42,6 +42,65 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 	#endif
 
 
+	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
+	irr::video::E_DRIVER_TYPE driverType = mgr->getVideoDriver()->getDriverType();
+	irr::video::IVideoDriver* driver = mgr->getVideoDriver();
+	irr::video::ITexture* cubemap;
+	irr::video::IImage* cubemapImages[6];
+	cubemapConstants* cns = new cubemapConstants(driverType==irr::video::EDT_OPENGL);
+    //So far there are no materials ready to use a cubemap, so we provide our own.
+    irr::s32 shader;
+
+    if(driverType==irr::video::EDT_DIRECT3D9)
+        shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+            "shaders/shader.hlsl",
+            "vs_main",
+            irr::video::EVST_VS_2_0,
+            "shaders/shader.hlsl",
+            "ps_main",
+            irr::video::EPST_PS_2_0,
+            cns,
+            irr::video::EMT_SOLID
+            );
+    else //OpenGL
+        shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+            "shaders/Water_vs.glsl",
+            "main",
+            irr::video::EVST_VS_2_0,
+            "shaders/Water_ps.glsl",
+            "main",
+            irr::video::EPST_PS_2_0,
+            cns,
+            irr::video::EMT_SOLID
+            );
+
+    shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
+
+    //creating the cubemap... For now, Irrlicht's cubemaps need to be created on the fly out of images.
+    //Loading the images
+    cubemapImages[0] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_ft.jpg");
+    cubemapImages[1] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_bk.jpg");
+    cubemapImages[2] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_up.jpg");
+    cubemapImages[3] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_dn.jpg");
+    cubemapImages[4] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_lf.jpg");
+    cubemapImages[5] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_rt.jpg");
+
+    //creating the cubemap itself
+    cubemap = driver->addTextureCubemap(
+        "irrlicht2.cubemap",
+        cubemapImages[0],
+        cubemapImages[1],
+        cubemapImages[2],
+        cubemapImages[3],
+        cubemapImages[4],
+        cubemapImages[5]
+    );
+
+    //We're done with the images, so we're releasing them. Unlike the Textures, the Images can be dropped.
+    for(int i=0;i<6;i++) {
+        cubemapImages[i]->drop();
+    }
+    //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) END
 
 	//FIXME: Hardcoded or defined in multiple places
 	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
@@ -70,6 +129,18 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
     }
     */
 
+    for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+    {
+        scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+        if (mb)
+        {
+            mb->getMaterial().setTexture(0,driver->getTexture("media/water.bmp"));
+            mb->getMaterial().setTexture(1,cubemap);
+            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+            mb->getMaterial().FogEnable = true;
+
+        }
+    }
 
 
 }
