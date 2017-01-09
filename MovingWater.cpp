@@ -78,27 +78,37 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
     //creating the cubemap... For now, Irrlicht's cubemaps need to be created on the fly out of images.
     //Loading the images
-    cubemapImages[0] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_ft.jpg");
-    cubemapImages[1] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_bk.jpg");
-    cubemapImages[2] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_up.jpg");
-    cubemapImages[3] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_dn.jpg");
-    cubemapImages[4] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_lf.jpg");
-    cubemapImages[5] = driver->createImageFromFile("../IrrlichtUpdate/irrlicht-code/media/irrlicht2_rt.jpg");
+    cubemapImages[0] = driver->createImageFromFile("media/cube_ft.jpg");
+    cubemapImages[1] = driver->createImageFromFile("media/cube_bk.jpg");
+    cubemapImages[2] = driver->createImageFromFile("media/cube_up.jpg");
+    cubemapImages[3] = driver->createImageFromFile("media/cube_dn.jpg");
+    cubemapImages[4] = driver->createImageFromFile("media/cube_lf.jpg");
+    cubemapImages[5] = driver->createImageFromFile("media/cube_rt.jpg");
 
-    //creating the cubemap itself
-    cubemap = driver->addTextureCubemap(
-        "irrlicht2.cubemap",
-        cubemapImages[0],
-        cubemapImages[1],
-        cubemapImages[2],
-        cubemapImages[3],
-        cubemapImages[4],
-        cubemapImages[5]
-    );
+    bool cubemapCreated = false;
 
-    //We're done with the images, so we're releasing them. Unlike the Textures, the Images can be dropped.
-    for(int i=0;i<6;i++) {
-        cubemapImages[i]->drop();
+    if (cubemapImages[0] && cubemapImages[1] && cubemapImages[2] && cubemapImages[3] && cubemapImages[4] && cubemapImages[5]) {
+
+        //creating the cubemap itself
+        cubemap = driver->addTextureCubemap(
+            "irrlicht2.cubemap",
+            cubemapImages[0],
+            cubemapImages[1],
+            cubemapImages[2],
+            cubemapImages[3],
+            cubemapImages[4],
+            cubemapImages[5]
+        );
+
+        if (cubemap) {
+            cubemapCreated = true;
+        }
+
+
+        //We're done with the images, so we're releasing them. Unlike the Textures, the Images can be dropped.
+        for(int i=0;i<6;i++) {
+            cubemapImages[i]->drop();
+        }
     }
     //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) END
 
@@ -135,8 +145,10 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
         if (mb)
         {
             mb->getMaterial().setTexture(0,driver->getTexture("media/water.bmp"));
-            mb->getMaterial().setTexture(1,cubemap);
-            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+            if (cubemapCreated) {
+                mb->getMaterial().setTexture(1,cubemap);
+                mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+            }
             mb->getMaterial().FogEnable = true;
 
         }
