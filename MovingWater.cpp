@@ -31,16 +31,16 @@ namespace scene
 //! constructor
 MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
 		ISceneNode* parent, ISceneManager* mgr, s32 id,
-		const core::vector3df& position, const core::vector3df& rotation,
-		const core::vector3df& scale)
+		const core::vector3df& position, const core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, scale),
+	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)),
 	WaveLength(waveLength), WaveSpeed(waveSpeed), WaveHeight(waveHeight)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
 	#endif
 
+	scaleFactorVertical = 1.0;
 
 	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
 	irr::video::E_DRIVER_TYPE driverType = mgr->getVideoDriver()->getDriverType();
@@ -179,6 +179,11 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
 }
 
 
+void MovingWaterSceneNode::setVerticalScale(f32 scale)
+{
+    scaleFactorVertical = scale;
+}
+
 void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 {
 	//std::cout << "In OnAnimate()" << std::endl;
@@ -205,24 +210,18 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
 			for (u32 i=0; i<vtxCnt; ++i) {
 				mesh->getMeshBuffer(b)->getPosition(i).X = -1*vertices[i].x; //Swap sign to maintain correct rotation order of vertices: TODO: Look at basic definition of X and Z coordinate system between water and FFTWave
-				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y;
+				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y*scaleFactorVertical;
 				mesh->getMeshBuffer(b)->getPosition(i).Z = vertices[i].z;
 
-				//Set normals (TODO: Check this!)
-				mesh->getMeshBuffer(b)->getNormal(i).X = -1*vertices[i].nx;
-				mesh->getMeshBuffer(b)->getNormal(i).Y = vertices[i].ny;
-				mesh->getMeshBuffer(b)->getNormal(i).Z = vertices[i].nz;
-
-				//Manually recalculate normals
-				//SceneManager->getMeshManipulator()->recalculateNormals(mesh->getMeshBuffer(b))
+				//Set normals (TODO: Disable normal calculation in FFT for speed)
+				//mesh->getMeshBuffer(b)->getNormal(i).X = -1*vertices[i].nx;
+				//mesh->getMeshBuffer(b)->getNormal(i).Y = vertices[i].ny;
+				//mesh->getMeshBuffer(b)->getNormal(i).Z = vertices[i].nz;
             }
-
-
+            //Manually recalculate normals
+            SceneManager->getMeshManipulator()->recalculateNormals(mesh->getMeshBuffer(b));
         }// end for all mesh buffers
-
-
 		mesh->setDirty(scene::EBT_VERTEX);
-
 	}
 	IMeshSceneNode::OnAnimate(timeMs);
 }

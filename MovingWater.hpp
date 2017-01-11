@@ -109,8 +109,8 @@ namespace scene
 		MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
             ISceneNode* parent, ISceneManager* mgr,	s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& rotation = core::vector3df(0,0,0),
-			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
+			const core::vector3df& rotation = core::vector3df(0,0,0)
+			);
 
 		//! destructor
 		//virtual ~MovingWaterSceneNode();
@@ -141,6 +141,8 @@ namespace scene
 		virtual void setReadOnlyMaterials(bool readonly);
 		virtual bool isReadOnlyMaterials() const;
 
+		void setVerticalScale(f32 scale);
+
 
 	private:
 
@@ -150,6 +152,7 @@ namespace scene
 		f32 WaveSpeed;
 		f32 WaveHeight;
 		f32 tileWidth;
+		f32 scaleFactorVertical;
 		IMesh* mesh;
 		cOcean* ocean;
 	};
