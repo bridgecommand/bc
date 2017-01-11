@@ -78,7 +78,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
 
-    terrain = smgr->addTerrainSceneNode(
+    /*terrain = smgr->addTerrainSceneNode(
                        heightMapPath.c_str(),//Height map file: Note this should normally be .png - avoid .bmp because of odd irrlicht handling.
                        0,					 // parent node
                        -1,					 // node id
@@ -91,12 +91,28 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 		               scene::ETPS_17,		// patchSize
 		               0					// smooth factor
                        );
-
-    if (terrain==0) {
+    */
+    //Add an empty terrain
+    terrain = smgr->addTerrainSceneNode("",0,-1,core::vector3df(0.f, terrainY, 0.f),core::vector3df(0.f, 0.f, 0.f),core::vector3df(scaleX,scaleY,scaleZ),video::SColor(255,255,255,255),5,scene::ETPS_17,0,true);
+    //Load the map
+    io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
+    //Check the height map file has loaded and the terrain exists
+    if (terrain==0 || heightMapFile == 0) {
         //Could not load terrain
         //ToDo: Tell user that terrain couldn't be loaded
         exit(EXIT_FAILURE);
     }
+
+    //Load the terrain and check success
+    bool loaded = terrain->loadHeightMap(heightMapFile);
+    if (!loaded) {
+        //Could not load terrain
+        //ToDo: Tell user that terrain couldn't be loaded
+        exit(EXIT_FAILURE);
+    }
+
+    heightMapFile->drop();
+    //TODO: Do we need to drop terrain?
 
     terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
     terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
