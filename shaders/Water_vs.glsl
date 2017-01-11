@@ -15,7 +15,7 @@
        Texcoord    = gl_MultiTexCoord0.xy;
        Normal      = gl_NormalMatrix * gl_Normal;
        ViewDirection = normalize(gl_Position.xyz);
-       Normal      = (matViewInverse*vec4(Normal,0)).xyz;
+       Normal      = normalize((matViewInverse*vec4(Normal,0)).xyz);
        ViewDirection = (matViewInverse*vec4(ViewDirection,0)).xyz;
     }
 

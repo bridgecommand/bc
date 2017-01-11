@@ -86,7 +86,7 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
 
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
 
-    //scale with weather
-    waterNode->setScale(core::vector3df(1.0,weather,1.0)); //This also scales the child nodes
+    //scale with weather TODO: Move into MovingWater.cpp, and make sure we scale the normals as well.
+    //waterNode->setScale(core::vector3df(1.0,weather,1.0)); //This also scales the child nodes
 
 }

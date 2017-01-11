@@ -13,7 +13,7 @@
     void main()
     {
         vec4 color = texture(baseMap,Texcoord);
-        vec3 reflection = normalize(reflect(ViewDirection,Normal));
+        vec3 reflection = reflect(ViewDirection,Normal);
         vec4 refl = texture(reflectionMap,reflection);
 
         //James: Fog
@@ -24,6 +24,6 @@
         fogFactor = clamp(fogFactor, 0.0, 1.0);
 
         gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor );
-        //gl_FragColor = color*refl;
+
     }
 

@@ -209,16 +209,20 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 				mesh->getMeshBuffer(b)->getPosition(i).Z = vertices[i].z;
 
 				//Set normals (TODO: Check this!)
-				mesh->getMeshBuffer(b)->getNormal(i).X = -1*vertices[i].x;
-				mesh->getMeshBuffer(b)->getNormal(i).Y = vertices[i].y;
-				mesh->getMeshBuffer(b)->getNormal(i).Z = vertices[i].z;
+				mesh->getMeshBuffer(b)->getNormal(i).X = -1*vertices[i].nx;
+				mesh->getMeshBuffer(b)->getNormal(i).Y = vertices[i].ny;
+				mesh->getMeshBuffer(b)->getNormal(i).Z = vertices[i].nz;
+
+				//Manually recalculate normals
+				//SceneManager->getMeshManipulator()->recalculateNormals(mesh->getMeshBuffer(b))
             }
 
 
         }// end for all mesh buffers
+
+
 		mesh->setDirty(scene::EBT_VERTEX);
 
-		SceneManager->getMeshManipulator()->recalculateNormals(mesh);
 	}
 	IMeshSceneNode::OnAnimate(timeMs);
 }
