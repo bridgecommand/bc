@@ -21,6 +21,7 @@
 
 #include "IniFile.hpp"
 #include "Constants.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -104,7 +105,23 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     }
 
     //Load the terrain and check success
-    bool loaded = terrain->loadHeightMap(heightMapFile);
+    bool loaded = false;
+    //Check if extension is .f32 for binary floating point file
+    std::string extension = "";
+    if (heightMapName.length() > 3) {
+        extension = heightMapName.substr(heightMapName.length() - 4,4);
+        Utilities::to_lower(extension);
+    }
+    if (extension.compare(".f32") == 0 ) {
+        //Binary file
+        loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
+        //Set scales etc to be 1.0, so heights are used directly
+        terrain->setScale(core::vector3df(scaleX,1.0f,scaleZ));
+        terrain->setPosition(core::vector3df(0.f, 0.f, 0.f));
+    } else {
+        loaded = terrain->loadHeightMap(heightMapFile);
+    }
+
     if (!loaded) {
         //Could not load terrain
         //ToDo: Tell user that terrain couldn't be loaded
