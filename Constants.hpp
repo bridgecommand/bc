@@ -34,7 +34,7 @@ const irr::f32 PI = 3.1415926535897932384626433832795;
 const irr::f32 RAD_IN_DEG = PI/180.0;
 
 //general definitions
-const std::string LONGNAME = "Bridge Command 5.0 Beta 4";
-const std::string VERSION = "5.0b4";
+const std::string LONGNAME = "Bridge Command 5.0 Beta 5";
+const std::string VERSION = "5.0b5";
 
 #endif
