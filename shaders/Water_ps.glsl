@@ -6,6 +6,8 @@
     uniform sampler2D baseMap;
     uniform samplerCube reflectionMap;
 
+    uniform float LightLevel; //
+
     varying vec2 Texcoord;
     varying vec3 Normal;
     varying vec3 ViewDirection;
@@ -30,8 +32,7 @@
         fogFactor = clamp(fogFactor, 0.0, 1.0);
 
         //gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor ); //Cubemap
-        gl_FragColor = mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
-
+        gl_FragColor = LightLevel*mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
 
     }
 

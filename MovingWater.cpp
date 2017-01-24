@@ -34,7 +34,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 		const core::vector3df& position, const core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
 	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)),
-	WaveLength(waveLength), WaveSpeed(waveSpeed), WaveHeight(waveHeight)
+	WaveLength(waveLength), WaveSpeed(waveSpeed), WaveHeight(waveHeight), LightLevel(0.75)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -47,7 +47,11 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 	irr::video::IVideoDriver* driver = mgr->getVideoDriver();
 	irr::video::ITexture* cubemap;
 	irr::video::IImage* cubemapImages[6];
-	cubemapConstants* cns = new cubemapConstants(driverType==irr::video::EDT_OPENGL);
+
+	IsOpenGL = (driverType==irr::video::EDT_OPENGL);
+    firstRun = true;
+
+	//cubemapConstants* cns = new cubemapConstants(driverType==irr::video::EDT_OPENGL);
     //So far there are no materials ready to use a cubemap, so we provide our own.
     irr::s32 shader;
 
@@ -59,7 +63,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
             "shaders/shader.hlsl",
             "ps_main",
             irr::video::EPST_PS_2_0,
-            cns,
+            this, //For callbacks
             irr::video::EMT_SOLID
             );
     else //OpenGL
@@ -70,7 +74,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
             "shaders/Water_ps.glsl",
             "main",
             irr::video::EPST_PS_2_0,
-            cns,
+            this, //For callbacks
             irr::video::EMT_SOLID
             );
 
@@ -166,6 +170,58 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 
 }
 
+void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
+{
+    //From Mel's cubemap demo
+    if(firstRun) {
+            firstRun = false;
+
+            driver = services->getVideoDriver();
+            //Looking for our constants IDs...
+            matViewInverse = services->getVertexShaderConstantID("matViewInverse");
+
+            if(IsOpenGL)
+            {
+                baseMap = services->getPixelShaderConstantID("baseMap");
+                reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+            }
+            else
+            {
+                matWorldViewProjection=services->getVertexShaderConstantID("matWorldViewProjection");
+                matWorld = services->getVertexShaderConstantID("matWorld");
+            }
+        }
+
+        //Setting up our constants...
+        irr::core::matrix4 mat;
+
+        mat = driver->getTransform(irr::video::ETS_VIEW);
+        mat.makeInverse();
+        services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
+
+        if(IsOpenGL)
+        {
+            int sampler=0;
+            services->setPixelShaderConstant(baseMap,&sampler,1);
+            sampler=1;
+            services->setPixelShaderConstant(reflectionMap,&sampler,1);
+        }
+        else
+        {
+            mat = driver->getTransform(irr::video::ETS_PROJECTION);
+            mat *= driver->getTransform(irr::video::ETS_VIEW);
+            mat *= driver->getTransform(irr::video::ETS_WORLD);
+            services->setVertexShaderConstant(matWorldViewProjection,mat.pointer(),16);
+
+            mat = driver->getTransform(irr::video::ETS_WORLD);
+            services->setVertexShaderConstant(matWorld,mat.pointer(),16);
+        }
+    //End from Mel's cubemap demo
+
+
+    services->setPixelShaderConstant(services->getVertexShaderConstantID("LightLevel"), &LightLevel, 1);
+}
+
 
 //! frame
 void MovingWaterSceneNode::OnRegisterSceneNode()
@@ -175,7 +231,8 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
 	if (IsVisible)
             SceneManager->registerNodeForRendering(this);
 
-        ISceneNode::OnRegisterSceneNode();
+
+    ISceneNode::OnRegisterSceneNode();
 }
 
 
