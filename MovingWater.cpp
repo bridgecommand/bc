@@ -44,7 +44,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
 	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
 	irr::video::E_DRIVER_TYPE driverType = mgr->getVideoDriver()->getDriverType();
-	irr::video::IVideoDriver* driver = mgr->getVideoDriver();
+	driver = mgr->getVideoDriver();
 	irr::video::ITexture* cubemap;
 	irr::video::IImage* cubemapImages[6];
 
@@ -219,6 +219,7 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
     //End from Mel's cubemap demo
 
 
+
     services->setPixelShaderConstant(services->getVertexShaderConstantID("LightLevel"), &LightLevel, 1);
 }
 
@@ -305,7 +306,7 @@ void MovingWaterSceneNode::render()
 
     //std::cout << "In render()" << std::endl;
 
-    video::IVideoDriver* driver = SceneManager->getVideoDriver();
+    //video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if (!mesh || !driver)
 		return;

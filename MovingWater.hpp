@@ -35,17 +35,6 @@ namespace scene
 	{
 	public:
 
-		int matWorldViewProjection;//Identifiers, much faster than string matching...
-        int matViewInverse;
-        int matWorld;
-        int baseMap;
-        int reflectionMap;
-
-        bool firstRun;
-        bool IsOpenGL;//Our constants set callback isn't limited to D3D9
-
-        irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
-
 		//! constructor
 		MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
             ISceneNode* parent, ISceneManager* mgr,	s32 id,
@@ -89,6 +78,15 @@ namespace scene
 
 	private:
 
+        //Shader related
+        int matWorldViewProjection;//Identifiers, much faster than string matching...
+        int matViewInverse;
+        int matWorld;
+        int baseMap;
+        int reflectionMap;
+        bool firstRun;
+        bool IsOpenGL;//Our constants set callback isn't limited to D3D9
+        irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
         //f32 addWave(const core::vector3df &source, f32 time) const;
 		f32 LightLevel;
