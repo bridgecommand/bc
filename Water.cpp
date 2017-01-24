@@ -87,6 +87,6 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
 
     //scale with weather
-    waterNode->setVerticalScale(weather);
+    waterNode->setVerticalScale(sqrt(weather));
 
 }

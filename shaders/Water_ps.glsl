@@ -14,7 +14,13 @@
     {
         vec4 color = texture(baseMap,Texcoord);
         vec3 reflection = reflect(ViewDirection,Normal);
-        vec4 refl = texture(reflectionMap,reflection);
+
+        //vec4 refl = texture(reflectionMap,reflection); //Temporarily not used - seems to break on my implementation of GLSL for some reason
+
+        //Alternative simple shading:
+        float brightness = 0.5+0.5*dot(reflection,vec3(0,1,0));
+        vec4 simpleShading = vec4(brightness,brightness,brightness,1.0);
+
 
         //James: Fog
         float fogFactor;
@@ -23,7 +29,9 @@
         fogFactor = (gl_Fog.end - z) / (gl_Fog.end - gl_Fog.start);
         fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-        gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor );
+        //gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor ); //Cubemap
+        gl_FragColor = mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
+
 
     }
 
