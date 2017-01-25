@@ -248,6 +248,10 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	if (mesh && IsVisible)
 	{
 
+        //Set light level
+        video::SColorf ambientLight = this->getSceneManager()->getAmbientLight();
+        LightLevel = (ambientLight.r + ambientLight.g + ambientLight.b) / 3.0; //Average
+
 		const f32 time = timeMs / 1000.f;
 
 		//Update the FFT Calculation
