@@ -143,6 +143,8 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
     }
     */
 
+
+
     for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
@@ -158,6 +160,10 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
         }
     }
 
+
+    //Hard code bounding box to be large - we always want to render water, and we actually render multiple displaced copies of the mesh, so just getting the mesh bounding box isn't correct.
+    //TODO: Look here if there's a problem with the water disappearing or if we implement collision with water.
+    boundingBox = core::aabbox3d<f32>(-10000,-100,-10000,10000,100,10000);
 
 }
 
@@ -229,9 +235,9 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
 {
     //std::cout << "In OnRegisterSceneNode()" << std::endl;
 
-	if (IsVisible)
-            SceneManager->registerNodeForRendering(this);
-
+	if (IsVisible) {
+        SceneManager->registerNodeForRendering(this);
+    }
 
     ISceneNode::OnRegisterSceneNode();
 }
@@ -260,12 +266,6 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
 		const u32 meshBufferCount = mesh->getMeshBufferCount();
 
-        //JAMES: new for seamless edges between multiple scene nodes
-        updateAbsolutePosition();
-        core::vector3df absolutePosition = getAbsolutePosition();
-        core::vector3df absolutePositionXZ(absolutePosition.X, 0, absolutePosition.Z);
-        //end new
-
 		for (u32 b=0; b<meshBufferCount; ++b)
 		{
 			const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
@@ -288,17 +288,6 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	IMeshSceneNode::OnAnimate(timeMs);
 }
 
-/*f32 MovingWaterSceneNode::addWave(const core::vector3df &source, f32 time) const
-{
-	//std::cout << "X: " << source.X << ", Z:" << source.Z << std::endl;
-
-	//std::cout << (0+WaveSpeed*time)/(WaveLength*2*core::PI) << std::endl;
-	//std::cout << WaveLength << std::endl;
-	return  (0*sinf(2*core::PI*(source.X - WaveSpeed*time)/WaveLength) * WaveHeight) +
-            (cosf(2*core::PI*(source.Z - WaveSpeed*time)/WaveLength) * WaveHeight);
-}
-*/
-
 void MovingWaterSceneNode::setMesh(IMesh* mesh)
 {
     //std::cout << "In setMesh()" << std::endl;
@@ -310,12 +299,12 @@ void MovingWaterSceneNode::render()
 
     //std::cout << "In render()" << std::endl;
 
-    //video::IVideoDriver* driver = SceneManager->getVideoDriver();
-
-	if (!mesh || !driver)
+	if (!mesh || !driver) {
+		std::cout << "Could not render" << std::endl;
 		return;
+    }
 
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+	//driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
@@ -325,10 +314,8 @@ void MovingWaterSceneNode::render()
             const video::SMaterial& material = mb->getMaterial();
 
             // only render transparent buffer if this is the transparent render pass
-            // and solid only in solid pass
+            // and solid only in solid pass: TODO: Does this need implementing?
             driver->setMaterial(material);
-            driver->drawMeshBuffer(mb);
-
 
             core::vector3df basicPosition = AbsoluteTransformation.getTranslation();
 
@@ -342,23 +329,17 @@ void MovingWaterSceneNode::render()
             }
 
             AbsoluteTransformation.setTranslation(basicPosition);
-            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
+        } else {
+            std::cout << "No meshbuffer to render" << std::endl;
         }
     }
-
-	//driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 }
 
 const core::aabbox3d<f32>& MovingWaterSceneNode::getBoundingBox() const
 {
-    //std::cout << "In getBoundingBox()" << std::endl;
-    if (mesh) {
-        return mesh->getBoundingBox();
-    } else {
-        return core::aabbox3d<f32>(0,0,0,1,1,1);
-    }
+    return boundingBox;
 }
 
 IMesh* MovingWaterSceneNode::getMesh(void)
@@ -382,7 +363,7 @@ void MovingWaterSceneNode::setReadOnlyMaterials(bool readonly)
 bool MovingWaterSceneNode::isReadOnlyMaterials() const
 {
     //std::cout << "In isReadOnlyMaterials()" << std::endl;
-    return false; //Fixme: Check!
+    return true; //Fixme: Check!
 }
 
 void MovingWaterSceneNode::setMaterialTexture(u32 textureLayer, video::ITexture * texture)

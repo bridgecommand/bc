@@ -18,6 +18,7 @@
 //on the absolute position, so you can tile multiple water nodes seamlessly.
 
 #include <vector>
+#include <iostream>
 
 #include "Water.hpp"
 #include "Utilities.hpp"
@@ -83,6 +84,8 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
     f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
     f32 yPos = tideHeight;
     f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+
+    //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
 
     waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
 

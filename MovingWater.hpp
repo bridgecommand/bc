@@ -97,6 +97,8 @@ namespace scene
 		f32 scaleFactorVertical;
 		IMesh* mesh;
 		cOcean* ocean;
+
+		core::aabbox3d<f32> boundingBox;
 	};
 
 } // end namespace scene
