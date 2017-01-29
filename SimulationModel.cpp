@@ -670,19 +670,19 @@ SimulationModel::~SimulationModel()
         //update water position
         water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
-        //Normalise positions if required (More than 100 metres from origin)
+        //Normalise positions if required (More than 1000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
-        if(ownShip.getPosition().getLength() > 100) {
+        if(ownShip.getPosition().getLength() > 1000) {
             core::vector3df ownShipPos = ownShip.getPosition();
             irr::s32 deltaX = -1*(s32)ownShipPos.X;
             irr::s32 deltaZ = -1*(s32)ownShipPos.Z;
-            //Round to nearest 1000 metres - water tile width, to avoid jumps
-            deltaX = 50.0*Utilities::round(deltaX/50.0);
-            deltaZ = 50.0*Utilities::round(deltaZ/50.0);
+            //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
+            deltaX = 500.0*Utilities::round(deltaX/500.0);
+            deltaZ = 500.0*Utilities::round(deltaZ/500.0);
 
             //Move all objects
             ownShip.moveNode(deltaX,0,deltaZ);
-            terrain.moveNode(deltaX,0,deltaZ);
+            terrain.moveNode(deltaX,0,deltaZ); //SLOW!
             otherShips.moveNode(deltaX,0,deltaZ);
             buoys.moveNode(deltaX,0,deltaZ);
             landObjects.moveNode(deltaX,0,deltaZ);
@@ -700,7 +700,7 @@ SimulationModel::~SimulationModel()
             device->getLogger()->log(normalisedLogMessage.c_str());
 
             //Debugging
-            std::cout << normalisedLogMessage << std::endl;
+            //std::cout << normalisedLogMessage << std::endl;
 
         }
 

@@ -80,7 +80,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 lightLevel, irr::f32 weather)
 {
-    //Round these to nearest segmentWidth
+    //Round these to nearest tileWidth
     f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
     f32 yPos = tideHeight;
     f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
