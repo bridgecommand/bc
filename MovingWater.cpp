@@ -20,6 +20,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "MovingWater.hpp"
+#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -118,7 +119,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
 	//FIXME: Hardcoded or defined in multiple places
 	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
-    irr::u32 segments = 32; //How many tiles per segment
+    segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
     ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth);
@@ -286,6 +287,38 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 		mesh->setDirty(scene::EBT_VERTEX);
 	}
 	IMeshSceneNode::OnAnimate(timeMs);
+}
+
+f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
+{
+
+    //Adjust relative position by 1/2 tile width
+
+
+    //Get the wave height (not including tide height) at this position relative to the origin of the water
+    f32 relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
+    f32 relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
+
+    //TODO: Probably not needed?
+    while (relPosXInternal < 0)
+        relPosXInternal+=tileWidth;
+    while (relPosZInternal < 0)
+        relPosZInternal+=tileWidth;
+
+
+    unsigned int xIndex = Utilities::round((f32)(segments+1)*relPosXInternal/tileWidth);
+    unsigned int zIndex = Utilities::round((f32)(segments+1)*relPosZInternal/tileWidth);
+    xIndex = (segments+1) - xIndex; //Sign of x is flipped when heights are applied!
+
+    unsigned int overallIndex = (segments+1) * zIndex + xIndex; //This should be the index of the closest vertex
+
+    vertex_ocean* vertices = ocean->getVertices();
+    f32 localHeight = vertices[overallIndex].y*scaleFactorVertical; //TODO: Error checking here!
+
+    //std::cout << "Index:"  << overallIndex << " RequestedX:" << relPosX << " RequestedZ:" << relPosZ << " VertexX:" << vertices[overallIndex].x << " VertexZ:" << vertices[overallIndex].z << std::endl;
+
+    return localHeight;
+
 }
 
 void MovingWaterSceneNode::setMesh(IMesh* mesh)

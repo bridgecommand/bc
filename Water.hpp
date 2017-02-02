@@ -27,6 +27,8 @@ class Water
         virtual ~Water();
         void load(irr::scene::ISceneManager* smgr, irr::f32 weather);
         void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
+        irr::f32 getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const;
+        irr::core::vector3df getPosition() const;
 
     private:
         irr::f32 tileWidth;

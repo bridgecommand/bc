@@ -253,6 +253,10 @@ SimulationModel::~SimulationModel()
         return getSpeed(); //FIXME: Will need to be updated when currents etc included
     }
 
+    irr::f32 SimulationModel::getWaveHeight(irr::f32 posX, irr::f32 posZ) const {
+        return water.getWaveHeight(posX,posZ);
+    }
+
    // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
    //    //FIXME: Complete
    // }

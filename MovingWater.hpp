@@ -75,6 +75,8 @@ namespace scene
 
 		void setVerticalScale(f32 scale);
 
+		f32 getWaveHeight(f32 relPosX, f32 relPosZ) const;
+
 
 	private:
 
@@ -87,6 +89,8 @@ namespace scene
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
+
+        irr::u32 segments;
 
         //f32 addWave(const core::vector3df &source, f32 time) const;
 		f32 LightLevel;

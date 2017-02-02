@@ -93,3 +93,13 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
     waterNode->setVerticalScale(sqrt(weather));
 
 }
+
+irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
+{
+    waterNode->getWaveHeight(relPosX,relPosZ);
+}
+
+irr::core::vector3df Water::getPosition() const
+{
+    waterNode->getPosition();
+}

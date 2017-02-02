@@ -37,6 +37,8 @@ Buoys::~Buoys()
 
 void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
 {
+    this->model = model;
+
     //get buoy.ini filename
     std::string scenarioBuoyFilename = worldName;
     scenarioBuoyFilename.append("/buoy.ini");
@@ -101,7 +103,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         f32 xPos, yPos, zPos;
         core::vector3df pos = it->getPosition();
         xPos = pos.X;
-        yPos = tideHeight;
+        yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z);
         zPos = pos.Z;
         it->setPosition(core::vector3df(xPos,yPos,zPos));
     }
