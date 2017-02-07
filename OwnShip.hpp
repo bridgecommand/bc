@@ -61,6 +61,7 @@ class OwnShip : public Ship
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
         Terrain* terrain;
+        SimulationModel* model;
         irr::f32 rollPeriod; //Roll period (s)
         irr::f32 rollAngle; //Roll Angle (deg)
         irr::f32 pitchPeriod; //Roll period (s)
@@ -102,6 +103,8 @@ class OwnShip : public Ship
         irr::f32 rudderTorque;
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
+
+        irr::f32 waveHeightFiltered; //1st order transfer filtered response to waves
         //General settings
         bool gps;
         bool depthSounder;

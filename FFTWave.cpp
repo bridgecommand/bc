@@ -267,6 +267,7 @@ cOcean::cOcean(const int N, const float A, const vector2 w, const float length) 
 
 	int index;
 
+	//NOTE: Code from here duplicated in hTilde()
 	complex htilde0, htilde0mk_conj;
 	for (int m_prime = 0; m_prime < Nplus1; m_prime++) {
 		for (int n_prime = 0; n_prime < Nplus1; n_prime++) {
@@ -289,6 +290,8 @@ cOcean::cOcean(const int N, const float A, const vector2 w, const float length) 
 			vertices[index].nz = 0.0f;
 		}
 	}
+
+	reInitialiseWaves = false;
 }
 
 cOcean::~cOcean() {
@@ -338,8 +341,24 @@ complex cOcean::hTilde_0(int n_prime, int m_prime) {
 complex cOcean::hTilde(float t, int n_prime, int m_prime) {
 	int index = m_prime * Nplus1 + n_prime;
 
-	//vertices[index].a *= 0.1;
-	//vertices[index].b *= 0.1;
+	if (reInitialiseWaves) { //NOTE: Code duplication from constructor here
+        complex htilde0, htilde0mk_conj;
+        htilde0        = hTilde_0( n_prime,  m_prime);
+        htilde0mk_conj = hTilde_0(-n_prime, -m_prime).conj();
+
+        vertices[index].a  = htilde0.a;
+        vertices[index].b  = htilde0.b;
+        vertices[index]._a = htilde0mk_conj.a;
+        vertices[index]._b = htilde0mk_conj.b;
+
+        vertices[index].ox = vertices[index].x =  (n_prime - N / 2.0f) * length / N;
+        vertices[index].oy = vertices[index].y =  0.0f;
+        vertices[index].oz = vertices[index].z =  (m_prime - N / 2.0f) * length / N;
+
+        vertices[index].nx = 0.0f;
+        vertices[index].ny = 1.0f;
+        vertices[index].nz = 0.0f;
+	}
 
 	complex htilde0(vertices[index].a,  vertices[index].b);
 	complex htilde0mkconj(vertices[index]._a, vertices[index]._b);
@@ -356,7 +375,7 @@ complex cOcean::hTilde(float t, int n_prime, int m_prime) {
 
 	return htilde0 * c0 + htilde0mkconj*c1;
 }
-
+/*
 complex_vector_normal cOcean::h_D_and_n(vector2 x, float t) {
 	complex h(0.0f, 0.0f);
 	vector2 D(0.0f, 0.0f);
@@ -395,9 +414,21 @@ complex_vector_normal cOcean::h_D_and_n(vector2 x, float t) {
 	cvn.n = n;
 	return cvn;
 }
+*/
 
+void cOcean::resetParameters(float A, vector2 w)
+{
+    //Only set if different
+    if (this->A == A && this->w.x == w.x && this->w.y == w.y)
+        return;
+
+    this->A = A;
+    this->w = w;
+    reInitialiseWaves = true;
+}
 
 void cOcean::evaluateWavesFFT(float t) {
+
 	float kx, kz, len, lambda = -1.0f;
 	int index, index1;
 
@@ -420,6 +451,8 @@ void cOcean::evaluateWavesFFT(float t) {
 			}
 		}
 	}
+
+	reInitialiseWaves = false; //If we had to re-initialise, this is done in hTilde, so should now be complete for all vertexes
 
 	for (int m_prime = 0; m_prime < N; m_prime++) {
 		fft->fft(h_tilde, h_tilde, 1, m_prime * N);

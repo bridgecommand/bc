@@ -73,7 +73,8 @@ namespace scene
 		virtual void setReadOnlyMaterials(bool readonly);
 		virtual bool isReadOnlyMaterials() const;
 
-		void setVerticalScale(f32 scale);
+		//void setVerticalScale(f32 scale);
+		void resetParameters(float A, vector2 w);
 
 		f32 getWaveHeight(f32 relPosX, f32 relPosZ) const;
 
@@ -98,7 +99,7 @@ namespace scene
 		f32 WaveSpeed;
 		f32 WaveHeight;
 		f32 tileWidth;
-		f32 scaleFactorVertical;
+		//f32 scaleFactorVertical;
 		IMesh* mesh;
 		cOcean* ocean;
 

@@ -34,6 +34,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Store reference to terrain
     this->terrain = terrain;
 
+    //Store reference to model
+    this->model = model;
+
     //reference to device (for logging etc)
     device=dev;
 
@@ -187,6 +190,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //set initial pitch and roll
     pitch = 0;
     roll = 0;
+    waveHeightFiltered = 0;
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
@@ -367,7 +371,12 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     } else {
         positionManuallyUpdated = false;
     }
-    yPos = tideHeight+heightCorrection;
+
+    //Apply up/down motion from waves, with some filtering
+    f32 timeConstant = 0.25;//Time constant in s
+    f32 factor = deltaTime/(timeConstant+deltaTime);
+    waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(xPos,zPos); //TODO: Check implementation of simple filter!
+    yPos = tideHeight+heightCorrection + waveHeightFiltered;
 
     //calculate pitch and roll - not linked to water/wave motion
     if (pitchPeriod>0)

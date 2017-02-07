@@ -126,6 +126,7 @@ class cOcean {
 	int N, Nplus1;				// dimension -- N should be a power of 2
 	float A;				// phillips spectrum parameter -- affects heights of waves
 	vector2 w;				// wind parameter
+	bool reInitialiseWaves; // If waves should be re-created (as new A or w?)
 	float length;				// length parameter
 	complex *h_tilde,			// for fast fourier transform
 		*h_tilde_slopex, *h_tilde_slopez,
@@ -145,13 +146,14 @@ class cOcean {
 	float phillips(int n_prime, int m_prime);		// phillips spectrum
 	complex hTilde_0(int n_prime, int m_prime);
 	complex hTilde(float t, int n_prime, int m_prime);
-	complex_vector_normal h_D_and_n(vector2 x, float t);
+	//complex_vector_normal h_D_and_n(vector2 x, float t);
 
   protected:
   public:
 	cOcean(const int N, const float A, const vector2 w, const float length);
 	~cOcean();
 
+	void resetParameters(float A, vector2 w);
 	void evaluateWavesFFT(float t);
 	vertex_ocean* getVertices();
 };

@@ -40,6 +40,9 @@ OtherShips::~OtherShips()
 void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
 {
 
+    //Store reference to model
+    this->model = model;
+
     for(u32 i=0;i<otherShipsData.size();i++)
     {
         //Get ship type and construct filename
@@ -86,7 +89,11 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
 void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        it->update(deltaTime, scenarioTime, tideHeight, lightLevel);
+        //Find local wave height
+        irr::core::vector3df prevPosition = it->getPosition();
+        f32 waveHeight = model->getWaveHeight(prevPosition.X,prevPosition.Z);
+
+        it->update(deltaTime, scenarioTime, tideHeight+waveHeight, lightLevel); //TODO: Some filtering here, so we smoothly respond to the waves?
     }
 }
 

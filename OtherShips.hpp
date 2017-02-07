@@ -57,6 +57,7 @@ class OtherShips
 
     private:
         std::vector<OtherShip> otherShips;
+        SimulationModel* model;
 };
 
 #endif

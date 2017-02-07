@@ -41,7 +41,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 	setDebugName("MovingWaterSceneNode");
 	#endif
 
-	scaleFactorVertical = 1.0;
+	//scaleFactorVertical = 1.0;
 
 	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
 	irr::video::E_DRIVER_TYPE driverType = mgr->getVideoDriver()->getDriverType();
@@ -122,7 +122,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
     segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
-    ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth);
+    ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth); //Note that the A and w parameters will get overwritten by ocean->resetParameters() dependent on the model's weather
 
 	mesh = mgr->addHillPlaneMesh( "myHill",
                            core::dimension2d<f32>(segmentSize,segmentSize),
@@ -175,6 +175,11 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 	// Mesh is dropped in IMeshSceneNode destructor (??? FIXME: Probably not true!)
     delete ocean;
 
+}
+
+void MovingWaterSceneNode::resetParameters(float A, vector2 w)
+{
+    ocean->resetParameters(A,w);
 }
 
 void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
@@ -243,11 +248,12 @@ void MovingWaterSceneNode::OnRegisterSceneNode()
     ISceneNode::OnRegisterSceneNode();
 }
 
-
+/*
 void MovingWaterSceneNode::setVerticalScale(f32 scale)
 {
     scaleFactorVertical = scale;
 }
+*/
 
 void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 {
@@ -273,7 +279,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
 			for (u32 i=0; i<vtxCnt; ++i) {
 				mesh->getMeshBuffer(b)->getPosition(i).X = -1*vertices[i].x; //Swap sign to maintain correct rotation order of vertices: TODO: Look at basic definition of X and Z coordinate system between water and FFTWave
-				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y*scaleFactorVertical;
+				mesh->getMeshBuffer(b)->getPosition(i).Y = vertices[i].y;
 				mesh->getMeshBuffer(b)->getPosition(i).Z = vertices[i].z;
 
 				//Set normals (TODO: Disable normal calculation in FFT for speed)
@@ -313,7 +319,7 @@ f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
     unsigned int overallIndex = (segments+1) * zIndex + xIndex; //This should be the index of the closest vertex
 
     vertex_ocean* vertices = ocean->getVertices();
-    f32 localHeight = vertices[overallIndex].y*scaleFactorVertical; //TODO: Error checking here!
+    f32 localHeight = vertices[overallIndex].y; //TODO: Error checking here!
 
     //std::cout << "Index:"  << overallIndex << " RequestedX:" << relPosX << " RequestedZ:" << relPosZ << " VertexX:" << vertices[overallIndex].x << " VertexZ:" << vertices[overallIndex].z << std::endl;
 
