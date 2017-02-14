@@ -101,6 +101,7 @@ namespace scene
 		f32 tileWidth;
 		//f32 scaleFactorVertical;
 		IMesh* mesh;
+		IMesh* flatMesh;
 		cOcean* ocean;
 
 		core::aabbox3d<f32> boundingBox;

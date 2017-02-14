@@ -132,17 +132,26 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            core::dimension2d<f32>(0,0),
                            core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
 
-    /*
+
+    flatMesh = mgr->getMesh("media/flatsea.x");
+    if (!flatMesh) {
+        std::cout << "Could not load flat sea mesh from media/flatsea.x" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+
     //For testing, make wireframe
-    for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+    /*
+    for (u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
     {
-        scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+        scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
         if (mb)
         {
             mb->getMaterial().setFlag(video::EMF_WIREFRAME, true);
         }
     }
     */
+
 
 
 
@@ -160,6 +169,23 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
         }
     }
+
+
+    for (u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
+    {
+        scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
+        if (mb)
+        {
+            mb->getMaterial().setTexture(0,driver->getTexture("media/water.bmp"));
+            if (cubemapCreated) {
+                mb->getMaterial().setTexture(1,cubemap);
+                mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+            }
+            mb->getMaterial().FogEnable = true;
+
+        }
+    }
+
 
 
     //Hard code bounding box to be large - we always want to render water, and we actually render multiple displaced copies of the mesh, so just getting the mesh bounding box isn't correct.
@@ -345,6 +371,7 @@ void MovingWaterSceneNode::render()
 
 	//driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
+	//Draw main water
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
@@ -368,6 +395,27 @@ void MovingWaterSceneNode::render()
             }
 
             AbsoluteTransformation.setTranslation(basicPosition);
+
+        } else {
+            std::cout << "No meshbuffer to render" << std::endl;
+        }
+    }
+
+    //Draw flat sea beyond the animated sea
+	for (u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
+    {
+        scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
+        if (mb)
+        {
+            const video::SMaterial& material = mb->getMaterial();
+
+            // only render transparent buffer if this is the transparent render pass
+            // and solid only in solid pass: TODO: Does this need implementing?
+            driver->setMaterial(material);
+
+            driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+            driver->drawMeshBuffer(mb);
+
 
         } else {
             std::cout << "No meshbuffer to render" << std::endl;
