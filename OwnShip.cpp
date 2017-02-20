@@ -375,7 +375,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     //Apply up/down motion from waves, with some filtering
     f32 timeConstant = 0.25;//Time constant in s
     f32 factor = deltaTime/(timeConstant+deltaTime);
-    waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(xPos,zPos); //TODO: Check implementation of simple filter!
+    waveHeightFiltered = model->getWaveHeight(xPos,zPos);//(1-factor) * waveHeightFiltered + factor*model->getWaveHeight(xPos,zPos); //TODO: Check implementation of simple filter!
     yPos = tideHeight+heightCorrection + waveHeightFiltered;
 
     //calculate pitch and roll - not linked to water/wave motion

@@ -20,7 +20,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "MovingWater.hpp"
-#include "Utilities.hpp"
+//#include "Utilities.hpp"
 
 #include <iostream>
 
@@ -130,7 +130,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
                            0,
                            0.0f,
                            core::dimension2d<f32>(0,0),
-                           core::dimension2d<f32>(tileWidth/(f32)segments,tileWidth/(f32)segments));
+                           core::dimension2d<f32>(tileWidth/(f32)(segments),tileWidth/(f32)(segments)));
 
 
     flatMesh = mgr->getMesh("media/flatsea.x");
@@ -142,15 +142,16 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
     //For testing, make wireframe
     /*
-    for (u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
+    for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
     {
-        scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
+        scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
         if (mb)
         {
             mb->getMaterial().setFlag(video::EMF_WIREFRAME, true);
         }
     }
     */
+
 
 
 
@@ -337,17 +338,42 @@ f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
     while (relPosZInternal < 0)
         relPosZInternal+=tileWidth;
 
+    f32 xIndexFloat = (f32)(segments+1)*relPosXInternal/tileWidth;
+    f32 zIndexFloat = (f32)(segments+1)*relPosZInternal/tileWidth;
+    xIndexFloat = (segments+1) - xIndexFloat; //Sign of x is flipped when heights are applied!
 
-    unsigned int xIndex = Utilities::round((f32)(segments+1)*relPosXInternal/tileWidth);
-    unsigned int zIndex = Utilities::round((f32)(segments+1)*relPosZInternal/tileWidth);
-    xIndex = (segments+1) - xIndex; //Sign of x is flipped when heights are applied!
+    //std::cout << "xIndexF:" << xIndexFloat << " zIndexF:" << zIndexFloat << " segments+1:" << segments+1 << std::endl;
 
-    unsigned int overallIndex = (segments+1) * zIndex + xIndex; //This should be the index of the closest vertex
+    //Bilinear interpolation
+    unsigned int xIndex0 = floor(xIndexFloat);
+    unsigned int zIndex0 = floor(zIndexFloat);
+    unsigned int xIndex1 = ceil(xIndexFloat);
+    unsigned int zIndex1 = ceil(zIndexFloat);
+
+    //If any indexes are equal to segments+1, set to 0 (as sea tiles)
+    if (xIndex0 == (segments+1)) {xIndex0=0;}
+    if (zIndex0 == (segments+1)) {zIndex0=0;}
+    if (xIndex1 == (segments+1)) {xIndex1=0;}
+    if (zIndex1 == (segments+1)) {zIndex1=0;}
+
+    f32 interpX = xIndexFloat - xIndex0;
+    f32 interpZ = zIndexFloat - zIndex0;
+
+    unsigned int index00 = (segments+1) * zIndex0 + xIndex0;
+    unsigned int index01 = (segments+1) * zIndex1 + xIndex0;
+    unsigned int index10 = (segments+1) * zIndex0 + xIndex1;
+    unsigned int index11 = (segments+1) * zIndex1 + xIndex1;
 
     vertex_ocean* vertices = ocean->getVertices();
-    f32 localHeight = vertices[overallIndex].y; //TODO: Error checking here!
 
-    //std::cout << "Index:"  << overallIndex << " RequestedX:" << relPosX << " RequestedZ:" << relPosZ << " VertexX:" << vertices[overallIndex].x << " VertexZ:" << vertices[overallIndex].z << std::endl;
+    //Error checking here?
+    f32 height00 = vertices[index00].y;
+    f32 height01 = vertices[index01].y;
+    f32 height10 = vertices[index10].y;
+    f32 height11 = vertices[index11].y;
+
+
+    f32 localHeight = height00*(1-interpX)*(1-interpZ) + height10*interpX*(1-interpZ) + height01*(1-interpX)*interpZ + height11*interpX*interpZ;
 
     return localHeight;
 
