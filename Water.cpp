@@ -43,31 +43,9 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
     //Set tile width
     //FIXME: Hardcoded or defined in multiple places
     tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
-    irr::u32 segments = 100; //How many tiles per segment
-    irr::f32 segmentSize = tileWidth / segments;
 
-    //some water (from demo 8)
+
     waterNode = new irr::scene::MovingWaterSceneNode(0.25f,1.0f,4.0f,smgr->getRootSceneNode(),smgr,0);
-
-    //waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    //waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    //waterNode = smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f);
-    //add secondary meshes around the central water mesh: Note - Irrlicht code has been modified to get the edges to match, by basing on absolute X,Z position.
-    /*
-    std::vector<irr::scene::ISceneNode*> secondaryWaterNodes;
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 0*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df(-1*tileWidth,0, 1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 0*tileWidth,0, 1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0,-1*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 0*tileWidth)));
-    secondaryWaterNodes.push_back(smgr->addWaterSurfaceSceneNode(waterMesh->getMesh(0), 0.25f, 300.0f, 10.0f,waterNode,-1,core::vector3df( 1*tileWidth,0, 1*tileWidth)));
-    for(std::vector<irr::scene::ISceneNode*>::iterator it = secondaryWaterNodes.begin(); it != secondaryWaterNodes.end(); ++it) {
-        (*it)->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-        (*it)->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    }
-    */
 
     waterNode->setPosition(core::vector3df(0,-0.25f,0));
 
