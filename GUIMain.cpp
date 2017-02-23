@@ -736,6 +736,46 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
         }
+        //Draw compass rose around radar (?Rotate with radar in head up and course up?)
+        for (u32 ticAngle = 0; ticAngle < 360; ticAngle += 5) {
+
+            f32 displayTicAngle = ticAngle;
+            if (radarHeadUp) {
+                displayTicAngle -= guiHeading;
+            }
+
+            f32 scaling = 0.98;
+            bool showValue = false;
+            if(ticAngle % 20 == 0 ) {
+                scaling = 0.90;
+                showValue = true;
+            } else if (ticAngle % 10 == 0) {
+                scaling = 0.94;
+            }
+
+            s32 deltaXTic = radius*sin(core::DEGTORAD*displayTicAngle);
+            s32 deltaYTic = -1*radius*cos(core::DEGTORAD*displayTicAngle);
+            core::position2d<s32> ticInner (centreX + scaling*deltaXTic,centreY + scaling*deltaYTic);
+            core::position2d<s32> ticOuter (centreX + deltaXTic,centreY + deltaYTic);
+
+            device->getVideoDriver()->draw2DLine(ticInner,ticOuter,video::SColor(255, 128, 128, 128));
+
+            //Show the angle if needed
+            if (showValue) {
+
+                core::stringw angleText = core::stringw(ticAngle);
+
+                s32 textWidth = guienv->getSkin()->getFont()->getDimension(angleText.c_str()).Width;
+                s32 textHeight = guienv->getSkin()->getFont()->getDimension(angleText.c_str()).Height;
+                s32 textStartX = centreX + 0.8*deltaXTic-0.5*textWidth;
+                s32 textEndX = textStartX+textWidth;
+                s32 textStartY = centreY + 0.8*deltaYTic-0.5*textHeight;
+                s32 textEndY = textStartY+textHeight;
+                guienv->getSkin()->getFont()->draw(angleText,core::rect<s32>(textStartX,textStartY,textEndX,textEndY),video::SColor(255,128,128,128));
+            }
+
+        }
+
     }
 
     void GUIMain::draw2dBearing()
