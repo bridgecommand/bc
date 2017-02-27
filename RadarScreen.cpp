@@ -34,46 +34,10 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
 {
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
-    /* For future investigation - make radar screen from sets of triangles for each cell, so you set the cell colour by setting the material colour
-    irr::scene::SMesh* mesh = 0;
-    irr::scene::SMeshBuffer *buf = 0;
-
-    // create new buffer
-    mesh = new irr::scene::SMesh();
-    buf = new irr::scene::SMeshBuffer();
-
-    //
-    mesh->addMeshBuffer(buf);
-    smgr->addMeshSceneNode(mesh);
-
-    //add vertices
-    buf->Vertices.set_used(3);
-
-    buf->Vertices[0].Pos.set(0,0,0);
-    buf->Vertices[0].TCoords.set(0,0);
-
-    buf->Vertices[1].Pos.set(0,100,-100);
-    buf->Vertices[1].TCoords.set(0,0);
-
-    buf->Vertices[2].Pos.set(0,100,100);
-    buf->Vertices[2].TCoords.set(0,0);
-
-    buf->Indices.set_used(3);
-    //Create triangles by setting
-    buf->Indices[0]=0;
-    buf->Indices[1]=1;
-    buf->Indices[2]=2;
-
-
-    buf->recalculateBoundingBox();
-    buf->drop();
-    mesh->setDirty();
-    mesh->recalculateBoundingBox();
-    */
 
     radarScreen = smgr->addBillboardSceneNode();
     radarScreen->setMaterialFlag(video::EMF_LIGHTING, false);
-    radarScreen->setSize(core::dimension2d<f32>(0.5f, 0.5f)); //FIXME: Hardcoded size
+    radarScreen->setSize(core::dimension2d<f32>(0.5f, 0.5f));
     this->parent = parent;
     this->offset = offset;
 }

@@ -627,7 +627,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         radarText ->setText(displayText.c_str());
         radarText2->setText(displayText.c_str());
 
-        //TODO: Use guiCPAs and guiTCPAs to display ARPA data
+        //Use guiCPAs and guiTCPAs to display ARPA data
         displayText = language->translate("arpa");
         displayText.append(L"\n");
         if (guiCPAs.size() == guiTCPAs.size()) {
@@ -710,7 +710,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         s32 deltaY = -1*radius*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> radarCentre (centreX,centreY);
         core::position2d<s32> radarHeading (centreX+deltaX,centreY+deltaY);
-        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255)); //Todo: Make these configurable
+        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,video::SColor(255, 255, 255, 255)); //Todo: Make these colours configurable
 
         //draw a look direction line
         if (radarHeadUp) {
@@ -722,7 +722,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         s32 deltaYView = -1*radius*cos(core::DEGTORAD*radarHeadingIndicator);
         core::position2d<s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         core::position2d<s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
-        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0)); //Todo: Make these configurable
+        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,video::SColor(255, 255, 0, 0)); //Todo: Make these colours configurable
 
         //draw an EBL line
         s32 deltaXEBL = radius*sin(core::DEGTORAD*guiRadarEBLBrg);
@@ -731,7 +731,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
-            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
+            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle

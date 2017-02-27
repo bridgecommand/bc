@@ -65,7 +65,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
-        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
+        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Note - odd conversion from char* to wchar*!
     }
     //select first one if possible
     if (scenarioListBox->getItemCount()>0) {
@@ -149,13 +149,15 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get file system access." << std::endl;
+        exit(EXIT_FAILURE); //Could not get file system
     }
     //store current dir
     io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to scenario dir
     if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
+        std::cout << "Could not get change working directory to scenario directory." << std::endl;
         exit(EXIT_FAILURE); //Couldn't change to scenario dir
     }
 

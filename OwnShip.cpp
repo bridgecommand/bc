@@ -167,7 +167,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         device->getLogger()->log(ownShipFullPath.c_str());
         shipMesh = smgr->addSphereMesh("Dummy name");
     }
-    //smgr->getMeshManipulator()->transform(shipMesh,transformMatrix); //FIXME: This seems to 'explode' some models, (assembled with animation?)
+
     ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
     ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(core::vector3df(0,heightCorrection,0));
@@ -278,7 +278,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 {
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
-        //Update spd and hdg with rudder and engine controls - assume two engines: Fixme: Should also work with single engine
+        //Update spd and hdg with rudder and engine controls - assume two engines, should also work with single engine
         portThrust = portEngine * maxForce;
         stbdThrust = stbdEngine * maxForce;
         if (singleEngine) {

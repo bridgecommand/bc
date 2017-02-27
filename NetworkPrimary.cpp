@@ -314,7 +314,7 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append("0"); //Fixme: Sart enabled
         stringToSend.append(",");
 
-        //TODO: Send leg information
+        //Send leg information
         std::vector<Leg> legs = model->getOtherShipLegs(number);
         stringToSend.append(Utilities::lexical_cast<std::string>(legs.size())); //Number of legs
         stringToSend.append(",");
