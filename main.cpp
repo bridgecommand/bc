@@ -143,7 +143,7 @@ int main()
     deviceParameters.AntiAlias = antiAlias;
     IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
-    device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
+    device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
 
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* smgr = device->getSceneManager();
@@ -262,8 +262,9 @@ int main()
     //remove credits here
     //loadingMessage->remove(); loadingMessage = 0;
 
-    //set up timing for NMEA: FIXME: Make this a defined constant
-    u32 nextNMEATime = device->getTimer()->getTime()+250;
+    //set up timing for NMEA
+    const u32 NMEA_UPDATE_MS = 250;
+    u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
     //main loop
     while(device->run())
@@ -271,11 +272,11 @@ int main()
 
         network->update();
 
-        //Check if time has elapsed, so we send data once per second.
+        //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
         if (device->getTimer()->getTime() >= nextNMEATime) {
             nmea.updateNMEA();
             nmea.sendNMEASerial();
-            nextNMEATime = device->getTimer()->getTime()+250; //Fixme: Make this a defined constant.
+            nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
         }
 
         model.update();

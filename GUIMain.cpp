@@ -731,7 +731,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,video::SColor(255, 255, 0, 0));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
-            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm; //General Fixme: 0.2*sh for radar radius should be changed into a constant or similar
+            irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle

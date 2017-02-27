@@ -451,11 +451,9 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
 
             //Calculate noise
-            f32 localNoise = radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,rain); //FIXME: Needs rain intensity and wind direction
+            f32 localNoise = radarNoise(radarNoiseLevel,radarSeaClutter,radarRainClutter,weather,localRange,currentScanAngle,0,scanSlope,rain); //FIXME: Needs wind direction
 
             //Scan other contacts here
-            //Fixme: Implementation needs completing later for ARPA to check if contact is detectable against clutter
-            //for(std::vector<RadarData>::iterator it = radarData.begin(); it != radarData.end(); ++it) {
             for(unsigned int thisContact = 0; thisContact<radarData.size(); thisContact++) {
                 f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
@@ -773,7 +771,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     irr::f32 cellMaxRange [rangeResolution];
     for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
         cellMinRange[currentStep] = ((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
-        cellMaxRange[currentStep] = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Fixme: Check rounding etc
+        cellMaxRange[currentStep] = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
     }
 
     for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {

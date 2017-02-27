@@ -65,7 +65,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
-        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
+        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Note - odd conversion from char* to wchar*!
     }
     //select first one if possible
     if (scenarioListBox->getItemCount()>0) {
