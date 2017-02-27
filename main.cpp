@@ -167,7 +167,7 @@ int main()
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         std::cerr << "Could not get filesystem:" << std::endl;
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        exit(EXIT_FAILURE); //Could not get file system
 
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());

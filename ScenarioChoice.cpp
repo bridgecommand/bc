@@ -149,13 +149,15 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get file system access." << std::endl;
+        exit(EXIT_FAILURE); //Could not get file system
     }
     //store current dir
     io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to scenario dir
     if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
+        std::cout << "Could not get change working directory to scenario directory." << std::endl;
         exit(EXIT_FAILURE); //Couldn't change to scenario dir
     }
 
