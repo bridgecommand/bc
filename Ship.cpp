@@ -61,6 +61,11 @@ irr::f32 Ship::getWidth() const
     return width;
 }
 
+irr::f32 Ship::getHeightCorrection() const
+{
+    return heightCorrection;
+}
+
 void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
 {
      //Update the position used, ready for next update. Doesn't actually move the mesh at this point

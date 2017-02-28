@@ -89,12 +89,19 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
 void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
 {
     for(std::vector<OtherShip>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+
         //Find local wave height
         irr::core::vector3df prevPosition = it->getPosition();
-        f32 waveHeight = model->getWaveHeight(prevPosition.X,prevPosition.Z);
+        f32 waveHeightFiltered = prevPosition.Y - tideHeight - it->getHeightCorrection(); //Calculate the previous wave height:
 
-        it->update(deltaTime, scenarioTime, tideHeight+waveHeight, lightLevel); //TODO: Some filtering here, so we smoothly respond to the waves?
+        //Apply up/down motion from waves, with some filtering
+        f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
+        f32 factor = deltaTime/(timeConstant+deltaTime);
+        waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
+
+        it->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);
     }
+
 }
 
 RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
