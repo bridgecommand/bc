@@ -21,14 +21,6 @@
 
         //vec4 refl = texture(reflectionMap,reflection); //Temporarily not used - seems to break on my implementation of GLSL for some reason
 
-        //Make a random colour: TODO: To be improved!
-        float rand1 = clamp(0.5+0.5*sin(Normal.x * 100000),0.0,1.0);
-        float rand2 = clamp(0.5+0.5*sin(Normal.y * 100000),0.0,1.0);
-        float rand3 = clamp(0.5+0.5*sin(Normal.z * 100000),0.0,1.0);
-        vec4 randColor = vec4(rand1,rand2,rand3,1.0);
-
-        vec4 finalColor = mix(color, randColor, 0.1);
-
         //Proportional to distance from camera
         float z = gl_FragCoord.z / gl_FragCoord.w;
         float smoothFactor;
@@ -56,7 +48,7 @@
 
         //gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor ); //Cubemap
         //gl_FragColor = LightLevel*mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
-        gl_FragColor = LightLevel*mix(gl_Fog.color, finalColor*simpleShading, fogFactor ); //Simple shading
+        gl_FragColor = LightLevel*mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
 
 
     }
