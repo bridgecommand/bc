@@ -61,12 +61,7 @@ private:
     irr::f32 previousJoystickStbd;
     irr::f32 previousJoystickRudder;
 
-    irr::u32 portJoystickAxis;
-    irr::u32 stbdJoystickAxis;
-    irr::u32 rudderJoystickAxis;
-    irr::u32 portJoystickNo;
-    irr::u32 stbdJoystickNo;
-    irr::u32 rudderJoystickNo;
+    JoystickSetup joystickSetup;
     std::vector<std::string>* logMessages;
 
 };
