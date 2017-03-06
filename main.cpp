@@ -107,13 +107,13 @@ int main()
 
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;;
-    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;;
-    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;;
+    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
+    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
     //Which joystick number
-    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "port_throttle_joystick");;
-    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "stbd_throttle_joystick");;
-    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "rudder_joystick");;
+    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
+    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
     //Load NMEA settings
     std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
