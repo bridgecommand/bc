@@ -106,13 +106,14 @@ int main()
     }
 
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
-    u32 portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-    u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
-    u32 rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+    JoystickSetup joystickSetup;
+    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;;
+    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;;
+    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;;
     //Which joystick number
-    u32 portJoystickNo = IniFile::iniFileTou32(iniFilename, "port_throttle_joystick");
-    u32 stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "stbd_throttle_joystick");
-    u32 rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "rudder_joystick");
+    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "port_throttle_joystick");;
+    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "stbd_throttle_joystick");;
+    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "rudder_joystick");;
 
     //Load NMEA settings
     std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
@@ -249,14 +250,6 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    JoystickSetup joystickSetup;
-    joystickSetup.portJoystickAxis = portJoystickAxis;
-    joystickSetup.stbdJoystickAxis = stbdJoystickAxis;
-    joystickSetup.rudderJoystickAxis = rudderJoystickAxis;
-    joystickSetup.portJoystickNo = portJoystickNo;
-    joystickSetup.stbdJoystickNo = stbdJoystickNo;
-    joystickSetup.rudderJoystickNo = rudderJoystickNo;
-
     MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
