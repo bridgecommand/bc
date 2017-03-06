@@ -249,7 +249,15 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
+    JoystickSetup joystickSetup;
+    joystickSetup.portJoystickAxis = portJoystickAxis;
+    joystickSetup.stbdJoystickAxis = stbdJoystickAxis;
+    joystickSetup.rudderJoystickAxis = rudderJoystickAxis;
+    joystickSetup.portJoystickNo = portJoystickNo;
+    joystickSetup.stbdJoystickNo = stbdJoystickNo;
+    joystickSetup.rudderJoystickNo = rudderJoystickNo;
+
+    MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model

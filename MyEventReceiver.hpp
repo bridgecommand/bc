@@ -25,11 +25,22 @@
 class GUIMain;
 class SimulationModel;
 
+//Data about joystick setup
+class JoystickSetup {
+public:
+    irr::u32 portJoystickAxis;
+    irr::u32 stbdJoystickAxis;
+    irr::u32 rudderJoystickAxis;
+    irr::u32 portJoystickNo;
+    irr::u32 stbdJoystickNo;
+    irr::u32 rudderJoystickNo;
+};
+
 class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages);
+    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;

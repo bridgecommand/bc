@@ -24,7 +24,7 @@
 
 using namespace irr;
 
-    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages) //Constructor
+    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI (Not currently used, all comms through model)
@@ -52,12 +52,12 @@ using namespace irr;
         }
         dev->getLogger()->log(""); //add a blank line
 
-		this->portJoystickAxis=portJoystickAxis;
-		this->stbdJoystickAxis=stbdJoystickAxis;
-		this->rudderJoystickAxis=rudderJoystickAxis;
-		this->portJoystickNo=portJoystickNo;
-		this->stbdJoystickNo=stbdJoystickNo;
-		this->rudderJoystickNo=rudderJoystickNo;
+		portJoystickAxis=joystickSetup.portJoystickAxis;
+		stbdJoystickAxis=joystickSetup.stbdJoystickAxis;
+		rudderJoystickAxis=joystickSetup.rudderJoystickAxis;
+		portJoystickNo=joystickSetup.portJoystickNo;
+		stbdJoystickNo=joystickSetup.stbdJoystickNo;
+		rudderJoystickNo=joystickSetup.rudderJoystickNo;
 
 		//Indicate that previous joystick information hasn't been initialised
 		previousJoystickPort = INFINITY;

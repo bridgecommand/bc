@@ -59,8 +59,8 @@ public:
     void setPos(irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     irr::f32 getRudder() const;
-    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)
-    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead)
+    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
+    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
     irr::f32 getPortEngineRPM() const;
     irr::f32 getStbdEngineRPM() const;
     //irr::f32 getPortEngine() const;
