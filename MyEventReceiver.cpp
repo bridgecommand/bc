@@ -116,18 +116,22 @@ using namespace irr;
 
               if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
                   {
-                        model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 rawJoytick = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 mappedJoystick = lookup1D(rawJoytick,joystickSetup.inputPoints,joystickSetup.outputPoints); //Todo: Also implement port_multiplier, port_offset, and same for stbd
+                        model->setStbdEngine(mappedJoystick);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                            model->setPortEngine(mappedJoystick);
                         }
                   }
               if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
                   {
-                        model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 rawJoytick = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 mappedJoystick = lookup1D(rawJoytick,joystickSetup.inputPoints,joystickSetup.outputPoints);
+                        model->setPortEngine(mappedJoystick);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                            model->setStbdEngine(mappedJoystick);
                         }
                   }
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
@@ -501,6 +505,50 @@ using namespace irr;
 
     }
 
+    irr::f32 MyEventReceiver::lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints)
+    {
+        //Check that the input and output points list are the same length
+        if (inputPoints.size() != outputPoints.size() || inputPoints.size() < 2) {
+            std::cout << "Error: lookup1D needs inputPoints and outputPoints list size to be the same, and needs at least two points." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        std::vector<f32>::size_type numberOfPoints = inputPoints.size();
+
+        //Check that inputPoints does not have decreasing values (must be increasing or equal)
+        for (unsigned int i=0; i+1<numberOfPoints; i++) {
+            if (inputPoints.at(i+1) < inputPoints.at(i)) {
+                std::cout << "Error: inputPoints to lookup1D must not be in a decreasing order." << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        //Return first output if at or below lowest input
+        if (lookupValue <= inputPoints.at(0)) {
+            return outputPoints.at(0);
+        }
+
+        //Return last output if at or above highest input
+        if (lookupValue >= inputPoints.at(numberOfPoints-1)) {
+            return outputPoints.at(numberOfPoints-1);
+        }
+
+        //Main interpolation
+        //Find the first point above the one we're interested in
+        unsigned int nextPoint=1;
+        while (nextPoint < numberOfPoints && inputPoints.at(nextPoint)<=lookupValue) {
+            nextPoint++;
+        }
+
+        //check for div by zero - shouldn't happen, but protect against
+        if (inputPoints.at(nextPoint)-inputPoints.at(nextPoint-1) == 0)
+            return 0.0;
+
+        //do interpolation
+        return outputPoints.at(nextPoint-1) + (outputPoints.at(nextPoint)-outputPoints.at(nextPoint-1))*(lookupValue-inputPoints.at(nextPoint-1))/(inputPoints.at(nextPoint)-inputPoints.at(nextPoint-1));
+
+
+    }
 
 /*
 	s32 MyEventReceiver::GetScrollBarPosSpeed() const

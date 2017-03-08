@@ -115,6 +115,24 @@ int main()
     joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
+    //Joystick mapping
+    u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+    if (numberOfJoystickPoints > 0) {
+        for (u32 i = 0; i < numberOfJoystickPoints; i++) {
+            joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
+            joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
+        }
+    }
+    //Default linear mapping if not set
+    if (joystickSetup.inputPoints.size()<2) {
+        joystickSetup.inputPoints.clear();
+        joystickSetup.outputPoints.clear();
+        joystickSetup.inputPoints.push_back(-1.0);
+        joystickSetup.inputPoints.push_back(1.0);
+        joystickSetup.outputPoints.push_back(-1.0);
+        joystickSetup.outputPoints.push_back(1.0);
+    }
+
     //Load NMEA settings
     std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
 

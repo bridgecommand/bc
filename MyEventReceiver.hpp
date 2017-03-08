@@ -34,6 +34,8 @@ public:
     irr::u32 portJoystickNo;
     irr::u32 stbdJoystickNo;
     irr::u32 rudderJoystickNo;
+    std::vector<irr::f32> inputPoints;
+    std::vector<irr::f32> outputPoints;
 };
 
 class MyEventReceiver : public irr::IEventReceiver
@@ -63,6 +65,8 @@ private:
 
     JoystickSetup joystickSetup;
     std::vector<std::string>* logMessages;
+
+    irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
 
 };
 
