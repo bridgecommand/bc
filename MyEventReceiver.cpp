@@ -116,22 +116,20 @@ using namespace irr;
 
               if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
                   {
-                        irr::f32 rawJoytick = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
-                        irr::f32 mappedJoystick = lookup1D(rawJoytick,joystickSetup.inputPoints,joystickSetup.outputPoints); //Todo: Also implement port_multiplier, port_offset, and same for stbd
-                        model->setStbdEngine(mappedJoystick);
+                        irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        model->setStbdEngine(value);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setPortEngine(mappedJoystick);
+                            model->setPortEngine(value);
                         }
                   }
               if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
                   {
-                        irr::f32 rawJoytick = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
-                        irr::f32 mappedJoystick = lookup1D(rawJoytick,joystickSetup.inputPoints,joystickSetup.outputPoints);
-                        model->setPortEngine(mappedJoystick);
+                        irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        model->setPortEngine(value);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setStbdEngine(mappedJoystick);
+                            model->setStbdEngine(value);
                         }
                   }
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
@@ -465,9 +463,6 @@ using namespace irr;
             }
 
             //Do joystick stuff here
-            //Todo: track joystick changes, so if not changing, the GUI inputs are used - partially implemented but need to check for jitter etc
-            //Todo: Also implement multiplier/offset and joystick map.
-            //FIXME: Note that Irrlicht does not have joystick handling on MacOS
 
             //check if any have changed
             bool joystickChanged = false;
@@ -482,12 +477,14 @@ using namespace irr;
             //If any have changed, use all (iff non-infinite)
             if (joystickChanged) {
                 if (newJoystickPort<INFINITY) {
-                    model->setPortEngine(newJoystickPort);
+                    irr::f32 mappedValue = lookup1D(newJoystickPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    model->setPortEngine(mappedValue);
                     previousJoystickPort=newJoystickPort;
                 }
 
                 if (newJoystickStbd<INFINITY) {
-                    model->setStbdEngine(newJoystickStbd);
+                    irr::f32 mappedValue = lookup1D(newJoystickStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    model->setStbdEngine(mappedValue);
                     previousJoystickStbd=newJoystickStbd;
                 }
 

@@ -158,7 +158,7 @@ private:
     irr::f32 weather; //0-12.0
     irr::f32 rainIntensity; //0-10
     irr::f32 visibilityRange; //Nm
-    irr::u32 loopNumber; //Todo: check if this is a reasonable size
+    irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     irr::f32 zoom;
     Terrain terrain;
     Light light;

@@ -118,7 +118,7 @@ int main()
     //Joystick mapping
     u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {
-        for (u32 i = 0; i < numberOfJoystickPoints; i++) {
+        for (u32 i = 1; i < numberOfJoystickPoints+1; i++) {
             joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
             joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
         }
