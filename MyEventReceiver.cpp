@@ -24,7 +24,7 @@
 
 using namespace irr;
 
-    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, irr::u32 portJoystickAxis, irr::u32 stbdJoystickAxis, irr::u32 rudderJoystickAxis, irr::u32 portJoystickNo, irr::u32 stbdJoystickNo, irr::u32 rudderJoystickNo, std::vector<std::string>* logMessages) //Constructor
+    MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
 		this->gui = gui; //Link to GUI (Not currently used, all comms through model)
@@ -52,12 +52,7 @@ using namespace irr;
         }
         dev->getLogger()->log(""); //add a blank line
 
-		this->portJoystickAxis=portJoystickAxis;
-		this->stbdJoystickAxis=stbdJoystickAxis;
-		this->rudderJoystickAxis=rudderJoystickAxis;
-		this->portJoystickNo=portJoystickNo;
-		this->stbdJoystickNo=stbdJoystickNo;
-		this->rudderJoystickNo=rudderJoystickNo;
+		this->joystickSetup = joystickSetup;
 
 		//Indicate that previous joystick information hasn't been initialised
 		previousJoystickPort = INFINITY;
@@ -121,18 +116,20 @@ using namespace irr;
 
               if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
                   {
-                        model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        model->setStbdEngine(value);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                            model->setPortEngine(value);
                         }
                   }
               if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
                   {
-                        model->setPortEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0); //Convert to from +-100 to +-1, and invert up/down
+                        irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0;  //Convert to from +-100 to +-1, and invert up/down
+                        model->setPortEngine(value);
                         //If right mouse button, set the other engine as well
                         if (rightMouseDown) {
-                            model->setStbdEngine(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/-100.0);
+                            model->setStbdEngine(value);
                         }
                   }
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
@@ -442,22 +439,22 @@ using namespace irr;
             for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
 
                 //Check which type we correspond to
-                if (thisJoystick == portJoystickNo && thisAxis == portJoystickAxis) {
-                    newJoystickPort = event.JoystickEvent.Axis[portJoystickAxis]/32768.0;
+                if (thisJoystick == joystickSetup.portJoystickNo && thisAxis == joystickSetup.portJoystickAxis) {
+                    newJoystickPort = event.JoystickEvent.Axis[joystickSetup.portJoystickAxis]/32768.0;
                     //If previous value is NAN, store current value in previous and current, otherwise only in current
                     if (previousJoystickPort==INFINITY) {
                         previousJoystickPort = newJoystickPort;
                     }
                 }
-                if (thisJoystick == stbdJoystickNo && thisAxis == stbdJoystickAxis) {
-                    newJoystickStbd = event.JoystickEvent.Axis[stbdJoystickAxis]/32768.0;
+                if (thisJoystick == joystickSetup.stbdJoystickNo && thisAxis == joystickSetup.stbdJoystickAxis) {
+                    newJoystickStbd = event.JoystickEvent.Axis[joystickSetup.stbdJoystickAxis]/32768.0;
                     //If previous value is NAN, store current value in previous and current, otherwise only in current
                     if (previousJoystickStbd==INFINITY) {
                         previousJoystickStbd = newJoystickStbd;
                     }
                 }
-                if (thisJoystick == rudderJoystickNo && thisAxis == rudderJoystickAxis) {
-                    newJoystickRudder = 30*event.JoystickEvent.Axis[rudderJoystickAxis]/32768.0;
+                if (thisJoystick == joystickSetup.rudderJoystickNo && thisAxis == joystickSetup.rudderJoystickAxis) {
+                    newJoystickRudder = 30*event.JoystickEvent.Axis[joystickSetup.rudderJoystickAxis]/32768.0;
                     //If previous value is NAN, store current value in previous and current, otherwise only in current
                     if (previousJoystickRudder==INFINITY) {
                         previousJoystickRudder = newJoystickRudder;
@@ -466,9 +463,6 @@ using namespace irr;
             }
 
             //Do joystick stuff here
-            //Todo: track joystick changes, so if not changing, the GUI inputs are used - partially implemented but need to check for jitter etc
-            //Todo: Also implement multiplier/offset and joystick map.
-            //FIXME: Note that Irrlicht does not have joystick handling on MacOS
 
             //check if any have changed
             bool joystickChanged = false;
@@ -483,12 +477,14 @@ using namespace irr;
             //If any have changed, use all (iff non-infinite)
             if (joystickChanged) {
                 if (newJoystickPort<INFINITY) {
-                    model->setPortEngine(newJoystickPort);
+                    irr::f32 mappedValue = lookup1D(newJoystickPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    model->setPortEngine(mappedValue);
                     previousJoystickPort=newJoystickPort;
                 }
 
                 if (newJoystickStbd<INFINITY) {
-                    model->setStbdEngine(newJoystickStbd);
+                    irr::f32 mappedValue = lookup1D(newJoystickStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+                    model->setStbdEngine(mappedValue);
                     previousJoystickStbd=newJoystickStbd;
                 }
 
@@ -506,6 +502,50 @@ using namespace irr;
 
     }
 
+    irr::f32 MyEventReceiver::lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints)
+    {
+        //Check that the input and output points list are the same length
+        if (inputPoints.size() != outputPoints.size() || inputPoints.size() < 2) {
+            std::cout << "Error: lookup1D needs inputPoints and outputPoints list size to be the same, and needs at least two points." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        std::vector<f32>::size_type numberOfPoints = inputPoints.size();
+
+        //Check that inputPoints does not have decreasing values (must be increasing or equal)
+        for (unsigned int i=0; i+1<numberOfPoints; i++) {
+            if (inputPoints.at(i+1) < inputPoints.at(i)) {
+                std::cout << "Error: inputPoints to lookup1D must not be in a decreasing order." << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        //Return first output if at or below lowest input
+        if (lookupValue <= inputPoints.at(0)) {
+            return outputPoints.at(0);
+        }
+
+        //Return last output if at or above highest input
+        if (lookupValue >= inputPoints.at(numberOfPoints-1)) {
+            return outputPoints.at(numberOfPoints-1);
+        }
+
+        //Main interpolation
+        //Find the first point above the one we're interested in
+        unsigned int nextPoint=1;
+        while (nextPoint < numberOfPoints && inputPoints.at(nextPoint)<=lookupValue) {
+            nextPoint++;
+        }
+
+        //check for div by zero - shouldn't happen, but protect against
+        if (inputPoints.at(nextPoint)-inputPoints.at(nextPoint-1) == 0)
+            return 0.0;
+
+        //do interpolation
+        return outputPoints.at(nextPoint-1) + (outputPoints.at(nextPoint)-outputPoints.at(nextPoint-1))*(lookupValue-inputPoints.at(nextPoint-1))/(inputPoints.at(nextPoint)-inputPoints.at(nextPoint-1));
+
+
+    }
 
 /*
 	s32 MyEventReceiver::GetScrollBarPosSpeed() const

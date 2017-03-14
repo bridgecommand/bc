@@ -59,8 +59,8 @@ public:
     void setPos(irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     irr::f32 getRudder() const;
-    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead)
-    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead)
+    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
+    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
     irr::f32 getPortEngineRPM() const;
     irr::f32 getStbdEngineRPM() const;
     //irr::f32 getPortEngine() const;
@@ -160,7 +160,7 @@ private:
     irr::f32 weather; //0-12.0
     irr::f32 rainIntensity; //0-10
     irr::f32 visibilityRange; //Nm
-    irr::u32 loopNumber; //Todo: check if this is a reasonable size
+    irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     irr::f32 zoom;
     Terrain terrain;
     Light light;

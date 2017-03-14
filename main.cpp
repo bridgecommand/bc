@@ -106,13 +106,32 @@ int main()
     }
 
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
-    u32 portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-    u32 stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
-    u32 rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+    JoystickSetup joystickSetup;
+    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
+    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
     //Which joystick number
-    u32 portJoystickNo = IniFile::iniFileTou32(iniFilename, "port_throttle_joystick");
-    u32 stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "stbd_throttle_joystick");
-    u32 rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "rudder_joystick");
+    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
+    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
+
+    //Joystick mapping
+    u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+    if (numberOfJoystickPoints > 0) {
+        for (u32 i = 1; i < numberOfJoystickPoints+1; i++) {
+            joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
+            joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
+        }
+    }
+    //Default linear mapping if not set
+    if (joystickSetup.inputPoints.size()<2) {
+        joystickSetup.inputPoints.clear();
+        joystickSetup.outputPoints.clear();
+        joystickSetup.inputPoints.push_back(-1.0);
+        joystickSetup.inputPoints.push_back(1.0);
+        joystickSetup.outputPoints.push_back(-1.0);
+        joystickSetup.outputPoints.push_back(1.0);
+    }
 
     //Load NMEA settings
     std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
@@ -249,7 +268,7 @@ int main()
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, portJoystickAxis, stbdJoystickAxis, rudderJoystickAxis, portJoystickNo, stbdJoystickNo, rudderJoystickNo, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port, linked to model
