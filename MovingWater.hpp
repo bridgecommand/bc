@@ -84,12 +84,16 @@ namespace scene
         //Shader related
         int matWorldViewProjection;//Identifiers, much faster than string matching...
         int matViewInverse;
+        int matWorldReflectionViewProj;
         int matWorld;
         int baseMap;
         int reflectionMap;
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
+
+        irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
+        irr::video::ITexture* _reflectionMap;
 
         irr::u32 segments;
 

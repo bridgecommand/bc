@@ -3,19 +3,25 @@
 //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723)
 
     /*Shader for Open GL*/
-    uniform sampler2D baseMap;
-    uniform samplerCube reflectionMap;
+    //uniform sampler2D baseMap;
+    //uniform samplerCube reflectionMap;
+    uniform sampler2D	reflectionMap; //coverage
 
-    uniform float LightLevel; //
+    //uniform float LightLevel; //
 
-    varying vec2 Texcoord;
+    //varying vec2 Texcoord;
     varying vec3 Normal;
-    varying vec3 ViewDirection;
+    //varying vec3 ViewDirection;
+
+    varying vec3 reflectionMapTexCoord;
 
     //varying float distToCamera; //From vertex shader
 
     void main()
     {
+
+        /*
+
         vec4 color = vec4(0.18,0.29,0.31,1.0);//texture(baseMap,Texcoord);
         vec3 reflection = reflect(ViewDirection,Normal);
 
@@ -49,6 +55,17 @@
         //gl_FragColor = mix(gl_Fog.color, color*refl, fogFactor ); //Cubemap
         //gl_FragColor = LightLevel*mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
         gl_FragColor = LightLevel*mix(gl_Fog.color, color*simpleShading, fogFactor ); //Simple shading
+        */
+        vec2 perturbation = (Normal.xz);
+        vec2 ProjectedReflectionTexCoords = clamp(reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation, 0.0, 1.0);
+        vec4 color0 = texture2D(reflectionMap, ProjectedReflectionTexCoords );
+
+        //Assume linear fog
+        float z = gl_FragCoord.z / gl_FragCoord.w;
+        float fogFactor = (gl_Fog.end - z) / (gl_Fog.end - gl_Fog.start);
+        fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+        gl_FragColor = mix(gl_Fog.color, color0, fogFactor );
 
 
     }

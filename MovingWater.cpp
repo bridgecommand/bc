@@ -43,11 +43,11 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
 
 	//scaleFactorVertical = 1.0;
 
+	driver = mgr->getVideoDriver();
+
+
 	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
 	irr::video::E_DRIVER_TYPE driverType = mgr->getVideoDriver()->getDriverType();
-	driver = mgr->getVideoDriver();
-	irr::video::ITexture* cubemap;
-	irr::video::IImage* cubemapImages[6];
 
 	IsOpenGL = (driverType==irr::video::EDT_OPENGL);
     firstRun = true;
@@ -80,42 +80,6 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
             );
 
     shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
-
-    //creating the cubemap... For now, Irrlicht's cubemaps need to be created on the fly out of images.
-    //Loading the images
-    cubemapImages[0] = driver->createImageFromFile("media/cube_ft.jpg");
-    cubemapImages[1] = driver->createImageFromFile("media/cube_bk.jpg");
-    cubemapImages[2] = driver->createImageFromFile("media/cube_up.jpg");
-    cubemapImages[3] = driver->createImageFromFile("media/cube_dn.jpg");
-    cubemapImages[4] = driver->createImageFromFile("media/cube_lf.jpg");
-    cubemapImages[5] = driver->createImageFromFile("media/cube_rt.jpg");
-
-    bool cubemapCreated = false;
-
-    if (cubemapImages[0] && cubemapImages[1] && cubemapImages[2] && cubemapImages[3] && cubemapImages[4] && cubemapImages[5]) {
-
-        //creating the cubemap itself
-        cubemap = driver->addTextureCubemap(
-            "irrlicht2.cubemap",
-            cubemapImages[0],
-            cubemapImages[1],
-            cubemapImages[2],
-            cubemapImages[3],
-            cubemapImages[4],
-            cubemapImages[5]
-        );
-
-        if (cubemap) {
-            cubemapCreated = true;
-        }
-
-
-        //We're done with the images, so we're releasing them. Unlike the Textures, the Images can be dropped.
-        for(int i=0;i<6;i++) {
-            cubemapImages[i]->drop();
-        }
-    }
-    //From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) END
 
 	//FIXME: Hardcoded or defined in multiple places
 	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
@@ -152,8 +116,12 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
     }
     */
 
+    //Create local camera for reflections
+	_camera = mgr->addCameraSceneNode(0, core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), -1, false);
+	irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
 
-
+	//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
+	_reflectionMap = driver->addRenderTargetTexture(core::dimension2d<u32>(512,512)); //TODO: Check hardcoding here
 
 
     for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
@@ -161,13 +129,10 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
         scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
         if (mb)
         {
-            mb->getMaterial().setTexture(0,driver->getTexture("media/water.bmp"));
-            if (cubemapCreated) {
-                mb->getMaterial().setTexture(1,cubemap);
-                mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
-            }
+            mb->getMaterial().setTexture(0,bumpTexture);
+            mb->getMaterial().setTexture(1,_reflectionMap);
+            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
             mb->getMaterial().FogEnable = true;
-
         }
     }
 
@@ -177,11 +142,9 @@ MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 wa
         scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
         if (mb)
         {
-            mb->getMaterial().setTexture(0,driver->getTexture("media/water.bmp"));
-            if (cubemapCreated) {
-                mb->getMaterial().setTexture(1,cubemap);
-                mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
-            }
+            mb->getMaterial().setTexture(0,bumpTexture);
+            mb->getMaterial().setTexture(1,_reflectionMap);
+            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
             mb->getMaterial().FogEnable = true;
 
         }
@@ -202,6 +165,18 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 	// Mesh is dropped in IMeshSceneNode destructor (??? FIXME: Probably not true!)
     delete ocean;
 
+    if (_camera)
+	{
+		_camera->drop();
+		_camera = NULL;
+	}
+
+	if (_reflectionMap)
+	{
+		_reflectionMap->drop();
+		_reflectionMap = NULL;
+	}
+
 }
 
 void MovingWaterSceneNode::resetParameters(float A, vector2 w)
@@ -218,6 +193,7 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
             driver = services->getVideoDriver();
             //Looking for our constants IDs...
             matViewInverse = services->getVertexShaderConstantID("matViewInverse");
+            matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
 
             if(IsOpenGL)
             {
@@ -237,6 +213,11 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
         mat = driver->getTransform(irr::video::ETS_VIEW);
         mat.makeInverse();
         services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
+
+        core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
+        worldReflectionViewProj *= _camera->getViewMatrix();;
+        worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
+        services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
 
         if(IsOpenGL)
         {
@@ -319,7 +300,70 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
         }// end for all mesh buffers
 		mesh->setDirty(scene::EBT_VERTEX);
 	}
+
 	IMeshSceneNode::OnAnimate(timeMs);
+	//Fixme: Need to store timeMs in something accessible to the shader for ripples
+
+	//Render reflection to texture
+	if (IsVisible)
+	{
+		//fixes glitches with incomplete refraction
+        const f32 CLIP_PLANE_OFFSET_Y = 1.0f;
+
+		core::rect<s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
+
+		setVisible(false); //hide the water
+
+		//reflection
+		driver->setRenderTarget(_reflectionMap, true, true); //render to reflection
+
+		//get current camera
+		scene::ICameraSceneNode* currentCamera = SceneManager->getActiveCamera();
+		f32 currentAspect = currentCamera->getAspectRatio();
+
+		//use this aspect ratio
+		_camera->setAspectRatio(currentAspect);
+
+		//set FOV and far value from current camera
+		_camera->setFarValue(currentCamera->getFarValue());
+		_camera->setFOV(currentCamera->getFOV());
+
+		core::vector3df position = currentCamera->getAbsolutePosition();
+		position.Y = -position.Y + 2 * RelativeTranslation.Y; //position of the water
+		_camera->setPosition(position);
+
+		core::vector3df target = currentCamera->getTarget();
+
+		//invert Y position of current camera
+		target.Y = -target.Y + 2 * RelativeTranslation.Y;
+		_camera->setTarget(target);
+
+		//set the reflection camera
+		SceneManager->setActiveCamera(_camera);
+
+		//reflection clipping plane
+		core::plane3d<f32> reflectionClipPlane(0, RelativeTranslation.Y - CLIP_PLANE_OFFSET_Y, 0, 0, 1, 0);
+		driver->setClipPlane(0, reflectionClipPlane, true);
+
+		SceneManager->drawAll(); //draw the scene
+
+		//disable clip plane
+		driver->enableClipPlane(0, false);
+
+		//set back old render target
+		driver->setRenderTarget(0, false, true);
+
+		//set back the active camera
+		SceneManager->setActiveCamera(currentCamera);
+
+		setVisible(true); //show it again
+
+        //Reset :: Fixme: Doesn't seem to be working on old PC
+        driver->setViewPort(core::rect<s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
+        driver->setViewPort(currentViewPort);
+        currentCamera->setAspectRatio(currentAspect);
+
+	}
 }
 
 f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
