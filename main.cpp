@@ -308,8 +308,7 @@ int main()
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
-            //Fixme: May want to re-introduce this
-            //realisticWater->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+            model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
             if (fullScreenRadar) {
                 driver->setViewPort(guiMain.getLargeRadarRect());
             } else {
@@ -317,7 +316,7 @@ int main()
             }
             model.setRadarCameraActive();
             smgr->drawAll();
-            //realisticWater->setVisible(true);
+            model.setWaterVisible(true); //Re-show the water
         }
 
         //3d view portion

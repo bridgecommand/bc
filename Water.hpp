@@ -29,6 +29,7 @@ class Water
         void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
         irr::f32 getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const;
         irr::core::vector3df getPosition() const;
+        void setVisible(bool visible);
 
     private:
         irr::f32 tileWidth;

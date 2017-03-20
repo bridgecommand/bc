@@ -109,6 +109,7 @@ public:
     irr::f32 getRain() const;
     void setVisibility(irr::f32 visibilityNm);
     irr::f32 getVisibility() const;
+    void setWaterVisible(bool visible);
     void lookUp();
     void lookDown();
     void lookLeft();

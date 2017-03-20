@@ -453,6 +453,11 @@ SimulationModel::~SimulationModel()
         return visibilityRange;
     }
 
+    void SimulationModel::setWaterVisible(bool visible)
+    {
+        water.setVisible(visible);
+    }
+
     void SimulationModel::lookUp()
     {
         camera.lookUp();

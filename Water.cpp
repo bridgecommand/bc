@@ -82,3 +82,8 @@ irr::core::vector3df Water::getPosition() const
 {
     waterNode->getPosition();
 }
+
+void Water::setVisible(bool visible)
+{
+    waterNode->setVisible(visible);
+}
