@@ -308,7 +308,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	if (IsVisible)
 	{
 		//fixes glitches with incomplete refraction
-        const f32 CLIP_PLANE_OFFSET_Y = 1.0f;
+        const f32 CLIP_PLANE_OFFSET_Y = 0.0f;
 
 		core::rect<s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
 
