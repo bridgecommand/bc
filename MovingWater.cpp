@@ -30,12 +30,10 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
-		ISceneNode* parent, ISceneManager* mgr, s32 id,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, const core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)),
-	WaveLength(waveLength), WaveSpeed(waveSpeed), WaveHeight(waveHeight), LightLevel(0.75)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)), LightLevel(0.75)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");

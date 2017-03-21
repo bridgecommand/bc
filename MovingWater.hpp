@@ -36,8 +36,7 @@ namespace scene
 	public:
 
 		//! constructor
-		MovingWaterSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
-            ISceneNode* parent, ISceneManager* mgr,	s32 id,
+		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0)
 			);
@@ -99,9 +98,6 @@ namespace scene
 
         //f32 addWave(const core::vector3df &source, f32 time) const;
 		f32 LightLevel;
-		f32 WaveLength;
-		f32 WaveSpeed;
-		f32 WaveHeight;
 		f32 tileWidth;
 		//f32 scaleFactorVertical;
 		IMesh* mesh;

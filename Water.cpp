@@ -45,9 +45,9 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
     tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
 
 
-    waterNode = new irr::scene::MovingWaterSceneNode(0.25f,1.0f,4.0f,smgr->getRootSceneNode(),smgr,0);
+    waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,0);
 
-    waterNode->setPosition(core::vector3df(0,-0.25f,0));
+    //waterNode->setPosition(core::vector3df(0,-0.25f,0));
 
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
     waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
