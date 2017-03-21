@@ -33,7 +33,7 @@ namespace scene
 MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, const core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)), LightLevel(0.75)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -177,9 +177,10 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 
 }
 
-void MovingWaterSceneNode::resetParameters(float A, vector2 w)
+void MovingWaterSceneNode::resetParameters(float A, vector2 w, float seaState)
 {
     ocean->resetParameters(A,w);
+    this->seaState = seaState;
 }
 
 void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
@@ -192,6 +193,8 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
             //Looking for our constants IDs...
             matViewInverse = services->getVertexShaderConstantID("matViewInverse");
             matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+            idLightLevel = services->getVertexShaderConstantID("lightLevel");
+            idSeaState = services->getVertexShaderConstantID("seaState");
 
             if(IsOpenGL)
             {
@@ -223,6 +226,8 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
             services->setPixelShaderConstant(baseMap,&sampler,1);
             sampler=1;
             services->setPixelShaderConstant(reflectionMap,&sampler,1);
+            services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
+            services->setPixelShaderConstant(idSeaState, &seaState, 1);
         }
         else
         {
@@ -237,8 +242,6 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
     //End from Mel's cubemap demo
 
 
-
-    services->setPixelShaderConstant(services->getVertexShaderConstantID("LightLevel"), &LightLevel, 1);
 }
 
 
@@ -269,7 +272,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 
         //Set light level
         video::SColorf ambientLight = this->getSceneManager()->getAmbientLight();
-        LightLevel = (ambientLight.r + ambientLight.g + ambientLight.b) / 3.0; //Average
+        lightLevel = (ambientLight.r + ambientLight.g + ambientLight.b) / 3.0; //Average
 
 		const f32 time = timeMs / 1000.f;
 

@@ -26,7 +26,8 @@
 
     uniform sampler2D	reflectionMap; //Reflection texture
 
-    uniform float LightLevel;
+    uniform float lightLevel;
+    uniform float seaState;
 
     varying vec3 Normal;
     varying vec3 ViewDirection;
@@ -44,7 +45,7 @@
         float distanceSmoothing = clamp(1-z/300,0.0,1.0);
 
         //Simple shading
-        vec3 color = vec3(0.18,0.29,0.31)*LightLevel;
+        vec3 color = vec3(0.18,0.29,0.31)*lightLevel;
         vec3 reflection = reflect(ViewDirection,Normal);
         float brightness = 0.5+0.5*dot(reflection,vec3(0,1,0));
         //flatten shading at long range (to avoid clear repetition of waves)
@@ -58,6 +59,9 @@
         ProjectedReflectionTexCoords = ProjectedReflectionTexCoords;
         ProjectedReflectionTexCoords = clamp(ProjectedReflectionTexCoords,0.0,1.0);
         vec4 reflectionColour = texture2D(reflectionMap, ProjectedReflectionTexCoords );
+
+        //Fade out reflection at high sea state:
+        reflectionColour = mix(reflectionColour,vec4(0.0,0.0,0.0,1.0),seaState/12.0);
 
         //Mix the two
         vec4 outputColour = mix(reflectionColour, simpleShading,0.75);

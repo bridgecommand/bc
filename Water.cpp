@@ -69,7 +69,7 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
 
     //scale with weather
     //waterNode->setVerticalScale(sqrt(weather));
-    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f)); //TODO: Work out what this relationship should be!
+    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather); //TODO: Work out what this relationship should be!
 
 }
 
