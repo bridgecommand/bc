@@ -302,7 +302,7 @@ int main()
 
         //Set up
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(true, true, video::SColor(0,128,128,128));
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
 
         bool fullScreenRadar = guiMain.getLargeRadar();
 

@@ -91,10 +91,10 @@ class vector2 {
 class cFFT {
   private:
 	unsigned int N, which;
-	unsigned int log_2_N;
-	float pi2;
 	unsigned int *reversed;
 	complex **T;
+	float pi2;
+	unsigned int log_2_N;
 	complex *c[2];
   protected:
   public:
@@ -126,14 +126,15 @@ class cOcean {
 	int N, Nplus1;				// dimension -- N should be a power of 2
 	float A;				// phillips spectrum parameter -- affects heights of waves
 	vector2 w;				// wind parameter
-	bool reInitialiseWaves; // If waves should be re-created (as new A or w?)
 	float length;				// length parameter
+	vertex_ocean *vertices;			// vertices for vertex buffer object
+	bool reInitialiseWaves; // If waves should be re-created (as new A or w?)
+
 	complex *h_tilde,			// for fast fourier transform
 		*h_tilde_slopex, *h_tilde_slopez,
 		*h_tilde_dx, *h_tilde_dz;
 	cFFT *fft;				// fast fourier transform
 
-	vertex_ocean *vertices;			// vertices for vertex buffer object
 	//unsigned int *indices;			// indicies for vertex buffer object
 	//unsigned int indices_count;		// number of indices to render
 

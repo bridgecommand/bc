@@ -87,7 +87,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         if (device->isWindowActive())
         {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
-            driver->beginScene(true, false, video::SColor(0,200,200,200)); //Don't clear z buffer as only using 2d
+            driver->beginScene(irr::video::ECBF_COLOR, video::SColor(0,200,200,200)); //Don't clear z buffer as only using 2d
             gui->drawAll();
             driver->endScene();
         }
@@ -137,7 +137,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     creditsText.append(getCredits());
     gui::IGUIStaticText* loadingMessage = gui->addStaticText(creditsText.c_str(), core::rect<s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
     device->run();
-    driver->beginScene(true, true, video::SColor(0,200,200,200));
+    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
     gui->drawAll();
     driver->endScene();
     loadingMessage->remove(); loadingMessage = 0;

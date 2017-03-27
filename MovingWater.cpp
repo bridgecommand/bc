@@ -316,7 +316,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 		setVisible(false); //hide the water
 
 		//reflection
-		driver->setRenderTarget(_reflectionMap, true, true); //render to reflection
+		driver->setRenderTarget(_reflectionMap, irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH); //render to reflection
 
 		//get current camera
 		scene::ICameraSceneNode* currentCamera = SceneManager->getActiveCamera();
@@ -352,7 +352,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 		driver->enableClipPlane(0, false);
 
 		//set back old render target
-		driver->setRenderTarget(0, false, true);
+		driver->setRenderTarget(0, 0);
 
 		//set back the active camera
 		SceneManager->setActiveCamera(currentCamera);
