@@ -56,7 +56,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
 
 }
 
-void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 lightLevel, irr::f32 weather)
+void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
 {
     //Round these to nearest tileWidth
     f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
@@ -69,7 +69,7 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, u32 l
 
     //scale with weather
     //waterNode->setVerticalScale(sqrt(weather));
-    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather); //TODO: Work out what this relationship should be!
+    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
 
 }
 
