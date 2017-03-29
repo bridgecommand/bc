@@ -135,6 +135,12 @@ void Camera::changeView()
     }
 }
 
+void Camera::setView(irr::u32 view) {
+    if (view<views.size()) {
+        currentView = view;
+    }
+}
+
 irr::u32 Camera::getView() const
 {
     return currentView;

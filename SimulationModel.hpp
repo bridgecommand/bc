@@ -119,6 +119,7 @@ public:
     void lookPort();
     void lookStbd();
     void changeView();
+    void setView(irr::u32 view);
     irr::u32 getCameraView() const;
     void increaseRadarRange();
     void decreaseRadarRange();

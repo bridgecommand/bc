@@ -503,6 +503,11 @@ SimulationModel::~SimulationModel()
         camera.changeView();
     }
 
+    void SimulationModel::setView(irr::u32 view)
+    {
+        camera.setView(view);
+    }
+
     irr::u32 SimulationModel::getCameraView() const
     {
         return camera.getView();

@@ -225,7 +225,21 @@ void NetworkSecondary::receiveMessage()
                     }
                 } //Check if 3 number elements for Other ships, buoys and MOBs
 
-                //Todo: Get weather, rain, viewpoint.
+                //Get weather info from record 7
+                //0 is weather, 1 is visibility, 3 is rain
+                std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
+                if (weatherData.size() == 5) {
+                    model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
+                    model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
+                    model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
+                }
+
+                //Get view information from record 9
+                std::vector<std::string> viewData = Utilities::split(receivedData.at(9),',');
+                if (viewData.size() == 1) {
+                    model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                }
+
                 //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)
 
                 //If in multiplayer mode, send back a message with our position and heading
