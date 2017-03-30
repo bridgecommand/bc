@@ -267,6 +267,9 @@ cOcean::cOcean(const int N, const float A, const vector2 w, const float length) 
 
 	int index;
 
+	//seed random number generator with srand, so we get repeatable random waves
+    srand(10);
+
 	//NOTE: Code from here duplicated in hTilde()
 	complex htilde0, htilde0mk_conj;
 	for (int m_prime = 0; m_prime < Nplus1; m_prime++) {
@@ -342,6 +345,7 @@ complex cOcean::hTilde(float t, int n_prime, int m_prime) {
 	int index = m_prime * Nplus1 + n_prime;
 
 	if (reInitialiseWaves) { //NOTE: Code duplication from constructor here
+
         complex htilde0, htilde0mk_conj;
         htilde0        = hTilde_0( n_prime,  m_prime);
         htilde0mk_conj = hTilde_0(-n_prime, -m_prime).conj();
@@ -425,6 +429,8 @@ void cOcean::resetParameters(float A, vector2 w)
     this->A = A;
     this->w = w;
     reInitialiseWaves = true;
+    //seed random number generator with srand, so we get repeatable random waves
+    srand(10);
 }
 
 void cOcean::evaluateWavesFFT(float t) {
