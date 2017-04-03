@@ -23,6 +23,7 @@
 //#include "Utilities.hpp"
 
 #include <iostream>
+#include <cmath>
 
 namespace irr
 {
@@ -420,7 +421,11 @@ f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
 
     f32 localHeight = height00*(1-interpX)*(1-interpZ) + height10*interpX*(1-interpZ) + height01*(1-interpX)*interpZ + height11*interpX*interpZ;
 
-    return localHeight;
+    if (std::isnormal(localHeight)) {
+        return localHeight;
+    } else {
+        return 0;
+    }
 
 }
 

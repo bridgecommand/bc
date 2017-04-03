@@ -29,6 +29,11 @@ bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df sta
 
 bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
 
+    //Return false if any is not a normal number (e.g. NaN)
+    if (!std::isnormal(angle) || !std::isnormal(startAng) || !std::isnormal(endAng)) {
+        return false;
+    }
+
     //adjust angles to make start angle in range 0-360. Change both angles together, so their difference is maintained
     while (startAng < 0) {
         startAng+=360;
@@ -50,6 +55,12 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
 }
 
 irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
+
+    //Return unchanged if NaN etc.
+    if (!std::isnormal(angle)) {
+        return angle;
+    }
+
     while (angle < 0) {
         angle+=360;
     }
