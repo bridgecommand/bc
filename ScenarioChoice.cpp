@@ -87,7 +87,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         if (device->isWindowActive())
         {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
-            driver->beginScene(irr::video::ECBF_COLOR, video::SColor(0,200,200,200)); //Don't clear z buffer as only using 2d
+            driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
             gui->drawAll();
             driver->endScene();
         }
