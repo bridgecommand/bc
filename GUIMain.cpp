@@ -22,6 +22,7 @@
 #include "ScrollDial.h"
 
 #include <iostream> //for debugging
+#include <cmath> //For fmod
 
 using namespace irr;
 
@@ -774,6 +775,21 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
                 guienv->getSkin()->getFont()->draw(angleText,core::rect<s32>(textStartX,textStartY,textEndX,textEndY),video::SColor(255,128,128,128));
             }
 
+        }
+
+        //Draw range rings
+
+        //Draw 4 range rings if radar range is divisible by 1.5, otherwise draw 4
+        u32 rangeRings;
+        if ( std::fmod(guiRadarRangeNm,1.5) < 0.1) {
+            rangeRings = 3;
+        } else {
+            rangeRings = 4;
+        }
+        for (unsigned int i = 1; i<rangeRings; i++) {
+            f32 ringRadius = radius*i/(float)rangeRings;
+            irr::u8 noSegments = ringRadius/2;
+            device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,video::SColor(128, 128, 128, 128),noSegments);
         }
 
     }
