@@ -128,38 +128,47 @@
 		</Unit>
 		<Unit filename="libs/enet/callbacks.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/callbacks.h" />
 		<Unit filename="libs/enet/compress.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/enet.h" />
 		<Unit filename="libs/enet/host.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/list.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/list.h" />
 		<Unit filename="libs/enet/packet.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/peer.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/protocol.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/protocol.h" />
 		<Unit filename="libs/enet/time.h" />
 		<Unit filename="libs/enet/types.h" />
 		<Unit filename="libs/enet/unix.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/unix.h" />
 		<Unit filename="libs/enet/utility.h" />
 		<Unit filename="libs/enet/win32.c">
 			<Option compilerVar="CC" />
+			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
 		</Unit>
 		<Unit filename="libs/enet/win32.h" />
 		<Unit filename="libs/serial/impl/unix.h" />
