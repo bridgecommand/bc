@@ -742,7 +742,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
                         arpaContacts.at(i).estimate.cpa = contactRange * sin(contactRelAngle*RAD_IN_DEG);
                         arpaContacts.at(i).estimate.tcpa = 60*relDistanceToCPA/relativeSpeed; // (nm / (nm/hr)), so time in hours, converted to minutes
-                        std::cout << "Contact " << arpaContacts.at(i).estimate.displayID << " CPA: " <<  arpaContacts.at(i).estimate.cpa << " nm in " << arpaContacts.at(i).estimate.tcpa << " minutes" << std::endl;
+                        //std::cout << "Contact " << arpaContacts.at(i).estimate.displayID << " CPA: " <<  arpaContacts.at(i).estimate.cpa << " nm in " << arpaContacts.at(i).estimate.tcpa << " minutes" << std::endl;
 
 
                     } //If time between scans > 0

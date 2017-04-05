@@ -100,7 +100,7 @@ private:
     irr::gui::IGUIStaticText* stbdText;
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
-    irr::gui::IGUIEditBox* arpaText;
+    irr::gui::IGUIStaticText* arpaText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
     irr::gui::IGUIButton* smallRadarButton;
@@ -123,7 +123,7 @@ private:
     irr::gui::IGUIButton* eblUpButton2;
     irr::gui::IGUIButton* eblDownButton2;
     irr::gui::IGUIStaticText* radarText2;
-    irr::gui::IGUIEditBox* arpaText2;
+    irr::gui::IGUIStaticText* arpaText2;
 
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
@@ -161,7 +161,7 @@ private:
     irr::s32 smallRadarScreenCentreY;
     irr::s32 smallRadarScreenRadius;
     std::vector<irr::f32> guiCPAs;
-    std::vector<irr::f32> guiTCPAs;
+    std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
     std::string guiTime;
     bool singleEngine;
     bool guiPaused;

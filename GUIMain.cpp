@@ -224,9 +224,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guienv->addEditBox(L"6",core::rect<s32>(0.155*su,0.040*sh,0.195*su,0.080*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         //arpaText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.090*sh,0.237*su,0.230*sh),true,true,radarARPATab,-1,true);
-        arpaText = guienv->addEditBox(L"",core::rect<s32>(0.005*su,0.090*sh,0.237*su,0.230*sh),true,radarARPATab);
-        arpaText->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
-        arpaText->setAutoScroll(true);
+        arpaText = guienv->addStaticText(L"",core::rect<s32>(0.005*su,0.090*sh,0.237*su,0.230*sh),true,false,radarARPATab);
+        //TODO: Add scroll bars?
 
         //Radar ARPA on big radar screen
         guienv->addCheckBox(false,core::rect<s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
@@ -237,9 +236,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         guienv->addEditBox(L"6",core::rect<s32>(0.010*radarSu,0.480*radarSu,0.050*radarSu,0.510*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),core::rect<s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         //arpaText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),true,true,largeRadarControls,-1,true);
-        arpaText2 = guienv->addEditBox(L"",core::rect<s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),true,largeRadarControls);
+        arpaText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),true,false,largeRadarControls);
         arpaText2->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
-        arpaText2->setAutoScroll(true);
+        //TODO: Add scroll bars?
 
         //Add paused button
         pausedButton = guienv->addButton(core::rect<s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
@@ -629,20 +628,50 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         radarText2->setText(displayText.c_str());
 
         //Use guiCPAs and guiTCPAs to display ARPA data
-        displayText = language->translate("arpa");
-        displayText.append(L"\n");
+        displayText = L"";
         if (guiCPAs.size() == guiTCPAs.size()) {
             for (unsigned int i = 0; i < guiCPAs.size(); i++) {
-                displayText.append(core::stringw(i+1));
-                displayText.append(L": ");
-                displayText.append(language->translate("cpa"));
-                displayText.append(L": ");
-                displayText.append(f32To2dp(guiCPAs.at(i)).c_str());
-                displayText.append(L" ");
-                displayText.append(language->translate("tcpa"));
-                displayText.append(L": ");
-                displayText.append(f32To2dp(guiTCPAs.at(i)).c_str());
-                displayText.append(L"\n");
+
+                //Convert TCPA from decimal minutes into minutes and seconds. Only show if less than 1 hr, and not in the past
+                //TODO: Make this configurable
+                if (guiTCPAs.at(i) > 0 && guiTCPAs.at(i)<=60) {
+
+                    f32 tcpa = guiTCPAs.at(i);
+                    f32 cpa  = guiCPAs.at(i);
+
+                    u32 tcpaMins = floor(tcpa);
+                    u32 tcpaSecs = floor(60*(tcpa - tcpaMins));
+
+                    core::stringw tcpaDisplayMins = core::stringw(tcpaMins);
+                    if (tcpaDisplayMins.size() == 1) {
+                        core::stringw zeroPadded = L"0";
+                        zeroPadded.append(tcpaDisplayMins);
+                        tcpaDisplayMins = zeroPadded;
+                    }
+
+                    core::stringw tcpaDisplaySecs = core::stringw(tcpaSecs);
+                    if (tcpaDisplaySecs.size() == 1) {
+                        core::stringw zeroPadded = L"0";
+                        zeroPadded.append(tcpaDisplaySecs);
+                        tcpaDisplaySecs = zeroPadded;
+                    }
+
+                    displayText.append(language->translate("contact"));
+                    displayText.append(L" ");
+                    displayText.append(core::stringw(i+1)); //Contact ID (1,2,...)
+                    displayText.append(L":\n");
+                    displayText.append(language->translate("cpa"));
+                    displayText.append(L":");
+                    displayText.append(f32To2dp(cpa).c_str());
+                    displayText.append(language->translate("nm"));
+                    displayText.append(L" ");
+                    displayText.append(language->translate("in"));
+                    displayText.append(L":");
+                    displayText.append(tcpaDisplayMins);
+                    displayText.append(L":");
+                    displayText.append(tcpaDisplaySecs);
+                    if (i < guiTCPAs.size()-1) {displayText.append(L"\n");} //No newline at end
+                }
             }
         }
         arpaText->setText(displayText.c_str());
