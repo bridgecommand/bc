@@ -75,7 +75,7 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
 irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
 
     //Return unchanged if NaN etc.
-    if (!std::isnormal(angle)) {
+    if (localisinf(angle) || localisnan(angle)) {
         return angle;
     }
 
