@@ -18,6 +18,24 @@
 #include <algorithm>
 #include <iostream>
 
+//From OpenCV via http://stackoverflow.com/a/20723890
+int Angles::localisinf(double x)
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) == 0x7ff00000 &&
+           ( (unsigned)ieee754.u == 0 );
+}
+
+int Angles::localisnan(double x)
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) +
+           ( (unsigned)ieee754.u != 0 ) > 0x7ff00000;
+}
+//End From OpenCV via http://stackoverflow.com/a/20723890
+
 bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df startAng, irr::core::vector2df endAng)
 {
     //Aim is to be a faster way of calculating if an angle is between two others, not using atan2
@@ -30,7 +48,7 @@ bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df sta
 bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
 
     //Return false if any is not a normal number (e.g. NaN)
-    if (!std::isnormal(angle) || !std::isnormal(startAng) || !std::isnormal(endAng)) {
+    if (localisinf(angle) || localisnan(angle) || localisinf(startAng) || localisnan(startAng) || localisinf(endAng) || localisnan(endAng)) {
         return false;
     }
 

@@ -108,6 +108,9 @@ namespace scene
 		cOcean* ocean;
 
 		core::aabbox3d<f32> boundingBox;
+
+		int localisnan(double x) const;
+        int localisinf(double x) const;
 	};
 
 } // end namespace scene

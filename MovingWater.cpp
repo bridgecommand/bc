@@ -23,7 +23,7 @@
 //#include "Utilities.hpp"
 
 #include <iostream>
-#include <cmath>
+//#include <cmath>
 
 namespace irr
 {
@@ -177,6 +177,25 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 	}
 
 }
+
+//From OpenCV via http://stackoverflow.com/a/20723890
+int MovingWaterSceneNode::localisinf(double x) const
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) == 0x7ff00000 &&
+           ( (unsigned)ieee754.u == 0 );
+}
+
+int MovingWaterSceneNode::localisnan(double x) const
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) +
+           ( (unsigned)ieee754.u != 0 ) > 0x7ff00000;
+}
+//End From OpenCV via http://stackoverflow.com/a/20723890
+
 
 void MovingWaterSceneNode::resetParameters(float A, vector2 w, float seaState)
 {
@@ -421,10 +440,10 @@ f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
 
     f32 localHeight = height00*(1-interpX)*(1-interpZ) + height10*interpX*(1-interpZ) + height01*(1-interpX)*interpZ + height11*interpX*interpZ;
 
-    if (std::isnormal(localHeight)) {
-        return localHeight;
-    } else {
+    if (localisnan(localHeight) || localisinf(localHeight)) {
         return 0;
+    } else {
+        return localHeight;
     }
 
 }

@@ -29,6 +29,9 @@ namespace Angles
 
     irr::core::vector3df irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pitch, irr::f32 roll); //Convert yaw,pitch,roll (in degrees) into irrlicht 'euler angles' in degrees, as used by setRotation, essentially changing the order the transformations are applied in.
     int sign(float in);
+
+    int localisnan(double x);
+    int localisinf(double x);
 }
 
 #endif // __ANGLES_HPP_INCLUDED__
