@@ -532,7 +532,6 @@ void cOcean::evaluateWavesFFT(float t) {
 			if (localisinf(vertices[index1].y) || localisnan(vertices[index1].y)) {
 				vertices[index1].y = 0;
 			}
-			
 			if (localisinf(vertices[index1].x) || localisinf(vertices[index1].z) || localisnan(vertices[index1].x) || localisnan(vertices[index1].z)) {
 				vertices[index1].x = vertices[index1].ox ;
 				vertices[index1].z = vertices[index1].oz ;
@@ -557,6 +556,15 @@ void cOcean::evaluateWavesFFT(float t) {
 				vertices[index1 + N + Nplus1 * N].ny =  n.y;
 				vertices[index1 + N + Nplus1 * N].nz =  n.z;
 
+				//Checking - Bug workaround for NaNs on OSX
+				if (localisinf(vertices[index1 + N + Nplus1 * N].y) || localisnan(vertices[index1 + N + Nplus1 * N].y)) {
+					vertices[index1 + N + Nplus1 * N].y = 0;
+				}
+				if (localisinf(vertices[index1 + N + Nplus1 * N].x) || localisinf(vertices[index1 + N + Nplus1 * N].z) || localisnan(vertices[index1 + N + Nplus1 * N].x) || localisnan(vertices[index1 + N + Nplus1 * N].z)) {
+					vertices[index1 + N + Nplus1 * N].x = vertices[index1 + N + Nplus1 * N].ox ;
+					vertices[index1 + N + Nplus1 * N].z = vertices[index1 + N + Nplus1 * N].oz ;
+				}
+
 				//std::cout << "At time " << t << " corner n'=m'=0, height = " << vertices[index1].y << std::endl;
 
 			}
@@ -569,6 +577,16 @@ void cOcean::evaluateWavesFFT(float t) {
 				vertices[index1 + N].nx =  n.x;
 				vertices[index1 + N].ny =  n.y;
 				vertices[index1 + N].nz =  n.z;
+				
+				//Checking - Bug workaround for NaNs on OSX
+				if (localisinf(vertices[index1 + N].y) || localisnan(vertices[index1 + N].y)) {
+					vertices[index1 + N].y = 0;
+				}
+				if (localisinf(vertices[index1 + N].x) || localisinf(vertices[index1 + N].z) || localisnan(vertices[index1 + N].x) || localisnan(vertices[index1 + N].z)) {
+					vertices[index1 + N].x = vertices[index1 + N].ox ;
+					vertices[index1 + N].z = vertices[index1 + N].oz ;
+				}
+				
 			}
 			if (m_prime == 0) {
 				vertices[index1 + Nplus1 * N].y = h_tilde[index].a;
@@ -579,6 +597,17 @@ void cOcean::evaluateWavesFFT(float t) {
 				vertices[index1 + Nplus1 * N].nx =  n.x;
 				vertices[index1 + Nplus1 * N].ny =  n.y;
 				vertices[index1 + Nplus1 * N].nz =  n.z;
+				
+				//Checking - Bug workaround for NaNs on OSX
+				if (localisinf(vertices[index1 + Nplus1 * N].y) || localisnan(vertices[index1 + Nplus1 * N].y)) {
+					vertices[index1 + Nplus1 * N].y = 0;
+				}
+				if (localisinf(vertices[index1 + Nplus1 * N].x) || localisinf(vertices[index1 + Nplus1 * N].z) || localisnan(vertices[index1 + Nplus1 * N].x) || localisnan(vertices[index1 + Nplus1 * N].z)) {
+					vertices[index1 + Nplus1 * N].x = vertices[index1 + Nplus1 * N].ox ;
+					vertices[index1 + Nplus1 * N].z = vertices[index1 + Nplus1 * N].oz ;
+				}
+
+				
 			}
 		}
 	}
