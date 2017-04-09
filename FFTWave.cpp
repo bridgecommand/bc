@@ -317,6 +317,9 @@ float cOcean::dispersion(int n_prime, int m_prime) {
 float cOcean::phillips(int n_prime, int m_prime) {
 	vector2 k(M_PI * (2 * n_prime - N) / length,
 		  M_PI * (2 * m_prime - N) / length);
+	
+	//std::cout << k.x << " " << k.y << std::endl;
+	
 	float k_length  = k.length();
 	if (k_length < 0.000001) return 0.0;
 
@@ -333,12 +336,21 @@ float cOcean::phillips(int n_prime, int m_prime) {
 	float damping   = 0.001;
 	float l2        = L2 * damping * damping;
 
-	return A * exp(-1.0f / (k_length2 * L2)) / k_length4 * k_dot_w2 * exp(-k_length2 * l2);
+	float returnVal =  A * exp(-1.0f / (k_length2 * L2)) / k_length4 * k_dot_w2 * exp(-k_length2 * l2);
+	
+	//std::cout << A << " " << k_length2 << " " << L2 << " " << k_length4 << " " << k_dot_w2 << " " << l2 << " " << returnVal<< std::endl;
+
+	return returnVal;
 }
 
 complex cOcean::hTilde_0(int n_prime, int m_prime) {
 	complex r = gaussianRandomVariable();
-	return r * sqrt(phillips(n_prime, m_prime) / 2.0f);
+	
+	float phillipsVal = phillips(n_prime, m_prime);
+	
+	r = r * sqrt(phillipsVal / 2.0f);
+	//std::cout << r.a << " " << r.b << " " << phillipsVal << " " << sqrt(phillipsVal) <<  std::endl;
+	return r;
 }
 
 complex cOcean::hTilde(float t, int n_prime, int m_prime) {
@@ -349,6 +361,8 @@ complex cOcean::hTilde(float t, int n_prime, int m_prime) {
         complex htilde0, htilde0mk_conj;
         htilde0        = hTilde_0( n_prime,  m_prime);
         htilde0mk_conj = hTilde_0(-n_prime, -m_prime).conj();
+        
+        //std::cout << htilde0.a << " " << htilde0.b << std::endl;
 
         vertices[index].a  = htilde0.a;
         vertices[index].b  = htilde0.b;
@@ -433,6 +447,24 @@ void cOcean::resetParameters(float A, vector2 w)
     srand(10);
 }
 
+//From OpenCV via http://stackoverflow.com/a/20723890
+int cOcean::localisinf(double x) const
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) == 0x7ff00000 &&
+           ( (unsigned)ieee754.u == 0 );
+}
+
+int cOcean::localisnan(double x) const
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) +
+           ( (unsigned)ieee754.u != 0 ) > 0x7ff00000;
+}
+//End From OpenCV via http://stackoverflow.com/a/20723890
+
 void cOcean::evaluateWavesFFT(float t) {
 
 	float kx, kz, len, lambda = -1.0f;
@@ -495,6 +527,16 @@ void cOcean::evaluateWavesFFT(float t) {
 			h_tilde_dz[index] = h_tilde_dz[index] * sign;
 			vertices[index1].x = vertices[index1].ox + h_tilde_dx[index].a * lambda;
 			vertices[index1].z = vertices[index1].oz + h_tilde_dz[index].a * lambda;
+			
+			//Checking - Bug workaround for NaNs on OSX
+			if (localisinf(vertices[index1].y) || localisnan(vertices[index1].y)) {
+				vertices[index1].y = 0;
+			}
+			
+			if (localisinf(vertices[index1].x) || localisinf(vertices[index1].z) || localisnan(vertices[index1].x) || localisnan(vertices[index1].z)) {
+				vertices[index1].x = vertices[index1].ox ;
+				vertices[index1].z = vertices[index1].oz ;
+			}
 
 			// normal
 			h_tilde_slopex[index] = h_tilde_slopex[index] * sign;

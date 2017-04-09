@@ -148,6 +148,9 @@ class cOcean {
 	complex hTilde_0(int n_prime, int m_prime);
 	complex hTilde(float t, int n_prime, int m_prime);
 	//complex_vector_normal h_D_and_n(vector2 x, float t);
+	
+	int localisinf(double x) const;
+	int localisnan(double x) const;
 
   protected:
   public:
