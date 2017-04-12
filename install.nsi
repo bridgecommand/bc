@@ -37,7 +37,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.o /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
+File /r /x .svn /x .objs /x .git /x .gitignore /x *.bat /x EnetServer /x BridgeCommand.app /x *.o /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bridgecommand.exe"
