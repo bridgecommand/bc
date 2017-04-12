@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - Scenario Specification</title>
+
+
+</head>
+
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Bridge
+Command 4.7</h1>
+
+<h2>Scenarios</h2>
+
+<div style="text-align: left;">
+<h3>Contents</h3>
+
+</div>
+
+<div style="text-align: left;">
+<ul id="mozToc">
+
+  <li>Introduction</li>
+ <li><a href="#mozTocId27852">Environment.ini</a></li>
+
+  <li><a href="#mozTocId653103">Othership.ini</a></li>
+
+  <li><a href="#mozTocId653104">Controlledship.ini</a></li>
+
+  <li><a href="#mozTocId971006">Ownship.ini</a></li>
+
+  <li><a href="#mozTocId612737">Description.ini</a></li>
+
+  <li><a href="#mozTocId123456">Objective.ini</a></li>
+  
+  <li><a href="#mozTocId919366">Conclusion</a></li>
+
+</ul>
+
+<h3>Introduction</h3>
+
+Bridge Command is built
+around the
+principle of 'Scenarios,' and loads one at the start of each session.
+The scenario sets the scenery area loaded, the other vessels in the
+simulation and the vessel simulated. It is essential to load a scenario
+when starting Bridge Command, but the scenario itself can be extremely
+simple or very complicated.<br>
+
+<br>
+
+Bridge Command comes with a scenario writing programme, which automates the process
+of scenario writing, so you don't need to worry about the technical details of each file if
+you use this editor. This writer is <a href="writer.html">documented here</a>. Below is the 
+full technical specification of the scenario format.<br>  
+
+<h3>Specification</h3>
+
+The files that make up a scenario are text files. Each scenario is stored in its own folder under the Scenarios folder.
+This folder is itself in the main Bridge Command folder, so if you have a typical installation and Bridge Command is 
+installed in <span style="font-style: italic;">C:\Program files\Bridge Command 4.7GPL</span>, then a scenario named 
+'Test Scenario' will be stored in <span style="font-style: italic;">C:\Program files\Bridge Command 4.7GPL\Scenarios\Test 
+Scenario</span>. The scenario files can be edited with a text editor (as distinct from a word processor), such as the Windows programme 
+<span style="font-style: italic;">Notepad</span>. This comes on all computers running Windows, and can be started from
+the Start Menu, by going to the 'All Programs, Accessories' submenu and clicking on the Notepad icon. An alternative 
+method of starting notepad is with the Windows 'Run' command, again on the start menu, and typing 
+<span style="font-style: italic;">notepad</span> and then clicking OK.<br>
+
+<br>
+
+</span>Each scenario is made up of four text files, named <span style="font-style: italic;"><br>
+
+</span>
+<ul>
+
+  <li><span style="font-style: italic;">Environment.ini</span></li>
+
+  <li><span style="font-style: italic;">Othership.ini</span></li>
+
+  <li><span style="font-style: italic;">Ownship.ini</span></li>
+
+  <li><span style="font-style: italic;">Description.ini</span></li>
+
+  <li><span style="font-style: italic;">Objective.ini</span></li>
+
+</ul>
+
+To get a feeling for how the scenarios work, it's probably best to
+start of by experimenting with an existing scenario, and modifying it.
+This should help you get to grips with what's involved than just
+reading the specification below, though it will be useful to understand
+the details of how things are defined.<br>
+
+<br>
+
+To copy an existing scenario to experiment with, copy the entire folder
+for that scenario, and rename it as something else. Then you can modify
+the scenario as much as you want without losing the original.
+<h3><a class="mozTocH3" name="mozTocId27852"></a>Environment.ini</h3>
+
+This defines the scenery loaded, along with its tidal and magnetic
+characteristics. <br>
+
+<h4><a class="mozTocH4" name="mozTocId644987"></a>Example</h4>
+
+<pre>Setting="SantaCatalina"<br>StartTime=7.25<br>StartDay=28<br>StartMonth=2<br>StartYear=2009<br>SunRise=8.817<br>SunSet=16.8<br>Variation=0<br>VisibilityRange=5<br>Weather=0.5<br>WindDirection=90<br>Rain=2</pre>
+
+You will notice that textual settings, such as <span style="font-style: italic;">SantaCatalina</span> are
+enclosed in quotation marks, while numerical ones are not. This is the
+general principle in all files.<br>
+
+<br>
+
+<h4><a class="mozTocH4" name="mozTocId999273"></a>Line
+by line analysis</h4>
+
+<ul>
+
+  <li>Setting: This selects which world area to load. This is the
+name of the folder containing the world model, typically in <span style="font-style: italic;">C:\Program files\Bridge Command
+4.7GPL\World</span>. The world area you load must exist!</li>
+
+  <li>StartTime: This is the time at which the scenario starts,
+in decimal hours (24 hour clock). Therefore, the setting <span style="font-style: italic;">7.25</span> above means
+that the scenario starts at 0715h.</li>
+
+  <li>StartDay: The day of the month the scenario starts. Therefore in the the example, the scenario will start
+on the 28th of the month.</li>
+
+ <li>StartMonth: The month of the year that the scenario starts. Therefore in the the example, the scenario will start 
+in February.</li>
+
+<li>StartYear: The year that the scenario starts. Therefore in the the example, the scenario will start 
+in 2009. The start year must be between 1970 and 2037.</li>
+
+  <li>SunRise: The time of sunrise, again in decimal hours. Along
+with SunSet, this can be omitted, giving a default sunrise at 6AM and
+sunset at 6PM.</li>
+
+  <li>SunSet: The time of sunset, in decimal hours. See SunRise
+above.</li>
+
+  <li>Variation: The magnetic variation, set in degrees, with
+westerly variation as positive. To simulate a gyrocompass, set this to
+zero.</li>
+
+  <li>VisibilityRange: The maximum distance at which objects are visible through fog/haze, in nautical miles. If the map controller is used, the visibility set by the map controller will override this.</li>
+
+  <li>Weather: How rough the sea is, from 0 (best) to 12 (worst). If the map controller is used, the weather set by the map controller will override this. The weather also determines how windy it is.</li>
+
+  <li>WindDirection: The bearing the wind is blowing from at the start of the scenario. If the map controller is used, the wind direction set by the map controller will override this.</li>
+
+  <li>Rain: The rain intensity, between 0 for no rain and 10 for maximum rain.</li>
+
+</ul>
+
+<h3><a class="mozTocH3" name="mozTocId653103"></a>Othership.ini</h3>
+
+Bridge Command allows you two ways to control other vessels in the simulation.
+This file allows you to set up ships with a pre-planned track, which can have many legs
+as required. You can also set up ships which can be controlled as the scenario is run with
+the Map Controller, a programme which is distributed with Bridge Command, and is <a href="controller.html">documented 
+here</a>.<br>
+
+<br>
+
+The first line sets the number of vessels that will be loaded, so if you want a
+simple scenario with no other ships, this file just contains one line:<br>
+
+<pre>Number=0<br></pre>
+
+However, if you want to load one or more other vessels with pre-planned tracks, the format is
+as below<br>
+
+<h4><a class="mozTocH4" name="mozTocId442177"></a>Example</h4>
+
+<pre>Number=1<br><br>Type(1)="HMAS_Waller"<br>InitialLong(1)=-118.486<br>InitialLat(1)=33.385<br>Legs(1)=2<br>Bearing(1,1)=190<br>Speed(1,1)=10<br>Distance(1,1)=1.5<br>Bearing(1,2)=190<br>Speed(1,2)=0<br>Distance(1,2)=1<br></pre>
+
+In this case, one vessel is being loaded, hence <span style="font-style: italic;">Number=1</span>. For each
+vessel loaded, the same setting are used, so the setting name is
+followed by the vessel number in brackets, with no additional spaces.<br>
+
+<h4><a class="mozTocH4" name="mozTocId788226"></a>Settings</h4>
+
+<ul>
+
+  <li>Type: The vessel to load. This must be an available 'other
+ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files\Bridge Command
+4.7GPL\Models\Othership</span>.</li>
+
+  <li>InitialLong: The longitude where the vessel starts. This
+is in decimal degrees, with east being positive. Therefore <span style="font-style: italic;">-118.486</span>
+corresponds to 118&deg; 29.16' West</li>
+
+  <li>InitialLat: As above, but for latitude with north as
+positive. Therefore <span style="font-style: italic;">33.385</span>
+corresponds to 33&deg; 23.1' North.</li>
+
+  <li>(Optional) InitLongUncertaintyNm and InitLatUncertaintyNm: If these are included, these change the initial position randomly, centred on the InitialLong and InitialLat. These set the maximum distance in the East/West and North/South directions from the nominal start point in nautical miles.</li>
+
+<li>(Optional). SART: Set this to 1 to enable a SART (Search And Rescue Transponder) on the vessel.</li>
+
+  <li>Legs: The number of legs making up the vessel's route (See
+below)</li>
+
+</ul>
+
+To make the ship move, a route is set made out of one or more 'legs' of
+set length, bearing and speed. As each can have many route legs, now a
+double number is added to the end of the setting name in brackets, the
+first number being the vessel number, and the second the leg number.
+These are separated by a comma, and there is no space between them.
+Therefore <span style="font-style: italic;">Bearing(1,2)</span>
+is the bearing of the <strong>second</strong> leg of the <strong>first</strong>
+vessel, whereas <span style="font-style: italic;">Bearing(3,1)</span>
+is the bearing of the <strong>first</strong> leg of the <strong>third</strong>
+vessel.<br>
+
+<h4><a class="mozTocH4" name="mozTocId197840"></a>Route</h4>
+
+For each leg, the following settings apply:<br>
+
+<ul>
+
+  <li>Bearing: The course in degrees (true).</li>
+
+  <li>Speed: The speed in knots (nautical miles per hour).</li>
+
+  <li>Distance: The length of the leg in nautical miles.</li>
+
+</ul>
+
+Note that after the last leg, the vessel stops and faces north (i.e. goes
+onto a course of 000&deg; with a speed of zero. To keep the vessel
+pointing in the required direction, you can add an extra leg onto the
+end of the route, with the required course, a non-zero length but a
+speed of zero. The vessel will remain stationary, facing in the
+required direction indefinitely. Remember that this leg needs to be
+counted in the number of legs set.<br>
+
+<h3><a class="mozTocH3" name="mozTocId653104"></a>Controlledship.ini</h3>
+
+This file sets up the vessels loaded into the scenario, which can be controlled by 
+the <a href="controller.html">Map Controller</a> when the scenario is run. Since the 
+Map Controller sets the vessels course and speed, you just need to set the vessels'
+types and initial positions.
+
+If you don't want any controlled ships, this file can contain the one line:<br>
+
+<pre>Number=0<br></pre>
+
+However, if you want to load one or more other vessels, the format is
+as below<br>
+
+<h4><a class="mozTocH4" name="mozTocId442177"></a>Example</h4>
+
+<pre>
+Number=2
+Type(1)="Timbercarrier"
+InitialLong(1)=-118.509917
+InitialLat(1)=33.412467
+
+Type(2)="Protis"
+InitialLong(2)=-118.509833
+InitialLat(2)=33.425133
+</pre>
+
+In this case, two vessels are being loaded, hence <span style="font-style: italic;">Number=2</span>. For each
+vessel loaded, the same setting are used, so the setting name is
+followed by the vessel number in brackets, with no additional spaces.<br>
+
+<h4><a class="mozTocH4" name="mozTocId788226"></a>Settings</h4>
+
+<ul>
+
+  <li>Type: The vessel to load. This must be an available 'other
+ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files\Bridge Command
+4.7GPL\Models\Othership</span>.</li>
+
+  <li>InitialLong: The longitude where the vessel starts. This
+is in decimal degrees, with east being positive. Therefore <span style="font-style: italic;">-118.486</span>
+corresponds to 118&deg; 29.16' West</li>
+
+  <li>InitialLat: As above, but for latitude with north as
+positive. Therefore <span style="font-style: italic;">33.385</span>
+corresponds to 33&deg; 23.1' North.</li>
+
+<li>(Optional). SART: Set this to 1 to enable a SART (Search And Rescue Transponder) on the vessel.</li>
+
+</ul>
+  
+<h3><a class="mozTocH3" name="mozTocId971006"></a>Ownship.ini</h3>
+
+This sets what vessel to load as your own ship, and some of its
+characteristics.<br>
+
+<h4><a class="mozTocH4" name="mozTocId192341"></a>Example</h4>
+
+<pre>ShipName="ORP_Jaskolka"<br>InitialLong=-118.49<br>InitialLat=33.38<br>InitialBearing=339<br>InitialSpeed=15<br>HasGPS=1<br>gpsDecimals=3<br>HasDepthSounder=1<br>MaxDepth=50<br>HasDeviation=0<br></pre>
+
+<h4><a class="mozTocH4" name="mozTocId187045"></a>Settings</h4>
+
+<ul>
+
+  <li>ShipName: The vessel to load. This must be an available
+'own ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files\Bridge Command
+4.7GPL\Models\Ownship.</span></li>
+
+  <li>InitialLong: The longitude where your vessel starts. This
+is in decimal degrees, with east being positive. Therefore <span style="font-style: italic;">-118.49</span> corresponds
+to 118&deg; 29.4' West</li>
+
+  <li>InitialLat: As above, but for latitude with north as
+positive. Therefore <span style="font-style: italic;">33.38</span>
+corresponds to 33&deg; 22.8' North.</li>
+
+  <li>(Optional) InitLongUncertaintyNm and InitLatUncertaintyNm: If these are included, these change the initial position randomly, centred on the InitialLong and InitialLat. These set the maximum distance in the East/West and North/South directions from the nominal start point in nautical miles.</li>
+
+  <li>InitialBearing: Your initial course in degrees (true)</li>
+
+  <li>InitialSpeed: Your initial speed in knots (nautical miles
+per hour)</li>
+
+  <li>HasGPS: If your vessel has a GPS readout. Set HasGPS=1 for
+a GPS display and HasGPS=0 for no readout</li>
+
+  <li>gpsDecimals: The number of decimal points to display for the GPS
+position in minutes, between 1 and 3. If not set this defaults to 2 
+(eg 50&deg 58.57N).</li>
+
+  <li>HasDepthSounder: As above, but for a depth readout (Depth
+under keel in metres)</li>
+
+ <li>MaxDepth: The maximum depth in metres for which the depth sounder will give a reading. If not set, this defaults to 100m.</li>
+
+  <li>HasDeviation: If the compass readout is affected by the
+deviation. If HasDeviation=0 is set here and Variation=0 is set in
+Environment.ini, the compass readout is in degrees true (as a
+gyrocompass)</li>
+
+</ul>
+
+<h3><a class="mozTocH3" name="mozTocId612737"></a>Description.ini</h3>
+
+The simplest file, just a plain text file of up to 12 lines in which you can
+describe the scenario. This is displayed when the user is selecting
+&nbsp;which scenario to load. This file is not strictly required,
+but useful if you want to put in some information for the scenario user. 
+Each line should be a maximum of 57 characters for all of the content to be visible.<br>
+
+<h4><a class="mozTocH4" name="mozTocId505252"></a>Example</h4>
+
+<pre>Off Santa Catalina island<br></pre>
+
+<h3><a class="mozTocH3" name="mozTocId123456"></a>Objective.ini (Optional)</h3>
+
+This sets any objectives for the scenario. Objectives can be set to come within a specified distance of another vessel, buoy, or fixed location. This file is optional.
+<h4>Example</h4>
+
+<pre>
+Number=2
+
+AvoidCollision=1
+targetType(1)=3
+targetID(1)=67
+targetMinDistance(1)=15
+
+targetType(2)=4
+long(2)=-9.98701
+lat(2)=50.01
+targetMinDistance(2)=20
+</pre>
+
+<h4>Settings</h4>
+<ul>
+  <li>Number: The number of objectives</li>
+  <li>AvoidCollision: If the objectives are failed if your own ship is in collision with other vessels or buoys.</li>
+  <li>targetType: 1 for an other ship, 2 for a controlled ship, 3 for a buoy or 4 for a fixed position</li> 
+  <li>targetID: (Only if targetType is 1-3). The number of the target in the scenario. For other ships and controlled ships, this is the number set in the scenario in othership.ini, controlledship.ini. For buoys, this is the buoy number in the world model.</li>
+  <li>long and lat: (Only if targetType is 4). The longitude and latitude of the objective.</li>
+  <li>targetMinDistance: How close you need to be to the target for the objective to be completed. Distance in metres.</li>
+</ul>
+
+<h3><a class="mozTocH3" name="mozTocId919366"></a>Conclusion</h3>
+
+If you have any questions, please ask the author - <a href="mail.php" onmouseover="this.href='mai' + 'lto:' + 'help' + '@' + 'bridgecommand.co.uk'">send
+me an email.</a><br><br>
+</div>
+
+</div>
+
+</body>
+</html>

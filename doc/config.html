@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Bridge Command 4.7</title>
+
+
+  <meta name="resource-type" content="document">
+
+  <meta name="description" content="Bridge Command Ship and navigation simulator, a non-commercial (freeware) 3d ship simulator for the PC.">
+
+  <meta name="keywords" content="Bridge, Command, ship, boat, navigation, chartwork, simulator, free, freeware, Windows, 3d">
+
+</head>
+
+
+<body style="background-color: rgb(221, 221, 221);">
+
+<div style="text-align: center;">
+<h1>Bridge Command 4.7</h1>
+</div>
+
+<center>
+<h2>Configuration</h2>
+
+</center>
+
+<h3>Introduction</h3>
+
+<p>Bridge Command's settings are controlled in the file bc4.ini, found in the Bridge Command root directory. This can  be edited with either a standard text editor (Such as notepad), or with the program provided, which can be started by clicking on the 'Change settings' button on the scenario selection screen.
+</p>
+
+<p>
+Alternatively, you can use the shortcuts in the Bridge Command start menu to change the settings for Bridge Command (bc4.ini), all of the map based programs (map.ini), and joystick/hardware controller settings (joystick.ini).
+</p>
+
+<p>The settings control how Bridge Command runs on your screen, such as whether it runs full screen, or in a window, and at what resolution, as well as many other things
+</p>
+
+<h3>Using the Settings Editor</h3>
+
+<p>When you run Bridge Command, click the button 'Change Settings' below the scenario list. This will load an editor, as shown below. This allows you to read about the different settings and change them.</p>
+
+<p>The configuration editor is from <a href="http://code.google.com/p/ini-settings-editor/">http://code.google.com/p/ini-settings-editor/</a> and is distributed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache Licence 2.0</a></p>
+
+<img src="images/settingsEdit.png" alt="Settings Editor" id="settingsEdit">
+
+<h3>Special ini file options</h3>
+
+<p>Bridge Command will normally used the file bc4.ini in the Bridge Command installation directory. However you can specify a different file if you start Bridge Command from a shortcut or the command line. If you run bc4.exe /ini="OtherIniFile.ini", you can specify a different file to load (either a full or relative path).</p>
+
+<h3>Individual user settings</h3>
+
+<p>In order to allow individual users to edit scenarios if they do not have write access to the location where Bridge Command is installed, an additional bc4.ini file located in %appdata%\Bridge Command\4.x (C:\Documents and Settings\USERNAME\Application Data\Bridge Command\4.x\bc4.ini for a standard installation) is used. This can override the 'scenario_dir' setting, meaning that each user can have a different scenario directory.</p>
+<p>If you use the <a href="writer.html">scenario editor</a>, it will check if the current scenario directory is writable, and if not, relocate it to the user's %appdata% folder automatically.</p>
+
+<h3>The bc4.ini technical specification</h3>
+
+<p>
+This file uses the general principles documented in the <a href="IniFileFormat.html">Ini File Format document</a>, which should be referred to alongside this document.
+<p>
+
+<h4>Example bc4.ini file</h4>
+
+<pre>
+graphics_width=800
+graphics_height=600
+graphics_depth=16
+graphics_mode=2
+scenario_dir="Scenarios"
+view_angle=90
+minimum_distance=0.5
+maximum_distance=100000
+collision_mode=1
+terrain_detail=2000
+name=""
+multihead=0
+udp_timeout=30
+udp_send_port=18304
+udp_recv_port=18303
+udp_resend_port=18305
+NMEA_ComPort=0
+NMEA_ComTimeout=500
+NMEA_Baud=4800
+NMEA_tcpip=0
+NMEA_port=10110
+NMEA_address="127.0.0.1"
+local_log=0
+</pre>
+
+<h4>Parameters and descriptions</h4>
+
+<p>The parameters set in the file are:
+<ul>
+<li>graphics_width: This sets the screen width. If running full screen, this should be a width your graphics card supports.</li>
+<li>graphics_height: This sets the screen height. It should be 0.75x the graphics_width value, and should also be supported by your graphics card.</li>
+<li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
+<li>graphics_mode: 1 is full screen, 2 is windowed. 
+<ul><li>(There is also a special purpose mode 3, which is windowed, but with no window border. If this is used, additional parameters graphics_x and graphics_y must be set to define the position of the window, as you will not be able to move it once running).</li></ul></li>
+<li>scenario_dir: This is the location where Bridge Command looks for the scenarios to choose from. It should either be relative to your Bridge Command root folder, or an absolute path.</li>
+<li>view_angle: The angle of view for the 3d window in degrees</li>
+<li>look_angle: (Optional) The initial view bearing in degrees, relative to the ship's head. If not set, this defaults to zero, i.e. looking straight ahead.</li>
+<li>minimum_distance: The minimum distance in metres that is rendered by the camera. If this is too small, you will see strange depth artifacts.</li> 
+<li>maximum_distance: The maximum distance the camera will render in metres. If the visiblity is less than this, the smaller value will be used.</li>
+<li>collision_mode: This can be 0, 1 or 2. 0 disables any collision detection for the own ship model. 1 uses a simple distance and ship shape collision detection method, and 2 uses polygon-polygon collision detection. This is most accurate, but is slightly slower running.</li> 
+<li>terrain_detail: The detail with which the terrain is rendered to the display. 2000 is a good default, but you can reduce this to around 500 in order to increase performance, at the cost of a less smooth terrain with more simplification artefacts.</li>
+<li>name: This allows you to give the simulator a unique name of your own choice, and can be any text string, enclosed in double quotation marks ("). It can also be blank (name="").</li>
+<li>multihead: This sets whether multiple displays are shown on one screen. This will reduce the resolution of each display, but show you a wider viewpoint around the ship. Set to 0 for normal, single display, 1 for the screen divided into four quarters, or 2 for a short, wide screen with a 270 degree field of view. <b>Please note that there is a better way of displaying on multiple screens, with multiple computers each rendering to one full screen, to get high resolution multi-screen display. Please see the main documentation for more details on how to do this.</b></li>
+<li>udp_timeout: Where Bridge Command is being used with the Map Controller, how long in milliseconds to wait for a data message to arrive.</li>
+<li>udp_send_port: The port used by Bridge Command to send UDP data when being used with the Map Controller or multiple displays.</li>
+<li>udp_recv_port: The port used by Bridge Command to receive UDP data from the Map Controller when being used with it.</li>
+<li>NMEA_ComPort: Sets the serial port number that Bridge Command should use to send emulated GPS data for use with a chart plotter, or 0 to disable.</li>
+<li>NMEA_ComTimeout: Sets the serial port timeout (i.e. how long Bridge Command will wait to send a message, set in milliseconds). Set as 1 or greater. If set to 0, the default of 500ms will be used.</li>
+<li>NMEA_Baud: Sets the baud rate for NMEA serial data. This should normally be 4800, or 38400 for NMEA HS</li>
+<li>NMEA_tcpip: Whether Bridge Command should use a tcp/ip network connection to send NMEA information, for example to send to a chart plotter. Set to 1 to enable, or 0 to disable. (Experimental)</li>
+<li>NMEA_port: What port to use for NMEA tcp/ip.</li>
+<li>NMEA_address: The IP address of the computer receiving the information. Use "127.0.0.1" if the information should go to the computer running Bridge Command.</li>
+<li>quick_quit: (Optional) Set this to 1 to make the program exit without waiting for confirmation when the 'Esc' key is hit. Set to 0 or leave blank for default.</li>
+<li>local_log: If Bridge Command should log exercises to be replayed with the <a href="replay.html">scenario replayer</a> in 2d or 3d. Set to 1 to enable, or 0 to disable.</li>
+</ul>
+</p>
+
+<h3>The map.ini technical specification</h3>
+
+<p>This file configures the Map Controller, and the other associated programs (Replay etc).
+</p>
+
+<h4>Example map.ini file</h4>
+
+<pre>
+graphics_width=640
+graphics_height=480
+graphics_depth=16
+graphics_mode=2
+smooth_radar=0
+cache_radar=1
+zoom_levels=3
+udp_timeout=30
+udp_send_port=18303
+udp_recv_port=18304
+</pre>
+
+<h4>Parameters and descriptions</h4>
+
+<p>The parameters set in the file are:
+<ul>
+<li>graphics_width: This sets the screen width. If running full screen, this should be a width your graphics card supports.</li>
+<li>graphics_height: This sets the screen height. It should be 0.75x the graphics_width value, and should also be supported by your graphics card.</li>
+<li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
+<li>graphics_mode: 1 is full screen, 2 is windowed</li>
+<li>smooth_radar: If this is set to 1, the map image will be smoothed when it is scaled for display. This will mean that the program will take more time to load.</li> 
+<li>cache_radar: One of the processes which takes most time in start-up is scaling the map images to the correct size. If this parameter is set to 1, the images will be scaled the first time they are used, and these prescaled images saved ready to be loaded directly. This significantly speeds up loading times, but can use substantial disk space. Set to 0 if you do not want to save the pre-scaled images.</li>
+<li>zoom_levels: The number of zoom levels for which a map image is displayed. This number must be 1 or greater. Since scaling the map to higher zoom levels is a slow process, increasing the zoom levels may make the program start very slowly.</li>
+<li>udp_timeout: How long in milliseconds to wait for a data message to arrive from Bridge Command.</li>
+<li>udp_send_port: The port used by the Map Controller to send UDP data to Bridge Command.</li>
+<li>udp_recv_port: The port used by the Map controller to receive UDP data from Bridge Command.</li>
+</ul>
+</p>
+
+</body>
+</html>

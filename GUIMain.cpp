@@ -698,10 +698,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
             }
         }
-        if (selectedItem > -1 && arpaText->getItemCount()>selectedItem) {
+        if (selectedItem > -1 && (s32)arpaText->getItemCount()>selectedItem) {
             arpaText->setSelected(selectedItem);
         }
-        if (selectedItem2 > -1 && arpaText2->getItemCount()>selectedItem2) {
+        if (selectedItem2 > -1 && (s32)arpaText2->getItemCount()>selectedItem2) {
             arpaText2->setSelected(selectedItem2);
         }
         if(arpaText->getVerticalScrollBar()) {

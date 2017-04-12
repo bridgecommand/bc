@@ -43,9 +43,10 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2015 James Packer");
+    titleText.append(L"\nCopyright 2017 James Packer");
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
+    title->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
 
     gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),core::rect<s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
     gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);

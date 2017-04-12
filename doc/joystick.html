@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - External controls</title>
+
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Using external controls with Bridge Command</h1>
+</div>
+
+<h2>Introduction</h2>
+
+<p>
+To increase the realism of the simulation, it is possible to use physical throttle levers and a wheel to control your vessel in Bridge Command. In principle, any three axis analog joystick can be used, but in practice suitable joysticks are not readily available, and it is quite simple to construct one to your own requirements. How to do this is explained at <a href="makethrottle.html">How to make a set of throttles and wheel</a>.
+</p>
+
+<h2>Details</h2>
+
+<h3>Enable Bridge Command's joystick support</h3>
+
+<p>
+In the start menu area for Bridge Command, find the shortcut to 'Joystick Settings', under the 'Settings' sub-menu. Use this to change the 'use joystick' setting from 0 to 1 to enable Bridge Command's joystick capabilities.
+</p>
+
+<p>You may also need to change a few more values, depending on how your joystick is set up. If the controller you want to use is not the only joystick connected to your system, you may have to change the 'joystick_no_' values to the correct one.
+</p>
+
+<p>
+You can also open the joystick configuration file <i>joystick.ini</i> directly, in the Bridge Command root directory (Usually "C:\Program files\Bridge Command 4.7GPL\").
+</p> 
+
+
+<h3>More options</h3>
+
+<p>If your set-up doesn't work with the default options, or you want more control over how the throttles and wheel work, you can edit all of the options in the file. A complete example is geven below, and the options are:
+</p>
+
+<ul>
+<li>
+use_joystick: Sets if Bridge Command uses a joystick as the input device. 1 to use a joystick/throttle set, 0 for normal mouse control.
+</li>
+<li>
+port_throttle_channel: This sets which joystick channel is used to control the port throttle (or mainsail). This will normally be 1,2 or 3.
+</li>
+<li>
+stbd_throttle_channel: This sets which joystick channel is used to control the starboard throttle (or jib). This will normally be 1,2 or 3.
+</li>
+<li>
+rudder_channel: This sets which joystick channel is used to control the rudder. This will normally be 1,2 or 3.
+</li>
+<li>
+joystick_no_port: This sets which joystick on your system Bridge Command uses for the port throttle (or mainsail). If you only have one joystick connected, this will be 0.
+</li>
+<li>
+joystick_no_stbd: This sets which joystick on your system Bridge Command uses for the starboard throttle (or jib). If you only have one joystick connected, this will be 0.
+</li>
+<li>
+joystick_no_rudder: This sets which joystick on your system Bridge Command uses for the rudder. If you only have one joystick connected, this will be 0.
+</li>
+<li>
+joystick_no: This sets which joystick on your system Bridge Command uses. If you only have one, this will be 0. This is used for the horn button (button 1)
+</li>
+<li>
+The following section sets the mapping between the joystick input value and the proportion of engine revs. It allows for fixed steps, such as slow ahead and half ahead, as well as different sensitivities for continuous control. This is set with fixed points that define the mapping of throttle to engine revs (see the image below)
+<ul>
+<li>
+joystick_map_points: The number of points in the mapping between the joystick input and the proportion of engine revs.
+</li>
+<li>For each point, 1 to joystick_map_points, the following must be defined:
+</li>
+<li>
+joystick_map(point,1): The joystick input value
+</li>
+<li>
+joystick_map(point,2): The proportion of max engine revs
+</li>
+<li>
+If the joystick input is outside the defined range, the first or last output value will be used as appropriate.
+</li>
+</ul>
+</li>
+<li>
+port_multiplier: This is used to calibrate your port throttle lever, and should almost always be left as 1.
+</li>
+<li>
+port_offset: This is used to calibrate your port throttle lever, and should almost always be left as 0.
+</li>
+<li>
+stbd_multiplier: This is used to calibrate your starboard throttle lever, and should almost always be left as 1.
+</li>
+<li>
+stbd_offset: This is used to calibrate your starboard throttle lever, and should almost always be left as 0.
+</li>
+<li>
+rudder_multiplier: This is used to calibrate your rudder, and should almost always be left as 1.
+</li>
+<li>
+rudder_offset: This is used to calibrate your rudder, and should almost always be left as 0.
+</li>
+</ul>
+</p>
+
+<p>
+In addition the the three joystick axes for engines and rudder, joystick button 1 will sound the ship's horn.
+</p>
+
+<h3>Example joystick mapping</h3>
+
+<p>
+This is the mapping in the example below. Each point is indicated, and the map gives fixed slow and half ahead and astern positions, and then the engines can be controlled up to full power. Half of the joystick input range is used.
+</p>
+<img src="images/joystick_map.png" id="map" alt="Joystick Mapping" name="map" />
+
+<h3>Example</h3>
+
+<p>This maps the full engine range to half of the joystick range, and has the following mapping, which gives the fixed positions of slow ahead and half ahead, and then allows continuous control up to full ahead, and is the same going astern.
+</p>
+
+<pre>
+use_joystick=1
+joystick_no=0
+
+port_throttle_channel=1
+stbd_throttle_channel=2
+rudder_channel=3
+
+joystick_map_points=12
+
+joystick_map(1,1)=-0.5	
+joystick_map(1,2)=-1
+
+joystick_map(2,1)=-0.25	
+joystick_map(2,2)=-0.5
+
+joystick_map(3,1)=-0.125	
+joystick_map(3,2)=-0.5
+
+joystick_map(4,1)=-0.125
+joystick_map(4,2)=-0.25
+
+joystick_map(5,1)=-0.0625	
+joystick_map(5,2)=-0.25
+
+joystick_map(6,1)=-0.0625	
+joystick_map(6,2)=0
+
+joystick_map(7,1)=0.0625	
+joystick_map(7,2)=0
+	
+joystick_map(8,1)=0.0625	
+joystick_map(8,2)=0.25
+	
+joystick_map(9,1)=0.125	
+joystick_map(9,2)=0.25
+	
+joystick_map(10,1)=0.125	
+joystick_map(10,2)=0.5
+	
+joystick_map(11,1)=0.25	
+joystick_map(11,2)=0.5
+	
+joystick_map(12,1)=0.5	
+joystick_map(12,2)=1
+
+port_multiplier=1
+port_offset=0
+stbd_multiplier=1
+stbd_offset=0
+rudder_multiplier=1
+rudder_offset=0
+</pre>
+
+
+</body>
+</html>
