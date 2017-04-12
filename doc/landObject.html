@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - Land objects</title>
+
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Land Objects</h1>
+</div>
+
+<h2>Introduction</h2>
+
+<p>
+Land objects are models that can be loaded into the world model, to represent buildings, marks and features on the land. A house, a light house building and a daymark are all examples of features that would be represented by loading the appropriate land object. This document will document how land object models are defined. For details of how to load land objects into the world model, please see the <a href="WorldFileSpec.html">World file specification</a>.
+</p>
+
+<p>
+The most fundamental part of any land object to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format (.3ds). With this, the text file object.ini can be used to define modifications to the way the model is loaded. The specification of this file is detailed below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file format</a>. 
+</p> 
+
+<p>
+Each land object is contained in a folder, with the land object's name, under Models\LandObject. So if Bridge Command is installed in its default location, a land object model called 'Church' would be at 'C:\Program Files\Bridge Command 4.7GPL\models\LandObject\Church'
+</p>
+
+<h2>Simple model loading</h2>
+
+<p>If the 3d model is in DirectX (.x) format, and does not need scaling (In Bridge Command 1 unit = 1 metre), to make the object available, rename the model file 'object.x'. In the land object's folder (Models\LandObject\ in Bridge Command's installation folder), create a sub-folder with the object name that you want, and place the model file and all required textures in this folder.</p> You can now load the land object into a world model, using the folder name you chose.
+
+<h2>Normal model loading</h2>
+
+<p>If you wish to scale the model, to make it the right size to load into Bridge Command, or if the file is in the 3DS format (.3ds), an additional settings file, 'object.ini' must be used. In the land object's folder (Models\LandObject\ in Bridge Command's installation folder), create a sub-folder with the object name that you want. Place your model and texture files in this folder. You must also create an object.ini file in this folder. This can either be created from a blank text file using Notepad, or copied from another model and edited with Notepad.</p>
+
+<h3>Object.ini</h3>
+
+<p>This file contains two lines, and an example file is shown below:</p>
+
+<pre>
+FileName="church.3ds"
+ScaleFactor=4.0
+</pre>
+
+<p>
+The FileName is set as the name of the model file you wish to load. This model file must exist in the folder, and should be either a 3ds or DirectX (.3ds or .x) model. The ScaleFactor is the amount that the model will be multiplied by to scale it for Bridge Command. This should therefore be set to 1 if no scaling is required.
+</p>
+
+</body>
+</html>

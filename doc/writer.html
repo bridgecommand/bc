@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - Scenario Writer</title>
+
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Scenario writer
+</h1>
+</div>
+
+<h2>Contents</h2>
+
+<p>
+<a href="#intro">Introduction</a><br />
+<a href="#using">Using the scenario writer</a><br />
+<a href="#multi">Multiplayer</a><br />
+<a href="#command">Command line parameters</a><br />
+</p>
+
+<h2>
+<a name="intro">
+Introduction
+</a>
+</h2>
+
+<p>
+The Scenario writer is provided to guide you through the process of writing a new scenario or editing an existing one. It automates the generation of the scenario files defined in the <a href="Scenario.html">scenario specification</a>
+</p>
+
+<p>
+To start the scenario editor, start Bridge Command and click on the 'Edit scenarios' buttons under the scenario list.
+</p>
+
+<h2>
+<a name="using">
+Using the scenario writer
+</a>
+</h2>
+
+<h3>Getting started</h3>
+
+<p>
+The scenario writer allows you to define the initial position of your ship, and all other ships in the scenario, and plan the tracks for the 'other ship' models - These are the vessels in the scenario which have a fixed and pre-planned route, made up of one or more legs. In addition, you can set the time and date of your scenario, weather, and any objectives that should be carried out in the exercise.
+</p>
+
+<p>
+The scenario writer is written to take you through the process of  defining your scenario in steps. These are:
+<ul>
+<li>Choose an existing scenario to edit, or select the 'New Scenario' button</li>
+<li>Choosing the sea area to load</li>
+<li>Choosing the own ship model (please refer to the <a href="distmodels.html">list of available models</a>)</li>
+</ul>
+</p>
+
+<p>
+Once you have done this, you can start to define your scenario. With your mouse, click and drag the map, so the map is centred where you want your own ship to start. Click on the 'PLACE' button at the top left of the map area to place it there, and use the 'Bearing -', 'Bearing +', 'Speed -' and 'Speed +' buttons to set your initial speed and heading.
+</p>
+
+<p>
+From now on, you can exit and save your scenario at any point, using the 'Exit/Save' button at the top right of the map screen.
+</p>
+
+<h3>Other vessels</h3>
+
+<p>Click on the 'Next stage' button to move onto the other ship stage. Here you can define the type of other ships loaded, their starting points, and what track they should follow. On the right of the screen, you can select what other ship you want to place, clicking the 'V' and '^' buttons to move through the list (please refer to the <a href="distmodels.html">list of available models</a>).</p>
+
+<p>With your mouse, click and drag the map, so the map is centred where you want the vessel to start, and click the 'PLACE' button. Vessel movements can be defined by pre-set tracks. To define the first leg of the track, drag the map so the end of the leg is at the centre, and click on the 'SET' button. The speed can be set with the Speed '+' and '-' buttons. You can create up to 100 legs for each vessel like this. If you need to go back and change a leg, press the Leg '&lt' button to clear the last leg.</p>
+
+<p>Instead of defining a fixed start point, it is also possible to define an area on the map, and the vessel will be placed randomly within this area. To do this, left click on the 'PLACE' button to define one corner of the area, and right click on 'PLACE' to define the other corner.</p>
+
+<p>The SART on/off button allows you to switch on or off a SART (Search and Rescue Transponder) on the vessel. If on, this will be simulated in the radar.</p>
+
+<p>To place another vessel, click the Ship '&gt' button, select the vessel from the list on the right, and place it with the 'PLACE' button.</p>
+
+
+<h3>Controlled ships</h3>
+
+<p>Controlled ships are other vessels loaded into the scenario, which have their movements controlled during the exercise from the Map Controller (see <a href="Tutorial.html#interactive">Running interactive simulations</a>).</p>
+
+<p>
+To set the starting positions for controlled ships, click the 'Next stage' button to move onto the controlled ship stage. Vessels are placed exactly as for other ships, but only the starting position is defined.
+</p>
+
+<h3>Weather</h3>
+
+<p>
+To set the weather, press 'Next stage' until you reach 'Stage 4: Weather'. Use the buttons here to change the weather and visibility. Weather may be set from 0 to 12, and visibility is set in nautical miles. The current weather and visibility are displayed to the right of the map.
+</p>
+
+<h3>Time and date</h3>
+
+<p>Press 'Next stage' to go to 'Stage 5: Time/date', and use the buttons to change the scenario start time and date. The current start time and date are displayed to the right of the map.
+</p>
+
+<h3>Objectives</h3>
+
+<p>
+Objective may be set for the scenario. The objective is defined by a vessel or buoy that must be approached, or a fixed location that must be reached, and how close the target must be approached. Contacts can be other ships, controlled ships or buoys, or a fixed latitude and longitude. To set an objective, click on the 'Type' '&lt' and '&gt' buttons to select whether the contact is an othership, controlled ship, buoy or fixed position, and select the contact with the 'Target id' &lt and &gt buttons, or place the position with the 'Here' button. The selected contact will be highlighted with a red circle on the map, or the location shown as a pale blue mark. To set the distance required (in metres) , use the 'Max distance' &lt/&gt buttons. Details for the current objective are shown to the right of the map. To set further objectives, use the 'Objective' &gt button to move onto the next objective.
+</p>
+
+<h3>
+Save
+</h3>
+
+<p>To save the scenario, click on 'Exit/Save' at the top of the map display. When asked if you want to save the scenario, click 'Yes', then type a name for the scenario, and press enter. The scenario will now be available the next time you start Bridge Command.</p>
+
+<h2>
+<a name="multi">
+Multiplayer
+</a>
+</h2>
+
+<p>
+The Scenario Writer can also be used to set up multiplayer scenarios. To do this, choose 'multiplayer' instead of a specific own ship model. This will take you straight to the stage where you place 'other ships'. These are placed in the same way as in a normal scenario.
+</p>
+
+<p>
+In a multiplayer scenario, the various own ships and their starting positions are set by specifying 'Controlled ships'. Therefore in the Controlled Ships stage, place as many controlled ships as you need for each multiplayer user. You will see that the available ships are the models that can be used as Own Ship models. It is important to remember the order you place each 'controlled ship', as this sets which multiplayer user gets which own ship. Therefore the 2nd controlled ship is the 'Own Ship' for multiplayer 2.
+</p>
+
+<p>
+All other stages are the same as for a regular scenario. The only exception is for objectives, as 'Controlled Ship' objectives should not be set in a multiplayer scenario.
+</p>
+
+<h2>
+<a name="command">
+Command line parameters
+</a>
+</h2>
+
+<p>If the scenario editor is started from the command line, starting the editor with the command line:</p>
+<pre>
+GraphicalScenarioEditor.exe /AUTORUN
+</pre>
+<p>will start Bridge Command with the scenario selected once you have saved it.</p>
+
+</body>
+</html>

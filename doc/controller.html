@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - Map Controller</title>
+
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Map Controller</h1>
+</div>
+
+<h2>Introduction</h2>
+
+<p>
+The Map Controller is intended to provide an overview of the scenario, and allow an instructor to control the scenario as it
+is underway. The Map Controller programme is intended to be run on another computer from the computer running Bridge Command,
+although if required it can run on the same computer.
+</p>
+
+<p>
+The Map Controller allows the user to:
+<ul>
+<li>Control the speed and bearing of all 'Controlled ships' in the scenario</li>
+<li>Reset the positions of 'Controlled ships'</li>
+<li>Control the sea state</li>
+<li>Control the visibility</li>
+<li>Control simulated failure of the engines and rudder on the own ship</li>
+
+</ul>
+For details of how to load 'controlled ships' in scenarios, please see the <a href="Scenario.html">scenario documentation</a>.
+</p>
+
+<p>
+For a more in depth, tutorial based introduction to using the Map Controller with Bridge Command, please see the <a href="Tutorial.html#interactive">running interactive exercises tutorial.</a> 
+</p>
+
+<h2>Running the Map Controller</h2>
+
+<p>
+Bridge Command and the Map Controller communicate via a network connection. Therefore the computers running Bridge Command
+and the Map Controller must be able to communicate over a network. If the computers are connected to the same router, or
+to the same local area network, you will probably not need to do anything more to allow the computers to communicate. If
+your computers are not already networked, there are various ways of achieving this, including a simple crossover ethernet
+cable between the computers, an ad-hoc wireless network, or obtaining a router and connecting both computers to it, either
+with ethernet cables or wirelessly. This document cannot go into the details of setting up the various different network
+options, but a search of the internet, or the Windows help will give you a full guide to setting these up.
+</p>
+
+<p>
+Once you have both computers networked, you will need to know the computer name (hostname) of each computer. If you don't know the computer names, you can find these by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. Make a note of the name for each computer. When you run the map controller, you will need to enter the name of the computer running Bridge Command, and when you run Bridge Command, you will need to enter the name of the computer running the Map Controller. (If you know the computer's IP addresses, you can use these instead of the computer name).
+</p>
+
+<div style="text-align: center;"><img alt="Hostname" src="images/hostname.png">
+</div>
+
+<p>
+When ready, start Bridge Command on one computer, and the Map Controller on the other computer. The order in which they are 
+started does not matter. Choose a scenario to load in Bridge Command. You should change the networking option from the default 'Standalone' to 'Networked (main)'.
+</p>
+
+<div style="text-align: center;"><img alt="Network Options" src="images/networkOptions.png">
+</div>
+
+<p>
+In Bridge Command, when you have selected a scenario, the programme will ask for an IP address or hostname at a screen titled 'Map controller & secondary displays'. At this prompt, enter the name/IP address that you have found for the computer running the Map Controller, and press enter to continue loading the scenario.
+</p>
+
+<p>
+When it starts, the Map Controller will ask for the name or IP address of the computer running Bridge Command. Here you should enter the name/IP address that you have found for the computer running Bridge Command, and press enter.
+</p>
+
+<p>In the map controller, you also have the option of logging the scenario, so you can replay it later. You will be asked to enter a log name. If you don't want to log the scenario, leave this blank and press enter. If you do wish to log, enter a name for your log here, and press enter to continue. Please read the <a href="replay.html">Replayer's documentation</a> for details of how to replay a logged scenario. 
+</p>
+
+<p>
+The map controller will also ask if you want to display in 3d on the same computer. If you choose 'Y' here, Bridge Command will automatically start up to display the 3d view.
+</p>
+
+
+<p>
+Bridge Command and the Map Controller will now load, and try to communicate via the addresses you haver entered. When
+comminication between the programmes has been achieved, you will see the Map Controller centre the map on the 'Own ship' in 
+the scenario, and the location of all other vessels in the scenario will be plotted.
+</p>
+
+<h2>Using the Map Controller</h2>
+
+<p>
+The Map Controller programme is controlled using the keyboard, largely with the arrow keys in combination with a second key, which is held down while the arrow keys are pressed. The key combinations used are:<br /><br />
+
+<table border=1>
+<tr><td><b>Keys</b></td><td><b>Action</b></td></tr>
+<tr><td>Arrow keys on their own</td><td>Move the map view</td></tr>
+<tr><td>Up/Down + Alt</td><td>Zoom in/out</td></tr>
+<tr><td>Up/Down + Ctrl</td><td>Select 'controlled ships' in scenario</td></tr>
+<tr><td>Up/Down + Shift</td><td>Increase/decrease speed of selected 'controlled ship'</td></tr>
+<tr><td>Right/Left + Shift</td><td>Increase/decrease bearing of selected 'controlled ship'</td></tr>
+<tr><td>PgUp/PgDn</td><td>Worsen/improve weather</td></tr>
+<tr><td>PgUp/PgDn + Shift</td><td>Worsen/improve visibility</td></tr>
+<tr><td>Home</td><td>Decrease wind bearing</td></tr>
+<tr><td>End</td><td>Increase wind bearing</td></tr>
+<tr><td>I</td><td>Increase rain intensity</td></tr>
+<tr><td>O</td><td>Decrease rain intensity</td></tr>
+<tr><td>R</td><td>Control simulated rudder failure</td></tr>
+<tr><td>P</td><td>Control simulated port engine failure</td></tr>
+<tr><td>S</td><td>Control simulated starboard engine failure</td></tr>
+<tr><td>L</td><td>Move the currently selected controlled ship to the location of the screen centre. If no ship is selected, this will move the 'own ship'.</td></tr>
+<tr><td>H</td><td>Hide the currently selected controlled ship.</td></tr>
+<tr><td>V</td><td>Make visible the currently selected controlled ship.</td></tr>
+</table>
+</p>
+
+<p>
+There is a data display at the lower right hand corner of the Map Controller screen, which displays the currently set weather
+and visibility, and the currently selected 'controlled ship,' as well as its currently set course and speed.
+</p>
+
+<p>
+When you press r, p or s to control the simulated failure, a screen will load which will allow you to set how the faiure happens. For the engines, enter a value between -1.0 for the engine locked in full astern, 0 for the engine stopped and 1.0 for the engine locked in full ahead, or anywhere in between. For the rudder, enter a value between -30 for 30 degrees of port rudder, 0 for the rudder locked amidships and 30 for 30 degrees of starboard rudder. When you have entered a value, press enter to continue and carry out the failure simulation.
+</p>
+
+<p>In order to clear the failure and allow normal control, enter the failure control again by pressing r,p or s as before, and instead of typing a value, do not enter anything, but just press enter. You can change the failure value in the same way as setting it the first time, and there is no need to clear the previous failure.
+</p>
+
+</body>
+</html>

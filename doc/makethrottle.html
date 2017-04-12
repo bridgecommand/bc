@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>Bridge Command 4.7 - USB Throttle and rudder</title>
+
+</head>
+
+<body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
+
+<div style="text-align: center;">
+<h1>Make your own throttles and wheel</h1>
+</div>
+
+<h2>Introduction</h2>
+
+<p>Using a simple USB interface chip, the BU0836, it is easy to construct your own throttle and wheel assembly with simple DIY and soldering skills</p>
+
+<p>For more details of the BU0836, and how to buy one, please visit <a href="http://www.leobodnar.com/products/BU0836/">the maker's site.</a> Reading this site will also be very useful in order to understand what you're doing when making your own controller set.</p>
+
+<p>
+The BU0836 chip allows you to use variable resistors (potentiometer) to control an analog joystick channel. Therefore, you will need three variable resistors, one for each throttle lever, and one for the wheel. These should be linear (not logarithmic), and with a resistance somewhere around 10k (The exact value doesn't matter). If you wish, you can also use a button switch (push to make), which will sound your ship's horn. You will also need some wire to connect the parts.
+</p>
+
+<p>
+For the variable resistors, you have two main options. You can either use a sliding or rotating potentiometers. For example in the UK,  Maplin part numbers JM85GT or FW05F might be appropriate. A slider will be easier to use mechanically, but if you want to construct an accurate throttle lever, the rotating option may be better.
+
+<p>
+<img src="images/slider_CC_Omegatron.jpg" name="Sliding Pot" id="slPot" alt="Sliding potentiometer"></img> <br />
+A sliding potentiometer (Creative Commons Share Alike, By <a href="http://commons.wikimedia.org/wiki/User:Omegatron">Omegatron</a>)
+</p>
+
+<p>
+<img src="images/rot_CC_Iainf.jpg" name="Rotating Pot" id="roPot" alt="Rotating potentiometer"></img><br /> 
+A rotating potentiometer (Creative Commons Attribution, By <a href="http://commons.wikimedia.org/wiki/User:Iainf">Iainf</a>)
+</p>
+
+<h2>The electrical stage</h2>
+<h3>The variable resistors</h3>
+<p>Using the connectors which come with the chip, connect up the three pins of the first variable resistor as shown:</p>
+<p>
+<img src="images/BU0836pot.png" name="" id="wire1" alt="Wires"></img><br /> 
+Image: Leo Bodnar.
+</p>
+<p>
+Then repeat this with the two other variable resistors, and connect the connectors to the three sets of pins on the left of the board.
+</p>
+
+<p>
+If you want to add a horn button to your controller, connect a simple 'push to make' switch between any ground connection and the column 1 pin. The column 1 pin is 6th from the right at the top of the board, and the first ground pin is two pins to the left of this. The horn button is optional.
+</p>
+
+<p>
+You should now be able to test the controller with Bridge Command. In the start menu area for Bridge Command, find the shortcut to 'Joystick Settings', under the 'Settings' sub-menu. Use this to change the 'use joystick' setting from 0 to 1 to enable Bridge Command's joystick capabilities. Now, connect the BU0836 to your computer, and start up Bridge Command. Try changing the three variable resistors, and you should see their effect on the ship. If required, swap around the way they are connected, and if necessary also flip the connectors, so your resistors control the right engine or wheel, and act in the right direction.
+</p> 
+
+<h2>The enclosure</h2>
+
+<p>
+Once this test has been sucessful, you can build an enclosure and levers and wheel for your controller. In this you are only limited by your ingenuity, but a few pointers are below:
+<ul>
+<li>You may need to add friction to the resistors controlling the throttles, so they don't move under the weight of the throttle levers. This can be done in many ways, the simplest being to wrap some string round the resistor shaft, and solidly connect it to something rigid.</li>
+<li>You may wish to connect up your wheel via gears or belts, so your wheel can turn multiple times.</li>
+</ul> 
+</p>
+
+<h2>Example</h2>
+
+<p>
+This simple example is made with two linear potentiometers for the engine controls, and a rotary pot for the rudder.
+</p>
+
+<p>
+<img src="images/simpleController.jpg" name="External" id="Ext" alt="Simple controller - external"></img> <br />
+External view
+</p>
+
+<p>
+<img src="images/controllerInternal.jpg" name="Internal" id="Int" alt="Simple controller - internal"></img> <br />
+Internal view
+</p>
+
+<h2>Links and references</h2>
+<p>
+<ul>
+<li>The idea of using the BU0836 chip, and how it could be exploited came from <a href="http://forum.shipsim.com/index.php/topic,4503.0.html">this Ship Simulator forum.</a> It also gives some good ideas!</li>
+</ul>
+</p>
+
+</body>
+</html>
