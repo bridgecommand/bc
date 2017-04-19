@@ -274,7 +274,7 @@ software or hardware chart plotter, to practise electronic navigation.
 <img src="images/chartPlotter.png" alt="Chart plotter" id="plotterImg">
 
 <p>
-To do this, you will need a serial data connection between your computer running Bridge Command and your chart plotter. The chart plotter could either be a dedicated chart plotter with an RS422 NMEA data input, or another computer running chart plotting software. If your computers have serial ports, all that you will need is a <a href="http://en.wikipedia.org/wiki/Null_modem#Cables_and_adapters">'null modem cable'</a> to connect them up. However, most modern computers don't come with serial ports, so you have two options. The simplest option is to get a USB to serial adapter for each computer, and a null modem cable to connect the simulator to the chart plotter. Alternatively, you can create a 'virtual com port' on each computer, and connect these across the network, using <a href="http://com0com.sourceforge.net/">com0com and com2tcp</a>. This is likely to be more complex to set up, but will not need any new hardware.
+To do this, you will need a serial data connection between your computer running Bridge Command and your chart plotter. The chart plotter could either be a dedicated chart plotter with an RS422 NMEA data input, or another computer running chart plotting software. If your computers have serial ports, all that you will need is a <a href="http://en.wikipedia.org/wiki/Null_modem#Cables_and_adapters">'null modem cable'</a> to connect them up. However, modern computers don't come with serial ports, so you have two options. The simplest option is to get a USB to serial adapter for each computer, and a null modem cable to connect the simulator to the chart plotter. Alternatively, you can create a 'virtual com port' on each computer, and connect these across the network, using <a href="http://com0com.sourceforge.net/">com0com and com2tcp</a>. This is likely to be more complex to set up, but will not need any new hardware.
 </p>
 
 <p>
@@ -282,11 +282,13 @@ Once you have got your computer and chart plotter connected physically or virtua
 </p>
 
 <p>
-To enable the GPS emulation, start Bridge Command, and in the scenario selection window, click on the 'Change Settings' button. In the settings editor, find the 'NMEA over serial' tab, and change the selection to the number of the com port you are using. For example, if you are using the serial port COM1 on your Bridge Command computer, change this to 1. When you have made your change, click on 'Save & Close' to confirm.
+To enable the GPS emulation, start the Bridge Command launcher, and click on 'Settings: Main'. In the settings editor, find the 'NMEA over serial' tab, and change the selection to the number of the com port you are using (double click anywhere in the 'NMEA_ComPort' row, type the number, and press enter). For example, if you are using the serial port COM1 on your Bridge Command computer, change this to 1. When you have made your change, click on 'Save' to confirm.
 </p>
 
+<img src="images/settingsedit.png" alt="Settings Editor" id="settings">
+
 <p>
-You can now start Bridge Command again. When it starts a scenario, it will now be sending NMEA data to the chart plotter emulating a GPS. The picture above shows Bridge Command running with OpenCPN, an open source chart plotter available from <a href="http://www.opencpn.org/">their website</a>.
+You can now start Bridge Command again. When it starts a scenario, it will now be sending NMEA data to the chart plotter emulating a GPS. The picture above shows Bridge Command 4.7 running with OpenCPN, an open source chart plotter available from <a href="http://www.opencpn.org/">their website</a>.
 </p>
 
 <p>
@@ -322,7 +324,7 @@ Interactive exercises are run with Bridge Command running on one computer, and a
 <h4>Finding the computer name (hostname) for both computers</h4>
 
 <p>
-If you don't know the computer names, you can find these by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. These ways will both show you the computer name. For example, the computer shown below is called 'mini'.
+If you don't know the computer names, you can find these on Windows 10 by opening the 'Settings' app, and searching for 'View your PC name', or on older versions by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. These ways will both show you the computer name. For example, the computer shown below is called 'mini'.
 </p>
 
 <img src="images/hostname.png" alt="hostname" id="hostname">
@@ -332,6 +334,12 @@ You'll see one line, circled in the picture above, which gives the computer's ho
 </p>
 
 <h4>Starting Bridge Command</h4>
+
+<p>
+On the controller computer, start the Bridge Command launcher and click 'Map Controller'.
+</p>
+
+-----------------------
 
 <p>
 Start Bridge Command and choose the scenario 'Controlled Ships Tutorial' and click the network option 'Networked (Main)' as circled below.<p>
