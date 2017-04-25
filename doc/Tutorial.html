@@ -308,7 +308,7 @@ In the first tutorial, you interacted with other vessels, which had their moveme
 </p>
 
 <p>
-In order to allow interactive scenarios, Bridge Command introduces the concept of 'Controlled ships.' These have their starting positions defined within the scenario, but their courses and speeds can be set as the simulation is run. 
+In order to allow interactive scenarios, Bridge Command allows the other ships' course legs to be modified in real time as the scenario develops. The course and speed of any current or future leg can be changed, as well as allowing the controller to move ships and change the weather.
 </p>
 
 <h4>Two networked computers needed</h4>
@@ -321,126 +321,112 @@ In order to allow this to work, two computers are needed, connected by a network
 Interactive exercises are run with Bridge Command running on one computer, and a second program, called the 'Map Controller' on the second computer. In order to set up the interactive simulation, you will need to know the computer name (hostname) or IP address of both computers. A hostname or IP address is the way a computer identifies itself to other computers on a network, so will be unique for each computer on the network.
 </p>
 
-<h4>Finding the computer name (hostname) for both computers</h4>
+<h4>Finding the computer name (hostname) for the controller computer</h4>
 
 <p>
-If you don't know the computer names, you can find these on Windows 10 by opening the 'Settings' app, and searching for 'View your PC name', or on older versions by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. These ways will both show you the computer name. For example, the computer shown below is called 'mini'.
+You will need to know the computer name (hostname) for the computer where you will be running the controller software. 
+If you don't know the computer name, you can find it on Windows 10 by opening the 'Settings' app, and searching for 'View your PC name', or on older versions by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. These ways will both show you the computer name. For example, the computer shown below is called 'mini'.
 </p>
 
 <img src="images/hostname.png" alt="hostname" id="hostname">
 
 <p>
-You'll see one line, circled in the picture above, which gives the computer's hostname. Make a note of this, and repeat this process on your second computer to find that as well.
+You'll see one line, circled in the picture above, which gives the computer's hostname. Make a note of this for later.
+</p>
+
+<h4>Starting the Controller</h4>
+
+<p>
+On the controller computer, start the Bridge Command launcher and click 'Map Controller'. You will see a screen come up that asks you to start the Bridge Command session.
 </p>
 
 <h4>Starting Bridge Command</h4>
 
 <p>
-On the controller computer, start the Bridge Command launcher and click 'Map Controller'.
+Once the controller has started, you should now start Bridge Command.
 </p>
 
------------------------
-
 <p>
-Start Bridge Command and choose the scenario 'Controlled Ships Tutorial' and click the network option 'Networked (Main)' as circled below.<p>
+On the simulator computer, start Bridge Command as normal, and choose the scenario 'a) Buoyage'. In the hostname box, type the computer name or IP address you have found for the other computer (The one you are running the map controller on).
+<p>
 
 <img src="images/networkOptions.png" alt="scenario network" id="scenarioNet">
 
-<p>
-When you get to the 'Map controller & secondary displays' screen, type in the computer name or IP address you have found for the other computer (The one you'll be running the map controller on).
-</p>
-
-<img src="images/networkIP.png" alt="scenario IP" id="scenarioIP">
+<h4>Controlling the simulation from the controller</h4>
 
 <p>
-Once you've typed in the computer name or IP address, press enter to continue loading the simulation. Once the simulation has started, press the '0' (zero) key at the top right of the keyboard to pause the simulation.
-</p>
-
-<h4>Starting the Map Controller</h4>
-
-<p>
-Now, on the computer you'll be running the controller on, start the Map Controller. You can start this in the same way as Bridge Command, except you need to click on the Map Controller icon.
-</p>
-
-<p>
-When you start the map controller, you will see a prompt asking you for the Bridge Command computer's name or IP address. At this prompt, type in the address you found earlier for the computer running Bridge Command, and press enter.
-</p>
-
-<p>You will see another prompt, asking you for a log name. This is so you can record the exercise in order to replay it later. Choose a suitable name and type it in. The name should only contain the numbers, letters, and the punctuation you are allowed in a file name (so no / \ * : &lt &gt ? " characters). If you don't want to log the simulation, don't type anything and just press enter. 
-</p>
-
-<p>
-You will then be asked if you want to display in 3d on the same computer. Type Y or N here. If you choose 'Y' here, Bridge Command will automatically start to display the 3d view of the scenario that you are controlling.</p>
-
-<p>
-After a short wait, the Map Controller will load, and you'll see a map of the world area chosen. If both Bridge Command and the Map Controller have completed loading, you should see a screen like this:
+When Bridge Command has started, the Map Controller will load up a map of the world area chosen. If both Bridge Command and the Map Controller have completed loading, you should see a screen like this:
 </p>
 
 <img src="images/controller.png" alt="controller" id="controller">
 
 <p>
-If the screen is blank, and none of the map is visible, it is likely that the messages sent from Bridge Command to the Map Controller over the network are getting blocked. Double check the computer names or IP addresses, and that you typed them in correctly. If this is right, and you still can't get contact, check your firewall settings - Bridge Command uses UDP on ports 18303 and 18304 by default. Check that these aren't being blocked, either by your computer or your router.
+If the screen is blank, and asks you to start the Bridge Command session, it is likely that the messages sent from Bridge Command to the Map Controller over the network are getting blocked. Double check the computer name or IP address, and that you typed it in correctly. If this is right, and you still can't get contact, check your firewall settings - Bridge Command uses UDP on port 18304 by default. Check that this isn't being blocked, either by your computer or your router.
 </p>
 
-<h4>Controlling the simulation from the controller</h4>
-
 <p>
-With the simulation still paused in Bridge Command, we'll explore the map controller. First, try moving around the map with the arrow keys on their own, or by clicking and
-dragging the map. Now zoom in and out by holding down the 'Alt' key and pressing the up 
+With the simulation still paused in Bridge Command, we'll explore the map controller. First, try moving around the map by clicking and
+dragging the map. <!--Now zoom in and out by holding down the 'Alt' key and pressing the up 
 and down arrow keys. To show or hide a range and bearing grid, press the space bar once, 
-and press it again to switch back.
+and press it again to switch back.-->
 </p>
 
 <p>
-You'll notice a number of contacts drawn on the map. The single grey contact is the 'Own ship,' the main ship in the simulation. You should also see two blue contacts. These are the 'Controlled Ships,' which are the ships we can control from this program. In addition, 'Other ships,' which have their actions pre-programmed in the scenario, are shown in green. All of the contacts have small heading lines to indicate their heading.
+You'll notice a number of contacts drawn on the map. The single red contact is the 'Own ship,' the main ship in the simulation. You should also see three blue contacts. These are the 'Other Ships,' which are the ships we can control from this program. Two of have white lines showing their pre-programmed movements as set in the scenario, and which can be changed by the controller as the scenario progresses. The third one is stationary, so no legs are shown.
 </p>
 
 <p>
-Now we'll select one of the controlled ships, and run through how they can be controlled. In the lower right of the screen, you'll see a line of text 'Selected ship.' Initially this will be 'Own Ship.' Hold down the 'Ctrl' key and press the up arrow key. You should see this change to '1' and additional information on its speed and bearing will appear. Also, you'll see the ship highlighted on the map with a red circle. Hold down 'Ctrl' and press the up arrow key again, so ship 2 is selected.
+Now we'll select one of the controlled ships, and run through how they can be controlled. In the lower left of the screen, you'll see a drop down box to 
+'Select ship'. Initially this will be 'Own Ship.' Use the drop down box to select 'Other Ship 1'. You will see the course legs for this ship (actually 
+the sailing yacht in this scenario) appear. You will see that the first leg is marked as 'Current', with the later legs marked as 'Future'.
 </p>
 
 <p>
-We'll now control the movement of this ship, so in Bridge Command, resume the simulation in real time, and then go back to the Map Controller.
+We'll now control the movement of this ship. In the 'Select leg' box to the right, click on leg '1 (Current)', and you should see the leg's course, speed and distance appear below. Try clicking 
+on the course (initially 110), and change this to 90, and then click the 'Change leg' button below. After a short pause, you should see the leg change in
+the display. (The pause is because the map displays the information from Bridge Command, so it only updates once Bridge Command has received the change and
+sent back the updated course information).
 </p>
 
 <p>
-Hold down the 'Shift' key, and hold down the left arrow key. You will see the heading line for the ship turn around, and the 'Current bearing' data line change. Do this until the ship's heading is 200&deg, and if you overshoot, go back with 'Shift' and the right arrow key. 
+You can change the speed and leg distance in the same way. Note that if you change the current leg distance, this distance will start when you click 
+'Change Leg', and is not the distance from the original start of the leg. You can change any current or future leg. Previous legs will remain in the list, 
+but cannot be changed.
 </p>
 
 <p>
-To set the ship's speed, hold down the 'Shift' key again, and this time use the up/down arrow keys to set the ship's speed. Set the ship's speed to 15 knots. In Bridge Command you should see the vessel gradually overtaking on your starboard side.
+In order to set up, or reset a simulation, it may be useful to re-locate the 'Own ship' or 'Other ships'. In order to do this, select the ship you want with 
+the drop down box and the up/down arrow keys, and move the map so the centre is where you want the ship to move to, and then press the 'Move Ship' button at
+the bottom of the screen. This will move the ship to this location.
 </p>
 
-<p>
-Experiment with selecting the other ship, with 'Ctrl' and the up/down arrow keys, and setting the courses and speeds you want for the two ships, and changing them as the simulation continues.
-</p>
-
-<p>
-In order to set up, or reset a simulation, it may be useful to re-locate the 'Own ship' or 'Controlled ships'. In order to do this, select the ship you want with 'Ctrl' and the up/down arrow keys, and move the map with the arrow keys so the centre of the map is where you want the ship to move to, and then press the 'L' key on the keyboard. This will move the ship to this location. This should allow you to set up the simulation exactly as you want it, with multiple controlled ships loaded in any position, and relocated into the positions you want when required. 
-</p>
+<!--
 
 <p>
 If you want, it is also possible to hide the 'Controlled ship' models, and make the visible again as required. With the relevant controlled ship selected, hide it by pressing the 'H' key, or make it visible with the 'V' key.
 </p>
-
+-->
 <p>
-You can also set the weather and visibility from the controller. To make the weather more severe, hold down the 'PgUp' (Page up) key on the keyboard, or the 'PgDn' (Page down) key to make it better. To reduce the visibility, hold down 'Shift' and use 'PgUp', and to increase it hold down 'Shift' and use 'PgDn'.
+You can also set the weather and visibility from the controller, using the three scroll bars on the control window. Hovering over these bars will show what each
+one does. The left bar controls the visibility, the middle one the rain, and the right bar controls the weather. 
 </p>
 
+<!--
 <p>
 To change the wind direction, use the 'Home' and 'End' keys. You will see the data line giving the current wind direction change.
 </p>
+-->
 
+<!--
 <p>
 If you want to carry out a man overboard exercise, you can deploy the man overboard dummy from the controller. To release the dummy, press the 'M' key, and you should see a yellow contact appear, giving the dummy's location. To retrieve the dummy, hold the 'Ctrl' key and press M.
 </p>
+-->
 
-<p>
-If you forget any of the commands, you'll see a summary on the right hand side of the controller screen. In Bridge Command, if you want to get help, press the 'F1' key to bring up a list of all the Bridge Command key commands.
-</p>
 
 <p>When you have finished, exit both Bridge Command and the Map Controller by pressing the 'Esc' key on each computer's keyboard.</p>
 
+<!--
 <h4>Replaying exercises</h4>
 
 <p>
@@ -470,11 +456,11 @@ If you're using two computers, start Bridge Command on one computer, having foun
 <p>
 Now start the replay as before, but instead of leaving the second prompt blank, enter the IP address or hostname you found for the Bridge Command computer. If you're running the 3d display on the same computer, enter 'localhost' as the hostname, and Bridge Command will start automatically. This will relay the replaying simulation to the Bridge Command display, which will display it in 3d.
 </p>
-
+-->
 <h4>Conclusion</h4>
 
 <p>
-With the Map Controller, Bridge Command can be a powerful tool for running, recording and replaying interactive exercises, which can be made as simple or complicated as the task requires.
+With the Map Controller, Bridge Command can be a powerful tool for running <!--, recording and replaying -->interactive exercises, which can be made as simple or complicated as the task requires.
 </p>
 
 <h3>
@@ -486,31 +472,46 @@ Tutorial 5: Multi-screen simulation
 <h4>Introduction</h4>
 
 <p>
-In order to provide a fully immersive simulation environment, it is possible to run the simulation across multiple screens, so anything up to a full 360&deg view can be shown. This would allow a full ship's bridge to be created, with Bridge Command simulating the entire environment around the ship, which could be projected onto screens surrounding the bridge. Or at a simpler level, three screens on a desk can give a 270&deg view from your simulated ship to give a fuller simulation realism. Each screen displays a 90&deg viewing angle.
+In order to provide a fully immersive simulation environment, it is possible to run the simulation across multiple screens, so anything up to a full 360&deg 
+view can be shown. This would allow a full ship's bridge to be created, with Bridge Command simulating the entire environment around the ship, which could 
+be projected onto screens surrounding the bridge. Or at a simpler level, three screens on a desk can give a 270&deg view from your simulated ship to give a 
+fuller simulation realism. Each screen displays a 90&deg viewing angle by default, but this can be changed to suit your configuration of screens 
+(see 'Configuration' below).
 </p>
 
 <p>
-To run with multiple screens, Bridge Command must be running with the Map Controller, and one computer is required per screen. All the computers must be on a network, just as in the <a href="#interactive">interactive exercise tutorial</a>. If you have not read this tutorial, it will be very helpful to read it first.
+To run with multiple screens, one computer is needed per screen, and all the computers must be on a network, just as in the <a href="#interactive">interactive 
+exercise tutorial</a>. If you have not read this tutorial, it will be very helpful to read it first.
 </p>
 
 <h4>Setting up</h4>
 
 <p>
-Find the names or IP addresses of all of the computers you will be using, and start Bridge Command on one computer, which will be the 'Master.' When you have selected a scenario, select 'Networked (Main)' mode. At the screen where you normally enter one IP address for the Map Controller, enter the names or IP addresses of all of the other computers including the Map Controller computer, separated by commas (','). If you wish, add the character 'M' to the start of the list, followed by a space. This will force the main Bridge Command display into 'master mode' so when you take a visual bearing, the angle of view will not follow the bearing on screen. This will be useful for full bridge simulators, where you don't want the viewing angles to change.
-</p>
-
-<p>As an example, if you have four other computers on the that you will be using, with IP addresses 192.168.0.2, 192.168.0.3, 192.168.0.4 and 192.168.2.1, you would enter <b>M 192.168.0.2,192.168.0.3,192.168.0.4,192.168.2.1</b>. The order of the IP addresses is not significant. (If any of the other computers are configured to use a non-standard UDP port, you can set this as part of the hostname/IP address. For example if one computer was using port 18308, you would set this as 192.168.0.2:18308.)</p>
-
-<p>
-Now start the Map Controller in the normal way on one of the computers, entering the IP address of the 'Master' computer when required.
+One computer will be used to run Bridge Command in the normal way, and we will refer to this as the master computer. The other computers will show the 
+secondary displays. To get started, find the names or IP addresses of all of the computers you will be using for secondary displays. Start Bridge Command on
+all of the secondary display computers first, clicking the 'Use as secondary display' option instead of choosing a scenario. 
 </p>
 
 <p>
-On each of the other computers, start Bridge Command, but this time select the option 'Secondary (3d)'. This will make these computers copy the view from the main computer. It is also possible to have a full screen radar display by selecting the network option 'Secondary (RADAR)'.
+When you have done this, start Bridge Command on the master computer. Select a scenario as normal, but instead of just entering one hostname (as in an 
+'interactive exercise'), enter the hostnames of all of the secondary displays, separated by commas (','). Note that you can also run the map controller at
+the same time on another computer. If you do so, just add the hostname of the controller computer to the list of hostnames you type in.
+</p>
+
+<p>As an example, if you have four other computers on the that you will be using, with hostnames secondary1, secondary2, secondary3 and controllerPC you would 
+enter <b>secondary1,secondary2,secondary3,controllerPC</b>. The order of the names is not significant. 
 </p>
 
 <p>
-Now set the viewpoints you want in each window, and run the simulation exactly as before. You can change the viewpoint on the slave displays as normal with the space bar, but when the viewpoint is changed on the master, the slave displays will change with it. You can also use the 'F' key on the keyboard to switch between a full screen 3d view, and a view that aligns with the main simulator display.
+Now set the viewpoints you want in each window, and run the simulation exactly as before. You can change the viewpoint on the slave displays as normal with the 
+space bar, but when the viewpoint is changed on the master, the slave displays will change with it. You can also use the 'Hide'/'Show' buttons to switch between 
+a full screen 3d view, and a view that aligns with the main simulator display. The full screen radar view is also available as normal.
+</p>
+
+<h4>Configuration</h4>
+<p>
+For each secondary display, the Settings Editor can be used to set the angle of view (to match your screen set up), and the initial direction of the view (parameters
+view_angle and look_angle).
 </p>
 
 </body>
