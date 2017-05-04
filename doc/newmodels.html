@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 4.7 - Ship models</title>
+  <title>Bridge Command 5.0 - Ship models</title>
 
 </head>
 
@@ -16,15 +16,25 @@
 <h2>Introduction</h2>
 
 <p>
-There are two classes of other ship models that can be defined in Bridge Command. These are 'own ships' and 'other ships.' Ownships are models that have their full dynamics modelled, and are for use as the user's own ship. 'Other ships' are used to model all other ships in the environment, and can be loaded as 'otherships' or 'controlledships'. For details of what you can do with these, and how to load them in scenarios, please see the <a href="Scenario.html">Scenario specification</a> and the <a href="writer.html">Scenario writer</a>.
+There are two classes of other ship models that can be defined in Bridge Command. These are 'own ships' and 'other ships.' Ownships are models 
+that have their full dynamics modelled, and are for use as the user's own ship. 'Other ships' are used to model all other ships in the 
+environment. For details of what you can do with these, and how to load them in scenarios, please see the <a href="Scenario.html">Scenario 
+specification</a> and the <a href="writer.html">Scenario writer</a>.
 </p>
 
 <p>
-The most fundamental part of any ship model to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format (.3ds). With this, the text file boat.ini is used to define the other characteristics of the model. The specification of this file is detailed below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file format</a>. 
+The most fundamental part of any ship model to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format 
+(.3ds). With this, the text file boat.ini is used to define the other characteristics of the model. The specification of this file is detailed 
+below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file 
+format</a>. 
 </p> 
 
 <p>
-Each vessel is contained in a folder, with the vessel's name, under Models\Othership  or Models\Ownship as appropriate. So if Bridge Command is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files\Bridge Command 4.7GPL\models\Ownship\Protis'
+Each vessel is contained in a folder, with the vessel's name, under Models\Othership  or Models\Ownship as appropriate. So if Bridge Command 
+is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files\Bridge Command 5.0\models\Ownship\Protis'.
+Bridge Command also looks in the user directory (%appdata%/Bridge Command/5.0 on Windows, ~/.Bridge Command/5.0 on Linux and 
+~/Library/Application Support/Bridge Command/5.0 on OSX), so users can add new ship models without needing to be able to make changes in the
+installation directory.
 </p>
 
 <h3>Sections</h3>
@@ -36,7 +46,9 @@ Each vessel is contained in a folder, with the vessel's name, under Models\Other
 <h2><a name="own" /a>Own ships</h2>
 
 <p>
-The 3D model to load, and all of the characteristics of the own ship model are defined in the file Boat.ini in the model's folder. In addition, a file Radar.ini sets up the parameters for the radar. A complete example of both files is given below, and the effect of each line is explained below this: 
+The 3D model to load, and all of the characteristics of the own ship model are defined in the file Boat.ini in the model's folder. In addition,
+ a file Radar.ini sets up the parameters for the radar. A complete example of both files is given below, and the effect of each line is 
+explained below this: 
 </p>
 
 <h3>Boat.ini</h3>
@@ -63,8 +75,6 @@ ViewX(3)=-9.4
 ViewY(3)=16.0
 ViewZ(3)=-9.8
 
-Sailing=0
-
 Max_propulsion_force=3000
 AsternEfficiency=0.667
 Mass=5000
@@ -81,20 +91,22 @@ Inertia=120000
 RudderA=5
 RudderB=0.05
 RudderBAstern=0
-
+<!--
 centrifugalDriftEffect=0.03
 
 PropWalkAhead=100
 PropWalkAstern=300
 PropWalkDriftEffect=0.000007
-
+-->
 Buffet=3.0
 Swell=1.0
+<!--
 Windage=0.05
 WindageTurnEffect=1.3
 
 DeviationMaximum=5
 DeviationMaximumHeading=10
+-->
 </pre>
 
 <p>
@@ -102,7 +114,7 @@ DeviationMaximumHeading=10
 <li>FileName: Sets the name of the 3D model file to load</li>
 <li>ScaleFactor: The amount to scale the 3D model by. Bridge Command uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
 <li><b>Note that all subsequent positions/distances are in the units/coordinate system of the 3D model file</b></li>
-<li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negatve value</li>
+<li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negative value</li>
 <li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Bridge Command axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Bridge Command uses a left handed coordinate system internally, so the Z axis is towards the ship's bow)</li>
 <li>Depth: The vessel's depth under the water line (in the 3D model's units)</li>
 <li>Views: The number of viewpoints on board the vessel (Minimum 1)</li>
@@ -122,14 +134,14 @@ DeviationMaximumHeading=10
 <li>RudderA: The turning effect of the rudder proportional to the ship's speed (Rudder torque(Nm)=RudderA*Speed(m/s)*rudder angle (deg)</li>
 <li>RudderB: The turning effect of the rudder proportional to the engine speed (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
 <li>RudderBAstern: The turning effect of the rudder proportional to the engine speed when going astern (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
-<li>CentrifugalDriftEffect: (Optional) The amount the ship should move sideways during a turn. (Metres per degree of turn)</li>
+<!--<li>CentrifugalDriftEffect: (Optional) The amount the ship should move sideways during a turn. (Metres per degree of turn)</li>-->
 <li>Buffet: The amount the ship is affected by buffeting due to the weather.</li>
 <li>Swell: The amount the ship is rolls in the swell, due to the weather.</li>
-<li>DeviationMaximum: The maximum deviation of compass north from magnetic north due to the ship's magnetic effects (In degrees). This is only used if 'HasDeviation=1' is set in the ownship.ini scenario file.</li>
-<li>DeviationMaximumHeading: The heading at which the compass deviation from magnetic is maximum. The deviation is calculated as a sinusoid, so the deviation will be zero at this heading +-90 degrees, and the opposite at this heading +-180 degrees.</li>
-<li>If a motor boat
+<!--<li>DeviationMaximum: The maximum deviation of compass north from magnetic north due to the ship's magnetic effects (In degrees). This is only used if 'HasDeviation=1' is set in the ownship.ini scenario file.</li>-->
+<!--<li>DeviationMaximumHeading: The heading at which the compass deviation from magnetic is maximum. The deviation is calculated as a sinusoid, so the deviation will be zero at this heading +-90 degrees, and the opposite at this heading +-180 degrees.</li>-->
+<!--<li>If a motor boat
 <ul>
-<li>Sailing=0: This sets the vessel into motor boat mode</li>
+<li>Sailing=0: This sets the vessel into motor boat mode</li>-->
 <li>Max_propulsion_force: The maximum propulsion force of one engine (in Newtons)</li>
 <li>AsternEfficiency: (Optional) The proportion of thrust available when going astern (range 0-1, default 1)</li>
 <li>MaxRevs: The ship's maximum engine revolutions (RPM)</li>
@@ -139,8 +151,8 @@ DeviationMaximumHeading=10
 <li>PropWalkDriftEffect: (Optional) The amount the ship should move sidways due to the 'prop walk' effect (Metres per Nm of prop walk)</li>
 <li>Windage: (Optional) The ratio between the speed with which the ship is moved by the wind and the wind speed.</li>
 <li>WindageTurnEffect: (Optional) The rate of turn due to the wind's action on the ship (Degrees/second per metre/second of wind speed when beam on to the wind)</li>
-</ul>
-</li>
+<!--</ul>-->
+<!--</li>
 <li>If sailing boat
 <ul>
 <li>Sailing=1: This sets the vessel into sailing boat mode.</li>
@@ -180,13 +192,13 @@ DeviationMaximumHeading=10
 <li>RadarScreenZ: Z location to display a radar screen (in the ownship model coordinates).</li>
 <li>RadarScreenSize: Size of radar screen to display in ownship model coordinates.</li>
 </ul>
-</li>
+</li>-->
 </ul>
 </p>
 
-<p>
+<!--<p>
 If there is a file <i>horn.wav</i> in the directory, this will be used as the ship's horn sound. If not, Bridge Command will default to it's own horn sound.
-</p>
+</p>-->
 
 <h3>Radar.ini</h3>
 
@@ -201,17 +213,16 @@ RadarRange(3) = 3
 RadarRange(4) = 2
 RadarRange(5) = 1
 RadarRange(6) = 0.5
-
+<!--
 FullARPA=1
-MARPAContacts=20
-
+MARPAContacts=20-->
 radar_sensitivity=3.0
 radar_range_sensitivity=5.0
 radar_height=10
 radar_noise=0.000000000005
 radar_sea_clutter=0.000000001
 radar_rain_clutter=0.00001
-plot_pi_data=1
+<!--plot_pi_data=1
 radar_bg_red=0
 radar_bg_green=0
 radar_bg_blue=200
@@ -223,7 +234,7 @@ radar2_green=255
 radar2_blue=0
 radar3_red=255
 radar3_green=0
-radar3_blue=0
+radar3_blue=0-->
 </pre>
 
 <p>
@@ -232,19 +243,21 @@ radar3_blue=0
 <li>For each radar range, where # is the range number (1 to NumberOfRadarRanges):
 <ul><li>RadarRange(#): The radar range in nautical miles</li></ul>
 </li>
-<li>FullARPA: Whether fully automatic radar target detection and tracking (ARPA) is enabled on the radar. Set to 2 to enable with initial manual selection of contacts, 1 to enable with fully automatic contact selection, and 0 to disable.</li>
-<li>MARPAContacts: The number of targets that can be tracked manually on the radar. Set to 0 to disable manual tracking, and any integer to allow that number of targets to be tracked simultaneously.</li>
+<!--<li>FullARPA: Whether fully automatic radar target detection and tracking (ARPA) is enabled on the radar. Set to 2 to enable with initial manual selection of contacts, 1 to enable with fully automatic contact selection, and 0 to disable.</li>
+<li>MARPAContacts: The number of targets that can be tracked manually on the radar. Set to 0 to disable manual tracking, and any integer to allow that number of targets to be tracked simultaneously.</li>-->
 <li>radar_sensitivity: The beam width of your radar in degrees. The smaller this is, the sharper your radar will be, but if you set this to be too low, it will reduce the program's performance.</li> 
 <li>radar_range_sensitivity: The accuracy of the radar in detecting ranges, in metres. This is only used for contact range detection, for automatic contact tracking on the radar (ARPA).</li>
 <li>radar_height: The height of the radar scanner in metres above sea level.</li>
 <li>radar_noise: The amount of random 'noise' picked up on the radar display. Default value: 0.000000000005</li>
 <li>radar_sea_clutter: The intensity of the sea clutter on the radar from the waves near the radar. Default value: 0.000000001</li>
 <li>radar_rain_clutter: The intensity of the rain clutter on the radar from reflections from rain. Default value: 0.00001</li>
+<!--
 <li>plot_pi_data: The level of data to print on the radar screen for each parallel index line. 0 to show no data, 1 to show the data for the currently selected line, and 2 to show the data for all parallel index lines.</li>
 <li>radar_bg_red, radar_bg_green, radar_bg_blue: The colour for the radar background, in red green and blue components, each in the range 0-255.</li>
 <li>radar1_red, radar1_green, radar1_blue: The colour for the radar echoes, and ship's head line in red, green and blue components, each in the range 0-255.</li>
 <li>radar2_red, radar2_green, radar2_blue: The colour for the viewing bearing line and ARPA data on the radar in red, green and blue components, each in the range 0-255.</li>
 <li>radar3_red, radar3_green, radar3_blue: The colour for the parallel index lines in red, green and blue components, each in the range 0-255.</li>
+-->
 </ul>
 </p>
 
@@ -260,7 +273,7 @@ ScaleFactor=0.3038
 YCorrection=-17
 SolidHeight=45
 AngleCorrection=0
-
+<!--
 Filename2="radar.x"
 x2=0.427
 y2=99.026
@@ -270,7 +283,7 @@ ScaleFactor2=1
 weapon_x=0.00
 weapon_y=43.713
 weapon_z=189.0
-
+-->
 NumberOfLights=5
 
 LightX(1)=26.4
@@ -332,7 +345,7 @@ LightEndAngle(5)=472.5
 <li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negatve value</li>
 <li>(Optional): SolidHeight: The maximum height at which the model should block radar targets behind it. If omitted, this defaults to about half of the height above the waterline. Note that this should be set in the model units and above the model's origin.</li>
 <li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Bridge Command axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Bridge Command uses a left handed coordinate system internally, so the Z axis is towards the ship's bow).</li>
-<li>OPTIONAL:
+<!--<li>OPTIONAL:
 <ul>
 <li>Filename2: If required, the filename of any secondary model file to be added to the ship model. This filename is relative to the ship's folder, so if one of the generic dayshapes is required, this can be set as "../Anchor.3ds" or similar.</li>
 <li>x2: The location in the ship's coordinates that the second model should be loaded (x)</li>
@@ -347,7 +360,7 @@ LightEndAngle(5)=472.5
 <li>weapon_y: The weapon base y position.</li>
 <li>weapon_z: The weapon base z position.</li>
 </ul>
-</li>
+</li>-->
 <li>NumberOfLights: The number of navigation lights</li>
 <li>For each light, where # is the light number:
 <ul>
