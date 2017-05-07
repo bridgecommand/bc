@@ -11,59 +11,58 @@
 
 <div style="text-align: center;">
    
-<h1>Bridge Command 4.7 related files specification</h1>
+<h1>Bridge Command 5.0 related files specification</h1>
    
 <h2>World file</h2>
 </div>
    
 <p>Please refer to the <a href="IniFileFormat.html">Initialisation file format (.ini) specification</a> in conjunction with this document.</p>
    
+<h3>Differences between 5.0 and previous versions</h3>
+<p>
+There is an important change in world models between version 5.0 and previous versions (4.x). The required size of the height map has increased 
+by one pixel. Previously, the size was 2^n (512, 1024, 2048, ...) pixels. It is now 2^n + 1 (513, 1025, 2049, ...) pixels. Therefore previous 
+world models need to be modified to use with version 5.0. 
+</p>
+<p>
+The easiest way to do this is to add a single line of black pixels to the top and right side of the heightmap, increase the value of the 
+parameter TerrainHeightMapSize by one, and multiply the value of the parameters TerrainLongExtent and TerrainLatExtent by 
+(new TerrainHeightMapSize/old TerrainHeightMapSize). See below for details of these parameters.
+</p>
+
 <h3>Introduction:</h3>
    
-<p>The
-world model is comprised of a minimum of 7 files residing in a common
-folder. Of these, there are at least 3 image files, and there are 5
-plain text files. The folder name is used when loading the world model,
-and is found under <i>World</i> in the <i>Bridge Command 4.7</i> root folder. For example, if <i>Bridge Command 4.7</i> is installed in <i>C:\Program files\Bridge Command 4.7GPL</i>, the files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files\Bridge Command 4.7GPL\World\Atlantis</i>.</p>
-   
-<p>The
-key component in a world model is a 'terrain', which represents the
-topography and bathymetry of the area modelled. To this, individual
-features are added, such as buoys, landmarks, navigation lights etc.</i></p>
+<p>The world model defines the environment of a scenario, and uses a heightmap to set the terrain and bathymetry. In addition, a texture file 
+is used to set the terrain colouring, and configuration files control how the environment is loaded, and other features such as buoys, landmarks
+and lights etc. A 'map' image is also used to display as a 2d view in the scenario editor and map controller.
+</p>
 
-<p>A
-primary terrain must be defined, and any number of additional areas may
-be defined. The intention is for the primary terrain to cover the
-entire area defined, and for secondary terrains to be used to give
-higher resolution models of some areas if required. To allow the secondary terrain to be seen, 
-the primary terrain must be below the
-height of the secondary. The programme will prioritise the highest
-numbered terrain when taking depth soundings, and to decide if the ship
-is aground.</p>
+<p>
+The world model is made up of files in a common folder. The folder name is used when loading the world model, and is found under <i>World</i>
+in the <i>Bridge Command</i> root folder. For example, if <i>Bridge Command</i> is installed in <i>C:\Program files\Bridge Command 5.0</i>, the 
+files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files\Bridge Command 5.0\World\Atlantis</i>. To allow users to 
+edit or add world models without changing the overall installation, Bridge Command will look first in the user directory for a world model, and 
+will use this in preference to the global model. The user directory is %appdata%/Bridge Command/5.0 on Windows, ~/.Bridge Command/5.0 on Linux 
+and ~/Library/Application Support/Bridge Command/5.0 on OSX.
+</p>
    
-<p>Each
-terrain is loaded from two image files, a height map and a texture. The
-shape of the terrain is generated from a height map, in which the
-colour of each pixel in the image is translated into a height value for
-that terrain location. The value taken is from the red channel of an
-RGB (ie. standard colour) image, or the value of a greyscale image.
-Black is low and white is high.</p>
+<p>
+The terrain is loaded from two image files, a height map and a texture. The shape of the terrain is generated from a height map, in which the
+colour of each pixel in the image is translated into a height value for that terrain location. The height map should be a greyscale PNG image, 
+and black is low and white is high. Alternatively, a raw binary format is allowed, and height maps with the extension .f32 will be interpreted 
+as a list of heights in metres as 32 bit floating point numbers. This allows a higher resolution of height map, which may be helpful if your 
+area includes deep sea and high mountains.
+</p>
    
-<p>The
-terrain generated from the height map is coloured with a texture image of the same
-dimensions as the heightmap, and then the additional features are
-loaded into the world as configured in the 5 text files.</p>
+<p>
+The terrain generated from the height map is coloured with a texture image, and then the additional features are loaded into the world as 
+configured in the .ini files.</p>
    
-<p>Additionally,
-another image of the same dimensions as the primary heightmap is
-defined for the background for the radar screen, and is used to give the impression of a radar 'echo'
-from the landscape in the radar screen.</p>
-
 <h3><span style="font-weight: bold;" lang="en-GB">The files:</span></h3>
    
 <p>The constituent files are listed below, with their purpose. Each is dealt with in detail below</p>
    
-<h4>Plain text:</h4>
+<h4>Configuration:</h4>
    
 <p>
 <ul>
@@ -72,69 +71,64 @@ from the landscape in the radar screen.</p>
 <li>LandObject.ini:&nbsp;Specifies fixed, land based objects in the world.</li>
 <li>Light.ini:&nbsp;Specifies navigation lights in world (floating or land based)</li>
 <li>Tide.ini:&nbsp;Defines the tides</li>
-<li>RadarReflector.ini:&nbsp;Defines location of fixed radar reflecting objects (Optional)</li>
-<li>Description.ini:&nbsp;A brief description of the world model (Optional)</li>
-<li>Thumb.bmp:&nbsp;A thumbnail image (Optional)</li>
+<!--<li>RadarReflector.ini:&nbsp;Defines location of fixed radar reflecting objects (Optional)</li>-->
+<!--<li>Description.ini:&nbsp;A brief description of the world model (Optional)</li>-->
+<!--<li>Thumb.bmp:&nbsp;A thumbnail image (Optional)</li>-->
 </ul>
 </p>   
    
 <h4>Images:</h4>
 
-<p>For
-the primary terrain, 3 image files are specified in terrain.ini, and 2
-for each subsequent terrain. The filenames are as specified in <i>terrain.ini</i>,
-and can be in bmp, png or jpeg format. The images required for all
-terrains are the heightmap image and texture image. For the primary
-terrain, a radar image is also required. Images must be square, and
-have a width and height of 2^n, where n is a positive integer (ie.
-2,4...128,256,512,1024,2048...)</p>
-
+<p>
+The filenames for the height map and texture files are as specified in <i>terrain.ini</i>. The heightmap should be in .png or raw binary 
+format (32 bit floating point, with extension .f32), and the texture and map image should be square and power of two (2^n) sizes (512, 1024, 
+...). The size of the heightmap should be square, and 2^n + 1 in size (513, 1025, 2049, ...).
+</p>
 
 <h4>File details:</h4>
 
 <h5>Terrain.ini</h5>
 
-<p>Contains 2 general variables, and a set of 9 variables for each terrain defined. The global variables are <b>Number</b> and <b>RadarImage</b>.
-Number is set to an integer value of 1 or greater, and is the number of
-terrain areas to be defined in the next section of the file. RadarImage is set to the filename of the radar image. This must be enclosed in double quotation marks (eg. RadarImage="radar.jpg" would be acceptable).</p>
+<p>Example</p>
 
-<p>The nine variables for each terrain are 
+<pre>
+MapImage="map.bmp"
+
+HeightMap(1)="height.png"
+Texture(1)="texture.bmp"
+TerrainLong(1)=-10
+TerrainLat(1)=50
+TerrainLongExtent(1)=0.05010
+TerrainLatExtent(1)=0.04008
+TerrainMaxHeight(1)=100
+SeaMaxDepth(1)=44.07
+TerrainHeightMapSize(1)=513
+</pre>
+
+<p>
 <ul>
-<li>HeightMap(#)</li>
-<li>Texture(#)</li>
-<li>TerrainLong(#)</li>
-<li>TerrainLat(#)</li>
-<li>TerrainLongExtent(#)</li>
-<li>TerrainLatExtent(#)</li>
-<li>TerrainMaxHeight(#)</li>
-<li>SeaMaxDepth(#)</li>
-<li>TerrainHeightMapSize(#)</li>
+<li>MapImage: File name of image used in 2d views (scenario editor, map controller)</li>
+<li>HeightMap(1): Height map file name (.png or .f32)</li>
+<li>Texture(1): Texture file name</li>
+<li>TerrainLong(1): Longitude of the south west corner of the terrain area (Decimal degrees, East positive)</li>
+<li>TerrainLat(1): Latitude of the south west corner of the terrain area (Decimal degrees, North positive)</li>
+<li>TerrainLongExtent(1): Extent of the terrain in decimal degrees (East-West)</li>
+<li>TerrainLatExtent(1): Extent of the terrain in decimal degrees (North-South)</li>
+<li>TerrainMaxHeight(1): The height in metres represented by a pure white pixel on the heightmap image (ignored for binary heightmap)</li>
+<li>SeaMaxDepth(1): The depth in metres represented by a pure black pixel on the heightmap image (ignored for binary heightmap)</li>
+<li>TerrainHeightMapSize(1): The size of the heightmap (513, 1025, 2049, ...)</li>
 </ul>
-Note that the # character should be replaced by the terrain number in question, starting with 1 for the primary terrain. HeightMap(#)takes the filename of the heightmap image file, as a text string. Texture(#) is the same, but takes the filename of the texture image. The remaining variables are numerical. TerrainLong(#) takes the longitude of the south west corner of the terrain area, TerrainLat(#) takes the latitude of this point. These are both in decimal degrees, with North and East as positive (the convention in <i>Bridge Command 4.0</i>. TerrainLongExtent(#) and TerrainLatExtent(#) take the extent of the terrain in decimal degrees in the East-West and
-North-South directions respectively. TerrainMaxHeight(#) takes the
-height in metres represented by a pure white pixel on the heightmap
-image. SeaMaxDepth(#) is equivalent, and takes the depth of sea in
-metres represented by a pure black pixel. Both are with respect to the
-same horizontal datum, and both should be positive values. TerrainHeightMapSize(#)
-takes the image size in pixels of the height/texture maps (which should
-be the same, and must both be square images). The image size must be a
-power of two (2,4...128,256,512,1024,2048...).</p>
-
-<h5>Example Terrain.ini, setting up one (primary) terrain:</h5>
-
-<pre>Number=1<br><br>RadarImage="radar.bmp"<br>HeightMap(1)="height.bmp"<br>Texture(1)="texture.bmp"<br>TerrainLong(1)=-123.00<br>TerrainLat(1)=37.333<br>TerrainLongExtent(1)=1<br>TerrainLatExtent(1)=1<br>TerrainMaxHeight(1)=786<br>SeaMaxDepth(1)=882<br>TerrainHeightMapSize(1)=1024</pre>
 
 <h5>Buoy.ini</h5>
    
-<p>Contains 1 general variable, and a set of 3 or 4 variables for each buoy defined. The global variable is Number,
-which is the number of buoys to be defined in the file. This can be
-zero, in which case no buoys are defined, and nothing further is
-required in this file. The three required variables for each buoy are 
-Type(#), Long(#) and Lat(#). Type(#) takes the buoy type, as a text string. This must correspond to an available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory (By default <i>C:\Program files\Bridge Command 4.7GPL</i>. Long(#) and Lat(#) 
-take respectively the buoy's Longitude and Latitude in standard
-decimal degrees. Note that only the buoy model and its location is
-specified here - if the buoy has a light attached, it must be specified
-in <i>Light.ini</i>, as specified below. The optional variable is RCS, which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.</p>
+<p>Contains 1 general variable, and a set of 3 or 4 variables for each buoy defined. The global variable is Number, which is the number of 
+buoys to be defined in the file. This can be zero, in which case no buoys are defined, and nothing further is required in this file. The three 
+required variables for each buoy are Type(#), Long(#) and Lat(#). Type(#) takes the buoy type, as a text string. This must correspond to an 
+available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory (By default 
+<i>C:\Program files\Bridge Command 5.0</i>. 
+Long(#) and Lat(#) take respectively the buoy's Longitude and Latitude in standard decimal degrees. Note that only the buoy model and its 
+location is specified here - if the buoy has a light attached, it must be specified in <i>Light.ini</i>, as specified below. 
+The optional variable is RCS, which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.</p>
 
 <h5>Example Buoy.ini, setting up three buoys:</h5>
 
@@ -146,7 +140,7 @@ in <i>Light.ini</i>, as specified below. The optional variable is RCS, which set
 (breakwaters etc). Contains 1 general variable, and a set of 5 to 6
 variables for each land object defined. <i>Number</i> sets the number of objects to be defined.This can be zero, in which
 case no land objects are defined, and nothing further is required in
-this file. The first three variables for each object, <i>Type(#)</i>, <i>Long(#)</i> and <i>Lat(#)</i> are defined as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command 4.7 root folder. The additional two variables, <i>Rotation(#)</i> and <i>HeightCorrection(#)</i> allow for the model to be rotated about its vertical axis, and moved up or down. If the optional setting <i>Absolute(#)</i> is set as 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level. <i>Rotation(#)</i> is specified in degrees. An anticlockwise rotation, as viewed from the top, is positive. <i>HeightCorrection(#)</i> allows for a model to be moved up or down, so it sits properly on the land. A positive <i>HeightCorrection(#)</i> moves the object upwards, and is in metres.</p>
+this file. The first three variables for each object, <i>Type(#)</i>, <i>Long(#)</i> and <i>Lat(#)</i> are defined as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command root folder. The additional two variables, <i>Rotation(#)</i> and <i>HeightCorrection(#)</i> allow for the model to be rotated about its vertical axis, and moved up or down. If the optional setting <i>Absolute(#)</i> is set as 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level. <i>Rotation(#)</i> is specified in degrees. An anticlockwise rotation, as viewed from the top, is positive. <i>HeightCorrection(#)</i> allows for a model to be moved up or down, so it sits properly on the land. A positive <i>HeightCorrection(#)</i> moves the object upwards, and is in metres.</p>
 
 <h5>Example LandObject.ini</h5>
 <pre>
@@ -197,12 +191,10 @@ which the light should be attached, or fixed. Fixed lights can be set
 to be either above the surrounding land height, or at an absolute
 height (Above the programme datum - equivalent to Chart datum). The
 position of fixed lights are defined by their latitude and longitude.
-There is one general
-variable, and there are 11 variables for each light defined. The global
-variable is <i>Number</i>,
-which as usual sets the number of lights to be defined. This can be
-zero, in which case no lights are defined, and nothing further is
-required in this file. The variable names for each light are:</p>
+There is one general variable, <i>Number</i> which as usual sets the 
+number of lights to be defined. This can be zero, in which case no lights 
+are defined, and nothing further is required in this file. The variable 
+names for each light are:</p>
 
 <p>
 <ul>
@@ -223,7 +215,7 @@ required in this file. The variable names for each light are:</p>
 <li>Blue(#)</li>
 <li>Range(#)</li>
 <li>Sequence(#)</li>
-<li>(optional) PhaseStart(#)</li>
+<!--<li>(optional) PhaseStart(#)</li>-->
 <li>StartAngle(#)</li>
 <li>EndAngle(#)</li>
 </ul>
@@ -252,19 +244,20 @@ represents the light being on, and 'D' is off. When the end of the
 sequence is reached, the sequence restarts. So for example, <i>Sequence(#)="LLLDDDDDD"</i>
 represents 0.75 seconds where the light is on, followed by 1.5 seconds
 where it is off, then restarting with 0.75s of light and so on. So for
-a fixed (constant) light, <i>Sequence(#)="L"</i> is all that is required, and to get a light occulting with 1s of light and 1s of darkness, <i>Sequence(#)="LLLLDDDD"</i> would work. The optional variable PhaseStart(#) sets which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1. 
+a fixed (constant) light, <i>Sequence(#)="L"</i> is all that is required, and to get a light occulting with 1s of light and 1s of darkness, <i>Sequence(#)="LLLLDDDD"</i> would work. <!--The optional variable PhaseStart(#) sets which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1.--> 
 </p>
 <p>
 To allow for sector lights, a light start and end angle are defined by <i>StartAngle(#)</i> and <i>EndAngle(#).</i> The light is visible between the <i>StartAngle(#)</i> bearing and <i>EndAngle(#)</i>, going clockwise. Therefore, <i>StartAngle(#)=0</i> and <i>EndAngle(#)=90</i> would show a light shining between North and East, as seen on a chart or from above the light. For an all round light, <i>StartAngle(#)=0</i> and <i>EndAngle(#)=360</i> should be used. The <i>EndAngle(#)</i> value must be greater than the <i>StartAngle(#)</i>.
 Therefore, angles can be defined in the range 0-720, so a light shining
 northwards and visible 20 degrees on either side would be defined by a <i>StartAngle(#)</i> of 340 and an <i>EndAngle(#)</i> of 380. 
 </p>
-<p>
+
+<!--<p>
 The last variable is <i>Floating(#)</i>,
 which should be set to 1 if the light should maintain its height above
 the water (if it is a buoy's light for example), and to 0 if it should
 be at the defined hight relative to the land at its position.
-</p>
+</p>-->
 
 <h5>Example light.ini</h5>
 <pre>Number=2<br><br>Buoy(1)=2<br>Height(1)=8<br>Red(1)=0<br>Green(1)=255<br>Blue(1)=0<br>Range(1)=20<br>Sequence(1)="lldddd"<br>StartAngle(1)=45<br>EndAngle(1)=315<br><br>Long(2)=50.2<br>Lat(2)=-34.6<br>Height(2)=3<br>Red(2)=255<br>Green(2)=0<br>Blue(2)=0<br>Range(2)=20<br>Sequence(2)="lllldd"<br>StartAngle(2)=0<br>EndAngle(2)=360</pre>
@@ -312,6 +305,8 @@ Offset(4)=411.51
 Speed(4)=30.082137
 </pre>
 </p>
+
+<!--
 
 <h5>RadarReflector.ini</h5>
    
@@ -366,11 +361,11 @@ required in this file. The variable names for each reflector are:</p>
 <p>
 This is optional, and is a thumbnail image that will be displayed to the user when selecting the world model.
 </p>
-
+-->
 <h3>Conclusion</h3>
 
 If you have any questions, please ask the author - <a href="mail.php" onmouseover="this.href='mai' + 'lto:' + 'help' + '@' + 'bridgecommand.co.uk'">send
-me an email.</a></p>
+me an email</a>, or ask on the <a href="https://www.bridgecommand.co.uk/forum">Forum</a></p>
 
 <p>
 James Packer - 19th March 2009
