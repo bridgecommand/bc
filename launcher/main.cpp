@@ -180,7 +180,7 @@ public:
                         //execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
                     #else
                         //Other (assumed posix)
-                        //execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
+                        execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
                     #endif
                     #endif
                 }
