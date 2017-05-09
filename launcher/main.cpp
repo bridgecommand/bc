@@ -181,6 +181,8 @@ public:
                     #else
                         //Other (assumed posix)
                         execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
+                        //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
+
                     #endif
                     #endif
                 }

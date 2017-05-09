@@ -354,7 +354,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     oldScenarioInfo = scenarioInfo;
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipData.X, ownShipData.Z, ownShipData.heading, buoys, otherShips);
+    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipData.X, ownShipData.Z, ownShipData.heading, buoys, otherShips, selectedShip, selectedLeg);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -417,7 +417,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipEditorData>& otherShips)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipEditorData>& otherShips,  const irr::s32& selectedShip, const irr::s32& selectedLeg)
 {
 
     //draw cross hairs
@@ -437,6 +437,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     irr::s32 ownRelPosX = 0 + mapOffsetX;
     irr::s32 ownRelPosY = 0 - mapOffsetZ;
     device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 0, 0),irr::core::rect<s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
+    if (selectedShip == -1) {
+        //Own ship selected
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4,video::SColor(255, 255, 0, 0),10);
+    }
+
     //Heading line
     irr::s32 hdgLineX = ownRelPosX + width/10*sin(ownShipHeading * RAD_IN_DEG);
     irr::s32 hdgLineY = ownRelPosY + width/10*cos(ownShipHeading * RAD_IN_DEG);
@@ -458,6 +463,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
         device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        if (selectedShip == (it - otherShips.begin()) ) {
+            //This ship selected
+            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,video::SColor(255, 0, 0, 255),10);
+        }
 
         //number
         int thisShipNumber = 1 + it - otherShips.begin();
@@ -505,6 +514,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<s32> endLine (legEndX, legEndY);
 
                         device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
+
                     } //Not infinite
 
                 } //If currentLegTimeRemaining > 0
@@ -528,6 +538,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<s32> endLine (legEndX, legEndY);
 
                         device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
+                        if (selectedShip==)
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
