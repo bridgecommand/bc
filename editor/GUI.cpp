@@ -538,7 +538,6 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<s32> endLine (legEndX, legEndY);
 
                         device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
-                        if (selectedShip==)
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
