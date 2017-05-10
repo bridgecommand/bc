@@ -177,7 +177,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        //execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
+                        execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
                     #else
                         //Other (assumed posix)
                         execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);

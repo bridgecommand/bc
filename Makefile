@@ -51,6 +51,7 @@ ifeq ($(UNAME_S),Darwin)
 	rm -rf BridgeCommand.app/Contents/Resources/Scenarios
 	rm -rf BridgeCommand.app/Contents/Resources/shaders
 	rm -rf BridgeCommand.app/Contents/Resources/World
+	cp -a doc BridgeCommand.app/Contents/Resources/doc	
 	cp -a media BridgeCommand.app/Contents/Resources/media
 	cp -a Models BridgeCommand.app/Contents/Resources/Models
 	cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
