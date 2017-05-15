@@ -1,9 +1,10 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.0 Beta 5"
-!define OUTPUTFILE "bc50b5_setup_noSource.exe"
-!define INSTALLLOCATION "Bridge Command 5.0b5"
-!define SMFOLDER "Bridge Command 5.0 Beta 5"
-!define REGKEY "BridgeCommand5.0b5"
+!define PROGRAMNAME "Bridge Command 5.0b6"
+;!define OUTPUTFILE "bc50_Release.exe"
+;!define OUTPUTFILE "bc50b6_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.0b6"
+!define SMFOLDER "Bridge Command 5.0b6"
+!define REGKEY "BridgeCommand5.0b6"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -68,6 +69,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\media"
   RMDir /r "$INSTDIR\world"
   RMDir /r "$INSTDIR\shaders"
+  RMDir /r "$INSTDIR\doc"
   
   Delete "$INSTDIR\bc5.ini"
   Delete "$INSTDIR\LICENSE.txt"
