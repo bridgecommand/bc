@@ -53,6 +53,12 @@ public:
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
+        GUI_ID_PI_SELECT_BOX,
+        GUI_ID_PI_RANGE_BOX,
+        GUI_ID_PI_BEARING_BOX,
+        GUI_ID_BIG_PI_SELECT_BOX,
+        GUI_ID_BIG_PI_RANGE_BOX,
+        GUI_ID_BIG_PI_BEARING_BOX,
         GUI_ID_ARPA_ON_BOX,
         GUI_ID_BIG_ARPA_ON_BOX,
         GUI_ID_ARPA_TRUE_REL_BOX,
@@ -115,6 +121,7 @@ private:
 
     //irr::gui::IGUIElement* largeRadarGUIParent; //Parent to make it easier to show/hide large radar gui
     irr::gui::IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
+    irr::gui::IGUIRectangle* largeRadarPIControls; //Parent for PI controls on large radar
     irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarClutterScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarRainScrollbar2; //For large radar

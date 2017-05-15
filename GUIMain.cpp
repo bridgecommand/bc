@@ -146,7 +146,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         radarTabControl = guienv->addTabControl(core::rect<s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
-        //irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
+        irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
         //irr::gui::IGUITab* radarGZoneTab = radarTabControl->addTab(language->translate("radarGuardZoneTab").c_str(),0);
         irr::gui::IGUITab* radarARPATab = radarTabControl->addTab(language->translate("radarARPATab").c_str(),0);
         //irr::gui::IGUITab* radarTrackTab = radarTabControl->addTab(language->translate("radarTrackTab").c_str(),0);
@@ -189,6 +189,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Controls for large radar window
         largeRadarControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.770*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.980*radarSu,radarTL.Y+0.730*radarSu));
+        largeRadarPIControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.550*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.750*radarSu,radarTL.Y+0.200*radarSu));
         radarGainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.040*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar2 = new gui::ScrollDial(core::vector2d<s32>(0.105*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.170*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
@@ -214,6 +215,38 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         eblDownButton2 = guienv->addButton(core::rect<s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         radarText2 = guienv->addStaticText(L"",core::rect<s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.400*radarSu),true,true,largeRadarControls,-1,true);
+
+        //Radar PI tab
+        //Drop down box to select PI 1-10
+        irr::gui::IGUIComboBox* piSelected = guienv->addComboBox(core::rect<s32>(0.005*su,0.040*sh,0.150*su,0.080*sh),radarPITab,GUI_ID_PI_SELECT_BOX);
+        piSelected->addItem(L"1");
+        piSelected->addItem(L"2");
+        piSelected->addItem(L"3");
+        piSelected->addItem(L"4");
+        piSelected->addItem(L"5");
+        piSelected->addItem(L"6");
+        piSelected->addItem(L"7");
+        piSelected->addItem(L"8");
+        piSelected->addItem(L"9");
+        piSelected->addItem(L"10");
+        //Edit boxes for bearing and range (+ve/-ve)
+        guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.100*sh,0.050*su,0.140*sh),true,radarPITab,GUI_ID_PI_RANGE_BOX);
+        guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.160*sh,0.050*su,0.200*sh),true,radarPITab,GUI_ID_PI_BEARING_BOX);
+
+        //PI on big radar screen
+        irr::gui::IGUIComboBox* piSelectedBig = guienv->addComboBox(core::rect<s32>(0.010*radarSu,0.010*radarSu,0.150*radarSu,0.040*radarSu),largeRadarPIControls,GUI_ID_BIG_PI_SELECT_BOX);
+        piSelectedBig->addItem(L"1");
+        piSelectedBig->addItem(L"2");
+        piSelectedBig->addItem(L"3");
+        piSelectedBig->addItem(L"4");
+        piSelectedBig->addItem(L"5");
+        piSelectedBig->addItem(L"6");
+        piSelectedBig->addItem(L"7");
+        piSelectedBig->addItem(L"8");
+        piSelectedBig->addItem(L"9");
+        piSelectedBig->addItem(L"10");
+        guienv->addEditBox(L"0",core::rect<s32>(0.140*radarSu,0.060*radarSu,0.190*radarSu,0.100*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_RANGE_BOX);
+        guienv->addEditBox(L"0",core::rect<s32>(0.140*radarSu,0.120*radarSu,0.190*radarSu,0.160*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
 
         //Radar ARPA tab
         guienv->addCheckBox(false,core::rect<s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
@@ -415,6 +448,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         smallRadarButton->setVisible(radarLarge);
         largeRadarControls->setVisible(radarLarge);
+        largeRadarPIControls->setVisible(radarLarge);
 
         //Move gui elements if on largescreen radar
         if (!radarLarge) {

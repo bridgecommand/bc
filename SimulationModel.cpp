@@ -538,6 +538,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRainClutter(value);
     }
 
+    void SimulationModel::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
+    {
+        //TODO: Set here
+    }
+
     void SimulationModel::increaseRadarEBLRange() {radarCalculation.increaseEBLRange();}
     void SimulationModel::decreaseRadarEBLRange() {radarCalculation.decreaseEBLRange();}
     void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
