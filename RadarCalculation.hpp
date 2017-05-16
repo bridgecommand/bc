@@ -93,6 +93,9 @@ class RadarCalculation
         irr::f32 getRainClutter() const;
         irr::f32 getEBLRangeNm() const;
         irr::f32 getEBLBrg() const;
+        void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
+        irr::f32 getPIbearing(irr::s32 PIid) const;
+        irr::f32 getPIrange(irr::s32 PIid) const;
         void increaseEBLRange();
         void decreaseEBLRange();
         void increaseEBLBrg();
@@ -132,6 +135,9 @@ class RadarCalculation
         irr::f32 radarNoiseLevel;
         irr::f32 radarSeaClutter;
         irr::f32 radarRainClutter;
+        //Parameters for parallel index
+        std::vector<irr::f32> piBearings;
+        std::vector<irr::f32> piRanges;
         //Parameters for EBL
         irr::f32 EBLRangeNm;
         irr::f32 EBLBrg;

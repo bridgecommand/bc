@@ -540,7 +540,17 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
     {
-        //TODO: Set here
+        radarCalculation.setPIData(PIid, PIbearing, PIrange);
+    }
+
+    irr::f32 SimulationModel::getPIbearing(irr::s32 PIid) const
+    {
+        return radarCalculation.getPIbearing(PIid);
+    }
+
+    irr::f32 SimulationModel::getPIrange(irr::s32 PIid) const
+    {
+        return radarCalculation.getPIrange(PIid);
     }
 
     void SimulationModel::increaseRadarEBLRange() {radarCalculation.increaseEBLRange();}

@@ -68,6 +68,12 @@ RadarCalculation::RadarCalculation()
         }
     }
 
+    //Hard coded in GUI and here for 10 parallel index lines
+    for(u32 i=0; i<10; i++) {
+        piBearings.push_back(0.0);
+        piRanges.push_back(0.0);
+    }
+
     radarScreenStale = true;
 
     currentScanAngle=0;
@@ -215,6 +221,32 @@ irr::f32 RadarCalculation::getEBLRangeNm() const
 irr::f32 RadarCalculation::getEBLBrg() const
 {
     return EBLBrg;
+}
+
+void RadarCalculation::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
+{
+    if (PIid >= 0 && PIid < piBearings.size() && PIid < piRanges.size()) {
+        piBearings.at(PIid) = PIbearing;
+        piRanges.at(PIid) = PIrange;
+    }
+}
+
+irr::f32 RadarCalculation::getPIbearing(irr::s32 PIid) const
+{
+    if (PIid >= 0 && PIid < piBearings.size()) {
+        return piBearings.at(PIid);
+    } else {
+        return 0;
+    }
+}
+
+irr::f32 RadarCalculation::getPIrange(irr::s32 PIid) const
+{
+    if (PIid >= 0 && PIid < piRanges.size()) {
+        return piRanges.at(PIid);
+    } else {
+        return 0;
+    }
 }
 
 void RadarCalculation::increaseEBLRange()

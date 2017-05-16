@@ -339,11 +339,21 @@ using namespace irr;
                     //Get PI data for the newly selected PI
                     s32 selectedPI = ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected(); //(-1 or 0-9)
                     //TODO: Use this to get data from model, and set fields
+                    gui::IGUIElement* piBrg = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_BEARING_BOX,true);
+                    gui::IGUIElement* piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX,true);
+                    gui::IGUIElement* piBrgBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_BEARING_BOX,true);
+                    gui::IGUIElement* piRngBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_RANGE_BOX,true);
+                    if (piBrg && piRng && piBrgBig && piRngBig) {
+                        piBrg->setText(core::stringw(model->getPIbearing(selectedPI)).c_str());
+                        piBrgBig->setText(core::stringw(model->getPIbearing(selectedPI)).c_str());
+                        piRng->setText(core::stringw(model->getPIrange(selectedPI)).c_str());
+                        piRngBig->setText(core::stringw(model->getPIrange(selectedPI)).c_str());
+                    }
                 }
 
             }
 
-            if (event.GUIEvent.EventType == gui::EGET_EDITBOX_CHANGED) {
+            if (event.GUIEvent.EventType == gui::EGET_EDITBOX_CHANGED || event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) {
 
                 //Bearing/range boxes:
                 if (id == GUIMain::GUI_ID_PI_BEARING_BOX || id == GUIMain::GUI_ID_BIG_PI_BEARING_BOX || id == GUIMain::GUI_ID_PI_RANGE_BOX || id == GUIMain::GUI_ID_BIG_PI_RANGE_BOX ) {
@@ -365,24 +375,26 @@ using namespace irr;
                         if (other!=0) {other->setText(event.GUIEvent.Caller->getText());}
                     }
 
-                    //Use the result
-                    gui::IGUIElement* piCombo = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_SELECT_BOX,true);
-                    gui::IGUIElement* piBrg = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_BEARING_BOX,true);
-                    gui::IGUIElement* piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX,true);
-                    if (piCombo && piBrg && piRng) {
-                        s32 selectedPI = ((gui::IGUIComboBox*)piCombo)->getSelected(); //(0-9)
+                    if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST ) {
+                        //Use the result
+                        gui::IGUIElement* piCombo = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_SELECT_BOX,true);
+                        gui::IGUIElement* piBrg = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_BEARING_BOX,true);
+                        gui::IGUIElement* piRng = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_PI_RANGE_BOX,true);
+                        if (piCombo && piBrg && piRng) {
+                            s32 selectedPI = ((gui::IGUIComboBox*)piCombo)->getSelected(); //(0-9)
 
-                        std::wstring brgWString = std::wstring(piBrg->getText());
-                        std::string brgString(brgWString.begin(), brgWString.end());
-                        f32 bearingChosen = Utilities::lexical_cast<f32>(brgString);
+                            std::wstring brgWString = std::wstring(piBrg->getText());
+                            std::string brgString(brgWString.begin(), brgWString.end());
+                            f32 bearingChosen = Utilities::lexical_cast<f32>(brgString);
 
-                        std::wstring rngWString = std::wstring(piRng->getText());
-                        std::string rngString(rngWString.begin(), rngWString.end());
-                        f32 rangeChosen = Utilities::lexical_cast<f32>(rngString);
+                            std::wstring rngWString = std::wstring(piRng->getText());
+                            std::string rngString(rngWString.begin(), rngWString.end());
+                            f32 rangeChosen = Utilities::lexical_cast<f32>(rngString);
 
-                        //Apply to model
-                        model->setPIData(selectedPI,bearingChosen,rangeChosen);
+                            //Apply to model
+                            model->setPIData(selectedPI,bearingChosen,rangeChosen);
 
+                        }
                     }
 
                 }

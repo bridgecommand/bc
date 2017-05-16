@@ -127,6 +127,8 @@ public:
     void setRadarClutter(irr::f32 value);
     void setRadarRain(irr::f32 value);
     void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
+    irr::f32 getPIbearing(irr::s32 PIid) const;
+    irr::f32 getPIrange(irr::s32 PIid) const;
     void increaseRadarEBLRange();
     void decreaseRadarEBLRange();
     void increaseRadarEBLBrg();
