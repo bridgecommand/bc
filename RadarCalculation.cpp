@@ -836,6 +836,53 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     //Copy image into overlaid
     radarImage->copyTo(radarImageOverlaid);
 
+    //Adjust for head up/course up
+    f32 radarOffsetAngle = 0;
+    if (headUp) {
+        radarOffsetAngle = -1*ownShipHeading;
+    }
+
+    //Draw parallel indexes on here
+    if (piRanges.size() == piBearings.size()) {
+        for(unsigned int i = 0; i< piRanges.size(); i++) {
+            f32 thisPIrange = piRanges.at(i);
+            f32 thisPIbrg = piBearings.at(i);
+            if(fabs(thisPIrange) > 0.0001 && fabs(thisPIrange) < getRangeNm()) {
+                //Not zero range or off screen
+
+                f32 piRangePX = (f32)bitmapWidth/2.0 * thisPIrange / getRangeNm(); //Find range in Px
+
+                //find sin and cos of PI angle (so we only need once)
+                f32 sinPIbrg=sin(-1*(thisPIbrg + radarOffsetAngle)*RAD_IN_DEG);
+				f32 cosPIbrg=cos(-1*(thisPIbrg + radarOffsetAngle)*RAD_IN_DEG);
+
+				//find central point on line
+                f32 x_a = -1*piRangePX * sin( (90-(-1*(thisPIbrg + radarOffsetAngle)))*RAD_IN_DEG ) + centrePixel;
+                f32 z_a =    piRangePX * cos( (90-(-1*(thisPIbrg + radarOffsetAngle)))*RAD_IN_DEG ) + centrePixel;
+
+                //find half chord length (length of PI line)
+                f32 halfChord = pow(pow((f32)bitmapWidth/2.0,2) - pow(piRangePX,2),0.5); //already checked that PIRange is smaller, so should be valid
+
+                //calculate end points of line
+                f32 x_1=x_a - halfChord * sinPIbrg;
+                f32 z_1=z_a - halfChord * cosPIbrg;
+                f32 x_2=x_a + halfChord * sinPIbrg;
+				f32 z_2=z_a + halfChord * cosPIbrg;
+
+				drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,255,255,255,255);
+
+				//Show line number
+                video::IImage* idNumberImage = NumberToImage::getImage(i+1,device);
+                if (idNumberImage) {
+                    core::rect<s32> sourceRect = core::rect<s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
+                    idNumberImage->copyToWithAlpha(radarImageOverlaid,core::position2d<s32>(x_a-10,z_a-10),sourceRect,video::SColor(255,255,255,255));
+                    idNumberImage->drop();
+                }
+
+            }
+        }
+    }
+
     //Draw ARPA stuff here from arpaContacts, into radarImage
     for(unsigned int i = 0; i < arpaContacts.size(); i++) {
         ARPAEstimatedState thisEstimate = arpaContacts.at(i).estimate;
@@ -846,13 +893,6 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
             //range in pixels
             f32 contactRangePx = (f32)bitmapWidth/2.0 * thisEstimate.range/getRangeNm();
-
-            //Adjust for head up/course up
-            f32 radarOffsetAngle = 0;
-            if (headUp) {
-                radarOffsetAngle = -1*ownShipHeading;
-            }
-
 
             //Find estimated screen location of contact
             s32 deltaX = centrePixel + contactRangePx * sin((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
