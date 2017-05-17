@@ -872,12 +872,27 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 				drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,255,255,255,255);
 
 				//Show line number
-                video::IImage* idNumberImage = NumberToImage::getImage(i+1,device);
-                if (idNumberImage) {
-                    core::rect<s32> sourceRect = core::rect<s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
-                    idNumberImage->copyToWithAlpha(radarImageOverlaid,core::position2d<s32>(x_a-10,z_a-10),sourceRect,video::SColor(255,255,255,255));
-                    idNumberImage->drop();
-                }
+				//Find point towards centre from the line
+				f32 xDirection = centrePixel-x_a;
+				f32 yDirection = centrePixel-z_a;
+				if (x_a!=0 && z_a !=0) {
+
+                    f32 mag = pow(pow(xDirection,2)+pow(yDirection,2),0.5);
+                    xDirection/=mag;
+                    yDirection/=mag;
+
+                    s32 xTextPos = x_a + 15*xDirection;
+                    s32 yTextPos = z_a + 15*yDirection;
+
+                    video::IImage* idNumberImage = NumberToImage::getImage(i+1,device);
+                    if (idNumberImage) {
+                        core::rect<s32> sourceRect = core::rect<s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
+                        idNumberImage->copyToWithAlpha(radarImageOverlaid,core::position2d<s32>(xTextPos,yTextPos),sourceRect,video::SColor(255,255,255,255));
+                        idNumberImage->drop();
+                    }
+				}
+
+
 
             }
         }
