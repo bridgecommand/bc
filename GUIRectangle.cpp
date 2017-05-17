@@ -14,9 +14,10 @@ namespace gui
 {
 
 
-IGUIRectangle::IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle) :
+IGUIRectangle::IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder) :
 IGUIElement(EGUIET_ELEMENT,environment,parent,0,rectangle)
 {
+    this->showBorder=showBorder;
 }
 
 //! destructor
@@ -41,7 +42,8 @@ if (!IsVisible)
 	// draws the background
 	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
-	Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+	if (showBorder)
+        Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
 	//Draw children
 	IGUIElement::draw();

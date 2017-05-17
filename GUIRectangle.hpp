@@ -17,7 +17,7 @@ namespace gui
 	public:
 
 		//! constructor
-		IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle);
+		IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder=true);
 
 		//! destructor
 		virtual ~IGUIRectangle();
@@ -26,6 +26,7 @@ namespace gui
 		virtual void draw();
 
     private:
+        bool showBorder;
 
     };
 }

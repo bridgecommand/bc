@@ -344,10 +344,10 @@ using namespace irr;
                     gui::IGUIElement* piBrgBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_BEARING_BOX,true);
                     gui::IGUIElement* piRngBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_RANGE_BOX,true);
                     if (piBrg && piRng && piBrgBig && piRngBig) {
-                        piBrg->setText(core::stringw(model->getPIbearing(selectedPI)).c_str());
-                        piBrgBig->setText(core::stringw(model->getPIbearing(selectedPI)).c_str());
-                        piRng->setText(core::stringw(model->getPIrange(selectedPI)).c_str());
-                        piRngBig->setText(core::stringw(model->getPIrange(selectedPI)).c_str());
+                        piBrg->setText(f32To3dp(model->getPIbearing(selectedPI),true).c_str());
+                        piBrgBig->setText(f32To3dp(model->getPIbearing(selectedPI),true).c_str());
+                        piRng->setText(f32To3dp(model->getPIrange(selectedPI),true).c_str());
+                        piRngBig->setText(f32To3dp(model->getPIrange(selectedPI),true).c_str());
                     }
                 }
 
@@ -629,6 +629,24 @@ using namespace irr;
         return outputPoints.at(nextPoint-1) + (outputPoints.at(nextPoint)-outputPoints.at(nextPoint-1))*(lookupValue-inputPoints.at(nextPoint-1))/(inputPoints.at(nextPoint)-inputPoints.at(nextPoint-1));
 
 
+    }
+
+    std::wstring MyEventReceiver::f32To3dp(irr::f32 value, bool stripZeros)
+    {
+        //Convert a floating point value to a wstring, with 3dp
+        char tempStr[100];
+        snprintf(tempStr,100,"%.3f",value);
+        std::wstring outputWstring = std::wstring(tempStr, tempStr+strlen(tempStr));
+        //Strip trailing zeros and decimal point
+        if (stripZeros) {
+            while (outputWstring.back() == '0') {
+                outputWstring.pop_back();
+            }
+            if (outputWstring.back() == '.') {
+                outputWstring.pop_back();
+            }
+        }
+        return outputWstring;
     }
 
 /*
