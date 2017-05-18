@@ -189,7 +189,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Controls for large radar window
         largeRadarControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.770*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.980*radarSu,radarTL.Y+0.730*radarSu));
-        largeRadarPIControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.550*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.750*radarSu,radarTL.Y+0.200*radarSu),false);
+        largeRadarPIControls = new gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),core::rect<s32>(radarTL.X+0.550*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.770*radarSu,radarTL.Y+0.200*radarSu),false);
         radarGainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.040*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar2 = new gui::ScrollDial(core::vector2d<s32>(0.105*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar2    = new gui::ScrollDial(core::vector2d<s32>(0.170*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
@@ -218,7 +218,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Radar PI tab
         //Drop down box to select PI 1-10
-        irr::gui::IGUIComboBox* piSelected = guienv->addComboBox(core::rect<s32>(0.005*su,0.040*sh,0.150*su,0.080*sh),radarPITab,GUI_ID_PI_SELECT_BOX);
+        (guienv->addStaticText(language->translate("parallelIndex").c_str(),core::rect<s32>(0.055*su,0.040*sh,0.205*su,0.080*sh),true,true,radarPITab))->setTextAlignment(gui::EGUIA_UPPERLEFT,gui::EGUIA_CENTER);
+        irr::gui::IGUIComboBox* piSelected = guienv->addComboBox(core::rect<s32>(0.005*su,0.040*sh,0.050*su,0.080*sh),radarPITab,GUI_ID_PI_SELECT_BOX);
         piSelected->addItem(L"1");
         piSelected->addItem(L"2");
         piSelected->addItem(L"3");
@@ -230,12 +231,14 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         piSelected->addItem(L"9");
         piSelected->addItem(L"10");
         //Edit boxes for bearing and range (+ve/-ve)
+        guienv->addStaticText(language->translate("piRange").c_str(),core::rect<s32>(0.055*su,0.100*sh,0.205*su,0.140*sh),true,true,radarPITab);
         guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.100*sh,0.050*su,0.140*sh),true,radarPITab,GUI_ID_PI_RANGE_BOX);
+        guienv->addStaticText(language->translate("piBearing").c_str(),core::rect<s32>(0.055*su,0.160*sh,0.205*su,0.200*sh),true,true,radarPITab);
         guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.160*sh,0.050*su,0.200*sh),true,radarPITab,GUI_ID_PI_BEARING_BOX);
 
         //PI on big radar screen
-        (guienv->addStaticText(language->translate("parallelIndex").c_str(),core::rect<s32>(0.010*radarSu,0.010*radarSu,0.085*radarSu,0.070*radarSu),false,true,largeRadarPIControls))->setTextAlignment(gui::EGUIA_LOWERRIGHT,gui::EGUIA_UPPERLEFT);
-        irr::gui::IGUIComboBox* piSelectedBig = guienv->addComboBox(core::rect<s32>(0.090*radarSu,0.010*radarSu,0.195*radarSu,0.035*radarSu),largeRadarPIControls,GUI_ID_BIG_PI_SELECT_BOX);
+        (guienv->addStaticText(language->translate("parallelIndex").c_str(),core::rect<s32>(0.005*radarSu,0.010*radarSu,0.075*radarSu,0.070*radarSu),false,true,largeRadarPIControls))->setTextAlignment(gui::EGUIA_LOWERRIGHT,gui::EGUIA_UPPERLEFT);
+        irr::gui::IGUIComboBox* piSelectedBig = guienv->addComboBox(core::rect<s32>(0.080*radarSu,0.010*radarSu,0.195*radarSu,0.035*radarSu),largeRadarPIControls,GUI_ID_BIG_PI_SELECT_BOX);
         piSelectedBig->addItem(L"1");
         piSelectedBig->addItem(L"2");
         piSelectedBig->addItem(L"3");
@@ -247,11 +250,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         piSelectedBig->addItem(L"9");
         piSelectedBig->addItem(L"10");
 
-        guienv->addStaticText(language->translate("PIrange").c_str(),core::rect<s32>(0.145*radarSu,0.045*radarSu,0.195*radarSu,0.070*radarSu),false,true,largeRadarPIControls);
-        guienv->addEditBox(L"0",core::rect<s32>(0.090*radarSu,0.045*radarSu,0.140*radarSu,0.070*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_RANGE_BOX);
+        guienv->addStaticText(language->translate("PIrange").c_str(),core::rect<s32>(0.130*radarSu,0.045*radarSu,0.215*radarSu,0.070*radarSu),false,false,largeRadarPIControls);
+        guienv->addEditBox(L"0",core::rect<s32>(0.080*radarSu,0.045*radarSu,0.125*radarSu,0.070*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_RANGE_BOX);
 
-        guienv->addStaticText(language->translate("PIbearing").c_str(),core::rect<s32>(0.145*radarSu,0.080*radarSu,0.195*radarSu,0.105*radarSu),false,true,largeRadarPIControls);
-        guienv->addEditBox(L"0",core::rect<s32>(0.090*radarSu,0.080*radarSu,0.140*radarSu,0.105*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
+        guienv->addStaticText(language->translate("PIbearing").c_str(),core::rect<s32>(0.130*radarSu,0.080*radarSu,0.215*radarSu,0.105*radarSu),false,false,largeRadarPIControls);
+        guienv->addEditBox(L"0",core::rect<s32>(0.080*radarSu,0.080*radarSu,0.125*radarSu,0.105*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
 
         //Radar ARPA tab
         guienv->addCheckBox(false,core::rect<s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);

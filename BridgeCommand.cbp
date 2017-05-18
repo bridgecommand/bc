@@ -126,6 +126,7 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="language.txt" />
 		<Unit filename="libs/enet/callbacks.c">
 			<Option compilerVar="CC" />
 			<Option compiler="clang" use="1" buildCommand="$compiler $options -std=c99 $includes -c $file -o $object" />
