@@ -218,7 +218,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         //Radar PI tab
         //Drop down box to select PI 1-10
-        (guienv->addStaticText(language->translate("parallelIndex").c_str(),core::rect<s32>(0.055*su,0.040*sh,0.205*su,0.080*sh),true,true,radarPITab))->setTextAlignment(gui::EGUIA_UPPERLEFT,gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("parallelIndex").c_str(),core::rect<s32>(0.055*su,0.040*sh,0.205*su,0.080*sh),false,true,radarPITab))->setTextAlignment(gui::EGUIA_UPPERLEFT,gui::EGUIA_CENTER);
         irr::gui::IGUIComboBox* piSelected = guienv->addComboBox(core::rect<s32>(0.005*su,0.040*sh,0.050*su,0.080*sh),radarPITab,GUI_ID_PI_SELECT_BOX);
         piSelected->addItem(L"1");
         piSelected->addItem(L"2");
@@ -231,9 +231,9 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         piSelected->addItem(L"9");
         piSelected->addItem(L"10");
         //Edit boxes for bearing and range (+ve/-ve)
-        guienv->addStaticText(language->translate("piRange").c_str(),core::rect<s32>(0.055*su,0.100*sh,0.205*su,0.140*sh),true,true,radarPITab);
+        (guienv->addStaticText(language->translate("piRange").c_str(),core::rect<s32>(0.055*su,0.100*sh,0.205*su,0.140*sh),false,true,radarPITab))->setTextAlignment(gui::EGUIA_UPPERLEFT,gui::EGUIA_CENTER);;
         guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.100*sh,0.050*su,0.140*sh),true,radarPITab,GUI_ID_PI_RANGE_BOX);
-        guienv->addStaticText(language->translate("piBearing").c_str(),core::rect<s32>(0.055*su,0.160*sh,0.205*su,0.200*sh),true,true,radarPITab);
+        (guienv->addStaticText(language->translate("piBearing").c_str(),core::rect<s32>(0.055*su,0.160*sh,0.205*su,0.200*sh),false,true,radarPITab))->setTextAlignment(gui::EGUIA_UPPERLEFT,gui::EGUIA_CENTER);;
         guienv->addEditBox(L"0",core::rect<s32>(0.005*su,0.160*sh,0.050*su,0.200*sh),true,radarPITab,GUI_ID_PI_BEARING_BOX);
 
         //PI on big radar screen

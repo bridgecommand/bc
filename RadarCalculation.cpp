@@ -225,7 +225,7 @@ irr::f32 RadarCalculation::getEBLBrg() const
 
 void RadarCalculation::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
 {
-    if (PIid >= 0 && PIid < piBearings.size() && PIid < piRanges.size()) {
+    if (PIid >= 0 && PIid < (s32)piBearings.size() && PIid < (s32)piRanges.size()) {
         piBearings.at(PIid) = PIbearing;
         piRanges.at(PIid) = PIrange;
     }
@@ -233,7 +233,7 @@ void RadarCalculation::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIr
 
 irr::f32 RadarCalculation::getPIbearing(irr::s32 PIid) const
 {
-    if (PIid >= 0 && PIid < piBearings.size()) {
+    if (PIid >= 0 && PIid < (s32)piBearings.size()) {
         return piBearings.at(PIid);
     } else {
         return 0;
@@ -242,7 +242,7 @@ irr::f32 RadarCalculation::getPIbearing(irr::s32 PIid) const
 
 irr::f32 RadarCalculation::getPIrange(irr::s32 PIid) const
 {
-    if (PIid >= 0 && PIid < piRanges.size()) {
+    if (PIid >= 0 && PIid < (s32)piRanges.size()) {
         return piRanges.at(PIid);
     } else {
         return 0;
