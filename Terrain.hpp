@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 
 #include <string>
+#include <vector>
 
 class Terrain
 {
@@ -35,13 +36,13 @@ class Terrain
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
-        irr::scene::ITerrainSceneNode* terrain;
-        irr::f32 terrainLong;
-        irr::f32 terrainXWidth;
-        irr::f32 terrainLongExtent;
-        irr::f32 terrainLat;
-        irr::f32 terrainZWidth;
-        irr::f32 terrainLatExtent;
+        std::vector<irr::scene::ITerrainSceneNode*> terrains;
+        irr::f32 primeTerrainLong;
+        irr::f32 primeTerrainXWidth;
+        irr::f32 primeTerrainLongExtent;
+        irr::f32 primeTerrainLat;
+        irr::f32 primeTerrainZWidth;
+        irr::f32 primeTerrainLatExtent;
 };
 
 #endif
