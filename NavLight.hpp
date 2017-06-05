@@ -24,7 +24,7 @@
 class NavLight {
 
     public:
-        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="");
+        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="", irr::u32 phaseStart=0);
         ~NavLight();
         void update(irr::f32 scenarioTime, irr::u32 lightLevel);
         irr::core::vector3df getPosition() const;
@@ -38,6 +38,7 @@ class NavLight {
         irr::f32 endAngle;
         irr::f32 range;
         std::string sequence;
+        irr::f32 charTime; //Time in seconds per character in sequence
         irr::f32 timeOffset;
         irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
         bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);

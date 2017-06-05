@@ -215,7 +215,7 @@ names for each light are:</p>
 <li>Blue(#)</li>
 <li>Range(#)</li>
 <li>Sequence(#)</li>
-<!--<li>(optional) PhaseStart(#)</li>-->
+<li>(optional) PhaseStart(#)</li>
 <li>StartAngle(#)</li>
 <li>EndAngle(#)</li>
 </ul>
@@ -244,7 +244,7 @@ represents the light being on, and 'D' is off. When the end of the
 sequence is reached, the sequence restarts. So for example, <i>Sequence(#)="LLLDDDDDD"</i>
 represents 0.75 seconds where the light is on, followed by 1.5 seconds
 where it is off, then restarting with 0.75s of light and so on. So for
-a fixed (constant) light, <i>Sequence(#)="L"</i> is all that is required, and to get a light occulting with 1s of light and 1s of darkness, <i>Sequence(#)="LLLLDDDD"</i> would work. <!--The optional variable PhaseStart(#) sets which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1.--> 
+a fixed (constant) light, <i>Sequence(#)="L"</i> is all that is required, and to get a light occulting with 1s of light and 1s of darkness, <i>Sequence(#)="LLLLDDDD"</i> would work. The optional variable PhaseStart(#) sets which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1. 
 </p>
 <p>
 To allow for sector lights, a light start and end angle are defined by <i>StartAngle(#)</i> and <i>EndAngle(#).</i> The light is visible between the <i>StartAngle(#)</i> bearing and <i>EndAngle(#)</i>, going clockwise. Therefore, <i>StartAngle(#)=0</i> and <i>EndAngle(#)=90</i> would show a light shining between North and East, as seen on a chart or from above the light. For an all round light, <i>StartAngle(#)=0</i> and <i>EndAngle(#)=360</i> should be used. The <i>EndAngle(#)</i> value must be greater than the <i>StartAngle(#)</i>.

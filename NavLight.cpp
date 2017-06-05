@@ -23,7 +23,7 @@
 
 using namespace irr;
 
-NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence) {
+NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
 
     //Store the scene manager, so we can find the active camera
     this->smgr = smgr;
@@ -47,8 +47,13 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     range = lightRange;
 
     //initialise light sequence information
+    charTime = 0.25; //where each character represents 0.25s of time
     sequence = lightSequence;
-    timeOffset=60.0*((irr::f32)std::rand()/RAND_MAX); //Random, 0-60s
+    if (phaseStart==0) {
+        timeOffset=60.0*((irr::f32)std::rand()/RAND_MAX); //Random, 0-60s
+    } else {
+        timeOffset=(phaseStart-1)*charTime;
+    }
 
     //set initial alpha to implausible value
     currentAlpha = -1;
@@ -111,7 +116,6 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     //find length of sequence
     std::string::size_type sequenceLength = sequence.length();
     if (sequenceLength > 0) {
-        f32 charTime = 0.25; //where each character represents 0.25s of time
         f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
         u32 positionInSequence = timeInSequence;
         if (positionInSequence>=sequenceLength) {positionInSequence = sequenceLength-1;} //Should not be required, but double check we're not off the end of the sequence

@@ -82,6 +82,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                 f32 lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
                 f32 lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
                 std::string lightSequence = IniFile::iniFileToString(scenarioLightFilename,IniFile::enumerate1("Sequence",currentLight));
+                u32 phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
                 f32 lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
                 f32 lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
                 lightRange = lightRange * M_IN_NM;
@@ -91,7 +92,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                     lightHeight/=buoyNode->getScale().Y;
                 }
                 //Create buoy light as a child of the buoy
-                buoysLights.push_back(NavLight (buoyNode,smgr,core::dimension2d<f32>(5, 5), core::vector3df(0,lightHeight,0),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence));
+                buoysLights.push_back(NavLight (buoyNode,smgr,core::dimension2d<f32>(5, 5), core::vector3df(0,lightHeight,0),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
             }
         }
     }
