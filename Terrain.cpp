@@ -54,6 +54,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     for (unsigned int i = 1; i<=numberOfTerrains; i++) {
 
+
         irr::f32 terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",i));
         irr::f32 terrainLat = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLat",i));
         irr::f32 terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLongExtent",i));
@@ -127,9 +128,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
         //Todo: Anti-aliasing flag?
+        std::cout << "Texture path: " << textureMapPath << std::endl;
         terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
 
-        terrains.push_back(terrain);
         //TO BE UPDATED END   ===========================================
 
 
@@ -141,7 +142,21 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             primeTerrainLat = terrainLat;
             primeTerrainZWidth = terrainZWidth;
             primeTerrainLatExtent = terrainLatExtent;
+
+
+        } else {
+            //Non-primary terrains need to be moved to account for their position (primary terrain starts at 0,0)
+
+            core::vector3df currentPos = terrain->getPosition();
+            irr::f32 deltaX = (terrainLong - primeTerrainLong) * primeTerrainXWidth / primeTerrainLongExtent;
+            irr::f32 deltaZ = (terrainLat - primeTerrainLat) * primeTerrainZWidth / primeTerrainLatExtent;
+            irr::f32 newPosX = currentPos.X + deltaX;
+            irr::f32 newPosY = currentPos.Y;
+            irr::f32 newPosZ = currentPos.Z + deltaZ;
+            terrain->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
         }
+
+        terrains.push_back(terrain);
 
     }
 
