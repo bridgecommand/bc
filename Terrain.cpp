@@ -85,7 +85,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         textureMapPath.append("/");
         textureMapPath.append(textureMapName);
 
-        //TO BE UPDATED START ===========================================
         //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
         irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,core::vector3df(0.f, terrainY, 0.f),core::vector3df(0.f, 0.f, 0.f),core::vector3df(scaleX,scaleY,scaleZ),video::SColor(255,255,255,255),5,scene::ETPS_17,0,true);
@@ -128,11 +127,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
         terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
         //Todo: Anti-aliasing flag?
-        std::cout << "Texture path: " << textureMapPath << std::endl;
         terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
-
-        //TO BE UPDATED END   ===========================================
-
 
         if (i==1) {
             //Private member variables used in further calculations
