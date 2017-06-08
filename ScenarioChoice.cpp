@@ -80,7 +80,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     device->clearSystemMessages();
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 

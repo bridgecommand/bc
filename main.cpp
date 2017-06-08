@@ -168,7 +168,7 @@ int main()
     scene::ISceneManager* smgr = device->getSceneManager();
 
     std::vector<std::string> logMessages;
-    DefaultEventReceiver defReceiver(&logMessages);
+    DefaultEventReceiver defReceiver(&logMessages, device);
     device->setEventReceiver(&defReceiver);
 
     //Tell the Ini routine the logger address
@@ -248,9 +248,8 @@ int main()
     } else {
         //If in secondary mode, get scenario information from the server
         std::string receivedSerialisedScenarioData;
-        while (receivedSerialisedScenarioData.empty()) {
+        while (device->run() && receivedSerialisedScenarioData.empty()) {
             network->getScenarioFromNetwork(receivedSerialisedScenarioData);
-            device->run();
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }

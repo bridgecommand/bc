@@ -26,13 +26,14 @@ class DefaultEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    DefaultEventReceiver(std::vector<std::string>* logMessages);
+    DefaultEventReceiver(std::vector<std::string>* logMessages, irr::IrrlichtDevice* dev);
 
     bool OnEvent(const irr::SEvent& event);
 
 private:
 
     std::vector<std::string>* logMessages;
+    irr::IrrlichtDevice* device;
 
 };
 

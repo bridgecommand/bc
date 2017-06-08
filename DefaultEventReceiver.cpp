@@ -22,9 +22,10 @@
 
 using namespace irr;
 
-    DefaultEventReceiver::DefaultEventReceiver(std::vector<std::string>* logMessages) //Constructor
+    DefaultEventReceiver::DefaultEventReceiver(std::vector<std::string>* logMessages, irr::IrrlichtDevice* dev) //Constructor
 	{
         this->logMessages = logMessages;
+        device = dev;
 	}
 
 	bool DefaultEventReceiver::OnEvent(const SEvent& event)
@@ -36,6 +37,14 @@ using namespace irr;
             std::string eventText(event.LogEvent.Text);
             logMessages->push_back(eventText);
             return true;
+        }
+
+        if (event.EventType == EET_KEY_INPUT_EVENT) {
+            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key ==  KEY_F4) { //Esc or F4 (for alt f4)
+                device->closeDevice(); //Shutdown.
+            }
+
+
         }
 
         return false;

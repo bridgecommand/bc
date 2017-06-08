@@ -20,8 +20,9 @@
 
 using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev) //Constructor
 	{
+		device = dev;
 		this->scenarioListBox = scenarioListBox;
 		this->scenarioText = scenarioText;
 		this->hostnameText = hostnameText;
@@ -80,6 +81,11 @@ using namespace irr;
                     scenarioSelected = scenarioListBox->getSelected();
                 }
 		    }
+
+            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key ==  KEY_F4) {
+                device->closeDevice(); //Shutdown.
+            }
+
 		}
         return false;
     }

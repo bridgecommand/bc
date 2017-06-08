@@ -23,13 +23,14 @@ class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev);
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected() const;
 
 private:
 
+    irr::IrrlichtDevice* device;
     irr::gui::IGUIListBox* scenarioListBox;
     irr::gui::IGUIStaticText* hostnameText;
     irr::gui::IGUIStaticText* scenarioText;
