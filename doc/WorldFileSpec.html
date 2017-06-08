@@ -22,12 +22,16 @@
 <p>
 There is an important change in world models between version 5.0 and previous versions (4.x). The required size of the height map has increased 
 by one pixel. Previously, the size was 2^n (512, 1024, 2048, ...) pixels. It is now 2^n + 1 (513, 1025, 2049, ...) pixels. Therefore previous 
-world models need to be modified to use with version 5.0. 
+world models need to be modified to use with version 5.0.
 </p>
 <p>
 The easiest way to do this is to add a single line of black pixels to the top and right side of the heightmap, increase the value of the 
 parameter TerrainHeightMapSize by one, and multiply the value of the parameters TerrainLongExtent and TerrainLatExtent by 
 (new TerrainHeightMapSize/old TerrainHeightMapSize). See below for details of these parameters.
+</p>
+<p>
+It is recommended to use .png format for the heightmap, as .bmp files may give inaccurate heights in some cases (depending on the exact 
+type of .bmp images used).
 </p>
 
 <h3>Introduction:</h3>
@@ -35,6 +39,13 @@ parameter TerrainHeightMapSize by one, and multiply the value of the parameters 
 <p>The world model defines the environment of a scenario, and uses a heightmap to set the terrain and bathymetry. In addition, a texture file 
 is used to set the terrain colouring, and configuration files control how the environment is loaded, and other features such as buoys, landmarks
 and lights etc. A 'map' image is also used to display as a 2d view in the scenario editor and map controller.
+</p>
+
+<p>
+A primary terrain must be defined, and any number of additional areas may be defined. The intention is for the primary terrain to cover the 
+entire area defined, and for secondary terrains to be used to give higher resolution models of some areas if required. To allow the secondary 
+terrain to be seen, the primary terrain must be below the height of the secondary in this area. The programme will prioritise the highest 
+numbered terrain when taking depth soundings, and to decide if the ship is aground.
 </p>
 
 <p>
@@ -54,6 +65,11 @@ as a list of heights in metres as 32 bit floating point numbers. This allows a h
 area includes deep sea and high mountains.
 </p>
    
+<p>
+It is recommended to use .png format for the heightmap, as .bmp files may give inaccurate heights in some cases (depending on the exact 
+type of .bmp images used).
+</p>
+
 <p>
 The terrain generated from the height map is coloured with a texture image, and then the additional features are loaded into the world as 
 configured in the .ini files.</p>
@@ -92,6 +108,8 @@ format (32 bit floating point, with extension .f32), and the texture and map ima
 <p>Example</p>
 
 <pre>
+Number=2
+
 MapImage="map.bmp"
 
 HeightMap(1)="height.png"
@@ -103,20 +121,35 @@ TerrainLatExtent(1)=0.04008
 TerrainMaxHeight(1)=100
 SeaMaxDepth(1)=44.07
 TerrainHeightMapSize(1)=513
+
+HeightMap(2)="detail.png"
+Texture(2)="detailTexture.png"
+TerrainLong(2)=-9.992284795
+TerrainLat(2)=50.006875322
+TerrainLongExtent(2)=0.006250292
+TerrainLatExtent(2)=0.005000234
+TerrainMaxHeight(2)=100
+SeaMaxDepth(2)=44.07
+TerrainHeightMapSize(2)=257
 </pre>
 
 <p>
 <ul>
+<li>Number: The number of height maps used (normally 1)</li>
 <li>MapImage: File name of image used in 2d views (scenario editor, map controller)</li>
-<li>HeightMap(1): Height map file name (.png or .f32)</li>
-<li>Texture(1): Texture file name</li>
-<li>TerrainLong(1): Longitude of the south west corner of the terrain area (Decimal degrees, East positive)</li>
-<li>TerrainLat(1): Latitude of the south west corner of the terrain area (Decimal degrees, North positive)</li>
-<li>TerrainLongExtent(1): Extent of the terrain in decimal degrees (East-West)</li>
-<li>TerrainLatExtent(1): Extent of the terrain in decimal degrees (North-South)</li>
-<li>TerrainMaxHeight(1): The height in metres represented by a pure white pixel on the heightmap image (ignored for binary heightmap)</li>
-<li>SeaMaxDepth(1): The depth in metres represented by a pure black pixel on the heightmap image (ignored for binary heightmap)</li>
-<li>TerrainHeightMapSize(1): The size of the heightmap (513, 1025, 2049, ...)</li>
+<li>For each terrain area, at least 1 required, where # is the number of the terrain (1, 2, ...)
+<ul>
+<li>HeightMap(#): Height map file name (.png or .f32)</li>
+<li>Texture(#): Texture file name</li>
+<li>TerrainLong(#): Longitude of the south west corner of the terrain area (Decimal degrees, East positive)</li>
+<li>TerrainLat(#): Latitude of the south west corner of the terrain area (Decimal degrees, North positive)</li>
+<li>TerrainLongExtent(#): Extent of the terrain in decimal degrees (East-West)</li>
+<li>TerrainLatExtent(#): Extent of the terrain in decimal degrees (North-South)</li>
+<li>TerrainMaxHeight(#): The height in metres represented by a pure white pixel on the heightmap image (ignored for binary heightmap)</li>
+<li>SeaMaxDepth(#): The depth in metres represented by a pure black pixel on the heightmap image (ignored for binary heightmap)</li>
+<li>TerrainHeightMapSize(#): The size of the heightmap (513, 1025, 2049, ...)</li>
+</ul>
+</li>
 </ul>
 
 <h5>Buoy.ini</h5>
