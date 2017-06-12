@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevice* dev) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
@@ -35,12 +35,13 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevi
     //Set up UDP
 
     //TODO: Check guide at http://stripydog.blogspot.co.uk/2015/03/nmea-0183-over-ip-unwritten-rules-for.html
-    asio::io_service io_service;
-    asio::ip::udp::resolver resolver(io_service);
-    asio::ip::udp::resolver::query query(asio::ip::udp::v4(), "localhost", "10110"); //TODO: Hardcoded to localhgst, and to port 10110 for NMEA data
-    receiver_endpoint = *resolver.resolve(query);
-    socket = new asio::ip::udp::socket(io_service);
-    socket->open(asio::ip::udp::v4());
+    try {
+        asio::ip::udp::resolver resolver(io_service);
+        asio::ip::udp::resolver::query query(asio::ip::udp::v4(), udpHostname, udpPortName);
+        receiver_endpoint = *resolver.resolve(query);
+    } catch (std::exception& e) {
+        device->getLogger()->log(e.what());
+    }
 
     //Set up serial
     if (!serialPortName.empty())
@@ -175,12 +176,13 @@ void NMEA::sendNMEASerial()
 
 void NMEA::sendNMEAUDP()
 {
-
-    //socket->send_to(asio::buffer(send_buf), receiver_endpoint);
-
-    //std::vector<std::string> buffer;
-    //buffer.push_back(messageToSend);
-    socket->send_to(asio::buffer(messageToSend),receiver_endpoint);
+    try {
+        asio::ip::udp::socket socket(io_service);
+        socket.open(asio::ip::udp::v4());
+        socket.send_to(asio::buffer(messageToSend),receiver_endpoint);
+    } catch (std::exception& e) {
+        device->getLogger()->log(e.what());
+    }
 
 }
 

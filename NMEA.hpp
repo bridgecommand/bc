@@ -29,7 +29,7 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
@@ -43,8 +43,9 @@ private:
     std::string addChecksum(std::string messageIn);
     int maxMessages; //How many messages are defined
     int currentMessageType; //Sequentially send different sentences
+    asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
-    asio::ip::udp::socket* socket;
+    //asio::ip::udp::socket* socket;
 
 };
 

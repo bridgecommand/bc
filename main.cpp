@@ -134,7 +134,9 @@ int main()
     }
 
     //Load NMEA settings
-    std::string serialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
+    std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
+    std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
+    std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
 
     //Load UDP network settings
     u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
@@ -270,8 +272,8 @@ int main()
     MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
-    //create NMEA serial port, linked to model
-    NMEA nmea(&model, serialPortName, device);
+    //create NMEA serial port and UDP, linked to model
+    NMEA nmea(&model, nmeaSerialPortName, nmeaUDPAddressName, nmeaUDPPortName, device);
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
@@ -292,10 +294,20 @@ int main()
 
         //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
         if (device->getTimer()->getTime() >= nextNMEATime) {
-            nmea.updateNMEA();
-            nmea.sendNMEASerial();
-            nmea.sendNMEAUDP();
+
+            if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
+                nmea.updateNMEA();
+
+                if (!nmeaSerialPortName.empty()) {
+                    nmea.sendNMEASerial();
+                }
+
+                if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
+                    nmea.sendNMEAUDP();
+                }
+
             nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
+            }
         }
 
         model.update();
