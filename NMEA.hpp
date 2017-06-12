@@ -20,6 +20,7 @@
 #include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
 #include <string>
+#include <asio.hpp> //For UDP
 
 //Forward declarations
 class SimulationModel;
@@ -32,6 +33,7 @@ public:
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
+    void sendNMEAUDP();
 
 private:
     irr::IrrlichtDevice* device;
@@ -41,6 +43,8 @@ private:
     std::string addChecksum(std::string messageIn);
     int maxMessages; //How many messages are defined
     int currentMessageType; //Sequentially send different sentences
+    asio::ip::udp::endpoint receiver_endpoint;
+    asio::ip::udp::socket* socket;
 
 };
 

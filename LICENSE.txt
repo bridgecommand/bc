@@ -19,8 +19,8 @@ author. Each model is credited to its author in the documentation
 distributed with Bridge Command.
 
 Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), the ENet 
-networking library (http://enet.bespin.org), water based on Keith Lantz FFT water 
-implementation and the RealisticWaterSceneNode by elvman 
+networking library (http://enet.bespin.org), ASIO, water based on Keith Lantz 
+FFT water implementation and the RealisticWaterSceneNode by elvman 
 (https://github.com/elvman/RealisticWaterSceneNode), and the Serial library by 
 William Woodall.
 

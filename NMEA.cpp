@@ -32,8 +32,21 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevi
     messageToSend = "";
     currentMessageType=0;
 
-    if (!serialPortName.empty()){
-        try {
+    //Set up UDP
+
+    //TODO: Check guide at http://stripydog.blogspot.co.uk/2015/03/nmea-0183-over-ip-unwritten-rules-for.html
+    asio::io_service io_service;
+    asio::ip::udp::resolver resolver(io_service);
+    asio::ip::udp::resolver::query query(asio::ip::udp::v4(), "localhost", "10110"); //TODO: Hardcoded to localhgst, and to port 10110 for NMEA data
+    receiver_endpoint = *resolver.resolve(query);
+    socket = new asio::ip::udp::socket(io_service);
+    socket->open(asio::ip::udp::v4());
+
+    //Set up serial
+    if (!serialPortName.empty())
+    {
+        try
+        {
             serial::Timeout timeout = serial::Timeout::simpleTimeout(50);
 
             mySerialPort.setPort(serialPortName);
@@ -43,7 +56,9 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::IrrlichtDevi
             mySerialPort.open();
             device->getLogger()->log("Serial port opened.");
 
-        } catch (std::exception const& e) {
+        }
+        catch (std::exception const& e)
+        {
             device->getLogger()->log(e.what());
         }
     }
@@ -54,23 +69,28 @@ NMEA::~NMEA()
 {
 
     //Shut down serial port here
-    if (mySerialPort.isOpen()) {
+    if (mySerialPort.isOpen())
+    {
         device->getLogger()->log("Closing serial port");
-        try {
+        try
+        {
             mySerialPort.close();
-        } catch (std::exception const& e) {
+        }
+        catch (std::exception const& e)
+        {
             device->getLogger()->log(e.what());
         }
     }
 
 }
 
-void NMEA::updateNMEA() {
+void NMEA::updateNMEA()
+{
 
     std::string timeString = Utilities::timestampToString(
-        model->getTimestamp(), "%H%M%S");
+                                 model->getTimestamp(), "%H%M%S");
     std::string dateString = Utilities::timestampToString(
-        model->getTimestamp(), "%d%m%y");
+                                 model->getTimestamp(), "%d%m%y");
 
     int rudderAngle = Utilities::round(model->getRudder());
     int portRPM = Utilities::round(model->getPortEngineRPM());
@@ -82,14 +102,20 @@ void NMEA::updateNMEA() {
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;
     char eastWest;
     char northSouth;
-    if (lat >= 0) {
+    if (lat >= 0)
+    {
         northSouth='N';
-    } else {
+    }
+    else
+    {
         northSouth='S';
     }
-    if (lon >= 0) {
+    if (lon >= 0)
+    {
         eastWest='E';
-    } else {
+    }
+    else
+    {
         eastWest='W';
     }
     lat = fabs(lat);
@@ -103,22 +129,34 @@ void NMEA::updateNMEA() {
     char messageBuffer[256];
 
     //Todo: Replace with select/case block:
-    if (currentMessageType        == 0) {
+    if (currentMessageType        == 0)
+    {
         snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
-    } else if (currentMessageType == 1) {
+    }
+    else if (currentMessageType == 1)
+    {
         snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,%s,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,timeString.c_str());
-    } else if (currentMessageType == 2) {
+    }
+    else if (currentMessageType == 2)
+    {
         snprintf(messageBuffer,100,"$GPGGA,%s,%02u%06.3f,%c,%03u%06.3f,%c,8,8,0.9,0.0,M,0.0,M,,",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
-    } else if (currentMessageType == 3) {
+    }
+    else if (currentMessageType == 3)
+    {
         snprintf(messageBuffer,100,"$IIRSA,%d,A,,",rudderAngle);
-    } else if (currentMessageType == 4) {
+    }
+    else if (currentMessageType == 4)
+    {
         snprintf(messageBuffer,100,"$IIRPM,S,1,%d,100,A",portRPM); //'S' is for shaft, '100' is pitch
-    } else if (currentMessageType == 5) {
+    }
+    else if (currentMessageType == 5)
+    {
         snprintf(messageBuffer,100,"$IIRPM,S,2,%d,100,A",stbdRPM);
     }
 
     currentMessageType++;
-    if (currentMessageType == maxMessages) {
+    if (currentMessageType == maxMessages)
+    {
         currentMessageType = 0;
     }
 
@@ -127,13 +165,27 @@ void NMEA::updateNMEA() {
     messageToSend = addChecksum(messageString);
 }
 
-void NMEA::sendNMEASerial() {
-    if (mySerialPort.isOpen()) {
+void NMEA::sendNMEASerial()
+{
+    if (mySerialPort.isOpen())
+    {
         mySerialPort.write(messageToSend);
     }
 }
 
-std::string NMEA::addChecksum(std::string messageIn) {
+void NMEA::sendNMEAUDP()
+{
+
+    //socket->send_to(asio::buffer(send_buf), receiver_endpoint);
+
+    //std::vector<std::string> buffer;
+    //buffer.push_back(messageToSend);
+    socket->send_to(asio::buffer(messageToSend),receiver_endpoint);
+
+}
+
+std::string NMEA::addChecksum(std::string messageIn)
+{
 
     char checksumBuffer[6];
 
@@ -141,7 +193,8 @@ std::string NMEA::addChecksum(std::string messageIn) {
     unsigned char checksum=0;
 
     irr::u8 s = messageIn.length();
-    for(int i = 1; i<s; i++) {
+    for(int i = 1; i<s; i++)
+    {
         checksum^= messageIn.at(i);
     }
     snprintf(checksumBuffer,sizeof(checksumBuffer),"*%02X\r\n",checksum);

@@ -28,13 +28,17 @@
 					<Add library="Xext" />
 					<Add library="X11" />
 					<Add library="Xcursor" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
+			<Add option="-DASIO_STANDALONE" />
+			<Add option="-DASIO_HAS_STD_THREAD" />
 			<Add directory="./libs/Irrlicht/irrlicht-svn/include" />
+			<Add directory="./libs/asio/include" />
 		</Compiler>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />

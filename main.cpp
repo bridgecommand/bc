@@ -294,6 +294,7 @@ int main()
         if (device->getTimer()->getTime() >= nextNMEATime) {
             nmea.updateNMEA();
             nmea.sendNMEASerial();
+            nmea.sendNMEAUDP();
             nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
         }
 
