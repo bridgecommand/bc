@@ -37,6 +37,8 @@
 #include <sstream>
 #include <fstream> //To save to log
 
+#include <chrono> //for profiling only
+
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -49,6 +51,45 @@ namespace IniFile {
 
 // Irrlicht Namespaces
 using namespace irr;
+
+//Profiling
+class Profiler {
+
+private:
+     std::chrono::steady_clock::time_point startBlock;
+     //std::chrono::steady_clock::time_point endBlock;
+     double elapsedSeconds;
+     std::string name;
+
+
+public:
+
+    Profiler(std::string name) {
+        elapsedSeconds = 0.0;
+        this->name = name;
+    }
+
+    ~Profiler() {
+        std::cout << "Elapsed time in " << name << ": " << elapsedSeconds << " s" << std::endl;
+    }
+
+    void tic() {
+        startBlock = std::chrono::steady_clock::now();
+    }
+
+    void toc() {
+        std::chrono::steady_clock::time_point endBlock = std::chrono::steady_clock::now();
+        elapsedSeconds += std::chrono::duration_cast<std::chrono::microseconds>(endBlock - startBlock).count()/1e6;
+    }
+
+    double report() {
+        std::cout << "Elapsed time in " << name << ": " << elapsedSeconds << " s" << std::endl;
+        return elapsedSeconds;
+    }
+
+};
+
+
 
 int main()
 {
@@ -286,13 +327,24 @@ int main()
     const u32 NMEA_UPDATE_MS = 250;
     u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
+
+    //Profiling
+    Profiler networkProfile("Network");
+    Profiler nmeaProfile("NMEA");
+    Profiler modelProfile("Model");
+    Profiler renderProfile("3d render");
+    Profiler guiProfile("GUI render");
+
     //main loop
     while(device->run())
     {
 
+        networkProfile.tic();
         network->update();
+        networkProfile.toc();
 
         //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
+        nmeaProfile.tic();
         if (device->getTimer()->getTime() >= nextNMEATime) {
 
             if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
@@ -309,9 +361,13 @@ int main()
             nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
             }
         }
+        nmeaProfile.toc();
 
+        modelProfile.tic();
         model.update();
+        modelProfile.toc();
 
+        renderProfile.tic();
         //Set up
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
@@ -344,10 +400,14 @@ int main()
             smgr->drawAll();
         }
 
+        renderProfile.toc();
+
+        guiProfile.tic();
         //gui
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
         driver->endScene();
+        guiProfile.toc();
 
     }
 
