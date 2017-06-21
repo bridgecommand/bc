@@ -190,6 +190,7 @@
 		<Unit filename="libs/serial/src/serial.cc" />
 		<Unit filename="libs/serial/v8stdint.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="profile.hpp" />
 		<Unit filename="shaders/Water_ps.glsl" />
 		<Unit filename="shaders/Water_vs.glsl" />
 		<Extensions>

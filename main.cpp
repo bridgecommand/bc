@@ -37,7 +37,7 @@
 #include <sstream>
 #include <fstream> //To save to log
 
-#include <chrono> //for profiling only
+#include "profile.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -51,45 +51,6 @@ namespace IniFile {
 
 // Irrlicht Namespaces
 using namespace irr;
-
-//Profiling
-class Profiler {
-
-private:
-     std::chrono::steady_clock::time_point startBlock;
-     //std::chrono::steady_clock::time_point endBlock;
-     double elapsedSeconds;
-     std::string name;
-
-
-public:
-
-    Profiler(std::string name) {
-        elapsedSeconds = 0.0;
-        this->name = name;
-    }
-
-    ~Profiler() {
-        std::cout << "Elapsed time in " << name << ": " << elapsedSeconds << " s" << std::endl;
-    }
-
-    void tic() {
-        startBlock = std::chrono::steady_clock::now();
-    }
-
-    void toc() {
-        std::chrono::steady_clock::time_point endBlock = std::chrono::steady_clock::now();
-        elapsedSeconds += std::chrono::duration_cast<std::chrono::microseconds>(endBlock - startBlock).count()/1e6;
-    }
-
-    double report() {
-        std::cout << "Elapsed time in " << name << ": " << elapsedSeconds << " s" << std::endl;
-        return elapsedSeconds;
-    }
-
-};
-
-
 
 int main()
 {
@@ -327,24 +288,26 @@ int main()
     const u32 NMEA_UPDATE_MS = 250;
     u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
-
-    //Profiling
-    Profiler networkProfile("Network");
-    Profiler nmeaProfile("NMEA");
-    Profiler modelProfile("Model");
-    Profiler renderProfile("3d render");
-    Profiler guiProfile("GUI render");
+//    Profiling
+//    Profiler networkProfile("Network");
+//    Profiler nmeaProfile("NMEA");
+//    Profiler modelProfile("Model");
+//    Profiler renderSetupProfile("Render setup");
+//    Profiler renderRadarProfile("Render radar");
+//    Profiler renderProfile("3d render");
+//    Profiler guiProfile("GUI render");
+//    Profiler renderFinishProfile("Render finish");
 
     //main loop
     while(device->run())
     {
 
-        networkProfile.tic();
+//        networkProfile.tic();
         network->update();
-        networkProfile.toc();
+//        networkProfile.toc();
 
         //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
-        nmeaProfile.tic();
+//        nmeaProfile.tic();
         if (device->getTimer()->getTime() >= nextNMEATime) {
 
             if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
@@ -361,16 +324,21 @@ int main()
             nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
             }
         }
-        nmeaProfile.toc();
+//        nmeaProfile.toc();
 
-        modelProfile.tic();
+//        modelProfile.tic();
         model.update();
-        modelProfile.toc();
+//        modelProfile.toc();
 
-        renderProfile.tic();
+
         //Set up
+
+//        renderSetupProfile.tic();
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
+//        renderSetupProfile.toc();
+
+//        renderRadarProfile.tic();
 
         bool fullScreenRadar = guiMain.getLargeRadar();
 
@@ -387,6 +355,10 @@ int main()
             model.setWaterVisible(true); //Re-show the water
         }
 
+ //       renderRadarProfile.toc();
+
+ //       renderProfile.tic();
+
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
         if (!fullScreenRadar) {
@@ -397,17 +369,22 @@ int main()
                 driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
                 model.updateViewport(aspect);
             }
+            //drawAll3dProfile.tic();
             smgr->drawAll();
+            //drawAll3dProfile.toc();
         }
 
-        renderProfile.toc();
+ //       renderProfile.toc();
 
-        guiProfile.tic();
+ //       guiProfile.tic();
         //gui
         driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
+ //       guiProfile.toc();
+
+ //       renderFinishProfile.tic();
         driver->endScene();
-        guiProfile.toc();
+ //       renderFinishProfile.toc();
 
     }
 
