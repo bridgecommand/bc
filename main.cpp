@@ -37,6 +37,12 @@
 #include <sstream>
 #include <fstream> //To save to log
 
+#ifdef _WIN32
+#include <direct.h> //for windows _mkdir
+#else
+#include <sys/stat.h>
+#endif // _WIN32
+
 #include "profile.hpp"
 
 //Mac OS:
@@ -227,9 +233,44 @@ int main()
         scenarioPath = userFolder + scenarioPath;
     }
 
+    //Find default hostname if set in user directory (hostname.txt)
+    if (Utilities::pathExists(userFolder + "/hostname.txt")) {
+        hostname=IniFile::iniFileToString(userFolder + "/hostname.txt","hostname");
+    }
+
     OperatingMode::Mode mode = OperatingMode::Normal;
     ScenarioChoice scenarioChoice(device,&language);
     scenarioChoice.chooseScenario(scenarioName, hostname, mode, scenarioPath);
+
+    //Save hostname in user directory (hostname.txt). Check first that the location exists
+    if (!Utilities::pathExists(Utilities::getUserDirBase())) {
+        std::string pathToMake = Utilities::getUserDirBase();
+        if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+        #ifdef _WIN32
+        mkdir(pathToMake.c_str());
+        #else
+        mkdir(pathToMake.c_str(),0755);
+        #endif // _WIN32
+    }
+    if (!Utilities::pathExists(Utilities::getUserDir())) {
+        std::string pathToMake = Utilities::getUserDir();
+        if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+        #ifdef _WIN32
+        mkdir(pathToMake.c_str());
+        #else
+        mkdir(pathToMake.c_str(),0755);
+        #endif // _WIN32
+    }
+
+    if (Utilities::pathExists(userFolder)) { //TODO: Should we make this if it doesn't exist?
+        std::string hostnameFile = userFolder + "/hostname.txt";
+        std::ofstream file (hostnameFile.c_str());
+        if (file.is_open()) {
+            file << "hostname=" << hostname << std::endl;
+            file.close();
+        }
+    }
+
 
     u32 creditsStartTime = device->getTimer()->getRealTime();
 
