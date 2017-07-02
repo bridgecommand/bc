@@ -32,6 +32,9 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
 void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, OperatingMode::Mode& mode, std::string scenarioPath)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
+    
+    //Find the computer's IP address and hostname
+    std::string ourHostName = asio::ip::host_name();
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
@@ -60,6 +63,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
     gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
+    
+    gui::IGUIStaticText* ourHostnameText = gui->addStaticText(language->translate("ourHostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
+    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
+    ourHostnameText->setVisible(false);
+    ourHostnameName->setVisible(false);
 
     //add credits text
     //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
@@ -80,7 +88,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     device->clearSystemMessages();
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,ourHostnameText,ourHostnameName,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 

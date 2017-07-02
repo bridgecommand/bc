@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
+#include <asio.hpp> //To find hostname
 #include <string>
 #include <vector>
 

@@ -20,7 +20,7 @@
 
 using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev) //Constructor
+StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* ourHostnameText, irr::gui::IGUIStaticText* ourHostnameName, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
 	{
 		device = dev;
 		this->scenarioListBox = scenarioListBox;
@@ -29,6 +29,8 @@ using namespace irr;
 		this->hostnameBox = hostnameBox;
 		this->secondaryBox = secondaryBox;
 		this->multiplayerBox = multiplayerBox;
+        this->ourHostnameText = ourHostnameText;
+        this->ourHostnameName = ourHostnameName;
 		this->listBoxID = listBoxID;
 		this->okButtonID = okButtonID;
 		this->secondaryBoxID = secondaryBoxID;
@@ -57,11 +59,15 @@ using namespace irr;
                         scenarioText->setVisible(false);
                         hostnameBox->setVisible(false);
                         hostnameText->setVisible(false);
+                        ourHostnameText->setVisible(true);
+                        ourHostnameName->setVisible(true);
                     } else {
                         scenarioListBox->setVisible(true);
                         scenarioText->setVisible(true);
                         hostnameBox->setVisible(true);
                         hostnameText->setVisible(true);
+                        ourHostnameText->setVisible(false);
+                        ourHostnameName->setVisible(false);
                     }
                 }
                 //Only one check box should be on
