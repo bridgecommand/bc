@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <asio.hpp>
+
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
@@ -105,9 +107,15 @@ int main (int argc, char ** argv)
     //Network class
     Network network(udpPort);
 
+    //Find our hostname to tell user
+    std::string ourHostName = asio::ip::host_name();
+    core::stringw patienceMessage = language.translate("startBC");
+    patienceMessage.append(L"\n");
+    patienceMessage.append(core::stringw(ourHostName.c_str()));
+
     //Find world model to use, from the network
     irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
-    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language.translate("startBC").c_str(), core::rect<s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(patienceMessage.c_str(), core::rect<s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
     //hide close button
     patienceWindow->getCloseButton()->setVisible(false);
 
