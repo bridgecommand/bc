@@ -1,0 +1,20 @@
+Detail around harbour
+
+Overall is 513x513
+
+Detail starting at lower left 79, 425 
+to upper right  143, 361 
+(64x64)
+
+Primary terrain:
+
+TerrainLong(1)=-10
+TerrainLat(1)=50
+TerrainLongExtent(1)=0.05010
+TerrainLatExtent(1)=0.04008
+
+So we have TerrainLong = -10 + 79/513 * 0.05010 = -9.992284795
+TerrainLat = 50 + (513-425)/513 * 0.04008 = 50.006875322
+
+LongExtent = 64/513*0.05010 = 0.006250292
+LatExtent = 64/513*0.04008 = 0.005000234
