@@ -32,7 +32,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
 void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, OperatingMode::Mode& mode, std::string scenarioPath)
 {
     video::IVideoDriver* driver = device->getVideoDriver();
-    
+
     //Find the computer's IP address and hostname
     std::string ourHostName = asio::ip::host_name();
 
@@ -63,9 +63,9 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
     gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
-    
+
     gui::IGUIStaticText* ourHostnameText = gui->addStaticText(language->translate("ourHostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
-    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
+    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.95*su,0.43*sh));
     ourHostnameText->setVisible(false);
     ourHostnameName->setVisible(false);
 
