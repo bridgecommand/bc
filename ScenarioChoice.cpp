@@ -61,11 +61,12 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
     gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.80*su,0.43*sh));
+    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.37*sh));
+    gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.38*sh,0.80*su,0.41*sh));
+    hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
 
-    gui::IGUIStaticText* ourHostnameText = gui->addStaticText(language->translate("ourHostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.42*sh));
-    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.40*sh,0.95*su,0.43*sh));
+    gui::IGUIStaticText* ourHostnameText = gui->addStaticText(language->translate("ourHostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.37*sh));
+    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.38*sh,0.95*su,0.41*sh));
     ourHostnameText->setVisible(false);
     ourHostnameName->setVisible(false);
 
