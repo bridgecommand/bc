@@ -31,6 +31,7 @@ class Buoy
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
+        void setRotation(irr::core::vector3df rotation);
         irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;

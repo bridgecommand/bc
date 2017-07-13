@@ -448,6 +448,71 @@ f32 MovingWaterSceneNode::getWaveHeight(f32 relPosX, f32 relPosZ) const
 
 }
 
+irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
+{
+
+    //Adjust relative position by 1/2 tile width
+
+    //Get the wave normal
+    f32 relPosXInternal = fmod(relPosX+tileWidth/2,tileWidth);
+    f32 relPosZInternal = fmod(relPosZ+tileWidth/2,tileWidth);
+
+    //TODO: Probably not needed?
+    while (relPosXInternal < 0)
+        relPosXInternal+=tileWidth;
+    while (relPosZInternal < 0)
+        relPosZInternal+=tileWidth;
+
+    f32 xIndexFloat = (f32)(segments+1)*relPosXInternal/tileWidth;
+    f32 zIndexFloat = (f32)(segments+1)*relPosZInternal/tileWidth;
+    xIndexFloat = (segments+1) - xIndexFloat; //Sign of x is flipped when heights are applied!
+
+    //std::cout << "xIndexF:" << xIndexFloat << " zIndexF:" << zIndexFloat << " segments+1:" << segments+1 << std::endl;
+
+    //Bilinear interpolation
+    unsigned int xIndex0 = floor(xIndexFloat);
+    unsigned int zIndex0 = floor(zIndexFloat);
+    unsigned int xIndex1 = ceil(xIndexFloat);
+    unsigned int zIndex1 = ceil(zIndexFloat);
+
+    //If any indexes are equal to segments+1, set to 0 (as sea tiles)
+    if (xIndex0 == (segments+1)) {xIndex0=0;}
+    if (zIndex0 == (segments+1)) {zIndex0=0;}
+    if (xIndex1 == (segments+1)) {xIndex1=0;}
+    if (zIndex1 == (segments+1)) {zIndex1=0;}
+
+    f32 interpX = xIndexFloat - xIndex0;
+    f32 interpZ = zIndexFloat - zIndex0;
+
+    unsigned int index00 = (segments+1) * zIndex0 + xIndex0;
+    unsigned int index01 = (segments+1) * zIndex1 + xIndex0;
+    unsigned int index10 = (segments+1) * zIndex0 + xIndex1;
+    unsigned int index11 = (segments+1) * zIndex1 + xIndex1;
+
+    vertex_ocean* vertices = ocean->getVertices();
+
+    //Error checking here?
+    f32 nx00 = vertices[index00].nx;
+    f32 nx01 = vertices[index01].nx;
+    f32 nx10 = vertices[index10].nx;
+    f32 nx11 = vertices[index11].nx;
+
+    f32 nz00 = vertices[index00].nz;
+    f32 nz01 = vertices[index01].nz;
+    f32 nz10 = vertices[index10].nz;
+    f32 nz11 = vertices[index11].nz;
+
+    f32 localNx = nx00*(1-interpX)*(1-interpZ) + nx10*interpX*(1-interpZ) + nx01*(1-interpX)*interpZ + nx11*interpX*interpZ;
+    f32 localNz = nz00*(1-interpX)*(1-interpZ) + nz10*interpX*(1-interpZ) + nz01*(1-interpX)*interpZ + nz11*interpX*interpZ;
+
+    if (localisnan(localNx) || localisinf(localNx) || localisnan(localNz) || localisinf(localNz)) {
+        return irr::core::vector2df(0,0);
+    } else {
+        return irr::core::vector2df(localNx,localNz);
+    }
+
+}
+
 void MovingWaterSceneNode::setMesh(IMesh* mesh)
 {
     //std::cout << "In setMesh()" << std::endl;

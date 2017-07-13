@@ -107,6 +107,14 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z);
         zPos = pos.Z;
         it->setPosition(core::vector3df(xPos,yPos,zPos));
+
+        f32 angleX, angleZ;
+        irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
+        angleX = normals.X * core::RADTODEG;//Assume small angle, so just convert rad to deg
+        angleZ = normals.Y * core::RADTODEG;//Assume small angle, so just convert rad to deg
+
+        it->setRotation(core::vector3df(angleX,0,angleZ));
+
     }
 
     for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {

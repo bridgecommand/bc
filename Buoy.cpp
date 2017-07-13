@@ -103,6 +103,11 @@ void Buoy::setPosition(irr::core::vector3df position)
     buoy->setPosition(position);
 }
 
+void Buoy::setRotation(irr::core::vector3df rotation)
+{
+    buoy->setRotation(rotation);
+}
+
 irr::f32 Buoy::getLength() const
 {
     return length;

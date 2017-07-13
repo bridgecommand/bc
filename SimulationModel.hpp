@@ -78,6 +78,7 @@ public:
     irr::f32 getSOG() const; //In metres/second
 
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
+    irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
     //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;

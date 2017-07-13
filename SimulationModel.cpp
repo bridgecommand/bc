@@ -256,6 +256,10 @@ SimulationModel::~SimulationModel()
         return water.getWaveHeight(posX,posZ);
     }
 
+    irr::core::vector2df SimulationModel::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const {
+        return water.getLocalNormals(relPosX,relPosZ);
+    }
+
    // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
    //    //FIXME: Complete
    // }
