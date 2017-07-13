@@ -5,15 +5,17 @@
 #ifndef __C_OCTREE_SCENE_NODE_H_INCLUDED__
 #define __C_OCTREE_SCENE_NODE_H_INCLUDED__
 
-#include "IMeshSceneNode.h"
+#include "IOctreeSceneNode.h"
 #include "Octree.h"
 
 namespace irr
 {
 namespace scene
 {
-	//! implementation of the IBspTreeSceneNode
-	class COctreeSceneNode : public IMeshSceneNode
+	class COctreeSceneNode;
+
+	//! implementation of the IOctreeSceneNode
+	class COctreeSceneNode : public IOctreeSceneNode
 	{
 	public:
 
@@ -37,7 +39,7 @@ namespace scene
 
 		//! returns the material based on the zero based index i. To get the amount
 		//! of materials used by this scene node, use getMaterialCount().
-		//! This function is needed for inserting the node into the scene hirachy on a
+		//! This function is needed for inserting the node into the scene hierarchy on a
 		//! optimal position for minimizing renderstate changes, but can also be used
 		//! to directly modify the material of a scene node.
 		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
@@ -73,8 +75,22 @@ namespace scene
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
-		//! or to remove attached childs.
+		//! or to remove attached children.
 		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
+
+		//! Set if/how vertex buffer object are used for the meshbuffers
+		/** NOTE: When there is already a mesh in the node this will rebuild
+		the octree. */
+		virtual void setUseVBO(EOCTREENODE_VBO useVBO) _IRR_OVERRIDE_;
+
+		//! Get if/how vertex buffer object are used for the meshbuffers
+		virtual EOCTREENODE_VBO getUseVBO() const _IRR_OVERRIDE_;
+
+		//! Set the kind of tests polygons do for visibility against the camera
+		virtual void setPolygonChecks(EOCTREE_POLYGON_CHECKS checks) _IRR_OVERRIDE_;
+
+		//! Get the kind of tests polygons do for visibility against the camera
+		virtual EOCTREE_POLYGON_CHECKS getPolygonChecks() const _IRR_OVERRIDE_;
 
 	private:
 
@@ -100,12 +116,9 @@ namespace scene
 
 		IMesh * Mesh;
 		IShadowVolumeSceneNode* Shadow;
-		//! use VBOs for rendering where possible
-		bool UseVBOs;
-		//! use visibility information together with VBOs
-		bool UseVisibilityAndVBOs;
-		//! use bounding box or frustum for calculate polys
-		bool BoxBased;
+
+		EOCTREENODE_VBO UseVBOs;
+		EOCTREE_POLYGON_CHECKS PolygonChecks;
 	};
 
 } // end namespace scene

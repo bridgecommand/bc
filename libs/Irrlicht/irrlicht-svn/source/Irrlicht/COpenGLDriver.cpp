@@ -56,7 +56,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFil
 	: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(), CacheHandler(0),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), ColorFormat(ECF_R8G8B8), FixedPipelineState(EOFPS_ENABLE),
-	Params(params), SDLDevice(device), DeviceType(EIDT_SDL)
+	Params(params), SDLDevice(device), ContextManager(0), DeviceType(EIDT_SDL)
 {
 #ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -291,7 +291,8 @@ bool COpenGLDriver::beginScene(u16 clearFlag, SColor clearColor, f32 clearDepth,
 		ContextManager->activateContext(videoData);
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
-	glFrontFace(GL_CW);
+	if ( DeviceType == EIDT_SDL )
+		glFrontFace(GL_CW);
 #endif
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -311,8 +312,11 @@ bool COpenGLDriver::endScene()
 		status = ContextManager->swapBuffers();
 
 #ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
-	SDL_GL_SwapBuffers();
-	status = true;
+	if ( DeviceType == EIDT_SDL )
+	{
+		SDL_GL_SwapBuffers();
+		status = true;
+	}
 #endif
 
 	// todo: console device present
@@ -463,7 +467,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return (!testGLError());
+	return (!testGLError(__LINE__));
 #else
 	return false;
 #endif
@@ -537,7 +541,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return (!testGLError());
+	return (!testGLError(__LINE__));
 #else
 	return false;
 #endif
@@ -666,7 +670,7 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 		indexList=0;
 	}
 
-	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
+	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList, mb->getPrimitiveCount(), mb->getVertexType(), mb->getPrimitiveType(), mb->getIndexType());
 
 	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
 		extGlBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -731,7 +735,7 @@ void COpenGLDriver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 #else
 				0);
 #endif
-		testGLError();
+		testGLError(__LINE__);
 	}
 }
 
@@ -758,7 +762,7 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 						0,
 #endif
 						&available);
-		testGLError();
+		testGLError(__LINE__);
 		if (available==GL_TRUE)
 		{
 			extGlGetQueryObjectiv(OcclusionQueries[index].UID,
@@ -773,7 +777,7 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 			if (queryFeature(EVDF_OCCLUSION_QUERY))
 				OcclusionQueries[index].Result = available;
 		}
-		testGLError();
+		testGLError(__LINE__);
 	}
 }
 
@@ -1280,87 +1284,24 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 	if (!sourceRect.isValid())
 		return;
 
-	core::position2d<s32> targetPos(destPos);
-	core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
-	// This needs to be signed as it may go negative.
-	core::dimension2d<s32> sourceSize(sourceRect.getSize());
+	// clip these coordinates
+	core::rect<s32> targetRect(destPos, sourceRect.getSize());
 	if (clipRect)
 	{
-		if (targetPos.X < clipRect->UpperLeftCorner.X)
-		{
-			sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
-			if (sourceSize.Width <= 0)
-				return;
-
-			sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
-			targetPos.X = clipRect->UpperLeftCorner.X;
-		}
-
-		if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
-		{
-			sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
-			if (sourceSize.Width <= 0)
-				return;
-		}
-
-		if (targetPos.Y < clipRect->UpperLeftCorner.Y)
-		{
-			sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
-			if (sourceSize.Height <= 0)
-				return;
-
-			sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
-			targetPos.Y = clipRect->UpperLeftCorner.Y;
-		}
-
-		if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
-		{
-			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
-			if (sourceSize.Height <= 0)
-				return;
-		}
-	}
-
-	// clip these coordinates
-
-	if (targetPos.X<0)
-	{
-		sourceSize.Width += targetPos.X;
-		if (sourceSize.Width <= 0)
+		targetRect.clipAgainst(*clipRect);
+		if ( targetRect.getWidth() < 0 || targetRect.getHeight() < 0 )
 			return;
-
-		sourcePos.X -= targetPos.X;
-		targetPos.X = 0;
 	}
 
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-
-	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
-	{
-		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
-		if (sourceSize.Width <= 0)
+	targetRect.clipAgainst( core::rect<s32>(0,0, (s32)renderTargetSize.Width, (s32)renderTargetSize.Height) );
+	if ( targetRect.getWidth() < 0 || targetRect.getHeight() < 0 )
 			return;
-	}
-
-	if (targetPos.Y<0)
-	{
-		sourceSize.Height += targetPos.Y;
-		if (sourceSize.Height <= 0)
-			return;
-
-		sourcePos.Y -= targetPos.Y;
-		targetPos.Y = 0;
-	}
-
-	if (targetPos.Y + sourceSize.Height >(s32)renderTargetSize.Height)
-	{
-		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
-		if (sourceSize.Height <= 0)
-			return;
-	}
 
 	// ok, we've clipped everything.
 	// now draw it.
+	const core::dimension2d<s32> sourceSize(targetRect.getSize());
+	const core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner + (targetRect.UpperLeftCorner-destPos));
 
 	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
@@ -1370,8 +1311,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 		sourcePos.Y * invH,
 		(sourcePos.X + sourceSize.Width) * invW,
 		(sourcePos.Y + sourceSize.Height) * invH);
-
-	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
 	if (!CacheHandler->getTextureCache().set(0, texture))
@@ -1383,10 +1322,10 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 	Quad2DVertices[2].Color = color;
 	Quad2DVertices[3].Color = color;
 
-	Quad2DVertices[0].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[1].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f);
-	Quad2DVertices[2].Pos = core::vector3df((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
-	Quad2DVertices[3].Pos = core::vector3df((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[0].Pos = core::vector3df((f32)targetRect.UpperLeftCorner.X, (f32)targetRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[1].Pos = core::vector3df((f32)targetRect.LowerRightCorner.X, (f32)targetRect.UpperLeftCorner.Y, 0.0f);
+	Quad2DVertices[2].Pos = core::vector3df((f32)targetRect.LowerRightCorner.X, (f32)targetRect.LowerRightCorner.Y, 0.0f);
+	Quad2DVertices[3].Pos = core::vector3df((f32)targetRect.UpperLeftCorner.X, (f32)targetRect.LowerRightCorner.Y, 0.0f);
 
 	Quad2DVertices[0].TCoords = core::vector2df(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
 	Quad2DVertices[1].TCoords = core::vector2df(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
@@ -1946,6 +1885,8 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end, SColor color)
 {
+	// TODO: It's not pixel-exact. Reason is the way OpenGL handles line-drawing (search the web for "diamond exit rule").
+
 	if (start==end)
 		drawPixel(start.X, start.Y, color);
 	else
@@ -2096,7 +2037,7 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 
 
 //! prints error if an error happened.
-bool COpenGLDriver::testGLError()
+bool COpenGLDriver::testGLError(int code)
 {
 #ifdef _DEBUG
 	GLenum g = glGetError();
@@ -2105,22 +2046,22 @@ bool COpenGLDriver::testGLError()
 	case GL_NO_ERROR:
 		return false;
 	case GL_INVALID_ENUM:
-		os::Printer::log("GL_INVALID_ENUM", ELL_ERROR); break;
+		os::Printer::log("GL_INVALID_ENUM", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_INVALID_VALUE:
-		os::Printer::log("GL_INVALID_VALUE", ELL_ERROR); break;
+		os::Printer::log("GL_INVALID_VALUE", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_INVALID_OPERATION:
-		os::Printer::log("GL_INVALID_OPERATION", ELL_ERROR); break;
+		os::Printer::log("GL_INVALID_OPERATION", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_STACK_OVERFLOW:
-		os::Printer::log("GL_STACK_OVERFLOW", ELL_ERROR); break;
+		os::Printer::log("GL_STACK_OVERFLOW", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_STACK_UNDERFLOW:
-		os::Printer::log("GL_STACK_UNDERFLOW", ELL_ERROR); break;
+		os::Printer::log("GL_STACK_UNDERFLOW", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_OUT_OF_MEMORY:
-		os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR); break;
+		os::Printer::log("GL_OUT_OF_MEMORY", core::stringc(code).c_str(), ELL_ERROR); break;
 	case GL_TABLE_TOO_LARGE:
-		os::Printer::log("GL_TABLE_TOO_LARGE", ELL_ERROR); break;
+		os::Printer::log("GL_TABLE_TOO_LARGE", core::stringc(code).c_str(), ELL_ERROR); break;
 #if defined(GL_EXT_framebuffer_object)
 	case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
-		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
+		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", core::stringc(code).c_str(), ELL_ERROR); break;
 #endif
 	};
 //	_IRR_DEBUG_BREAK_IF(true);
@@ -2525,11 +2466,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// Color Mask
-	CacheHandler->setColorMask(
-		(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
-		(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+	CacheHandler->setColorMask(material.ColorMask);
 
 	// Blend Equation
     if (material.BlendOperation == EBO_NONE)
@@ -3524,6 +3461,67 @@ void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 	glFogfv(GL_FOG_COLOR, data);
 }
 
+//! Draws a 3d box.
+void COpenGLDriver::draw3DBox( const core::aabbox3d<f32>& box, SColor color )
+{
+	core::vector3df edges[8];
+	box.getEdges(edges);
+
+	setRenderStates3DMode();
+
+	video::S3DVertex v[24];
+
+	for(u32 i = 0; i < 24; i++)
+		v[i].Color = color;
+
+	v[0].Pos = edges[5];
+	v[1].Pos = edges[1];
+	v[2].Pos = edges[1];
+	v[3].Pos = edges[3];
+	v[4].Pos = edges[3];
+	v[5].Pos = edges[7];
+	v[6].Pos = edges[7];
+	v[7].Pos = edges[5];
+	v[8].Pos = edges[0];
+	v[9].Pos = edges[2];
+	v[10].Pos = edges[2];
+	v[11].Pos = edges[6];
+	v[12].Pos = edges[6];
+	v[13].Pos = edges[4];
+	v[14].Pos = edges[4];
+	v[15].Pos = edges[0];
+	v[16].Pos = edges[1];
+	v[17].Pos = edges[0];
+	v[18].Pos = edges[3];
+	v[19].Pos = edges[2];
+	v[20].Pos = edges[7];
+	v[21].Pos = edges[6];
+	v[22].Pos = edges[5];
+	v[23].Pos = edges[4];
+
+	if (!FeatureAvailable[IRR_ARB_vertex_array_bgra] && !FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		getColorBuffer(v, 24, EVT_STANDARD);
+
+	CacheHandler->setClientState(true, false, true, false);
+
+	glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(v))[0].Pos);
+
+#ifdef GL_BGRA
+	const GLint colorSize=(FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])?GL_BGRA:4;
+#else
+	const GLint colorSize=4;
+#endif
+	if (FeatureAvailable[IRR_ARB_vertex_array_bgra] || FeatureAvailable[IRR_EXT_vertex_array_bgra])
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(v))[0].Color);
+	else
+	{
+		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	}
+
+	glDrawArrays(GL_LINES, 0, 24);
+}
+
 
 //! Draws a 3d line.
 void COpenGLDriver::draw3DLine(const core::vector3df& start,
@@ -3826,10 +3824,15 @@ bool COpenGLDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SCol
 void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 {
 	GLbitfield mask = 0;
+	u8 colorMask = 0;
+	bool depthMask = false;
+
+	CacheHandler->getColorMask(colorMask);
+	CacheHandler->getDepthMask(depthMask);
 
 	if (flag & ECBF_COLOR)
 	{
-		CacheHandler->setColorMask(true, true, true, true);
+		CacheHandler->setColorMask(ECP_ALL);
 
 		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
@@ -3853,6 +3856,9 @@ void COpenGLDriver::clearBuffers(u16 flag, SColor color, f32 depth, u8 stencil)
 
 	if (mask)
 		glClear(mask);
+
+	CacheHandler->setColorMask(colorMask);
+	CacheHandler->setDepthMask(depthMask);
 }
 
 
@@ -3927,7 +3933,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 		}
 		glReadBuffer(tgt);
 		glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, fmt, type, pixels);
-		testGLError();
+		testGLError(__LINE__);
 		glReadBuffer(GL_BACK);
 	}
 
@@ -3963,7 +3969,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 
 	if (newImage)
 	{
-		if (testGLError() || !pixels)
+		if (testGLError(__LINE__) || !pixels)
 		{
 			newImage->drop();
 			return 0;
@@ -4275,7 +4281,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_rg))
 		{
-			internalFormat = GL_RG32F;			
+			internalFormat = GL_RG32F;
 			pixelFormat = GL_RG;
 			pixelType = GL_FLOAT;
 		}
@@ -4285,7 +4291,7 @@ void COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& intern
 	case ECF_A32B32G32R32F:
 		if (queryOpenGLFeature(COpenGLExtensionHandler::IRR_ARB_texture_float))
 		{
-			internalFormat = GL_RGBA32F_ARB;			
+			internalFormat = GL_RGBA32F_ARB;
 			pixelFormat = GL_RGBA;
 			pixelType = GL_FLOAT;
 		}

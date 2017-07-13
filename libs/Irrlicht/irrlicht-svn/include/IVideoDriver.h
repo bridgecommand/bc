@@ -250,8 +250,8 @@ namespace video
 		virtual bool beginScene(u16 clearFlag=(u16)(ECBF_COLOR|ECBF_DEPTH), SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0,
 			const SExposedVideoData& videoData=SExposedVideoData(), core::rect<s32>* sourceRect = 0) = 0;
 
-		//! Old beginScene implementation for downward compatibility. Can't clearn stencil buffer, but otherwise identical to other beginScene
-		_IRR_DEPRECATED_ bool beginScene(bool backBuffer, bool zBuffer, SColor color = SColor(255,0,0,0),
+		//! Alternative beginScene implementation. Can't clear stencil buffer, but otherwise identical to other beginScene
+		bool beginScene(bool backBuffer, bool zBuffer, SColor color = SColor(255,0,0,0),
 			const SExposedVideoData& videoData = SExposedVideoData(), core::rect<s32>* sourceRect = 0)
 		{
 			u16 flag = 0;
@@ -621,9 +621,9 @@ namespace video
 			f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Sets a new render target.
-		// Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
-		// It's still offered for backward compatibility.
-		_IRR_DEPRECATED_ bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
+		//! Prefer to use the setRenderTarget function taking flags as parameter as this one can't clear the stencil buffer.
+		//! It's still offered for backward compatibility.
+		bool setRenderTarget(ITexture* texture, bool clearBackBuffer, bool clearZBuffer, SColor color = SColor(255,0,0,0))
 		{
 			u16 flag = 0;
 
@@ -966,8 +966,11 @@ namespace video
 		virtual void draw2DRectangleOutline(const core::recti& pos,
 				SColor color=SColor(255,255,255,255)) =0;
 
-		//! Draws a 2d line. Both start and end will be included in coloring.
-		/** \param start Screen coordinates of the start of the line
+		//! Draws a 2d line. 
+		/** In theory both start and end will be included in coloring.
+		BUG: Currently hardware drivers (d3d/opengl) ignore the last pixel
+		(they use the so called "diamond exit rule" for drawing lines).
+		\param start Screen coordinates of the start of the line
 		in pixels.
 		\param end Screen coordinates of the start of the line in
 		pixels.

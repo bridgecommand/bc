@@ -401,9 +401,10 @@ CSceneManager::~CSceneManager()
 
 
 //! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
+IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& alternativeCacheName)
 {
-	IAnimatedMesh* msh = MeshCache->getMeshByName(filename);
+	io::path cacheName = alternativeCacheName.empty() ? filename : alternativeCacheName;
+	IAnimatedMesh* msh = MeshCache->getMeshByName(cacheName);
 	if (msh)
 		return msh;
 
@@ -425,7 +426,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
 			msh = MeshLoaderList[i]->createMesh(file);
 			if (msh)
 			{
-				MeshCache->addMesh(filename, msh);
+				MeshCache->addMesh(cacheName, msh);
 				msh->drop();
 				break;
 			}
@@ -678,7 +679,7 @@ IAnimatedMeshSceneNode* CSceneManager::addAnimatedMeshSceneNode(IAnimatedMesh* m
 //! Adds a scene node for rendering using a octree to the scene graph. This a good method for rendering
 //! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 //! faster then a bsp tree.
-IMeshSceneNode* CSceneManager::addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent,
+IOctreeSceneNode* CSceneManager::addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent,
 			s32 id, s32 minimalPolysPerNode, bool alsoAddIfMeshPointerZero)
 {
 	if (!alsoAddIfMeshPointerZero && (!mesh || !mesh->getFrameCount()))
@@ -693,7 +694,7 @@ IMeshSceneNode* CSceneManager::addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNod
 //! Adds a scene node for rendering using a octree. This a good method for rendering
 //! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 //! faster then a bsp tree.
-IMeshSceneNode* CSceneManager::addOctreeSceneNode(IMesh* mesh, ISceneNode* parent,
+IOctreeSceneNode* CSceneManager::addOctreeSceneNode(IMesh* mesh, ISceneNode* parent,
 		s32 id, s32 minimalPolysPerNode, bool alsoAddIfMeshPointerZero)
 {
 	if (!alsoAddIfMeshPointerZero && !mesh)
@@ -2573,7 +2574,7 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 
 	case EMWT_B3D:
 #ifdef _IRR_COMPILE_WITH_B3D_WRITER_
-		return new CB3DMeshWriter(FileSystem);
+		return new CB3DMeshWriter();
 #else
 		return 0;
 #endif

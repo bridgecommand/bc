@@ -502,6 +502,11 @@ bool CIrrDeviceLinux::createWindow()
 			IrrPrintXGrabError(grabPointer, "XGrabPointer");
 			XWarpPointer(XDisplay, None, XWindow, 0, 0, 0, 0, 0, 0);
 		}
+		else if (CreationParams.WindowPosition.X >= 0 || CreationParams.WindowPosition.Y >= 0)	// default is -1, -1
+		{
+			// Window managers are free to ignore positions above, so give it another shot
+			XMoveWindow(XDisplay,XWindow,x,y);
+		}
 	}
 	else
 	{
@@ -1002,8 +1007,8 @@ bool CIrrDeviceLinux::run()
 					{
 						// we assume it's a user message
 						irrevent.EventType = irr::EET_USER_EVENT;
-						irrevent.UserEvent.UserData1 = (s32)event.xclient.data.l[0];
-						irrevent.UserEvent.UserData2 = (s32)event.xclient.data.l[1];
+						irrevent.UserEvent.UserData1 = static_cast<size_t>(event.xclient.data.l[0]);
+						irrevent.UserEvent.UserData2 = static_cast<size_t>(event.xclient.data.l[1]);
 						postEventFromUser(irrevent);
 					}
 					XFree(atom);

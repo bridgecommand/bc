@@ -442,6 +442,8 @@ irr::core::stringc SJoystickWin32Control::findJoystickName(int index, const JOYC
 bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
 	{
@@ -462,9 +464,6 @@ bool SJoystickWin32Control::activateJoysticks(core::array<SJoystickInfo> & joyst
 	}
 	return true;
 #else
-	joystickInfo.clear();
-	ActiveJoysticks.clear();
-
 	const u32 numberOfJoysticks = ::joyGetNumDevs();
 	JOYINFOEX info;
 	info.dwSize = sizeof(info);
@@ -955,8 +954,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_USER:
 		event.EventType = irr::EET_USER_EVENT;
-		event.UserEvent.UserData1 = (irr::s32)wParam;
-		event.UserEvent.UserData2 = (irr::s32)lParam;
+		event.UserEvent.UserData1 = static_cast<size_t>(wParam);
+		event.UserEvent.UserData2 = static_cast<size_t>(lParam);
 		dev = getDeviceFromHWnd(hWnd);
 
 		if (dev)
@@ -1954,6 +1953,26 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 			MessageBox(NULL, __TEXT("Unknown error"), pszCaption, MB_OK|MB_ICONERROR);
 		}
 	}
+}
+
+// Same function Windows offers in VersionHelpers.h, but we can't use that as it's not available in older sdk's (minimum is SDK 8.1)
+bool CIrrDeviceWin32::isWindowsVistaOrGreater()
+{
+#if (_WIN32_WINNT >= 0x0500)
+	OSVERSIONINFOEX osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	osvi.dwMajorVersion = 6; //  Windows Vista
+
+	if ( !GetVersionEx((OSVERSIONINFO*)&osvi) )
+	{
+		return false;
+	}
+
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL));
+#else
+    return false;
+#endif
 }
 
 // Convert an Irrlicht texture to a Windows cursor

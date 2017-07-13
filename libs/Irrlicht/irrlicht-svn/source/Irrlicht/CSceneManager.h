@@ -42,7 +42,7 @@ namespace scene
 		virtual ~CSceneManager();
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-		virtual IAnimatedMesh* getMesh(const io::path& filename) _IRR_OVERRIDE_;
+		virtual IAnimatedMesh* getMesh(const io::path& filename, const io::path& alternativeCacheName) _IRR_OVERRIDE_;
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 		virtual IAnimatedMesh* getMesh(io::IReadFile* file) _IRR_OVERRIDE_;
@@ -118,13 +118,13 @@ namespace scene
 		//! Adds a scene node for rendering using a octree to the scene graph. This a good method for rendering
 		//! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 		//! faster then a bsp tree.
-		virtual IMeshSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		virtual IOctreeSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) _IRR_OVERRIDE_;
 
 		//! Adss a scene node for rendering using a octree. This a good method for rendering
 		//! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 		//! faster then a bsp tree.
-		virtual IMeshSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+		virtual IOctreeSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=128, bool alsoAddIfMeshPointerZero=false) _IRR_OVERRIDE_;
 
 		//! Adds a camera scene node to the tree and sets it as active camera.

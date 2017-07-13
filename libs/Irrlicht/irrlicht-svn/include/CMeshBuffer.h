@@ -18,7 +18,10 @@ namespace scene
 	{
 	public:
 		//! Default constructor for empty meshbuffer
-		CMeshBuffer():ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER)
+		CMeshBuffer()
+			: ChangedID_Vertex(1), ChangedID_Index(1)
+			, MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER)
+			, PrimitiveType(EPT_TRIANGLES)
 		{
 			#ifdef _DEBUG
 			setDebugName("CMeshBuffer");
@@ -117,14 +120,16 @@ namespace scene
 		/** should be called if the mesh changed. */
 		virtual void recalculateBoundingBox()
 		{
-			if (Vertices.empty())
-				BoundingBox.reset(0,0,0);
-			else
+			if (!Vertices.empty())
 			{
 				BoundingBox.reset(Vertices[0].Pos);
-				for (u32 i=1; i<Vertices.size(); ++i)
+				const irr::u32 vsize = Vertices.size();
+				for (u32 i=1; i<vsize; ++i)
 					BoundingBox.addInternalPoint(Vertices[i].Pos);
 			}
+			else
+				BoundingBox.reset(0,0,0);
+
 		}
 
 
@@ -252,6 +257,17 @@ namespace scene
 				MappingHint_Index=NewMappingHint;
 		}
 
+		//! Describe what kind of primitive geometry is used by the meshbuffer
+		virtual void setPrimitiveType(E_PRIMITIVE_TYPE type)
+		{
+			PrimitiveType = type;
+		}
+
+		//! Get the kind of primitive geometry which is used by the meshbuffer
+		virtual E_PRIMITIVE_TYPE getPrimitiveType() const
+		{
+			return PrimitiveType;
+		}
 
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
@@ -285,6 +301,8 @@ namespace scene
 		core::array<u16> Indices;
 		//! Bounding box of this meshbuffer.
 		core::aabbox3d<f32> BoundingBox;
+		//! Primitive type used for rendering (triangles, lines, ...)
+		E_PRIMITIVE_TYPE PrimitiveType;
 	};
 
 	//! Standard meshbuffer
