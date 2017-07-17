@@ -23,9 +23,25 @@
 
 using namespace irr;
 
+NavLightCallback::NavLightCallback()
+{
+    firstRun = true;
+    lightLevel = 0;
+}
+
 void NavLightCallback::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
 {
+    if (firstRun) {
+        firstRun = false;
+        services->setPixelShaderConstant(services->getVertexShaderConstantID("lightLevel"), &lightLevel, 1);
+        //services->setPixelShaderConstant("lightLevel", &lightLevel, 1);
+    }
+}
 
+void NavLightCallback::setLightLevel(irr::f32 lightLevel)
+{
+    this->lightLevel = lightLevel;
+    //std::cout << lightLevel << std::endl;
 }
 
 NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
@@ -90,6 +106,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 }
 
 NavLight::~NavLight() {
+    //TODO: Understand why NavLights are being created and destroyed during model set-up
 }
 
 irr::core::vector3df NavLight::getPosition() const
@@ -153,6 +170,8 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
             lightNode->setVisible(false);
         }
     }
+
+    shaderCallback->setLightLevel((f32)lightLevel/256); //Convert to float for shader
 
 }
 

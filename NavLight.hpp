@@ -25,7 +25,13 @@ class NavLightCallback : public irr::video::IShaderConstantSetCallBack {
 
 public:
 
+    NavLightCallback();
     void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData);
+    void setLightLevel(irr::f32 lightLevel);
+
+private:
+    bool firstRun;
+    irr::f32 lightLevel;
 
 };
 
