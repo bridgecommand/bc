@@ -23,17 +23,47 @@
 
 using namespace irr;
 
-NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
+void NavLightCallback::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
+{
+
+}
+
+NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
 
     //Store the scene manager, so we can find the active camera
     this->smgr = smgr;
 
+    shaderCallback = new NavLightCallback; //Todo - drop or delete as required
+
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
+
+    //TODO: Implement for directX as well
+    irr::s32 shader;
+    if (smgr->getVideoDriver()->getDriverType() == irr::video::EDT_OPENGL) {
+    shader = smgr->getVideoDriver()->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+            "shaders/NavLight_vs.glsl",
+            "main",
+            irr::video::EVST_VS_2_0,
+            "shaders/NavLight_ps.glsl",
+            "main",
+            irr::video::EPST_PS_2_0,
+            shaderCallback, //For callbacks
+            irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL
+            //irr::video::EMT_SOLID
+            );
+    }
+
+    shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
+
+    //Apply shader
     lightNode->setColor(colour);
-    lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
-    lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-    lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
-    lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+    for (u32 i=0; i<lightNode->getMaterialCount(); ++i)
+    {
+        lightNode->getMaterial(i).setTexture(0,smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
+        lightNode->getMaterial(i).MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+        lightNode->getMaterial(i).FogEnable = true;
+    }
+
 
     //Fix angles if start is negative
     while (lightStartAngle < 0) {
@@ -56,7 +86,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     }
 
     //set initial alpha to implausible value
-    currentAlpha = -1;
+//    currentAlpha = -1;
 }
 
 NavLight::~NavLight() {
@@ -124,22 +154,21 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
         }
     }
 
-    //set transparency dependent on light level, only changing if required, as this is a slow operation
-    u16 requiredAlpha = 255-lightLevel;
-    if (requiredAlpha != currentAlpha) {
-        setAlpha((u8)requiredAlpha, lightNode->getMaterial(0).getTexture(0));
-        currentAlpha = requiredAlpha;
-    }
 }
 
+/*
 bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 //Modified from http://irrlicht.sourceforge.net/forum/viewtopic.php?t=31400
 //FIXME: Check how the texture color format is set
 {
-    if(!tex)
-    {
+
+    //return true;
+
+    std::cout << "Setting alpha to " << static_cast<int>(alpha) << std::endl;
+
+    if(!tex) {
         return false;
-    };
+    }
 
     u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
 
@@ -147,6 +176,8 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
     {
         case video::ECF_A1R5G5B5: //see video::ECOLOR_FORMAT for more information on the texture formats.
         {
+
+            std::cout << "video::ECF_A1R5G5B5" << std::endl;
           //  printf("16BIT\n");
             u16* Data = (u16*)tex->lock(); //get Data for 16-bit Texture
             for(u32 i = 0; i < size ; i++)
@@ -159,14 +190,22 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
         };
         case video::ECF_A8R8G8B8:
         {
+            std::cout << "video::ECF_A8R8G8B8" << std::endl;
             u32* Data = (u32*)tex->lock();
-            for( u32 i = 0 ; i < size ; i++)
-            {
-                //u8 minAlpha = std::min(((u8*)&Data[i])[3],alpha);
-                u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
-                ((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
+            if (Data) {
+                for( u32 i = 0 ; i < size ; i++)
+                {
+
+                    //video::SColor currentColor(Data[i]);
+                    //u32 alphaToUse = currentColor.getAlpha() == 0 ? 0 : alpha;
+                    //Data[i] = video::SColor(alphaToUse, currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue()).color;
+
+                    u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
+                    ((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
+                }
             }
             tex->unlock();
+            tex->regenerateMipMapLevels();
             break;
         };
         default:
@@ -174,6 +213,7 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
     };
     return true;
 }
+*/
 
 void NavLight::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
