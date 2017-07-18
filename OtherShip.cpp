@@ -137,12 +137,21 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(NavLight (ship,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(new NavLight (ship,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
         }
     }
 
     //store leg information
     legs=legsLoaded;
+}
+
+OtherShip::~OtherShip()
+{
+    //Drop navLights
+    for(std::vector<NavLight*>::iterator it = navLights.begin(); it != navLights.end(); ++it) {
+        delete (*it);
+    }
+    navLights.clear();
 }
 
 void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
@@ -173,8 +182,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     ship->setRotation(core::vector3df(0, hdg+angleCorrection, 0)); //Global vectors
 
     //for each light, find range and angle
-    for(std::vector<NavLight>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {
-        navLights[currentLight].update(scenarioTime, lightLevel);
+    for(std::vector<NavLight*>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {
+        navLights[currentLight]->update(scenarioTime, lightLevel);
     }
 
 }

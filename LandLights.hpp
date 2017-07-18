@@ -37,7 +37,7 @@ class LandLights
         irr::u32 getNumber() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
     private:
-        std::vector<NavLight> landLights;
+        std::vector<NavLight*> landLights;
 };
 
 #endif

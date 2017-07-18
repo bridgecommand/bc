@@ -32,7 +32,10 @@ Buoys::Buoys()
 
 Buoys::~Buoys()
 {
-    //dtor
+    for(std::vector<NavLight*>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
+        delete (*it);
+    }
+    buoysLights.clear();
 }
 
 void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
@@ -92,7 +95,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                     lightHeight/=buoyNode->getScale().Y;
                 }
                 //Create buoy light as a child of the buoy
-                buoysLights.push_back(NavLight (buoyNode,smgr,core::dimension2d<f32>(5, 5), core::vector3df(0,lightHeight,0),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
+                buoysLights.push_back(new NavLight (buoyNode,smgr,core::dimension2d<f32>(5, 5), core::vector3df(0,lightHeight,0),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
             }
         }
     }
@@ -117,10 +120,10 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
 
     }
 
-    for(std::vector<NavLight>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
+    for(std::vector<NavLight*>::iterator it = buoysLights.begin(); it != buoysLights.end(); ++it) {
 
         //Update light size/visibility etc
-        it->update(scenarioTime, lightLevel);
+        (*it)->update(scenarioTime, lightLevel);
 
         //Note that the buoy light is a child of the buoy, so it moves with it
     }

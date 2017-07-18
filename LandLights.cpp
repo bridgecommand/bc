@@ -31,7 +31,11 @@ LandLights::LandLights()
 
 LandLights::~LandLights()
 {
-    //dtor
+    //Drop navLights
+    for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
+        delete (*it);
+    }
+    landLights.clear();
 }
 
 void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain)
@@ -64,7 +68,7 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
             lightRange = lightRange * M_IN_NM;
 
 
-            landLights.push_back(NavLight (0,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
+            landLights.push_back(new NavLight (0,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
         }
     }
 
@@ -72,8 +76,8 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
 
 void LandLights::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::u32 lightLevel)
 {
-    for(std::vector<NavLight>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
-        it->update(scenarioTime, lightLevel);
+    for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
+        (*it)->update(scenarioTime, lightLevel);
     }
 }
 
@@ -84,7 +88,7 @@ irr::u32 LandLights::getNumber() const
 
 void LandLights::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
-    for(std::vector<NavLight>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
-        it->moveNode(deltaX,deltaY,deltaZ);
+    for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
+        (*it)->moveNode(deltaX,deltaY,deltaZ);
     }
 }

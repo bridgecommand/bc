@@ -42,7 +42,7 @@ class Buoys
 
     private:
         std::vector<Buoy> buoys;
-        std::vector<NavLight> buoysLights;
+        std::vector<NavLight*> buoysLights;
         SimulationModel* model; //Store reference to model
 };
 

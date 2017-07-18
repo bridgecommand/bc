@@ -35,7 +35,7 @@ class OtherShips
 {
     public:
         OtherShips();
-        virtual ~OtherShips();
+        ~OtherShips();
         void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
@@ -56,7 +56,7 @@ class OtherShips
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
-        std::vector<OtherShip> otherShips;
+        std::vector<OtherShip*> otherShips;
         SimulationModel* model;
 };
 
