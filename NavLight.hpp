@@ -45,6 +45,7 @@ class NavLight : public irr::video::IShaderConstantSetCallBack {
         //bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
         bool firstRun;
         irr::f32 lightLevel;
+        irr::s32 idLightLevel;
 };
 
 #endif

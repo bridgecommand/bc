@@ -93,9 +93,9 @@ void NavLight::OnSetConstants(video::IMaterialRendererServices* services, s32 us
 {
     if (firstRun) {
         firstRun = false;
-        services->setPixelShaderConstant(services->getVertexShaderConstantID("lightLevel"), &lightLevel, 1);
-        //services->setPixelShaderConstant("lightLevel", &lightLevel, 1);
+        idLightLevel = services->getVertexShaderConstantID("lightLevel");
     }
+    services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
 }
 
 irr::core::vector3df NavLight::getPosition() const
