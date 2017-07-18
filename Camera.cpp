@@ -149,6 +149,10 @@ irr::u32 Camera::getView() const
 void Camera::setHFOV(irr::f32 hFOV)
 {
     this->hFOV=hFOV;
+    irr::f32 aspect=camera->getAspectRatio();
+
+    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    camera->setFOV(vFOV);
 }
 
 void Camera::updateViewport(irr::f32 aspect)
