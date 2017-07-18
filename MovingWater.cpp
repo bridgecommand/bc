@@ -207,58 +207,58 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
 {
     //From Mel's cubemap demo
     if(firstRun) {
-            firstRun = false;
+        firstRun = false;
 
-            driver = services->getVideoDriver();
-            //Looking for our constants IDs...
-            matViewInverse = services->getVertexShaderConstantID("matViewInverse");
-            matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
-            idLightLevel = services->getVertexShaderConstantID("lightLevel");
-            idSeaState = services->getVertexShaderConstantID("seaState");
-
-            if(IsOpenGL)
-            {
-                baseMap = services->getPixelShaderConstantID("baseMap");
-                reflectionMap = services->getPixelShaderConstantID("reflectionMap");
-            }
-            else
-            {
-                matWorldViewProjection=services->getVertexShaderConstantID("matWorldViewProjection");
-                matWorld = services->getVertexShaderConstantID("matWorld");
-            }
-        }
-
-        //Setting up our constants...
-        irr::core::matrix4 mat;
-
-        mat = driver->getTransform(irr::video::ETS_VIEW);
-        mat.makeInverse();
-        services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
-
-        core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
-        worldReflectionViewProj *= _camera->getViewMatrix();;
-        worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
-        services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+        driver = services->getVideoDriver();
+        //Looking for our constants IDs...
+        matViewInverse = services->getVertexShaderConstantID("matViewInverse");
+        matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+        idLightLevel = services->getVertexShaderConstantID("lightLevel");
+        idSeaState = services->getVertexShaderConstantID("seaState");
 
         if(IsOpenGL)
         {
-            int sampler=0;
-            services->setPixelShaderConstant(baseMap,&sampler,1);
-            sampler=1;
-            services->setPixelShaderConstant(reflectionMap,&sampler,1);
-            services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
-            services->setPixelShaderConstant(idSeaState, &seaState, 1);
+            baseMap = services->getPixelShaderConstantID("baseMap");
+            reflectionMap = services->getPixelShaderConstantID("reflectionMap");
         }
         else
         {
-            mat = driver->getTransform(irr::video::ETS_PROJECTION);
-            mat *= driver->getTransform(irr::video::ETS_VIEW);
-            mat *= driver->getTransform(irr::video::ETS_WORLD);
-            services->setVertexShaderConstant(matWorldViewProjection,mat.pointer(),16);
-
-            mat = driver->getTransform(irr::video::ETS_WORLD);
-            services->setVertexShaderConstant(matWorld,mat.pointer(),16);
+            matWorldViewProjection=services->getVertexShaderConstantID("matWorldViewProjection");
+            matWorld = services->getVertexShaderConstantID("matWorld");
         }
+    }
+
+    //Setting up our constants...
+    irr::core::matrix4 mat;
+
+    mat = driver->getTransform(irr::video::ETS_VIEW);
+    mat.makeInverse();
+    services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
+
+    core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
+    worldReflectionViewProj *= _camera->getViewMatrix();;
+    worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
+    services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+
+    if(IsOpenGL)
+    {
+        int sampler=0;
+        services->setPixelShaderConstant(baseMap,&sampler,1);
+        sampler=1;
+        services->setPixelShaderConstant(reflectionMap,&sampler,1);
+        services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
+        services->setPixelShaderConstant(idSeaState, &seaState, 1);
+    }
+    else
+    {
+        mat = driver->getTransform(irr::video::ETS_PROJECTION);
+        mat *= driver->getTransform(irr::video::ETS_VIEW);
+        mat *= driver->getTransform(irr::video::ETS_WORLD);
+        services->setVertexShaderConstant(matWorldViewProjection,mat.pointer(),16);
+
+        mat = driver->getTransform(irr::video::ETS_WORLD);
+        services->setVertexShaderConstant(matWorld,mat.pointer(),16);
+    }
     //End from Mel's cubemap demo
 
 
