@@ -75,6 +75,8 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />
+		<Unit filename="ManOverboard.cpp" />
+		<Unit filename="ManOverboard.hpp" />
 		<Unit filename="MovingWater.cpp" />
 		<Unit filename="MovingWater.hpp" />
 		<Unit filename="MyEventReceiver.cpp" />

@@ -38,6 +38,7 @@ class GUIMain;
 #include "LandObjects.hpp"
 #include "LandLights.hpp"
 #include "OwnShip.hpp"
+#include "ManOverboard.hpp"
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
@@ -184,6 +185,7 @@ private:
     RadarScreen radarScreen;
     GUIMain* guiMain;
     bool isMouseDown; //Updated by the event receiver, used by radar
+    ManOverboard manOverboard;
 
     //Simulation time handling
     irr::u32 currentTime; //Computer clock time

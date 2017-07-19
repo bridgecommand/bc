@@ -32,7 +32,8 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance) //constructor, including own ship model
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance):
+    manOverboard(irr::core::vector3df(0,0,0),scene,dev) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -193,6 +194,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.2);
         radarCamera.setFarValue(0.3);
+
+        //Hide the man overboard model
+        manOverboard.setVisible(false);
 
         //initialise offset
         offsetPosition = core::vector3d<int64_t>(0,0,0);
