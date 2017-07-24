@@ -152,6 +152,8 @@ public:
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
     std::string getWorldName() const;
+    void releaseManOverboard();
+    void retrieveManOverboard();
     void update();
 
 private:

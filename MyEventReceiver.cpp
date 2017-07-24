@@ -503,6 +503,14 @@ using namespace irr;
                             device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
                             break;
 
+                        case KEY_KEY_M:
+                            model->releaseManOverboard();
+                            break;
+
+                        case KEY_KEY_N:
+                            model->retrieveManOverboard();
+                            break;
+
                         default:
                             //don't do anything
                             break;

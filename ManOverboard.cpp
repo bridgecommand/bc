@@ -17,13 +17,16 @@
 #include "ManOverboard.hpp"
 #include "IniFile.hpp"
 #include "Utilities.hpp"
+#include "SimulationModel.hpp"
 
 #include <iostream>
 
 using namespace irr;
 
-ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model)
 {
+
+    this->model=model;
 
     std::string basePath = "Models/ManOverboard/";
     std::string userFolder = Utilities::getUserDir();
@@ -112,3 +115,10 @@ void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     man->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
 }
 
+void ManOverboard::update(irr::f32 tideHeight)
+{
+    //Move with tide and waves
+    core::vector3df pos=getPosition();
+    pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+    setPosition(pos);
+}

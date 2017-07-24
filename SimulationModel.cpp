@@ -33,7 +33,7 @@
 using namespace irr;
 
 SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance):
-    manOverboard(irr::core::vector3df(0,0,0),scene,dev) //Initialise MOB
+    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -657,6 +657,32 @@ SimulationModel::~SimulationModel()
         return worldName;
     }
 
+    void SimulationModel::releaseManOverboard()
+    {
+        std::cout << "Releasing man overboard" << std::endl;
+        manOverboard.setVisible(true);
+        core::vector3df ownShipPos = ownShip.getPosition();
+        core::vector3df relativePosition;
+        relativePosition.Y = 0;
+        //Put randomly on port or starboard side of the ship
+        if (rand() > RAND_MAX/2) {
+            relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
+            relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+            //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
+        } else {
+            relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
+            relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+            //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
+        }
+        manOverboard.setPosition(ownShipPos + relativePosition);
+
+    }
+
+    void SimulationModel::retrieveManOverboard()
+    {
+        manOverboard.setVisible(false);
+    }
+
     void SimulationModel::update()
     {
 
@@ -699,6 +725,9 @@ SimulationModel::~SimulationModel()
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
 
+        //update man overboard
+        manOverboard.update(tideHeight);
+
         //Check for collisions
         bool collided = checkOwnShipCollision();
 
@@ -723,7 +752,7 @@ SimulationModel::~SimulationModel()
             buoys.moveNode(deltaX,0,deltaZ);
             landObjects.moveNode(deltaX,0,deltaZ);
             landLights.moveNode(deltaX,0,deltaZ);
-
+            manOverboard.moveNode(deltaX,0,deltaZ);
 
             //Change stored offset
             offsetPosition.X -= deltaX;
