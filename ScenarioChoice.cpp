@@ -138,6 +138,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     multiplayerText->remove();multiplayerText=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
+    ourHostnameText->remove();ourHostnameText=0;
+    ourHostnameName->remove();ourHostnameName=0;
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using
 
