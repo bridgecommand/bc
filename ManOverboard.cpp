@@ -84,6 +84,11 @@ void ManOverboard::setVisible(bool isVisible)
     man->setVisible(isVisible);
 }
 
+bool ManOverboard::getVisible() const
+{
+    return man->isVisible();
+}
+
 irr::core::vector3df ManOverboard::getPosition() const
 {
     man->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required

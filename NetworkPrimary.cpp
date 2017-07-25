@@ -298,7 +298,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfBuoys()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: MOB
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardVisible()? 1 : 0));
     stringToSend.append("#");
 
     //3 Each 'Other' (Pos X (abs), Pos Z, angle, SART |) #
@@ -342,7 +342,10 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append("#");
 
     //5 MOB
-    stringToSend.append("0,0#"); //Fixme: Mob details
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardPosX()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardPosZ()));
+    stringToSend.append("#");
 
     //6 Loop
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLoopNumber()));

@@ -659,28 +659,58 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::releaseManOverboard()
     {
-        std::cout << "Releasing man overboard" << std::endl;
-        manOverboard.setVisible(true);
-        core::vector3df ownShipPos = ownShip.getPosition();
-        core::vector3df relativePosition;
-        relativePosition.Y = 0;
-        //Put randomly on port or starboard side of the ship
-        if (rand() > RAND_MAX/2) {
-            relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
-            relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
-            //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
-        } else {
-            relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
-            relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
-            //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
+        //Only release/update if not already released
+        if (!manOverboard.getVisible()) {
+            manOverboard.setVisible(true);
+            core::vector3df ownShipPos = ownShip.getPosition();
+            core::vector3df relativePosition;
+            relativePosition.Y = 0;
+            //Put randomly on port or starboard side of the ship
+            if (rand() > RAND_MAX/2) {
+                relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
+                relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+                //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
+            } else {
+                relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
+                relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+                //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
+            }
+            manOverboard.setPosition(ownShipPos + relativePosition);
         }
-        manOverboard.setPosition(ownShipPos + relativePosition);
 
     }
 
     void SimulationModel::retrieveManOverboard()
     {
         manOverboard.setVisible(false);
+    }
+
+    bool SimulationModel::getManOverboardVisible() const
+    {
+        return manOverboard.getVisible();
+    }
+
+    irr::f32 SimulationModel::getManOverboardPosX() const
+    {
+        return manOverboard.getPosition().X + offsetPosition.X;
+    }
+
+    irr::f32 SimulationModel::getManOverboardPosZ() const
+    {
+        return manOverboard.getPosition().Z + offsetPosition.Z;
+    }
+
+
+    void SimulationModel::setManOverboardVisible(bool visible)
+    {
+        //To be used directly, eg when in secondary display mode only
+        manOverboard.setVisible(visible);
+    }
+
+    void SimulationModel::setManOverboardPos(irr::f32 positionX, irr::f32 positionZ)
+    {
+        //To be used directly, eg when in secondary display mode only
+        manOverboard.setPosition(core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
     }
 
     void SimulationModel::update()

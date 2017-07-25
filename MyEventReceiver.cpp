@@ -432,6 +432,11 @@ using namespace irr;
                         case KEY_RIGHT:
                             model->lookStbd();
                             break;
+
+                        case KEY_KEY_M:
+                            model->retrieveManOverboard();
+                            break;
+
                         default:
                             //don't do anything
                             break;
@@ -505,10 +510,6 @@ using namespace irr;
 
                         case KEY_KEY_M:
                             model->releaseManOverboard();
-                            break;
-
-                        case KEY_KEY_N:
-                            model->retrieveManOverboard();
                             break;
 
                         default:

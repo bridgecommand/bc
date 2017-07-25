@@ -28,6 +28,7 @@ class ManOverboard
         ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model);
         irr::core::vector3df getPosition() const;
         void setVisible(bool isVisible);
+        bool getVisible() const;
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);

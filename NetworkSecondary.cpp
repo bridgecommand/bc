@@ -223,6 +223,22 @@ void NetworkSecondary::receiveMessage()
                             }
                         }
                     }
+
+                    //Update MOB data
+                    irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+                    if (numberMOB==1) {
+                        //MOB should be visible, find if we have an MOB position record with two items (record 5)
+                        //TODO: TEST!
+                        std::vector<std::string> mobData = Utilities::split(receivedData.at(5),',');
+                        if (mobData.size()==2) {
+                            model->setManOverboardVisible(true);
+                            model->setManOverboardPos(  Utilities::lexical_cast<irr::f32>(mobData.at(0)),
+                                                        Utilities::lexical_cast<irr::f32>(mobData.at(1)));
+                        }
+                    } else if (numberMOB==0) {
+                        model->setManOverboardVisible(false);
+                    }
+
                 } //Check if 3 number elements for Other ships, buoys and MOBs
 
                 //Get weather info from record 7
