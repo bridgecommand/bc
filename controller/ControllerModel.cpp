@@ -127,7 +127,7 @@ ControllerModel::~ControllerModel()
     scaledMap->drop();
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain)
+void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData)
 {
     //std::cout << mouseDown << std::endl;
 
@@ -171,7 +171,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
 }
 
 void ControllerModel::resetOffset()

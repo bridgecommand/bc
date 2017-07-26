@@ -148,6 +148,8 @@ int main (int argc, char ** argv)
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipDisplayData> otherShipsData;
+    PositionData mobData;
+    bool mobVisible;
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain, &network);
@@ -158,10 +160,10 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain);
+        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
 
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain);
+        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
 
         driver->endScene();
     }

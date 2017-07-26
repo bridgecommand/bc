@@ -109,7 +109,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -185,7 +185,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     dataDisplay->setText(displayText.c_str());
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips, selectedShip, selectedLeg);
+    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips, selectedShip, selectedLeg, mobVisible, mobPosX, mobPosZ);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -224,7 +224,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const irr::s32& selectedShip, const irr::s32& selectedLeg)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
 {
 
     //draw cross hairs
@@ -255,6 +255,14 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     irr::core::position2d<s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
     irr::core::position2d<s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
     device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,video::SColor(255, 255, 0, 0));
+
+    //Draw location of MOB
+    if (mobVisible) {
+        irr::s32 relPosX = (mobPosX - ownShipPosX)/metresPerPx + mapOffsetX;
+        irr::s32 relPosY = (mobPosZ - ownShipPosZ)/metresPerPx - mapOffsetZ;
+
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*2,video::SColor(255, 255, 255, 0),10);
+    }
 
     //Draw location of buoys
     for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {

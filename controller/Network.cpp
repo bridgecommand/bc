@@ -94,7 +94,7 @@ std::string Network::findWorldName()
     return worldName;
 }
 
-void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain)
+void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData)
 {
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
@@ -109,7 +109,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
             case ENET_EVENT_TYPE_RECEIVE:
 
                 //receive it
-                receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain);
+                receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain,mobVisible,mobData);
 
                 //send something back
                 sendMessage(event.peer); //Todo: Think if we only want to send after receipt?
@@ -153,7 +153,7 @@ void Network::sendMessage(ENetPeer* peer)
     }
 }
 
-void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain)
+void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -173,14 +173,14 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
             //Populate the data structures from the stripped string
-            findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain);
+            findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
 
         } //Check received message starts with BC
     } //Check message at least 3 characters
 
 }
 
-void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain) {
+void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData) {
 //Split into main parts
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
@@ -217,6 +217,29 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
             } //Check number of buoys matches the amount of data
 
         } //Check if 3 number elements for Other ships, buoys and MOBs
+
+        //Update MOB data
+        //BEGIN COPY FROM BC
+        irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+        if (numberMOB==1) {
+            //MOB should be visible, find if we have an MOB position record with two items (record 5)
+            //TODO: TEST!
+            std::vector<std::string> mobStringData = Utilities::split(receivedData.at(5),',');
+            if (mobStringData.size()==2) {
+                mobData.X = Utilities::lexical_cast<irr::f32>(mobStringData.at(0));
+                mobData.Z = Utilities::lexical_cast<irr::f32>(mobStringData.at(1));
+                mobVisible=true;
+            } else {
+                mobVisible = false;
+                mobData.X = 0;
+                mobData.Z = 0;
+            }
+        } else if (numberMOB==0) {
+            mobVisible = false;
+            mobData.X = 0;
+            mobData.Z = 0;
+        }
+        //END COPY FROM BC
 
         //Weather data in record 7 (Weather, rain, vis etc)
         std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');

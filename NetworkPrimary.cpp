@@ -219,7 +219,19 @@ void NetworkPrimary::receiveNetwork()
                                     }
 
 
+                                } else if (thisCommand.substr(0,2).compare("MO") == 0) {
+                                    //'MO', Man overboard
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size()==2) {
+                                        irr::s32 mobMode = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                        if (mobMode==1) {
+                                            model->releaseManOverboard();
+                                        } else if (mobMode==-1) {
+                                            model->retrieveManOverboard();
+                                        }
+                                    }
                                 }
+
                             } //This command has at least three characters
 
                         }
