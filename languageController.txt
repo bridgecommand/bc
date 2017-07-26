@@ -21,6 +21,9 @@ rain = "Rain"
 visibility="Visibility"
 setDistance = "Distance (Nm)"
 
+releaseMOB = "Release\nMOB"
+retrieveMOB = "Retrieve\nMOB"
+
 past = " (Past)"
 current = " (Current)"
 future = " (Future)"

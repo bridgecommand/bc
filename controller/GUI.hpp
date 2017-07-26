@@ -45,6 +45,8 @@ public:
         GUI_ID_ADDLEG_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
         GUI_ID_MOVESHIP_BUTTON,
+        GUI_ID_RELEASEMOB_BUTTON,
+        GUI_ID_RETRIEVEMOB_BUTTON,
         GUI_ID_WEATHER_SCROLLBAR,
         GUI_ID_RAIN_SCROLLBAR,
         GUI_ID_VISIBILITY_SCROLLBAR
@@ -91,6 +93,8 @@ private:
     irr::gui::IGUIScrollBar* weatherBar;
     irr::gui::IGUIScrollBar* rainBar;
     irr::gui::IGUIScrollBar* visibilityBar;
+    irr::gui::IGUIButton* releaseMOB;
+    irr::gui::IGUIButton* retrieveMOB;
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;
 

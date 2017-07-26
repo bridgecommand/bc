@@ -132,6 +132,16 @@ using namespace irr;
                     //std::cout << messageToSend << std::endl;
                 }
 
+                if (id == GUIMain::GUI_ID_RELEASEMOB_BUTTON) {
+                    std::string messageToSend = "MCMO,1#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_RETRIEVEMOB_BUTTON) {
+                    std::string messageToSend = "MCMO,-1#";
+                    network->setStringToSend(messageToSend);
+                }
+
             }
 
             if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {

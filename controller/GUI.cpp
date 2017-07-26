@@ -42,7 +42,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     guiWindow->getCloseButton()->setVisible(false);
 
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.35*su,0.15*sh), true, true, guiWindow, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.31*su,0.15*sh), true, true, guiWindow, -1, true); //Actual text set later
 
     //Add ship selector drop down
     shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
@@ -69,12 +69,16 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
+    //Add buttons to release and retrieve man overboard dummy
+    //TODO: Move left by 0.04*su
+    releaseMOB = guienv->addButton(core::rect<s32>(0.40*su,0.05*sh,0.47*su,0.11*sh),guiWindow,GUI_ID_RELEASEMOB_BUTTON,language->translate("releaseMOB").c_str());
+    retrieveMOB = guienv->addButton(core::rect<s32>(0.40*su,0.12*sh,0.47*su,0.19*sh),guiWindow,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
 
     //Scroll bars for weather setting
-    //core::rect<s32>(0.01*su,0.05*sh,0.35*su,0.15*sh)
-    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.38*su, 0.05*sh,0.40*su, 0.19*sh),guiWindow,GUI_ID_VISIBILITY_SCROLLBAR);
-    rainBar = guienv->addScrollBar(false,core::rect<s32>(0.41*su, 0.05*sh,0.43*su, 0.19*sh),guiWindow,GUI_ID_RAIN_SCROLLBAR);
-    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.44*su, 0.05*sh,0.46*su, 0.19*sh),guiWindow,GUI_ID_WEATHER_SCROLLBAR);
+    //TODO: Move left by 0.04*su
+    visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.32*su, 0.05*sh,0.34*su, 0.19*sh),guiWindow,GUI_ID_VISIBILITY_SCROLLBAR);
+    rainBar = guienv->addScrollBar(false,core::rect<s32>(0.345*su, 0.05*sh,0.365*su, 0.19*sh),guiWindow,GUI_ID_RAIN_SCROLLBAR);
+    weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.37*su, 0.05*sh,0.39*su, 0.19*sh),guiWindow,GUI_ID_WEATHER_SCROLLBAR);
 
     visibilityBar->setToolTipText(language->translate("visibility").c_str());
     rainBar->setToolTipText(language->translate("rain").c_str());
