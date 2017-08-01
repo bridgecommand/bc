@@ -128,6 +128,14 @@ int main (int argc, char ** argv)
         worldName = network.findWorldName();
     }
 
+    //Update screen once more
+    patienceText->setText(language.translate("loadingMap").c_str());
+    if (device->run()) {
+        driver->beginScene();
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+    }
+
     patienceText->remove();
     patienceWindow->remove();
     if (worldName.size() == 0) {

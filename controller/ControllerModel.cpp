@@ -104,23 +104,22 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     //irr::u32 widthFromHeight = loadedSize.Height * widthToHeight;
     //irr::u32 heightFromWidth = loadedSize.Width / widthToHeight;
     //Always scale bigger if needed
-    std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
+    //std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
     for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
         irr::f32 scaling;
-        //Todo: Store this so in increaseZoom and decreaseZoom, we don't need hardcoded ratios between zoom levels
+
+        //Todo: Implement this more sensibly
         if (i==0) {
-            scaling = 0.1;
+            scaling = 0.025;
         } else if (i==1) {
-            scaling = 0.2;
+            scaling = 0.05;
         } else if (i==2) {
-            scaling = 0.4;
+            scaling = 0.1;
         } else {
-            scaling = 0.8;
+            scaling = 0.2;
         }
         irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
         irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
-
-        //std::cout << "Required width px " << requiredWidth << " height px " << requiredHeight << std::endl;
 
         //Create scaled map with the same image format of the size required
         scaledMap[i] = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
@@ -129,6 +128,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
 
         //Save scale
         metresPerPx[i] = terrainXWidth / requiredWidth;
+
+        std::cout << "Scaled to: width px " << requiredWidth << " height px " << requiredHeight << std::endl;
 
     }
 
@@ -231,9 +232,10 @@ void ControllerModel::increaseZoom()
 {
     if(currentZoom+1<ZOOMLEVELS) {
         currentZoom++;
-        //TODO: Fix hardcoded ratio between zoom levels
-        mapOffsetX*=2;
-        mapOffsetZ*=2;
+
+        irr::f32 scaleChange = (irr::f32)scaledMap[currentZoom]->getDimension().Width/(irr::f32)scaledMap[currentZoom-1]->getDimension().Width;
+        mapOffsetX*=scaleChange;
+        mapOffsetZ*=scaleChange;
     }
 }
 
@@ -241,8 +243,9 @@ void ControllerModel::decreaseZoom()
 {
     if(currentZoom>0) {
         currentZoom--;
-        //TODO: Fix hardcoded ratio between zoom levels
-        mapOffsetX/=2;
-        mapOffsetZ/=2;
+
+        irr::f32 scaleChange = (irr::f32)scaledMap[currentZoom]->getDimension().Width/(irr::f32)scaledMap[currentZoom+1]->getDimension().Width;
+        mapOffsetX*=scaleChange;
+        mapOffsetZ*=scaleChange;
     }
 }
