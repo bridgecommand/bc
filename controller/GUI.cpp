@@ -37,6 +37,11 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
 
     //gui
 
+    //Add zoom buttons
+    zoomIn = guienv->addButton(core::rect<s32>(0.01*su,0.01*sh,0.04*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
+    zoomOut = guienv->addButton(core::rect<s32>(0.01*su,0.06*sh,0.04*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
+
+
     //Add a moveable window to put things in
     guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh),false,0,0,GUI_ID_WINDOW);
     guiWindow->getCloseButton()->setVisible(false);
@@ -70,12 +75,10 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
     //Add buttons to release and retrieve man overboard dummy
-    //TODO: Move left by 0.04*su
     releaseMOB = guienv->addButton(core::rect<s32>(0.40*su,0.05*sh,0.47*su,0.11*sh),guiWindow,GUI_ID_RELEASEMOB_BUTTON,language->translate("releaseMOB").c_str());
     retrieveMOB = guienv->addButton(core::rect<s32>(0.40*su,0.12*sh,0.47*su,0.19*sh),guiWindow,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
 
     //Scroll bars for weather setting
-    //TODO: Move left by 0.04*su
     visibilityBar = guienv->addScrollBar(false,core::rect<s32>(0.32*su, 0.05*sh,0.34*su, 0.19*sh),guiWindow,GUI_ID_VISIBILITY_SCROLLBAR);
     rainBar = guienv->addScrollBar(false,core::rect<s32>(0.345*su, 0.05*sh,0.365*su, 0.19*sh),guiWindow,GUI_ID_RAIN_SCROLLBAR);
     weatherBar = guienv->addScrollBar(false,core::rect<s32>(0.37*su, 0.05*sh,0.39*su, 0.19*sh),guiWindow,GUI_ID_WEATHER_SCROLLBAR);

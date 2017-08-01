@@ -28,6 +28,8 @@
 
 #include "GUI.hpp"
 
+#define ZOOMLEVELS 4
+
 class ControllerModel //Start of the 'Model' part of MVC
 {
 
@@ -41,6 +43,8 @@ public:
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
+    void increaseZoom();
+    void decreaseZoom();
 
 private:
 
@@ -49,7 +53,9 @@ private:
     irr::video::IVideoDriver* driver;
 
     irr::video::IImage* unscaledMap;
-    irr::video::IImage* scaledMap;
+    irr::video::IImage* scaledMap[ZOOMLEVELS];
+
+    irr::u32 currentZoom;
 
     irr::f32 terrainLong;
     irr::f32 terrainLat;
@@ -58,7 +64,7 @@ private:
     irr::f32 terrainXWidth;
     irr::f32 terrainZWidth;
 
-    irr::f32 metresPerPx;
+    irr::f32 metresPerPx[ZOOMLEVELS];
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;

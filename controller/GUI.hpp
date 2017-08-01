@@ -47,6 +47,8 @@ public:
         GUI_ID_MOVESHIP_BUTTON,
         GUI_ID_RELEASEMOB_BUTTON,
         GUI_ID_RETRIEVEMOB_BUTTON,
+        GUI_ID_ZOOMIN_BUTTON,
+        GUI_ID_ZOOMOUT_BUTTON,
         GUI_ID_WEATHER_SCROLLBAR,
         GUI_ID_RAIN_SCROLLBAR,
         GUI_ID_VISIBILITY_SCROLLBAR
@@ -95,6 +97,8 @@ private:
     irr::gui::IGUIScrollBar* visibilityBar;
     irr::gui::IGUIButton* releaseMOB;
     irr::gui::IGUIButton* retrieveMOB;
+    irr::gui::IGUIButton* zoomIn;
+    irr::gui::IGUIButton* zoomOut;
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;
 

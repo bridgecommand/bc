@@ -29,7 +29,11 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     driver = device->getVideoDriver();
 
     unscaledMap = 0;
-    scaledMap = 0;
+    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
+        scaledMap[i] = 0;
+    }
+
+    currentZoom = 0;
 
     mapOffsetX = 0;
     mapOffsetZ = 0;
@@ -97,39 +101,60 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std:
     irr::core::dimension2d<irr::u32> loadedSize = unscaledMap->getDimension();
 
     //Calculate scaling needed
-    irr::u32 widthFromHeight = loadedSize.Height * widthToHeight;
-    irr::u32 heightFromWidth = loadedSize.Width / widthToHeight;
+    //irr::u32 widthFromHeight = loadedSize.Height * widthToHeight;
+    //irr::u32 heightFromWidth = loadedSize.Width / widthToHeight;
     //Always scale bigger if needed
-    irr::u32 requiredWidth = std::max(widthFromHeight, loadedSize.Width);
-    irr::u32 requiredHeight = std::max(heightFromWidth, loadedSize.Height);
+    std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
+    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
+        irr::f32 scaling;
+        //Todo: Store this so in increaseZoom and decreaseZoom, we don't need hardcoded ratios between zoom levels
+        if (i==0) {
+            scaling = 0.1;
+        } else if (i==1) {
+            scaling = 0.2;
+        } else if (i==2) {
+            scaling = 0.4;
+        } else {
+            scaling = 0.8;
+        }
+        irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
+        irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
-    std::cout << "Required width px " << requiredWidth << " height px " << requiredHeight << std::endl;
+        //std::cout << "Required width px " << requiredWidth << " height px " << requiredHeight << std::endl;
 
-    //Create scaled map with the same image format of the size required
-    scaledMap = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
-    //Copy and scale image
-    unscaledMap->copyToScaling(scaledMap);
+        //Create scaled map with the same image format of the size required
+        scaledMap[i] = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
+        //Copy and scale image
+        unscaledMap->copyToScaling(scaledMap[i]);
+
+        //Save scale
+        metresPerPx[i] = terrainXWidth / requiredWidth;
+
+    }
 
     //Drop the unscaled map, as we don't need this again
     unscaledMap->drop();
     unscaledMap=0;
 
-    //Save scale
-    metresPerPx = terrainXWidth / requiredWidth;
-
-    std::cout << "Actual width px " << scaledMap->getDimension().Width << " height px " << scaledMap->getDimension().Height << std::endl;
+//    std::cout << "Actual width px " << scaledMap->getDimension().Width << " height px " << scaledMap->getDimension().Height << std::endl;
 
 }
 
 //Destructor
 ControllerModel::~ControllerModel()
 {
-    scaledMap->drop();
+    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
+        scaledMap[i]->drop();
+    }
+
 }
 
 void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData)
 {
-    //std::cout << mouseDown << std::endl;
+    //Check if current zoom is valid, if not return.
+    if(!(currentZoom<ZOOMLEVELS)) {
+        return;
+    }
 
     //Find mouse position change if clicked, and clicked last time
     if (mouseClickedLastUpdate && mouseDown) {
@@ -149,14 +174,14 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
-    irr::video::IImage* tempImage = driver->createImage(scaledMap->getColorFormat(),screenSize); //Empty image
+    irr::video::IImage* tempImage = driver->createImage(scaledMap[currentZoom]->getColorFormat(),screenSize); //Empty image
     tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData.Z/metresPerPx    + driver->getScreenSize().Height/2 - scaledMap->getDimension().Height + mapOffsetZ;
+    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx[currentZoom] + driver->getScreenSize().Width/2 + mapOffsetX;
+    irr::s32 topLeftZ = ownShipData.Z/metresPerPx[currentZoom]    + driver->getScreenSize().Height/2 - scaledMap[currentZoom]->getDimension().Height + mapOffsetZ;
 
-    scaledMap->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
+    scaledMap[currentZoom]->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     //Drop any previous textures
     for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
@@ -171,7 +196,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx,ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx[currentZoom],ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
 }
 
 void ControllerModel::resetOffset()
@@ -200,4 +225,24 @@ void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from even
 void ControllerModel::setMouseDown(bool isMouseDown)
 {
     mouseDown = isMouseDown;
+}
+
+void ControllerModel::increaseZoom()
+{
+    if(currentZoom+1<ZOOMLEVELS) {
+        currentZoom++;
+        //TODO: Fix hardcoded ratio between zoom levels
+        mapOffsetX*=2;
+        mapOffsetZ*=2;
+    }
+}
+
+void ControllerModel::decreaseZoom()
+{
+    if(currentZoom>0) {
+        currentZoom--;
+        //TODO: Fix hardcoded ratio between zoom levels
+        mapOffsetX/=2;
+        mapOffsetZ/=2;
+    }
 }
