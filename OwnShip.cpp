@@ -209,18 +209,36 @@ void OwnShip::setRudder(irr::f32 rudder)
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     //Set the rudder (-ve is port, +ve is stbd)
     this->rudder = rudder;
+    if (this->rudder<-30) {
+        this->rudder = -30;
+    }
+    if (this->rudder>30) {
+        this->rudder = 30;
+    }
 }
 
 void OwnShip::setPortEngine(irr::f32 port)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     portEngine = port; //+-1
+    if (portEngine>1) {
+        portEngine = 1;
+    }
+    if (portEngine<-1) {
+        portEngine = -1;
+    }
 }
 
 void OwnShip::setStbdEngine(irr::f32 stbd)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     stbdEngine = stbd; //+-1
+    if (stbdEngine>1) {
+        stbdEngine = 1;
+    }
+    if (stbdEngine<-1) {
+        stbdEngine = -1;
+    }
 }
 
 irr::f32 OwnShip::getPortEngine() const

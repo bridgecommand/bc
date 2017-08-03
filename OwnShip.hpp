@@ -41,9 +41,9 @@ class OwnShip : public Ship
         bool hasGPS() const;
         bool hasDepthSounder() const;
         irr::f32 getMaxSounderDepth() const;
-        void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd)
-        void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1
-        void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1
+        void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
+        void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
+        void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1

@@ -512,6 +512,40 @@ using namespace irr;
                             model->releaseManOverboard();
                             break;
 
+                        //Keyboard control of engines
+                        case KEY_KEY_A:
+                            //Increase port engine revs:
+                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_Z:
+                            //Decrease port engine revs:
+                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_S:
+                            //Increase stbd engine revs:
+                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_X:
+                            //Decrease stbd engine revs:
+                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_D:
+                            //Increase stbd and port engine revs:
+                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_C:
+                            //Decrease stbd engine revs:
+                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                            break;
+                        case KEY_KEY_V:
+                            model->setRudder(model->getRudder()-5);
+                            break;
+                        case KEY_KEY_B:
+                            model->setRudder(model->getRudder()+5);
+                            break;
+
                         default:
                             //don't do anything
                             break;

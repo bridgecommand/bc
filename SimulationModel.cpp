@@ -392,16 +392,16 @@ SimulationModel::~SimulationModel()
     void SimulationModel::setPortEngine(irr::f32 port)
     {
         //Set the engine, (-ve astern, +ve ahead)
-        ownShip.setPortEngine(port);
+        ownShip.setPortEngine(port); //This method limits the range applied
     }
 
     void SimulationModel::setStbdEngine(irr::f32 stbd)
     {
         //Set the engine, (-ve astern, +ve ahead)
-        ownShip.setStbdEngine(stbd);
+        ownShip.setStbdEngine(stbd); //This method limits the range applied
     }
 
-    /*irr::f32 SimulationModel::getPortEngine() const
+    irr::f32 SimulationModel::getPortEngine() const
     {
         return ownShip.getPortEngine();
     }
@@ -409,7 +409,7 @@ SimulationModel::~SimulationModel()
     irr::f32 SimulationModel::getStbdEngine() const
     {
         return ownShip.getStbdEngine();
-    }*/
+    }
 
     irr::f32 SimulationModel::getPortEngineRPM() const
     {
