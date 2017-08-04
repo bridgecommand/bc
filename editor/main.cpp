@@ -189,8 +189,19 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     scenarioOK->remove();
     worldOK->remove();
     multiplayerBox->remove();
-    scnWorldChoiceWindow->remove();
     device->setEventReceiver(0);
+
+    //Show patience message
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language->translate("loadingMap").c_str(),core::rect<s32>(0.01*su,0.04*sh,0.95*su,0.95*sh),false,true,scnWorldChoiceWindow);
+    if (device->run()) {
+        driver->beginScene();
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+    }
+
+    //Finish cleaning up
+    patienceText->remove();
+    scnWorldChoiceWindow->remove();
 
 }
 
