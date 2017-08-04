@@ -47,7 +47,7 @@ sunRise="Sun rise"
 sunSet="Sun set"
 scenario="Scenario name"
 apply="Apply"
-save="Save & Exit"
+save="Save"
 
 saved="Saved"
 failed="Failed"
