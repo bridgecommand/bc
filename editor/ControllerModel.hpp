@@ -30,6 +30,8 @@
 #include "GUI.hpp"
 #include "../Lang.hpp"
 
+#define ZOOMLEVELS 4
+
 class ControllerModel //Start of the 'Model' part of MVC
 {
 
@@ -64,6 +66,8 @@ public:
     void save();
 
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
+    void increaseZoom();
+    void decreaseZoom();
 
 private:
 
@@ -80,7 +84,8 @@ private:
     std::string worldName;
 
     irr::video::IImage* unscaledMap;
-    irr::video::IImage* scaledMap;
+    irr::video::IImage* scaledMap[ZOOMLEVELS];
+    irr::u32 currentZoom;
 
     irr::f32 terrainLong;
     irr::f32 terrainLat;
@@ -89,7 +94,7 @@ private:
     irr::f32 terrainXWidth;
     irr::f32 terrainZWidth;
 
-    irr::f32 metresPerPx;
+    irr::f32 metresPerPx[ZOOMLEVELS];
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;

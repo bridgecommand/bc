@@ -38,8 +38,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     //gui
 
     //Add zoom buttons
-    zoomIn = guienv->addButton(core::rect<s32>(0.01*su,0.01*sh,0.04*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
-    zoomOut = guienv->addButton(core::rect<s32>(0.01*su,0.06*sh,0.04*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
+    zoomIn = guienv->addButton(core::rect<s32>(0.96*su,0.01*sh,0.99*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
+    zoomOut = guienv->addButton(core::rect<s32>(0.96*su,0.06*sh,0.99*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
 
 
     //Add a moveable window to put things in

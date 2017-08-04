@@ -43,6 +43,15 @@ using namespace irr;
 
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
+
+                if (id == GUIMain::GUI_ID_ZOOMIN_BUTTON) {
+                    model->increaseZoom();
+                }
+
+                if (id == GUIMain::GUI_ID_ZOOMOUT_BUTTON) {
+                    model->decreaseZoom();
+                }
+
                 if (id == GUIMain::GUI_ID_CHANGE_BUTTON) {
                     //Get data from gui
 

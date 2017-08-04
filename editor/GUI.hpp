@@ -40,6 +40,8 @@ public:
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
+        GUI_ID_ZOOMIN_BUTTON,
+        GUI_ID_ZOOMOUT_BUTTON,
         GUI_ID_CHANGE_BUTTON,
 //        GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDSHIP_BUTTON,
@@ -91,6 +93,9 @@ private:
 
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
+
+    irr::gui::IGUIButton* zoomIn;
+    irr::gui::IGUIButton* zoomOut;
 
     irr::gui::IGUIWindow* guiWindow;
     irr::gui::IGUIWindow* generalDataWindow;
