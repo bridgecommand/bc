@@ -2,4 +2,6 @@
 *.d
 *.depend
 *.layout
+*~
+.*
 Thumbs.db
