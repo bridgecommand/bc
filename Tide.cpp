@@ -86,3 +86,10 @@ irr::f32 Tide::getTideHeight() {
     return tideHeight;
 }
 
+irr::core::vector2df Tide::getTidalStream(irr::f32 posX, irr::f32 posZ, uint64_t absoluteTime) const {
+    irr::core::vector2df tidalStream;
+    tidalStream.X = 0; //Speed in metres per second in X direction (+ve is motion towards East)
+    tidalStream.Y = 10; //Speed in metres per second in Z direction (+ve is motion towards North)
+    return tidalStream;
+}
+

@@ -40,7 +40,8 @@ public:
     virtual ~Tide();
     void load(const std::string& worldName);
     void update(uint64_t absoluteTime);
-    irr::f32 getTideHeight();
+    irr::f32 getTideHeight(); //To be called after update(time)
+    irr::core::vector2df getTidalStream(irr::f32 posX, irr::f32 posZ, uint64_t absoluteTime) const; //Does not need update() to be called before this
 
 private:
     irr::f32 tideHeight;
