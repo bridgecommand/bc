@@ -23,10 +23,11 @@
 
 using namespace irr;
 
-ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model)
+ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain)
 {
 
     this->model=model;
+    this->terrain=terrain;
 
     std::string basePath = "Models/ManOverboard/";
     std::string userFolder = Utilities::getUserDir();
@@ -120,10 +121,20 @@ void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     man->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
 }
 
-void ManOverboard::update(irr::f32 tideHeight)
+void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
     //Move with tide and waves
     core::vector3df pos=getPosition();
     pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+
+    //Move with tidal stream (if not aground)
+    f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
+    irr::core::vector2df stream = model->getTidalStream(pos.X,pos.Z,model->getTimestamp());
+    if (depth > 0) {
+        f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
+        pos.X += stream.X*deltaTime*streamScaling;
+        pos.Z += stream.Y*deltaTime*streamScaling;
+    }
+
     setPosition(pos);
 }

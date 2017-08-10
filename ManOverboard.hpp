@@ -21,23 +21,25 @@
 
 //Forward declarations
 class SimulationModel;
+class Terrain;
 
 class ManOverboard
 {
     public:
-        ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model);
+        ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain);
         irr::core::vector3df getPosition() const;
         void setVisible(bool isVisible);
         bool getVisible() const;
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 tideHeight);
+        void update(irr::f32 deltaTime, irr::f32 tideHeight);
         irr::scene::ISceneNode* getSceneNode() const;
     protected:
     private:
         irr::scene::IMeshSceneNode* man; //The scene node for the man overboard model.
         SimulationModel* model;
+        Terrain* terrain;
 };
 
 #endif

@@ -33,7 +33,7 @@
 using namespace irr;
 
 SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance):
-    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this) //Initialise MOB
+    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -760,7 +760,7 @@ SimulationModel::~SimulationModel()
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
 
         //update man overboard
-        manOverboard.update(tideHeight);
+        manOverboard.update(deltaTime, tideHeight);
 
         //Check for collisions
         bool collided = checkOwnShipCollision();
