@@ -17,6 +17,7 @@
 #include "Tide.hpp"
 #include "IniFile.hpp"
 #include "Utilities.hpp"
+#include "Constants.hpp"
 #include <iostream>
 
 using namespace irr;
@@ -79,6 +80,7 @@ void Tide::update(uint64_t absoluteTime) {
         }
 
     }
+    //std::cout << "Last high tide time:" << Utilities::timestampToString(highTideTime(absoluteTime,-1)) << std::endl;
 
 }
 
@@ -89,7 +91,57 @@ irr::f32 Tide::getTideHeight() {
 irr::core::vector2df Tide::getTidalStream(irr::f32 posX, irr::f32 posZ, uint64_t absoluteTime) const {
     irr::core::vector2df tidalStream;
     tidalStream.X = 0; //Speed in metres per second in X direction (+ve is motion towards East)
-    tidalStream.Y = 10; //Speed in metres per second in Z direction (+ve is motion towards North)
+    tidalStream.Y = 00; //Speed in metres per second in Z direction (+ve is motion towards North)
+
+
+
     return tidalStream;
 }
 
+irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {
+    //return der(TideHeight) (in ?? units)
+    //tim is absolute time tide is required for
+    //TO BE TESTED!
+
+    f32 timeHours = f32(absoluteTime)/SECONDS_IN_HOUR;
+	f32 der=0;
+
+	for (unsigned int i=1; i<tidalHarmonics.size(); i++) { //0th component has no gradient
+        //;HarmonicHeight#=Tide(i,0)*Cos( Tide(i,1) + tim_hours*Tide(i,2)) ;tide(n,0) is amplitude, 1 is offset (rad), 2 is speed (rad/s)
+		f32 harmonicAngle=tidalHarmonics.at(i).offset+timeHours*tidalHarmonics.at(i).speed;
+		//reduce to range 0 to 360
+		harmonicAngle=harmonicAngle-floor(harmonicAngle/360)*360;
+
+		f32 harmonicDer=-1*tidalHarmonics.at(i).speed*tidalHarmonics.at(i).amplitude*sin(harmonicAngle*core::DEGTORAD);
+		//
+		//	;a cos (w t + c)
+		//	;->
+		//	;-wa sin(w t + c)
+
+		der = der + harmonicDer;
+	}
+	return der;
+}
+
+uint64_t Tide::highTideTime(uint startSearchTime, int searchDirection) const {
+//find the next high tide time in s before or after start_search_time. if search_direction is positive, search forward in time
+//do this by finding when sum of derivatives of harmonics goes from +ve to -ve
+
+	if (searchDirection > 0) {
+        //look forward in time
+		for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=10*60) {
+			if (getTideGradient(t - 10*60) > 0 && getTideGradient(t + 10*60) < 0) {
+				return t;
+			}
+		}
+	} else {
+        //look back in time
+		for (uint64_t t = startSearchTime-10*60; t>=startSearchTime-SECONDS_IN_DAY; t-=10*60) {
+			if (getTideGradient(t - 10*60) > 0 && getTideGradient(t + 10*60) < 0) {
+				return t;
+			}
+		}
+	}
+	//no time found, return 0
+	return 0;
+}

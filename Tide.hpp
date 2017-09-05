@@ -46,7 +46,8 @@ public:
 private:
     irr::f32 tideHeight;
     std::vector<tidalHarmonic> tidalHarmonics;
-
+    irr::f32 getTideGradient(uint64_t absoluteTime) const; //return der(TideHeight) (in ?? units)
+    uint64_t highTideTime(uint startSearchTime, int searchDirection=1) const; //Find previous or next high tide time
 
 };
 
