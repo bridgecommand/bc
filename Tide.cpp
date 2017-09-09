@@ -123,7 +123,7 @@ irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {
 	return der;
 }
 
-uint64_t Tide::highTideTime(uint startSearchTime, int searchDirection) const {
+uint64_t Tide::highTideTime(uint64_t startSearchTime, int searchDirection) const {
 //find the next high tide time in s before or after start_search_time. if search_direction is positive, search forward in time
 //do this by finding when sum of derivatives of harmonics goes from +ve to -ve
 
@@ -148,7 +148,7 @@ uint64_t Tide::highTideTime(uint startSearchTime, int searchDirection) const {
 	return 0;
 }
 
-uint64_t Tide::lowTideTime(uint startSearchTime, int searchDirection) const {
+uint64_t Tide::lowTideTime(uint64_t startSearchTime, int searchDirection) const {
 //find the next low tide time in s before or after start_search_time. if search_direction is positive, search forward in time
 //do this by finding when sum of derivatives of harmonics goes from -ve to +ve
 
