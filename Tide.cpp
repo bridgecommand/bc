@@ -147,3 +147,28 @@ uint64_t Tide::highTideTime(uint startSearchTime, int searchDirection) const {
 	//no time found, return 0
 	return 0;
 }
+
+uint64_t Tide::lowTideTime(uint startSearchTime, int searchDirection) const {
+//find the next low tide time in s before or after start_search_time. if search_direction is positive, search forward in time
+//do this by finding when sum of derivatives of harmonics goes from -ve to +ve
+
+    int timestep = 10*60; //Find to nearest 10 minutes
+
+	if (searchDirection > 0) {
+        //look forward in time
+		for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=timestep) {
+			if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
+				return t;
+			}
+		}
+	} else {
+        //look back in time
+		for (uint64_t t = startSearchTime-timestep; t>=startSearchTime-SECONDS_IN_DAY; t-=timestep) {
+			if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
+				return t;
+			}
+		}
+	}
+	//no time found, return 0
+	return 0;
+}
