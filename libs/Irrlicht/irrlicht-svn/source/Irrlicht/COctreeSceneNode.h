@@ -5,7 +5,11 @@
 #ifndef __C_OCTREE_SCENE_NODE_H_INCLUDED__
 #define __C_OCTREE_SCENE_NODE_H_INCLUDED__
 
+#ifdef __APPLE__
 #include "../../Include/IOctreeSceneNode.h"
+#else
+#include "IOctreeSceneNode.h"
+#endif
 #include "Octree.h"
 
 namespace irr

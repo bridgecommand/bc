@@ -14,7 +14,11 @@
 #include "IParticleSystemSceneNode.h"
 #include "ILightSceneNode.h"
 #include "IMeshSceneNode.h"
+#ifdef __APPLE__
 #include "../../Include/IOctreeSceneNode.h"
+#else
+#include "IOctreeSceneNode.h"
+#endif
 
 namespace irr
 {
