@@ -2436,6 +2436,8 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1";
 				INSTALL_PATH = /;
 				ONLY_ACTIVE_ARCH = YES;
+                CLANG_CXX_LIBRARY = "libc++";
+                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Debug;
 		};
@@ -2445,6 +2447,8 @@
 				DEPLOYMENT_LOCATION = YES;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "NDEBUG=1";
 				INSTALL_PATH = /;
+                CLANG_CXX_LIBRARY = "libc++";
+                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
 		};
@@ -2480,6 +2484,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Irrlicht;
 				SDKROOT = macosx;
+                CLANG_CXX_LIBRARY = "libc++";
+                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Debug;
 		};
@@ -2513,6 +2519,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = Irrlicht;
 				SDKROOT = macosx;
+                CLANG_CXX_LIBRARY = "libc++";
+                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
 		};
