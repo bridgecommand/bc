@@ -23,8 +23,8 @@
 namespace IniFile
 {
     extern irr::ILogger* irrlichtLogger;
-    std::string enumerate1(std::string commandName, irr::u32 number);
-    std::string enumerate2(std::string commandName, irr::u32 number1, irr::u32 number2);
+    std::string enumerate1(std::string commandName, irr::s32 number);
+    std::string enumerate2(std::string commandName, irr::s32 number1, irr::s32 number2);
     std::string iniFileToString(std::string fileName, std::string command);
     std::wstring iniFileToWString(std::string fileName, std::wstring command);
     irr::u32 iniFileTou32(std::string fileName, std::string command);

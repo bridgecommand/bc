@@ -59,6 +59,36 @@ void Tide::load(const std::string& worldName) {
         tidalHarmonics.push_back(loadingHarmonic);
     }
 
+    std::string tidalStreamFilename = worldName;
+    tidalStreamFilename.append("/tidalstream.ini");
+    meanRangeSprings = IniFile::iniFileTof32(tidalStreamFilename,"MeanRangeSprings");
+    meanRangeNeaps = IniFile::iniFileTof32(tidalStreamFilename,"MeanRangeNeaps");
+    irr::u32 numberOfDiamonds = IniFile::iniFileTou32(tidalStreamFilename,"Number");
+
+    //Load other components
+    tidalDiamond loadingDiamond;
+    for(u32 i=1;i<=numberOfDiamonds; i++) {
+        loadingDiamond.longitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Long",i));
+        loadingDiamond.latitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Lat",i));
+
+        //Load and convert SpeedN, SpeedS and Direction into speedXNeaps, speedXSprings etc in m/s for each hour between 6 before to 6 after high tide
+        for(int j = 0; j<13; j++) {
+            int hour = j-6;
+            f32 speedNeaps = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedN",i,hour));
+            f32 speedSprings = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedS",i,hour));
+            f32 streamDirection = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("Direction",i,hour));
+            loadingDiamond.speedXSprings[i] = sin(streamDirection*core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedZSprings[i] = cos(streamDirection*core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedXNeaps[i] = sin(streamDirection*core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            loadingDiamond.speedZNeaps[i] = cos(streamDirection*core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            //std::cout << "Loading hour " << hour << " where direction is " << streamDirection << std::endl;
+            //std::cout << "Loading from: " << IniFile::enumerate2("Direction",i,hour) << std::endl;
+        }
+
+        tidalDiamonds.push_back(loadingDiamond);
+
+    }
+
 }
 
 void Tide::update(uint64_t absoluteTime) {
@@ -80,7 +110,12 @@ void Tide::update(uint64_t absoluteTime) {
         }
 
     }
-    //std::cout << "Last high tide time:" << Utilities::timestampToString(highTideTime(absoluteTime,-1)) << std::endl;
+
+
+    //Find time to nearest high tide. TideHour is time since high water, -ve if before high water, +ve if after
+    f32 tideHour = ((f32)absoluteTime - (f32)highTideTime(absoluteTime)) / SECONDS_IN_HOUR; //TODO: Check precision on this. Note we need to convert to signed number before subtraction!
+
+
 
 }
 
@@ -101,7 +136,6 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 posX, irr::f32 posZ, uint64_t
 irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {
     //return der(TideHeight) (in ?? units)
     //tim is absolute time tide is required for
-    //TO BE TESTED!
 
     f32 timeHours = f32(absoluteTime)/SECONDS_IN_HOUR;
 	f32 der=0;
@@ -127,6 +161,17 @@ uint64_t Tide::highTideTime(uint64_t startSearchTime, int searchDirection) const
 //find the next high tide time in s before or after start_search_time. if search_direction is positive, search forward in time
 //do this by finding when sum of derivatives of harmonics goes from +ve to -ve
 
+//If searchDirection is 0, find the nearest high tide (by gradient climb)
+
+
+    if (searchDirection==0) {
+        if (getTideGradient(startSearchTime) > 0) { //Tide is rising
+            searchDirection = 1;
+        } else {
+            searchDirection = -1;
+        }
+    }
+
     int timestep = 10*60; //Find to nearest 10 minutes
 
 	if (searchDirection > 0) {
@@ -151,6 +196,16 @@ uint64_t Tide::highTideTime(uint64_t startSearchTime, int searchDirection) const
 uint64_t Tide::lowTideTime(uint64_t startSearchTime, int searchDirection) const {
 //find the next low tide time in s before or after start_search_time. if search_direction is positive, search forward in time
 //do this by finding when sum of derivatives of harmonics goes from -ve to +ve
+
+//If searchDirection is 0, find the nearest high tide (by gradient climb)
+
+    if (searchDirection==0) {
+        if (getTideGradient(startSearchTime) < 0) { //Tide is falling
+            searchDirection = 1;
+        } else {
+            searchDirection = -1;
+        }
+    }
 
     int timestep = 10*60; //Find to nearest 10 minutes
 

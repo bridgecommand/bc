@@ -30,7 +30,7 @@ using namespace irr;
 //Utility functions
 namespace IniFile
 {
-    std::string enumerate1(std::string commandName, irr::u32 number)
+    std::string enumerate1(std::string commandName, irr::s32 number)
     //Build up a command in the format 'commandName(#)'
     {
         std::string ans = commandName;
@@ -41,7 +41,7 @@ namespace IniFile
         return ans;
     }
 
-    std::string enumerate2(std::string commandName, irr::u32 number1, irr::u32 number2)
+    std::string enumerate2(std::string commandName, irr::s32 number1, irr::s32 number2)
     //Build up a command in the format 'commandName(#,#)'
     {
         std::string ans = commandName;
