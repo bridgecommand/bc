@@ -129,7 +129,7 @@ void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 
     //Move with tidal stream (if not aground)
     f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
-    irr::core::vector2df stream = model->getTidalStream(pos.X,pos.Z,model->getTimestamp());
+    irr::core::vector2df stream = model->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
     if (depth > 0) {
         f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
         pos.X += stream.X*deltaTime*streamScaling;

@@ -58,18 +58,22 @@ public:
     virtual ~Tide();
     void load(const std::string& worldName);
     void update(uint64_t absoluteTime);
-    irr::f32 getTideHeight(); //To be called after update(time)
-    irr::core::vector2df getTidalStream(irr::f32 posX, irr::f32 posZ, uint64_t absoluteTime) const; //Does not need update() to be called before this
+    irr::f32 getTideHeight() const; //To be called after update(time)
+    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const; //Does not need update() to be called before this
 
 private:
+    uint64_t highTideTime(uint64_t startSearchTime, int searchDirection=0) const; //Find previous or next high tide time. Search direction of 0 gives the nearest one (by gradient climb), positive gives next, and negative gives previous
+    uint64_t lowTideTime(uint64_t startSearchTime, int searchDirection=0) const; //Find previous or next low tide time.  Search direction of 0 gives the nearest one (by gradient descent), positive gives next, and negative gives previous
+    irr::f32 calcTideHeight(uint64_t absoluteTime) const;
+
     irr::f32 tideHeight;
+    //irr::core::vector2df tidalStream; //Speed in m/s
     std::vector<tidalHarmonic> tidalHarmonics;
     std::vector<tidalDiamond> tidalDiamonds;
     irr::f32 meanRangeSprings; //For tidal stream
     irr::f32 meanRangeNeaps;  //For tidal stream
     irr::f32 getTideGradient(uint64_t absoluteTime) const; //return der(TideHeight) (in ?? units)
-    uint64_t highTideTime(uint64_t startSearchTime, int searchDirection=0) const; //Find previous or next high tide time. Search direction of 0 gives the nearest one (by gradient climb), positive gives next, and negative gives previous
-    uint64_t lowTideTime(uint64_t startSearchTime, int searchDirection=0) const; //Find previous or next low tide time.  Search direction of 0 gives the nearest one (by gradient descent), positive gives next, and negative gives previous
+
 
 };
 

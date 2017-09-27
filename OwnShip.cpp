@@ -387,7 +387,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         xPos += sin(hdg*core::DEGTORAD)*spd*deltaTime;
         zPos += cos(hdg*core::DEGTORAD)*spd*deltaTime;
         //Apply tidal stream, based on our current absolute position
-        irr::core::vector2df stream = model->getTidalStream(model->getPosX(),model->getPosZ(),model->getTimestamp());
+        irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
         if (getDepth() > 0) {
             f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
             xPos += stream.X*deltaTime*streamScaling;
