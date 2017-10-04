@@ -21,6 +21,7 @@
 #include "Utilities.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 using namespace irr;
 
