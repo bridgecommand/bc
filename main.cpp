@@ -165,7 +165,9 @@ int main()
 
     //create device
     SIrrlichtCreationParameters deviceParameters;
-    deviceParameters.DriverType = video::EDT_OPENGL;
+    //deviceParameters.DriverType = video::EDT_OPENGL;
+	deviceParameters.DriverType = video::EDT_DIRECT3D9;
+
     deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     deviceParameters.Fullscreen = fullScreen;
