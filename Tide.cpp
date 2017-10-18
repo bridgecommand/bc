@@ -130,6 +130,7 @@ irr::f32 Tide::calcTideHeight(uint64_t absoluteTime) const {
 
 irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
 
+	//Default return value
     core::vector2df tidalStream;
     tidalStream.X = 0;
     tidalStream.Y = 0;
@@ -154,7 +155,7 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 
         f32 distanceToDiamond = std::pow(std::pow(distanceToDiamondLat,2) + std::pow(distanceToDiamondLong*cos(latitude*core::DEGTORAD),2),0.5)/60;
         f32 thisWeight;
-        if (distanceToDiamond > 0.001) {
+        if (fabs(distanceToDiamond) > 0.001) {
             thisWeight = 1/distanceToDiamond;
         } else {
             thisWeight = 1000;
@@ -199,26 +200,30 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 
     }
 
-    f32 localXNeaps = weightedSumXNeaps/totalWeight;
-    f32 localZNeaps = weightedSumZNeaps/totalWeight;
-    f32 localXSprings = weightedSumXSprings/totalWeight;
-    f32 localZSprings = weightedSumZSprings/totalWeight;
+	if (totalWeight > 0) {
 
-    //Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
-    f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
-    if (rangeOfDay <= meanRangeNeaps) {
-        tidalStream.X = localXNeaps;
-        tidalStream.Y = localZNeaps;
-    } else if (rangeOfDay >= meanRangeSprings) {
-        tidalStream.X = localXSprings;
-        tidalStream.Y = localZSprings;
-    } else if ((meanRangeSprings-meanRangeNeaps) > 0) {
-        f32 springsInterp = (rangeOfDay-meanRangeNeaps)/(meanRangeSprings-meanRangeNeaps);
-        tidalStream.X = localXNeaps*(1-springsInterp)+localXSprings*springsInterp;
-        tidalStream.Y = localZNeaps*(1-springsInterp)+localZSprings*springsInterp;
-    }
+		f32 localXNeaps = weightedSumXNeaps / totalWeight;
+		f32 localZNeaps = weightedSumZNeaps / totalWeight;
+		f32 localXSprings = weightedSumXSprings / totalWeight;
+		f32 localZSprings = weightedSumZSprings / totalWeight;
+
+		//Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
+		f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
+		if (rangeOfDay <= meanRangeNeaps) {
+			tidalStream.X = localXNeaps;
+			tidalStream.Y = localZNeaps;
+		}
+		else if (rangeOfDay >= meanRangeSprings) {
+			tidalStream.X = localXSprings;
+			tidalStream.Y = localZSprings;
+		}
+		else if ((meanRangeSprings - meanRangeNeaps) > 0) {
+			f32 springsInterp = (rangeOfDay - meanRangeNeaps) / (meanRangeSprings - meanRangeNeaps);
+			tidalStream.X = localXNeaps*(1 - springsInterp) + localXSprings*springsInterp;
+			tidalStream.Y = localZNeaps*(1 - springsInterp) + localZSprings*springsInterp;
+		}
+	} 
     return tidalStream;
-
 }
 
 irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {

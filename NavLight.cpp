@@ -34,7 +34,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
 
     //TODO: Implement for directX as well
-    irr::s32 shader;
+    irr::s32 shader=0;
     if (smgr->getVideoDriver()->getDriverType() == irr::video::EDT_OPENGL) {
     shader = smgr->getVideoDriver()->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
             "shaders/NavLight_vs.glsl",
