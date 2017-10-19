@@ -62,8 +62,8 @@ namespace Utilities
             if (std::is_floating_point<T>::value) {
 				var = (T)std::numeric_limits<float>::infinity();
             } else {
-				var = 1000000000; //FIXME: Temporary fix 
-				//std::numeric_limits<T>::max();
+				//var = 1000000000; //FIXME: Temporary fix 
+				var = (std::numeric_limits<T>::max)();
             }
         } else if (
             in.compare("-inf")==0 ||
@@ -72,16 +72,13 @@ namespace Utilities
             in.compare("-INFINITY")==0
         ) {
            //-inf
-			var = -1000000000; //FIXME: Temporary fix
-            /*
+			//var = -1000000000; //FIXME: Temporary fix
 			if (std::is_floating_point<T>::value) {
-                var = -(T)std::numeric_limits<float>::infinity();
+                var = (T)std::numeric_limits<float>::infinity();
+				var = -1.0 * var;
             } else {
                 var = std::numeric_limits<T>::lowest();
             }
-			*/
-
-
         } else {
             std::stringstream iss;
             iss << in;
