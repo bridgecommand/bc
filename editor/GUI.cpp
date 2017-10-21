@@ -257,7 +257,11 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     displayText.append(f32To3dp(lonMinutes).c_str());
     displayText.append(language->translate("minSymbol"));
     displayText.append(eastWest);
-    displayText.append(L"\n");
+    displayText.append(L" (");
+    displayText.append(f32To4dp(mapCentreLat).c_str());
+    displayText.append(L",");
+    displayText.append(f32To4dp(mapCentreLong).c_str());
+    displayText.append(L")\n");
 
     //Display
     dataDisplay->setText(displayText.c_str());
@@ -797,10 +801,18 @@ std::string GUIMain::getScenarioName() const {
     return scenarioNameString;
 }
 
-std::wstring GUIMain::f32To3dp(irr::f32 value)
+std::wstring GUIMain::f32To3dp(irr::f32 value) const
 {
     //Convert a floating point value to a wstring, with 3dp
     char tempStr[100];
     snprintf(tempStr,100,"%.3f",value);
+    return std::wstring(tempStr, tempStr+strlen(tempStr));
+}
+
+std::wstring GUIMain::f32To4dp(irr::f32 value) const
+{
+    //Convert a floating point value to a wstring, with 3dp
+    char tempStr[100];
+    snprintf(tempStr,100,"%.4f",value);
     return std::wstring(tempStr, tempStr+strlen(tempStr));
 }
