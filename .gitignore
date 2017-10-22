@@ -4,4 +4,8 @@
 *.layout
 *~
 .*
+*.obj
+*.tlog
+*.log
+*.pdb
 Thumbs.db

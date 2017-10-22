@@ -75,6 +75,7 @@ graphics_mode=2
 graphics_width=800
 graphics_height=600
 graphics_depth=32
+use_directX=1
 anti_alias=4
 view_angle=90
 look_angle=0
@@ -139,6 +140,7 @@ NMEA_ComPort=""
 <li>graphics_width: This sets the screen width. If running full screen, this should be a width your graphics card supports.</li>
 <li>graphics_height: This sets the screen height. It should be 0.75x the graphics_width value, and should also be supported by your graphics card.</li>
 <li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
+<li>use_directX: This is set to 1 to use DirectX 9 if available, or 0 to use OpenGL. Depending on your graphics card, DirectX may be better supported on Windows.</li>
 <li>anti_alias: Number of pixels for anti-aliasing the rendered view, to avoid jagged pixels on sharp edges (eg where then land and sky meet). 0 to disable, default value is 4.
 <li>view_angle: The angle of view for the 3d window in degrees</li>
 <li>look_angle: (Optional) The initial view bearing in degrees, relative to the ship's head. If not set, this defaults to zero, i.e. looking straight ahead.</li>

@@ -96,6 +96,7 @@ int main()
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
     u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+    u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
 
     //Initial view configuration
     f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
@@ -166,6 +167,15 @@ int main()
     //create device
     SIrrlichtCreationParameters deviceParameters;
     deviceParameters.DriverType = video::EDT_OPENGL;
+	//Allow optional directX if available
+	if (directX==1) {
+        if (IrrlichtDevice::isDriverSupported(video::EDT_DIRECT3D9)) {
+            deviceParameters.DriverType = video::EDT_DIRECT3D9;
+        } else {
+            std::cout << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
+        }
+	}
+
     deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     deviceParameters.Fullscreen = fullScreen;
@@ -247,7 +257,7 @@ int main()
         std::string pathToMake = Utilities::getUserDirBase();
         if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
         #ifdef _WIN32
-        mkdir(pathToMake.c_str());
+        _mkdir(pathToMake.c_str());
         #else
         mkdir(pathToMake.c_str(),0755);
         #endif // _WIN32
@@ -256,7 +266,7 @@ int main()
         std::string pathToMake = Utilities::getUserDir();
         if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
         #ifdef _WIN32
-        mkdir(pathToMake.c_str());
+        _mkdir(pathToMake.c_str());
         #else
         mkdir(pathToMake.c_str(),0755);
         #endif // _WIN32

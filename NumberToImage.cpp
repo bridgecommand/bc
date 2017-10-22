@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "NumberToImage.hpp"
+#include <vector>
 
 using namespace irr;
 
@@ -28,13 +29,15 @@ namespace NumberToImage
     {
 
         core::stringc numberString = core::stringc(number);
-        u32 length = numberString.size();
+        const u32 length = numberString.size();
         //u32 imageWidth = length * CHAR_WIDTH;
         //u32 imageHeight = CHAR_HEIGHT;
 
         if (length > 0) {
 
-            video::IImage* numberImages[length];
+			std::vector<video::IImage*> numberImages;
+			numberImages.resize(length);
+            //video::IImage* numberImages[length];
             u32 overallWidth = 0;
             u32 maxHeight = 0;
             //video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, core::dimension2d<u32>(imageWidth, imageHeight));

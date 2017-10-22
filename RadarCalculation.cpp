@@ -34,7 +34,7 @@
 
 using namespace irr;
 
-RadarCalculation::RadarCalculation()
+RadarCalculation::RadarCalculation() : rangeResolution(64)
 {
     //Initial values for controls, all 0-100:
     radarGain = 50;
@@ -55,7 +55,7 @@ RadarCalculation::RadarCalculation()
     largestARPADisplayId = 0;
 
     //initialise scanArray size (360 x rangeResolution points per scan)
-    rangeResolution = 64;
+    //rangeResolution = 64; now set initialiser list
     scanArray.resize(360,std::vector<f32>(rangeResolution,0.0));
     scanArrayAmplified.resize(360,std::vector<f32>(rangeResolution,0.0));
     scanArrayAmplifiedPrevious.resize(360,std::vector<f32>(rangeResolution,0.0));
@@ -799,11 +799,15 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
 
     //precalculate cell max/min range for speed outside nested loop
-    irr::f32 cellMinRange [rangeResolution];
-    irr::f32 cellMaxRange [rangeResolution];
-    for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
-        cellMinRange[currentStep] = ((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
-        cellMaxRange[currentStep] = ((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
+	std::vector<irr::f32> cellMinRange;
+	std::vector<irr::f32> cellMaxRange;
+	//irr::f32 cellMinRange [rangeResolution];
+    //irr::f32 cellMaxRange [rangeResolution];
+	cellMinRange.push_back(0);
+	cellMaxRange.push_back(0);
+    for (u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that we start with the element at 1, so we've already pushed in a dummy entry at 0
+        cellMinRange.push_back((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
+        cellMaxRange.push_back((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
     }
 
     for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
