@@ -28,7 +28,7 @@
 //Forward declarations
 class SimulationModel;
 class OtherShip;
-class RadarData;
+struct RadarData;
 class OtherShipData;
 
 class OtherShips
