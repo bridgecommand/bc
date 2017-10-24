@@ -14,6 +14,8 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
+
 #include "GUI.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
@@ -681,6 +683,7 @@ int GUIMain::getSelectedLeg() const {
     //Note that this returns the leg, starting at 0 (Different from controller implementation, which starts at 1 (not 0))
     return legSelector->getSelected();
 }
+
 
 std::string GUIMain::getOwnShipTypeSelected() const {
     //Todo: Instead of this, should probably use the strings directly from 'std::vector<std::string> ownShipTypes'
