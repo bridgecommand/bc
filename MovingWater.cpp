@@ -57,11 +57,11 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
     if(driverType==irr::video::EDT_DIRECT3D9)
         shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
-            "shaders/shader.hlsl",
-            "vs_main",
+            "shaders/Water_vs.hlsl",
+            "main",
             irr::video::EVST_VS_2_0,
-            "shaders/shader.hlsl",
-            "ps_main",
+            "shaders/Water_ps.hlsl",
+            "main",
             irr::video::EPST_PS_2_0,
             this, //For callbacks
             irr::video::EMT_SOLID

@@ -47,7 +47,20 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
             irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL
             //irr::video::EMT_SOLID
             );
-    }
+	}
+	else {
+		shader = smgr->getVideoDriver()->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+			"shaders/NavLight.hlsl",
+			"vs_main",
+			irr::video::EVST_VS_2_0,
+			"shaders/NavLight.hlsl",
+			"ps_main",
+			irr::video::EPST_PS_2_0,
+			this, //For callbacks
+			irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL
+			//irr::video::EMT_SOLID
+		);
+	}
 
     shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
 
