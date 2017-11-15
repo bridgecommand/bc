@@ -35,7 +35,7 @@ Water::~Water()
     //dtor
 }
 
-void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
+void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, irr::u32 disableShaders)
 {
 
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -45,7 +45,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather)
     tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
 
 
-    waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,0);
+    waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,0,disableShaders);
 
     //waterNode->setPosition(core::vector3df(0,-0.25f,0));
 

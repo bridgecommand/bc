@@ -37,6 +37,7 @@ namespace scene
 
 		//! constructor
 		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
+			irr::u32 disableShaders,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0)
 			);
@@ -92,6 +93,7 @@ namespace scene
         int idSeaState;
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
+		irr::u32 disableShaders;
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
         irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
