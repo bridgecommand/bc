@@ -267,7 +267,7 @@ int main (int argc, char ** argv)
             std::string pathToMake = Utilities::getUserDirBase();
             if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
             #ifdef _WIN32
-            mkdir(pathToMake.c_str());
+            _mkdir(pathToMake.c_str());
             #else
             mkdir(pathToMake.c_str(),0755);
             #endif // _WIN32
@@ -276,7 +276,7 @@ int main (int argc, char ** argv)
             std::string pathToMake = Utilities::getUserDir();
             if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
             #ifdef _WIN32
-            mkdir(pathToMake.c_str());
+            _mkdir(pathToMake.c_str());
             #else
             mkdir(pathToMake.c_str(),0755);
             #endif // _WIN32

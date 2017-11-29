@@ -26,7 +26,7 @@
 class SimulationModel;
 class Buoy;
 class NavLight;
-class RadarData;
+struct RadarData;
 
 class Buoys
 {

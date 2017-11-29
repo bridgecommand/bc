@@ -52,7 +52,7 @@ public:
                 s32 id = event.GUIEvent.Caller->getID();
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
+                        _execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -65,7 +65,7 @@ public:
                 }
                 if (id == MC_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
+                        _execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -78,7 +78,7 @@ public:
                 }
                 if (id == RP_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
+                        _execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -91,7 +91,7 @@ public:
                 }
                 if (id == ED_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
+                        _execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -104,7 +104,7 @@ public:
                 }
                 if (id == MH_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
+                        _execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -118,7 +118,7 @@ public:
 
                 if (id == INI_BC_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
+                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -131,7 +131,7 @@ public:
                 }
                 if (id == INI_MC_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
+                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -144,7 +144,7 @@ public:
                 }
                 if (id == INI_RP_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
+                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -157,7 +157,7 @@ public:
                 }
                 if (id == INI_MH_BUTTON) {
                     #ifdef _WIN32
-                        execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
+                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE

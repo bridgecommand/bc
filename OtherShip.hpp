@@ -27,7 +27,7 @@
 #include <cmath>
 #include <vector>
 
-class RadarData;
+struct RadarData;
 
 class OtherShip : public Ship
 {

@@ -22,7 +22,7 @@
 #include <string>
 #include <cmath>
 
-class RadarData;
+struct RadarData;
 
 class Buoy
 {

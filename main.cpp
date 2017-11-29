@@ -97,7 +97,10 @@ int main()
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
     u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
     u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
-
+	u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
+	if (directX == 1) {
+		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
+	}
     //Initial view configuration
     f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
     f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
@@ -313,7 +316,7 @@ int main()
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance);
+    SimulationModel model(device, smgr, &guiMain, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

@@ -2,10 +2,13 @@
 *.d
 *.depend
 *.layout
+*.cscope_file_list
 *~
 .*
 *.obj
 *.tlog
 *.log
 *.pdb
+*.iobj
+*.ipdb
 Thumbs.db

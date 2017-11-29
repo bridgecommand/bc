@@ -31,10 +31,10 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, irr::u32 disableShaders,
 		const core::vector3df& position, const core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -55,29 +55,30 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
     //So far there are no materials ready to use a cubemap, so we provide our own.
     irr::s32 shader;
 
-    if(driverType==irr::video::EDT_DIRECT3D9)
-        shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
-            "shaders/shader.hlsl",
-            "vs_main",
-            irr::video::EVST_VS_2_0,
-            "shaders/shader.hlsl",
-            "ps_main",
-            irr::video::EPST_PS_2_0,
-            this, //For callbacks
-            irr::video::EMT_SOLID
-            );
-    else //OpenGL
-        shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
-            "shaders/Water_vs.glsl",
-            "main",
-            irr::video::EVST_VS_2_0,
-            "shaders/Water_ps.glsl",
-            "main",
-            irr::video::EPST_PS_2_0,
-            this, //For callbacks
-            irr::video::EMT_SOLID
-            );
-
+	if (!disableShaders) {
+		if (driverType == irr::video::EDT_DIRECT3D9)
+			shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+				"shaders/Water_vs.hlsl",
+				"main",
+				irr::video::EVST_VS_2_0,
+				"shaders/Water_ps.hlsl",
+				"main",
+				irr::video::EPST_PS_2_0,
+				this, //For callbacks
+				irr::video::EMT_SOLID
+			);
+		else //OpenGL
+			shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+				"shaders/Water_vs.glsl",
+				"main",
+				irr::video::EVST_VS_2_0,
+				"shaders/Water_ps.glsl",
+				"main",
+				irr::video::EPST_PS_2_0,
+				this, //For callbacks
+				irr::video::EMT_SOLID
+			);
+	}
     shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
 
 	//FIXME: Hardcoded or defined in multiple places
@@ -116,39 +117,44 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
     */
 
     //Create local camera for reflections
-	_camera = mgr->addCameraSceneNode(0, core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), -1, false);
-	irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
+	if (!disableShaders) {
+		_camera = mgr->addCameraSceneNode(0, core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), -1, false);
+		irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
 
-	//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
-	_reflectionMap = driver->addRenderTargetTexture(core::dimension2d<u32>(512,512)); //TODO: Check hardcoding here
-
-
-    for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
-    {
-        scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
-        if (mb)
-        {
-            mb->getMaterial().setTexture(0,bumpTexture);
-            mb->getMaterial().setTexture(1,_reflectionMap);
-            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
-            mb->getMaterial().FogEnable = true;
-        }
-    }
+		//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
+		_reflectionMap = driver->addRenderTargetTexture(core::dimension2d<u32>(512, 512)); //TODO: Check hardcoding here
 
 
-    for (u32 i=0; i<flatMesh->getMeshBufferCount(); ++i)
-    {
-        scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
-        if (mb)
-        {
-            mb->getMaterial().setTexture(0,bumpTexture);
-            mb->getMaterial().setTexture(1,_reflectionMap);
-            mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
-            mb->getMaterial().FogEnable = true;
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
+		{
+			scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+			if (mb)
+			{
+				mb->getMaterial().setTexture(0, bumpTexture);
+				mb->getMaterial().setTexture(1, _reflectionMap);
+				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+				mb->getMaterial().FogEnable = true;
+			}
+		}
 
-        }
-    }
 
+		for (u32 i = 0; i < flatMesh->getMeshBufferCount(); ++i)
+		{
+			scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
+			if (mb)
+			{
+				mb->getMaterial().setTexture(0, bumpTexture);
+				mb->getMaterial().setTexture(1, _reflectionMap);
+				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
+				mb->getMaterial().FogEnable = true;
+
+			}
+		}
+	}
+	else {
+		_camera = 0;
+		_reflectionMap = 0;
+	}
 
 
     //Hard code bounding box to be large - we always want to render water, and we actually render multiple displaced copies of the mesh, so just getting the mesh bounding box isn't correct.
@@ -206,61 +212,62 @@ void MovingWaterSceneNode::resetParameters(float A, vector2 w, float seaState)
 void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
 {
     //From Mel's cubemap demo
-    if(firstRun) {
-        firstRun = false;
+	if (!disableShaders) {
+		if (firstRun) {
+			firstRun = false;
 
-        driver = services->getVideoDriver();
-        //Looking for our constants IDs...
-        matViewInverse = services->getVertexShaderConstantID("matViewInverse");
-        matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
-        idLightLevel = services->getVertexShaderConstantID("lightLevel");
-        idSeaState = services->getVertexShaderConstantID("seaState");
+			driver = services->getVideoDriver();
+			//Looking for our constants IDs...
+			matViewInverse = services->getVertexShaderConstantID("matViewInverse");
+			matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+			idLightLevel = services->getVertexShaderConstantID("lightLevel");
+			idSeaState = services->getVertexShaderConstantID("seaState");
 
-        if(IsOpenGL)
-        {
-            baseMap = services->getPixelShaderConstantID("baseMap");
-            reflectionMap = services->getPixelShaderConstantID("reflectionMap");
-        }
-        else
-        {
-            matWorldViewProjection=services->getVertexShaderConstantID("matWorldViewProjection");
-            matWorld = services->getVertexShaderConstantID("matWorld");
-        }
-    }
+			if (IsOpenGL)
+			{
+				baseMap = services->getPixelShaderConstantID("baseMap");
+				reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+			}
+			else
+			{
+				matWorldViewProjection = services->getVertexShaderConstantID("matWorldViewProjection");
+				matWorld = services->getVertexShaderConstantID("matWorld");
+			}
+		}
 
-    //Setting up our constants...
-    irr::core::matrix4 mat;
+		//Setting up our constants...
+		irr::core::matrix4 mat;
 
-    mat = driver->getTransform(irr::video::ETS_VIEW);
-    mat.makeInverse();
-    services->setVertexShaderConstant(matViewInverse,mat.pointer(),16);
+		mat = driver->getTransform(irr::video::ETS_VIEW);
+		mat.makeInverse();
+		services->setVertexShaderConstant(matViewInverse, mat.pointer(), 16);
 
-    core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
-    worldReflectionViewProj *= _camera->getViewMatrix();;
-    worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
-    services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+		core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
+		worldReflectionViewProj *= _camera->getViewMatrix();;
+		worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
+		services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
 
-    if(IsOpenGL)
-    {
-        int sampler=0;
-        services->setPixelShaderConstant(baseMap,&sampler,1);
-        sampler=1;
-        services->setPixelShaderConstant(reflectionMap,&sampler,1);
-        services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
-        services->setPixelShaderConstant(idSeaState, &seaState, 1);
-    }
-    else
-    {
-        mat = driver->getTransform(irr::video::ETS_PROJECTION);
-        mat *= driver->getTransform(irr::video::ETS_VIEW);
-        mat *= driver->getTransform(irr::video::ETS_WORLD);
-        services->setVertexShaderConstant(matWorldViewProjection,mat.pointer(),16);
+		if (IsOpenGL)
+		{
+			int sampler = 0;
+			services->setPixelShaderConstant(baseMap, &sampler, 1);
+			sampler = 1;
+			services->setPixelShaderConstant(reflectionMap, &sampler, 1);
+			services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
+			services->setPixelShaderConstant(idSeaState, &seaState, 1);
+		}
+		else
+		{
+			mat = driver->getTransform(irr::video::ETS_PROJECTION);
+			mat *= driver->getTransform(irr::video::ETS_VIEW);
+			mat *= driver->getTransform(irr::video::ETS_WORLD);
+			services->setVertexShaderConstant(matWorldViewProjection, mat.pointer(), 16);
 
-        mat = driver->getTransform(irr::video::ETS_WORLD);
-        services->setVertexShaderConstant(matWorld,mat.pointer(),16);
-    }
-    //End from Mel's cubemap demo
-
+			mat = driver->getTransform(irr::video::ETS_WORLD);
+			services->setVertexShaderConstant(matWorld, mat.pointer(), 16);
+		}
+		//End from Mel's cubemap demo
+	}
 
 }
 
@@ -326,7 +333,7 @@ void MovingWaterSceneNode::OnAnimate(u32 timeMs)
 	//Fixme: Need to store timeMs in something accessible to the shader for ripples
 
 	//Render reflection to texture
-	if (IsVisible)
+	if (IsVisible && !disableShaders)
 	{
 		//fixes glitches with incomplete refraction
         const f32 CLIP_PLANE_OFFSET_Y = 0.0f;
@@ -621,6 +628,11 @@ void MovingWaterSceneNode::setMaterialTexture(u32 textureLayer, video::ITexture 
     for (u32 i = 0; i<mesh->getMeshBufferCount(); i++) {
         mesh->getMeshBuffer(i)->getMaterial().setTexture(textureLayer, texture);
     }
+
+	//also set for far mesh
+	for (u32 i = 0; i<flatMesh->getMeshBufferCount(); i++) {
+		flatMesh->getMeshBuffer(i)->getMaterial().setTexture(textureLayer, texture);
+	}
     //for (u32 i=0; i<getMaterialCount(); ++i)
     //    getMaterial(i).setTexture(textureLayer, texture);
 }

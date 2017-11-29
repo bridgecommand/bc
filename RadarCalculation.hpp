@@ -29,7 +29,7 @@ class Terrain;
 class OwnShip;
 class Buoys;
 class OtherShips;
-class RadarData;
+struct RadarData;
 
 enum ARPA_CONTACT_TYPE {
     CONTACT_NORMAL,

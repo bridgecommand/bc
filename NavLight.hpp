@@ -21,7 +21,7 @@
 
 #include "irrlicht.h"
 
-class NavLight : public irr::video::IShaderConstantSetCallBack {
+class NavLight {
 
     public:
         NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="", irr::u32 phaseStart=0);
@@ -30,7 +30,6 @@ class NavLight : public irr::video::IShaderConstantSetCallBack {
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData);
 
     private:
         irr::scene::ISceneManager* smgr;
@@ -41,11 +40,9 @@ class NavLight : public irr::video::IShaderConstantSetCallBack {
         std::string sequence;
         irr::f32 charTime; //Time in seconds per character in sequence
         irr::f32 timeOffset;
-        //irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
-        //bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
-        bool firstRun;
-        irr::f32 lightLevel;
-        irr::s32 idLightLevel;
+        irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
+        bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
+        //irr::f32 lightLevel;
 };
 
 #endif
