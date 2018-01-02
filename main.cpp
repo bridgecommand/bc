@@ -50,6 +50,8 @@
 #include <mach-o/dyld.h>
 #endif
 
+#include <sndfile.h>
+
 //Global definition for ini logger
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
@@ -60,6 +62,10 @@ using namespace irr;
 
 int main()
 {
+
+	char buf[1024];
+	sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
+	std::cout << buf << std::endl;
 
     //Mac OS:
 	#ifdef __APPLE__
