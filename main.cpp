@@ -51,6 +51,7 @@
 #endif
 
 #include <sndfile.h>
+#include <portaudio.h>
 
 //Global definition for ini logger
 namespace IniFile {
@@ -66,6 +67,13 @@ int main()
 	char buf[1024];
 	sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
 	std::cout << buf << std::endl;
+
+
+	PaError portAudioError;
+	portAudioError = Pa_Initialize();
+	if (portAudioError == paNoError) {
+		std::cout << Pa_GetVersionText() << std::endl;
+	}
 
     //Mac OS:
 	#ifdef __APPLE__
