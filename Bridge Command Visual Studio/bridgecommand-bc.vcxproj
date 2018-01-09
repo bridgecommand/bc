@@ -182,6 +182,7 @@
     <ClCompile Include="..\Ship.cpp" />
     <ClCompile Include="..\SimulationModel.cpp" />
     <ClCompile Include="..\Sky.cpp" />
+    <ClCompile Include="..\Sound.cpp" />
     <ClCompile Include="..\StartupEventReceiver.cpp" />
     <ClCompile Include="..\Terrain.cpp" />
     <ClCompile Include="..\Tide.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="..\Ship.hpp" />
     <ClInclude Include="..\SimulationModel.hpp" />
     <ClInclude Include="..\Sky.hpp" />
+    <ClInclude Include="..\Sound.hpp" />
     <ClInclude Include="..\StartupEventReceiver.hpp" />
     <ClInclude Include="..\Terrain.hpp" />
     <ClInclude Include="..\Tide.hpp" />

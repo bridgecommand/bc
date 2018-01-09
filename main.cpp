@@ -29,6 +29,7 @@
 #include "Constants.hpp"
 #include "Lang.hpp"
 #include "NMEA.hpp"
+#include "Sound.hpp"
 #include "Utilities.hpp"
 #include "OperatingModeEnum.hpp"
 
@@ -50,8 +51,6 @@
 #include <mach-o/dyld.h>
 #endif
 
-#include <sndfile.h>
-#include <portaudio.h>
 
 //Global definition for ini logger
 namespace IniFile {
@@ -63,17 +62,6 @@ using namespace irr;
 
 int main()
 {
-
-	char buf[1024];
-	sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
-	std::cout << buf << std::endl;
-
-
-	PaError portAudioError;
-	portAudioError = Pa_Initialize();
-	if (portAudioError == paNoError) {
-		std::cout << Pa_GetVersionText() << std::endl;
-	}
 
     //Mac OS:
 	#ifdef __APPLE__
@@ -264,6 +252,9 @@ int main()
     if (Utilities::pathExists(userFolder + "/hostname.txt")) {
         hostname=IniFile::iniFileToString(userFolder + "/hostname.txt","hostname");
     }
+
+	//Start sound
+	Sound soundModel;
 
     OperatingMode::Mode mode = OperatingMode::Normal;
     ScenarioChoice scenarioChoice(device,&language);
