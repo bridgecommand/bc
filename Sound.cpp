@@ -1,3 +1,4 @@
+//Proof of principle - source from https://github.com/hosackm/wavplayer/blob/master/main.c
 /*   Bridge Command 5.0 Ship Simulator
 Copyright (C) 2018 James Packer
 
@@ -28,12 +29,63 @@ Sound::Sound() {
 		std::cout << Pa_GetVersionText() << std::endl;
 	}
 
+	/* Open the soundfile */
+	data.file = sf_open("Sounds/Bwave.wav", SFM_READ, &data.info);
+
+	if (sf_error(file) != SF_ERR_NO_ERROR)
+	{
+		fprintf(stderr, "%s\n", sf_strerror(file));
+	}
+
+
+	/* Open PaStream with values read from the file */
+	portAudioError = Pa_OpenDefaultStream(&stream
+		, 0                     /* no input */
+		, data.info.channels         /* stereo out */
+		, paFloat32             /* floating point */
+		, data.info.samplerate
+		, FRAMES_PER_BUFFER
+		, callback
+		, &data);        /* our sndfile data struct */
+	if (portAudioError != paNoError)
+	{
+		fprintf(stderr, "Problem opening Default Stream\n");
+		
+	}
+
+	std::cout << "At end of sound constructor" << std::endl;
+
 	
+
+}
+
+void Sound::StartSound() {
+	/* Start the stream */
+	
+	std::cout << "At start of sound start" << std::endl;
+	
+	portAudioError = Pa_StartStream(stream);
+	if (portAudioError != paNoError)
+	{
+		fprintf(stderr, "Problem opening starting Stream\n");
+	}
+
+	std::cout << "At end of sound start" << std::endl;
 }
 
 Sound::~Sound() {
+	
+	portAudioError = Pa_CloseStream(stream);
+	if (portAudioError != paNoError)
+	{
+		fprintf(stderr, "Problem closing stream\n");
+	}
+	
 	portAudioError = Pa_Terminate();
 	if (portAudioError == paNoError) {
 		std::cout << "PortAudio terminated" << std::endl;
 	}
+
+	/* Close the soundfile */
+	sf_close(file);
 }

@@ -357,6 +357,8 @@ int main()
 //    Profiler guiProfile("GUI render");
 //    Profiler renderFinishProfile("Render finish");
 
+	soundModel.StartSound();
+
     //main loop
     while(device->run())
     {
