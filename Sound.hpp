@@ -50,36 +50,39 @@ private:
 		, void                           *userData
 	)
 	{
-		std::cout << "At start of callback" << std::endl;
 		float           *out;
 		callback_data_s *p_data = (callback_data_s*)userData;
 		sf_count_t       num_read;
 
-		std::cout << "Callback 1" << std::endl;
-
 		out = (float*)output;
 		p_data = (callback_data_s*)userData;
-		std::cout << p_data << std::endl;
-
-		std::cout << "Callback 2" << std::endl;
 
 		/* clear output buffer */
 		memset(out, 0, sizeof(float) * frameCount * p_data->info.channels);
 
-		std::cout << "Callback 3" << std::endl;
-
 		/* read directly into output buffer */
 		num_read = sf_read_float(p_data->file, out, frameCount * p_data->info.channels);
 
-		std::cout << "Callback 4" << std::endl;
-
 		/*  If we couldn't read a full frameCount of samples we've reached EOF */
+		//Try to restart
 		if (num_read < frameCount)
 		{
-			return paComplete;
-		}
+			
+			sf_count_t seekLocation =  sf_seek(p_data->file, 0, SEEK_SET);
+			if (seekLocation == -1) {
+				return paComplete;
+			}
+			
+			//Read again
+			/* read directly into output buffer */
+			num_read = sf_read_float(p_data->file, out, frameCount * p_data->info.channels);
 
-		std::cout << "Callback 5" << std::endl;
+			/*  If we couldn't read a full frameCount of samples we've reached EOF */
+			if (num_read < frameCount) {
+				return paComplete;
+			}
+
+		}
 
 		return paContinue;
 	}

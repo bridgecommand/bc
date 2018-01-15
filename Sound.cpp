@@ -22,7 +22,6 @@ Sound::Sound() {
 	
 	char buf[1024];
 	sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
-	std::cout << buf << std::endl;
 
 	portAudioError = Pa_Initialize();
 	if (portAudioError == paNoError) {
@@ -53,7 +52,6 @@ Sound::Sound() {
 		
 	}
 
-	std::cout << "At end of sound constructor" << std::endl;
 
 	
 
@@ -62,15 +60,12 @@ Sound::Sound() {
 void Sound::StartSound() {
 	/* Start the stream */
 	
-	std::cout << "At start of sound start" << std::endl;
-	
 	portAudioError = Pa_StartStream(stream);
 	if (portAudioError != paNoError)
 	{
 		fprintf(stderr, "Problem opening starting Stream\n");
 	}
 
-	std::cout << "At end of sound start" << std::endl;
 }
 
 Sound::~Sound() {
