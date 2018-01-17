@@ -30,12 +30,9 @@ Sound::Sound() {
 
 	/* Open the soundfile */
 	data.file = sf_open("Sounds/Bwave.wav", SFM_READ, &data.info);
-
-	if (sf_error(file) != SF_ERR_NO_ERROR)
-	{
-		fprintf(stderr, "%s\n", sf_strerror(file));
+	if (sf_error(data.file) != SF_ERR_NO_ERROR) {
+		fprintf(stderr, "%s\n", sf_strerror(data.file));
 	}
-
 
 	/* Open PaStream with values read from the file */
 	portAudioError = Pa_OpenDefaultStream(&stream
@@ -48,12 +45,9 @@ Sound::Sound() {
 		, &data);        /* our sndfile data struct */
 	if (portAudioError != paNoError)
 	{
-		fprintf(stderr, "Problem opening Default Stream\n");
-		
+		fprintf(stderr, "Problem opening Default Stream\n");	
 	}
 
-
-	
 
 }
 
@@ -82,5 +76,5 @@ Sound::~Sound() {
 	}
 
 	/* Close the soundfile */
-	sf_close(file);
+	sf_close(data.file);
 }

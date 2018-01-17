@@ -89,7 +89,7 @@ private:
 
 	PaError portAudioError;
 	PaStream *stream;
-	SNDFILE *file;
+	//SNDFILE *file;
 	callback_data_s data;
 
 };
