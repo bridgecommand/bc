@@ -21,6 +21,7 @@
 #include "Terrain.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
+#include "Sound.hpp"
 
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -32,7 +33,7 @@
 
 using namespace irr;
 
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders):
+SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -40,6 +41,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         smgr = scene;
         driver = scene->getVideoDriver();
         guiMain = gui;
+		this->sound = sound;
         isMouseDown = false;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
@@ -397,17 +399,24 @@ SimulationModel::~SimulationModel()
     {
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setPortEngine(port); //This method limits the range applied
+		
+		//Set engine sound level
+		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
     }
 
     void SimulationModel::setStbdEngine(irr::f32 stbd)
     {
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setStbdEngine(stbd); //This method limits the range applied
+
+		//Set engine sound level
+		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
     }
 
     irr::f32 SimulationModel::getPortEngine() const
     {
         return ownShip.getPortEngine();
+
     }
 
     irr::f32 SimulationModel::getStbdEngine() const
@@ -716,6 +725,14 @@ SimulationModel::~SimulationModel()
         //To be used directly, eg when in secondary display mode only
         manOverboard.setPosition(core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
     }
+
+	void SimulationModel::startHorn() {
+		sound->setVolumeHorn(1.0);
+	}
+
+	void SimulationModel::endHorn() {
+		sound->setVolumeHorn(0.0);
+	}
 
     void SimulationModel::update()
     {

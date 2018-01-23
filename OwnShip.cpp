@@ -131,8 +131,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
 
     //Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
-    portEngine = requiredEngineProportion(spd);
-    stbdEngine = requiredEngineProportion(spd);
+	model->setPortEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
+	model->setStbdEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
     rudder=0;
     rateOfTurn=0;
 

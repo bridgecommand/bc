@@ -476,6 +476,10 @@ using namespace irr;
                             model->setAccelerator(3600.0);
                             break;
 
+						case KEY_KEY_H:
+							model->startHorn();
+							break;
+
                         //Camera look
                         case KEY_UP:
                             model->lookUp();
@@ -552,6 +556,12 @@ using namespace irr;
                     }
                 }
             }
+		}
+
+		if (event.EventType == EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown) {
+			if (event.KeyInput.Key == KEY_KEY_H) {
+				model->endHorn();
+			}
 		}
 
 		//From joystick (actually polled, once per run():

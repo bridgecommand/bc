@@ -27,6 +27,7 @@
 //Forward declarations
 class ScenarioData;
 class GUIMain;
+class Sound;
 
 #include "Terrain.hpp"
 #include "Light.hpp"
@@ -49,7 +50,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -161,6 +162,10 @@ public:
     irr::f32 getManOverboardPosZ() const;
     void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
+	
+	void startHorn();
+	void endHorn();
+
     void update();
 
 private:
@@ -193,6 +198,7 @@ private:
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;
+	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
     ManOverboard manOverboard;
 

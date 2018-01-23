@@ -1,4 +1,3 @@
-//Proof of principle - source from https://github.com/hosackm/wavplayer/blob/master/main.c
 /*   Bridge Command 5.0 Ship Simulator
 Copyright (C) 2018 James Packer
 
@@ -14,6 +13,8 @@ GNU General Public License For more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+
+//Based on sample code from https://github.com/hosackm/wavplayer/blob/master/main.c
 
 #ifndef __SOUND_HPP_INCLUDED__
 #define __SOUND_HPP_INCLUDED__
@@ -33,6 +34,12 @@ public:
 	Sound();
 	~Sound();
 	void StartSound();
+	void setVolumeWave(float vol);
+	void setVolumeEngine(float vol);
+	void setVolumeHorn(float vol);
+	float getVolumeWave() const;
+	float getVolumeEngine() const;
+	float getVolumeHorn() const;
 
 private:
 

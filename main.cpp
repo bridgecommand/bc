@@ -321,7 +321,7 @@ int main()
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
+    SimulationModel model(device, smgr, &guiMain, &soundModel, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

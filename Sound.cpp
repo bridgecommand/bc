@@ -1,4 +1,3 @@
-//Proof of principle - source from https://github.com/hosackm/wavplayer/blob/master/main.c
 /*   Bridge Command 5.0 Ship Simulator
 Copyright (C) 2018 James Packer
 
@@ -15,13 +14,15 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+//Based on sample code from https://github.com/hosackm/wavplayer/blob/master/main.c
+
 #include "Sound.hpp"
 #include <iostream>
 
 //Volumes, should be in range 0-1
 float Sound::hornVolume = 0.0;
 float Sound::waveVolume = 1.0;
-float Sound::engineVolume=0.25;
+float Sound::engineVolume=0.0;
 
 Sound::Sound() {
 
@@ -86,6 +87,30 @@ void Sound::StartSound() {
 		}
 	}
 
+}
+
+void Sound::setVolumeWave(float vol) {
+	Sound::waveVolume = vol;
+}
+
+void Sound::setVolumeEngine(float vol) {
+	Sound::engineVolume = vol;
+}
+
+void Sound::setVolumeHorn(float vol) {
+	Sound::hornVolume = vol;
+}
+
+float Sound::getVolumeWave() const {
+	return Sound::waveVolume;
+}
+
+float Sound::getVolumeEngine() const {
+	return Sound::engineVolume;
+}
+
+float Sound::getVolumeHorn() const {
+	return Sound::hornVolume;
 }
 
 Sound::~Sound() {
