@@ -24,7 +24,14 @@ float Sound::hornVolume = 0.0;
 float Sound::waveVolume = 1.0;
 float Sound::engineVolume=0.0;
 
+bool Sound::waveSoundLoaded = false;
+bool Sound::hornSoundLoaded = false;
+
 Sound::Sound() {
+
+}
+
+void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {
 
 	soundLoaded = false;
 
@@ -36,34 +43,43 @@ Sound::Sound() {
 		return;
 	}
 
-	/* Open the soundfiles */
-	data.fileWave = sf_open("Sounds/Bwave.wav", SFM_READ, &data.infoWave);
-	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
-		return;
-	}
-
-	data.fileEngine = sf_open("Sounds/Engine.wav", SFM_READ, &data.infoEngine);
+	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
 	if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
 		return;
 	}
 
-	data.fileHorn = sf_open("Sounds/horn.wav", SFM_READ, &data.infoHorn);
+	/* Open the soundfiles */
+	data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
+	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
+		return;
+	}
+	
+	data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
 	if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
 		return;
 	}
 
 	//Check key parameters are the same
-	if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.channels != data.infoHorn.channels || data.infoWave.samplerate != data.infoEngine.samplerate || data.infoWave.samplerate != data.infoHorn.samplerate) {
-		std::cout << "Inconsistent formats of wave, engine or horn sounds, sound not loaded." << std::endl;
-		return;
+	if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.samplerate != data.infoEngine.samplerate) {
+		//Check wave vs engine
+		std::cout << "Inconsistent formats of wave and engine sounds, wave sound not loaded." << std::endl;
+	} else {
+		waveSoundLoaded = true;
+	}
+
+	if (data.infoHorn.channels != data.infoEngine.channels || data.infoHorn.samplerate != data.infoEngine.samplerate ) {
+		//Check wave vs engine
+		std::cout << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
+	} else {
+		hornSoundLoaded = true;
 	}
 
 	/* Open PaStream with values read from the file - all should be same, so any can be used*/
 	portAudioError = Pa_OpenDefaultStream(&stream
 		, 0                     /* no input */
-		, data.infoWave.channels         /* stereo out */
+		, data.infoEngine.channels         /* stereo out */
 		, paFloat32             /* floating point */
-		, data.infoWave.samplerate
+		, data.infoEngine.samplerate
 		, FRAMES_PER_BUFFER
 		, callback
 		, &data);        /* our sndfile data struct */

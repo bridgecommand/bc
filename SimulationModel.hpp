@@ -107,6 +107,10 @@ public:
     void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void deleteOtherShipLeg(int shipNumber, int legNumber);
+	std::string getOwnShipEngineSound() const;
+	std::string getOwnShipWaveSound() const;
+	std::string getOwnShipHornSound() const;
+
 
     void setWeather(irr::f32 weather); //Range 0-12.
     irr::f32 getWeather() const;

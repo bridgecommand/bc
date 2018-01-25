@@ -254,7 +254,7 @@ int main()
     }
 
 	//Start sound
-	Sound soundModel;
+	Sound sound;
 
     OperatingMode::Mode mode = OperatingMode::Normal;
     ScenarioChoice scenarioChoice(device,&language);
@@ -321,7 +321,7 @@ int main()
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &soundModel, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
@@ -335,6 +335,9 @@ int main()
 
     //create NMEA serial port and UDP, linked to model
     NMEA nmea(&model, nmeaSerialPortName, nmeaUDPAddressName, nmeaUDPPortName, device);
+
+	//Load sound files
+	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound());
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
@@ -357,7 +360,7 @@ int main()
 //    Profiler guiProfile("GUI render");
 //    Profiler renderFinishProfile("Render finish");
 
-	soundModel.StartSound();
+	sound.StartSound();
 
     //main loop
     while(device->run())

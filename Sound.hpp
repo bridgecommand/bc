@@ -33,6 +33,7 @@ public:
 
 	Sound();
 	~Sound();
+	void load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile);
 	void StartSound();
 	void setVolumeWave(float vol);
 	void setVolumeEngine(float vol);
@@ -58,6 +59,8 @@ private:
 	static float engineVolume;
 
 	bool soundLoaded;
+	static bool waveSoundLoaded;
+	static bool hornSoundLoaded;
 	PaError portAudioError;
 	PaStream *stream;
 	//SNDFILE *file;
@@ -79,39 +82,18 @@ private:
 		out = (float*)output;
 		p_data = (callback_data_s*)userData;
 
-		//Note that we've ensured already that channels are the same for all files
+		//Note that we've ensured already that channels are the same for all files, if both waveSoundLoaded and hornSoundLoaded are true
 
 		/* clear output buffer */
-		memset(out, 0, sizeof(float) * frameCount * p_data->infoWave.channels);
+		memset(out, 0, sizeof(float) * frameCount * p_data->infoEngine.channels);
 
 		//Create three buffers, for wave, engine and horn
-		std::vector<float> waveBuffer(sizeof(float) * frameCount * p_data->infoWave.channels);
 		std::vector<float> engineBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
-		std::vector<float> hornBuffer(sizeof(float) * frameCount * p_data->infoHorn.channels);
+		std::vector<float> waveBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
+		std::vector<float> hornBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
 
 		/* read into buffers */
-		num_read = sf_read_float(p_data->fileWave, waveBuffer.data(), frameCount * p_data->infoWave.channels);
-		/*  If we couldn't read a full frameCount of samples we've reached EOF */
-		//Try to restart
-		if (num_read < frameCount)
-		{
-
-			sf_count_t seekLocation = sf_seek(p_data->fileWave, 0, SEEK_SET);
-			if (seekLocation == -1) {
-				return paComplete;
-			}
-
-			//Read again
-			/* read directly into output buffer */
-			num_read = sf_read_float(p_data->fileWave, waveBuffer.data(), frameCount * p_data->infoWave.channels);
-
-			/*  If we couldn't read a full frameCount of samples we've reached EOF */
-			if (num_read < frameCount) {
-				return paComplete;
-			}
-		}
-
-		num_read = sf_read_float(p_data->fileEngine, engineBuffer.data(), frameCount * p_data->infoWave.channels);
+		num_read = sf_read_float(p_data->fileEngine, engineBuffer.data(), frameCount * p_data->infoEngine.channels);
 		/*  If we couldn't read a full frameCount of samples we've reached EOF */
 		//Try to restart
 		if (num_read < frameCount)
@@ -124,40 +106,70 @@ private:
 
 			//Read again
 			/* read directly into output buffer */
-			num_read = sf_read_float(p_data->fileEngine, engineBuffer.data(), frameCount * p_data->infoWave.channels);
+			num_read = sf_read_float(p_data->fileEngine, engineBuffer.data(), frameCount * p_data->infoEngine.channels);
 
 			/*  If we couldn't read a full frameCount of samples we've reached EOF */
 			if (num_read < frameCount) {
 				return paComplete;
 			}
 		}
-
-		num_read = sf_read_float(p_data->fileHorn, hornBuffer.data(), frameCount * p_data->infoWave.channels);
-		/*  If we couldn't read a full frameCount of samples we've reached EOF */
-		//Try to restart
-		if (num_read < frameCount)
-		{
-
-			sf_count_t seekLocation = sf_seek(p_data->fileHorn, 0, SEEK_SET);
-			if (seekLocation == -1) {
-				return paComplete;
-			}
-
-			//Read again
-			/* read directly into output buffer */
-			num_read = sf_read_float(p_data->fileHorn, hornBuffer.data(), frameCount * p_data->infoWave.channels);
-
+		
+		if (waveSoundLoaded) {
+			num_read = sf_read_float(p_data->fileWave, waveBuffer.data(), frameCount * p_data->infoEngine.channels);
 			/*  If we couldn't read a full frameCount of samples we've reached EOF */
-			if (num_read < frameCount) {
-				return paComplete;
+			//Try to restart
+			if (num_read < frameCount)
+			{
+
+				sf_count_t seekLocation = sf_seek(p_data->fileWave, 0, SEEK_SET);
+				if (seekLocation == -1) {
+					return paComplete;
+				}
+
+				//Read again
+				/* read directly into output buffer */
+				num_read = sf_read_float(p_data->fileWave, waveBuffer.data(), frameCount * p_data->infoEngine.channels);
+
+				/*  If we couldn't read a full frameCount of samples we've reached EOF */
+				if (num_read < frameCount) {
+					return paComplete;
+				}
+			}
+		}
+
+		if (hornSoundLoaded) {
+			num_read = sf_read_float(p_data->fileHorn, hornBuffer.data(), frameCount * p_data->infoEngine.channels);
+			/*  If we couldn't read a full frameCount of samples we've reached EOF */
+			//Try to restart
+			if (num_read < frameCount)
+			{
+
+				sf_count_t seekLocation = sf_seek(p_data->fileHorn, 0, SEEK_SET);
+				if (seekLocation == -1) {
+					return paComplete;
+				}
+
+				//Read again
+				/* read directly into output buffer */
+				num_read = sf_read_float(p_data->fileHorn, hornBuffer.data(), frameCount * p_data->infoEngine.channels);
+
+				/*  If we couldn't read a full frameCount of samples we've reached EOF */
+				if (num_read < frameCount) {
+					return paComplete;
+				}
 			}
 		}
 
 		//Copy into output buffer, with mixing
 		for (int i = 0; i < frameCount * p_data->infoWave.channels; i++) {
-			out[i] = waveVolume*waveBuffer[i]*0.33 + engineVolume*engineBuffer[i]*0.33 + hornVolume*hornBuffer[i] * 0.33;
+			out[i] = engineVolume*engineBuffer[i] * 0.33;
+			if (waveSoundLoaded) {
+				out[i] += waveVolume*waveBuffer[i] * 0.33;
+			}
+			if (hornSoundLoaded) {
+				out[i] += hornVolume*hornBuffer[i] * 0.33;
+			}
 		}
-		
 
 		return paContinue;
 	}

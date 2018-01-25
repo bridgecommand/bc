@@ -50,7 +50,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     hdg = ownShipData.initialBearing;
 
 
-    std::string basePath = "Models/Ownship/" + ownShipName + "/";
+    basePath = "Models/Ownship/" + ownShipName + "/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {
@@ -274,6 +274,11 @@ irr::f32 OwnShip::getPitch() const
 irr::f32 OwnShip::getRoll() const
 {
     return roll;
+}
+
+std::string OwnShip::getBasePath() const
+{
+	return basePath;
 }
 
 bool OwnShip::isSingleEngine() const

@@ -53,6 +53,7 @@ class OwnShip : public Ship
         irr::f32 getRudder() const; //-30 to 30
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
+		std::string getBasePath() const;
         bool isSingleEngine() const;
 
     protected:
@@ -60,6 +61,7 @@ class OwnShip : public Ship
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
+		std::string basePath; //The location the model is loaded from
         Terrain* terrain;
         SimulationModel* model;
         irr::f32 rollPeriod; //Roll period (s)

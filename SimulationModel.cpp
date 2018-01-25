@@ -28,6 +28,7 @@
 #include "Utilities.hpp"
 
 #include <cmath>
+#include <fstream>
 
 //#include <ctime>
 
@@ -358,6 +359,50 @@ SimulationModel::~SimulationModel()
         otherShips.deleteLeg(shipNumber, legNumber, scenarioTime);
     }
 
+	std::string SimulationModel::getOwnShipEngineSound() const {
+		std::string soundPath = ownShip.getBasePath(); 
+		//TODO: Check existence of sound file in base path, and if not fall back to default.
+		soundPath.append("/Engine.wav");
+		
+		std::ifstream file(soundPath.c_str());
+		if (file.good()) {
+			return soundPath;
+		} else {
+			return "Sounds/Engine.wav";
+		}
+
+	}
+
+	std::string SimulationModel::getOwnShipWaveSound() const {
+		std::string soundPath = ownShip.getBasePath();
+		//TODO: Check existence of sound file in base path, and if not fall back to default.
+		soundPath.append("/Bwave.wav");
+
+		std::ifstream file(soundPath.c_str());
+		if (file.good()) {
+			return soundPath;
+		}
+		else {
+			return "Sounds/Bwave.wav";
+		}
+
+	}
+
+	std::string SimulationModel::getOwnShipHornSound() const {
+		std::string soundPath = ownShip.getBasePath();
+		//TODO: Check existence of sound file in base path, and if not fall back to default.
+		soundPath.append("/Horn.wav");
+
+		std::ifstream file(soundPath.c_str());
+		if (file.good()) {
+			return soundPath;
+		}
+		else {
+			return "Sounds/Horn.wav";
+		}
+
+	}
+
     void SimulationModel::setHeading(f32 hdg)
     {
          ownShip.setHeading(hdg);
@@ -401,7 +446,13 @@ SimulationModel::~SimulationModel()
         ownShip.setPortEngine(port); //This method limits the range applied
 		
 		//Set engine sound level
-		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		if (ownShip.isSingleEngine()) {
+			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+		}
+		else {
+			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		}
+		
     }
 
     void SimulationModel::setStbdEngine(irr::f32 stbd)
