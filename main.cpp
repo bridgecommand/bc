@@ -187,6 +187,11 @@ int main()
     deviceParameters.AntiAlias = antiAlias;
     IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
+	if (device == 0) {
+		std::cerr << "Could not start - please check your graphics options." << std::endl;
+		exit(EXIT_FAILURE); //Could not get file system
+	}
+
     device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
 
     video::IVideoDriver* driver = device->getVideoDriver();
