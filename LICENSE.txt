@@ -27,8 +27,6 @@ William Woodall.
 The Irrlicht Engine is based in part on the work of the Independent JPEG Group, 
 the zlib, and libpng.
 
-The configuration editor is distributed under the Apache Licence 2.0
-(http://code.google.com/p/ini-settings-editor.)
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
