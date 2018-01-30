@@ -69,6 +69,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\world"
   RMDir /r "$INSTDIR\shaders"
   RMDir /r "$INSTDIR\doc"
+  RMDir /r "$INSTDIR\Sounds"
   
   Delete "$INSTDIR\bc5.ini"
   Delete "$INSTDIR\LICENSE.txt"
@@ -81,6 +82,8 @@ SetShellVarContext all
   Delete "$INSTDIR\bridgecommand-ini.exe"
   Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\Irrlicht.dll"
+  Delete "$INSTDIR\libsndfile-1.dll"
+  Delete "$INSTDIR\portaudio_x86.dll"
   Delete "$INSTDIR\uninstall.exe"
   Delete "$INSTDIR\language.txt"
   Delete "$INSTDIR\languageController.txt"
