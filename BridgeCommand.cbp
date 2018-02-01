@@ -25,6 +25,8 @@
 				<Option compiler="gcc" />
 				<Linker>
 					<Add option="-L./libs/Irrlicht/irrlicht-svn/lib/Linux" />
+					<Add option="-L./libs/libsndfile/lib" />
+					<Add option="-L./libs/portaudio/lib" />
 					<Add library="Irrlicht" />
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
@@ -32,6 +34,8 @@
 					<Add library="X11" />
 					<Add library="Xcursor" />
 					<Add library="pthread" />
+					<Add library="sndfile" />
+					<Add library="portaudio" />
 				</Linker>
 			</Target>
 		</Build>
@@ -42,6 +46,8 @@
 			<Add option="-DASIO_HAS_STD_THREAD" />
 			<Add directory="./libs/Irrlicht/irrlicht-svn/include" />
 			<Add directory="./libs/asio/include" />
+			<Add directory="./libs/portaudio/include" />
+			<Add directory="./libs/libsndfile/include" />
 		</Compiler>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
@@ -121,6 +127,8 @@
 		<Unit filename="SimulationModel.hpp" />
 		<Unit filename="Sky.cpp" />
 		<Unit filename="Sky.hpp" />
+		<Unit filename="Sound.cpp" />
+		<Unit filename="Sound.hpp" />
 		<Unit filename="StartupEventReceiver.cpp" />
 		<Unit filename="StartupEventReceiver.hpp" />
 		<Unit filename="Terrain.cpp" />
