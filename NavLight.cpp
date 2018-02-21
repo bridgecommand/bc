@@ -31,7 +31,11 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
 
 	lightNode->setColor(colour);
-	lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
+
+	lightTexture = smgr->getVideoDriver()->getTexture("media/particlewhite.png");
+
+	
+	lightNode->setMaterialTexture(0, lightTexture);
 	lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 	lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
 	lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
@@ -130,13 +134,15 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 	u16 requiredAlpha = 255 - lightLevel;
 	if (requiredAlpha != currentAlpha) {
 		
+		/*
 		//Reload light textures - required as setAlpha seems only to work once
 		lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
 		lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 		lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
 		lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		
-		setAlpha((u8)requiredAlpha, lightNode->getMaterial(0).getTexture(0));
+		*/
+
+		setAlpha((u8)requiredAlpha, lightTexture);
 		currentAlpha = requiredAlpha;
 	}
 
@@ -154,6 +160,10 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	};
 
 	u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
+	u32 width = tex->getSize().Width;
+	u32 height = tex->getSize().Height;
+
+	
 
 	switch (tex->getColorFormat()) //getTexture Format, (nly 2 support alpha)
 	{
@@ -161,10 +171,20 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	{
 		//  printf("16BIT\n");
 		u16* Data = (u16*)tex->lock(); //get Data for 16-bit Texture
-		for (u32 i = 0; i < size; i++)
-		{
-			u8 alphaToUse = (u8)video::getAlpha(Data[i]) == 0 ? 0 : alpha; //If already transparent, leave as-is
-			Data[i] = video::RGBA16(video::getRed(Data[i]), video::getGreen(Data[i]), video::getBlue(Data[i]), alphaToUse);
+		for (u32 i = 0; i < width; i++) {
+			for (u32 j = 0; j < height; j++) {
+				
+				f32 x = (s32)i - (s32)width / 2;
+				f32 y = (s32)j - (s32)height / 2;
+				f32 radSq = x*x + y*y;
+				if (radSq <= width*width / 4) {
+					Data[i + j*width] = video::RGBA16(255, 255, 255, alpha);
+				} else {
+					Data[i + j*width] = video::RGBA16(255, 255, 255, 0);
+				}
+				 
+
+			}
 		}
 		tex->unlock();
 		break;
@@ -172,12 +192,29 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	case video::ECF_A8R8G8B8:
 	{
 		u32* Data = (u32*)tex->lock();
-		for (u32 i = 0; i < size; i++)
-		{
-			//u8 minAlpha = std::min(((u8*)&Data[i])[3],alpha);
-			u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
-			((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
+		
+		irr::video::SColor pixelColor;
+
+		for (u32 i = 0; i < width; i++) {
+			for (u32 j = 0; j < height; j++) {
+				
+				f32 x = (s32)i - (s32)width / 2;
+				f32 y = (s32)j - (s32)height / 2;
+				f32 radSq = x*x + y*y;
+				if (radSq <= width*width / 4) {
+					pixelColor.set(alpha, 255, 255, 255);
+				}
+				else {
+					pixelColor.set(0, 255, 255, 255);
+				}
+				
+				Data[i + j*width] = pixelColor.color;
+			}
 		}
+		
+			//u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
+			//((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
+			
 		tex->unlock();
 		break;
 	};
