@@ -21,8 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define FRAMES_PER_BUFFER   (512)
 
+#ifdef WITH_SOUND
 #include <sndfile.h>
 #include <portaudio.h>
+#endif // WITH_SOUND
 #include <string.h>
 #include <iostream>
 #include <vector>
@@ -42,6 +44,7 @@ public:
 	float getVolumeEngine() const;
 	float getVolumeHorn() const;
 
+#ifdef WITH_SOUND
 private:
 
 	typedef struct
@@ -65,7 +68,7 @@ private:
 	PaStream *stream;
 	//SNDFILE *file;
 	callback_data_s data;
-	
+
 	static int callback
 	(const void                     *input
 		, void                           *output
@@ -113,7 +116,7 @@ private:
 				return paComplete;
 			}
 		}
-		
+
 		if (waveSoundLoaded) {
 			num_read = sf_read_float(p_data->fileWave, waveBuffer.data(), frameCount * p_data->infoEngine.channels);
 			/*  If we couldn't read a full frameCount of samples we've reached EOF */
@@ -174,6 +177,7 @@ private:
 		return paContinue;
 	}
 
+#endif // WITH_SOUND
 
 };
 

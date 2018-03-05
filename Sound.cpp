@@ -17,6 +17,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //Based on sample code from https://github.com/hosackm/wavplayer/blob/master/main.c
 
 #include "Sound.hpp"
+
+#ifndef WITH_SOUND
+    //Dummy implementation of public interface
+
+    Sound::Sound() {}
+	Sound::~Sound()  {}
+	void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {}
+	void Sound::StartSound() {}
+	void Sound::setVolumeWave(float vol) {}
+	void Sound::setVolumeEngine(float vol) {}
+	void Sound::setVolumeHorn(float vol) {}
+	float Sound::getVolumeWave() const {return 0;}
+	float Sound::getVolumeEngine() const {return 0;}
+	float Sound::getVolumeHorn() const {return 0;}
+
+#else // WITH_SOUND
+
 #include <iostream>
 
 //Volumes, should be in range 0-1
@@ -53,7 +70,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
 		return;
 	}
-	
+
 	data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
 	if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
 		return;
@@ -94,7 +111,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 
 void Sound::StartSound() {
 	/* Start the stream */
-	
+
 	if (soundLoaded) {
 		portAudioError = Pa_StartStream(stream);
 		if (portAudioError != paNoError)
@@ -130,13 +147,13 @@ float Sound::getVolumeHorn() const {
 }
 
 Sound::~Sound() {
-	
+
 	portAudioError = Pa_CloseStream(stream);
 	if (portAudioError != paNoError)
 	{
 		fprintf(stderr, "Problem closing stream\n");
 	}
-	
+
 	portAudioError = Pa_Terminate();
 	if (portAudioError == paNoError) {
 		std::cout << "PortAudio terminated" << std::endl;
@@ -147,3 +164,5 @@ Sound::~Sound() {
 	sf_close(data.fileEngine);
 	sf_close(data.fileHorn);
 }
+
+#endif // WITH_SOUND
