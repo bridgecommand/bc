@@ -11,12 +11,16 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-D_WIN32_WINNT=0x0501 -DWINVER=0x0501" />
+					<Add option="-D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -DWITH_SOUND" />
 				</Compiler>
 				<Linker>
 					<Add option="./libs/Irrlicht/irrlicht-svn/lib/Win32-gcc/libIrrlicht.a" />
+					<Add option="-L./libs/libsndfile/lib" />
+					<Add option="-L./libs/portaudio/lib" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
+					<Add library="sndfile" />
+					<Add library="portaudio" />
 				</Linker>
 			</Target>
 			<Target title="Linux">
