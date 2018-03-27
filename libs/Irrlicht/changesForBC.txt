@@ -3,17 +3,9 @@ The following modifications have been made for Bridge Command to the base Irrlic
 Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
 (CTerrainSceneNode.cpp)
 
-Water Surface Scene node modified to make wave height a function of absolute X,Z position, for seamless tiled water nodes.
-(CWaterSurfaceSceneNode.cpp)
-
-Scroll bar (CGUIScrollBar.cpp) modified to accept right click as well as left click to change. Also changed in CGUIEnvironment.cpp.
-
 OSX specific code (CIrrDeviceMacOSX.mm) modified to avoid crash on close, and to bring window to front when launched (otherwise the window disappears when the program is selected in the launcher)
 
 CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
 
 All changes marked in source with //JAMES
 
-Other changes:
---------------
-glext.h updated to latest version from Irrlicht trunk (fix for compilation issue on linux). Not needed in 1.8.4

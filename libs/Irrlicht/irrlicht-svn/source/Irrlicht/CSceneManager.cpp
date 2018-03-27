@@ -148,7 +148,11 @@
 #include "CMeshSceneNode.h"
 #include "CSkyBoxSceneNode.h"
 #include "CSkyDomeSceneNode.h"
+
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
 #include "CParticleSystemSceneNode.h"
+#endif // _IRR_COMPILE_WITH_PARTICLES_
+
 #include "CDummyTransformationSceneNode.h"
 #include "CWaterSurfaceSceneNode.h"
 #include "CTerrainSceneNode.h"
@@ -415,30 +419,9 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& 
 		return 0;
 	}
 
-	// iterate the list in reverse order so user-added loaders can override the built-in ones
-	s32 count = MeshLoaderList.size();
-	for (s32 i=count-1; i>=0; --i)
-	{
-		if (MeshLoaderList[i]->isALoadableFileExtension(filename))
-		{
-			// reset file to avoid side effects of previous calls to createMesh
-			file->seek(0);
-			msh = MeshLoaderList[i]->createMesh(file);
-			if (msh)
-			{
-				MeshCache->addMesh(cacheName, msh);
-				msh->drop();
-				break;
-			}
-		}
-	}
+	msh = getUncachedMesh(file, filename, cacheName);
 
 	file->drop();
-
-	if (!msh)
-		os::Printer::log("Could not load mesh, file format seems to be unsupported", filename, ELL_ERROR);
-	else
-		os::Printer::log("Loaded mesh", filename, ELL_INFORMATION);
 
 	return msh;
 }
@@ -451,22 +434,32 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 		return 0;
 
 	io::path name = file->getFileName();
-	IAnimatedMesh* msh = MeshCache->getMeshByName(file->getFileName());
+	IAnimatedMesh* msh = MeshCache->getMeshByName(name);
 	if (msh)
 		return msh;
+
+	msh = getUncachedMesh(file, name, name);
+
+	return msh;
+}
+
+// load and create a mesh which we know already isn't in the cache and put it in there
+IAnimatedMesh* CSceneManager::getUncachedMesh(io::IReadFile* file, const io::path& filename, const io::path& cachename)
+{
+	IAnimatedMesh* msh = 0;
 
 	// iterate the list in reverse order so user-added loaders can override the built-in ones
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
-		if (MeshLoaderList[i]->isALoadableFileExtension(name))
+		if (MeshLoaderList[i]->isALoadableFileExtension(filename))
 		{
 			// reset file to avoid side effects of previous calls to createMesh
 			file->seek(0);
 			msh = MeshLoaderList[i]->createMesh(file);
 			if (msh)
 			{
-				MeshCache->addMesh(file->getFileName(), msh);
+				MeshCache->addMesh(cachename, msh);
 				msh->drop();
 				break;
 			}
@@ -474,13 +467,12 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 	}
 
 	if (!msh)
-		os::Printer::log("Could not load mesh, file format seems to be unsupported", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Could not load mesh, file format seems to be unsupported", filename, ELL_ERROR);
 	else
-		os::Printer::log("Loaded mesh", file->getFileName(), ELL_INFORMATION);
+		os::Printer::log("Loaded mesh", filename, ELL_DEBUG);
 
 	return msh;
 }
-
 
 //! returns the video driver
 video::IVideoDriver* CSceneManager::getVideoDriver()
@@ -860,6 +852,7 @@ IParticleSystemSceneNode* CSceneManager::addParticleSystemSceneNode(
 	const core::vector3df& position, const core::vector3df& rotation,
 	const core::vector3df& scale)
 {
+#ifdef _IRR_COMPILE_WITH_PARTICLES_
 	if (!parent)
 		parent = this;
 
@@ -868,6 +861,9 @@ IParticleSystemSceneNode* CSceneManager::addParticleSystemSceneNode(
 	node->drop();
 
 	return node;
+#else
+	return 0;
+#endif // _IRR_COMPILE_WITH_PARTICLES_
 }
 
 
@@ -1377,6 +1373,16 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	return taken;
 }
 
+void CSceneManager::clearAllRegisteredNodesForRendering()
+{
+	CameraList.clear();
+	LightList.clear();
+	SkyBoxList.clear();
+	SolidNodeList.clear();
+	TransparentNodeList.clear();
+	TransparentEffectNodeList.clear();
+	ShadowNodeList.clear();
+}
 
 //! This method is called just before the rendering process of the whole scene.
 //! draws all scene nodes

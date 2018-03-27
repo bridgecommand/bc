@@ -31,40 +31,49 @@ namespace irr
 namespace io
 {
 
+// All derived attribute types implement at least getter/setter for their own type (like CBoolAttribute will have setBool/getBool).
+// Simple types will also implement getStringW and setString, but don't expect it to work for all types.
+// String serialization makes no sense for some attribute-types (like stringw arrays or pointers), but is still useful for many types.
+// (Note: I do _not_ know yet why the default string serialization is asymmetric with char* in set and wchar_t* in get).
+// Additionally many attribute types will implement conversion functions like CBoolAttribute has p.E. getInt/setInt().
+// The reason for conversion functions is likely to make reading old formats easier which have changed in the meantime. For example
+// an old xml can contain a bool attribute which is an int in a newer format. You can still call getInt() even thought the attribute has the wrong type.
+// And please do _not_ confuse these attributes here with the ones used in the xml-reader (aka SAttribute which is just a key-value pair).
+
 class IAttribute : public virtual IReferenceCounted
 {
 public:
 
 	virtual ~IAttribute() {};
 
-	virtual s32 getInt()				{ return 0; }
-	virtual f32 getFloat()				{ return 0; }
-	virtual video::SColorf getColorf()		{ return video::SColorf(1.0f,1.0f,1.0f,1.0f); }
-	virtual video::SColor getColor()		{ return video::SColor(255,255,255,255); }
-	virtual core::stringc getString()		{ return core::stringc(getStringW().c_str()); }
-	virtual core::stringw getStringW()		{ return core::stringw(); }
-	virtual core::array<core::stringw> getArray()	{ return core::array<core::stringw>(); };
-	virtual bool getBool()				{ return false; }
-	virtual void getBinary(void* outdata, s32 maxLength) {};
-	virtual core::vector3df getVector()		{ return core::vector3df(); }
-	virtual core::position2di getPosition()	{ return core::position2di(); }
-	virtual core::rect<s32> getRect()		{ return core::rect<s32>(); }
-	virtual core::quaternion getQuaternion(){ return core::quaternion(); }
-	virtual core::matrix4 getMatrix()		{ return core::matrix4(); }
-	virtual core::triangle3df getTriangle()		{ return core::triangle3df(); }
-	virtual core::vector2df getVector2d()		{ return core::vector2df(); }
-	virtual core::vector2di getVector2di()		{ return core::vector2di(); }
-	virtual core::line2df getLine2d()		{ return core::line2df(); }
-	virtual core::line2di getLine2di()		{ return core::line2di(); }
-	virtual core::line3df getLine3d()		{ return core::line3df(); }
-	virtual core::line3di getLine3di()		{ return core::line3di(); }
-	virtual core::dimension2du getDimension2d()	{ return core::dimension2du(); }
-	virtual core::aabbox3d<f32> getBBox()		{ return core::aabbox3d<f32>(); }
-	virtual core::plane3df getPlane()		{ return core::plane3df(); }
+	virtual s32 getInt() const				 { return 0; }
+	virtual f32 getFloat() const			 { return 0; }
+	virtual video::SColorf getColorf() const { return video::SColorf(1.0f,1.0f,1.0f,1.0f); }
+	virtual video::SColor getColor() const	 { return video::SColor(255,255,255,255); }
+	virtual core::stringc getString() const	 { return core::stringc(getStringW().c_str()); }
+	virtual core::stringw getStringW() const { return core::stringw(); }
+	virtual core::array<core::stringw> getArray() const { return core::array<core::stringw>(); };
+	virtual bool getBool() const			{ return false; }
+	virtual void getBinary(void* outdata, s32 maxLength) const {};
+	virtual core::vector3df getVector() const      { return core::vector3df(); }
+	virtual core::position2di getPosition()	const  { return core::position2di(); }
+	virtual core::rect<s32> getRect() const	       { return core::rect<s32>(); }
+	virtual core::quaternion getQuaternion() const { return core::quaternion(); }
+	virtual core::matrix4 getMatrix() const	      { return core::matrix4(); }
+	virtual core::triangle3df getTriangle() const { return core::triangle3df(); }
+	virtual core::vector2df getVector2d() const	  { return core::vector2df(); }
+	virtual core::vector2di getVector2di() const  { return core::vector2di(); }
+	virtual core::line2df getLine2d() const  { return core::line2df(); }
+	virtual core::line2di getLine2di() const { return core::line2di(); }
+	virtual core::line3df getLine3d() const  { return core::line3df(); }
+	virtual core::line3di getLine3di() const { return core::line3di(); }
+	virtual core::dimension2du getDimension2d() const { return core::dimension2du(); }
+	virtual core::aabbox3d<f32> getBBox() const	{ return core::aabbox3d<f32>(); }
+	virtual core::plane3df getPlane() const	    { return core::plane3df(); }
 
-	virtual video::ITexture* getTexture()		{ return 0; }
-	virtual const char* getEnum()			{ return 0; }
-	virtual void* getUserPointer()			{ return 0; }
+	virtual video::ITexture* getTexture() const	{ return 0; }
+	virtual const char* getEnum() const	 { return 0; }
+	virtual void* getUserPointer() const { return 0; }
 
 	virtual void setInt(s32 intValue)		{};
 	virtual void setFloat(f32 floatValue)		{};

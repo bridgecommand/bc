@@ -551,6 +551,7 @@
 		<Unit filename="../../include/SMeshBuffer.h" />
 		<Unit filename="../../include/SMeshBufferLightMap.h" />
 		<Unit filename="../../include/SMeshBufferTangents.h" />
+		<Unit filename="../../include/SOverrideMaterial.h" />
 		<Unit filename="../../include/SParticle.h" />
 		<Unit filename="../../include/SSharedMeshBuffer.h" />
 		<Unit filename="../../include/SSkinMeshBuffer.h" />
@@ -825,6 +826,11 @@
 		<Unit filename="COgreMeshFileLoader.h" />
 		<Unit filename="COpenGLCacheHandler.cpp" />
 		<Unit filename="COpenGLCacheHandler.h" />
+		<Unit filename="COpenGLCommon.h" />
+		<Unit filename="COpenGLCoreCacheHandler.h" />
+		<Unit filename="COpenGLCoreFeature.h" />
+		<Unit filename="COpenGLCoreRenderTarget.h" />
+		<Unit filename="COpenGLCoreTexture.h" />
 		<Unit filename="COpenGLDriver.cpp" />
 		<Unit filename="COpenGLDriver.h" />
 		<Unit filename="COpenGLExtensionHandler.cpp" />

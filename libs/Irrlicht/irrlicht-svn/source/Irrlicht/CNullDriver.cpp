@@ -437,7 +437,10 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size, const io::
 	}
 
 	if (0 == name.size())
+	{
+		os::Printer::log("Could not create ITexture, texture needs to have a non-empty name.", ELL_WARNING);
 		return 0;
+	}
 
 	IImage* image = new CImage(format, size);
 	ITexture* t = 0;
@@ -463,7 +466,13 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size, const io::
 
 ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
 {
-	if (0 == name.size() || !image)
+	if (0 == name.size())
+	{
+		os::Printer::log("Could not create ITexture, texture needs to have a non-empty name.", ELL_WARNING);
+		return 0;
+	}
+
+	if (!image)
 		return 0;
 
 	ITexture* t = 0;
@@ -638,7 +647,7 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io:
 		}
 
 		if (texture)
-			os::Printer::log("Loaded texture", file->getFileName());
+			os::Printer::log("Loaded texture", file->getFileName(), ELL_DEBUG);
 	}
 
 	for (u32 i = 0; i < imageArray.size(); ++i)
@@ -1379,7 +1388,7 @@ bool CNullDriver::checkPrimitiveCount(u32 prmCount) const
 	if (prmCount > m)
 	{
 		char tmp[1024];
-		sprintf(tmp,"Could not draw triangles, too many primitives(%u), maxium is %u.", prmCount, m);
+		sprintf(tmp,"Could not draw triangles, too many primitives(%u), maximum is %u.", prmCount, m);
 		os::Printer::log(tmp, ELL_ERROR);
 		return false;
 	}
