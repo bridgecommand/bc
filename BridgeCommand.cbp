@@ -27,6 +27,9 @@
 				<Option output="bridgecommand-bc" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DWITH_SOUND" />
+				</Compiler>
 				<Linker>
 					<Add option="-L./libs/Irrlicht/irrlicht-svn/lib/Linux" />
 					<Add option="-L./libs/libsndfile/lib" />
