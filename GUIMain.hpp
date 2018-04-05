@@ -25,6 +25,34 @@
 #include <vector>
 #include <string>
 
+struct GUIData {
+    irr::f32 lat;
+    irr::f32 longitude;
+    irr::f32 hdg;
+    irr::f32 viewAngle;
+    irr::f32 viewElevationAngle;
+    irr::f32 spd;
+    irr::f32 portEng;
+    irr::f32 stbdEng;
+    irr::f32 rudder;
+    irr::f32 depth;
+    irr::f32 weather;
+    irr::f32 rain;
+    irr::f32 visibility;
+    irr::f32 radarRangeNm;
+    irr::f32 radarGain;
+    irr::f32 radarClutter;
+    irr::f32 radarRain;
+    irr::f32 guiRadarEBLBrg;
+    irr::f32 guiRadarEBLRangeNm;
+    std::vector<irr::f32> CPAs;
+    std::vector<irr::f32> TCPAs;
+    std::string currentTime;
+    bool paused;
+    bool collided;
+    bool headUp;
+};
+
 class GUIMain //Create, build and update GUI
 {
 public:
@@ -88,7 +116,7 @@ public:
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
     void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
-    void updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::vector<irr::f32> CPAs, std::vector<irr::f32> TCPAs, std::string currentTime, bool paused,  bool collided, bool headUp);
+    void updateGuiData(GUIData* guiData);
     void showLogWindow();
     void drawGUI();
 

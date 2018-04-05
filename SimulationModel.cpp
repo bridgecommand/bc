@@ -207,12 +207,15 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //store time
         previousTime = device->getTimer()->getTime();
 
+        guiData = new GUIData;
+
     } //end of SimulationModel constructor
 
 SimulationModel::~SimulationModel()
 {
     radarImage->drop(); //We created this with 'create', so drop it when we're finished
     radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
+    delete guiData;
 }
 
     irr::f32 SimulationModel::longToX(irr::f32 longitude) const
@@ -360,10 +363,10 @@ SimulationModel::~SimulationModel()
     }
 
 	std::string SimulationModel::getOwnShipEngineSound() const {
-		std::string soundPath = ownShip.getBasePath(); 
+		std::string soundPath = ownShip.getBasePath();
 		//TODO: Check existence of sound file in base path, and if not fall back to default.
 		soundPath.append("/Engine.wav");
-		
+
 		std::ifstream file(soundPath.c_str());
 		if (file.good()) {
 			return soundPath;
@@ -444,7 +447,7 @@ SimulationModel::~SimulationModel()
     {
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setPortEngine(port); //This method limits the range applied
-		
+
 		//Set engine sound level
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
@@ -452,7 +455,7 @@ SimulationModel::~SimulationModel()
 		else {
 			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
 		}
-		
+
     }
 
     void SimulationModel::setStbdEngine(irr::f32 stbd)
@@ -897,8 +900,35 @@ SimulationModel::~SimulationModel()
             TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
         }
 
+        //Collate data to show in gui
+        guiData->lat = getLat();
+        guiData->longitude = getLong();
+        guiData->hdg = ownShip.getHeading();
+        guiData->viewAngle = camera.getLook();
+        guiData->viewElevationAngle = elevAngle;
+        guiData->spd = ownShip.getSpeed();
+        guiData->portEng = ownShip.getPortEngine();
+        guiData->stbdEng = ownShip.getStbdEngine();
+        guiData->rudder = ownShip.getRudder();
+        guiData->depth = ownShip.getDepth();
+        guiData->weather = weather;
+        guiData->rain = rainIntensity;
+        guiData->visibility = visibilityRange;
+        guiData->radarRangeNm = radarCalculation.getRangeNm();
+        guiData->radarGain = radarCalculation.getGain();
+        guiData->radarClutter = radarCalculation.getClutter();
+        guiData->radarRain = radarCalculation.getRainClutter();
+        guiData->guiRadarEBLBrg = radarCalculation.getEBLBrg();
+        guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
+        guiData->CPAs = CPAs;
+        guiData->TCPAs = TCPAs;
+        guiData->currentTime = Utilities::timestampToString(absoluteTime);
+        guiData->paused = paused;
+        guiData->collided = collided;
+        guiData->headUp = radarCalculation.getHeadUp();
+
         //send data to gui
-        guiMain->updateGuiData(getLat(), getLong(), ownShip.getHeading(), camera.getLook(), elevAngle, ownShip.getSpeed(), ownShip.getPortEngine(), ownShip.getStbdEngine(), ownShip.getRudder(), ownShip.getDepth(), weather, rainIntensity, visibilityRange, radarCalculation.getRangeNm(), radarCalculation.getGain(), radarCalculation.getClutter(), radarCalculation.getRainClutter(), radarCalculation.getEBLBrg(), radarCalculation.getEBLRangeNm(), CPAs, TCPAs, Utilities::timestampToString(absoluteTime), paused, collided, radarCalculation.getHeadUp()); //Set GUI heading in degrees and speed (in m/s)
+        guiMain->updateGuiData(guiData); //Set GUI heading in degrees and speed (in m/s)
     }
 
     bool SimulationModel::checkOwnShipCollision()

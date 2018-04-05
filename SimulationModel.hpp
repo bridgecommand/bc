@@ -27,6 +27,7 @@
 //Forward declarations
 class ScenarioData;
 class GUIMain;
+class GUIData;
 class Sound;
 
 #include "Terrain.hpp"
@@ -166,7 +167,7 @@ public:
     irr::f32 getManOverboardPosZ() const;
     void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
-	
+
 	void startHorn();
 	void endHorn();
 
@@ -224,6 +225,9 @@ private:
     std::string scenarioName;
     std::string worldName;
     std::string serialisedScenarioData;
+
+    //Structure to pass data to gui
+    GUIData* guiData;
 
 };
 #endif

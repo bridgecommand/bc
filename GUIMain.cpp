@@ -501,53 +501,53 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
-    void GUIMain::updateGuiData(irr::f32 lat, irr::f32 longitude, irr::f32 hdg, irr::f32 viewAngle, irr::f32 viewElevationAngle, irr::f32 spd, irr::f32 portEng, irr::f32 stbdEng, irr::f32 rudder, irr::f32 depth, irr::f32 weather, irr::f32 rain, irr::f32 visibility, irr::f32 radarRangeNm, irr::f32 radarGain, irr::f32 radarClutter, irr::f32 radarRain, irr::f32 guiRadarEBLBrg, irr::f32 guiRadarEBLRangeNm, std::vector<irr::f32> CPAs, std::vector<irr::f32> TCPAs, std::string currentTime, bool paused, bool collided, bool headUp)
+    void GUIMain::updateGuiData(GUIData* guiData)
     {
         //Update scroll bars
-        hdgScrollbar->setPos(Utilities::round(hdg));
-        spdScrollbar->setPos(Utilities::round(spd));
-        portScrollbar->setPos(Utilities::round(portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
-        stbdScrollbar->setPos(Utilities::round(stbdEng * -100));
-        rudderScrollbar->setPos(Utilities::round(rudder));
-        radarGainScrollbar->setPos(Utilities::round(radarGain));
-        radarClutterScrollbar->setPos(Utilities::round(radarClutter));
-        radarRainScrollbar->setPos(Utilities::round(radarRain));
+        hdgScrollbar->setPos(Utilities::round(guiData->hdg));
+        spdScrollbar->setPos(Utilities::round(guiData->spd));
+        portScrollbar->setPos(Utilities::round(guiData->portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
+        stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));
+        rudderScrollbar->setPos(Utilities::round(guiData->rudder));
+        radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
+        radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
+        radarRainScrollbar->setPos(Utilities::round(guiData->radarRain));
 
-        radarGainScrollbar2->setPos(Utilities::round(radarGain));
-        radarClutterScrollbar2->setPos(Utilities::round(radarClutter));
-        radarRainScrollbar2->setPos(Utilities::round(radarRain));
+        radarGainScrollbar2->setPos(Utilities::round(guiData->radarGain));
+        radarClutterScrollbar2->setPos(Utilities::round(guiData->radarClutter));
+        radarRainScrollbar2->setPos(Utilities::round(guiData->radarRain));
 
-        weatherScrollbar->setPos(Utilities::round(weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
-        rainScrollbar->setPos(Utilities::round(rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
-        visibilityScrollbar->setPos(Utilities::round(visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
+        weatherScrollbar->setPos(Utilities::round(guiData->weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
+        rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
+        visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
         //Update text display data
-        guiLat = lat;
-        guiLong = longitude;
-        guiHeading = hdg; //Heading in degrees
+        guiLat = guiData->lat;
+        guiLong = guiData->longitude;
+        guiHeading = guiData->hdg; //Heading in degrees
         headingIndicator->setHeading(guiHeading);
-        viewHdg = viewAngle+hdg;
-        viewElev = viewElevationAngle;
+        viewHdg = guiData->viewAngle+guiData->hdg;
+        viewElev = guiData->viewElevationAngle;
         while (viewHdg>=360) {viewHdg-=360;}
         while (viewHdg<0) {viewHdg+=360;}
-        guiSpeed = spd*MPS_TO_KTS; //Speed in knots
-        guiDepth = depth;
-        guiRadarRangeNm = radarRangeNm;
-        guiTime = currentTime;
-        guiPaused = paused;
-        guiCollided = collided;
+        guiSpeed = guiData->spd*MPS_TO_KTS; //Speed in knots
+        guiDepth = guiData->depth;
+        guiRadarRangeNm = guiData->radarRangeNm;
+        guiTime = guiData->currentTime;
+        guiPaused = guiData->paused;
+        guiCollided = guiData->collided;
 
-        radarHeadUp = headUp;
+        radarHeadUp = guiData->headUp;
 
         //update EBL Data
-        this->guiRadarEBLBrg = guiRadarEBLBrg;
+        this->guiRadarEBLBrg = guiData->guiRadarEBLBrg;
         if (radarHeadUp) {
             this->guiRadarEBLBrg -= guiHeading;
         }
-        this->guiRadarEBLRangeNm = guiRadarEBLRangeNm;
+        this->guiRadarEBLRangeNm = guiData->guiRadarEBLRangeNm;
 
         //Update ARPA data
-        guiCPAs = CPAs;
-        guiTCPAs = TCPAs;
+        guiCPAs = guiData->CPAs;
+        guiTCPAs = guiData->TCPAs;
     }
 
     void GUIMain::showLogWindow()
