@@ -75,6 +75,7 @@ RadarCalculation::RadarCalculation() : rangeResolution(64)
     }
 
     radarScreenStale = true;
+    radarRadiusPx = 10; //Set to an arbitrary value initially, will be set later.
 
     currentScanAngle=0;
 }

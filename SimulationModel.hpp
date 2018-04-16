@@ -167,6 +167,10 @@ public:
     irr::f32 getManOverboardPosZ() const;
     void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
+    bool hasGPS() const;
+    bool isSingleEngine() const;
+    bool hasDepthSounder() const;
+    irr::f32 getMaxSounderDepth() const;
 
 	void startHorn();
 	void endHorn();

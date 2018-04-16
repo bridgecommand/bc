@@ -26,9 +26,17 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages)
+GUIMain::GUIMain()
+{
+
+}
+
+void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS)
     {
         this->device = device;
+        this->hasDepthSounder = hasDepthSounder;
+        this->maxSounderDepth = maxSounderDepth;
+        this->hasGPS = hasGPS;
         guienv = device->getGUIEnvironment();
 
         video::IVideoDriver* driver = device->getVideoDriver();
@@ -39,7 +47,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         this->logMessages = logMessages;
 
         //default to double engine in gui
-        singleEngine = false;
+        this->singleEngine = singleEngine;
 
         //Default to small radar display
         radarLarge = false;
@@ -77,7 +85,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         hdgScrollbar->setVisible(false);
         spdScrollbar->setVisible(false);
 
-        //Add engine and rudder bars
+        //Add engine, rudder and thruster bars
         core::array<s32> rudderTics; rudderTics.push_back(-25);rudderTics.push_back(-20);rudderTics.push_back(-15);rudderTics.push_back(-10);rudderTics.push_back(-5);
         rudderTics.push_back(5);rudderTics.push_back(10);rudderTics.push_back(15);rudderTics.push_back(20);rudderTics.push_back(25);
 
@@ -86,17 +94,46 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
 
         core::array<s32> centreTic; centreTic.push_back(0);
 
+        hasBowThruster = false; //FIXME: Load this from ship spec
+        hasSternThruster = true; //FIXME: Load this from ship spec
+        if (hasBowThruster) {
+            irr::f32 verticalScreenPos;
+            if (hasSternThruster) {
+                verticalScreenPos = 0.99-2*0.04;
+            } else {
+                verticalScreenPos = 0.99-1*0.04;
+            }
+            bowThrusterScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_BOWTHRUSTER_SCROLL_BAR,core::rect<s32>(0.01*su, verticalScreenPos*sh, 0.08*su, (verticalScreenPos+0.04)*sh),engineTics,centreTic);
+            bowThrusterScrollbar->setMax(100);
+            bowThrusterScrollbar->setMin(-100);
+            bowThrusterScrollbar->setPos(0);
+            bowThrusterScrollbar->setToolTipText(language->translate("bowThruster").c_str());
+        } else {
+            bowThrusterScrollbar = 0;
+        }
+
+        if (hasSternThruster) {
+            irr::f32 verticalScreenPos = 0.99-1*0.04;
+            sternThrusterScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_STERNTHRUSTER_SCROLL_BAR,core::rect<s32>(0.01*su, verticalScreenPos*sh, 0.08*su, (verticalScreenPos+0.04)*sh),engineTics,centreTic);
+            sternThrusterScrollbar->setMax(100);
+            sternThrusterScrollbar->setMin(-100);
+            sternThrusterScrollbar->setPos(0);
+            sternThrusterScrollbar->setToolTipText(language->translate("sternThruster").c_str());
+        } else {
+            sternThrusterScrollbar = 0;
+        }
+
         portText = guienv->addStaticText(language->translate("portEngine").c_str(),core::rect<s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
         portText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         portText->setOverrideColor(video::SColor(255,128,0,0));
-        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.675*sh, 0.04*su, 0.99*sh),engineTics,centreTic);
+        portScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,core::rect<s32>(0.01*su, 0.675*sh, 0.04*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
         portScrollbar->setMax(100);
         portScrollbar->setMin(-100);
         portScrollbar->setPos(0);
         stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),core::rect<s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));
         stbdText->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
         stbdText->setOverrideColor(video::SColor(255,0,128,0));
-        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.675*sh, 0.08*su, 0.99*sh),engineTics,centreTic);
+        stbdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,core::rect<s32>(0.05*su, 0.675*sh, 0.08*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
@@ -104,6 +141,34 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
+
+        //Adapt if single engine:
+        if (singleEngine) {
+            stbdScrollbar->setVisible(false);
+            stbdText->setVisible(false);
+
+            //Get max extent of both engine scroll bars
+            core::vector2d<s32> lowerRight = stbdScrollbar->getRelativePosition().LowerRightCorner;
+            core::vector2d<s32> upperLeft = portScrollbar->getRelativePosition().UpperLeftCorner;
+            portScrollbar->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
+
+            //Change text from 'portEngine' to 'engine', and use all space
+            portText->setText(language->translate("engine").c_str());
+            portText->enableOverrideColor(false);
+            lowerRight = stbdText->getRelativePosition().LowerRightCorner;
+            upperLeft = portText->getRelativePosition().UpperLeftCorner;
+            portText->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
+        }
+
+        if (controlsHidden) {
+            stbdScrollbar->setVisible(false);
+            portScrollbar->setVisible(false);
+            stbdText->setVisible(false);
+            portText->setVisible(false);
+            rudderScrollbar->setVisible(false);
+            if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
+            if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
+        }
 
         //add data display:
         dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
@@ -308,6 +373,13 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         stbdScrollbar->drop();
         rudderScrollbar->drop();
 
+        if (bowThrusterScrollbar) {
+            bowThrusterScrollbar->drop();
+        }
+        if (sternThrusterScrollbar) {
+            sternThrusterScrollbar->drop();
+        }
+
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
         rainScrollbar->drop();
@@ -393,41 +465,6 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
     {
         return core::rect<s32>(largeRadarScreenCentreX - largeRadarScreenRadius, largeRadarScreenCentreY - largeRadarScreenRadius, largeRadarScreenCentreX + largeRadarScreenRadius, largeRadarScreenCentreY + largeRadarScreenRadius);
-    }
-
-    void GUIMain::setSingleEngine()
-    {
-        singleEngine = true; //Used to choose what to show/hide later if we change visibility
-        stbdScrollbar->setVisible(false);
-        stbdText->setVisible(false);
-
-        //Get max extent of both engine scroll bars
-        core::vector2d<s32> lowerRight = stbdScrollbar->getRelativePosition().LowerRightCorner;
-        core::vector2d<s32> upperLeft = portScrollbar->getRelativePosition().UpperLeftCorner;
-        portScrollbar->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
-
-        //Change text from 'portEngine' to 'engine', and use all space
-        portText->setText(language->translate("engine").c_str());
-        portText->enableOverrideColor(false);
-        lowerRight = stbdText->getRelativePosition().LowerRightCorner;
-        upperLeft = portText->getRelativePosition().UpperLeftCorner;
-        portText->setRelativePosition(core::rect<s32>(upperLeft,lowerRight));
-    }
-
-    void GUIMain::hideEngineAndRudder()
-    {
-        stbdScrollbar->setVisible(false);
-        portScrollbar->setVisible(false);
-        stbdText->setVisible(false);
-        portText->setVisible(false);
-        rudderScrollbar->setVisible(false);
-    }
-
-    void GUIMain::setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS)
-    {
-        this->hasDepthSounder = hasDepthSounder;
-        this->maxSounderDepth = maxSounderDepth;
-        this->hasGPS = hasGPS;
     }
 
     void GUIMain::updateVisibility()

@@ -56,8 +56,9 @@ struct GUIData {
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages);
+    GUIMain();
     ~GUIMain();
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -66,6 +67,8 @@ public:
         GUI_ID_PORT_SCROLL_BAR,
         GUI_ID_STBD_SCROLL_BAR,
         GUI_ID_RUDDER_SCROLL_BAR,
+        GUI_ID_BOWTHRUSTER_SCROLL_BAR,
+        GUI_ID_STERNTHRUSTER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
         GUI_ID_BIG_RADAR_BUTTON,
         GUI_ID_SMALL_RADAR_BUTTON,
@@ -130,6 +133,8 @@ private:
     irr::gui::IGUIScrollBar* portScrollbar;
     irr::gui::IGUIScrollBar* stbdScrollbar;
     irr::gui::IGUIScrollBar* rudderScrollbar;
+    irr::gui::IGUIScrollBar* bowThrusterScrollbar;
+    irr::gui::IGUIScrollBar* sternThrusterScrollbar;
     irr::gui::IGUIStaticText* portText;
     irr::gui::IGUIStaticText* stbdText;
     irr::gui::IGUIStaticText* dataDisplay;
@@ -199,6 +204,8 @@ private:
     std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
     std::string guiTime;
     bool singleEngine;
+    bool hasBowThruster;
+    bool hasSternThruster;
     bool guiPaused;
     bool guiCollided;
     bool showInterface;

@@ -301,7 +301,7 @@ int main()
     std::srand(device->getTimer()->getTime());
 
     //create GUI
-    GUIMain guiMain(device, &language, &logMessages);
+    GUIMain guiMain;
 
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
@@ -325,8 +325,19 @@ int main()
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
+
     //Create simulation model
     SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
+
+    //Load the gui
+    bool hideEngineAndRudder=false;
+    if (mode==OperatingMode::Secondary) {
+        hideEngineAndRudder=true;
+    }
+    guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS()); //FIXME: This needs to pull in information on:
+        //Single Engine from ownShip.isSingleEngine()
+        //hideEngineAndRudder from mode == OperatingMode::Secondary
+        //setInstruments from ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS()
 
     //Give the network class a pointer to the model
     network->setModel(&model);

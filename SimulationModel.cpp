@@ -122,6 +122,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
 
+        /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
         if (ownShip.isSingleEngine()) {
             gui->setSingleEngine();
@@ -134,10 +135,10 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //Tell the GUI what instruments to display - currently GPS and depth sounder
         gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
+        */
 
         //Load the radar with config parameters
         radarCalculation.load(ownShip.getRadarConfigFile(),device);
-        radarCalculation.setRadarDisplayRadius(gui->getRadarPixelRadius());
 
         //set camera zoom to 1
         zoom = 1.0;
@@ -175,8 +176,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
         //core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //Previous offset from camera
 
+        //radarScreen.setRadarDisplayRadius(gui->getRadarPixelRadius());
         radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
-        radarScreen.setRadarDisplayRadius(gui->getRadarPixelRadius());
+
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -780,6 +782,26 @@ SimulationModel::~SimulationModel()
         manOverboard.setPosition(core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
     }
 
+    bool SimulationModel::hasGPS() const
+    {
+        return ownShip.hasGPS();
+    }
+
+    bool SimulationModel::isSingleEngine() const
+    {
+        return ownShip.isSingleEngine();
+    }
+
+    bool SimulationModel::hasDepthSounder() const
+    {
+        return ownShip.hasDepthSounder();
+    }
+
+    irr::f32 SimulationModel::getMaxSounderDepth() const
+    {
+        return ownShip.getMaxSounderDepth();
+    }
+
 	void SimulationModel::startHorn() {
 		sound->setVolumeHorn(1.0);
 	}
@@ -803,6 +825,9 @@ SimulationModel::~SimulationModel()
 
         //increment loop number
         loopNumber++;
+
+        //Ensure we have the right radar screen resolution
+        setRadarDisplayRadius(guiMain->getRadarPixelRadius());
 
         //Update tide height and tidal stream here.
         tide.update(absoluteTime);
