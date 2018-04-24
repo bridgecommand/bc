@@ -490,6 +490,16 @@ SimulationModel::~SimulationModel()
         return ownShip.getStbdEngineRPM();
     }
 
+    void SimulationModel::setBowThruster(irr::f32 proportion)
+    {
+        ownShip.setBowThruster(proportion);
+    }
+
+    void SimulationModel::setSternThruster(irr::f32 proportion)
+    {
+        ownShip.setSternThruster(proportion);
+    }
+
     void SimulationModel::setAccelerator(irr::f32 accelerator)
     {
         device->getTimer()->setSpeed(accelerator);
@@ -795,6 +805,16 @@ SimulationModel::~SimulationModel()
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
+    }
+
+    bool SimulationModel::hasBowThruster() const
+    {
+        return ownShip.hasBowThruster();
+    }
+
+    bool SimulationModel::hasSternThruster() const
+    {
+        return ownShip.hasSternThruster();
     }
 
     irr::f32 SimulationModel::getMaxSounderDepth() const

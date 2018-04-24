@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5.0 - Ship models</title>
+  <title>Bridge Command 5.2 - Ship models</title>
 
 </head>
 
@@ -87,10 +87,17 @@ DynamicsSpeedB=100
 PropSpace=2.0
 DynamicsTurnDragA=180000
 DynamicsTurnDragB=12000
+DynamicsLateralDragA=187.1
+DynamicsLateralDragB=1000
 Inertia=120000
 RudderA=5
 RudderB=0.05
 RudderBAstern=0
+
+BowThrusterForce=2000
+SternThrusterForce=2000
+BowThrusterDistance=3.0
+SternThrusterDistance=2.5
 <!--
 centrifugalDriftEffect=0.03
 
@@ -130,10 +137,16 @@ DeviationMaximumHeading=10
 <li>DynamicsSpeedB: The amount of drag on the ship proportional to its speed (drag(N)=DynamicsSpeedB*Speed(m/s))</li> 
 <li>DynamicsTurnDragA: The amount of angular drag on the ship proportional to the rate of turn squared (drag(Nm)=DynamicsTurnDragA*Rate Of Turn(rad/s)^2)</li>
 <li>DynamicsTurnDragB: The amount of angular drag on the ship proportional to the rate of turn (drag(Nm)=DynamicsTurnDragB*Rate Of Turn(rad/s))</li>
+<li>DynamicsLateralDragA: The amount of drag on the ship proportional to its lateral (sideways) speed squared (drag(N)=DynamicsLateralDragA*Speed(m/s)^2)</li>
+<li>DynamicsLateralDragB: The amount of drag on the ship proportional to its lateral (sideways) speed (drag(N)=DynamicsLateralDragB*Speed(m/s))</li> 
 <li>Inertia: The ship's polar moment of inertia about it's vertical axis(kg m^2)</li>
 <li>RudderA: The turning effect of the rudder proportional to the ship's speed (Rudder torque(Nm)=RudderA*Speed(m/s)*rudder angle (deg)</li>
 <li>RudderB: The turning effect of the rudder proportional to the engine speed (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
 <li>RudderBAstern: The turning effect of the rudder proportional to the engine speed when going astern (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
+<li>BowThrusterForce (Optional): The maximum bow thruster force (in Newtons)</li>
+<li>SternThrusterForce (Optional): The maximum stern thruster force (in Newtons)</li>
+<li>BowThrusterDistance (Optional): The distance of the bow thruster forward of the centre of rotation of the vessel in metres</li>
+<li>SternThrusterDistance (Optional): The distance of the stern thruster behind of the centre of rotation of the vessel in metres</li>
 <!--<li>CentrifugalDriftEffect: (Optional) The amount the ship should move sideways during a turn. (Metres per degree of turn)</li>-->
 <li>Buffet: The amount the ship is affected by buffeting due to the weather.</li>
 <li>Swell: The amount the ship is rolls in the swell, due to the weather.</li>

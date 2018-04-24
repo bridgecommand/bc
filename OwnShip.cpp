@@ -96,6 +96,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     gps = (IniFile::iniFileTou32(shipIniFilename,"HasGPS")==1);
     if (maxSounderDepth < 1) {maxSounderDepth=100;} //Default
 
+    bowThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"BowThrusterForce")>0);
+    sternThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce")>0);
+    bowThrusterMaxForce = IniFile::iniFileTof32(shipIniFilename,"BowThrusterForce");
+    sternThrusterMaxForce = IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce");
+    bowThrusterDistance = IniFile::iniFileTof32(shipIniFilename,"BowThrusterDistance");
+    sternThrusterDistance = IniFile::iniFileTof32(shipIniFilename,"SternThrusterDistance");
+    dynamicsLateralDragA = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragA");
+    dynamicsLateralDragB = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragB");
+
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
         {asternEfficiency = 1;}
@@ -103,6 +112,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         {shipMass = 10000;}
     if (inertia == 0)
         {inertia = 2000;}
+
+    //If lateral drag isn't set, use 50x main drag values
+    if (dynamicsLateralDragA==0 && dynamicsLateralDragB==0) {
+        dynamicsLateralDragA = dynamicsSpeedA*10;
+        dynamicsLateralDragB = dynamicsSpeedB*10;
+    }
+
 
     if (propellorSpacing==0) {
         singleEngine=true;
@@ -191,6 +207,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     pitch = 0;
     roll = 0;
     waveHeightFiltered = 0;
+
+    //Initialise
+    bowThruster = 0;
+    sternThruster = 0;
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
@@ -238,6 +258,28 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
     }
     if (stbdEngine<-1) {
         stbdEngine = -1;
+    }
+}
+
+void OwnShip::setBowThruster(irr::f32 proportion) {
+    //Proportion is -1 to +1
+    bowThruster = proportion;
+    if (bowThruster>1) {
+        bowThruster = 1;
+    }
+    if (bowThruster<-1) {
+        bowThruster = -1;
+    }
+}
+
+void OwnShip::setSternThruster(irr::f32 proportion) {
+    //Proportion is -1 to +1
+    sternThruster = proportion;
+    if (sternThruster>1) {
+        sternThruster = 1;
+    }
+    if (sternThruster<-1) {
+        sternThruster = -1;
     }
 }
 
@@ -302,19 +344,20 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
         //Update spd and hdg with rudder and engine controls - assume two engines, should also work with single engine
-        portThrust = portEngine * maxForce;
-        stbdThrust = stbdEngine * maxForce;
+        irr::f32 portThrust = portEngine * maxForce;
+        irr::f32 stbdThrust = stbdEngine * maxForce;
         if (singleEngine) {
             stbdThrust = portThrust; //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
         }
         if (portThrust<0) {portThrust*=asternEfficiency;}
         if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
+        irr::f32 drag;
         if (spd<0) { //Compensate for loss of sign when squaring
             drag = -1*dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
 		} else {
 			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
 		}
-		acceleration = (portThrust+stbdThrust-drag)/shipMass;
+		irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
         spd += acceleration*deltaTime;
 
         //Turn dynamics
@@ -339,6 +382,9 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 			propWalkTorqueStbd=-1*propWalkAstern*(stbdThrust/maxForce);
         }
 		propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
+		//Thrusters
+		irr::f32 thrusterTorque;
+		thrusterTorque = bowThruster*bowThrusterMaxForce*bowThrusterDistance - sternThruster*sternThrusterMaxForce*sternThrusterDistance;
         //Turn drag
         if (rateOfTurn<0) {
             dragTorque=-1*dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
@@ -346,7 +392,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             dragTorque=   dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
         }
         //Turn dynamics
-        rateOfTurn += (rudderTorque + engineTorque + propWalkTorque - dragTorque)*deltaTime/inertia; //Rad/s
+        rateOfTurn += (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque)*deltaTime/inertia; //Rad/s
 
         //slow down if aground
         if (getDepth()<0) { //Todo: Have a separate groundingDepth(), that checks min depth at centre, and 3/4 ahead and astern of centre
@@ -439,6 +485,16 @@ bool OwnShip::hasGPS() const
 bool OwnShip::hasDepthSounder() const
 {
     return depthSounder;
+}
+
+bool OwnShip::hasBowThruster() const
+{
+    return bowThrusterPresent;
+}
+
+bool OwnShip::hasSternThruster() const
+{
+    return sternThrusterPresent;
 }
 
 irr::f32 OwnShip::getMaxSounderDepth() const

@@ -40,10 +40,14 @@ class OwnShip : public Ship
         irr::f32 getAngleCorrection() const;
         bool hasGPS() const;
         bool hasDepthSounder() const;
+        bool hasBowThruster() const;
+        bool hasSternThruster() const;
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
+        void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
+        void setSternThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
         void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1
@@ -75,6 +79,10 @@ class OwnShip : public Ship
         irr::f32 portEngine; //-1 to + 1
         irr::f32 stbdEngine; //-1 to + 1
         bool singleEngine;
+        bool bowThrusterPresent;
+        bool sternThrusterPresent;
+        irr::f32 bowThruster; //-1 to +1
+        irr::f32 sternThruster; //-1 to +1
         irr::f32 rudder; //-30 to + 30
         //Dynamics parameters
         irr::f32 shipMass;
@@ -84,19 +92,25 @@ class OwnShip : public Ship
         irr::f32 dynamicsSpeedB;
         irr::f32 dynamicsTurnDragA;
         irr::f32 dynamicsTurnDragB;
+        irr::f32 dynamicsLateralDragA;
+        irr::f32 dynamicsLateralDragB;
         irr::f32 rudderA;
         irr::f32 rudderB;
         irr::f32 rudderBAstern;
         irr::f32 maxForce;
+        irr::f32 bowThrusterMaxForce;
+        irr::f32 sternThrusterMaxForce;
+        irr::f32 bowThrusterDistance;
+        irr::f32 sternThrusterDistance;
         irr::f32 propellorSpacing;
         irr::f32 asternEfficiency;
         irr::f32 propWalkAhead;
         irr::f32 propWalkAstern;
         //Dynamics variables
-        irr::f32 portThrust;
-        irr::f32 stbdThrust;
-        irr::f32 drag;
-        irr::f32 acceleration;
+        //irr::f32 portThrust;
+        //irr::f32 stbdThrust;
+        //irr::f32 drag;
+        //irr::f32 acceleration;
         irr::f32 maxSpeedAhead;
         irr::f32 maxSpeedAstern;
         irr::f32 requiredEngineProportion(irr::f32 speed);

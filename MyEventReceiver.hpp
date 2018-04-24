@@ -31,9 +31,13 @@ public:
     irr::u32 portJoystickAxis;
     irr::u32 stbdJoystickAxis;
     irr::u32 rudderJoystickAxis;
+    irr::u32 bowThrusterJoystickAxis;
+    irr::u32 sternThrusterJoystickAxis;
     irr::u32 portJoystickNo;
     irr::u32 stbdJoystickNo;
     irr::u32 rudderJoystickNo;
+    irr::u32 bowThrusterJoystickNo;
+    irr::u32 sternThrusterJoystickNo;
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
 };
@@ -62,6 +66,8 @@ private:
     irr::f32 previousJoystickPort;
     irr::f32 previousJoystickStbd;
     irr::f32 previousJoystickRudder;
+    irr::f32 previousJoystickBowThruster;
+    irr::f32 previousJoystickSternThruster;
 
     JoystickSetup joystickSetup;
     std::vector<std::string>* logMessages;

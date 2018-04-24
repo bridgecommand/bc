@@ -58,7 +58,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasSternThruster, bool hasBowThruster);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -118,7 +118,7 @@ public:
     irr::core::rect<irr::s32> getLargeRadarRect() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
-    void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
+//    void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);
     void updateGuiData(GUIData* guiData);
     void showLogWindow();
     void drawGUI();

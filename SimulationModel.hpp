@@ -68,6 +68,8 @@ public:
     irr::f32 getStbdEngine() const; //Range +-1
     irr::f32 getPortEngineRPM() const;
     irr::f32 getStbdEngineRPM() const;
+    void setBowThruster(irr::f32 proportion);
+    void setSternThruster(irr::f32 proportion);
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;
     irr::f32 getSpeed() const; //Gets the own ship's speed
@@ -171,6 +173,8 @@ public:
     bool isSingleEngine() const;
     bool hasDepthSounder() const;
     irr::f32 getMaxSounderDepth() const;
+    bool hasBowThruster() const;
+    bool hasSternThruster() const;
 
 	void startHorn();
 	void endHorn();

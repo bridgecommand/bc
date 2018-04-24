@@ -58,6 +58,8 @@ using namespace irr;
 		previousJoystickPort = INFINITY;
 		previousJoystickStbd = INFINITY;
 		previousJoystickRudder = INFINITY;
+		previousJoystickBowThruster = INFINITY;
+		previousJoystickSternThruster = INFINITY;
 
 		this->logMessages = logMessages;
 
@@ -136,6 +138,18 @@ using namespace irr;
                   {
                         model->setRudder(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
                   }
+
+            //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
+
+              if (id == GUIMain::GUI_ID_BOWTHRUSTER_SCROLL_BAR) {
+                  irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/100.0;  //Convert to from +-100 to +-1
+                  model->setBowThruster(value);
+              }
+              if (id == GUIMain::GUI_ID_STERNTHRUSTER_SCROLL_BAR) {
+                  irr::f32 value = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos()/100.0;  //Convert to from +-100 to +-1
+                  model->setSternThruster(value);
+              }
+
               if (id == GUIMain::GUI_ID_RADAR_GAIN_SCROLL_BAR)
                   {
                         model->setRadarGain(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
@@ -571,6 +585,8 @@ using namespace irr;
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
             irr::f32 newJoystickRudder = previousJoystickRudder;
+            irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
+            irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
             u8 thisJoystick = event.JoystickEvent.Joystick;
             for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
@@ -597,6 +613,22 @@ using namespace irr;
                         previousJoystickRudder = newJoystickRudder;
                     }
                 }
+
+                if (thisJoystick == joystickSetup.bowThrusterJoystickNo && thisAxis == joystickSetup.bowThrusterJoystickAxis) {
+                    newJoystickBowThruster = event.JoystickEvent.Axis[joystickSetup.bowThrusterJoystickAxis]/32768.0;
+                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    if (previousJoystickBowThruster==INFINITY) {
+                        previousJoystickBowThruster = newJoystickBowThruster;
+                    }
+                }
+                if (thisJoystick == joystickSetup.sternThrusterJoystickNo && thisAxis == joystickSetup.sternThrusterJoystickAxis) {
+                    newJoystickSternThruster = event.JoystickEvent.Axis[joystickSetup.sternThrusterJoystickAxis]/32768.0;
+                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    if (previousJoystickSternThruster==INFINITY) {
+                        previousJoystickSternThruster = newJoystickSternThruster;
+                    }
+                }
+
             }
 
             //Do joystick stuff here
@@ -606,7 +638,9 @@ using namespace irr;
             f32 portChange = fabs(newJoystickPort - previousJoystickPort);
             f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
             f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
-            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01)
+            f32 bowThrusterChange = fabs(newJoystickBowThruster - previousJoystickBowThruster);
+            f32 sternThrusterChange = fabs(newJoystickSternThruster - previousJoystickSternThruster);
+            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
             {
                 joystickChanged = true;
             }
@@ -628,6 +662,16 @@ using namespace irr;
                 if (newJoystickRudder<INFINITY) {
                     model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
+                }
+
+                if (newJoystickBowThruster<INFINITY) {
+                    model->setBowThruster(newJoystickBowThruster);
+                    previousJoystickBowThruster=newJoystickBowThruster;
+                }
+
+                if (newJoystickSternThruster<INFINITY) {
+                    model->setSternThruster(newJoystickSternThruster);
+                    previousJoystickSternThruster=newJoystickSternThruster;
                 }
 
             }

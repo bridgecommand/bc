@@ -31,12 +31,14 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS)
+void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasSternThruster, bool hasBowThruster)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
+        this->hasBowThruster = hasBowThruster;
+        this->hasSternThruster = hasSternThruster;
         guienv = device->getGUIEnvironment();
 
         video::IVideoDriver* driver = device->getVideoDriver();
@@ -94,8 +96,6 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         core::array<s32> centreTic; centreTic.push_back(0);
 
-        hasBowThruster = false; //FIXME: Load this from ship spec
-        hasSternThruster = true; //FIXME: Load this from ship spec
         if (hasBowThruster) {
             irr::f32 verticalScreenPos;
             if (hasSternThruster) {
