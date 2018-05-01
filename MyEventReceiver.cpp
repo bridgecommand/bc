@@ -435,15 +435,19 @@ using namespace irr;
                     {
                         //Camera look
                         case KEY_UP:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookAhead();
                             break;
                         case KEY_DOWN:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookAstern();
                             break;
                         case KEY_LEFT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookPort();
                             break;
                         case KEY_RIGHT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookStbd();
                             break;
 
@@ -496,15 +500,19 @@ using namespace irr;
 
                         //Camera look
                         case KEY_UP:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookUp();
                             break;
                         case KEY_DOWN:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookDown();
                             break;
                         case KEY_LEFT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookLeft();
                             break;
                         case KEY_RIGHT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookRight();
                             break;
                         case KEY_SPACE:
