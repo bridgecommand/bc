@@ -44,6 +44,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     std::string ownShipName = ownShipData.ownShipName;
     //Get initial position and heading, and set these
     spd = ownShipData.initialSpeed*KTS_TO_MPS;
+    lateralSpd = 0;
     xPos = model->longToX(ownShipData.initialLong);
     yPos = 0;
     zPos = model->latToZ(ownShipData.initialLat);
@@ -360,6 +361,19 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 		irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
         spd += acceleration*deltaTime;
 
+        //Lateral dynamics
+        irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
+
+        irr::f32 lateralDrag;
+        if (lateralSpd<0) { //Compensate for loss of sign when squaring
+            lateralDrag = -1*dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+		} else {
+			lateralDrag =    dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+		}
+		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag)/shipMass;
+		//std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
+		lateralSpd += lateralAcceleration*deltaTime;
+
         //Turn dynamics
         //Rudder
         if ((portThrust+stbdThrust) > 0) {
@@ -409,6 +423,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             if (rateOfTurn<0) {
                 rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
             }
+
+            if (lateralSpd>0) {
+                lateralSpd = fmin(0.1,lateralSpd);
+            }
+            if (lateralSpd<0) {
+                lateralSpd = fmax(-0.1,lateralSpd);
+            }
         }
 
         //Apply turn
@@ -435,8 +456,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
     //move, according to heading and speed
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos += sin(hdg*core::DEGTORAD)*spd*deltaTime;
-        zPos += cos(hdg*core::DEGTORAD)*spd*deltaTime;
+        xPos += sin(hdg*core::DEGTORAD)*spd*deltaTime + cos(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
+        zPos += cos(hdg*core::DEGTORAD)*spd*deltaTime - sin(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
         if (getDepth() > 0) {
@@ -444,6 +465,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             xPos += stream.X*deltaTime*streamScaling;
             zPos += stream.Y*deltaTime*streamScaling;
         }
+
+        //Todo: Calculate CoG and SoG here
 
     } else {
         positionManuallyUpdated = false;

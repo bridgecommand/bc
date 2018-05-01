@@ -119,6 +119,8 @@ class OwnShip : public Ship
         irr::f32 rudderTorque;
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
+        irr::f32 lateralSpd;
+
 
         irr::f32 waveHeightFiltered; //1st order transfer filtered response to waves
         //General settings
