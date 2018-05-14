@@ -255,7 +255,7 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
 
 void Network::findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData)
 {
-    if (positionData.size() == 8) { //8 elements in position data sent
+    if (positionData.size() == 9) { //9 elements in position data sent
         ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
         ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
         ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));

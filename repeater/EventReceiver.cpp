@@ -47,6 +47,13 @@ using namespace irr;
 			}
         }
 
+        if (event.EventType== EET_KEY_INPUT_EVENT) {
+            //Quit with esc or F4 (for alt-F4)
+            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key == KEY_F4) {
+                exit(EXIT_SUCCESS);
+            }
+        }
+
         return false;
 
     }

@@ -303,6 +303,8 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getSOG()*MPS_TO_KTS));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getCOG()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getRudder()));
     stringToSend.append("#");
 
     //2 Numbers: Number Other, Number buoys, Number MOB #

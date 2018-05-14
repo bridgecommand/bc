@@ -190,7 +190,7 @@ void NetworkSecondary::receiveMessage()
                 //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
                 if (mode==OperatingMode::Secondary) {
                     std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-                    if (positionData.size() == 8) { //8 elements in position data sent
+                    if (positionData.size() == 9) { //9 elements in position data sent
                         model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
                                       Utilities::lexical_cast<irr::f32>(positionData.at(1)));
                         model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
