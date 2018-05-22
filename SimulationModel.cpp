@@ -131,6 +131,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Tell gui to hide all ship controls if in secondary mode
         if (mode == OperatingMode::Secondary) {
             gui->hideEngineAndRudder();
+//      TODO      gui->hideWheel();  
         }
 
         //Tell the GUI what instruments to display - currently GPS and depth sounder
@@ -444,6 +445,21 @@ SimulationModel::~SimulationModel()
     {
         return ownShip.getRudder();
     }
+
+
+// DEE vvvvvvvvvvv
+    void SimulationModel::setWheel(irr::f32 wheel)
+    {
+        //Set the wheel (-ve is port, +ve is stbd)
+        ownShip.setWheel(wheel);
+    }
+
+    irr::f32 SimulationModel::getWheel() const
+    {
+        return ownShip.getWheel();
+    }
+// DEE ^^^^^^^^^^^
+
 
     void SimulationModel::setPortEngine(irr::f32 port)
     {
@@ -833,6 +849,12 @@ SimulationModel::~SimulationModel()
     void SimulationModel::update()
     {
 
+
+// DEE vvvv debug I think that this is effectively the CLOCK
+
+
+        // move time along .. this goes before everything else in the cycle
+
         //get delta time
         currentTime = device->getTimer()->getTime();
         deltaTime = (currentTime - previousTime)/1000.f;
@@ -845,6 +867,10 @@ SimulationModel::~SimulationModel()
 
         //increment loop number
         loopNumber++;
+
+        // end move time along
+
+
 
         //Ensure we have the right radar screen resolution
         setRadarDisplayRadius(guiMain->getRadarPixelRadius());
@@ -874,6 +900,7 @@ SimulationModel::~SimulationModel()
 
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
+
 
         //update man overboard
         manOverboard.update(deltaTime, tideHeight);
@@ -945,6 +972,9 @@ SimulationModel::~SimulationModel()
             TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
         }
 
+
+
+
         //Collate data to show in gui
         guiData->lat = getLat();
         guiData->longitude = getLong();
@@ -954,7 +984,8 @@ SimulationModel::~SimulationModel()
         guiData->spd = ownShip.getSpeed();
         guiData->portEng = ownShip.getPortEngine();
         guiData->stbdEng = ownShip.getStbdEngine();
-        guiData->rudder = ownShip.getRudder();
+        guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
+        guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
         guiData->depth = ownShip.getDepth();
         guiData->weather = weather;
         guiData->rain = rainIntensity;
@@ -971,6 +1002,10 @@ SimulationModel::~SimulationModel()
         guiData->paused = paused;
         guiData->collided = collided;
         guiData->headUp = radarCalculation.getHeadUp();
+
+// DEE vvvv units are rad per second
+	guiData->RateOfTurn = ownShip.getRateOfTurn();
+// DEE ^^^^
 
         //send data to gui
         guiMain->updateGuiData(guiData); //Set GUI heading in degrees and speed (in m/s)

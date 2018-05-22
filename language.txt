@@ -30,6 +30,11 @@ engine="Engine"
 bowThruster="Bow Thruster"
 sternThruster="Stern Thruster"
 
+
+rudderText="Rudder position"
+wheelText="Wheel position"
+rotText="Rate of turn"
+
 radarMainTab="Main"
 radarEBLVRMTab="EBL\nVRM"
 radarPITab="PI"
