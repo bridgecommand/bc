@@ -168,6 +168,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     controlMode = MODE_ENGINE;
 
     //calculate max speed from dynamics parameters
+    // DEE this looks like it is in knots and not metres per second
     maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
 	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
 
@@ -415,7 +416,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Lateral dynamics
         irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
-
+// comment perhaps dynamicsLateralDragA and B should be proportional to the lateral submerged area so roughly dynamicsDragA * (L / B)
         irr::f32 lateralDrag;
         if (lateralSpd<0) { //Compensate for loss of sign when squaring
             lateralDrag = -1*dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
@@ -541,7 +542,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //Todo: Calculate CoG and SoG here
-
+// CoG = Arctan(xPos/zPos); // or convert to cos to avoid asympoic
+// SoG = (3600/1852) * sqrt(xPos^2+yPos^2)/ deltaTime // in knots
     } else {
         positionManuallyUpdated = false;
     }

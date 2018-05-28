@@ -111,7 +111,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
             }
 
 // DEE bowthruster position
-            bowThrusterScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_BOWTHRUSTER_SCROLL_BAR,core::rect<s32>(0.01*su, verticalScreenPos*sh, 0.5*su, (verticalScreenPos*0.4)*sh),engineTics,centreTic);
+            bowThrusterScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_BOWTHRUSTER_SCROLL_BAR,core::rect<s32>(0.01*su, verticalScreenPos*sh, 0.08*su, (verticalScreenPos+0.04)*sh),engineTics,centreTic);
             bowThrusterScrollbar->setMax(100);
             bowThrusterScrollbar->setMin(-100);
             bowThrusterScrollbar->setPos(0);
