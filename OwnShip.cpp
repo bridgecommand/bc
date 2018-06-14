@@ -185,6 +185,16 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         shipMesh = smgr->addSphereMesh("Dummy name");
     }
 
+    //If any part is partially transparent, make it fully transparent (for bridge windows etc!)
+    if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
+        for(u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
+            if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
+                smgr->getMeshManipulator()->setVertexColorAlpha(shipMesh->getMeshBuffer(mb), 0);
+            }
+        }
+    }
+
+
     ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
     ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(core::vector3df(0,heightCorrection,0));

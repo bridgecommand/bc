@@ -120,7 +120,7 @@ DeviationMaximumHeading=10
 <ul>
 <li>FileName: Sets the name of the 3D model file to load</li>
 <li>ScaleFactor: The amount to scale the 3D model by. Bridge Command uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
-<li><b>Note that all subsequent positions/distances are in the units/coordinate system of the 3D model file</b></li>
+<li><b>Note that all subsequent positions/distances are in the units/coordinate system of the 3D model file, except for the propulsion system.</b></li>
 <li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negative value</li>
 <li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Bridge Command axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Bridge Command uses a left handed coordinate system internally, so the Z axis is towards the ship's bow)</li>
 <li>Depth: The vessel's depth under the water line (in the 3D model's units)</li>
@@ -131,7 +131,7 @@ DeviationMaximumHeading=10
 <li>ViewY(#): The viewpoint's Y coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
 <li>ViewZ(#): The viewpoint's Z coordinate (in the model's unit system - as long as AngleCorrection is zero)</li>
 </ul></li>
-
+<li>MakeTransparent (Optional): If this is set to 1, any part of the model that is partially transparent will be made fully transparent. This is useful where models have bridge windows where the material used partially obscures the view.</li>
 <li>Mass: The vessel's mass (in kg)</li>
 <li>DynamicsSpeedA: The amount of drag on the ship proportional to its speed squared (drag(N)=DynamicsSpeedA*Speed(m/s)^2)</li>
 <li>DynamicsSpeedB: The amount of drag on the ship proportional to its speed (drag(N)=DynamicsSpeedB*Speed(m/s))</li> 
@@ -145,8 +145,8 @@ DeviationMaximumHeading=10
 <li>RudderBAstern: The turning effect of the rudder proportional to the engine speed when going astern (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
 <li>BowThrusterForce (Optional): The maximum bow thruster force (in Newtons)</li>
 <li>SternThrusterForce (Optional): The maximum stern thruster force (in Newtons)</li>
-<li>BowThrusterDistance (Optional): The distance of the bow thruster forward of the centre of rotation of the vessel in metres</li>
-<li>SternThrusterDistance (Optional): The distance of the stern thruster behind of the centre of rotation of the vessel in metres</li>
+<li>BowThrusterDistance (Optional): The distance of the bow thruster forward of the centre of rotation of the vessel in metres (world, not model units)</li>
+<li>SternThrusterDistance (Optional): The distance of the stern thruster behind of the centre of rotation of the vessel in metres (world, not model units)</li>
 <!--<li>CentrifugalDriftEffect: (Optional) The amount the ship should move sideways during a turn. (Metres per degree of turn)</li>-->
 <li>Buffet: The amount the ship is affected by buffeting due to the weather.</li>
 <li>Swell: The amount the ship is rolls in the swell, due to the weather.</li>
@@ -158,7 +158,7 @@ DeviationMaximumHeading=10
 <li>Max_propulsion_force: The maximum propulsion force of one engine (in Newtons)</li>
 <li>AsternEfficiency: (Optional) The proportion of thrust available when going astern (range 0-1, default 1)</li>
 <li>MaxRevs: The ship's maximum engine revolutions (RPM)</li>
-<li>PropSpace: The spacing between the port and starboard propellors in metres. Set to zero to model a one-engined vessel.</li>
+<li>PropSpace: The spacing between the port and starboard propellors in metres (world, not model units). Set to zero to model a one-engined vessel.</li>
 <li>PropWalkAhead: (Optional) The maximum turning moment (Nm) applied by the 'prop walk' effect on the ship, with the engine engaged forwards. If the vessel has a normal propellor arrangement, with a single right turning propellor, or double outwards turning propellors, this should be positive.</li>
 <li>PropWalkAstern: (Optional) The maximum turning moment (Nm) applied by the 'prop walk' effect on the ship, with the engine engaged astern. This should be positive for normal vessels, and should normally be larger than the ahead value.</li>
 <li>PropWalkDriftEffect: (Optional) The amount the ship should move sidways due to the 'prop walk' effect (Metres per Nm of prop walk)</li>
