@@ -58,6 +58,7 @@ class OwnShip : public Ship
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
 		std::string getBasePath() const;
+		irr::core::vector3df getScreenDisplayPosition() const;
         bool isSingleEngine() const;
 
     protected:
@@ -120,13 +121,14 @@ class OwnShip : public Ship
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
         irr::f32 lateralSpd;
-
-
+		
         irr::f32 waveHeightFiltered; //1st order transfer filtered response to waves
         //General settings
         bool gps;
         bool depthSounder;
         irr::f32 maxSounderDepth;
+
+		irr::core::vector3df screenDisplayPosition;
 
 };
 

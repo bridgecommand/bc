@@ -171,6 +171,18 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         views.push_back(core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
     }
 
+	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
+	screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
+	screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
+	//Default position out of view if not set
+	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z) {
+		screenDisplayPosition.Y = 500;
+	}
+	screenDisplayPosition.X *= scaleFactor;
+	screenDisplayPosition.Y *= scaleFactor;
+	screenDisplayPosition.Z *= scaleFactor;
+
+
     //Load the model
     scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
@@ -332,6 +344,11 @@ irr::f32 OwnShip::getRoll() const
 std::string OwnShip::getBasePath() const
 {
 	return basePath;
+}
+
+irr::core::vector3df OwnShip::getScreenDisplayPosition() const
+{
+	return screenDisplayPosition;
 }
 
 bool OwnShip::isSingleEngine() const
@@ -545,4 +562,3 @@ std::string OwnShip::getRadarConfigFile() const
 {
     return radarConfigFile;
 }
-

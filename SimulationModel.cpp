@@ -173,8 +173,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         rain.load(smgr, camera.getSceneNode(), device);
 
         //make a radar screen, setting parent and offset from own ship
-        core::vector3df radarOffset = core::vector3df(0,100,0); //FIXME: Temporary - radar 100m above ship - used to render 2d radar, but could also be used in 3d view if required
-        //core::vector3df radarOffset = core::vector3df(0.45,-0.28,0.75); //Previous offset from camera
+        core::vector3df radarOffset = ownShip.getScreenDisplayPosition(); //Used to render 2d radar, but could also be used in 3d view if required
 
         //radarScreen.setRadarDisplayRadius(gui->getRadarPixelRadius());
         radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
