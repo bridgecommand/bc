@@ -33,7 +33,7 @@ class RadarScreen
 
     private:
         irr::video::IVideoDriver* driver;
-        irr::scene::IBillboardSceneNode* radarScreen;
+        irr::scene::IMeshSceneNode* radarScreen;
         irr::scene::ISceneNode* parent;
         irr::core::vector3df offset;
         irr::u32 radarRadiusPx;

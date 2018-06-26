@@ -35,9 +35,10 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
 
-    radarScreen = smgr->addBillboardSceneNode();
+	irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(size, size));
+
+    radarScreen = smgr->addMeshSceneNode(radarPlane);
     radarScreen->setMaterialFlag(video::EMF_LIGHTING, false);
-    radarScreen->setSize(core::dimension2d<f32>(size, size));
     this->parent = parent;
     this->offset = offset;
 }
@@ -61,6 +62,7 @@ void RadarScreen::update(video::IImage* radarImage)
 
     //move screen
     radarScreen->setPosition(parent->getPosition() + offsetTransformed);
+	radarScreen->setRotation(parent->getRotation()+irr::core::vector3df(-90,0,0));
 
     //Get old texture if it exists
     video::ITexture* oldTexture = 0;
