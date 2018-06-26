@@ -174,9 +174,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
 	screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
 	screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
+	screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
 	//Default position out of view if not set
 	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z) {
 		screenDisplayPosition.Y = 500;
+	}
+	if (screenDisplaySize <= 0) {
+		screenDisplaySize = 1;
 	}
 	screenDisplayPosition.X *= scaleFactor;
 	screenDisplayPosition.Y *= scaleFactor;
@@ -349,6 +353,11 @@ std::string OwnShip::getBasePath() const
 irr::core::vector3df OwnShip::getScreenDisplayPosition() const
 {
 	return screenDisplayPosition;
+}
+
+irr::f32 OwnShip::getScreenDisplaySize() const
+{
+	return screenDisplaySize;
 }
 
 bool OwnShip::isSingleEngine() const

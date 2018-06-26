@@ -30,14 +30,14 @@ RadarScreen::~RadarScreen()
 }
 
 
-void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset)
+void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size)
 {
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
 
     radarScreen = smgr->addBillboardSceneNode();
     radarScreen->setMaterialFlag(video::EMF_LIGHTING, false);
-    radarScreen->setSize(core::dimension2d<f32>(0.5f, 0.5f));
+    radarScreen->setSize(core::dimension2d<f32>(size, size));
     this->parent = parent;
     this->offset = offset;
 }

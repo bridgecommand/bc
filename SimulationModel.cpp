@@ -173,11 +173,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         rain.load(smgr, camera.getSceneNode(), device);
 
         //make a radar screen, setting parent and offset from own ship
-        core::vector3df radarOffset = ownShip.getScreenDisplayPosition(); //Used to render 2d radar, but could also be used in 3d view if required
-
-        //radarScreen.setRadarDisplayRadius(gui->getRadarPixelRadius());
-        radarScreen.load(smgr,ownShip.getSceneNode(),radarOffset);
-
+        radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize());
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -193,11 +189,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
-        radarViews.push_back(core::vector3df(0,0,-0.25));
-        radarCamera.load(smgr,radarScreen.getSceneNode(),radarViews,core::PI/2.0,0,0);
+        radarViews.push_back(ownShip.getScreenDisplayPosition() + core::vector3df(0,0,-0.5*ownShip.getScreenDisplaySize()));
+        radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,core::PI/2.0,0,0);
         radarCamera.updateViewport(1.0);
-        radarCamera.setNearValue(0.2);
-        radarCamera.setFarValue(0.3);
+        radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
+        radarCamera.setFarValue(1.2*0.5*ownShip.getScreenDisplaySize());
 
         //Hide the man overboard model
         manOverboard.setVisible(false);

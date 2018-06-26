@@ -25,7 +25,7 @@ class RadarScreen
         RadarScreen();
         virtual ~RadarScreen();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size);
         void setRadarDisplayRadius(irr::u32 radiusPx);
         void update(irr::video::IImage* radarImage);
         irr::scene::ISceneNode* getSceneNode() const;

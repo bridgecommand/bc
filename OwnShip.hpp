@@ -59,6 +59,7 @@ class OwnShip : public Ship
         irr::f32 getRoll() const;
 		std::string getBasePath() const;
 		irr::core::vector3df getScreenDisplayPosition() const;
+		irr::f32 getScreenDisplaySize() const;
         bool isSingleEngine() const;
 
     protected:
@@ -129,6 +130,7 @@ class OwnShip : public Ship
         irr::f32 maxSounderDepth;
 
 		irr::core::vector3df screenDisplayPosition;
+		irr::f32 screenDisplaySize;
 
 };
 
