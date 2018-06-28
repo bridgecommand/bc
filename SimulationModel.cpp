@@ -173,7 +173,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         rain.load(smgr, camera.getSceneNode(), device);
 
         //make a radar screen, setting parent and offset from own ship
-        radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize());
+        radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -189,9 +189,11 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make radar camera
         std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
-        radarViews.push_back(ownShip.getScreenDisplayPosition() + core::vector3df(0,0,-0.5*ownShip.getScreenDisplaySize()));
+		irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
+        radarViews.push_back(ownShip.getScreenDisplayPosition() + core::vector3df(0,0.5*sin(core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
         radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,core::PI/2.0,0,0);
-        radarCamera.updateViewport(1.0);
+		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
+		radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
         radarCamera.setFarValue(1.2*0.5*ownShip.getScreenDisplaySize());
 

@@ -30,7 +30,7 @@ RadarScreen::~RadarScreen()
 }
 
 
-void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size)
+void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size, irr::f32 tilt)
 {
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
@@ -41,6 +41,7 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
     radarScreen->setMaterialFlag(video::EMF_LIGHTING, false);
     this->parent = parent;
     this->offset = offset;
+	this->tilt = tilt;
 }
 
 void RadarScreen::setRadarDisplayRadius(u32 radiusPx)
@@ -62,7 +63,7 @@ void RadarScreen::update(video::IImage* radarImage)
 
     //move screen
     radarScreen->setPosition(parent->getPosition() + offsetTransformed);
-	radarScreen->setRotation(parent->getRotation()+irr::core::vector3df(-90,0,0));
+	radarScreen->setRotation(parent->getRotation()+irr::core::vector3df(-90+tilt,0,0));
 
     //Get old texture if it exists
     video::ITexture* oldTexture = 0;

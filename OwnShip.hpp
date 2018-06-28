@@ -60,6 +60,7 @@ class OwnShip : public Ship
 		std::string getBasePath() const;
 		irr::core::vector3df getScreenDisplayPosition() const;
 		irr::f32 getScreenDisplaySize() const;
+		irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
 
     protected:
@@ -131,6 +132,7 @@ class OwnShip : public Ship
 
 		irr::core::vector3df screenDisplayPosition;
 		irr::f32 screenDisplaySize;
+		irr::f32 screenDisplayTilt;
 
 };
 
