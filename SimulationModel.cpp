@@ -254,11 +254,11 @@ SimulationModel::~SimulationModel()
     }
 
     irr::f32 SimulationModel::getCOG() const{
-        return getHeading(); //FIXME: Will need to be updated when currents etc included
+        return ownShip.getCOG();
     }
 
     irr::f32 SimulationModel::getSOG() const{
-        return getSpeed(); //FIXME: Will need to be updated when currents etc included
+        return ownShip.getSOG();
     }
 
     irr::f32 SimulationModel::getWaveHeight(irr::f32 posX, irr::f32 posZ) const {

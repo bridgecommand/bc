@@ -239,6 +239,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Initialise
     bowThruster = 0;
     sternThruster = 0;
+
+    cog = 0;
+    sog = 0;
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
@@ -496,23 +499,45 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     if(hdg>=360) {hdg-=360;}
     if(hdg<0) {hdg+=360;}
 
+    irr::f32 xChange = 0;
+    irr::f32 zChange = 0;
+
     //move, according to heading and speed
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos += sin(hdg*core::DEGTORAD)*spd*deltaTime + cos(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
-        zPos += cos(hdg*core::DEGTORAD)*spd*deltaTime - sin(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
+        xChange = sin(hdg*core::DEGTORAD)*spd*deltaTime + cos(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
+        zChange = cos(hdg*core::DEGTORAD)*spd*deltaTime - sin(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
         if (getDepth() > 0) {
             f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
-            xPos += stream.X*deltaTime*streamScaling;
-            zPos += stream.Y*deltaTime*streamScaling;
+            xChange += stream.X*deltaTime*streamScaling;
+            zChange += stream.Y*deltaTime*streamScaling;
         }
-
-        //Todo: Calculate CoG and SoG here
 
     } else {
         positionManuallyUpdated = false;
     }
+
+    xPos += xChange;
+    zPos += zChange;
+
+
+    if (deltaTime > 0) {
+
+        //Speed over ground
+        sog = pow((pow(xChange,2) + pow(zChange,2)),0.5)/deltaTime; //speed over ground in m/s
+
+        //Course over ground
+        if (xChange!=0 || zChange!=0 ) {
+            cog = atan2(xChange,zChange)*core::RADTODEG;
+            if (cog >= 360) {cog -=360;}
+            if (cog < 0) {cog +=360;}
+        } else {
+            cog = 0;
+        }
+    } //if paused, leave cog & sog unchanged.
+
+    //std::cout << "CoG: " << cog << " SoG: " << sog << std::endl;
 
     //Apply up/down motion from waves, with some filtering
     f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
@@ -530,6 +555,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     ship->setPosition(core::vector3df(xPos,yPos,zPos));
     ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,pitch,roll));
 
+}
+
+irr::f32 OwnShip::getCOG() const
+{
+    return cog;
+}
+
+irr::f32 OwnShip::getSOG() const
+{
+    return sog; //m/s
 }
 
 irr::f32 OwnShip::getDepth()

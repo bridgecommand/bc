@@ -57,6 +57,8 @@ class OwnShip : public Ship
         irr::f32 getRudder() const; //-30 to 30
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
+        irr::f32 getCOG() const;
+        irr::f32 getSOG() const; //m/s
 		std::string getBasePath() const;
 		irr::core::vector3df getScreenDisplayPosition() const;
 		irr::f32 getScreenDisplaySize() const;
@@ -123,7 +125,10 @@ class OwnShip : public Ship
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
         irr::f32 lateralSpd;
-		
+
+		irr::f32 cog; //course over ground
+		irr::f32 sog; //m/s speed over ground
+
         irr::f32 waveHeightFiltered; //1st order transfer filtered response to waves
         //General settings
         bool gps;
