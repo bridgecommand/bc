@@ -177,9 +177,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
 	screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
 	//Default position out of view if not set
-	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z) {
+	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z == 0) {
 		screenDisplayPosition.Y = 500;
 	}
+
 	if (screenDisplaySize <= 0) {
 		screenDisplaySize = 1;
 	}
