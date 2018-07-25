@@ -134,10 +134,25 @@ using namespace irr;
                             model->setStbdEngine(value);
                         }
                   }
+
+// DEE debug this must be disabled becuase only the wheel is directly controlled
+// disbaling mouse controlling the rudder directly change it to change wheel
+
               if (id == GUIMain::GUI_ID_RUDDER_SCROLL_BAR)
                   {
-                        model->setRudder(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+//                        model->setRudder(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
                   }
+
+
+
+
+// DEE capture the wheel
+              if (id == GUIMain::GUI_ID_WHEEL_SCROLL_BAR)
+                  {
+                        model->setWheel(((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
+                  }
+// DEE capture the wheel
+
 
             //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
 
@@ -565,12 +580,20 @@ using namespace irr;
                             model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
                             model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
                             break;
+
+// DEE vvvv key rudder to port changed to rudder wheel to port
                         case KEY_KEY_V:
-                            model->setRudder(model->getRudder()-5);
+//                            model->setRudder(model->getRudder()-5);
+			    model->setWheel(model->getWheel()-1);
                             break;
+// DEE ^^^^
+
+// DEE vvvV key rudder to starboard changed to key wheel to starboard
                         case KEY_KEY_B:
-                            model->setRudder(model->getRudder()+5);
+//                            model->setRudder(model->getRudder()+5);
+                            model->setWheel(model->getWheel()+1);
                             break;
+// DEE ^^^^
 
                         default:
                             //don't do anything
@@ -645,10 +668,15 @@ using namespace irr;
             bool joystickChanged = false;
             f32 portChange = fabs(newJoystickPort - previousJoystickPort);
             f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
-            f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
+            f32 wheelChange = fabs(newJoystickRudder - previousJoystickRudder);
+
+// DEE
+//            f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
             f32 bowThrusterChange = fabs(newJoystickBowThruster - previousJoystickBowThruster);
             f32 sternThrusterChange = fabs(newJoystickSternThruster - previousJoystickSternThruster);
-            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
+// DEE
+//            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
+            if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
             {
                 joystickChanged = true;
             }
@@ -668,7 +696,10 @@ using namespace irr;
                 }
 
                 if (newJoystickRudder<INFINITY) {
-                    model->setRudder(newJoystickRudder);
+
+// DEE if the joystick rudder control is used then make it change the wheel not the rudder
+                    model->setWheel(newJoystickRudder);
+//                    model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
                 }
 

@@ -21,6 +21,7 @@
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
+//#include "RateOfTurnIndicator.h" // DEE addition
 #include "GUIRectangle.hpp"
 #include <vector>
 #include <string>
@@ -35,6 +36,10 @@ struct GUIData {
     irr::f32 portEng;
     irr::f32 stbdEng;
     irr::f32 rudder;
+// DEE vvvv
+    irr::f32 wheel;
+    irr::f32 RateOfTurn;
+// DEE ^^^
     irr::f32 depth;
     irr::f32 weather;
     irr::f32 rain;
@@ -67,6 +72,11 @@ public:
         GUI_ID_PORT_SCROLL_BAR,
         GUI_ID_STBD_SCROLL_BAR,
         GUI_ID_RUDDER_SCROLL_BAR,
+// DEE vvvv
+	GUI_ID_WHEEL_SCROLL_BAR,
+        GUI_ID_RATE_OF_TURN_SCROLL_BAR,
+	GUI_ID_RATE_OF_TURN_INDICATOR,
+// DEE ^^^^
         GUI_ID_BOWTHRUSTER_SCROLL_BAR,
         GUI_ID_STERNTHRUSTER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
@@ -133,12 +143,23 @@ private:
     irr::gui::IGUIScrollBar* portScrollbar;
     irr::gui::IGUIScrollBar* stbdScrollbar;
     irr::gui::IGUIScrollBar* rudderScrollbar;
+
+// DEE vvvvv
+    irr::gui::IGUIScrollBar* wheelScrollbar;
+// DEE ^^^^^
+
     irr::gui::IGUIScrollBar* bowThrusterScrollbar;
     irr::gui::IGUIScrollBar* sternThrusterScrollbar;
     irr::gui::IGUIStaticText* portText;
     irr::gui::IGUIStaticText* stbdText;
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
+// DEE vvvvv
+    irr::gui::IGUIStaticText* rudderText;
+    irr::gui::IGUIStaticText* wheelText;
+    irr::gui::IGUIScrollBar* rateofturnScrollbar;
+
+// DEE ^^^^^
     irr::gui::IGUIListBox* arpaText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
@@ -169,6 +190,12 @@ private:
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
     irr::gui::HeadingIndicator* headingIndicator;
+
+// DEE vvv this is the larger rot indicator
+//    irr::gui::RateOfTurnIndicator* rateofturnIndicator;
+
+// DEE ^^^
+
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
     irr::gui::IGUIButton* binosButton;
@@ -220,6 +247,11 @@ private:
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;
     irr::core::rect<irr::s32> altHdgIndicatorPos;
+
+
+    //DEE defines the position of the rate of turn indicator
+    irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
+	
 
     void updateVisibility();
     void draw2dRadar();

@@ -1,4 +1,5 @@
-/*   Bridge Command 5.0 Ship Simulator
+
+/*
      Copyright (C) 2014 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -13,6 +14,10 @@
      You should have received a copy of the GNU General Public License along
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
+
+// DEE What does this do ... draws the GUI screen
+
+
 
 #include "GUIMain.hpp"
 
@@ -38,6 +43,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
         this->hasBowThruster = hasBowThruster;
+
         this->hasSternThruster = hasSternThruster;
         guienv = device->getGUIEnvironment();
 
@@ -79,7 +85,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         smallRadarScreenRadius=0.2*sh;
 
         //gui - add scroll bars for speed and heading control directly
-        hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
+        hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.001*su, 0.61*sh, 0.01*su, 0.99*sh));
         hdgScrollbar->setMax(360);
         spdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_SPEED_SCROLL_BAR,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh));
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
@@ -103,6 +109,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
             } else {
                 verticalScreenPos = 0.99-1*0.04;
             }
+
+// DEE bowthruster position
             bowThrusterScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_BOWTHRUSTER_SCROLL_BAR,core::rect<s32>(0.01*su, verticalScreenPos*sh, 0.08*su, (verticalScreenPos+0.04)*sh),engineTics,centreTic);
             bowThrusterScrollbar->setMax(100);
             bowThrusterScrollbar->setMin(-100);
@@ -137,10 +145,44 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         stbdScrollbar->setMax(100);
         stbdScrollbar->setMin(-100);
         stbdScrollbar->setPos(0);
-        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
+
+// DEE vvvvv put a wheel bar below the rudder bar
+        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.90*sh, 0.45*su, 0.93*sh),rudderTics,centreTic);
+        rudderText = guienv->addStaticText(language->translate("rudderText").c_str(),core::rect<s32>(0.09*su, 0.87*sh, 0.45*su, 0.90*sh));
+
+//        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
+// DEE ^^^^^
+
         rudderScrollbar->setMax(30);
         rudderScrollbar->setMin(-30);
         rudderScrollbar->setPos(0);
+
+// DEE vvvvv wheel position bar
+        wheelScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
+        wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),core::rect<s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
+        wheelScrollbar->setMax(30);
+        wheelScrollbar->setMin(-30);
+        wheelScrollbar->setPos(0);
+// DEE ^^^^^
+
+
+
+// DEE vvvvv add very basic rate of turn indicator
+// rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
+
+        rateofturnScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,core::rect<s32>(0.30*su, 0.83*sh, 0.40*su, 0.88*sh),rudderTics,centreTic);
+
+
+        rateofturnScrollbar->setMax(50); 
+        rateofturnScrollbar->setMin(-50);
+        rateofturnScrollbar->setSmallStep(1);
+        rateofturnScrollbar->setPos(0);
+        rateofturnScrollbar->setToolTipText(language->translate("rotText").c_str());
+
+// DEE ^^^^^
+
+
+
 
         //Adapt if single engine:
         if (singleEngine) {
@@ -168,31 +210,56 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
             stbdText->setVisible(false);
             portText->setVisible(false);
             rudderScrollbar->setVisible(false);
+
+// DEE vvvvv
+	    wheelScrollbar->setVisible(false); // not sure this should be hidden
+            wheelText->setVisible(false); // hide the wheel text
+            rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
+// DEE ^^^^^
             if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
             if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
         }
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
+// DEE vvvvv modify position
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.65*sh,0.45*su,0.80*sh), true, false, 0, -1, true); //Actual text set later
+//        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.85*sh), true, false, 0, -1, true); //Actual text set later
+
+// DEE ^^^^^
+
         guiHeading = 0;
         guiSpeed = 0;
 
         //Add heading indicator
-        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
+
+// DEE vvvv altered
+        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.600*sh,0.45*su,0.630*sh);
+//        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
+// DEE
         altHdgIndicatorPos = core::rect<s32>(0.09*su,0.900*sh,0.45*su,0.950*sh);
         headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
+//        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.92*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
+// DEE vvv above ocmmented out
+        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
+// DEE ^^^^^^^
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
+
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
+
+
+// DEE vvvv moves where the rain scrollbar is displayed
+//        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
+        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
+// DEE ^^^^
+
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -201,7 +268,14 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
+
+// DEE vvvvv
+
+        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
+//        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.80*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
+
+// DEE ^^^^
+
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -348,20 +422,20 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.80*sh,0.14*su,0.85*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.80*sh,0.14*su,0.85*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.92*sh,0.19*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.80*sh,0.19*su,0.85*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.80*sh,0.24*su,0.85*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.92*sh,0.26*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.80*sh,0.26*su,0.85*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -548,6 +622,12 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         portScrollbar->setPos(Utilities::round(guiData->portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));
         rudderScrollbar->setPos(Utilities::round(guiData->rudder));
+
+// DEE vvvvv
+// this sets the scrollbar wheel position to match the guiData's idea of where it should be
+	wheelScrollbar->setPos(Utilities::round(guiData->wheel));
+// DEE ^^^^^
+
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
         radarRainScrollbar->setPos(Utilities::round(guiData->radarRain));
@@ -559,6 +639,13 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         weatherScrollbar->setPos(Utilities::round(guiData->weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
         rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
         visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
+
+
+// DEE vvvvv  this should display the rate of turn data on the screen 
+// DEE        since internalrate of turn is in rads per second then for deg per min x 3438
+        rateofturnScrollbar->setPos(Utilities::round(3438*guiData->RateOfTurn));
+// DEE ^^^^
+
         //Update text display data
         guiLat = guiData->lat;
         guiLong = guiData->longitude;

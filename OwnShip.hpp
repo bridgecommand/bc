@@ -44,6 +44,9 @@ class OwnShip : public Ship
         bool hasSternThruster() const;
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
+
+        void setWheel(irr::f32); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE
+
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
@@ -55,6 +58,11 @@ class OwnShip : public Ship
         irr::f32 getPortEngineRPM() const;
         irr::f32 getStbdEngineRPM() const;
         irr::f32 getRudder() const; //-30 to 30
+
+
+	irr::f32 getWheel() const; // DEE -30 to +30 
+
+
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
         irr::f32 getCOG() const;
@@ -73,7 +81,7 @@ class OwnShip : public Ship
 		std::string basePath; //The location the model is loaded from
         Terrain* terrain;
         SimulationModel* model;
-        irr::f32 rollPeriod; //Roll period (s)
+        irr::f32 rollPeriod; //Roll period (s)  DEE this should be dynamically loaded
         irr::f32 rollAngle; //Roll Angle (deg)
         irr::f32 pitchPeriod; //Roll period (s)
         irr::f32 pitchAngle; //Roll Angle (deg)
@@ -88,7 +96,14 @@ class OwnShip : public Ship
         bool sternThrusterPresent;
         irr::f32 bowThruster; //-1 to +1
         irr::f32 sternThruster; //-1 to +1
+
+// DEE vvvvvvv
+        irr::f32 wheel; //-30 to + 30
+	irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
+// DEE ^^^^^^^
+
         irr::f32 rudder; //-30 to + 30
+
         //Dynamics parameters
         irr::f32 shipMass;
         irr::f32 inertia;

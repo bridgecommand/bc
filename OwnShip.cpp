@@ -85,9 +85,33 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     propWalkAhead = IniFile::iniFileTof32(shipIniFilename,"PropWalkAhead");// (Optional, default 0)
     propWalkAstern = IniFile::iniFileTof32(shipIniFilename,"PropWalkAstern");// (Optional, default 0)
     //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movements
-    rollPeriod = 5; //Roll period (s)
+
+    // DEE todo parametarise this to a function of the GM and hence GZ and second moment of Inertia about a longitudinal axis passing through the metacentre, or at least a good approximation of it.  Future modelling could also try to model parametric rolling.
+    rollPeriod = IniFile::iniFileTof32(shipIniFilename,"rollPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
+    if (rollPeriod == 0) {
+      rollPeriod=8; // default to a roll periof of 8 seconds if unspecified
+    }
+// DEE ^^^^^
+
+
+// DEE vvvvv
+    RudderAngularVelocity = IniFile::iniFileTof32(shipIniFilename,"RudderAngularVelocity"); // Softcoded angular speed of the steering gear
+
+    if (RudderAngularVelocity == 0) {
+       RudderAngularVelocity=30; // default to an almost instentaeous rudder
+    }
+
+// DEE ^^^^^
+
+
+
     rollAngle = 2*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Roll Angle (deg @weather=1)
-    pitchPeriod = 6; //Roll period (s)
+
+// DEE vvvvv ammeneded to reflect larger ships, this should be parametarised in a similar manner to rollPeriod and taken into account in the future when calculating parametric rolling conditions
+//    pitchPeriod = 6; //Pitch period (s)
+    pitchPeriod = 12; //Pitch period (s)
+// DEE ^^^^^
+
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
     buffetPeriod = 8; //Yaw period (s)
     buffet = IniFile::iniFileTof32(shipIniFilename,"Buffet");
@@ -144,6 +168,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     controlMode = MODE_ENGINE;
 
     //calculate max speed from dynamics parameters
+    // DEE this looks like it is in knots and not metres per second
     maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
 	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
 
@@ -269,6 +294,24 @@ void OwnShip::setRudder(irr::f32 rudder)
     }
 }
 
+
+// DEE vvvvvvv
+void OwnShip::setWheel(irr::f32 wheel)
+{
+    controlMode = MODE_ENGINE; //Switch to engine and rudder mode
+    //Set the wheel (-ve is port, +ve is stbd)
+    this->wheel = wheel;
+    if (this->wheel<-30) {
+        this->wheel = -30;
+    }
+    if (this->wheel>30) {
+        this->wheel = 30;
+    }
+}
+// DEE ^^^^^^^
+
+
+
 void OwnShip::setPortEngine(irr::f32 port)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
@@ -340,6 +383,16 @@ irr::f32 OwnShip::getRudder() const
     return rudder;
 }
 
+
+// DEE vvvvvvvvvvvvvv
+irr::f32 OwnShip::getWheel() const
+{
+    return wheel;
+}
+// DEE ^^^^^^^^^^^^^
+
+
+
 irr::f32 OwnShip::getPitch() const
 {
     return pitch;
@@ -409,7 +462,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Lateral dynamics
         irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
-
+// comment perhaps dynamicsLateralDragA and B should be proportional to the lateral submerged area so roughly dynamicsDragA * (L / B)
         irr::f32 lateralDrag;
         if (lateralSpd<0) { //Compensate for loss of sign when squaring
             lateralDrag = -1*dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
@@ -487,6 +540,28 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         hdg += buffetAngle;
 
+
+        // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
+	irr::f32 RudderPerSec=RudderAngularVelocity; 
+        irr::f32 MaxRudderInDtime=rudder+RudderPerSec*deltaTime;
+        irr::f32 MinRudderInDtime=rudder-RudderPerSec*deltaTime;
+
+        if (wheel>MaxRudderInDtime) {	
+		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
+        	} else { // wheel < MaxRudderInDtime
+                if (wheel>MinRudderInDtime) {
+		rudder = wheel; // rudder can turn to the wheel setting
+			} else {
+				rudder = MinRudderInDtime; // rudder as far to port as time will allow
+				}
+		}
+
+
+        // DEE ^^^^^^^^^^^^^^^^^^
+
+
+
+
     } else //End of engine mode
     {
         //MODE_AUTO
@@ -514,7 +589,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             xChange += stream.X*deltaTime*streamScaling;
             zChange += stream.Y*deltaTime*streamScaling;
         }
-
     } else {
         positionManuallyUpdated = false;
     }
