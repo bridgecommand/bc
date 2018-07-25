@@ -162,6 +162,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         radarForegroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar1_red"));
         radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar1_green"));
         radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,"radar1_blue"));
+
     }
 }
 

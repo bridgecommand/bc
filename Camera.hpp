@@ -35,6 +35,7 @@ class Camera
         void setActive();
         void lookUp();
         void lookDown();
+		void setLookUp(irr::f32 angle);
         void lookLeft();
         void lookRight();
         void lookAhead();

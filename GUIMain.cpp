@@ -36,7 +36,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasSternThruster, bool hasBowThruster)
+void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
@@ -203,6 +203,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         }
 
         if (controlsHidden) {
+            //TODO: Need to make sure that updateVisibility does not undo this
+            //Also weather controls etc
             stbdScrollbar->setVisible(false);
             portScrollbar->setVisible(false);
             stbdText->setVisible(false);

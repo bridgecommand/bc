@@ -75,6 +75,11 @@ void Camera::lookDown()
     }
 }
 
+void Camera::setLookUp(irr::f32 angle)
+{
+	lookUpAngle = angle;
+}
+
 void Camera::lookLeft()
 {
     lookAngle--;
@@ -185,7 +190,7 @@ void Camera::update()
         m.setRotationDegrees(parent->getRotation());
 
         // transform forward vector of camera
-        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection)), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection)));
+        core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
         m.transformVect(frv);
 
         // transform upvector of camera
