@@ -87,7 +87,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movements
 
     // DEE todo parametarise this to a function of the GM and hence GZ and second moment of Inertia about a longitudinal axis passing through the metacentre, or at least a good approximation of it.  Future modelling could also try to model parametric rolling.
-    rollPeriod = IniFile::iniFileTof32(shipIniFilename,"rollPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
+    rollPeriod = IniFile::iniFileTof32(shipIniFilename,"RollPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
     if (rollPeriod == 0) {
       rollPeriod=8; // default to a roll periof of 8 seconds if unspecified
     }
@@ -109,8 +109,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
 // DEE vvvvv ammeneded to reflect larger ships, this should be parametarised in a similar manner to rollPeriod and taken into account in the future when calculating parametric rolling conditions
 //    pitchPeriod = 6; //Pitch period (s)
-    pitchPeriod = 12; //Pitch period (s)
+//    pitchPeriod = 12; //Pitch period (s)
 // DEE ^^^^^
+
+    pitchPeriod = IniFile::iniFileTof32(shipIniFilename,"PitchPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
+    if (pitchPeriod == 0) {
+      pitchPeriod=12 // default to a roll periof of 12 seconds if unspecified
+    }
 
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
     buffetPeriod = 8; //Yaw period (s)
@@ -542,11 +547,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
 
         // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
-	irr::f32 RudderPerSec=RudderAngularVelocity; 
+	irr::f32 RudderPerSec=RudderAngularVelocity;
         irr::f32 MaxRudderInDtime=rudder+RudderPerSec*deltaTime;
         irr::f32 MinRudderInDtime=rudder-RudderPerSec*deltaTime;
 
-        if (wheel>MaxRudderInDtime) {	
+        if (wheel>MaxRudderInDtime) {
 		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
         	} else { // wheel < MaxRudderInDtime
                 if (wheel>MinRudderInDtime) {

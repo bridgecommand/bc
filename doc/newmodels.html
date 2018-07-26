@@ -93,6 +93,7 @@ Inertia=120000
 RudderA=5
 RudderB=0.05
 RudderBAstern=0
+RudderAngularVelocity=10
 
 BowThrusterForce=2000
 SternThrusterForce=2000
@@ -107,6 +108,8 @@ PropWalkDriftEffect=0.000007
 -->
 Buffet=3.0
 Swell=1.0
+RollPeriod=8
+PitchPeriod=12
 <!--
 Windage=0.05
 WindageTurnEffect=1.3
@@ -143,6 +146,7 @@ DeviationMaximumHeading=10
 <li>RudderA: The turning effect of the rudder proportional to the ship's speed (Rudder torque(Nm)=RudderA*Speed(m/s)*rudder angle (deg)</li>
 <li>RudderB: The turning effect of the rudder proportional to the engine speed (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
 <li>RudderBAstern: The turning effect of the rudder proportional to the engine speed when going astern (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
+<li>RudderAngularVelocity (Optional): The maximum rudder response rate in degrees per second. If not set, a default of 30 is used.</li>
 <li>BowThrusterForce (Optional): The maximum bow thruster force (in Newtons)</li>
 <li>SternThrusterForce (Optional): The maximum stern thruster force (in Newtons)</li>
 <li>BowThrusterDistance (Optional): The distance of the bow thruster forward of the centre of rotation of the vessel in metres (world, not model units)</li>
@@ -150,6 +154,8 @@ DeviationMaximumHeading=10
 <!--<li>CentrifugalDriftEffect: (Optional) The amount the ship should move sideways during a turn. (Metres per degree of turn)</li>-->
 <li>Buffet: The amount the ship is affected by buffeting due to the weather.</li>
 <li>Swell: The amount the ship is rolls in the swell, due to the weather.</li>
+<li>RollPeriod: The period for one roll cycle in seconds (Default 8s)</li>
+<li>PitchPeriod: The period for one pitch cycle in seconds (Default 12s)</li>
 <!--<li>DeviationMaximum: The maximum deviation of compass north from magnetic north due to the ship's magnetic effects (In degrees). This is only used if 'HasDeviation=1' is set in the ownship.ini scenario file.</li>-->
 <!--<li>DeviationMaximumHeading: The heading at which the compass deviation from magnetic is maximum. The deviation is calculated as a sinusoid, so the deviation will be zero at this heading +-90 degrees, and the opposite at this heading +-180 degrees.</li>-->
 <!--<li>If a motor boat
