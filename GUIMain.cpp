@@ -23,7 +23,7 @@
 
 #include "Constants.hpp"
 #include "Utilities.hpp"
-#include "OutlineScrollBar.h"
+//#include "OutlineScrollBar.h"
 #include "ScrollDial.h"
 
 #include <iostream> //for debugging
@@ -147,18 +147,18 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         stbdScrollbar->setPos(0);
 
 // DEE vvvvv put a wheel bar below the rudder bar
-        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.90*sh, 0.45*su, 0.93*sh),rudderTics,centreTic);
-        rudderText = guienv->addStaticText(language->translate("rudderText").c_str(),core::rect<s32>(0.09*su, 0.87*sh, 0.45*su, 0.90*sh));
+        //rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.90*sh, 0.45*su, 0.93*sh),rudderTics,centreTic,true);
+        //rudderText = guienv->addStaticText(language->translate("rudderText").c_str(),core::rect<s32>(0.09*su, 0.87*sh, 0.45*su, 0.90*sh));
 
 //        rudderScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
 // DEE ^^^^^
 
-        rudderScrollbar->setMax(30);
-        rudderScrollbar->setMin(-30);
-        rudderScrollbar->setPos(0);
+        //rudderScrollbar->setMax(30);
+        //rudderScrollbar->setMin(-30);
+        //rudderScrollbar->setPos(0);
 
 // DEE vvvvv wheel position bar
-        wheelScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
+        wheelScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true);
         wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),core::rect<s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
         wheelScrollbar->setMax(30);
         wheelScrollbar->setMin(-30);
@@ -173,7 +173,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         rateofturnScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,core::rect<s32>(0.30*su, 0.83*sh, 0.40*su, 0.88*sh),rudderTics,centreTic);
 
 
-        rateofturnScrollbar->setMax(50); 
+        rateofturnScrollbar->setMax(50);
         rateofturnScrollbar->setMin(-50);
         rateofturnScrollbar->setSmallStep(1);
         rateofturnScrollbar->setPos(0);
@@ -209,7 +209,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
             portScrollbar->setVisible(false);
             stbdText->setVisible(false);
             portText->setVisible(false);
-            rudderScrollbar->setVisible(false);
+            //rudderScrollbar->setVisible(false);
 
 // DEE vvvvv
 	    wheelScrollbar->setVisible(false); // not sure this should be hidden
@@ -447,7 +447,9 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         //Drop scroll bars created with 'new'
         portScrollbar->drop();
         stbdScrollbar->drop();
-        rudderScrollbar->drop();
+        wheelScrollbar->drop();
+        //rudderScrollbar->drop();
+        rateofturnScrollbar->drop();
 
         if (bowThrusterScrollbar) {
             bowThrusterScrollbar->drop();
@@ -621,7 +623,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         spdScrollbar->setPos(Utilities::round(guiData->spd));
         portScrollbar->setPos(Utilities::round(guiData->portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));
-        rudderScrollbar->setPos(Utilities::round(guiData->rudder));
+        //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
+        wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));
 
 // DEE vvvvv
 // this sets the scrollbar wheel position to match the guiData's idea of where it should be
@@ -641,7 +644,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
 
 
-// DEE vvvvv  this should display the rate of turn data on the screen 
+// DEE vvvvv  this should display the rate of turn data on the screen
 // DEE        since internalrate of turn is in rads per second then for deg per min x 3438
         rateofturnScrollbar->setPos(Utilities::round(3438*guiData->RateOfTurn));
 // DEE ^^^^

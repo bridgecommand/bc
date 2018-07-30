@@ -114,7 +114,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     pitchPeriod = IniFile::iniFileTof32(shipIniFilename,"PitchPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
     if (pitchPeriod == 0) {
-      pitchPeriod=12 // default to a roll periof of 12 seconds if unspecified
+      pitchPeriod=12; // default to a roll periof of 12 seconds if unspecified
     }
 
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)

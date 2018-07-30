@@ -22,6 +22,7 @@
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
 //#include "RateOfTurnIndicator.h" // DEE addition
+#include "OutlineScrollBar.h"
 #include "GUIRectangle.hpp"
 #include <vector>
 #include <string>
@@ -142,10 +143,10 @@ private:
     irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIScrollBar* portScrollbar;
     irr::gui::IGUIScrollBar* stbdScrollbar;
-    irr::gui::IGUIScrollBar* rudderScrollbar;
+//    irr::gui::IGUIScrollBar* rudderScrollbar;
 
 // DEE vvvvv
-    irr::gui::IGUIScrollBar* wheelScrollbar;
+    irr::gui::OutlineScrollBar* wheelScrollbar;
 // DEE ^^^^^
 
     irr::gui::IGUIScrollBar* bowThrusterScrollbar;
@@ -251,7 +252,7 @@ private:
 
     //DEE defines the position of the rate of turn indicator
     irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
-	
+
 
     void updateVisibility();
     void draw2dRadar();

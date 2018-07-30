@@ -19,7 +19,7 @@ namespace gui
 		//! constructor
 		OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 			IGUIElement* parent, s32 id, core::rect<s32> rectangle,
-			core::array<s32> shortTicMarks=core::array<s32>(), core::array<s32> longTicMarks=core::array<s32>());
+			core::array<s32> shortTicMarks=core::array<s32>(), core::array<s32> longTicMarks=core::array<s32>(), bool secondaryIndicator=false);
 
 		//! destructor
 		virtual ~OutlineScrollBar();
@@ -63,6 +63,9 @@ namespace gui
 		//! sets the position of the scrollbar
 		virtual void setPos(s32 pos);
 
+		//! sets the position of the secondary indicator
+		virtual void setSecondary(s32 pos);
+
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 
@@ -89,6 +92,10 @@ namespace gui
 		s32 Pos;
 		s32 DrawPos;
 		s32 DrawHeight;
+		bool Secondary;
+		s32 PosSecondary;
+		s32 DrawPosSecondary;
+		s32 DrawHeightSecondary;
 		s32 Min;
 		s32 Max;
 		s32 SmallStep;

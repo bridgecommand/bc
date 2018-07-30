@@ -19,11 +19,11 @@ namespace gui
 //! constructor
 OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
-				core::rect<s32> rectangle, core::array<s32> shortTicMarks, core::array<s32> longTicMarks)
+				core::rect<s32> rectangle, core::array<s32> shortTicMarks, core::array<s32> longTicMarks, bool secondaryIndicator)
 	: IGUIScrollBar(environment, parent, id, rectangle), Dragging(false), Horizontal(horizontal),
 	Pos(0), DrawPos(0),
 	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0),
-	shortTicMarks(shortTicMarks), longTicMarks(longTicMarks)
+	shortTicMarks(shortTicMarks), longTicMarks(longTicMarks), Secondary(secondaryIndicator)
 {
 	#ifdef _DEBUG
 	setDebugName("OutlineScrollBar");
@@ -247,6 +247,34 @@ void OutlineScrollBar::draw()
 
 		Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
 
+
+		if (Secondary) {
+            //Start secondary line
+            if ( core::isnotzero ( range() ) ) {
+                // recalculate slider line
+                core::vector2d<s32> startPoint;
+                core::vector2d<s32> endPoint;
+                if (Horizontal)
+                {
+                    //Slider line
+                    startPoint.X = AbsoluteRect.UpperLeftCorner.X + DrawPosSecondary;
+                    endPoint.X = startPoint.X;
+                    startPoint.Y = AbsoluteRect.UpperLeftCorner.Y;
+                    endPoint.Y = AbsoluteRect.LowerRightCorner.Y;
+                }
+                else
+                {
+                    startPoint.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPosSecondary;
+                    endPoint.Y = startPoint.Y;
+                    startPoint.X = AbsoluteRect.UpperLeftCorner.X;
+                    endPoint.X = AbsoluteRect.LowerRightCorner.X;
+                }
+
+                Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,64,64,64));
+            }
+            //End secondary line
+		}
+
 		//draw tic marks
 		for (unsigned int i = 0; i<shortTicMarks.size();i++) {
             if (Horizontal)
@@ -352,6 +380,26 @@ void OutlineScrollBar::setPos(s32 pos)
 
 }
 
+//! sets the position of the secondary indicator
+void OutlineScrollBar::setSecondary(s32 pos)
+{
+	PosSecondary = core::s32_clamp ( pos, Min, Max );
+
+	if (Horizontal)
+	{
+		f32 f = RelativeRect.getWidth() / range();
+		DrawPosSecondary = (s32)(( PosSecondary - Min ) * f);
+		DrawHeightSecondary = RelativeRect.getHeight();
+	}
+	else
+	{
+		f32 f = RelativeRect.getHeight()/ range();
+
+		DrawPosSecondary = (s32)(( PosSecondary - Min ) * f);
+		DrawHeightSecondary = RelativeRect.getWidth();
+	}
+
+}
 
 //! gets the small step value
 s32 OutlineScrollBar::getSmallStep() const
