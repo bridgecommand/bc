@@ -156,8 +156,8 @@ private:
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
 // DEE vvvvv
-    irr::gui::IGUIStaticText* rudderText;
-    irr::gui::IGUIStaticText* wheelText;
+    //irr::gui::IGUIStaticText* rudderText;
+    //irr::gui::IGUIStaticText* wheelText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
 // DEE ^^^^^

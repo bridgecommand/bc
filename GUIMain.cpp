@@ -85,7 +85,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         smallRadarScreenRadius=0.2*sh;
 
         //gui - add scroll bars for speed and heading control directly
-        hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.001*su, 0.61*sh, 0.01*su, 0.99*sh));
+        hdgScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_HEADING_SCROLL_BAR,core::rect<s32>(0.01*su, 0.61*sh, 0.04*su, 0.99*sh));
         hdgScrollbar->setMax(360);
         spdScrollbar = new gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_SPEED_SCROLL_BAR,core::rect<s32>(0.05*su, 0.61*sh, 0.08*su, 0.99*sh));
         spdScrollbar->setMax(20.f*1852.f/3600.f); //20 knots in m/s
@@ -159,7 +159,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
 // DEE vvvvv wheel position bar
         wheelScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,core::rect<s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true);
-        wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),core::rect<s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
+        //wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),core::rect<s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
         wheelScrollbar->setMax(30);
         wheelScrollbar->setMin(-30);
         wheelScrollbar->setPos(0);
@@ -170,9 +170,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 // DEE vvvvv add very basic rate of turn indicator
 // rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
 
-        rateofturnScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,core::rect<s32>(0.30*su, 0.83*sh, 0.40*su, 0.88*sh),rudderTics,centreTic);
-
-
+        rateofturnScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,core::rect<s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
+		
         rateofturnScrollbar->setMax(50);
         rateofturnScrollbar->setMin(-50);
         rateofturnScrollbar->setSmallStep(1);
@@ -213,7 +212,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
 // DEE vvvvv
 	    wheelScrollbar->setVisible(false); // not sure this should be hidden
-            wheelText->setVisible(false); // hide the wheel text
+//            wheelText->setVisible(false); // hide the wheel text
             rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
 // DEE ^^^^^
             if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
@@ -221,30 +220,18 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         }
 
         //add data display:
-// DEE vvvvv modify position
-        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.65*sh,0.45*su,0.80*sh), true, false, 0, -1, true); //Actual text set later
-//        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.85*sh), true, false, 0, -1, true); //Actual text set later
-
-// DEE ^^^^^
-
+        dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.09*su,0.71*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 
         //Add heading indicator
-
-// DEE vvvv altered
-        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.600*sh,0.45*su,0.630*sh);
-//        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
-// DEE
+        stdHdgIndicatorPos = core::rect<s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
         altHdgIndicatorPos = core::rect<s32>(0.09*su,0.900*sh,0.45*su,0.950*sh);
         headingIndicator = new gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-//        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.92*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
-// DEE vvv above ocmmented out
-        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
-// DEE ^^^^^^^
+        weatherScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.290*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
@@ -253,13 +240,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-
-
-// DEE vvvv moves where the rain scrollbar is displayed
-//        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
-        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
-// DEE ^^^^
-
+        rainScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -268,14 +249,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-
-// DEE vvvvv
-
-        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.75*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
-//        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.80*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
-
-// DEE ^^^^
-
+        visibilityScrollbar = new gui::ScrollDial(core::vector2d<s32>(0.390*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -422,20 +396,20 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.80*sh,0.14*su,0.85*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.80*sh,0.14*su,0.85*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(core::rect<s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.80*sh,0.19*su,0.85*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(core::rect<s32>(0.14*su,0.92*sh,0.19*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.80*sh,0.24*su,0.85*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(core::rect<s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.80*sh,0.26*su,0.85*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(core::rect<s32>(0.24*su,0.92*sh,0.26*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
