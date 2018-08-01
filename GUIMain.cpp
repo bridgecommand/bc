@@ -36,13 +36,14 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster)
+void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
         this->hasBowThruster = hasBowThruster;
+        this->hasRateOfTurnIndicator = hasRateOfTurnIndicator;
 
         this->hasSternThruster = hasSternThruster;
         guienv = device->getGUIEnvironment();
@@ -171,12 +172,15 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 // rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
 
         rateofturnScrollbar = new gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,core::rect<s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
-		
+
         rateofturnScrollbar->setMax(50);
         rateofturnScrollbar->setMin(-50);
         rateofturnScrollbar->setSmallStep(1);
         rateofturnScrollbar->setPos(0);
         rateofturnScrollbar->setToolTipText(language->translate("rotText").c_str());
+        if (!hasRateOfTurnIndicator) {
+            rateofturnScrollbar->setVisible(false);
+        }
 
 // DEE ^^^^^
 

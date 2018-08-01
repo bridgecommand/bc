@@ -338,7 +338,7 @@ int main()
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster());
+    guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator());
 
     //Give the network class a pointer to the model
     network->setModel(&model);

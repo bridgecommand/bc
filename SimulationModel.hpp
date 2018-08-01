@@ -182,6 +182,7 @@ public:
     irr::f32 getMaxSounderDepth() const;
     bool hasBowThruster() const;
     bool hasSternThruster() const;
+    bool hasTurnIndicator() const;
 
 	void startHorn();
 	void endHorn();

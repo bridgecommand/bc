@@ -131,7 +131,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         //Tell gui to hide all ship controls if in secondary mode
         if (mode == OperatingMode::Secondary) {
             gui->hideEngineAndRudder();
-//      TODO      gui->hideWheel();  
+//      TODO      gui->hideWheel();
         }
 
         //Tell the GUI what instruments to display - currently GPS and depth sounder
@@ -828,6 +828,11 @@ SimulationModel::~SimulationModel()
     bool SimulationModel::hasSternThruster() const
     {
         return ownShip.hasSternThruster();
+    }
+
+    bool SimulationModel::hasTurnIndicator() const
+    {
+        return ownShip.hasTurnIndicator();
     }
 
     irr::f32 SimulationModel::getMaxSounderDepth() const

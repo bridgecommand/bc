@@ -42,6 +42,7 @@ class OwnShip : public Ship
         bool hasDepthSounder() const;
         bool hasBowThruster() const;
         bool hasSternThruster() const;
+        bool hasTurnIndicator() const;
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
 
@@ -60,7 +61,7 @@ class OwnShip : public Ship
         irr::f32 getRudder() const; //-30 to 30
 
 
-	irr::f32 getWheel() const; // DEE -30 to +30 
+	irr::f32 getWheel() const; // DEE -30 to +30
 
 
         irr::f32 getPitch() const;
@@ -94,6 +95,7 @@ class OwnShip : public Ship
         bool singleEngine;
         bool bowThrusterPresent;
         bool sternThrusterPresent;
+        bool turnIndicatorPresent;
         irr::f32 bowThruster; //-1 to +1
         irr::f32 sternThruster; //-1 to +1
 

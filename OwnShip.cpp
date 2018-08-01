@@ -128,6 +128,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     bowThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"BowThrusterForce")>0);
     sternThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce")>0);
+    turnIndicatorPresent = (IniFile::iniFileTou32(shipIniFilename,"HasRateOfTurnIndicator")==1);
     bowThrusterMaxForce = IniFile::iniFileTof32(shipIniFilename,"BowThrusterForce");
     sternThrusterMaxForce = IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce");
     bowThrusterDistance = IniFile::iniFileTof32(shipIniFilename,"BowThrusterDistance");
@@ -675,6 +676,11 @@ bool OwnShip::hasBowThruster() const
 bool OwnShip::hasSternThruster() const
 {
     return sternThrusterPresent;
+}
+
+bool OwnShip::hasTurnIndicator() const
+{
+    return turnIndicatorPresent;
 }
 
 irr::f32 OwnShip::getMaxSounderDepth() const
