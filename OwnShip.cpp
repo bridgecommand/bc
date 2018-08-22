@@ -238,7 +238,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
         for(u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
             if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
-                smgr->getMeshManipulator()->setVertexColorAlpha(shipMesh->getMeshBuffer(mb), 0);
+				//Hide this mesh buffer by scaling to zero size
+				smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),core::vector3df(0,0,0));
             }
         }
     }
