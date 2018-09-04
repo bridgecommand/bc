@@ -42,6 +42,7 @@ DESTPATH = $(BinPath)/$(Target)$(SUF)
 #default target is Linux
 all: 
 	$(warning Building...)
+	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ all
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
 	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
@@ -71,6 +72,7 @@ endif
 
 clean:
 	$(warning Cleaning...)
+	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ clean
 	@$(RM) $(DESTPATH)
 
 .PHONY: all
@@ -83,3 +85,4 @@ endif
 ifeq ($(HOSTTYPE), sun4)
 LDFLAGS += -lrt
 endif
+
