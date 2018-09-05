@@ -38,7 +38,7 @@ public:
         GUI_ID_REPEATER_CHOICE
     };
 
-    void updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle);
+    void updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle);
     void setMode(bool headingMode);
 
 private:

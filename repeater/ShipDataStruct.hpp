@@ -24,7 +24,8 @@ struct ShipData : public PositionData //To hold information about a ship's posit
 {
     irr::f32 heading;
     irr::f32 rudder;
-    ShipData():heading(0), rudder(0){}
+    irr::f32 wheel;
+    ShipData():heading(0), rudder(0), wheel(0){}
 };
 
 #endif // __SHIPDATASTRUCT_HPP_INCLUDED__

@@ -55,7 +55,7 @@ GUIMain::~GUIMain()
     heading->drop();
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle)
+void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle)
 {
 
     if(!modeChosen) {
@@ -82,14 +82,17 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
         u32 sh = driver->getScreenSize().Height;
         core::vector2d<s32> rudderIndicatorCentre = core::vector2d<s32>(0.5*su,0.5*sh);
         core::vector2d<s32> rudderAngleVectorHead = core::vector2d<s32> (        0,  0.240*sh);
+        core::vector2d<s32> wheelAngleVectorHead = core::vector2d<s32> (        0,  0.240*sh);
         core::vector2d<s32> rudderAngleVectorBack1 = core::vector2d<s32>(-0.040*sh,  -0.040*sh);
         core::vector2d<s32> rudderAngleVectorBack2 = core::vector2d<s32>( 0.040*sh,  -0.040*sh);
         rudderAngleVectorHead.rotateBy(-1*rudderAngle*angleScale);
+        wheelAngleVectorHead.rotateBy(-1*wheelAngle*angleScale);
         rudderAngleVectorBack1.rotateBy(-1*rudderAngle*angleScale);
         rudderAngleVectorBack2.rotateBy(-1*rudderAngle*angleScale);
         driver->draw2DLine(rudderIndicatorCentre+rudderAngleVectorBack1,rudderIndicatorCentre+rudderAngleVectorHead,irr::video::SColor(255,0,0,0));
         driver->draw2DLine(rudderIndicatorCentre+rudderAngleVectorHead,rudderIndicatorCentre+rudderAngleVectorBack2,irr::video::SColor(255,0,0,0));
         driver->draw2DLine(rudderIndicatorCentre+rudderAngleVectorBack2,rudderIndicatorCentre+rudderAngleVectorBack1,irr::video::SColor(255,0,0,0));
+        driver->draw2DLine(rudderIndicatorCentre,rudderIndicatorCentre+wheelAngleVectorHead,irr::video::SColor(200,0,0,0));
         driver->draw2DPolygon(rudderIndicatorCentre,0.01*sh,irr::video::SColor(255,0,0,0));
 
         //Draw scale
