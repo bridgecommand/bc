@@ -227,7 +227,9 @@ int main (int argc, char ** argv)
     u32 graphicsDepth = 32;
     bool fullScreen = false;
 
-    Lang language("languageIniEditor.txt");
+
+
+
 
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();
@@ -367,6 +369,20 @@ int main (int argc, char ** argv)
             delete thisSection; //TODO: Check if this is appropriate
         }
     }
+
+
+    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+    if (modifier.length()==0) {
+        modifier = "en"; //Default
+    }
+    std::string languageFile = "languageIniEditor-";
+    languageFile.append(modifier);
+    languageFile.append(".txt");
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+
+    Lang language(languageFile);
 
     //Do set-up here
 

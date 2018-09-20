@@ -5,7 +5,9 @@
 
 #include "irrlicht.h"
 #include <iostream>
+#include "../IniFile.hpp"
 #include "../Lang.hpp"
+#include "../Utilities.hpp"
 
 //headers for execl
 #ifdef _WIN32
@@ -221,7 +223,29 @@ int main (int argc, char ** argv)
     u32 graphicsDepth = 32;
     bool fullScreen = false;
 
-    Lang language("languageLauncher.txt");
+    //User read/write location - look in here first and the exe folder second for files
+    std::string userFolder = Utilities::getUserDir();
+
+    //Read basic ini settings
+    std::string iniFilename = "bc5.ini";
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+
+
+    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+    if (modifier.length()==0) {
+        modifier = "en"; //Default
+    }
+    std::string languageFile = "languageLauncher-";
+    languageFile.append(modifier);
+    languageFile.append(".txt");
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+
+    Lang language(languageFile);
 
     IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     video::IVideoDriver* driver = device->getVideoDriver();

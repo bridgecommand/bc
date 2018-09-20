@@ -89,7 +89,13 @@ int main (int argc, char ** argv)
 
     //load language
     //load language
-    std::string languageFile = "languageRepeater.txt";
+    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+    if (modifier.length()==0) {
+        modifier = "en"; //Default
+    }
+    std::string languageFile = "languageRepeater-";
+    languageFile.append(modifier);
+    languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
         languageFile = userFolder + languageFile;
     }

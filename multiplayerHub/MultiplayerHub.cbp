@@ -8,6 +8,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option output="../bridgecommand-mh" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
@@ -18,6 +19,7 @@
 			</Target>
 			<Target title="Linux">
 				<Option output="../bridgecommand-mh" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
