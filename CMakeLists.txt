@@ -14,7 +14,6 @@ ExternalProject_Add(bc-irrlicht
     INSTALL_COMMAND ""
 )
 
-
 include_directories(
     ./libs/enet/enet-1.3.11/include
     ./libs/asio/include
@@ -22,6 +21,27 @@ include_directories(
 )
 
 add_definitions(-DASIO_STANDALONE -DASIO_HAS_STD_THREAD)
+
+add_library(bc-enet
+    libs/enet/callbacks.c
+    libs/enet/compress.c
+    libs/enet/host.c
+    libs/enet/list.c
+    libs/enet/packet.c
+    libs/enet/peer.c
+    libs/enet/protocol.c
+    libs/enet/unix.c
+    libs/enet/win32.c
+)
+
+add_library(bc-serial
+    libs/serial/src/impl/list_ports/list_ports_linux.cc
+    libs/serial/src/impl/list_ports/list_ports_osx.cc
+    libs/serial/src/impl/list_ports/list_ports_win.cc
+    libs/serial/src/impl/unix.cc
+    libs/serial/src/impl/win.cc
+    libs/serial/src/serial.cc
+)
 
 set(BC_SOURCES
     main.cpp
@@ -68,23 +88,6 @@ set(BC_SOURCES
     Tide.cpp
     Utilities.cpp
     Water.cpp
-
-    libs/enet/callbacks.c
-    libs/enet/compress.c
-    libs/enet/host.c
-    libs/enet/list.c
-    libs/enet/packet.c
-    libs/enet/peer.c
-    libs/enet/protocol.c
-    libs/enet/unix.c
-    libs/enet/win32.c
-
-    libs/serial/src/impl/list_ports/list_ports_linux.cc
-    libs/serial/src/impl/list_ports/list_ports_osx.cc
-    libs/serial/src/impl/list_ports/list_ports_win.cc
-    libs/serial/src/impl/unix.cc
-    libs/serial/src/impl/win.cc
-    libs/serial/src/serial.cc
 )
 
 add_executable(bridgecommand-bc
@@ -100,6 +103,8 @@ link_directories(
 )
 
 target_link_libraries(bridgecommand-bc PRIVATE
+    bc-enet
+    bc-serial
     "${IRRLICHT_HOME}/source/Irrlicht/libIrrlicht.a"
     GL
     Xxf86vm
