@@ -9,6 +9,13 @@ add_subdirectory(libs/enet)
 add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
+# optional tools
+add_subdirectory(controller)
+add_subdirectory(editor)
+add_subdirectory(iniEditor)
+add_subdirectory(launcher)
+add_subdirectory(multiplayerHub)
+add_subdirectory(repeater)
 
 
 set(BC_SOURCES
