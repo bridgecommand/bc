@@ -36,6 +36,7 @@ public:
     void getScenarioFromNetwork(std::string& dataString);
     void setModel(SimulationModel* model);
     void update();
+    int getPort();
 
 private:
     SimulationModel* model;

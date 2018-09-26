@@ -37,6 +37,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream> //To save to log
+#include <asio.hpp> //To display hostname
 
 #ifdef _WIN32
 #include <direct.h> //for windows _mkdir
@@ -59,6 +60,27 @@ namespace IniFile {
 
 // Irrlicht Namespaces
 using namespace irr;
+
+irr::core::stringw getCredits(){
+
+    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
+    creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
+    creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
+    creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
+    creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
+    creditsString.append(L"> Juergen Klemp\n");
+    creditsString.append(L"> Simon D Richardson\n");
+    creditsString.append(L"> Jason Simpson\n");
+    creditsString.append(L"> Ragnar\n");
+    creditsString.append(L"> Thierry Videlaine\n");
+    creditsString.append(L"> NETC (Naval Education and Training Command)\n");
+    creditsString.append(L"> Sky image from 0ptikz\n\n");
+    creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
+    creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, the FFTWave implementation by Keith Lantz, and the Serial library by William Woodall.\n\n");
+    creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
+
+    return creditsString;
+}
 
 int main()
 {
@@ -307,6 +329,18 @@ int main()
 
     u32 creditsStartTime = device->getTimer()->getRealTime();
 
+    //Show loading message
+    u32 su = driver->getScreenSize().Width;
+    u32 sh = driver->getScreenSize().Height;
+    irr::core::stringw creditsText = language.translate("loadingmsg");
+    creditsText.append(L"\n\n");
+    creditsText.append(getCredits());
+    gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), core::rect<s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
+    device->run();
+    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
+    device->getGUIEnvironment()->drawAll();
+    driver->endScene();
+
     //seed random number generator
     std::srand(device->getTimer()->getTime());
 
@@ -325,6 +359,19 @@ int main()
         scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
     } else {
         //If in secondary mode, get scenario information from the server
+        //Tell user what we're doing
+        core::stringw portMessage = language.translate("secondaryWait");
+        portMessage.append(L" ");
+        std::string ourHostName = asio::ip::host_name();
+        portMessage.append(core::stringw(ourHostName.c_str()));
+        portMessage.append(L":");
+        portMessage.append(core::stringw(network->getPort()));
+        loadingMessage->setText(portMessage.c_str());
+        device->run();
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+        //Get the data
         std::string receivedSerialisedScenarioData;
         while (device->run() && receivedSerialisedScenarioData.empty()) {
             network->getScenarioFromNetwork(receivedSerialisedScenarioData);
@@ -332,6 +379,8 @@ int main()
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
     std::string serialisedScenarioData = scenarioData.serialise();
+
+    loadingMessage->remove(); loadingMessage = 0;
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 

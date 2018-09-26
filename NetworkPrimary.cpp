@@ -79,9 +79,22 @@ void NetworkPrimary::connectToServer(std::string hostnames)
         std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
         //Todo: validate this?
 
+        //Check if the string contains a ':', and if so, split into hostname and port part
+        if (thisHostname.find(':') != std::string::npos) {
+            std::vector<std::string> splitHostname = Utilities::split(thisHostname,':');
+            if (splitHostname.size()==2) {
+                thisHostname = splitHostname.at(0);
+                address.port = Utilities::lexical_cast<enet_uint16>(splitHostname.at(1));
+            } else {
+                address.port = port; //Fall back to default
+            }
+        } else {
+            address.port = port;
+        }
+
         /* Connect to some.server.net:18304. */
         enet_address_set_host (& address, thisHostname.c_str());
-        address.port = port;
+
         /* Initiate the connection, allocating the two channels 0 and 1. */
         peer = enet_host_connect (client, & address, 2, 0);
         //Note we don't store peer pointer, as we broadcast to all connected peers.
@@ -121,6 +134,11 @@ void NetworkPrimary::update()
 {
     receiveNetwork();
     sendNetwork();
+}
+
+int NetworkPrimary::getPort()
+{
+    return 0;
 }
 
 void NetworkPrimary::receiveNetwork()

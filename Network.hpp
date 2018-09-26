@@ -35,6 +35,7 @@ class Network
     virtual void setModel(SimulationModel* model) = 0;
     virtual void getScenarioFromNetwork(std::string& dataString) = 0; //Not used by primary
     virtual void update() = 0;
+    virtual int getPort() = 0;
     virtual ~Network();
 };
 

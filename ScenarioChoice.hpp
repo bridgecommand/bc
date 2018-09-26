@@ -35,7 +35,6 @@ private:
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* gui;
     Lang* language;
-    irr::core::stringw getCredits();
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {

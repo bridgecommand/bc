@@ -143,17 +143,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using
 
-    //Show loading message
-    irr::core::stringw creditsText = language->translate("loadingmsg");
-    creditsText.append(L"\n\n");
-    creditsText.append(getCredits());
-    gui::IGUIStaticText* loadingMessage = gui->addStaticText(creditsText.c_str(), core::rect<s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
-    device->run();
-    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
-    gui->drawAll();
-    driver->endScene();
-    loadingMessage->remove(); loadingMessage = 0;
-
     return;
 }
 
@@ -207,28 +196,4 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
         exit(EXIT_FAILURE); //Couldn't change dir back
     }
     fileList->drop();
-}
-
-irr::core::stringw ScenarioChoice::getCredits(){
-
-    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
-    creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
-    creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
-    creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
-    creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
-    creditsString.append(L"> Juergen Klemp\n");
-    creditsString.append(L"> Simon D Richardson\n");
-    creditsString.append(L"> Jason Simpson\n");
-    creditsString.append(L"> Ragnar\n");
-    creditsString.append(L"> Thierry Videlaine\n");
-    creditsString.append(L"> NETC (Naval Education and Training Command)\n");
-    creditsString.append(L"> Sky image from 0ptikz\n\n");
-    creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
-    creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, the FFTWave implementation by Keith Lantz, and the Serial library by William Woodall.\n\n");
-    creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
-
-
-    return creditsString;
-
-
 }

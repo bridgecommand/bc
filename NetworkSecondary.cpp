@@ -25,6 +25,8 @@
 
 NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::IrrlichtDevice* dev)
 {
+    server = 0;
+
     if (enet_initialize () != 0)
     {
         std::cerr << "An error occurred while initializing ENet." << std::endl;
@@ -53,17 +55,33 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
     /* enet_address_set_host (& address, "x.x.x.x"); */
     address.host = ENET_HOST_ANY;
     /* Bind the server to port XXXXX. */
-    address.port = port;
-    server = enet_host_create (& address /* the address to bind the server host to */,
-    32 /* allow up to 32 clients and/or outgoing connections */,
-    2 /* allow up to 2 channels to be used, 0 and 1 */,
-    0 /* assume any amount of incoming bandwidth */,
-    0 /* assume any amount of outgoing bandwidth */);
+
+    int tries=0;
+
+    while (server==NULL && tries < 10) {
+        address.port = port;
+        server = enet_host_create (& address /* the address to bind the server host to */,
+        32 /* allow up to 32 clients and/or outgoing connections */,
+        2 /* allow up to 2 channels to be used, 0 and 1 */,
+        0 /* assume any amount of incoming bandwidth */,
+        0 /* assume any amount of outgoing bandwidth */);
+
+        //Update for next attempt if needed
+        if (server==NULL) {
+            tries++;
+            port++;
+        }
+    }
+
     if (server == NULL)
     {
         std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
         exit (EXIT_FAILURE);
+    } else {
+        std::cout << "Connected on UDP port " << server->address.port << std::endl;
     }
+
+
 }
 
 NetworkSecondary::~NetworkSecondary()
@@ -104,6 +122,14 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
 void NetworkSecondary::setModel(SimulationModel* model) //This MUST be called before update()
 {
     this->model = model;
+}
+
+int NetworkSecondary::getPort()
+{
+    if (server) {
+        return server->address.port;
+    }
+    return 0;
 }
 
 void NetworkSecondary::update()
