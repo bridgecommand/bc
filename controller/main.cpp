@@ -118,6 +118,8 @@ int main (int argc, char ** argv)
     core::stringw patienceMessage = language.translate("startBC");
     patienceMessage.append(L"\n");
     patienceMessage.append(core::stringw(ourHostName.c_str()));
+    patienceMessage.append(L":");
+    patienceMessage.append(core::stringw(network.getPort()));
 
     //Find world model to use, from the network
     irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());

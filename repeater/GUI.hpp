@@ -29,7 +29,7 @@
 class GUIMain //Create, build and update GUI
 {
 public:
-    GUIMain(irr::IrrlichtDevice* device, Lang* language);
+    GUIMain(irr::IrrlichtDevice* device, Lang* language, irr::core::stringw message);
     ~GUIMain();
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
@@ -48,6 +48,7 @@ private:
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
 
+    irr::gui::IGUIStaticText* messageText;
     irr::gui::IGUIButton* headingButton;
     irr::gui::IGUIButton* repeaterButton;
 

@@ -4,7 +4,7 @@ The characters \n will be replaced with a line break, so multiple lines of text 
 This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
 
 waiting = "Waiting..."
-startBC = "Please start the Bridge Command session. This computer's hostname is:"
+startBC = "Please start the Bridge Command session. This computer's hostname and port is:"
 loadingMap = "Scaling and loading map image"
 
 pos="Position: "

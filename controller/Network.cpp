@@ -25,6 +25,8 @@
 Network::Network(int port)
 {
 
+    server = 0;
+
     if (enet_initialize () != 0)
     {
         std::cout << "An error occurred while initializing ENet.\n";
@@ -35,17 +37,29 @@ Network::Network(int port)
     /* A specific host address can be specified by */
     /* enet_address_set_host (& address, "x.x.x.x"); */
     address.host = ENET_HOST_ANY;
-    /* Bind the server to port XXXX. */
-    address.port = port;
-    server = enet_host_create (& address /* the address to bind the server host to */,
-    32 /* allow up to 32 clients and/or outgoing connections */,
-    2 /* allow up to 2 channels to be used, 0 and 1 */,
-    0 /* assume any amount of incoming bandwidth */,
-    0 /* assume any amount of outgoing bandwidth */);
+    int tries=0;
+
+    while (server==NULL && tries < 10) {
+        address.port = port;
+        server = enet_host_create (& address /* the address to bind the server host to */,
+        32 /* allow up to 32 clients and/or outgoing connections */,
+        2 /* allow up to 2 channels to be used, 0 and 1 */,
+        0 /* assume any amount of incoming bandwidth */,
+        0 /* assume any amount of outgoing bandwidth */);
+
+        //Update for next attempt if needed
+        if (server==NULL) {
+            tries++;
+            port++;
+        }
+    }
+
     if (server == NULL)
     {
-        std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
+        std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
         exit (EXIT_FAILURE);
+    } else {
+        std::cout << "Connected on UDP port " << server->address.port << std::endl;
     }
 
     stringToSend = "";
@@ -57,6 +71,14 @@ Network::~Network()
 {
     enet_host_destroy(server);
     enet_deinitialize();
+}
+
+int Network::getPort()
+{
+    if (server) {
+        return server->address.port;
+    }
+    return 0;
 }
 
 std::string Network::findWorldName()

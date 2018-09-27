@@ -36,6 +36,7 @@ public:
     ~Network();
 
     std::string findWorldName();
+    int getPort();
     void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData);
     void setStringToSend(std::string stringToSend);
 

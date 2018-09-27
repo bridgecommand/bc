@@ -24,7 +24,7 @@
 
 using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
+GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, irr::core::stringw message)
 {
     this->device = device;
     guienv = device->getGUIEnvironment();
@@ -36,6 +36,8 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language)
     this->language = language;
 
     //gui
+
+    messageText = guienv->addStaticText(message.c_str(),core::rect<s32>(su*0.0,sh*0.0,su*0.9,sh*0.1));
 
     //choice buttons
     headingButton = guienv->addButton(core::rect<s32>(su*0.1,sh*0.1,su*0.9,sh*0.5),0,GUI_ID_HEADING_CHOICE,language->translate("headingIndicator").c_str());
@@ -71,6 +73,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
         //hide choice buttons
         headingButton->setVisible(false);
         repeaterButton->setVisible(false);
+        messageText->setVisible(false);
 
         //Set value
         heading->setHeading(ownShipHeading);
@@ -153,6 +156,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
         //hide choice buttons
         headingButton->setVisible(false);
         repeaterButton->setVisible(false);
+        messageText->setVisible(false);
 
         //draw compass rose
         s32 centreX = device->getVideoDriver()->getScreenSize().Width/2;

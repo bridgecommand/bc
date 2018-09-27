@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <asio.hpp>
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "Network.hpp"
@@ -114,9 +115,16 @@ int main (int argc, char ** argv)
     //Network class
     Network network(udpPort);
 
+    //Show user the hostname etc
+    std::string ourHostName = asio::ip::host_name();
+
+    core::stringw patienceMessage = core::stringw(ourHostName.c_str());
+    patienceMessage.append(L":");
+    patienceMessage.append(core::stringw(network.getPort()));
+
 
     //GUI class
-    GUIMain guiMain(device, &language);
+    GUIMain guiMain(device, &language, patienceMessage);
     //Main model
     ControllerModel controller(device, &guiMain);
 

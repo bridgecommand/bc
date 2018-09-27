@@ -37,8 +37,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
+			<Add option="-DASIO_STANDALONE" />
+			<Add option="-DASIO_HAS_STD_THREAD" />
 			<Add option="-fexceptions" />
 			<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
+			<Add directory="../libs/asio/include" />
 		</Compiler>
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../HeadingIndicator.cpp" />

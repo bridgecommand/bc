@@ -35,6 +35,7 @@ public:
     ~Network();
 
     void update(irr::f32& time, ShipData& ownShipData);
+    int getPort();
 
 private:
 

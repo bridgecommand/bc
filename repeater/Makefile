@@ -14,7 +14,7 @@ BinPath = ..
 # general compiler settings (might need to be set when compiling the lib, too)
 # preprocessor flags, e.g. defines and include paths
 UNAME_S := $(shell uname -s)
-USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include
+USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include -I../libs/asio/include -DASIO_STANDALONE -DASIO_HAS_STD_THREAD
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
