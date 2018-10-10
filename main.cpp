@@ -82,6 +82,32 @@ irr::core::stringw getCredits(){
     return creditsString;
 }
 
+#ifdef _WIN32
+static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_COMMAND:
+	{
+		HWND hwndCtl = (HWND)lParam;
+		int code = HIWORD(wParam);
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	}
+
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+#endif
+
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 int main()
 {
 
@@ -119,7 +145,11 @@ int main()
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
-    u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
+	if (fakeFullScreen) {
+		fullScreen = true; //Fall back for non-windows
+	}
+	u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
     u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
 	u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
 	if (directX == 1) {
@@ -185,9 +215,20 @@ int main()
     }
 
     //Sensible defaults if not set
-    if (graphicsWidth==0) {graphicsWidth=800;}
-    if (graphicsHeight==0) {graphicsHeight=600;}
-    if (graphicsDepth==0) {graphicsDepth=32;}
+	if (graphicsWidth == 0 || graphicsHeight == 0) {
+		IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+		core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+		nulldevice->drop();
+		if (graphicsWidth == 0) {
+			graphicsWidth = deskres.Width;
+		}
+		if (graphicsHeight == 0) {
+			graphicsHeight = deskres.Height;
+		}
+	}
+	
+	if (graphicsDepth == 0) { graphicsDepth = 32; }
+    
 
     //set size of camera window
     u32 graphicsWidth3d = graphicsWidth;
@@ -195,8 +236,47 @@ int main()
     f32 aspect = (f32)graphicsWidth/(f32)graphicsHeight;
     f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
 
+	SIrrlichtCreationParameters deviceParameters;
+
+#ifdef _WIN32
+	
+	HWND hWnd;
+	HINSTANCE hInstance = 0;
+	// create dialog
+	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
+
+	WNDCLASSEX wcex;
+	
+	if (fakeFullScreen) {
+
+		wcex.cbSize = sizeof(WNDCLASSEX);
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
+		wcex.cbClsExtra = 0;
+		wcex.cbWndExtra = DLGWINDOWEXTRA;
+		wcex.hInstance = hInstance;
+		wcex.hIcon = NULL;
+		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+		wcex.lpszMenuName = 0;
+		wcex.lpszClassName = Win32ClassName;
+		wcex.hIconSm = 0;
+
+		RegisterClassEx(&wcex);
+
+		DWORD style = WS_VISIBLE | WS_POPUP;
+
+		hWnd = CreateWindow(Win32ClassName, "Bridge Command",
+			style, 0, 0, graphicsWidth, graphicsHeight,
+			NULL, NULL, hInstance, NULL);
+
+		deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
+
+	}
+#endif
+
     //create device
-    SIrrlichtCreationParameters deviceParameters;
+    
     deviceParameters.DriverType = video::EDT_OPENGL;
 	//Allow optional directX if available
 	if (directX==1) {
