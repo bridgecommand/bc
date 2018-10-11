@@ -220,10 +220,19 @@ int main()
 		core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 		nulldevice->drop();
 		if (graphicsWidth == 0) {
-			graphicsWidth = deskres.Width;
+			if (fullScreen) {
+				graphicsWidth = deskres.Width;
+			} else {
+				graphicsWidth = deskres.Width*0.9;
+			}
 		}
 		if (graphicsHeight == 0) {
-			graphicsHeight = deskres.Height;
+			if (fullScreen) {
+				graphicsHeight = deskres.Height;
+			}
+			else {
+				graphicsHeight = deskres.Height*0.9;
+			}
 		}
 	}
 	
@@ -264,10 +273,34 @@ int main()
 
 		RegisterClassEx(&wcex);
 
+		//Find location of mouse cursor
+		POINT p;
+		int x = 0;
+		int y = 0;
+		if (GetCursorPos(&p))
+		{
+			//Find monitor this is on
+			HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
+			MONITORINFO mi;
+			RECT        rc;
+
+			mi.cbSize = sizeof(mi);
+			GetMonitorInfo(monitor, &mi);
+			rc = mi.rcMonitor;
+
+			//Set to fill current monitor
+			x = rc.left;
+			y = rc.top;
+			graphicsWidth = rc.right - rc.left;
+			graphicsHeight = rc.bottom - rc.top;
+
+		}
+		
+
 		DWORD style = WS_VISIBLE | WS_POPUP;
 
-		hWnd = CreateWindow(Win32ClassName, "Bridge Command",
-			style, 0, 0, graphicsWidth, graphicsHeight,
+		hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+			style, x, y, graphicsWidth, graphicsHeight,
 			NULL, NULL, hInstance, NULL);
 
 		deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
@@ -291,6 +324,7 @@ int main()
     deviceParameters.Bits = graphicsDepth;
     deviceParameters.Fullscreen = fullScreen;
     deviceParameters.AntiAlias = antiAlias;
+
     IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
 	if (device == 0) {
