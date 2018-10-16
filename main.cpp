@@ -258,6 +258,11 @@ int main()
 	
 	if (fakeFullScreen) {
 
+		if (GetSystemMetrics(SM_CMONITORS) > 1) {
+			//TODO: Translate
+			MessageBoxA(nullptr, "Please move this message box to the monitor where Bridge Command should run, and click OK", "Multi monitor", MB_OK);
+		}
+
 		wcex.cbSize = sizeof(WNDCLASSEX);
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
