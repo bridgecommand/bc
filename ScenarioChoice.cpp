@@ -33,9 +33,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 {
     video::IVideoDriver* driver = device->getVideoDriver();
 
-    //Find the computer's IP address and hostname
-    std::string ourHostName = asio::ip::host_name();
-
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
     getScenarioList(scenarioList,scenarioPath); //Populate list
@@ -65,11 +62,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.38*sh,0.80*su,0.41*sh));
     hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
 
-    gui::IGUIStaticText* ourHostnameText = gui->addStaticText(language->translate("ourHostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.37*sh));
-    gui::IGUIStaticText* ourHostnameName = gui->addStaticText(core::stringw(ourHostName.c_str()).c_str(),core::rect<s32>(0.52*su,0.38*sh,0.95*su,0.41*sh));
-    ourHostnameText->setVisible(false);
-    ourHostnameName->setVisible(false);
-
     //add credits text
     //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
 
@@ -89,7 +81,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     device->clearSystemMessages();
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,ourHostnameText,ourHostnameName,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
@@ -138,8 +130,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     multiplayerText->remove();multiplayerText=0;
     hostnameBox->remove(); hostnameBox=0;
     hostnameText->remove();hostnameText=0;
-    ourHostnameText->remove();ourHostnameText=0;
-    ourHostnameName->remove();ourHostnameName=0;
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using
 

@@ -5,12 +5,11 @@ This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encod
 
 ok="OK"
 scnChoose="Please choose a scenario:"
-ourHostname="This computer's hostname:"
 secondary="Use as secondary display"
 secondaryWait="Waiting for connection. This computer's hostname and port is:\n"
 multiplayer="Multiplayer mode"
 hostname="Optional: Hostname for controller/secondary display."
-hostnameHelp="Use commas to separate hostnames.\nStart any controller and secondary display sessions\nbefore starting the main Bridge Command session"
+hostnameHelp="Hostnames:\nStart secondary displays or controller sessions first.\nThese will show the hostname and port.\nEnter these here, as hostname:port\nUse commas to separate hostnames."
 loadingmsg="Loading scenario..."
 
 pausedbutton="Paused, click to start"

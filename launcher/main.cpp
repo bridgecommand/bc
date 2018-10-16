@@ -3,6 +3,10 @@
 //Map Controller executable depending
 //on which button the user presses
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 #include "irrlicht.h"
 #include <iostream>
 #include "../IniFile.hpp"
