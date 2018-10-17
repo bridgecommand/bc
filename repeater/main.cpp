@@ -19,6 +19,10 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
@@ -26,6 +30,28 @@ using namespace irr;
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
+
+#ifdef _WIN32
+static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_COMMAND:
+	{
+		HWND hwndCtl = (HWND)lParam;
+		int code = HIWORD(wParam);
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	}
+
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+#endif
 
 int main (int argc, char ** argv)
 {
@@ -62,19 +88,123 @@ int main (int argc, char ** argv)
     u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
+	if (fakeFullScreen) {
+		fullScreen = true; //Fall back for non-windows
+	}
 
-    if (graphicsWidth == 0 ) {graphicsWidth=640;}
-    if (graphicsHeight == 0 ) {graphicsHeight=480;}
-    if (graphicsDepth == 0 ) {graphicsDepth=32;}
+	//Sensible defaults if not set
+	if (graphicsWidth == 0 || graphicsHeight == 0) {
+		IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+		core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+		nulldevice->drop();
+		if (graphicsWidth == 0) {
+			if (fullScreen) {
+				graphicsWidth = deskres.Width;
+			}
+			else {
+				graphicsWidth = deskres.Width*0.9;
+			}
+		}
+		if (graphicsHeight == 0) {
+			if (fullScreen) {
+				graphicsHeight = deskres.Height;
+			}
+			else {
+				graphicsHeight = deskres.Height*0.9;
+			}
+		}
+	}
 
+	if (graphicsDepth == 0) { graphicsDepth = 32; }
     //Load UDP network settings
     u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
 
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    video::IVideoDriver* driver = device->getVideoDriver();
+	SIrrlichtCreationParameters deviceParameters;
+
+#ifdef _WIN32
+
+	HWND hWnd;
+	HINSTANCE hInstance = 0;
+	// create dialog
+	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
+
+	WNDCLASSEX wcex;
+
+	if (fakeFullScreen) {
+
+		if (GetSystemMetrics(SM_CMONITORS) > 1) {
+			//TODO: Translate
+			MessageBoxA(nullptr, "Please move this message box to the monitor where the repeater should run, and click OK", "Multi monitor", MB_OK);
+		}
+
+		wcex.cbSize = sizeof(WNDCLASSEX);
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
+		wcex.cbClsExtra = 0;
+		wcex.cbWndExtra = DLGWINDOWEXTRA;
+		wcex.hInstance = hInstance;
+		wcex.hIcon = NULL;
+		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+		wcex.lpszMenuName = 0;
+		wcex.lpszClassName = Win32ClassName;
+		wcex.hIconSm = 0;
+
+		RegisterClassEx(&wcex);
+
+		//Find location of mouse cursor
+		POINT p;
+		int x = 0;
+		int y = 0;
+		if (GetCursorPos(&p))
+		{
+			//Find monitor this is on
+			HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
+			MONITORINFO mi;
+			RECT        rc;
+
+			mi.cbSize = sizeof(mi);
+			GetMonitorInfo(monitor, &mi);
+			rc = mi.rcMonitor;
+
+			//Set to fill current monitor
+			x = rc.left;
+			y = rc.top;
+			graphicsWidth = rc.right - rc.left;
+			graphicsHeight = rc.bottom - rc.top;
+
+		}
+
+
+		DWORD style = WS_VISIBLE | WS_POPUP;
+
+		hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+			style, x, y, graphicsWidth, graphicsHeight,
+			NULL, NULL, hInstance, NULL);
+
+		deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
+
+	}
+#endif
+
+    //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+
+	deviceParameters.DriverType = video::EDT_OPENGL;
+	deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth, graphicsHeight);
+	deviceParameters.Bits = graphicsDepth;
+	deviceParameters.Fullscreen = fullScreen;
+
+	IrrlichtDevice* device = createDeviceEx(deviceParameters);
+	if (device == 0) {
+		std::cerr << "Could not start - please check your graphics options." << std::endl;
+		exit(EXIT_FAILURE); //Could not get file system
+	}
+	
+	video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
 

@@ -36,6 +36,10 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 //Set up global for ini reader to have access to irrlicht logger if needed.
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;

@@ -26,6 +26,10 @@
 #include <unistd.h>
 #endif //__APPLE__
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 

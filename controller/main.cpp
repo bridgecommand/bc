@@ -21,6 +21,10 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 

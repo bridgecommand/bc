@@ -52,6 +52,9 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
 
 //Global definition for ini logger
 namespace IniFile {
@@ -102,10 +105,6 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-#endif
-
-#ifdef _MSC_VER
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 int main()

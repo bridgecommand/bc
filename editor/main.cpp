@@ -25,6 +25,10 @@
 #include <unistd.h>
 #endif //__APPLE__
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
+
 //Includes for copying scenario files
 #ifdef _WIN32
     #include <windows.h>
