@@ -12,7 +12,7 @@ hostname="Optional: Hostname for controller/secondary display."
 hostnameHelp="Hostnames:\nStart secondary displays or controller sessions first.\nThese will show the hostname and port.\nEnter these here, as hostname:port\nUse commas to separate hostnames."
 loadingmsg="Loading scenario..."
 
-pausedbutton="Paused, click to start"
+pausedbutton="Paused, click to start\n======================\nKeyboard usage:\nArrow keys - look around\nCtrl + Arrow keys: Look ahead/port/stbd/astern\nSpace: Change view\n0-7: Time compression\n'H': Horn\n'M': Release man overboard dummy\nCtrl + 'M': Retrieve man overboard dummy\n'A'/'Z': Control port engine\n'S'/'X': Control stbd engine\n'D'/'C': Control both engines\n'V'/'B':Control rudder\nEsc: Quit"
 
 pos = "Position: "
 hdg="Heading: "
