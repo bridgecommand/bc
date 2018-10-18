@@ -222,7 +222,7 @@ int main()
 			if (fullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
-				graphicsWidth = deskres.Width*0.9;
+				graphicsWidth = deskres.Width*0.8;
 			}
 		}
 		if (graphicsHeight == 0) {
@@ -230,13 +230,13 @@ int main()
 				graphicsHeight = deskres.Height;
 			}
 			else {
-				graphicsHeight = deskres.Height*0.9;
+				graphicsHeight = deskres.Height*0.8;
 			}
 		}
 	}
-	
+
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
-    
+
 
     //set size of camera window
     u32 graphicsWidth3d = graphicsWidth;
@@ -247,14 +247,14 @@ int main()
 	SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
-	
+
 	HWND hWnd;
 	HINSTANCE hInstance = 0;
 	// create dialog
 	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
 
 	WNDCLASSEX wcex;
-	
+
 	if (fakeFullScreen) {
 
 		if (GetSystemMetrics(SM_CMONITORS) > 1) {
@@ -299,7 +299,7 @@ int main()
 			graphicsHeight = rc.bottom - rc.top;
 
 		}
-		
+
 
 		DWORD style = WS_VISIBLE | WS_POPUP;
 
@@ -313,7 +313,7 @@ int main()
 #endif
 
     //create device
-    
+
     deviceParameters.DriverType = video::EDT_OPENGL;
 	//Allow optional directX if available
 	if (directX==1) {
