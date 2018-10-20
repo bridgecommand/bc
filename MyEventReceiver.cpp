@@ -443,6 +443,23 @@ using namespace irr;
                 if (event.KeyInput.Shift) {
                     //Shift down
 
+                    switch(event.KeyInput.Key)
+                    {
+                        //Camera look
+                        case KEY_LEFT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->lookStepLeft();
+                            break;
+                        case KEY_RIGHT:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->lookStepRight();
+                            break;
+                        default:
+                            //don't do anything
+                            break;
+                    }
+
+
                 } else if (event.KeyInput.Control) {
                     //Ctrl down
 
