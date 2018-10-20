@@ -244,6 +244,19 @@ int main()
     f32 aspect = (f32)graphicsWidth/(f32)graphicsHeight;
     f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
 
+    //load language
+    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+    if (modifier.length()==0) {
+        modifier = "en"; //Default
+    }
+    std::string languageFile = "language-";
+    languageFile.append(modifier);
+    languageFile.append(".txt");
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+    Lang language(languageFile);
+
 	SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
@@ -365,19 +378,6 @@ int main()
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
-
-    //load language
-    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
-    if (modifier.length()==0) {
-        modifier = "en"; //Default
-    }
-    std::string languageFile = "language-";
-    languageFile.append(modifier);
-    languageFile.append(".txt");
-    if (Utilities::pathExists(userFolder + languageFile)) {
-        languageFile = userFolder + languageFile;
-    }
-    Lang language(languageFile);
 
     //set gui skin and 'flatten' this
     gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(gui::EGST_WINDOWS_METALLIC   );
