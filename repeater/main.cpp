@@ -123,6 +123,19 @@ int main (int argc, char ** argv)
         udpPort = 18304;
     }
 
+	//load language
+	std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+	if (modifier.length() == 0) {
+		modifier = "en"; //Default
+	}
+	std::string languageFile = "languageRepeater-";
+	languageFile.append(modifier);
+	languageFile.append(".txt");
+	if (Utilities::pathExists(userFolder + languageFile)) {
+		languageFile = userFolder + languageFile;
+	}
+	Lang language(languageFile);
+
 	SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
@@ -137,8 +150,12 @@ int main (int argc, char ** argv)
 	if (fakeFullScreen) {
 
 		if (GetSystemMetrics(SM_CMONITORS) > 1) {
-			//TODO: Translate
-			MessageBoxA(nullptr, "Please move this message box to the monitor where the repeater should run, and click OK", "Multi monitor", MB_OK);
+			core::stringw locationMessageW = language.translate("moveMessage");
+
+			std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
+			std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
+
+			MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
 		}
 
 		wcex.cbSize = sizeof(WNDCLASSEX);
@@ -217,20 +234,6 @@ int main (int argc, char ** argv)
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
-
-    //load language
-    //load language
-    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
-    if (modifier.length()==0) {
-        modifier = "en"; //Default
-    }
-    std::string languageFile = "languageRepeater-";
-    languageFile.append(modifier);
-    languageFile.append(".txt");
-    if (Utilities::pathExists(userFolder + languageFile)) {
-        languageFile = userFolder + languageFile;
-    }
-    Lang language(languageFile);
 
     //Set font : Todo - make this configurable
     gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");

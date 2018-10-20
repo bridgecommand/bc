@@ -271,8 +271,12 @@ int main()
 	if (fakeFullScreen) {
 
 		if (GetSystemMetrics(SM_CMONITORS) > 1) {
-			//TODO: Translate
-			MessageBoxA(nullptr, "Please move this message box to the monitor where Bridge Command should run, and click OK", "Multi monitor", MB_OK);
+			core::stringw locationMessageW = language.translate("moveMessage");
+			
+			std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
+			std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
+
+			MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
 		}
 
 		wcex.cbSize = sizeof(WNDCLASSEX);
