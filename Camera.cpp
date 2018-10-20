@@ -98,6 +98,24 @@ void Camera::lookRight()
     }
 }
 
+void Camera::lookStepLeft()
+{
+    lookAngle -= hFOV*core::RADTODEG;
+    if (lookAngle<0)
+    {
+        lookAngle+=360;
+    }
+}
+
+void Camera::lookStepRight()
+{
+    lookAngle += hFOV*core::RADTODEG;
+    if (lookAngle>=360)
+    {
+        lookAngle-=360;
+    }
+}
+
 void Camera::lookAhead()
 {
     lookAngle = 0;

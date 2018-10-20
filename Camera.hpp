@@ -38,6 +38,8 @@ class Camera
 		void setLookUp(irr::f32 angle);
         void lookLeft();
         void lookRight();
+        void lookStepLeft();
+        void lookStepRight();
         void lookAhead();
         void lookAstern();
         void lookPort();

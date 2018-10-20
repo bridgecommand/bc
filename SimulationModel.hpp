@@ -133,6 +133,8 @@ public:
     void lookDown();
     void lookLeft();
     void lookRight();
+    void lookStepLeft();
+    void lookStepRight();
     void lookAhead();
     void lookAstern();
     void lookPort();

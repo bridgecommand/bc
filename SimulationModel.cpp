@@ -578,6 +578,16 @@ SimulationModel::~SimulationModel()
         camera.lookRight();
     }
 
+    void SimulationModel::lookStepLeft()
+    {
+        camera.lookStepLeft();
+    }
+
+    void SimulationModel::lookStepRight()
+    {
+        camera.lookStepRight();
+    }
+
     void SimulationModel::lookAhead()
     {
         camera.lookAhead();
