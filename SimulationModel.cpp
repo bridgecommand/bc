@@ -93,7 +93,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         if (worldName == "") {
             //Could not load world name from scenario, so end here
-            std::cerr << "World model name not defined" << std::endl;
+            std::cout << "World model name not defined" << std::endl;
             exit(EXIT_FAILURE);
         }
 

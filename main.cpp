@@ -349,8 +349,8 @@ int main()
     IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
 	if (device == 0) {
-		std::cerr << "Could not start - please check your graphics options." << std::endl;
-		exit(EXIT_FAILURE); //Could not get file system
+		std::cout << "Could not start - please check your graphics options." << std::endl;
+		return(EXIT_FAILURE); //Could not get file system
 	}
 
     device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
@@ -361,6 +361,18 @@ int main()
     std::vector<std::string> logMessages;
     DefaultEventReceiver defReceiver(&logMessages, device);
     device->setEventReceiver(&defReceiver);
+
+	//Save log messages to user directory, into log.txt, overwrite old file with that name
+	std::ofstream logFile;
+	logFile.open(userFolder + "log.txt");
+	
+	#ifdef _WIN32
+	std::streambuf * coutbuf = std::cout.rdbuf(); //Store in case we want to revert
+	if (logFile.good()) {
+		std::cout.rdbuf(logFile.rdbuf());
+	}
+	#endif // _WIN32
+
 
     //Tell the Ini routine the logger address
     IniFile::irrlichtLogger = device->getLogger();
@@ -377,7 +389,7 @@ int main()
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         std::cerr << "Could not get filesystem:" << std::endl;
-        exit(EXIT_FAILURE); //Could not get file system
+        return(EXIT_FAILURE); //Could not get file system
 
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
@@ -652,22 +664,18 @@ int main()
 
     device->drop();
 
-    //Save log messages to user directory, into log.txt, overwrite old file with that name
-    std::ofstream logFile;
-    logFile.open(userFolder + "log.txt");
-    for (unsigned int i=0;i<logMessages.size();i++) {
+    //Save log messages out
+	//Note that std::cout has also been redirected to this file, so it will contain anything from cout, as well as these log messages
+	for (unsigned int i=0;i<logMessages.size();i++) {
         if (logFile.good()) {
             //Check we're not creating an excessively long file
             if (i<=1000 && logMessages.at(i).length() <=1000) {
-                logFile << logMessages.at(i) << std::endl;
+                logFile << "Log: " << logMessages.at(i) << std::endl;
             }
         }
     }
+	
 
-    //Debug - dump log
-    //for (unsigned int i=0;i<logMessages.size();i++) {
-    //    std::cout << logMessages.at(i) << std::endl;
-    //}
 
     //End
     return(0);

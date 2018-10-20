@@ -97,7 +97,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Get name of selected scenario
     if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (s32)scenarioList.size()) {
-        exit(EXIT_FAILURE); //No scenario loaded
+		std::cout << "No scenario selected." << std::endl;
+		exit(EXIT_FAILURE); //No scenario loaded
     }
 
     //Get hostname, and convert from wchar_t* to wstring to string
@@ -139,7 +140,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {
 
     io::IFileSystem* fileSystem = device->getFileSystem();
-    if (fileSystem==0) {
+	if (fileSystem==0) {
         std::cout << "Could not get file system access." << std::endl;
         exit(EXIT_FAILURE); //Could not get file system
     }
@@ -154,6 +155,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
     io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
+		std::cout << "Could not get file list for secenarios." << std::endl;
         exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
     }
 

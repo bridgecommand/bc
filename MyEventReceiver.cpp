@@ -744,7 +744,7 @@ using namespace irr;
         //Check that the input and output points list are the same length
         if (inputPoints.size() != outputPoints.size() || inputPoints.size() < 2) {
             std::cout << "Error: lookup1D needs inputPoints and outputPoints list size to be the same, and needs at least two points." << std::endl;
-            exit(EXIT_FAILURE);
+            return 0;
         }
 
         std::vector<f32>::size_type numberOfPoints = inputPoints.size();
@@ -753,7 +753,7 @@ using namespace irr;
         for (unsigned int i=0; i+1<numberOfPoints; i++) {
             if (inputPoints.at(i+1) < inputPoints.at(i)) {
                 std::cout << "Error: inputPoints to lookup1D must not be in a decreasing order." << std::endl;
-                exit(EXIT_FAILURE);
+                return 0;
             }
         }
 

@@ -106,6 +106,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	}
 
 	soundLoaded = true; // All OK if we've got here
+	std::cout << "Sound loaded" << std::endl;
 
 }
 
@@ -116,7 +117,7 @@ void Sound::StartSound() {
 		portAudioError = Pa_StartStream(stream);
 		if (portAudioError != paNoError)
 		{
-			fprintf(stderr, "Problem opening starting Stream\n");
+			std::cout << "Problem opening starting Stream" << std::endl;
 		}
 	}
 
@@ -151,7 +152,7 @@ Sound::~Sound() {
 	portAudioError = Pa_CloseStream(stream);
 	if (portAudioError != paNoError)
 	{
-		fprintf(stderr, "Problem closing stream\n");
+		std::cout << "Problem closing stream" << std::endl;
 	}
 
 	portAudioError = Pa_Terminate();
