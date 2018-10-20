@@ -343,23 +343,10 @@ In order to allow this to work, two computers are needed, connected by a network
 Interactive exercises are run with Bridge Command running on one computer, and a second program, called the 'Map Controller' on the second computer. In order to set up the interactive simulation, you will need to know the computer name (hostname) or IP address of both computers. A hostname or IP address is the way a computer identifies itself to other computers on a network, so will be unique for each computer on the network.
 </p>
 
-<h4>Finding the computer name (hostname) for the controller computer</h4>
-
-<p>
-You will need to know the computer name (hostname) for the computer where you will be running the controller software. 
-If you don't know the computer name, you can find it on Windows 10 by opening the 'Settings' app, and searching for 'View your PC name', or on older versions by right clicking on 'My Computer' and selecting properties, or open a Command Prompt (Start, Accessories, Command Prompt), and typing in 'hostname' and pressing enter. These ways will both show you the computer name. For example, the computer shown below is called 'mini'.
-</p>
-
-<img src="images/hostname.png" alt="hostname" id="hostname">
-
-<p>
-You'll see one line, circled in the picture above, which gives the computer's hostname. Make a note of this for later.
-</p>
-
 <h4>Starting the Controller</h4>
 
 <p>
-On the controller computer, start the Bridge Command launcher and click 'Map Controller'. You will see a screen come up that asks you to start the Bridge Command session.
+On the controller computer, start the Bridge Command launcher and click 'Map Controller'. You will see a screen come up that asks you to start the Bridge Command session, and tells you the hostname of the computer
 </p>
 
 <h4>Starting Bridge Command</h4>
@@ -369,7 +356,7 @@ Once the controller has started, you should now start Bridge Command.
 </p>
 
 <p>
-On the simulator computer, start Bridge Command as normal, and choose the scenario 'a) Buoyage'. In the hostname box, type the computer name or IP address you have found for the other computer (The one you are running the map controller on).
+On the simulator computer, start Bridge Command as normal, and choose the scenario 'a) Buoyage'. In the hostname box, type the computer name or IP address for the other computer (As shown in the Map Controller window).
 <p>
 
 <img src="images/networkOptions.png" alt="scenario network" id="scenarioNet">
