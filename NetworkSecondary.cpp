@@ -37,7 +37,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
 
     if (enet_initialize () != 0)
     {
-        std::cout << "An error occurred while initializing ENet.\n";
+        std::cerr << "An error occurred while initializing ENet.\n";
         exit(EXIT_FAILURE);
     }
 
@@ -66,12 +66,10 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
 
     if (server == NULL)
     {
-        std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
+        std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
 		enet_deinitialize();
 		exit (EXIT_FAILURE);
-    } else {
-        std::cout << "Connected on UDP port " << server->address.port << std::endl;
-    }
+    } 
 
 
 }
@@ -128,7 +126,7 @@ void NetworkSecondary::update()
 {
 
     if (model==0) {
-        std::cout << "Network not linked to model" << std::endl;
+        std::cerr << "Network not linked to model" << std::endl;
         return;
     }
 

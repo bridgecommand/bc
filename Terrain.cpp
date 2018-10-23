@@ -48,7 +48,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     u32 numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
     if (numberOfTerrains <= 0) {
-        std::cout << "Could not load terrain." << std::endl;
+        std::cerr << "Could not load terrain." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -93,7 +93,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //Check the height map file has loaded and the terrain exists
         if (terrain==0 || heightMapFile == 0) {
             //Could not load terrain
-            std::cout << "Could not load terrain." << std::endl;
+            std::cerr << "Could not load terrain." << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -117,7 +117,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         if (!loaded) {
             //Could not load terrain
-            std::cout << "Could not load terrain." << std::endl;
+            std::cerr << "Could not load terrain." << std::endl;
             exit(EXIT_FAILURE);
         }
 

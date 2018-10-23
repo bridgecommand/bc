@@ -743,7 +743,7 @@ using namespace irr;
     {
         //Check that the input and output points list are the same length
         if (inputPoints.size() != outputPoints.size() || inputPoints.size() < 2) {
-            std::cout << "Error: lookup1D needs inputPoints and outputPoints list size to be the same, and needs at least two points." << std::endl;
+            std::cerr << "Error: lookup1D needs inputPoints and outputPoints list size to be the same, and needs at least two points." << std::endl;
             return 0;
         }
 
@@ -752,7 +752,7 @@ using namespace irr;
         //Check that inputPoints does not have decreasing values (must be increasing or equal)
         for (unsigned int i=0; i+1<numberOfPoints; i++) {
             if (inputPoints.at(i+1) < inputPoints.at(i)) {
-                std::cout << "Error: inputPoints to lookup1D must not be in a decreasing order." << std::endl;
+                std::cerr << "Error: inputPoints to lookup1D must not be in a decreasing order." << std::endl;
                 return 0;
             }
         }

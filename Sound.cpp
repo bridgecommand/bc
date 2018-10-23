@@ -79,14 +79,14 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	//Check key parameters are the same
 	if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.samplerate != data.infoEngine.samplerate) {
 		//Check wave vs engine
-		std::cout << "Inconsistent formats of wave and engine sounds, wave sound not loaded." << std::endl;
+		std::cerr << "Inconsistent formats of wave and engine sounds, wave sound not loaded." << std::endl;
 	} else {
 		waveSoundLoaded = true;
 	}
 
 	if (data.infoHorn.channels != data.infoEngine.channels || data.infoHorn.samplerate != data.infoEngine.samplerate ) {
 		//Check wave vs engine
-		std::cout << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
+		std::cerr << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
 	} else {
 		hornSoundLoaded = true;
 	}
@@ -106,8 +106,6 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	}
 
 	soundLoaded = true; // All OK if we've got here
-	std::cout << "Sound loaded" << std::endl;
-
 }
 
 void Sound::StartSound() {
@@ -117,7 +115,7 @@ void Sound::StartSound() {
 		portAudioError = Pa_StartStream(stream);
 		if (portAudioError != paNoError)
 		{
-			std::cout << "Problem opening starting Stream" << std::endl;
+			std::cerr << "Problem opening starting Stream" << std::endl;
 		}
 	}
 
@@ -152,12 +150,12 @@ Sound::~Sound() {
 	portAudioError = Pa_CloseStream(stream);
 	if (portAudioError != paNoError)
 	{
-		std::cout << "Problem closing stream" << std::endl;
+		std::cerr << "Problem closing stream" << std::endl;
 	}
 
 	portAudioError = Pa_Terminate();
 	if (portAudioError == paNoError) {
-		std::cout << "PortAudio terminated" << std::endl;
+		std::cerr << "PortAudio terminated" << std::endl;
 	}
 
 	/* Close the soundfile */

@@ -192,7 +192,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //camera offset (in unscaled and uncorrected ship coords)
     irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
     if (numberOfViews==0) {
-        std::cout << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
+        std::cerr << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
         exit(EXIT_FAILURE);
     }
     for(u32 i=1;i<=numberOfViews;i++) {

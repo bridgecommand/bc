@@ -53,7 +53,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 	//cubemapConstants* cns = new cubemapConstants(driverType==irr::video::EDT_OPENGL);
     //So far there are no materials ready to use a cubemap, so we provide our own.
-    irr::s32 shader;
+    irr::s32 shader=0;
 
 	if (!disableShaders) {
 		if (driverType == irr::video::EDT_DIRECT3D9)
@@ -99,7 +99,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
     flatMesh = mgr->getMesh("media/flatsea.x");
     if (!flatMesh) {
-        std::cout << "Could not load flat sea mesh from media/flatsea.x" << std::endl;
+        std::cerr << "Could not load flat sea mesh from media/flatsea.x" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -532,7 +532,7 @@ void MovingWaterSceneNode::render()
     //std::cout << "In render()" << std::endl;
 
 	if (!mesh || !driver) {
-		std::cout << "Could not render" << std::endl;
+		std::cerr << "Could not render" << std::endl;
 		return;
     }
 
@@ -564,7 +564,7 @@ void MovingWaterSceneNode::render()
             AbsoluteTransformation.setTranslation(basicPosition);
 
         } else {
-            std::cout << "No meshbuffer to render" << std::endl;
+            std::cerr << "No meshbuffer to render" << std::endl;
         }
     }
 
@@ -585,7 +585,7 @@ void MovingWaterSceneNode::render()
 
 
         } else {
-            std::cout << "No meshbuffer to render" << std::endl;
+            std::cerr << "No meshbuffer to render" << std::endl;
         }
     }
 
@@ -598,20 +598,20 @@ const core::aabbox3d<f32>& MovingWaterSceneNode::getBoundingBox() const
 
 IMesh* MovingWaterSceneNode::getMesh(void)
 {
-    //std::cout << "In getMesh()" << std::endl;
+    //std::cerr << "In getMesh()" << std::endl;
     return mesh;
 }
 
 IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
 {
-    //std::cout << "In addShadowVolumeSceneNode()" << std::endl;
+    //std::cerr << "In addShadowVolumeSceneNode()" << std::endl;
     return 0;
 }
 
 void MovingWaterSceneNode::setReadOnlyMaterials(bool readonly)
 {
     //Ignored
-    //std::cout << "In setReadOnlyMaterials()" << std::endl;
+    //std::cerr << "In setReadOnlyMaterials()" << std::endl;
 }
 
 bool MovingWaterSceneNode::isReadOnlyMaterials() const

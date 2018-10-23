@@ -52,9 +52,11 @@
 #include <mach-o/dyld.h>
 #endif
 
+
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
+
 
 //Global definition for ini logger
 namespace IniFile {
@@ -337,7 +339,7 @@ int main()
         if (IrrlichtDevice::isDriverSupported(video::EDT_DIRECT3D9)) {
             deviceParameters.DriverType = video::EDT_DIRECT3D9;
         } else {
-            std::cout << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
+            std::cerr << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
         }
 	}
 
@@ -348,8 +350,16 @@ int main()
 
     IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
+	//On Windows, redirect console stderr to log file
+	std::string userLog = userFolder + "log.txt";
+	std::cout << "User log file is " << userLog << std::endl;
+	FILE * stream = 0;
+	#ifdef _WIN32
+	errno_t success = freopen_s(&stream, userLog.c_str(), "w", stderr);
+	#endif // _WIN32
+
 	if (device == 0) {
-		std::cout << "Could not start - please check your graphics options." << std::endl;
+		std::cerr << "Could not start - please check your graphics options." << std::endl;
 		return(EXIT_FAILURE); //Could not get file system
 	}
 
@@ -361,18 +371,6 @@ int main()
     std::vector<std::string> logMessages;
     DefaultEventReceiver defReceiver(&logMessages, device);
     device->setEventReceiver(&defReceiver);
-
-	//Save log messages to user directory, into log.txt, overwrite old file with that name
-	std::ofstream logFile;
-	logFile.open(userFolder + "log.txt");
-	
-	#ifdef _WIN32
-	std::streambuf * coutbuf = std::cout.rdbuf(); //Store in case we want to revert
-	if (logFile.good()) {
-		std::cout.rdbuf(logFile.rdbuf());
-	}
-	#endif // _WIN32
-
 
     //Tell the Ini routine the logger address
     IniFile::irrlichtLogger = device->getLogger();
@@ -665,7 +663,17 @@ int main()
     device->drop();
 
     //Save log messages out
-	//Note that std::cout has also been redirected to this file, so it will contain anything from cout, as well as these log messages
+	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
+	//Save log messages to user directory, into log.txt, overwrite old file with that name
+	std::ofstream logFile;
+	if (stream) {
+		fclose(stream);
+		logFile.open(userLog, std::ofstream::app); //Append
+	}
+	else {
+		logFile.open(userLog); //Overwrite
+	}
+	
 	for (unsigned int i=0;i<logMessages.size();i++) {
         if (logFile.good()) {
             //Check we're not creating an excessively long file
@@ -675,8 +683,6 @@ int main()
         }
     }
 	
-
-
     //End
     return(0);
 }
