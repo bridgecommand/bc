@@ -50,9 +50,6 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, irr::u32 dis
     //waterNode->setPosition(core::vector3df(0,-0.25f,0));
 
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    waterNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-
-
 
 }
 

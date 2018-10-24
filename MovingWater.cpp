@@ -150,12 +150,32 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 			}
 		}
-	}
-	else {
+	} else {
 		_camera = 0;
 		_reflectionMap = 0;
 	}
 
+
+	if (disableShaders) {
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
+		{
+			scene::IMeshBuffer* mb = mesh->getMeshBuffer(i);
+			if (mb)
+			{
+				mb->getMaterial().FogEnable = true;
+			}
+		}
+
+
+		for (u32 i = 0; i < flatMesh->getMeshBufferCount(); ++i)
+		{
+			scene::IMeshBuffer* mb = flatMesh->getMeshBuffer(i);
+			if (mb)
+			{
+				mb->getMaterial().FogEnable = true;
+			}
+		}
+	}
 
     //Hard code bounding box to be large - we always want to render water, and we actually render multiple displaced copies of the mesh, so just getting the mesh bounding box isn't correct.
     //TODO: Look here if there's a problem with the water disappearing or if we implement collision with water.
