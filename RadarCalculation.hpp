@@ -112,6 +112,8 @@ class RadarCalculation
         irr::u32 getARPAContacts() const;
         irr::f32 getARPACPA(irr::u32 contactID) const;
         irr::f32 getARPATCPA(irr::u32 contactID) const;
+		irr::f32 getARPASpeed(irr::u32 contactID) const;
+		irr::f32 getARPAHeading(irr::u32 contactID) const;
         void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:

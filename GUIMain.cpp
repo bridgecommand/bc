@@ -655,6 +655,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         //Update ARPA data
         guiCPAs = guiData->CPAs;
         guiTCPAs = guiData->TCPAs;
+		guiARPAheadings = guiData->headings;
+		guiARPAspeeds = guiData->speeds;
     }
 
     void GUIMain::showLogWindow()
@@ -782,7 +784,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         arpaText->clear();
         arpaText2->clear();
 
-        if (guiCPAs.size() == guiTCPAs.size()) {
+        if (guiCPAs.size() == guiTCPAs.size() && guiCPAs.size() == guiARPAspeeds.size() && guiCPAs.size() == guiARPAheadings.size()) {
             for (unsigned int i = 0; i < guiCPAs.size(); i++) {
 
                 //Convert TCPA from decimal minutes into minutes and seconds.
@@ -794,6 +796,8 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
                 f32 tcpa = guiTCPAs.at(i);
                 f32 cpa  = guiCPAs.at(i);
+				u32 arpahdg = round(guiARPAheadings.at(i));
+				u32 arpaspd = round(guiARPAspeeds.at(i));
 
                 u32 tcpaMins = floor(tcpa);
                 u32 tcpaSecs = floor(60*(tcpa - tcpaMins));
@@ -844,6 +848,27 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
                 arpaText->addItem(displayText.c_str());
                 arpaText2->addItem(displayText.c_str());
+
+				//Pad heading to three decimals
+				core::stringw headingText = core::stringw(arpahdg);
+				if (headingText.size() == 1) {
+					core::stringw zeroPadded = L"00";
+					zeroPadded.append(headingText);
+					headingText = zeroPadded;
+				}
+				else if (headingText.size() == 2) {
+					core::stringw zeroPadded = L"0";
+					zeroPadded.append(headingText);
+					headingText = zeroPadded;
+				}
+
+				displayText = L">";
+				displayText.append(headingText);
+				displayText.append(L" ");
+				displayText.append(core::stringw(arpaspd));
+				displayText.append(L" kts");
+				arpaText->addItem(displayText.c_str());
+				arpaText2->addItem(displayText.c_str());
 
             }
         }

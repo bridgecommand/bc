@@ -979,9 +979,13 @@ SimulationModel::~SimulationModel()
         irr::u32 numberOfARPAContacts = radarCalculation.getARPAContacts();
         std::vector<irr::f32> CPAs;
         std::vector<irr::f32> TCPAs;
+		std::vector<irr::f32> headings;
+		std::vector<irr::f32> speeds;
         for(unsigned int i = 0; i<numberOfARPAContacts; i++) {
             CPAs.push_back(radarCalculation.getARPACPA(i+1)); //i+1 as the user numbering starts at 1, not 0
             TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
+			headings.push_back(radarCalculation.getARPAHeading(i + 1));
+			speeds.push_back(radarCalculation.getARPASpeed(i + 1));
         }
 
 
@@ -1010,6 +1014,8 @@ SimulationModel::~SimulationModel()
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
         guiData->CPAs = CPAs;
         guiData->TCPAs = TCPAs;
+		guiData->headings = headings;
+		guiData->speeds = speeds;
         guiData->currentTime = Utilities::timestampToString(absoluteTime);
         guiData->paused = paused;
         guiData->collided = collided;

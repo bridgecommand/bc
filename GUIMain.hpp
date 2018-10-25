@@ -53,7 +53,9 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     std::vector<irr::f32> CPAs;
     std::vector<irr::f32> TCPAs;
-    std::string currentTime;
+	std::vector<irr::f32> headings;
+	std::vector<irr::f32> speeds;
+	std::string currentTime;
     bool paused;
     bool collided;
     bool headUp;
@@ -230,6 +232,8 @@ private:
     irr::s32 smallRadarScreenRadius;
     std::vector<irr::f32> guiCPAs;
     std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
+	std::vector<irr::f32> guiARPAheadings;
+	std::vector<irr::f32> guiARPAspeeds; //in knots
     std::string guiTime;
     bool singleEngine;
     bool hasBowThruster;
