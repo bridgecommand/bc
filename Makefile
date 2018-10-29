@@ -42,8 +42,20 @@ DESTPATH = $(BinPath)/$(Target)$(SUF)
 #default target is Linux
 all: 
 	$(warning Building...)
+#Build Irrlicht (different command on OSX)
+ifeq ($(UNAME_S),Darwin)
+	$(xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj)
+else
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ all
+endif
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
+#Build additional programs
+	$(MAKE) -C launcher/ all
+	$(MAKE) -C controller/ all
+	$(MAKE) -C editor/ all
+	$(MAKE) -C iniEditor/ all
+	$(MAKE) -C multiplayerHub/ all
+	$(MAKE) -C repeater/ all
 ifeq ($(UNAME_S),Darwin)
 	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
 	rm -f BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/.gitignore
@@ -62,17 +74,23 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
 	cp -a mph.ini BridgeCommand.app/Contents/Resources/mph.ini
 	cp -a repeater.ini BridgeCommand.app/Contents/Resources/repeater.ini
-	cp -a language.txt BridgeCommand.app/Contents/Resources/language.txt
-	cp -a languageController.txt BridgeCommand.app/Contents/Resources/languageController.txt
-	cp -a languageMultiplayer.txt BridgeCommand.app/Contents/Resources/languageMultiplayer.txt 
-	cp -a languageLauncher.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
-	cp -a languageIniEditor.txt BridgeCommand.app/Contents/Resources/languageIniEditor.txt
-	cp -a languageRepeater.txt BridgeCommand.app/Contents/Resources/languageRepeater.txt
+	cp -a language-en.txt BridgeCommand.app/Contents/Resources/language.txt
+	cp -a languageController-en.txt BridgeCommand.app/Contents/Resources/languageController.txt
+	cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer.txt 
+	cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
+	cp -a languageIniEditor-en.txt BridgeCommand.app/Contents/Resources/languageIniEditor.txt
+	cp -a languageRepeater-en.txt BridgeCommand.app/Contents/Resources/languageRepeater.txt
 endif
 
 clean:
 	$(warning Cleaning...)
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ clean
+	$(MAKE) -C launcher/ clean
+	$(MAKE) -C controller/ clean
+	$(MAKE) -C editor/ clean
+	$(MAKE) -C iniEditor/ clean
+	$(MAKE) -C multiplayerHub/ clean
+	$(MAKE) -C repeater/ clean
 	@$(RM) $(DESTPATH)
 
 .PHONY: all
