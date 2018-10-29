@@ -1,23 +1,20 @@
 ﻿To build on linux:
 ==================
 
-1) Change directory to ./libs/Irrlicht/irrlicht-svn/source/Irrlicht
-2) Run 'make' to compile irrlicht (1.9 from svn plus minor changes for Bridge Command)
-3) cd back to this directory
-4) Run 'make' to compile Bridge Command
+1) Run 'make' to compile Bridge Command
 (Additional steps are optional to build the additional programs - you can now run ./bridgecommand-bc)
 
-5) cd to ./controller
-6) Run 'make' to compile the Map Controller, and cd ..
-7) cd to ./editor
-8) Run 'make' to compile the Scenario editor, and cd ..
-9) cd to ./iniEditor
-10) Run 'make' to compile the Settings editor, and cd ..
-11) cd to ./launcher
-12) Run 'make' to compile the launcher, and cd ..
+2) cd to ./controller
+3) Run 'make' to compile the Map Controller, and cd ..
+4) cd to ./editor
+5) Run 'make' to compile the Scenario editor, and cd ..
+6) cd to ./iniEditor
+7) Run 'make' to compile the Settings editor, and cd ..
+8) cd to ./launcher
+9) Run 'make' to compile the launcher, and cd ..
 
 Running
-13) Run ./bridgecommand to start the simulator.
+10) Run ./bridgecommand to start the simulator.
 
 To build on Mac:
 ================
