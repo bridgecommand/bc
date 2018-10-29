@@ -4,17 +4,85 @@
 
 # Name of the executable created (.exe will be added automatically if necessary)
 Target := bridgecommand-bc
-# List of source files, separated by spaces
-Sources := main.cpp Angles.cpp Buoy.cpp Buoys.cpp Camera.cpp DefaultEventReceiver.cpp FFTWave.cpp GUIMain.cpp GUIRectangle.cpp HeadingIndicator.cpp IniFile.cpp LandLights.cpp LandObject.cpp LandObjects.cpp Lang.cpp Light.cpp ManOverboard.cpp MovingWater.cpp MyEventReceiver.cpp NMEA.cpp NavLight.cpp Network.cpp NetworkPrimary.cpp NetworkSecondary.cpp NumberToImage.cpp OtherShip.cpp OtherShips.cpp OutlineScrollBar.cpp OwnShip.cpp RadarCalculation.cpp RadarScreen.cpp Rain.cpp ScenarioChoice.cpp ScenarioDataStructure.cpp ScrollDial.cpp Ship.cpp SimulationModel.cpp Sky.cpp Sound.cpp StartupEventReceiver.cpp Terrain.cpp Tide.cpp Utilities.cpp Water.cpp libs/enet/callbacks.c libs/enet/compress.c libs/enet/host.c libs/enet/list.c libs/enet/packet.c libs/enet/peer.c libs/enet/protocol.c libs/enet/unix.c libs/enet/win32.c libs/serial/src/impl/list_ports/list_ports_linux.cc libs/serial/src/impl/list_ports/list_ports_osx.cc libs/serial/src/impl/list_ports/list_ports_win.cc libs/serial/src/impl/unix.cc libs/serial/src/impl/win.cc libs/serial/src/serial.cc
+
+# List of source files
+Sources += main.cpp
+Sources += Angles.cpp
+Sources += Buoy.cpp
+Sources += Buoys.cpp
+Sources += Camera.cpp
+Sources += DefaultEventReceiver.cpp
+Sources += FFTWave.cpp
+Sources += GUIMain.cpp
+Sources += GUIRectangle.cpp
+Sources += HeadingIndicator.cpp
+Sources += IniFile.cpp
+Sources += LandLights.cpp
+Sources += LandObject.cpp
+Sources += LandObjects.cpp
+Sources += Lang.cpp
+Sources += Light.cpp
+Sources += ManOverboard.cpp
+Sources += MovingWater.cpp
+Sources += MyEventReceiver.cpp
+Sources += NMEA.cpp
+Sources += NavLight.cpp
+Sources += Network.cpp
+Sources += NetworkPrimary.cpp
+Sources += NetworkSecondary.cpp
+Sources += NumberToImage.cpp
+Sources += OtherShip.cpp
+Sources += OtherShips.cpp
+Sources += OutlineScrollBar.cpp
+Sources += OwnShip.cpp
+Sources += RadarCalculation.cpp
+Sources += RadarScreen.cpp
+Sources += Rain.cpp
+Sources += ScenarioChoice.cpp
+Sources += ScenarioDataStructure.cpp
+Sources += ScrollDial.cpp
+Sources += Ship.cpp
+Sources += SimulationModel.cpp
+Sources += Sky.cpp
+Sources += Sound.cpp
+Sources += StartupEventReceiver.cpp
+Sources += Terrain.cpp
+Sources += Tide.cpp
+Sources += Utilities.cpp
+Sources += Water.cpp
+
+Sources += libs/enet/callbacks.c
+Sources += libs/enet/compress.c
+Sources += libs/enet/host.c
+Sources += libs/enet/list.c
+Sources += libs/enet/packet.c
+Sources += libs/enet/peer.c
+Sources += libs/enet/protocol.c
+Sources += libs/enet/unix.c
+Sources += libs/enet/win32.c
+
+Sources += libs/serial/src/impl/list_ports/list_ports_linux.cc
+Sources += libs/serial/src/impl/list_ports/list_ports_osx.cc
+Sources += libs/serial/src/impl/list_ports/list_ports_win.cc
+Sources += libs/serial/src/impl/unix.cc
+Sources += libs/serial/src/impl/win.cc
+Sources += libs/serial/src/serial.cc
+
 # Path to Irrlicht directory, should contain include/ and lib/
 IrrlichtHome := ./libs/Irrlicht/irrlicht-svn
+
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
 BinPath = .
 
 # general compiler settings (might need to be set when compiling the lib, too)
 # preprocessor flags, e.g. defines and include paths
 UNAME_S := $(shell uname -s)
-USERCPPFLAGS = -std=c++11 -I./libs/enet/enet-1.3.11/include -I./libs/asio/include -DASIO_STANDALONE -DASIO_HAS_STD_THREAD
+USERCPPFLAGS = -std=c++11 \
+	-I./libs/enet/enet-1.3.11/include \
+	-I./libs/asio/include \
+	-DASIO_STANDALONE \
+	-DASIO_HAS_STD_THREAD
+
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
@@ -23,9 +91,24 @@ USERCXXFLAGS = -O3 -ffast-math
 endif
 # linker flags such as additional libraries and link paths
 ifeq ($(UNAME_S),Darwin)
-USERLDFLAGS = -stdlib=libc++ -L./libs/Irrlicht/irrlicht-svn/lib/OSX -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+USERLDFLAGS = -stdlib=libc++ \
+	-L./libs/Irrlicht/irrlicht-svn/lib/OSX \
+	-lIrrlicht \
+	-L/usr/X11R6/lib$(LIBSELECT) \
+	-framework OpenGL \
+	-framework Cocoa \
+	-framework IOKit \
+	-framework CoreVideo
 else
-USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor -lpthread
+USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux \
+	-lIrrlicht \
+	-L/usr/X11R6/lib$(LIBSELECT) \
+	-lGL \
+	-lXxf86vm \
+	-lXext \
+	-lX11 \
+	-lXcursor \
+	-lpthread
 endif
 
 ####
@@ -40,7 +123,7 @@ LDFLAGS = $(USERLDFLAGS)
 DESTPATH = $(BinPath)/$(Target)$(SUF)
 
 #default target is Linux
-all: 
+all:
 	$(warning Building...)
 #Build Irrlicht (different command on OSX)
 ifeq ($(UNAME_S),Darwin)
@@ -64,7 +147,7 @@ ifeq ($(UNAME_S),Darwin)
 	rm -rf BridgeCommand.app/Contents/Resources/Scenarios
 	rm -rf BridgeCommand.app/Contents/Resources/shaders
 	rm -rf BridgeCommand.app/Contents/Resources/World
-	cp -a doc BridgeCommand.app/Contents/Resources/doc	
+	cp -a doc BridgeCommand.app/Contents/Resources/doc
 	cp -a media BridgeCommand.app/Contents/Resources/media
 	cp -a Models BridgeCommand.app/Contents/Resources/Models
 	cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
