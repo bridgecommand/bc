@@ -167,7 +167,11 @@ endif
 
 clean:
 	$(warning Cleaning...)
+ifeq ($(UNAME_S),Darwin)
+	xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj clean
+else
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ clean
+endif	
 	$(MAKE) -C launcher/ clean
 	$(MAKE) -C controller/ clean
 	$(MAKE) -C editor/ clean
