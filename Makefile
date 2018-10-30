@@ -127,7 +127,7 @@ all:
 	$(warning Building...)
 #Build Irrlicht (different command on OSX)
 ifeq ($(UNAME_S),Darwin)
-	$(xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj)
+	xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj
 else
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ all
 endif
@@ -157,12 +157,12 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
 	cp -a mph.ini BridgeCommand.app/Contents/Resources/mph.ini
 	cp -a repeater.ini BridgeCommand.app/Contents/Resources/repeater.ini
-	cp -a language-en.txt BridgeCommand.app/Contents/Resources/language.txt
-	cp -a languageController-en.txt BridgeCommand.app/Contents/Resources/languageController.txt
-	cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer.txt 
-	cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher.txt
-	cp -a languageIniEditor-en.txt BridgeCommand.app/Contents/Resources/languageIniEditor.txt
-	cp -a languageRepeater-en.txt BridgeCommand.app/Contents/Resources/languageRepeater.txt
+	cp -a language-en.txt BridgeCommand.app/Contents/Resources/language-en.txt
+	cp -a languageController-en.txt BridgeCommand.app/Contents/Resources/languageController-en.txt
+	cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer-en.txt 
+	cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher-en.txt
+	cp -a languageIniEditor-en.txt BridgeCommand.app/Contents/Resources/languageIniEditor-en.txt
+	cp -a languageRepeater-en.txt BridgeCommand.app/Contents/Resources/languageRepeater-en.txt
 endif
 
 clean:
