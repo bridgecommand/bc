@@ -17,6 +17,8 @@ add_subdirectory(launcher)
 add_subdirectory(multiplayerHub)
 add_subdirectory(repeater)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 set(BC_SOURCES
     main.cpp
@@ -74,5 +76,5 @@ target_link_libraries(bridgecommand-bc PRIVATE
     bc-enet
     bc-serial
     bc-irrlicht
-    pthread
+    Threads::Threads
 )
