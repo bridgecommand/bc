@@ -1,5 +1,5 @@
 
-add_executable(bridgecommand-mc EXCLUDE_FROM_ALL
+add_executable(bridgecommand-mc
     ControllerModel.cpp
     EventReceiver.cpp
     GUI.cpp

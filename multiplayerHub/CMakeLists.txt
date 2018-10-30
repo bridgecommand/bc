@@ -1,5 +1,5 @@
 
-add_executable(bridgecommand-mh EXCLUDE_FROM_ALL
+add_executable(bridgecommand-mh
     main.cpp
     ../IniFile.cpp
     ../Lang.cpp
