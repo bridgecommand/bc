@@ -14,6 +14,7 @@ add_executable(bridgecommand-rp
 )
 
 target_link_libraries(bridgecommand-rp
+    bc-asio
     bc-enet
     bc-irrlicht
 )
