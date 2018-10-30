@@ -1,4 +1,6 @@
 
+include_directories(${CMAKE_SOURCE_DIR}/libs/asio/include/)
+
 add_executable(bridgecommand-rp
     main.cpp
     ../IniFile.cpp
