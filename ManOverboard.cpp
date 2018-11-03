@@ -21,16 +21,14 @@
 
 #include <iostream>
 
-using namespace irr;
 
 ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain)
+    : model(model)
+    , terrain(terrain)
 {
-
-    this->model=model;
-    this->terrain=terrain;
-
     std::string basePath = "Models/ManOverboard/";
     std::string userFolder = Utilities::getUserDir();
+
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {
         basePath = userFolder + basePath;
@@ -43,13 +41,13 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
     std::string mobFileName = IniFile::iniFileToString(mobIniFilename,"FileName", "ManOverboard.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
+    irr::f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string mobFullPath = basePath + mobFileName;
 
     //Load the mesh
-    scene::IMesh* mobMesh = smgr->getMesh(mobFullPath.c_str());
+    irr::scene::IMesh* mobMesh = smgr->getMesh(mobFullPath.c_str());
 
 	//add to scene node
 	if (mobMesh==0) {
@@ -63,14 +61,14 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(man->getMaterialCount()>0) {
-        for(u32 mat=0;mat<man->getMaterialCount();mat++) {
-            man->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+        for(irr::u32 mat=0;mat<man->getMaterialCount();mat++) {
+            man->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
-    man->setScale(core::vector3df(mobScale,mobScale,mobScale));
-    man->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    man->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    man->setScale(irr::core::vector3df(mobScale,mobScale,mobScale));
+    man->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    man->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
 }
 
@@ -107,25 +105,25 @@ irr::scene::ISceneNode* ManOverboard::getSceneNode() const
 
 void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
-    core::vector3df currentPos = man->getPosition();
+    irr::core::vector3df currentPos = man->getPosition();
     irr::f32 newPosX = currentPos.X + deltaX;
     irr::f32 newPosY = currentPos.Y + deltaY;
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
-    man->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+    man->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
 
 void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
     //Move with tide and waves
-    core::vector3df pos=getPosition();
+    irr::core::vector3df pos=getPosition();
     pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
 
     //Move with tidal stream (if not aground)
-    f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
+    irr::f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
     irr::core::vector2df stream = model->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
     if (depth > 0) {
-        f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
+        irr::f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
         pos.X += stream.X*deltaTime*streamScaling;
         pos.Z += stream.Y*deltaTime*streamScaling;
     }
