@@ -30,8 +30,6 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-// Irrlicht Namespaces
-using namespace irr;
 
 const irr::s32 SAVE_BUTTON = 1;
 
@@ -53,44 +51,40 @@ struct IniFileTab {
     std::vector<IniFileEntry> settings;
 };
 
-void saveFile(IrrlichtDevice* device, std::string iniFilename, gui::IGUITabControl* tabbedPane) {
-
+void saveFile(irr::IrrlichtDevice* device, std::string iniFilename, irr::gui::IGUITabControl* tabbedPane)
+{
     bool successSaving = false;
     std::ofstream file (iniFilename.c_str());
-    if (file.is_open())
-    {
+    if (file.is_open()) {
         //For each tab, get tab name and child table
         for (int i = 0; i<tabbedPane->getTabCount(); i++) {
-
             //Get tab name - convert from stringw to std::string, loosing any extended character info.
-            std::string sectionName(core::stringc(tabbedPane->getTab(i)->getText()).c_str());
+            std::string sectionName(irr::core::stringc(tabbedPane->getTab(i)->getText()).c_str());
             file << sectionName << std::endl;
 
             //For each table, get contents, including description
-            core::list<gui::IGUIElement*> tabChildren = tabbedPane->getTab(i)->getChildren();
+            irr::core::list<irr::gui::IGUIElement*> tabChildren = tabbedPane->getTab(i)->getChildren();
             //There should just be one child, but iterate through all, and do stuff with tables
-            for (core::list<gui::IGUIElement*>::Iterator it = tabChildren.begin(); it != tabChildren.end(); ++it) {
-
-                if ((*it)->getType() == gui::EGUIET_TABLE ) {
-                    gui::IGUITable* thisTable = (gui::IGUITable*)(*it);
-                    u32 numberOfRows = thisTable->getRowCount();
+            for (irr::core::list<irr::gui::IGUIElement*>::Iterator it = tabChildren.begin(); it != tabChildren.end(); ++it) {
+                if ((*it)->getType() == irr::gui::EGUIET_TABLE ) {
+                    irr::gui::IGUITable* thisTable = (irr::gui::IGUITable*)(*it);
+                    irr::u32 numberOfRows = thisTable->getRowCount();
                     for (int j = 0; j<numberOfRows; j++) {
-                        std::string varName(core::stringc(thisTable->getCellText(j,0)).c_str());
-                        std::string varValue(core::stringc(thisTable->getCellText(j,1)).c_str());
-                        std::string desc(core::stringc(thisTable->getCellText(j,2)).c_str());
+                        std::string varName(irr::core::stringc(thisTable->getCellText(j,0)).c_str());
+                        std::string varValue(irr::core::stringc(thisTable->getCellText(j,1)).c_str());
+                        std::string desc(irr::core::stringc(thisTable->getCellText(j,2)).c_str());
                         file << varName << "=" << "\"" << varValue << "\"" << std::endl;
                         file <<varName << "_DESC=\"" << desc << "\"" << std::endl;
                     }
                 }
             }
 
-
-
             //Collate these
             //Save (or warn if not possible)
         }
-    if (file.good()) {successSaving=true;}
-    file.close();
+
+        if (file.good()) {successSaving=true;}
+        file.close();
     }
 
     if (successSaving) {
@@ -99,10 +93,10 @@ void saveFile(IrrlichtDevice* device, std::string iniFilename, gui::IGUITabContr
 }
 
 //Event receiver: This does the actual launching
-class Receiver : public IEventReceiver
+class Receiver : public irr::IEventReceiver
 {
 public:
-    Receiver(IrrlichtDevice* device, gui::IGUIEnvironment* environment, gui::IGUITabControl* tabbedPane, std::string iniFilename)
+    Receiver(irr::IrrlichtDevice* device, irr::gui::IGUIEnvironment* environment, irr::gui::IGUITabControl* tabbedPane, std::string iniFilename)
     {
         this->environment = environment;
         this->tabbedPane = tabbedPane;
@@ -111,32 +105,32 @@ public:
     }
 
 private:
-    IrrlichtDevice* device;
-    gui::IGUIEnvironment* environment;
-    core::position2di mousePos;
+    irr::IrrlichtDevice* device;
+    irr::gui::IGUIEnvironment* environment;
+    irr::core::position2di mousePos;
     irr::gui::IGUIEditBox* valueEntryBox = 0;
     irr::gui::IGUITable* selectedTable = 0; //Keep track of which table was last selected
-    s32 selectedRow = 0; //In the selected table, which row was last selected?
-    gui::IGUITabControl* tabbedPane;
+    irr::s32 selectedRow = 0; //In the selected table, which row was last selected?
+    irr::gui::IGUITabControl* tabbedPane;
     std::string iniFilename;
 
-    virtual bool OnEvent(const SEvent& event)
+    virtual bool OnEvent(const irr::SEvent& event)
     {
-        if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-            if (event.MouseInput.Event == EMIE_MOUSE_MOVED) {
+        if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+            if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
                 mousePos.X = event.MouseInput.X;
                 mousePos.Y = event.MouseInput.Y;
             }
         }
 
-        if (event.EventType == EET_GUI_EVENT) {
-
-            if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER || (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST && event.GUIEvent.Caller == valueEntryBox ) ) {
+        if (event.EventType == irr::EET_GUI_EVENT) {
+            if (event.GUIEvent.EventType == irr::gui::EGET_EDITBOX_ENTER ||
+                (event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST && event.GUIEvent.Caller == valueEntryBox)) {
                 //Enter or edit box has lost focus
                 if (valueEntryBox!=0) {
 
                     //Update the table
-                    selectedTable->setCellText(selectedRow,1,core::stringw(valueEntryBox->getText())/*,video::SColor (255, 255, 255, 255)*/);
+                    selectedTable->setCellText(selectedRow,1,irr::core::stringw(valueEntryBox->getText())/*,video::SColor (255, 255, 255, 255)*/);
 
                     //Remove the edit box
                     valueEntryBox->remove();
@@ -144,32 +138,27 @@ private:
                 }
             }
 
-            if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED ) {
-                s32 id = event.GUIEvent.Caller->getID();
+            if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
+                irr::s32 id = event.GUIEvent.Caller->getID();
                 if (id == SAVE_BUTTON) {
-
                     //Save to the ini file
                     saveFile(device,iniFilename,tabbedPane);
-
                 }
-
             }
 
-            if (event.GUIEvent.EventType == gui::EGET_TABLE_SELECTED_AGAIN  ) {
-                selectedTable = ((gui::IGUITable*)event.GUIEvent.Caller);
-                s32 id = event.GUIEvent.Caller->getID();
+            if (event.GUIEvent.EventType == irr::gui::EGET_TABLE_SELECTED_AGAIN  ) {
+                selectedTable = ((irr::gui::IGUITable*)event.GUIEvent.Caller);
+                irr::s32 id = event.GUIEvent.Caller->getID();
                 selectedRow = selectedTable->getSelected();
-                core::stringw selectedValue = core::stringw(selectedTable->getCellText(selectedRow,1));
+                irr::core::stringw selectedValue = irr::core::stringw(selectedTable->getCellText(selectedRow,1));
 
                 if (valueEntryBox==0) {
-                    valueEntryBox = environment->addEditBox(selectedValue.c_str(),core::rect<s32>(mousePos.X, mousePos.Y, mousePos.X + 100, mousePos.Y + 30 )); //FIXME: Hardcoding of size
+                    valueEntryBox = environment->addEditBox(selectedValue.c_str(),irr::core::rect<irr::s32>(mousePos.X, mousePos.Y, mousePos.X + 100, mousePos.Y + 30 )); //FIXME: Hardcoding of size
                     environment->setFocus(valueEntryBox);
                 }
-
             }
 
             //When edit box looses focus or enter pressed (selected again?), save this and use
-
         }
         return false;
     }
@@ -191,9 +180,8 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 
 }
 
-int main (int argc, char ** argv)
+int main (int argc, char *argv[])
 {
-
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
     std::string iniFilename = "bc5.ini";
     if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
@@ -208,7 +196,7 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+#ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -224,35 +212,31 @@ int main (int argc, char ** argv)
     //change to this path now
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+#endif
 
-    u32 graphicsWidth = 800;
-    u32 graphicsHeight = 600;
-    u32 graphicsDepth = 32;
+    irr::u32 graphicsWidth = 800;
+    irr::u32 graphicsHeight = 600;
+    irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
-
-
-
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    video::IVideoDriver* driver = device->getVideoDriver();
-
-    gui::IGUIEnvironment* environment = device->getGUIEnvironment();
+    irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
 
     //Set gui colours
-    gui::IGUISkin* skin = environment->getSkin();
+    irr::gui::IGUISkin* skin = environment->getSkin();
 
-    skin->setColor(gui::EGDC_3D_DARK_SHADOW ,video::SColor(255,128,128,128));
-    skin->setColor(gui::EGDC_3D_SHADOW ,video::SColor(255,190,190,190));
-    skin->setColor(gui::EGDC_3D_FACE ,video::SColor(255,235,235,235));
-    skin->setColor(gui::EGDC_3D_LIGHT ,video::SColor(255,255,255,255));
+    skin->setColor(irr::gui::EGDC_3D_DARK_SHADOW, irr::video::SColor(255,128,128,128));
+    skin->setColor(irr::gui::EGDC_3D_SHADOW, irr::video::SColor(255,190,190,190));
+    skin->setColor(irr::gui::EGDC_3D_FACE, irr::video::SColor(255,235,235,235));
+    skin->setColor(irr::gui::EGDC_3D_LIGHT, irr::video::SColor(255,255,255,255));
 
-    core::dimension2d<u32> screenSize = driver->getScreenSize();
-    u32 width = screenSize.Width;
-    u32 height = screenSize.Height;
+    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
+    irr::u32 width = screenSize.Width;
+    irr::u32 height = screenSize.Height;
 
-    #ifdef __APPLE__
+#ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
@@ -260,12 +244,11 @@ int main (int argc, char ** argv)
         std::cout << "Could not get filesystem" << std::endl;
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
-    #endif
+#endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
     std::cout << "User folder is " << userFolder << std::endl;
-
 
     //Copy into userdir if not already there
     if (!Utilities::pathExists(userFolder + iniFilename)) {
@@ -311,7 +294,7 @@ int main (int argc, char ** argv)
     }
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = environment->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = environment->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {
@@ -390,16 +373,15 @@ int main (int argc, char ** argv)
 
     //Do set-up here
 
-    gui::IGUIButton* saveButton = environment->addButton(core::rect<s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
-
-    gui::IGUITabControl* tabbedPane = environment->addTabControl( core::rect<s32>(10,10,width-10,height-100),0,true);
+    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
+    irr::gui::IGUITabControl* tabbedPane = environment->addTabControl(irr::core::rect<irr::s32>(10,10,width-10,height-100),0,true);
 
     //Add tab entry here
     for(int i = 0; i<iniFileStructure.size(); i++) {
-        gui::IGUITab* thisTab = tabbedPane->addTab((core::stringw(iniFileStructure.at(i).tabName.c_str())).c_str());
+        irr::gui::IGUITab* thisTab = tabbedPane->addTab((irr::core::stringw(iniFileStructure.at(i).tabName.c_str())).c_str());
 
         //Add tab contents in a table
-        gui::IGUITable* thisTable = environment->addTable(core::rect<s32>(10,10,width-30,height-170),thisTab);
+        irr::gui::IGUITable* thisTable = environment->addTable(irr::core::rect<irr::s32>(10,10,width-30,height-170),thisTab);
 
         thisTable->addColumn(language.translate("name").c_str());
         thisTable->addColumn(language.translate("value").c_str());
@@ -410,13 +392,10 @@ int main (int argc, char ** argv)
 
         for (int j = 0; j<iniFileStructure.at(i).settings.size(); j++) {
             thisTable->addRow(j);
-            thisTable->setCellText(j,0,core::stringw(iniFileStructure.at(i).settings.at(j).settingName.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
-            thisTable->setCellText(j,1,core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
-            thisTable->setCellText(j,2,core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
+            thisTable->setCellText(j,0,irr::core::stringw(iniFileStructure.at(i).settings.at(j).settingName.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
+            thisTable->setCellText(j,1,irr::core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
+            thisTable->setCellText(j,2,irr::core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
         }
-
-
-
     }
 
     Receiver receiver(device, environment, tabbedPane, iniFilename);
@@ -427,5 +406,6 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
-    return(0);
+
+    return 0;
 }
