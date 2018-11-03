@@ -63,8 +63,6 @@ namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
 
-// Irrlicht Namespaces
-using namespace irr;
 
 irr::core::stringw getCredits(){
 
@@ -144,29 +142,29 @@ int main()
         iniFilename = userFolder + iniFilename;
     }
 
-    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    irr::s32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::s32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
 	if (fakeFullScreen) {
 		fullScreen = true; //Fall back for non-windows
 	}
-	u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
-    u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
-	u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
+	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+    irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
+    irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
 	if (directX == 1) {
 		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
 	}
     //Initial view configuration
-    f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
-    f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
     if (viewAngle <= 0) {
         viewAngle = 90;
     }
 
-    f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
-    f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
     if (cameraMinDistance<=0) {
         cameraMinDistance = 1;
     }
@@ -189,9 +187,9 @@ int main()
     joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
 
     //Joystick mapping
-    u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+    irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {
-        for (u32 i = 1; i < numberOfJoystickPoints+1; i++) {
+        for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
             joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
             joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
         }
@@ -212,15 +210,15 @@ int main()
     std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
 
     //Load UDP network settings
-    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
 
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
-		core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+        irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 		nulldevice->drop();
 		if (graphicsWidth == 0) {
 			if (fullScreen) {
@@ -243,10 +241,10 @@ int main()
 
 
     //set size of camera window
-    u32 graphicsWidth3d = graphicsWidth;
-    u32 graphicsHeight3d = graphicsHeight*0.6;
-    f32 aspect = (f32)graphicsWidth/(f32)graphicsHeight;
-    f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
+    irr::s32 graphicsWidth3d = graphicsWidth;
+    irr::s32 graphicsHeight3d = graphicsHeight*0.6;
+    irr::f32 aspect = (irr::f32)graphicsWidth/(irr::f32)graphicsHeight;
+    irr::f32 aspect3d = (irr::f32)graphicsWidth3d/(irr::f32)graphicsHeight3d;
 
     //load language
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
@@ -261,7 +259,7 @@ int main()
     }
     Lang language(languageFile);
 
-	SIrrlichtCreationParameters deviceParameters;
+    irr::SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
 
@@ -335,22 +333,22 @@ int main()
 
     //create device
 
-    deviceParameters.DriverType = video::EDT_OPENGL;
+    deviceParameters.DriverType = irr::video::EDT_OPENGL;
 	//Allow optional directX if available
 	if (directX==1) {
-        if (IrrlichtDevice::isDriverSupported(video::EDT_DIRECT3D9)) {
-            deviceParameters.DriverType = video::EDT_DIRECT3D9;
+        if (irr::IrrlichtDevice::isDriverSupported(irr::video::EDT_DIRECT3D9)) {
+            deviceParameters.DriverType = irr::video::EDT_DIRECT3D9;
         } else {
             std::cerr << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
         }
 	}
 
-    deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth,graphicsHeight);
+	deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     deviceParameters.Fullscreen = fullScreen;
     deviceParameters.AntiAlias = antiAlias;
 
-    IrrlichtDevice* device = createDeviceEx(deviceParameters);
+    irr::IrrlichtDevice* device = createDeviceEx(deviceParameters);
 
 	//On Windows, redirect console stderr to log file
 	std::string userLog = userFolder + "log.txt";
@@ -365,10 +363,10 @@ int main()
 		return(EXIT_FAILURE); //Could not get file system
 	}
 
-    device->setWindowCaption(core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
+	device->setWindowCaption(irr::core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
 
-    video::IVideoDriver* driver = device->getVideoDriver();
-    scene::ISceneManager* smgr = device->getSceneManager();
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::scene::ISceneManager* smgr = device->getSceneManager();
 
     std::vector<std::string> logMessages;
     DefaultEventReceiver defReceiver(&logMessages, device);
@@ -380,7 +378,7 @@ int main()
     device->getLogger()->log("User folder is:");
     device->getLogger()->log(userFolder.c_str());
 
-    smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+    smgr->getParameters()->setAttribute(irr::scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
     #ifdef __APPLE__
     //Bring window to front
@@ -396,13 +394,13 @@ int main()
     #endif
 
     //set gui skin and 'flatten' this
-    gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(gui::EGST_WINDOWS_METALLIC   );
+    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         device->getLogger()->log("Could not load font, using default");
     } else {
@@ -461,17 +459,17 @@ int main()
     }
 
 
-    u32 creditsStartTime = device->getTimer()->getRealTime();
+    irr::u32 creditsStartTime = device->getTimer()->getRealTime();
 
     //Show loading message
-    u32 su = driver->getScreenSize().Width;
-    u32 sh = driver->getScreenSize().Height;
+    irr::s32 su = driver->getScreenSize().Width;
+    irr::s32 sh = driver->getScreenSize().Height;
     irr::core::stringw creditsText = language.translate("loadingmsg");
     creditsText.append(L"\n\n");
     creditsText.append(getCredits());
-    gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), core::rect<s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
+    irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), { su/20,sh/20,su-su/20,sh-sh/20 },true);
     device->run();
-    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
+    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
     device->getGUIEnvironment()->drawAll();
     driver->endScene();
 
@@ -494,15 +492,15 @@ int main()
     } else {
         //If in secondary mode, get scenario information from the server
         //Tell user what we're doing
-        core::stringw portMessage = language.translate("secondaryWait");
+        irr::core::stringw portMessage = language.translate("secondaryWait");
         portMessage.append(L" ");
         std::string ourHostName = asio::ip::host_name();
-        portMessage.append(core::stringw(ourHostName.c_str()));
+        portMessage.append(irr::core::stringw(ourHostName.c_str()));
         portMessage.append(L":");
-        portMessage.append(core::stringw(network->getPort()));
+        portMessage.append(irr::core::stringw(network->getPort()));
         loadingMessage->setText(portMessage.c_str());
         device->run();
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
         //Get the data
@@ -553,8 +551,8 @@ int main()
     //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
-    const u32 NMEA_UPDATE_MS = 250;
-    u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
+    const irr::u32 NMEA_UPDATE_MS = 250;
+    irr::u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
 //    Profiling
 //    Profiler networkProfile("Network");
@@ -604,7 +602,7 @@ int main()
         //Set up
 
 //        renderSetupProfile.tic();
-        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
+        driver->setViewPort({0,0,graphicsWidth,graphicsHeight}); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
 //        renderSetupProfile.toc();
 
@@ -618,7 +616,7 @@ int main()
             if (fullScreenRadar) {
                 driver->setViewPort(guiMain.getLargeRadarRect());
             } else {
-                driver->setViewPort(core::rect<s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+                driver->setViewPort({graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight});
             }
             model.setRadarCameraActive();
             smgr->drawAll();
@@ -633,10 +631,10 @@ int main()
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(core::rect<s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+                driver->setViewPort({0,0,graphicsWidth3d,graphicsHeight3d});
                 model.updateViewport(aspect3d);
             } else {
-                driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight));
+                driver->setViewPort({ 0,0,graphicsWidth,graphicsHeight });
                 model.updateViewport(aspect);
             }
             //drawAll3dProfile.tic();
@@ -648,7 +646,7 @@ int main()
 
  //       guiProfile.tic();
         //gui
-        driver->setViewPort(core::rect<s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
+        driver->setViewPort({ 0,0,graphicsWidth,graphicsHeight }); //Full screen for gui
         guiMain.drawGUI();
  //       guiProfile.toc();
 
