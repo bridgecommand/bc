@@ -18,7 +18,7 @@ add_subdirectory(launcher)
 add_subdirectory(multiplayerHub)
 add_subdirectory(repeater)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 
 set(BC_SOURCES
