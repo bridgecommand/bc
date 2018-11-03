@@ -23,37 +23,33 @@
 #include "Network.hpp"
 #include "../Utilities.hpp"
 
-using namespace irr;
 
-    EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
-	{
-		this->device = device; //Link to the irrlicht device
-		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI
-		this->network = network; //Link to the network
+EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
+{
+    this->device = device; //Link to the irrlicht device
+    this->model = model; //Link to the model
+    this->gui = gui; //Link to GUI
+    this->network = network; //Link to the network
+}
+
+bool EventReceiver::OnEvent(const irr::SEvent& event)
+{
+    if (event.EventType == irr::EET_GUI_EVENT && event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED) {
+        irr::s32 id = event.GUIEvent.Caller->getID();
+        if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
+            gui->setMode(true);
+        }
+        if (id==GUIMain::GUI_ID_REPEATER_CHOICE) {
+            gui->setMode(false);
+        }
     }
 
-    bool EventReceiver::OnEvent(const SEvent& event)
-	{
-
-        if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
-		{
-			s32 id = event.GUIEvent.Caller->getID();
-			if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
-                gui->setMode(true);
-			}
-			if (id==GUIMain::GUI_ID_REPEATER_CHOICE) {
-                gui->setMode(false);
-			}
+    if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
+        //Quit with esc or F4 (for alt-F4)
+        if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key == irr::KEY_F4) {
+            exit(EXIT_SUCCESS);
         }
-
-        if (event.EventType== EET_KEY_INPUT_EVENT) {
-            //Quit with esc or F4 (for alt-F4)
-            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key == KEY_F4) {
-                exit(EXIT_SUCCESS);
-            }
-        }
-
-        return false;
-
     }
+
+    return false;
+}
