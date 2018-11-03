@@ -20,10 +20,9 @@
 #include "IniFile.hpp"
 #include "Utilities.hpp"
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
-using namespace irr;
 
 Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
@@ -42,13 +41,13 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName", "buoy.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
+    irr::f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string buoyFullPath = basePath + buoyFileName;
 
     //Load the mesh
-    scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
+    irr::scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
 
 	//add to scene node
 	if (buoyMesh==0) {
@@ -62,14 +61,14 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
-        for(u32 mat=0;mat<buoy->getMaterialCount();mat++) {
-            buoy->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+        for(irr::u32 mat=0;mat<buoy->getMaterialCount();mat++) {
+            buoy->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
-    buoy->setScale(core::vector3df(buoyScale,buoyScale,buoyScale));
-    buoy->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    buoy->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    buoy->setScale(irr::core::vector3df(buoyScale,buoyScale,buoyScale));
+    buoy->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    buoy->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
     length = buoy->getBoundingBox().getExtent().Z;
@@ -170,10 +169,10 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
 
 void Buoy::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
-    core::vector3df currentPos = buoy->getPosition();
+    irr::core::vector3df currentPos = buoy->getPosition();
     irr::f32 newPosX = currentPos.X + deltaX;
     irr::f32 newPosY = currentPos.Y + deltaY;
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
-    buoy->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+    buoy->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
