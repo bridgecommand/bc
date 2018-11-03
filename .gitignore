@@ -12,3 +12,13 @@
 *.iobj
 *.ipdb
 Thumbs.db
+bridgecommand
+bridgecommand-bc
+bridgecommand-ed
+bridgecommand-ini
+bridgecommand-mc
+bridgecommand-mh
+bridgecommand-rp
+libs/Irrlicht/irrlicht-svn/lib/Linux/
+libs/Irrlicht/irrlicht-svn/source/Irrlicht/libIrrlicht.a
+
