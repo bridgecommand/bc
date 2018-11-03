@@ -18,79 +18,76 @@
 
 #include <iostream>
 
-using namespace irr;
 
 StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
-	{
-		device = dev;
-		this->scenarioListBox = scenarioListBox;
-		this->scenarioText = scenarioText;
-		this->hostnameText = hostnameText;
-		this->hostnameBox = hostnameBox;
-		this->secondaryBox = secondaryBox;
-		this->multiplayerBox = multiplayerBox;
-        this->listBoxID = listBoxID;
-		this->okButtonID = okButtonID;
-		this->secondaryBoxID = secondaryBoxID;
-		this->multiplayerBoxID = multiplayerBoxID;
-		scenarioSelected = -1; //Set as initially invalid
-	}
+    : device(dev)
+    , scenarioListBox(scenarioListBox)
+    , hostnameText(hostnameText)
+    , scenarioText(scenarioText)
+    , hostnameBox(hostnameBox)
+    , secondaryBox(secondaryBox)
+    , multiplayerBox(multiplayerBox)
+    , listBoxID(listBoxID)
+    , okButtonID(okButtonID)
+    , secondaryBoxID(secondaryBoxID)
+    , multiplayerBoxID(multiplayerBoxID)
+    , scenarioSelected(-1)  // Set as initially invalid
+{
+}
 
-    bool StartupEventReceiver::OnEvent(const SEvent& event)
-	{
-        if (event.EventType == EET_GUI_EVENT)
-		{
-			s32 id = event.GUIEvent.Caller->getID();
-			//If OK button, or double click on list
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  )
-            {
-                if (scenarioListBox->getSelected() > -1 ) {
-                    scenarioSelected = scenarioListBox->getSelected();
+bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
+{
+    if (event.EventType == irr::EET_GUI_EVENT) {
+        irr::s32 id = event.GUIEvent.Caller->getID();
+        //If OK button, or double click on list
+        if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN) {
+            if (scenarioListBox->getSelected() > -1) {
+                scenarioSelected = scenarioListBox->getSelected();
+            }
+        }
+
+        if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED) {
+            if (id == secondaryBoxID || id == multiplayerBoxID) {
+                //Check state, and set hostname box and text visible
+                if ( ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()) {
+                    scenarioListBox->setVisible(false);
+                    scenarioText->setVisible(false);
+                    hostnameBox->setVisible(false);
+                    hostnameText->setVisible(false);
+                } else {
+                    scenarioListBox->setVisible(true);
+                    scenarioText->setVisible(true);
+                    hostnameBox->setVisible(true);
+                    hostnameText->setVisible(true);
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_CHECKBOX_CHANGED) {
-                if (id == secondaryBoxID || id == multiplayerBoxID) {
-                    //Check state, and set hostname box and text visible
-                    if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
-                        scenarioListBox->setVisible(false);
-                        scenarioText->setVisible(false);
-                        hostnameBox->setVisible(false);
-                        hostnameText->setVisible(false);
-                    } else {
-                        scenarioListBox->setVisible(true);
-                        scenarioText->setVisible(true);
-                        hostnameBox->setVisible(true);
-                        hostnameText->setVisible(true);
-                    }
-                }
-                //Only one check box should be on
-                if (id == secondaryBoxID) {
-                    multiplayerBox->setChecked(false);
-                }
-                if (id == multiplayerBoxID) {
-                    secondaryBox->setChecked(false);
-                }
+            //Only one check box should be on
+            if (id == secondaryBoxID) {
+                multiplayerBox->setChecked(false);
             }
-		}
-
-		if (event.EventType == EET_KEY_INPUT_EVENT)
-		{
-		    if (event.KeyInput.Key==KEY_RETURN) {
-                if (scenarioListBox->getSelected() > -1 ) {
-                    scenarioSelected = scenarioListBox->getSelected();
-                }
-		    }
-
-            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key ==  KEY_F4) {
-                device->closeDevice(); //Shutdown.
+            if (id == multiplayerBoxID) {
+                secondaryBox->setChecked(false);
             }
-
-		}
-        return false;
+        }
     }
 
-    irr::s32 StartupEventReceiver::getScenarioSelected() const
+    if (event.EventType == irr::EET_KEY_INPUT_EVENT)
     {
-        return scenarioSelected;
+        if (event.KeyInput.Key==irr::KEY_RETURN) {
+            if (scenarioListBox->getSelected() > -1 ) {
+                scenarioSelected = scenarioListBox->getSelected();
+            }
+        }
+
+        if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key == irr::KEY_F4) {
+            device->closeDevice(); //Shutdown.
+        }
     }
+    return false;
+}
+
+irr::s32 StartupEventReceiver::getScenarioSelected() const
+{
+    return scenarioSelected;
+}
