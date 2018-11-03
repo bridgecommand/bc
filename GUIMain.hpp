@@ -192,7 +192,7 @@ private:
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
-    irr::gui::HeadingIndicator* headingIndicator;
+    HeadingIndicator* headingIndicator;
 
 // DEE vvv this is the larger rot indicator
 //    irr::gui::RateOfTurnIndicator* rateofturnIndicator;

@@ -26,7 +26,9 @@
 #include "../HeadingIndicator.h"
 #include "PositionDataStruct.hpp"
 
-class GUIMain //Create, build and update GUI
+
+// Create, build and update GUI
+class GUIMain
 {
 public:
     GUIMain(irr::IrrlichtDevice* device, Lang* language, irr::core::stringw message);
@@ -42,7 +44,6 @@ public:
     void setMode(bool headingMode);
 
 private:
-
     Lang* language;
 
     irr::IrrlichtDevice* device;
@@ -55,13 +56,10 @@ private:
     bool modeChosen;
     bool showHeadingIndicator;
 
-    irr::gui::HeadingIndicator* heading;
+    HeadingIndicator* heading;
 
     std::wstring f32To3dp(irr::f32 value);
     std::wstring f32To1dp(irr::f32 value);
-
 };
 
 #endif
-
-

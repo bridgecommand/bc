@@ -230,7 +230,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Add heading indicator
         stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
         altHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.900*sh,0.45*su,0.950*sh);
-        headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
+        headingIndicator = new HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,core::rect<s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);

@@ -5,34 +5,25 @@
 #ifndef __HEADING_INDICATOR_H_INCLUDED__
 #define __HEADING_INDICATOR_H_INCLUDED__
 
+
 #include "IGUIElement.h"
 
-namespace irr
+class HeadingIndicator : public irr::gui::IGUIElement
 {
-namespace gui
-{
+public:
 
-	class HeadingIndicator : public IGUIElement
-	{
-	public:
+    //! constructor
+    HeadingIndicator(irr::gui::IGUIEnvironment* environment, irr::gui::IGUIElement* parent, irr::core::rect<irr::s32> rectangle);
 
-		//! constructor
-		HeadingIndicator(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle);
+    //! destructor
+    virtual ~HeadingIndicator();
 
-		//! destructor
-		virtual ~HeadingIndicator();
+    //! draws the element and its children
+    virtual void draw();
 
-		//! draws the element and its children
-		virtual void draw();
+    virtual void setHeading(irr::f32 heading);
 
-		virtual void setHeading(f32 heading);
-
-    private:
-
-        f32 heading;
-
-    };
-}
-}
-
+private:
+    irr::f32 heading;
+};
 #endif
