@@ -177,8 +177,8 @@ private:
     irr::gui::IGUIScrollBar* radarRainScrollbar;
 
     //irr::gui::IGUIElement* largeRadarGUIParent; //Parent to make it easier to show/hide large radar gui
-    irr::gui::IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
-    irr::gui::IGUIRectangle* largeRadarPIControls; //Parent for PI controls on large radar
+    IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
+    IGUIRectangle* largeRadarPIControls; //Parent for PI controls on large radar
     irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarClutterScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarRainScrollbar2; //For large radar

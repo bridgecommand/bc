@@ -5,32 +5,25 @@
 #ifndef __GUI_RECTANGLE_H_INCLUDED__
 #define __GUI_RECTANGLE_H_INCLUDED__
 
+
 #include "IGUIElement.h"
 
-namespace irr
+
+class IGUIRectangle : public irr::gui::IGUIElement
 {
-namespace gui
-{
+public:
+    //! constructor
+    IGUIRectangle(irr::gui::IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<irr::s32> rectangle, bool showBorder=true);
 
-	class IGUIRectangle : public IGUIElement
-	{
-	public:
+    //! destructor
+    virtual ~IGUIRectangle();
 
-		//! constructor
-		IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder=true);
+    //! draws the element and its children
+    virtual void draw();
 
-		//! destructor
-		virtual ~IGUIRectangle();
-
-		//! draws the element and its children
-		virtual void draw();
-
-    private:
-        bool showBorder;
-
-    };
-}
-}
+private:
+    bool showBorder;
+};
 
 #endif
 

@@ -8,14 +8,8 @@
 
 #include "GUIRectangle.hpp"
 
-namespace irr
-{
-namespace gui
-{
-
-
-IGUIRectangle::IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder) :
-IGUIElement(EGUIET_ELEMENT,environment,parent,0,rectangle)
+IGUIRectangle::IGUIRectangle(irr::gui::IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<irr::s32> rectangle, bool showBorder)
+    : irr::gui::IGUIElement(irr::gui::EGUIET_ELEMENT,environment,parent,0,rectangle)
 {
     this->showBorder=showBorder;
 }
@@ -28,30 +22,24 @@ IGUIRectangle::~IGUIRectangle()
 //! draws the element and its children
 void IGUIRectangle::draw()
 {
+    if (!IsVisible)
+        return;
 
-if (!IsVisible)
-		return;
-
-    IGUISkin* skin = Environment->getSkin();
+    irr::gui::IGUISkin* skin = Environment->getSkin();
 
     if (!skin)
         return;
 
-    u32 skinAlpha = skin->getColor(gui::EGDC_3D_FACE).getAlpha();
+    irr::u32 skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
 
 	// draws the background
 	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
-	if (showBorder)
-        Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+	if (showBorder) {
+        //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+        Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,irr::video::SColor(skinAlpha,0,0,0));
+    }
 
 	//Draw children
 	IGUIElement::draw();
-
 }
-
-}
-}
-
-
-
