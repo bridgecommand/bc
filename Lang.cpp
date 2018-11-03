@@ -18,7 +18,6 @@
 
 #include "IniFile.hpp"
 
-using namespace irr;
 
 Lang::Lang(std::string language)
 {
@@ -47,8 +46,5 @@ irr::core::stringw Lang::translate(std::string phraseName)
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
 
-    //convert to stringw
-    core::stringw returnPhrase(translatedPhrase.c_str());
-
-    return returnPhrase;
+    return translatedPhrase.c_str();
 }
