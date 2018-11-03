@@ -1,0 +1,10 @@
+# Hashes of file build rules.
+d56d517129382f8138c8d5ef8dd0beda libs/Irrlicht/CMakeFiles/bc-irrlicht-internal
+eab907031a35c7bff08172d22799d253 libs/Irrlicht/CMakeFiles/bc-irrlicht-internal-complete
+e005ac54c5764982a039d51641681106 libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-build
+3ce54efceeb2aede1d0a17de210e1554 libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-configure
+77aaea077c999cfeb4c97afeacc38d5c libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-download
+3ac9ea0e0d24e18e99d1508eff307b99 libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-install
+521dcbb903bdeeab5c206bfcabe47c00 libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-mkdir
+a32465b4e416881ba8d94c292f196295 libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-patch
+eabb084ee20bcbb57bda4f6992fd2d3c libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-update

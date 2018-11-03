@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbc-enet.a  CMakeFiles/bc-enet.dir/callbacks.c.o CMakeFiles/bc-enet.dir/compress.c.o CMakeFiles/bc-enet.dir/host.c.o CMakeFiles/bc-enet.dir/list.c.o CMakeFiles/bc-enet.dir/packet.c.o CMakeFiles/bc-enet.dir/peer.c.o CMakeFiles/bc-enet.dir/protocol.c.o CMakeFiles/bc-enet.dir/unix.c.o CMakeFiles/bc-enet.dir/win32.c.o
+/usr/bin/ranlib libbc-enet.a

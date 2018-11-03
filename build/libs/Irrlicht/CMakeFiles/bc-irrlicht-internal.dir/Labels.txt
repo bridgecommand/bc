@@ -1,0 +1,13 @@
+# Target labels
+ bc-irrlicht-internal
+# Source files and their labels
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/CMakeFiles/bc-irrlicht-internal
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/CMakeFiles/bc-irrlicht-internal.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/CMakeFiles/bc-irrlicht-internal-complete.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-install.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-mkdir.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-download.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-update.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-patch.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-configure.rule
+/home/ceeac/Projects/code/bc/build/libs/Irrlicht/bc-irrlicht-internal-prefix/src/bc-irrlicht-internal-stamp/bc-irrlicht-internal-build.rule

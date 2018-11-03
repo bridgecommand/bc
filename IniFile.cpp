@@ -27,9 +27,6 @@
 #include <codecvt> //For UTF-8 reading
 #endif // _WIN32
 
-// Irrlicht Namespaces
-using namespace irr;
-
 class IniCache
 {
 public:
@@ -278,17 +275,14 @@ namespace IniFile
     }
 
     //Load unsigned integer from an ini file
-    u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue)
+    irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue)
     {
         return g_iniCache.getUIntValue(fileName, key, defValue);
     }
 
     //Load float from an ini file
-    f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue)
+    irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue)
     {
         return g_iniCache.getFloatValue(fileName, key, defValue);
     }
-
 }
-
-

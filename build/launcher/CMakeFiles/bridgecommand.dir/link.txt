@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2 -g -DNDEBUG   CMakeFiles/bridgecommand.dir/main.cpp.o CMakeFiles/bridgecommand.dir/__/IniFile.cpp.o CMakeFiles/bridgecommand.dir/__/Lang.cpp.o CMakeFiles/bridgecommand.dir/__/Utilities.cpp.o  -o bridgecommand /media/ceeac/Projects/code/bc/libs/Irrlicht/irrlicht-svn/source/Irrlicht/libIrrlicht.a -lGL -lXxf86vm -lXext -lX11 -lXcursor 
