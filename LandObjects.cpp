@@ -19,16 +19,13 @@
 #include "LandObject.hpp"
 #include "IniFile.hpp"
 #include "Terrain.hpp"
-//#include "Constants.hpp"
 #include "SimulationModel.hpp"
 
 #include <iostream>
 
-using namespace irr;
 
 LandObjects::LandObjects()
 {
-
 }
 
 LandObjects::~LandObjects()
@@ -43,27 +40,26 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     scenarioLandObjectFilename.append("/landobject.ini");
 
     //Find number of objects
-    u32 numberOfObjects;
+    irr::u32 numberOfObjects;
     numberOfObjects = IniFile::iniFileTou32(scenarioLandObjectFilename,"Number");
-    for(u32 currentObject=1;currentObject<=numberOfObjects;currentObject++) {
+    for(irr::u32 currentObject=1;currentObject<=numberOfObjects;currentObject++) {
 
         //Get Object type and construct filename
         std::string objectName = IniFile::iniFileToString(scenarioLandObjectFilename,IniFile::enumerate1("Type",currentObject));
         //Get object position
-        f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
-        f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
-        f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
+        irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
+        irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
+        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
         //Check if land object is given in absolute height, or relative to terrain.
         if (IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Absolute",currentObject))!=1) {
             objectY += terrain.getHeight(objectX,objectZ);
         }
 
         //Get rotation
-        f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
+        irr::f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
 
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),core::vector3df(objectX,objectY,objectZ),rotation,smgr,dev));
-
+        landObjects.push_back(LandObject (objectName.c_str(),irr::core::vector3df(objectX,objectY,objectZ),rotation,smgr,dev));
     }
 }
 
@@ -78,4 +74,3 @@ void LandObjects::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
         it->moveNode(deltaX,deltaY,deltaZ);
     }
 }
-
