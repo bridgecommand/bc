@@ -44,8 +44,6 @@
     #endif
 #endif // __APPLE__
 
-// Irrlicht Namespaces
-using namespace irr;
 
 //Set up global for ini reader to have access to irrlicht logger if needed.
 namespace IniFile {
@@ -53,15 +51,15 @@ namespace IniFile {
 }
 
 //To do: Utility function to find scenario list
-void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, std::string path) {
+void getDirectoryList(irr::IrrlichtDevice* device, std::vector<std::string>&dirList, std::string path) {
 
-    io::IFileSystem* fileSystem = device->getFileSystem();
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         std::cout << "Failed to get access to file system" << std::endl;
         exit(EXIT_FAILURE);
     }
     //store current dir
-    io::path cwd = fileSystem->getWorkingDirectory();
+    irr::io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to dir
     if (!fileSystem->changeWorkingDirectoryTo(path.c_str())) {
@@ -69,16 +67,16 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
         exit(EXIT_FAILURE); //Couldn't change to dir
     }
 
-    io::IFileList* fileList = fileSystem->createFileList();
+    irr::io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
         std::cout << "Could not get scenario list" << std::endl;
         exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
     }
 
     //List here
-    for (u32 i=0;i<fileList->getFileCount();i++) {
+    for (irr::u32 i=0;i<fileList->getFileCount();i++) {
         if (fileList->isDirectory(i)) {
-            const io::path& fileName = fileList->getFileName(i);
+            const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)
                 //std::cout << fileName.c_str() << std::endl;
                 dirList.push_back(fileName.c_str());
@@ -94,15 +92,14 @@ void getDirectoryList(IrrlichtDevice* device, std::vector<std::string>&dirList, 
     fileList->drop();
 }
 
-void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
 //Will fill one of worldName of scenarioName, depending on user's selection.
+void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
 {
-
-    video::IVideoDriver* driver = device->getVideoDriver();
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get screen width
-    u32 su = driver->getScreenSize().Width;
-    u32 sh = driver->getScreenSize().Height;
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
 
     //Find list of scenarios, and list of available world models
     std::string scenarioPath = "Scenarios/";
@@ -124,19 +121,19 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     const irr::s32 OK_SCENARIO_BUTTON_ID = 103;
     const irr::s32 OK_WORLD_BUTTON_ID = 104;
 
-    irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
-    irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(core::rect<s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUIListBox* worldListBox =    device->getGUIEnvironment()->addListBox(core::rect<s32>(0.545*su,0.200*sh,0.920*su,0.60*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
-    irr::gui::IGUICheckBox* multiplayerBox = device->getGUIEnvironment()->addCheckBox(false,core::rect<s32>(0.545*su,0.700*sh,0.920*su,0.730*sh),scnWorldChoiceWindow,-1,language->translate("multiplayer").c_str());
-    irr::gui::IGUIStaticText* scenarioText = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),core::rect<s32>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
-    irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),core::rect<s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
-    irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
-    irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(core::rect<s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
+    irr::gui::IGUIWindow* scnWorldChoiceWindow  = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
+    irr::gui::IGUIListBox* scenarioListBox      = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUIListBox* worldListBox         = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.545*su,0.200*sh,0.920*su,0.60*sh),scnWorldChoiceWindow,WORLD_BOX_ID); //TODO: Set ID so we can use event receiver
+    irr::gui::IGUICheckBox* multiplayerBox      = device->getGUIEnvironment()->addCheckBox(false,irr::core::rect<irr::s32>(0.545*su,0.700*sh,0.920*su,0.730*sh),scnWorldChoiceWindow,-1,language->translate("multiplayer").c_str());
+    irr::gui::IGUIStaticText* scenarioText      = device->getGUIEnvironment()->addStaticText(language->translate("selectScenario").c_str(),irr::core::rect<irr::s32>(0.035*su,0.150*sh,0.485*su,0.190*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIStaticText* worldText         = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),irr::core::rect<irr::s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIButton* scenarioOK            = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
+    irr::gui::IGUIButton* worldOK               = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioDirList.begin(); it != scenarioDirList.end(); ++it) {
-        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
+        scenarioListBox->addItem(irr::core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
     }
     //select first one if possible
     if (scenarioListBox->getItemCount()>0) {
@@ -144,7 +141,7 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     }
     //Add world to list box
     for (std::vector<std::string>::iterator it = worldDirList.begin(); it != worldDirList.end(); ++it) {
-        worldListBox->addItem(core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
+        worldListBox->addItem(irr::core::stringw(it->c_str()).c_str()); //Fixme - odd conversion from char* to wchar*!
     }
     //select first one if possible
     if (worldListBox->getItemCount()>0) {
@@ -196,7 +193,7 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
     device->setEventReceiver(0);
 
     //Show patience message
-    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language->translate("loadingMap").c_str(),core::rect<s32>(0.01*su,0.04*sh,0.95*su,0.95*sh),false,true,scnWorldChoiceWindow);
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(language->translate("loadingMap").c_str(),irr::core::rect<irr::s32>(0.01*su,0.04*sh,0.95*su,0.95*sh),false,true,scnWorldChoiceWindow);
     if (device->run()) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
@@ -211,97 +208,94 @@ void findWhatToLoad(IrrlichtDevice* device, std::string& worldName, std::string&
 
 int copyDir(std::string source, std::string dest)
 {
-
     //Copy contents of source dir into dest dir
 
-    #ifdef _WIN32
-        //Windows version: Creates dest dir automatically
-        source.append(1,'\0'); //Add an extra null to end of string
-        dest.append(1,'\0');
-        replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
+#ifdef _WIN32
+    //Windows version: Creates dest dir automatically
+    source.append(1,'\0'); //Add an extra null to end of string
+    dest.append(1,'\0');
+    replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
 
-        SHFILEOPSTRUCT fileOp;
-        fileOp.wFunc = FO_COPY;
-        fileOp.pFrom = source.c_str();
-        fileOp.pTo = dest.c_str();
-        fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
+    SHFILEOPSTRUCT fileOp;
+    fileOp.wFunc = FO_COPY;
+    fileOp.pFrom = source.c_str();
+    fileOp.pTo = dest.c_str();
+    fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
 
-        return SHFileOperation(&fileOp);
-    #else
-        #ifdef __APPLE__
-            //Apple version: Requires that dest dir exists
-            copyfile_state_t s;
-            s=copyfile_state_alloc();
-            //use copyfile here to do recursive copy
-            int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
-            copyfile_state_free(s);
-            return returnValue;
-        #else // __APPLE__
-            //Other posix
-            //Note: Not implemented yet for other posix: need to implement recursive directory copy.
-            //Requires that dest dir exists
-            //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
-            if (!Utilities::pathExists(dest)) {
+    return SHFileOperation(&fileOp);
+#else
+#ifdef __APPLE__
+    //Apple version: Requires that dest dir exists
+    copyfile_state_t s;
+    s=copyfile_state_alloc();
+    //use copyfile here to do recursive copy
+    int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
+    copyfile_state_free(s);
+    return returnValue;
+#else // __APPLE__
+    //Other posix
+    //Note: Not implemented yet for other posix: need to implement recursive directory copy.
+    //Requires that dest dir exists
+    //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
+    if (!Utilities::pathExists(dest)) {
+        return -1;
+    }
+
+    //For each folder at root level, create new folder in dest, and call copyDir on this
+    DIR *dir = opendir(source.c_str());
+    if (!dir) {return -1;}
+    struct dirent *entry = readdir(dir);
+    while (entry != NULL) {
+        if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
+            std::string newDir = dest;
+
+            newDir.append(source);
+            newDir.append("/");
+            newDir.append(entry->d_name);
+            //newDir.append("/");
+
+            //std::cout << "Dest: " << dest << std::endl;
+            //std::cout << "Trying to create '" << newDir << "'" << std::endl;
+            if (mkdir(newDir.c_str(),0755)==0) {
+                //Recursive here
+                std::string fromDir = source;
+                fromDir.append("/");
+                fromDir.append(entry->d_name);
+
+                std::string toDir = dest;
+
+                copyDir(fromDir, toDir);
+            } else {
                 return -1;
             }
+        } else if (entry->d_type == DT_REG) {
+            //Copy file
+            //entry->d_name;
+            std::string newFile = dest;
+            newFile.append(source);
+            newFile.append("/");
+            newFile.append(entry->d_name);
 
-            //For each folder at root level, create new folder in dest, and call copyDir on this
-            DIR *dir = opendir(source.c_str());
-            if (!dir) {return -1;}
-            struct dirent *entry = readdir(dir);
-            while (entry != NULL) {
-                if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
-                    std::string newDir = dest;
+            std::string fromFile = source;
+            fromFile.append("/");
+            fromFile.append(entry->d_name);
 
-                    newDir.append(source);
-                    newDir.append("/");
-                    newDir.append(entry->d_name);
-                    //newDir.append("/");
+            //std::cout << "About to try and create >>" << newFile << "<< from >>" << fromFile << "<<" << std::endl;
 
-                    //std::cout << "Dest: " << dest << std::endl;
-                    //std::cout << "Trying to create '" << newDir << "'" << std::endl;
-                    if (mkdir(newDir.c_str(),0755)==0) {
-                        //Recursive here
-                        std::string fromDir = source;
-                        fromDir.append("/");
-                        fromDir.append(entry->d_name);
-
-                        std::string toDir = dest;
-
-                        copyDir(fromDir, toDir);
-                    } else {
-                        return -1;
-                    }
-                } else if (entry->d_type == DT_REG) {
-                    //Copy file
-                    //entry->d_name;
-                    std::string newFile = dest;
-                    newFile.append(source);
-                    newFile.append("/");
-                    newFile.append(entry->d_name);
-
-                    std::string fromFile = source;
-                    fromFile.append("/");
-                    fromFile.append(entry->d_name);
-
-                    //std::cout << "About to try and create >>" << newFile << "<< from >>" << fromFile << "<<" << std::endl;
-
-                    std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
-                    std::ofstream destStream(newFile.c_str(), std::ios::binary);
-                    if (fromStream && destStream) {
-                        destStream << fromStream.rdbuf();
-                    }
-
-                }
-
-                entry = readdir(dir);
+            std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
+            std::ofstream destStream(newFile.c_str(), std::ios::binary);
+            if (fromStream && destStream) {
+                destStream << fromStream.rdbuf();
             }
 
-            //For each file at root level, create the file and copy contents
+        }
 
+        entry = readdir(dir);
+    }
 
-        #endif // __APPLE__
-    #endif // _WIN32
+    //For each file at root level, create the file and copy contents
+#endif // __APPLE__
+#endif // _WIN32
 
     return -1;
 }
@@ -315,10 +309,10 @@ void checkUserScenarioDir(void)
 
     if (!Utilities::pathExists(userFolder + scenarioPath)) {
 
-        #ifdef _WIN32
+#ifdef _WIN32
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
         copyDir("Scenarios", userFolder + scenarioPath);
-        #else
+#else
         //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
         if (!Utilities::pathExists(Utilities::getUserDirBase())) {
             std::string pathToMake = Utilities::getUserDirBase();
@@ -336,18 +330,15 @@ void checkUserScenarioDir(void)
         }
         std::cout << "Copying scenario files into " << userFolder << std::endl;
         copyDir("Scenarios", userFolder);
-        #endif // __APPLE__
-
-
+#endif // __APPLE__
     }
 }
 
-int main (int argc, char ** argv)
+int main (int argc, char *argv[])
 {
-
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+#ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -373,16 +364,16 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
-    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    video::IVideoDriver* driver = device->getVideoDriver();
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
-    #ifdef __APPLE__
+#ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
@@ -406,7 +397,7 @@ int main (int argc, char ** argv)
     Lang language(languageFile);
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {
@@ -544,8 +535,7 @@ int main (int argc, char ** argv)
 
         //Load other ship information
         int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
-        for(u32 i=1;i<=numberOfOtherShips;i++) {
-
+        for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
             //Temporary structure to load data
             OtherShipEditorData thisShip;
 
@@ -584,10 +574,7 @@ int main (int argc, char ** argv)
 
             //Add to array.
             otherShipsData.push_back(thisShip);
-
-
         }
-
     }
 
     //Load buoy data
@@ -601,10 +588,9 @@ int main (int argc, char ** argv)
     std::string scenarioBuoyFilename = worldPath;
     scenarioBuoyFilename.append("/buoy.ini");
     //Find number of buoys
-    u32 numberOfBuoys;
+    irr::u32 numberOfBuoys;
     numberOfBuoys = IniFile::iniFileTou32(scenarioBuoyFilename,"Number");
-    for(u32 currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
-
+    for(irr::u32 currentBuoy=1;currentBuoy<=numberOfBuoys;currentBuoy++) {
         PositionData thisBuoy;
         //Get buoy position
         thisBuoy.X = controller.longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
@@ -620,7 +606,6 @@ int main (int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     while(device->run()) {
-
         driver->beginScene();
 
         //Read in data from network
@@ -632,5 +617,5 @@ int main (int argc, char ** argv)
         driver->endScene();
     }
 
-    return(0);
+    return 0;
 }
