@@ -25,17 +25,14 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-// Irrlicht Namespaces
-using namespace irr;
 
 //Set up global for ini reader to have access to irrlicht logger if needed.
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
 }
 
-int main (int argc, char ** argv)
+int main(int argc, char *argv[])
 {
-
     //Mac OS:
     //Find starting folder
 	#ifdef __APPLE__
@@ -49,6 +46,7 @@ int main (int argc, char ** argv)
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
+
 	//change up from BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
     exeFolderPath.append("/../../../../Resources");
     //change to this path now, so ini file is read
@@ -64,19 +62,19 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
-    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
     //Load UDP network settings
-    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
 
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    video::IVideoDriver* driver = device->getVideoDriver();
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
 
@@ -84,8 +82,8 @@ int main (int argc, char ** argv)
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
         std::cout << "Could not get filesystem" << std::endl;
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
@@ -105,7 +103,7 @@ int main (int argc, char ** argv)
     Lang language(languageFile);
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {
@@ -119,18 +117,17 @@ int main (int argc, char ** argv)
 
     //Find our hostname to tell user
     std::string ourHostName = asio::ip::host_name();
-    core::stringw patienceMessage = language.translate("startBC");
+    irr::core::stringw patienceMessage = language.translate("startBC");
     patienceMessage.append(L"\n");
-    patienceMessage.append(core::stringw(ourHostName.c_str()));
+    patienceMessage.append(irr::core::stringw(ourHostName.c_str()));
     patienceMessage.append(L":");
-    patienceMessage.append(core::stringw(network.getPort()));
+    patienceMessage.append(irr::core::stringw(network.getPort()));
 
     //Find world model to use, from the network
-    irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(core::rect<s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
-    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(patienceMessage.c_str(), core::rect<s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
+    irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());
+    irr::gui::IGUIStaticText* patienceText = device->getGUIEnvironment()->addStaticText(patienceMessage.c_str(), irr::core::rect<irr::s32>(10,40,driver->getScreenSize().Width-30, driver->getScreenSize().Height-40), true, false, patienceWindow);
     //hide close button
     patienceWindow->getCloseButton()->setVisible(false);
-
 
     std::string worldName = "";
     while (device->run() && worldName.size() == 0) {
@@ -176,7 +173,6 @@ int main (int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     while(device->run()) {
-
         driver->beginScene();
 
         //Read in data from network
@@ -188,5 +184,5 @@ int main (int argc, char ** argv)
         driver->endScene();
     }
 
-    return(0);
+    return 0;
 }
