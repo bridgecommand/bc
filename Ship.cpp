@@ -21,7 +21,6 @@
 #include "SimulationModel.hpp"
 #include "IniFile.hpp"
 
-using namespace irr;
 
 Ship::Ship()
 {
@@ -101,8 +100,5 @@ void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     xPos += deltaX;
     yPos += deltaY;
     zPos += deltaZ;
-    ship->setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 }
-
-
-
