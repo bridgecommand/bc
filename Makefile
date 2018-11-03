@@ -122,6 +122,8 @@ LDFLAGS = $(USERLDFLAGS)
 # name of the binary - only valid for targets which set SYSTEM
 DESTPATH = $(BinPath)/$(Target)$(SUF)
 
+SRCFILES = $(patsubst %,$(shell pwd)/%,$(Sources))
+
 #default target is Linux
 all:
 	$(warning Building...)
@@ -131,7 +133,7 @@ ifeq ($(UNAME_S),Darwin)
 else
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ all
 endif
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SRCFILES) -o $(DESTPATH) $(LDFLAGS)
 #Build additional programs
 	$(MAKE) -C launcher/ all
 	$(MAKE) -C controller/ all
