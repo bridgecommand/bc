@@ -30,11 +30,8 @@
 #include <cmath>
 #include <fstream>
 
-//#include <ctime>
 
-using namespace irr;
-
-SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders):
+SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -145,9 +142,9 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         zoom = 1.0;
 
         //make a camera, setting parent and offset
-        std::vector<core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
+        std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         irr::f32 angleCorrection = ownShip.getAngleCorrection();
-        camera.load(smgr,ownShip.getSceneNode(),views,core::degToRad(viewAngle),lookAngle,angleCorrection);
+        camera.load(smgr,ownShip.getSceneNode(),views,irr::core::degToRad(viewAngle),lookAngle,angleCorrection);
         camera.setNearValue(cameraMinDistance);
         camera.setFarValue(cameraMaxDistance);
 
@@ -178,21 +175,21 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
-        u32 radarTextureSize = driver->getScreenSize().Height; // Conservative estimate - can't be bigger than screen height.
+        irr::u32 radarTextureSize = driver->getScreenSize().Height; // Conservative estimate - can't be bigger than screen height.
         //Find next power of 2 size
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
 
         //In simulationModel, keep track of the used size, and pass this to gui etc.
-        radarImage = driver->createImage (video::ECF_A8R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaid = driver->createImage (video::ECF_A8R8G8B8, core::dimension2d<u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImage->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageOverlaid->fill(video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImageOverlaid->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
 
         //make radar camera
-        std::vector<core::vector3df> radarViews; //Get the initial camera offset from the radar screen
+        std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
 		irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
-        radarViews.push_back(ownShip.getScreenDisplayPosition() + core::vector3df(0,0.5*sin(core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
-        radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,core::PI/2.0,0,0);
+        radarViews.push_back(ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
+        radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,irr::core::PI/2.0,0,0);
 		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
 		radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
@@ -202,7 +199,7 @@ SimulationModel::SimulationModel(IrrlichtDevice* dev, scene::ISceneManager* scen
         manOverboard.setVisible(false);
 
         //initialise offset
-        offsetPosition = core::vector3d<int64_t>(0,0,0);
+        offsetPosition = irr::core::vector3d<int64_t>(0,0,0);
 
         //store time
         previousTime = device->getTimer()->getTime();
@@ -406,7 +403,7 @@ SimulationModel::~SimulationModel()
 
 	}
 
-    void SimulationModel::setHeading(f32 hdg)
+	void SimulationModel::setHeading(irr::f32 hdg)
     {
          ownShip.setHeading(hdg);
     }
@@ -726,7 +723,7 @@ SimulationModel::~SimulationModel()
         } else {
             zoom = 1.0;
         }
-        camera.setHFOV(core::degToRad(viewAngle)/zoom);
+        camera.setHFOV(irr::core::degToRad(viewAngle)/zoom);
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)
@@ -764,17 +761,17 @@ SimulationModel::~SimulationModel()
         //Only release/update if not already released
         if (!manOverboard.getVisible()) {
             manOverboard.setVisible(true);
-            core::vector3df ownShipPos = ownShip.getPosition();
-            core::vector3df relativePosition;
+            irr::core::vector3df ownShipPos = ownShip.getPosition();
+            irr::core::vector3df relativePosition;
             relativePosition.Y = 0;
             //Put randomly on port or starboard side of the ship
             if (rand() > RAND_MAX/2) {
-                relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+                relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
             } else {
-                relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*core::DEGTORAD);
+                relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
             }
             manOverboard.setPosition(ownShipPos + relativePosition);
@@ -812,7 +809,7 @@ SimulationModel::~SimulationModel()
     void SimulationModel::setManOverboardPos(irr::f32 positionX, irr::f32 positionZ)
     {
         //To be used directly, eg when in secondary display mode only
-        manOverboard.setPosition(core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
+        manOverboard.setPosition(irr::core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
     }
 
     bool SimulationModel::hasGPS() const
@@ -894,7 +891,7 @@ SimulationModel::~SimulationModel()
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-        driver->setFog(light.getLightSColor(), video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         irr::u32 lightLevel = light.getLightLevel();
 
         //update rain
@@ -927,9 +924,9 @@ SimulationModel::~SimulationModel()
         //Normalise positions if required (More than 1000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
         if(ownShip.getPosition().getLength() > 1000) {
-            core::vector3df ownShipPos = ownShip.getPosition();
-            irr::s32 deltaX = -1*(s32)ownShipPos.X;
-            irr::s32 deltaZ = -1*(s32)ownShipPos.Z;
+            irr::core::vector3df ownShipPos = ownShip.getPosition();
+            irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
+            irr::s32 deltaZ = -1*(irr::s32)ownShipPos.Z;
             //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
             deltaX = 500.0*Utilities::round(deltaX/500.0);
             deltaZ = 500.0*Utilities::round(deltaZ/500.0);
@@ -963,7 +960,7 @@ SimulationModel::~SimulationModel()
         camera.update();
 
         //set radar screen position, and update it with a radar image from the radar calculation
-        core::vector2di cursorPositionRadar = guiMain->getCursorPositionRadar();
+        irr::core::vector2di cursorPositionRadar = guiMain->getCursorPositionRadar();
         radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
         radarScreen.update(radarImageOverlaid);
         radarCamera.update();
