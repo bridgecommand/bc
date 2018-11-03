@@ -26,8 +26,6 @@
 #include <mach-o/dyld.h>
 #endif
 
-// Irrlicht Namespaces
-using namespace irr;
 
 //Global definition for ini logger
 namespace IniFile {
@@ -46,16 +44,16 @@ const irr::s32 INI_MH_BUTTON = 9;
 const irr::s32 DOC_BUTTON = 10;
 
 //Event receiver: This does the actual launching
-class Receiver : public IEventReceiver
+class Receiver : public irr::IEventReceiver
 {
 public:
     Receiver() { }
 
-    virtual bool OnEvent(const SEvent& event)
+    virtual bool OnEvent(const irr::SEvent& event)
     {
-        if (event.EventType == EET_GUI_EVENT) {
-            if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED ) {
-                s32 id = event.GUIEvent.Caller->getID();
+        if (event.EventType == irr::EET_GUI_EVENT) {
+            if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
+                irr::s32 id = event.GUIEvent.Caller->getID();
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
                         _execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
@@ -199,9 +197,8 @@ public:
     }
 };
 
-int main (int argc, char ** argv)
+int main (int argc, char *argv[])
 {
-
     //Mac OS:
     //Find starting folder
 	#ifdef __APPLE__
@@ -222,9 +219,9 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    u32 graphicsWidth = 200;
-    u32 graphicsHeight = 465;
-    u32 graphicsDepth = 32;
+    irr::u32 graphicsWidth = 200;
+    irr::u32 graphicsHeight = 465;
+    irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
     //User read/write location - look in here first and the exe folder second for files
@@ -236,7 +233,6 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
-
 
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
@@ -251,8 +247,8 @@ int main (int argc, char ** argv)
 
     Lang language(languageFile);
 
-    IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    video::IVideoDriver* driver = device->getVideoDriver();
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
@@ -265,7 +261,7 @@ int main (int argc, char ** argv)
     #endif
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {
@@ -274,18 +270,18 @@ int main (int argc, char ** argv)
     }
 
     //Add launcher buttons
-    irr::gui::IGUIButton* launchBC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,10,190,75),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    irr::gui::IGUIButton* launchED = device->getGUIEnvironment()->addButton(core::rect<s32>(10,100,190,130),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
-    irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,140,190,170),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
-    irr::gui::IGUIButton* launchRP = device->getGUIEnvironment()->addButton(core::rect<s32>(10,180,190,210),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
-    irr::gui::IGUIButton* launchMH = device->getGUIEnvironment()->addButton(core::rect<s32>(10,220,190,250),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+    irr::gui::IGUIButton* launchBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,10,190,75),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
+    irr::gui::IGUIButton* launchED = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,100,190,130),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
+    irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,140,190,170),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    irr::gui::IGUIButton* launchRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,180,190,210),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
+    irr::gui::IGUIButton* launchMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,220,190,250),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
 
-    irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,275,190,300),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,310,190,335),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(core::rect<s32>(10,345,190,370),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(core::rect<s32>(10,380,190,405),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,275,190,300),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,310,190,335),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,345,190,370),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
+    irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,380,190,405),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
 
-    irr::gui::IGUIButton* launchDOC = device->getGUIEnvironment()->addButton(core::rect<s32>(10,430,190,455),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    irr::gui::IGUIButton* launchDOC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,430,190,455),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);
@@ -295,5 +291,5 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
-    return(0);
+    return 0;
 }
