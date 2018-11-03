@@ -1,12 +1,13 @@
 
 set(IRRLICHT_HOME "${CMAKE_CURRENT_SOURCE_DIR}/irrlicht-svn")
 
+add_library(bc-irrlicht INTERFACE)
+
 if (MSVC)
-    add_library(bc-irrlicht INTERFACE)
     target_link_libraries(bc-irrlicht INTERFACE
         "${IRRLICHT_HOME}/lib/Win32-visualstudio/Irrlicht.lib"
     )
-else ()
+else (MSVC)
     include(ExternalProject)
     ExternalProject_Add(bc-irrlicht-internal
         SOURCE_DIR "${IRRLICHT_HOME}/source/Irrlicht/"
@@ -15,7 +16,7 @@ else ()
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ""
     )
-    
+
     link_directories(
         /usr/X11R6/lib64 # or lib32
     )
