@@ -73,12 +73,18 @@ void NetworkPrimary::connectToServer(std::string hostnames)
         multipleHostnames.push_back(""); //Add an empty record
     }
 
+    //Trim each hostname (for spaces etc), and make lower case
+    for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
+        multipleHostnames.at(i) = Utilities::trim(multipleHostnames.at(i));
+        Utilities::to_lower(multipleHostnames.at(i));
+    }
+
     //Set up a peer for each hostname
     for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
         ENetAddress address;
         ENetPeer* peer;
 
-        std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
+        std::string thisHostname = multipleHostnames.at(i);
         //Todo: validate this?
 
         //Check if the string contains a ':', and if so, split into hostname and port part
@@ -92,6 +98,14 @@ void NetworkPrimary::connectToServer(std::string hostnames)
             }
         } else {
             address.port = port;
+
+            //Count number of instances of this earlier in list, and if so, increment port, so
+            //localhost,localhost,localhost would become like localhost:port,localhost:port+1,localhost:port+2
+            for (unsigned int j=0; j<i; j++) {
+                if (thisHostname.compare(multipleHostnames.at(j))==0) {
+                    address.port++;
+                }
+            }
         }
 
         /* Connect to some.server.net:18304. */
