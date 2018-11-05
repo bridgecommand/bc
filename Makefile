@@ -151,7 +151,9 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a media BridgeCommand.app/Contents/Resources/media
 	cp -a Models BridgeCommand.app/Contents/Resources/Models
 	cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
-	cp -a shaders BridgeCommand.app/Contents/Resources/shaders
+	mkdir BridgeCommand.app/Contents/Resources/shaders
+	cat shaders/Water_ps.glsl | sed -r 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps.glsl
+	cat shaders/Water_vs.glsl | sed -r 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs.glsl
 	cp -a World BridgeCommand.app/Contents/Resources/World
 	cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 	cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
