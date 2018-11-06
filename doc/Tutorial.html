@@ -296,7 +296,17 @@ software or hardware chart plotter, to practise electronic navigation.
 <img src="images/chartPlotter.png" alt="Chart plotter" id="plotterImg">
 
 <p>
-To do this, you will need a serial data connection between your computer running Bridge Command and your chart plotter. The chart plotter could either be a dedicated chart plotter with an RS422 NMEA data input, or another computer running chart plotting software. If your computers have serial ports, all that you will need is a <a href="http://en.wikipedia.org/wiki/Null_modem#Cables_and_adapters">'null modem cable'</a> to connect them up. However, modern computers don't come with serial ports, so you have two options. The simplest option is to get a USB to serial adapter for each computer, and a null modem cable to connect the simulator to the chart plotter. Alternatively, you can create a 'virtual com port' on each computer, and connect these across the network, using <a href="http://com0com.sourceforge.net/">com0com and com2tcp</a>. This is likely to be more complex to set up, but will not need any new hardware.
+To do this, you will need a serial or ethernet data connection between your computer running Bridge Command and your chart plotter. 
+</p>
+
+<h4>Set up for network connection</h4>
+<p>
+You can use a chart plotter on the same computer or another computer connected on the same network. Bridge Command sends ethernet (UDP) NMEA data by default to port 10110, and by default to 'localhost', i.e. the same computer. If you want to use the chart plotter on another computer on the network, find the plotter computer's hostname (starting Bridge Command in secondary mode on the plotter computer will show this, or you can find the name by typing 'hostname' at a command prompt.) Your chart plotter will need to have settings to enable NMEA input over UDP, and to set the port number. Start the Bridge Command settings editor, and switch to the NMEA tab, and set the 'NMEA_UDPAddress' setting to match the hostname of the plotter computer, and ensure the 'NMEA_UDPPort' setting matches the port expected by the plotter.
+</p>
+
+<h4>Set up for serial connection</h4>
+<p>
+The chart plotter could either be a dedicated chart plotter with an RS422 NMEA data input, or another computer running chart plotting software. If your computers have serial ports, all that you will need is a <a href="http://en.wikipedia.org/wiki/Null_modem#Cables_and_adapters">'null modem cable'</a> to connect them up. However, modern computers don't come with serial ports, so you have two options. The simplest option is to get a USB to serial adapter for each computer, and a null modem cable to connect the simulator to the chart plotter. Alternatively, you can create a 'virtual com port' on each computer, and connect these across the network, using <a href="http://com0com.sourceforge.net/">com0com and com2tcp</a>. This is likely to be more complex to set up, but will not need any new hardware.
 </p>
 
 <p>
@@ -304,17 +314,19 @@ Once you have got your computer and chart plotter connected physically or virtua
 </p>
 
 <p>
-To enable the GPS emulation, start the Bridge Command launcher, and click on 'Settings: Main'. In the settings editor, find the 'NMEA over serial' tab, and change the selection to the number of the com port you are using (double click anywhere in the 'NMEA_ComPort' row, type the number, and press enter). For example, if you are using the serial port COM1 on your Bridge Command computer, change this to 1. When you have made your change, click on 'Save' to confirm.
+To enable the GPS emulation, start the Bridge Command launcher, and click on 'Settings: Main'. In the settings editor, find the 'NMEA' tab, and change the selection to the number of the com port you are using (double click anywhere in the 'NMEA_ComPort' row, type the number, and press enter). For example, if you are using the serial port COM1 on your Bridge Command computer, change this to 1. When you have made your change, click on 'Save' to confirm.
 </p>
 
 <img src="images/settingsedit.png" alt="Settings Editor" id="settings">
+
+<h4>Running with the chart plotter</h4>
 
 <p>
 You can now start Bridge Command again. When it starts a scenario, it will now be sending NMEA data to the chart plotter emulating a GPS. The picture above shows Bridge Command 4.7 running with OpenCPN, an open source chart plotter available from <a href="http://www.opencpn.org/">their website</a>.
 </p>
 
 <p>
-As setting this up will be very dependent on the hardware and software you have, it isn't possible to give detailed instructions for all possibilities, but if you have any questions about setting this up, please ask on the forum (<a href="http://www.bridgecommand.co.uk/forum/">bridgecommand.co.uk/forum</a>).
+As setting this up will be very dependent on the hardware and software you have, it isn't possible to give detailed instructions for all possibilities, but if you have any questions about setting this up, please ask on the forum (<a href="https://www.bridgecommand.co.uk/forum/">bridgecommand.co.uk/forum</a>).
 </p>
 
 <h3>
@@ -495,7 +507,7 @@ To run with multiple screens, one Bridge Command session is needed per screen, a
 exercise tutorial</a>.
 </p>
 
-<h4>Setting up - single computer, Windows</h4>
+<h4>Setting up - single computer with multiple displays on Windows</h4>
 
 <p>
 One session will be used to run Bridge Command in the normal way, and we will refer to this as the master. The other sessions will show the 
@@ -520,7 +532,7 @@ all of the secondary display computers first, clicking the 'Use as secondary dis
 <p>
 When you have done this, start Bridge Command on the master computer. Select a scenario as normal, but instead of just entering one hostname (as in an 
 'interactive exercise'), enter the hostnames of all of the secondary displays, separated by commas (','). Note that you can also run the map controller at
-the same time on another computer. If you do so, just add the hostname of the controller computer to the list of hostnames you type in.
+the same time on another computer. If you do so, just add the hostname of the controller computer to the list of hostnames you type in. If any of the port numbers are different from the default of 18304, you can set this by typing 'hostname:port'
 </p>
 
 <p>As an example, if you have four other computers on the that you will be using, with hostnames secondary1, secondary2, secondary3 and controllerPC you would 
@@ -528,15 +540,15 @@ enter <b>secondary1,secondary2,secondary3,controllerPC</b>. The order of the nam
 </p>
 
 <p>
-Now set the viewpoints you want in each window, and run the simulation exactly as before. You can change the viewpoint on the slave displays as normal with the 
-space bar, but when the viewpoint is changed on the master, the slave displays will change with it. You can also use the 'Hide'/'Show' buttons to switch between 
+Now set the viewpoints you want in each window, and run the simulation exactly as before. You can change the viewpoint on the secondary displays as normal with the 
+space bar, but when the viewpoint is changed on the master, the secondary displays will change with it. You can also use the 'Hide'/'Show' buttons to switch between 
 a full screen 3d view, and a view that aligns with the main simulator display. The full screen radar view is also available as normal.
 </p>
 
 <h4>Configuration</h4>
 <p>
 For each secondary display, the Settings Editor can be used to set the angle of view (to match your screen set up), and the initial direction of the view (parameters
-view_angle and look_angle).
+view_angle and look_angle). To change the view in steps in Bridge Command (for example if you are using multiple displays on one computer), use 'Shift' with the left and right arrow keys to change the view. 
 </p>
 
 </body>
