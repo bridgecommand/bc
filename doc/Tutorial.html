@@ -491,16 +491,30 @@ fuller simulation realism. Each screen displays a 90&deg viewing angle by defaul
 </p>
 
 <p>
-To run with multiple screens, one computer is needed per screen, and all the computers must be on a network, just as in the <a href="#interactive">interactive 
-exercise tutorial</a>. If you have not read this tutorial, it will be very helpful to read it first.
+To run with multiple screens, one Bridge Command session is needed per screen, and this can either be on one computer, or multiple computers. For multiple computers, these must be on a network, just as in the <a href="#interactive">interactive 
+exercise tutorial</a>.
 </p>
 
-<h4>Setting up</h4>
+<h4>Setting up - single computer, Windows</h4>
 
 <p>
-One computer will be used to run Bridge Command in the normal way, and we will refer to this as the master computer. The other computers will show the 
-secondary displays. To get started, find the names or IP addresses of all of the computers you will be using for secondary displays. Start Bridge Command on
-all of the secondary display computers first, clicking the 'Use as secondary display' option instead of choosing a scenario. 
+One session will be used to run Bridge Command in the normal way, and we will refer to this as the master. The other sessions will show the 
+secondary displays. With the settings editor, check that the graphics mode is '3', which is a borderless window. This is required as a conventional full screen set up does not work with multiple monitors. If you want to change from the default 90&deg view angle, you can also change this ('view_angle' in the settings editor).
+</p>
+
+<p>
+Start Bridge Command, and you should see a small popup window. Drag this to where you want your first Bridge Command session to be, and click OK. Instead of choosing a scenario, click the the 'Use as secondary display' option instead of choosing a scenario, and click OK. Repeat this for all except one monitor, which you will use for the master session. 
+</p>
+
+<p>
+For the master session, start Bridge Command in the same way, but in the 'hostname' box, type Localhost,localhost (if you have two secondary displays). Then select a scenario, and click OK. After a brief pause, you should see the scenario appear on all screens. Change the view on the secondary screens with 'Shift' and left/right arrow keys to step around the view. If you don't see anything happen, check your firewall settings, as Bridge Command uses local network communication between the sessions.
+</p>
+
+<h4>Setting up - multiple computers</h4>
+
+<p>
+ Start Bridge Command on
+all of the secondary display computers first, clicking the 'Use as secondary display' option instead of choosing a scenario. Make a note of the hostname and port of all of the computers you will be using for secondary displays, as shown in the secondary startup screen.  
 </p>
 
 <p>
