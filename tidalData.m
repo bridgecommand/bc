@@ -6,7 +6,7 @@ clear
 filename = "TideList.txt";
 fid = fopen (filename, "w");
 
-startYear = 2018;
+startYear = 2019;
 for startMonth= 1:12
 
 %find year start timestamp (or can we use unix timestamp internally??)
@@ -59,6 +59,7 @@ end
 
 %find max and min points
 numberofHighLows = 0;
+highLows=[];
 %run through height list, excluding end points. Compare points with those before & after to find if higher or lower
 for i = 2:size(height,2)-1
 	%check for high tide
@@ -138,7 +139,7 @@ switch startMonth
 endswitch
 fprintf(fid,"%s\n",monthname);
 
-tidesPlotted = 0
+tidesPlotted = 0;
 
 for i = 1:size(highLows,1)
 	if currentDay != highLows(i,6)
