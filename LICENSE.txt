@@ -3,7 +3,7 @@ NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED FOR NAVIGA
 BRIDGE COMMAND MUST NOT BE USED FOR SAFETY-CRITICAL 
 APPLICATIONS SUCH AS NAVIGATION ON THE SEA.
 
-Bridge Command is Copyright (C) 2017 by James Packer. The model
+Bridge Command is Copyright (C) 2018 by James Packer. The model
 files distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, 
 Simon D Richardson, Jason Simpson, Thierry Videlaine, and NETC (Naval 
