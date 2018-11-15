@@ -562,8 +562,9 @@ using namespace irr;
                         case KEY_F4:
                             model->setAccelerator(0.0);
                             device->sleep(500);
-                            device->clearSystemMessages();
+                            //device->clearSystemMessages();
                             device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
+                            return true; //Return true here, so second 'esc' button pushes don't close the message box
                             break;
 
                         case KEY_KEY_M:
