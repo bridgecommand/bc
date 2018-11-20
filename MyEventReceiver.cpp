@@ -66,6 +66,8 @@ using namespace irr;
         //assume mouse buttons not pressed initially
         leftMouseDown = false;
         rightMouseDown = false;
+
+        shutdownDialogActive = false;
 	}
 
     bool MyEventReceiver::OnEvent(const SEvent& event)
@@ -196,6 +198,13 @@ using namespace irr;
                     device->closeDevice(); //Confirm shutdown.
                 }
             }
+
+            if (event.GUIEvent.EventType==gui::EGET_MESSAGEBOX_CANCEL) {
+                if (id == GUIMain::GUI_ID_CLOSE_BOX) {
+                    shutdownDialogActive = false;
+                }
+            }
+
 
             if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
                 if (id == GUIMain::GUI_ID_START_BUTTON)
@@ -563,7 +572,10 @@ using namespace irr;
                             model->setAccelerator(0.0);
                             device->sleep(500);
                             //device->clearSystemMessages();
-                            device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
+                            if (!shutdownDialogActive) {
+                                device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,gui::EMBF_OK|gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
+                                shutdownDialogActive = true;
+                            }
                             return true; //Return true here, so second 'esc' button pushes don't close the message box
                             break;
 
