@@ -71,6 +71,7 @@ private:
 
     JoystickSetup joystickSetup;
     std::vector<std::string>* logMessages;
+    bool shutdownDialogActive;
 
     irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
     std::wstring f32To3dp(irr::f32 value, bool stripZeros=false);
