@@ -81,7 +81,9 @@ irr::core::stringw getCredits(){
     creditsString.append(L"> NETC (Naval Education and Training Command)\n");
     creditsString.append(L"> Sky image from 0ptikz\n\n");
     creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
-    creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, the FFTWave implementation by Keith Lantz, and the Serial library by William Woodall.\n\n");
+    
+	creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
+		
     creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
 
     return creditsString;
