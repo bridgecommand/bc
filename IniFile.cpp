@@ -172,26 +172,22 @@ std::string IniCache::getStringValue(const std::string& fileName, const std::str
     std::string keyLow = key;
     Utilities::to_lower(keyLow);
 
-    try {
-        auto fileIt = m_stringData.find(fileName);
-        if (fileIt == m_stringData.end()) {
-            if (!readFile(fileName)) {
-                throw std::runtime_error("File not found.");
-            }
-            fileIt = m_stringData.find(fileName);
-            assert(fileIt != m_stringData.end());
-        }
-
-        const auto keyIt = fileIt->second.find(keyLow);
-        if (keyIt == (fileIt->second).end()) {
+    auto fileIt = m_stringData.find(fileName);
+    if (fileIt == m_stringData.end()) {
+        if (!readFile(fileName)) {
+            //file not found
             return defValue;
         }
-
-        return keyIt->second;
+        fileIt = m_stringData.find(fileName);
+        assert(fileIt != m_stringData.end());
     }
-    catch (std::runtime_error&) {
+
+    const auto keyIt = fileIt->second.find(keyLow);
+    if (keyIt == (fileIt->second).end()) {
         return defValue;
     }
+
+    return keyIt->second;
 }
 
 std::wstring IniCache::getWStringValue(const std::string& fileName, const std::string& key, const std::wstring& defValue)
@@ -199,26 +195,23 @@ std::wstring IniCache::getWStringValue(const std::string& fileName, const std::s
     std::wstring keyLow = std::wstring(key.begin(), key.end());
     Utilities::to_lower(keyLow);
 
-    try {
-        auto fileIt = m_wstringData.find(fileName);
-        if (fileIt == m_wstringData.end()) {
-            if (!readWFile(fileName)) {
-                throw std::runtime_error("File not found.");
-            }
-            fileIt = m_wstringData.find(fileName);
-            assert(fileIt != m_wstringData.end());
-        }
-
-        const auto keyIt = fileIt->second.find(keyLow);
-        if (keyIt == (fileIt->second).end()) {
+    auto fileIt = m_wstringData.find(fileName);
+    if (fileIt == m_wstringData.end()) {
+        if (!readWFile(fileName)) {
+            // file not found
             return defValue;
         }
-
-        return keyIt->second;
+        fileIt = m_wstringData.find(fileName);
+        assert(fileIt != m_wstringData.end());
     }
-    catch (std::runtime_error&) {
+
+    const auto keyIt = fileIt->second.find(keyLow);
+    if (keyIt == (fileIt->second).end()) {
         return defValue;
     }
+
+    return keyIt->second;
+
 }
 
 irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& key, irr::u32 defValue)
