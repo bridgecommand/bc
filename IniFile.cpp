@@ -38,6 +38,9 @@ public:
     std::string getStringValue(const std::string &fileName, const std::string &key, const std::string &defValue = "");
     std::wstring getWStringValue(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
 
+    irr::u32 getUIntValue(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
+    irr::f32 getFloatValue(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
+
 private:
     bool readFile(const std::string &fileName);
 
@@ -218,6 +221,43 @@ std::wstring IniCache::getWStringValue(const std::string& fileName, const std::s
     }
 }
 
+irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& key, irr::u32 defValue)
+{
+    const std::string value = getStringValue(fileName, key, "");
+    if (value == "") {
+        return defValue; // not found
+    }
+
+    const char *val = value.c_str();
+    const char *end = nullptr;
+    irr::u32 result = irr::core::strtoul10(val, &end);
+    if (end - val == value.length()) {
+        return result;
+    }
+    else {
+        return defValue; // failed to parse value
+    }
+}
+
+
+irr::f32 IniCache::getFloatValue(const std::string& fileName, const std::string& key, irr::f32 defValue)
+{
+    const std::string value = getStringValue(fileName, key, "");
+    if (value == "") {
+        return defValue; // not found
+    }
+
+    const char *val = value.c_str();
+    const char *end = nullptr;
+    irr::f32 result = irr::core::fast_atof(val, &end);
+    if (end - val == value.length()) {
+        return result;
+    }
+    else {
+        return defValue; // failed to parse value
+    }
+}
+
 
 //Utility functions
 namespace IniFile
@@ -245,17 +285,15 @@ namespace IniFile
     }
 
     //Load unsigned integer from an ini file
-    u32 iniFileTou32(const std::string &fileName, const std::string &key)
+    u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue)
     {
-        const std::string valueString = iniFileToString(fileName, key); //Get the value as a string
-        return core::strtoul10(valueString.c_str()); //Convert this into an unsigned int
+        return g_iniCache.getUIntValue(fileName, key, defValue);
     }
 
     //Load float from an ini file
-    f32 iniFileTof32(const std::string &fileName, const std::string &key)
+    f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue)
     {
-        const std::string valueString = iniFileToString(fileName, key); //Get the value as a string
-        return irr::core::fast_atof(valueString.c_str()); //Convert this into a float
+        return g_iniCache.getFloatValue(fileName, key, defValue);
     }
 
 }
