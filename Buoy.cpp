@@ -39,10 +39,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     std::string buoyIniFilename = basePath + "buoy.ini";
 
     //get filename from ini file (or empty string if file doesn't exist)
-    std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName");
-    if (buoyFileName=="") {
-        buoyFileName = "buoy.x"; //Default if not set
-    }
+    std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName", "buoy.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
     f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor");

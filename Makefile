@@ -161,7 +161,7 @@ ifeq ($(UNAME_S),Darwin)
 	cp -a repeater.ini BridgeCommand.app/Contents/Resources/repeater.ini
 	cp -a language-en.txt BridgeCommand.app/Contents/Resources/language-en.txt
 	cp -a languageController-en.txt BridgeCommand.app/Contents/Resources/languageController-en.txt
-	cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer-en.txt 
+	cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer-en.txt
 	cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher-en.txt
 	cp -a languageIniEditor-en.txt BridgeCommand.app/Contents/Resources/languageIniEditor-en.txt
 	cp -a languageRepeater-en.txt BridgeCommand.app/Contents/Resources/languageRepeater-en.txt
@@ -173,7 +173,7 @@ ifeq ($(UNAME_S),Darwin)
 	xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj clean
 else
 	$(MAKE) -C $(IrrlichtHome)/source/Irrlicht/ clean
-endif	
+endif
 	$(MAKE) -C launcher/ clean
 	$(MAKE) -C controller/ clean
 	$(MAKE) -C editor/ clean

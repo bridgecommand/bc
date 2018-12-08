@@ -77,6 +77,18 @@ namespace Utilities
         return inString.substr(first, last-first+1);
     }
 
+    std::wstring trim(std::wstring inString, std::wstring trimChrs) {
+        //Based on http://codereview.stackexchange.com/questions/40124/trim-white-space-from-string, Loki Astari answer
+        if(inString.empty()) {
+            return inString;
+        }
+
+        std::size_t firstScan = inString.find_first_not_of(trimChrs);
+        std::size_t first     = firstScan == std::string::npos ? inString.length() : firstScan;
+        std::size_t last      = inString.find_last_not_of(trimChrs);
+        return inString.substr(first, last-first+1);
+    }
+
     signed int round(float numberIn) {
         //Implements round away from zero
 

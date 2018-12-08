@@ -16,9 +16,12 @@
 
 #include "IniFile.hpp"
 
+#include <cassert>
 #include <fstream> //for ini loading
 #include <string> //for ini loading
 #include <iostream>
+#include <map>
+
 #include "Utilities.hpp" //for ini loading
 #ifndef _WIN32
 #include <codecvt> //For UTF-8 reading
@@ -27,208 +30,232 @@
 // Irrlicht Namespaces
 using namespace irr;
 
+class IniCache
+{
+public:
+    IniCache() = default;
+
+    std::string getStringValue(const std::string &fileName, const std::string &key, const std::string &defValue = "");
+    std::wstring getWStringValue(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
+
+private:
+    bool readFile(const std::string &fileName);
+
+    bool readWFile(const std::string &fileName);
+
+private:
+    std::map<std::string, std::map<std::string,  std::string>>  m_stringData;
+    std::map<std::string, std::map<std::wstring, std::wstring>> m_wstringData;
+};
+
+
+static IniCache g_iniCache;
+
+
+bool IniCache::readFile(const std::string& fileName)
+{
+    if (m_stringData.find(fileName) != m_stringData.end()) {
+        return true; // file already read
+    }
+
+    std::ifstream file (fileName.c_str());
+
+    //Set UTF-8 on Linux/OSX etc
+#ifndef _WIN32
+    try {
+#  ifdef __APPLE__
+        char* thisLocale = setlocale(LC_ALL, "");
+        if (thisLocale) {
+            file.imbue(std::locale(thisLocale));
+        }
+#  else
+        file.imbue(std::locale("en_US.UTF8"));
+#  endif
+    } catch (const std::runtime_error& runtimeError) {
+        file.imbue(std::locale(""));
+    }
+#endif
+
+    if (!file.is_open()) {
+        if (IniFile::irrlichtLogger) {
+            std::string logMessage = "Unable to open file: ";
+            logMessage.append(fileName);
+            IniFile::irrlichtLogger->log(logMessage.c_str());
+        }
+        else {
+            std::cerr << "Unable to open file " << fileName << std::endl;
+        }
+        return false;
+    }
+
+    std::string line;
+    while ( std::getline (file,line) )
+    {
+        const std::size_t equalsPos = line.find_first_of("=");
+        if (equalsPos != std::string::npos) {
+            std::string key   = Utilities::trim(line.substr(0, equalsPos));
+            std::string value = Utilities::trim(line.substr(equalsPos+1, std::string::npos));
+
+            Utilities::to_lower(key);
+            value = Utilities::trim(value, "\"");
+
+            m_stringData[fileName][key] = value;
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+
+bool IniCache::readWFile(const std::string& fileName)
+{
+    if (m_stringData.find(fileName) != m_stringData.end()) {
+        return true; // file already read
+    }
+
+    std::wifstream file(fileName.c_str());
+
+    //Set UTF-8 on Linux/OSX etc
+    #ifndef _WIN32
+    try {
+        #  ifdef __APPLE__
+        char* thisLocale = setlocale(LC_ALL, "");
+        if (thisLocale) {
+            file.imbue(std::locale(thisLocale));
+        }
+        #  else
+        file.imbue(std::locale("en_US.UTF8"));
+        #  endif
+    } catch (const std::runtime_error& runtimeError) {
+        file.imbue(std::locale(""));
+    }
+    #endif
+
+    if (!file.is_open()) {
+        if (IniFile::irrlichtLogger) {
+            std::string logMessage = "Unable to open file: ";
+            logMessage.append(fileName);
+            IniFile::irrlichtLogger->log(logMessage.c_str());
+        }
+        else {
+            std::cerr << "Unable to open file " << fileName << std::endl;
+        }
+        return false;
+    }
+
+    std::wstring line;
+    while ( std::getline (file,line) )
+    {
+        const std::size_t equalsPos = line.find_first_of(L"=");
+        if (equalsPos != std::wstring::npos) {
+            std::wstring key   = Utilities::trim(line.substr(0, equalsPos));
+            std::wstring value = Utilities::trim(line.substr(equalsPos+1, std::wstring::npos));
+
+            Utilities::to_lower(key);
+            value = Utilities::trim(value, L"\"");
+
+            m_wstringData[fileName][key] = value;
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+
+std::string IniCache::getStringValue(const std::string& fileName, const std::string& key, const std::string& defValue)
+{
+    std::string keyLow = key;
+    Utilities::to_lower(keyLow);
+
+    try {
+        auto fileIt = m_stringData.find(fileName);
+        if (fileIt == m_stringData.end()) {
+            if (!readFile(fileName)) {
+                throw std::runtime_error("File not found.");
+            }
+            fileIt = m_stringData.find(fileName);
+            assert(fileIt != m_stringData.end());
+        }
+
+        const auto keyIt = fileIt->second.find(keyLow);
+        if (keyIt == (fileIt->second).end()) {
+            return defValue;
+        }
+
+        return keyIt->second;
+    }
+    catch (std::runtime_error&) {
+        return defValue;
+    }
+}
+
+std::wstring IniCache::getWStringValue(const std::string& fileName, const std::string& key, const std::wstring& defValue)
+{
+    std::wstring keyLow = std::wstring(key.begin(), key.end());
+    Utilities::to_lower(keyLow);
+
+    try {
+        auto fileIt = m_wstringData.find(fileName);
+        if (fileIt == m_wstringData.end()) {
+            if (!readWFile(fileName)) {
+                throw std::runtime_error("File not found.");
+            }
+            fileIt = m_wstringData.find(fileName);
+            assert(fileIt != m_wstringData.end());
+        }
+
+        const auto keyIt = fileIt->second.find(keyLow);
+        if (keyIt == (fileIt->second).end()) {
+            return defValue;
+        }
+
+        return keyIt->second;
+    }
+    catch (std::runtime_error&) {
+        return defValue;
+    }
+}
+
+
 //Utility functions
 namespace IniFile
 {
-    std::string enumerate1(std::string commandName, irr::s32 number)
-    //Build up a command in the format 'commandName(#)'
+    //Build up a command in the format 'key(#)'
+    std::string enumerate1(std::string key, irr::s32 number)
     {
-        std::string ans = commandName;
-        ans.append("(");
-        ans.append(Utilities::lexical_cast<std::string>(number));
-        ans.append(")");
-
-        return ans;
+        return key + "(" + std::to_string(number) + ")";
     }
 
-    std::string enumerate2(std::string commandName, irr::s32 number1, irr::s32 number2)
-    //Build up a command in the format 'commandName(#,#)'
+    //Build up a command in the format 'key(#,#)'
+    std::string enumerate2(std::string key, irr::s32 number1, irr::s32 number2)
     {
-        std::string ans = commandName;
-        ans.append("(");
-        ans.append(Utilities::lexical_cast<std::string>(number1));
-        ans.append(",");
-        ans.append(Utilities::lexical_cast<std::string>(number2));
-        ans.append(")");
-
-        return ans;
+        return key + "(" + std::to_string(number1) + "," + std::to_string(number2) + ")";
     }
 
-    std::string trim(const std::string& str, const std::string& trimChr=" \n\r\t")
+    std::string iniFileToString(const std::string &fileName, const std::string &key, const std::string &defValue)
     {
-        const std::size_t strBegin = str.find_first_not_of(trimChr);
-        if (strBegin == std::string::npos)
-            return ""; // no content
-        const std::size_t strEnd = str.find_last_not_of(trimChr);
-        const std::size_t strRange = strEnd - strBegin + 1;
-
-        return str.substr(strBegin, strRange);
+        return g_iniCache.getStringValue(fileName, key, defValue);
     }
 
-    std::wstring trim(const std::wstring& str, const std::wstring& trimChr=L" \n\r\t")
+    std::wstring iniFileToWString(const std::string &fileName, const std::string &key, const std::wstring &defValue)
     {
-        const std::size_t strBegin = str.find_first_not_of(trimChr);
-        if (strBegin == std::wstring::npos)
-            return L""; // no content
-        const std::size_t strEnd = str.find_last_not_of(trimChr);
-        const std::size_t strRange = strEnd - strBegin + 1;
-
-        return str.substr(strBegin, strRange);
-    }
-
-    std::string iniFileToString(std::string fileName, std::string command)
-    {
-        std::ifstream file (fileName.c_str());
-
-        //Set UTF-8 on Linux/OSX etc
-        #ifndef _WIN32
-        try {
-            #ifdef __APPLE__
-            char* thisLocale = setlocale(LC_ALL, "");
-            if (thisLocale) {
-                file.imbue(std::locale(thisLocale));
-            }
-            #else
-            file.imbue(std::locale("en_US.UTF8"));
-            #endif
-        } catch (const std::runtime_error& runtimeError) {
-            file.imbue(std::locale(""));
-        }
-        #endif
-
-        std::string valuePart = "";
-        if (file.is_open())
-        {
-            std::string line;
-            while ( std::getline (file,line) )
-            {
-                std::string lowerLine(line); //Duplicate the line so we can make it lowercase, without affecting the result
-                Utilities::to_lower(lowerLine);
-                Utilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
-
-                //Look for the command and the '=' sign in the line
-                std::size_t commandFound = lowerLine.find(command);
-                std::size_t equalsFound = lowerLine.find("=");
-
-                //If both found, with equals after the command
-                if (commandFound!=std::string::npos && equalsFound!=std::string::npos && equalsFound>commandFound)
-                {
-                    //Check that the part before the '=' exactly matches the command
-                    if (trim(lowerLine.substr(0,equalsFound))==trim(command))
-                    {
-                        //get the value
-                        //try {
-                            valuePart = line.substr(equalsFound+1,std::string::npos);//from equals to end, not including the equals
-                        //}
-                        //catch (const std::out_of_range& oor) {
-                        //    std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
-                        //}
-                    }
-                }
-
-            }
-            file.close();
-        } else {
-            if (irrlichtLogger) {
-                std::string logMessage = "Unable to open file: ";
-                logMessage.append(fileName);
-                irrlichtLogger->log(logMessage.c_str());
-            } else {
-                std::cerr << "Unable to open file " << fileName << std::endl;
-            }
-        }//
-
-        //trim whitespace and " characters if present
-        valuePart = trim(valuePart);
-        valuePart = trim(valuePart,"\"");
-        return valuePart;
-    }
-
-    std::wstring iniFileToWString(std::string fileName, std::wstring command)
-    {
-        std::wifstream file (fileName.c_str());
-
-        //Set UTF-8 on Linux/OSX etc
-        #ifndef _WIN32
-        try {
-            #ifdef __APPLE__
-            char* thisLocale = setlocale(LC_ALL, "");
-            if (thisLocale) {
-                file.imbue(std::locale(thisLocale));
-            }
-            #else
-            file.imbue(std::locale("en_US.UTF8"));
-            #endif
-        } catch (const std::runtime_error& runtimeError) {
-            file.imbue(std::locale(""));
-        }
-        #endif
-
-        std::wstring valuePart = L"";
-        if (file.is_open())
-        {
-            std::wstring line;
-            while ( std::getline (file,line) )
-            {
-                std::wstring lowerLine(line); //Duplicate the line so we can make it lowercase, without affecting the result
-                Utilities::to_lower(lowerLine);
-                Utilities::to_lower(command); //Make the command lowercase, so we can check this without case sensitivity
-
-                //Look for the command and the '=' sign in the line
-                std::size_t commandFound = lowerLine.find(command);
-                std::size_t equalsFound = lowerLine.find(L"=");
-
-                //If both found, with equals after the command
-                if (commandFound!=std::string::npos && equalsFound!=std::string::npos && equalsFound>commandFound)
-                {
-                    //Check that the part before the '=' exactly matches the command
-                    if (trim(lowerLine.substr(0,equalsFound))==trim(command))
-                    {
-                        //get the value
-                        //try {
-                            valuePart = line.substr(equalsFound+1,std::string::npos);//from equals to end, not including the equals
-                        //}
-                        //catch (const std::out_of_range& oor) {
-                        //    std::cerr << "Could not get value for: " << command << " " << oor.what() << '\n';
-                        //}
-                    }
-                }
-
-            }
-            file.close();
-        } else {
-            if (irrlichtLogger) {
-                std::string logMessage = "Unable to open file: ";
-                logMessage.append(fileName);
-                irrlichtLogger->log(logMessage.c_str());
-            } else {
-                std::cerr << "Unable to open file " << fileName << std::endl;
-            }
-        }
-
-
-        //trim whitespace and " characters if present
-        valuePart = trim(valuePart);
-        valuePart = trim(valuePart,L"\"");
-        return valuePart;
+        return g_iniCache.getWStringValue(fileName, key, defValue);
     }
 
     //Load unsigned integer from an ini file
-    u32 iniFileTou32(std::string fileName, std::string command)
+    u32 iniFileTou32(const std::string &fileName, const std::string &key)
     {
-        u32 result = 0;
-        std::string valueString = iniFileToString(fileName, command); //Get the value as a string
-        result = core::strtoul10(valueString.c_str()); //Convert this into an unsigned int
-        return result;
+        const std::string valueString = iniFileToString(fileName, key); //Get the value as a string
+        return core::strtoul10(valueString.c_str()); //Convert this into an unsigned int
     }
 
     //Load float from an ini file
-    f32 iniFileTof32(std::string fileName, std::string command)
+    f32 iniFileTof32(const std::string &fileName, const std::string &key)
     {
-        f32 result = 0;
-        std::string valueString = iniFileToString(fileName, command); //Get the value as a string
-        result = core::fast_atof(valueString.c_str()); //Convert this into a float
-        return result;
+        const std::string valueString = iniFileToString(fileName, key); //Get the value as a string
+        return irr::core::fast_atof(valueString.c_str()); //Convert this into a float
     }
 
 }

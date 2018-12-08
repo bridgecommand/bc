@@ -36,9 +36,13 @@ namespace Utilities
     void to_lower(std::wstring& toConvert);
     signed int round(float numberIn);
     time_t dmyToTimestamp(int day, int month, int year);
+
     std::string timestampToString(time_t timestamp, std::string format);
     std::string timestampToString(time_t timestamp);
+
     std::string trim(std::string inString, std::string trimChrs = " \f\n\r\t\v");
+    std::wstring trim(std::wstring inString, std::wstring trimChrs = L" \f\n\r\t\v");
+
     std::vector<std::string> split(const std::string &inputString, char delim);
     std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Bridge Command/ on windows)
     std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Bridge Command/VERSIONUMBER/ on windows)
@@ -62,7 +66,7 @@ namespace Utilities
             if (std::is_floating_point<T>::value) {
 				var = (T)std::numeric_limits<float>::infinity();
             } else {
-				//var = 1000000000; //FIXME: Temporary fix 
+				//var = 1000000000; //FIXME: Temporary fix
 				var = (std::numeric_limits<T>::max)();
             }
         } else if (
