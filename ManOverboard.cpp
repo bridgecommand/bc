@@ -40,16 +40,10 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
     std::string mobIniFilename = basePath + "ManOverboard.ini";
 
     //get filename from ini file (or empty string if file doesn't exist)
-    std::string mobFileName = IniFile::iniFileToString(mobIniFilename,"FileName");
-    if (mobFileName=="") {
-        mobFileName = "ManOverboard.x"; //Default if not set
-    }
+    std::string mobFileName = IniFile::iniFileToString(mobIniFilename,"FileName", "ManOverboard.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor");
-    if (mobScale==0.0) {
-        mobScale = 1.0; //Default if not set
-    }
+    f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string mobFullPath = basePath + mobFileName;

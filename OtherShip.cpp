@@ -59,10 +59,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     std::string shipFileName = IniFile::iniFileToString(iniFilename,"FileName");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor");
-    if (scaleFactor==0.0) {
-        scaleFactor = 1.0; //Default if not set
-    }
+    f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
 
     f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
@@ -94,10 +91,10 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     width = ship->getBoundingBox().getExtent().X*scaleFactor;
     height = ship->getBoundingBox().getExtent().Y * 0.75 * scaleFactor; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
-    solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight"); //FIXME: Note in documentation that this is height above waterline in model units
-    if (solidHeight == 0) {
-        solidHeight = 0.5*height; //Default if not set (Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default)
-    }
+
+    // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
+    //FIXME: Note in documentation that this is height above waterline in model units
+    solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight", .5f * height);
 
     //store initial x,y,z positions
     xPos = location.X;

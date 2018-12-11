@@ -36,16 +36,10 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     std::string objectIniFilename = basePath + "/object.ini";
 
     //get filename from ini file (or empty string if file doesn't exist)
-    std::string objectFileName = IniFile::iniFileToString(objectIniFilename,"FileName");
-    if (objectFileName=="") {
-        objectFileName = "object.x"; //Default if not set
-    }
+    std::string objectFileName = IniFile::iniFileToString(objectIniFilename,"FileName", "object.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor");
-    if (objectScale==0.0) {
-        objectScale = 1.0; //Default if not set
-    }
+    f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
 
     std::string objectFullPath = basePath + objectFileName;
 
