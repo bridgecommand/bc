@@ -393,6 +393,9 @@ SimulationModel::~SimulationModel()
 
 	std::string SimulationModel::getOwnShipHornSound() const {
 		std::string soundPath = ownShip.getBasePath();
+
+		//TODO: Check for both Horn.wav and horn.wav in all locations
+
 		//TODO: Check existence of sound file in base path, and if not fall back to default.
 		soundPath.append("/Horn.wav");
 
@@ -401,7 +404,7 @@ SimulationModel::~SimulationModel()
 			return soundPath;
 		}
 		else {
-			return "Sounds/Horn.wav";
+			return "Sounds/horn.wav";
 		}
 
 	}
