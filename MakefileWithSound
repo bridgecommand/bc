@@ -84,7 +84,7 @@ USERCPPFLAGS = -std=c++11 \
 	-I./libs/libsndfile/include \
 	-DASIO_STANDALONE \
 	-DASIO_HAS_STD_THREAD \
-    -DWITH_SOUND
+	-DWITH_SOUND
 
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
@@ -115,6 +115,10 @@ else
 USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux \
 	-lIrrlicht \
 	-L/usr/X11R6/lib$(LIBSELECT) \
+	-L./libs/portaudio/lib \
+	-L./libs/libsndfile/lib \
+	-lsndfile \
+	-lportaudio \
 	-lGL \
 	-lXxf86vm \
 	-lXext \

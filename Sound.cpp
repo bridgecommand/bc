@@ -57,22 +57,26 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 
 	portAudioError = Pa_Initialize();
 	if (portAudioError != paNoError) {
+		std::cerr << "Pa_Initialize failed." << std::endl;
 		return;
 	}
 
 	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
 	if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
+		std::cerr << "sf_error on engineSoundFile." << std::endl;
 		return;
 	}
 
 	/* Open the soundfiles */
 	data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
 	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
+        std::cerr << "sf_error on waveSoundFile." << std::endl;
 		return;
 	}
 
 	data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
 	if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
+        std::cerr << "sf_error on hornSoundFile." << std::endl;
 		return;
 	}
 
@@ -102,10 +106,12 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 		, &data);        /* our sndfile data struct */
 	if (portAudioError != paNoError)
 	{
+		std::cerr << "Pa_OpenDefaultStream failed." << std::endl;
 		return;
 	}
 
 	soundLoaded = true; // All OK if we've got here
+	std::cout << "Sound::load succeeded" << std::endl;
 }
 
 void Sound::StartSound() {
