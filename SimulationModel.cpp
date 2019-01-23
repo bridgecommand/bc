@@ -363,49 +363,140 @@ SimulationModel::~SimulationModel()
     }
 
 	std::string SimulationModel::getOwnShipEngineSound() const {
-		std::string soundPath = ownShip.getBasePath();
-		//TODO: Check existence of sound file in base path, and if not fall back to default.
-		soundPath.append("/Engine.wav");
 
-		std::ifstream file(soundPath.c_str());
-		if (file.good()) {
-			return soundPath;
-		} else {
-			return "Sounds/Engine.wav";
+		//Check existence of sound file in base path, and if not fall back to default.
+		std::string soundPath = ownShip.getBasePath();
+
+		{ //Create local scope for file
+            soundPath.append("/Engine.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
 		}
+
+		//Check for lower case version
+		{
+            soundPath = ownShip.getBasePath();
+            soundPath.append("/engine.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//Fall back to default, again checking both upper and lower case
+
+		{
+            soundPath = "Sounds/Engine.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		{
+            soundPath = "Sounds/engine.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//In case nothing found
+		return "";
 
 	}
 
 	std::string SimulationModel::getOwnShipWaveSound() const {
-		std::string soundPath = ownShip.getBasePath();
-		//TODO: Check existence of sound file in base path, and if not fall back to default.
-		soundPath.append("/Bwave.wav");
 
-		std::ifstream file(soundPath.c_str());
-		if (file.good()) {
-			return soundPath;
+		//Check existence of sound file in base path, and if not fall back to default.
+		std::string soundPath = ownShip.getBasePath();
+
+		{ //Create local scope for file
+            soundPath.append("/Bwave.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
 		}
-		else {
-			return "Sounds/Bwave.wav";
+
+		//Check for lower case version
+		{
+            soundPath = ownShip.getBasePath();
+            soundPath.append("/bwave.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
 		}
+
+		//Fall back to default, again checking both upper and lower case
+
+		{
+            soundPath = "Sounds/Bwave.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		{
+            soundPath = "Sounds/bwave.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//In case nothing found
+		return "";
 
 	}
 
 	std::string SimulationModel::getOwnShipHornSound() const {
+
+		//Check existence of sound file in base path, and if not fall back to default.
 		std::string soundPath = ownShip.getBasePath();
 
-		//TODO: Check for both Horn.wav and horn.wav in all locations
-
-		//TODO: Check existence of sound file in base path, and if not fall back to default.
-		soundPath.append("/Horn.wav");
-
-		std::ifstream file(soundPath.c_str());
-		if (file.good()) {
-			return soundPath;
+		{ //Create local scope for file
+            soundPath.append("/Horn.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
 		}
-		else {
-			return "Sounds/horn.wav";
+
+		//Check for lower case version
+		{
+            soundPath = ownShip.getBasePath();
+            soundPath.append("/horn.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
 		}
+
+		//Fall back to default, again checking both upper and lower case
+
+		{
+            soundPath = "Sounds/Horn.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		{
+            soundPath = "Sounds/horn.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//In case nothing found
+		return "";
 
 	}
 
