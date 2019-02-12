@@ -186,8 +186,14 @@ public:
                         execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
-                        //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
+                        #ifdef FOR_DEB
+                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/bridgecommand/doc/index.html", NULL);
+                            //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
+                        #else
+                            execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
+                            //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
+                        #endif // FOR_DEB
+
 
                     #endif
                     #endif
@@ -201,6 +207,10 @@ public:
 
 int main (int argc, char ** argv)
 {
+
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
 
     //Mac OS:
     //Find starting folder
@@ -289,6 +299,10 @@ int main (int argc, char ** argv)
 
     Receiver receiver;
     device->setEventReceiver(&receiver);
+
+    #ifdef FOR_DEB
+    chdir("/usr/bin");
+    #endif // FOR_DEB
 
     while (device->run()) {
         driver->beginScene();

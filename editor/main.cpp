@@ -44,6 +44,10 @@
     #endif
 #endif // __APPLE__
 
+#ifdef __linux__
+    #include <unistd.h>
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
@@ -344,6 +348,10 @@ void checkUserScenarioDir(void)
 
 int main (int argc, char ** argv)
 {
+
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
 
     //Mac OS:
     //Find starting folder

@@ -64,6 +64,10 @@ std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 
 int main()
 {
 
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
+
     //Mac OS:
 	#ifdef __APPLE__
     //Find starting folder

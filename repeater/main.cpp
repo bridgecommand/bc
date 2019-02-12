@@ -56,6 +56,10 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 int main (int argc, char ** argv)
 {
 
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
+
     //Mac OS:
     //Find starting folder
 	#ifdef __APPLE__
