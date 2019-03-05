@@ -30,6 +30,10 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
+#ifdef __linux__
+    #include <unistd.h>
+#endif
+
 // Irrlicht Namespaces
 using namespace irr;
 
@@ -193,6 +197,10 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 
 int main (int argc, char ** argv)
 {
+
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
 
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
     std::string iniFilename = "bc5.ini";
