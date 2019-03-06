@@ -1,4 +1,4 @@
-prefix=c:/devel/target/libsndfile
+prefix=/Users/James/Documents/BridgeCommand/libsndfile-1.0.28/lib
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -8,5 +8,5 @@ Description: A library for reading and writing audio files
 Requires: 
 Version: 1.0.28
 Libs: -L${libdir} -lsndfile
-Libs.private: Ext/libflac.la Ext/libvorbis.la Ext/libogg.la
+Libs.private: 
 Cflags: -I${includedir} 
