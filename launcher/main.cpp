@@ -187,7 +187,7 @@ public:
                     #else
                         //Other (assumed posix)
                         #ifdef FOR_DEB
-                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/bridgecommand/doc/index.html", NULL);
+                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/doc/bridgecommand/index.html", NULL);
                             //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
                         #else
                             execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
