@@ -31,6 +31,7 @@
 					<Add library="Xext" />
 					<Add library="X11" />
 					<Add library="Xcursor" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 			<Target title="LinuxForDeb">
@@ -49,6 +50,7 @@
 					<Add library="Xext" />
 					<Add library="X11" />
 					<Add library="Xcursor" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
