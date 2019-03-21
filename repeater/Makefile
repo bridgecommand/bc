@@ -25,7 +25,7 @@ endif
 ifeq ($(UNAME_S),Darwin)
 USERLDFLAGS = -stdlib=libc++ -L../libs/Irrlicht/irrlicht-svn/lib/OSX -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 else
-USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
+USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux -lIrrlicht -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor -lpthread
 endif
 
 ####
