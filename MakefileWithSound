@@ -124,6 +124,7 @@ USERLDFLAGS = -L$(IrrlichtHome)/lib/Linux \
 	-lXext \
 	-lX11 \
 	-lXcursor \
+	-lasound \
 	-lpthread
 endif
 
