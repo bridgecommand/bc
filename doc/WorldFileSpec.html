@@ -105,7 +105,7 @@ format (32 bit floating point, with extension .f32), and the texture and map ima
 
 <h4>File details:</h4>
 
-<h5>Terrain.ini</h5>
+<h5>terrain.ini</h5>
 
 <p>Example</p>
 
@@ -154,7 +154,7 @@ TerrainHeightMapSize(2)=257
 </li>
 </ul>
 
-<h5>Buoy.ini</h5>
+<h5>buoy.ini</h5>
    
 <p>Contains 1 general variable, and a set of 3 or 4 variables for each buoy defined. The global variable is Number, which is the number of 
 buoys to be defined in the file. This can be zero, in which case no buoys are defined, and nothing further is required in this file. The three 
@@ -162,14 +162,14 @@ required variables for each buoy are Type(#), Long(#) and Lat(#). Type(#) takes 
 available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory (By default 
 <i>C:\Program files\Bridge Command 5.0</i>. 
 Long(#) and Lat(#) take respectively the buoy's Longitude and Latitude in standard decimal degrees. Note that only the buoy model and its 
-location is specified here - if the buoy has a light attached, it must be specified in <i>Light.ini</i>, as specified below. 
+location is specified here - if the buoy has a light attached, it must be specified in <i>light.ini</i>, as specified below. 
 The optional variable is RCS, which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.</p>
 
-<h5>Example Buoy.ini, setting up three buoys:</h5>
+<h5>Example buoy.ini, setting up three buoys:</h5>
 
 <pre>Number=3<br><br>Type(1)="Port"<br>Long(1)=-4.135<br>Lat(1)=52.407<br><br>Type(2)="RY"<br>Long(2)=-4.299<br>Lat(2)=55.004<br>RCS(2)=3.5<br><br>Type(3)="Mooring"<br>Long(3)=-4.505<br>Lat(3)=52.702</pre>
 
-<h5>LandObject.ini</h5>
+<h5>landobject.ini</h5>
 
 <p>The analog of <i>buoy.ini</i>, but for fixed objects, either on land or ground based object at sea
 (breakwaters etc). Contains 1 general variable, and a set of 5 to 6
@@ -177,7 +177,7 @@ variables for each land object defined. <i>Number</i> sets the number of objects
 case no land objects are defined, and nothing further is required in
 this file. The first three variables for each object, <i>Type(#)</i>, <i>Long(#)</i> and <i>Lat(#)</i> are defined as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command root folder. The additional two variables, <i>Rotation(#)</i> and <i>HeightCorrection(#)</i> allow for the model to be rotated about its vertical axis, and moved up or down. If the optional setting <i>Absolute(#)</i> is set as 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level. <i>Rotation(#)</i> is specified in degrees. An anticlockwise rotation, as viewed from the top, is positive. <i>HeightCorrection(#)</i> allows for a model to be moved up or down, so it sits properly on the land. A positive <i>HeightCorrection(#)</i> moves the object upwards, and is in metres.</p>
 
-<h5>Example LandObject.ini</h5>
+<h5>Example landobject.ini</h5>
 <pre>
 Number=5
 
@@ -216,7 +216,7 @@ HeightCorrection(5)=121.92
 Rotation(5)=0
 Absolute(5)=1
 </pre>
-<h5>Light.ini</h5>
+<h5>light.ini</h5>
    
 <p>This
 specifies navigation lights in the environment. These can either be
@@ -297,7 +297,7 @@ be at the defined hight relative to the land at its position.
 <h5>Example light.ini</h5>
 <pre>Number=2<br><br>Buoy(1)=2<br>Height(1)=8<br>Red(1)=0<br>Green(1)=255<br>Blue(1)=0<br>Range(1)=20<br>Sequence(1)="lldddd"<br>StartAngle(1)=45<br>EndAngle(1)=315<br><br>Long(2)=50.2<br>Lat(2)=-34.6<br>Height(2)=3<br>Red(2)=255<br>Green(2)=0<br>Blue(2)=0<br>Range(2)=20<br>Sequence(2)="lllldd"<br>StartAngle(2)=0<br>EndAngle(2)=360</pre>
 
-<h5>Tide.ini</h5>
+<h5>tide.ini</h5>
 <p>
 Bridge Command defines the tide in terms of it's harmonic constituents, which each have an amplitude, speed and offset. This means that any tide of any complexity can be modelled. Currently there is only one set of tidal characteristics, which apply across all of the environment model. The amplitude is set in metres, and is half the range of the component. The speed is set in degrees/hour, where one full period is 360 degrees. So for example, the main component of a tide, which has approximately two highs and two lows in a 25 hour period would have a speed of around 28.8 degrees/hour. The offset is how much the tidal component is shifted in degrees, relative to a component that had a peak at 0000 on the morning of the 1st January 1970 (used as Bridge Command's time reference point).
 </p>
@@ -316,7 +316,7 @@ variable is <i>Harmonics</i>, which defines the number of harmonic components mo
 </ul> 
 </p>
 
-<h5>Example Tide.ini:</h5>
+<h5>Example tide.ini:</h5>
 <p>
 <pre>
 Harmonics=4
