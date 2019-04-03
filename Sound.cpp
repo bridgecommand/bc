@@ -63,20 +63,20 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 
 	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
 	if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
-		std::cerr << "sf_error on engineSoundFile " << engineSoundFile << std::endl;
+		std::cerr << "sf_error on engineSoundFile " << engineSoundFile.c_str() << std::endl;
 		return;
 	}
 
 	/* Open the soundfiles */
 	data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
 	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
-        std::cerr << "sf_error on waveSoundFile " << waveSoundFile << std::endl;
+        std::cerr << "sf_error on waveSoundFile " << waveSoundFile.c_str() << std::endl;
 		return;
 	}
 
 	data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
 	if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
-        std::cerr << "sf_error on hornSoundFile" << hornSoundFile << std::endl;
+        std::cerr << "sf_error on hornSoundFile" << hornSoundFile.c_str() << std::endl;
 		return;
 	}
 
