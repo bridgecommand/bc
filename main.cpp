@@ -245,13 +245,6 @@ int main()
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
 
-
-    //set size of camera window
-    u32 graphicsWidth3d = graphicsWidth;
-    u32 graphicsHeight3d = graphicsHeight*0.6;
-    f32 aspect = (f32)graphicsWidth/(f32)graphicsHeight;
-    f32 aspect3d = (f32)graphicsWidth3d/(f32)graphicsHeight3d;
-
     //load language
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
@@ -464,12 +457,20 @@ int main()
         }
     }
 
-
-    u32 creditsStartTime = device->getTimer()->getRealTime();
-
-    //Show loading message
     u32 su = driver->getScreenSize().Width;
     u32 sh = driver->getScreenSize().Height;
+
+	//set size of camera window, based on actual window
+	graphicsWidth = su;
+	graphicsHeight = sh;
+	u32 graphicsWidth3d = su;
+	u32 graphicsHeight3d = sh * 0.6;
+	f32 aspect = (f32)su / (f32)sh;
+	f32 aspect3d = (f32)graphicsWidth3d / (f32)graphicsHeight3d;
+
+	//Show loading message
+
+	u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
     creditsText.append(L"\n\n");
     creditsText.append(getCredits());
