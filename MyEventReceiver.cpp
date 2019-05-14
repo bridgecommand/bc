@@ -655,7 +655,7 @@ using namespace irr;
         		device->getLogger()->log(joystickInfoMessage.c_str());
 
         		for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
-        			f32 axisSetting = event.JoystickEvent.Axis[thisAxis]/32768.0;
+        			s16 axisSetting = event.JoystickEvent.Axis[thisAxis];
         			device->getLogger()->log(core::stringc(axisSetting).c_str());
         		}
         		device->getLogger()->log("");
