@@ -154,15 +154,8 @@ float Sound::getVolumeHorn() const {
 Sound::~Sound() {
 
 	portAudioError = Pa_CloseStream(stream);
-	if (portAudioError != paNoError)
-	{
-		std::cerr << "Problem closing stream" << std::endl;
-	}
 
 	portAudioError = Pa_Terminate();
-	if (portAudioError == paNoError) {
-		std::cerr << "PortAudio terminated" << std::endl;
-	}
 
 	/* Close the soundfile */
 	sf_close(data.fileWave);
