@@ -72,14 +72,12 @@ NMEA::~NMEA()
     //Shut down serial port here
     if (mySerialPort.isOpen())
     {
-        device->getLogger()->log("Closing serial port");
         try
         {
             mySerialPort.close();
         }
         catch (std::exception const& e)
         {
-            device->getLogger()->log(e.what());
         }
     }
 

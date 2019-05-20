@@ -58,8 +58,6 @@ NetworkPrimary::~NetworkPrimary() //Destructor
     //shut down networking
     enet_host_destroy(client);
     enet_deinitialize();
-
-    device->getLogger()->log("Shut down enet");
 }
 
 void NetworkPrimary::connectToServer(std::string hostnames)

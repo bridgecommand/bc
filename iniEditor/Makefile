@@ -42,7 +42,7 @@ DESTPATH = $(BinPath)/$(Target)$(SUF)
 
 #default target is Linux
 all: 
-	$(warning Building...)
+	$(info Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
 	rm -f ../BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
@@ -50,7 +50,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 clean:
-	$(warning Cleaning...)
+	$(info Cleaning...)
 	@$(RM) $(DESTPATH)
 
 .PHONY: all

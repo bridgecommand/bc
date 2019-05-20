@@ -542,6 +542,7 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
         //Items not to show if we're on full screen radar
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
+		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
         hideInterfaceButton->setVisible(showInterface && !radarLarge);
         showInterfaceButton->setVisible(!showInterface && !radarLarge);
 

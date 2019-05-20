@@ -78,7 +78,6 @@ NetworkSecondary::~NetworkSecondary()
 {
     enet_host_destroy(server);
     enet_deinitialize();
-    device->getLogger()->log("Shut down enet");
 }
 
 void NetworkSecondary::connectToServer(std::string hostnames)

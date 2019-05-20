@@ -34,6 +34,8 @@ using namespace irr;
 		//store device
 		device = dev;
 
+		showJoystickStatusInLog = true;
+
 		//set up joystick if present, and inform user what's available
 		dev->activateJoysticks(joystickInfo);
 
@@ -642,6 +644,28 @@ using namespace irr;
 		//From joystick (actually polled, once per run():
         if (event.EventType == EET_JOYSTICK_INPUT_EVENT) {
 
+        	u8 thisJoystick = event.JoystickEvent.Joystick;
+
+        	//Show joystick raw status
+        	if (showJoystickStatusInLog) {
+
+        		std::string joystickInfoMessage = "Initial joystick status (";
+        		joystickInfoMessage.append(core::stringc(event.JoystickEvent.Joystick).c_str());
+        		joystickInfoMessage.append(")\n");
+        		device->getLogger()->log(joystickInfoMessage.c_str());
+
+        		for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
+        			s16 axisSetting = event.JoystickEvent.Axis[thisAxis];
+        			device->getLogger()->log(core::stringc(axisSetting).c_str());
+        		}
+        		device->getLogger()->log("");
+
+        		//If we've shown for all joysticks, don't show again.
+        		if (event.JoystickEvent.Joystick+1 == joystickInfo.size()) {
+        			showJoystickStatusInLog = false; //Don't show again
+        		}
+
+        	}
 
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
@@ -649,7 +673,7 @@ using namespace irr;
             irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
             irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
-            u8 thisJoystick = event.JoystickEvent.Joystick;
+
             for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
 
                 //Check which type we correspond to

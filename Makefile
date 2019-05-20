@@ -124,7 +124,7 @@ DESTPATH = $(BinPath)/$(Target)$(SUF)
 
 #default target is Linux
 all:
-	$(warning Building...)
+	$(info Building...)
 #Build Irrlicht (different command on OSX)
 ifeq ($(UNAME_S),Darwin)
 	xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj
@@ -168,7 +168,7 @@ ifeq ($(UNAME_S),Darwin)
 endif
 
 clean:
-	$(warning Cleaning...)
+	$(info Cleaning...)
 ifeq ($(UNAME_S),Darwin)
 	xcodebuild -project libs/Irrlicht/irrlicht-svn/source/Irrlicht/Irrlicht.xcodeproj clean
 else

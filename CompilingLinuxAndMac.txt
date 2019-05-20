@@ -1,12 +1,42 @@
 ﻿To build on linux:
 ==================
 
+1) Ensure the required library packages are installed with the following command in the terminal window:
+sudo apt-get install mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev
 1) Run 'make' to compile Bridge Command
 2) Run ./bridgecommand to start the simulator.
 
 To build on Mac:
 ================
 
-1) Ensure you have XCode installed (required to compile programs on Mac)
+1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store
 2) Run 'make' to compile Bridge Command
 3) Run the BridgeCommand app (BridgeCommand.app)
+
+Additional steps to compile with sound (for both Mac and Linux):
+================================================================
+Libsndfile:
+Download and uncompress libsndfile-1.0.28.tar.gz from http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28.tar.gz
+Create a folder for the output, referred to as <Somewhere> (Absolute path)
+Change directory to where you've uncompressed libsndfile, then run the following in the terminal window:
+
+./configure --disable-shared --prefix=<Somewhere>
+make
+make install
+cd <Somewhere>
+cp -a lib <BridgeCommandSourceLocation>/libs/libsndfile/
+
+
+Portaudio (Note for Linux compilation, remove the --disable-mac-universal option):
+Download and uncompress pa_stable_v190600_20161030.tgz from http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
+Change directory to where you've uncompressed Portaudio, then run the following in the terminal window:
+
+./configure --disable-mac-universal --disable-shared --enable-static
+make
+cd lib/.libs/
+cp * <BridgeCommandSourceLocation>/libs/portaudio/lib/
+
+Building Bridge Command with sound:
+Change to where you have the Bridge Command source then run the following in the terminal window:
+
+make -f MakefileWithSound
