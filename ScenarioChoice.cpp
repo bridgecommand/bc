@@ -43,7 +43,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2019 James Packer");
+    titleText.append(L"\nCopyright 2019 James Packer\n\n");
+    titleText.append(L"Build: ");
+    titleText.append(core::stringw(__DATE__));
+    titleText.append(L" ");
+    titleText.append(core::stringw(__TIME__));
     core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
     title->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
