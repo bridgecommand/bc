@@ -34,7 +34,7 @@ using namespace irr;
 		//store device
 		device = dev;
 
-		showJoystickStatusInLog = true;
+		lastShownJoystickStatus = device->getTimer()->getRealTime()-5000;
 
 		//set up joystick if present, and inform user what's available
 		dev->activateJoysticks(joystickInfo);
@@ -74,6 +74,8 @@ using namespace irr;
 
     bool MyEventReceiver::OnEvent(const SEvent& event)
 	{
+
+
 
 
         //std::cout << "Any event in receiver" << std::endl;
@@ -646,23 +648,26 @@ using namespace irr;
 
         	u8 thisJoystick = event.JoystickEvent.Joystick;
 
-        	//Show joystick raw status
-        	if (showJoystickStatusInLog) {
+        	//Show joystick raw status in log window
+        	if (device->getTimer()->getRealTime() - lastShownJoystickStatus > 5000) {
 
-        		std::string joystickInfoMessage = "Initial joystick status (";
+        		std::string joystickInfoMessage = "Joystick status (";
         		joystickInfoMessage.append(core::stringc(event.JoystickEvent.Joystick).c_str());
         		joystickInfoMessage.append(")\n");
         		device->getLogger()->log(joystickInfoMessage.c_str());
 
+        		std::string thisJoystickStatus = "";
         		for (u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
         			s16 axisSetting = event.JoystickEvent.Axis[thisAxis];
-        			device->getLogger()->log(core::stringc(axisSetting).c_str());
+        			thisJoystickStatus.append(core::stringc(axisSetting).c_str());
+        			thisJoystickStatus.append(" ");
         		}
+        		device->getLogger()->log(thisJoystickStatus.c_str());
         		device->getLogger()->log("");
 
         		//If we've shown for all joysticks, don't show again.
         		if (event.JoystickEvent.Joystick+1 == joystickInfo.size()) {
-        			showJoystickStatusInLog = false; //Don't show again
+        			lastShownJoystickStatus = device->getTimer()->getRealTime();
         		}
 
         	}

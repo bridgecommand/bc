@@ -662,12 +662,14 @@ void GUIMain::load(IrrlichtDevice* device, Lang* language, std::vector<std::stri
 
     void GUIMain::showLogWindow()
     {
-        gui::IGUIWindow* logWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.99*su,0.99*sh));
-        gui::IGUIListBox* logText = guienv->addListBox(core::rect<s32>(0.03*su,0.05*sh,0.95*su,0.95*sh),logWindow);
+
+    	irr::gui::IGUIWindow* logWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.99*su,0.99*sh));
+    	irr::gui::IGUIListBox* logText = guienv->addListBox(core::rect<s32>(0.03*su,0.05*sh,0.95*su,0.95*sh),logWindow);
 
         if (logWindow && logText && logMessages) {
 
             logText->setDrawBackground(true);
+            logText->clear();
 
             for (unsigned int i = 0; i<logMessages->size(); i++) {
                 std::string logTextString = logMessages->at(i);
