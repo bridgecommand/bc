@@ -644,11 +644,12 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             }
 
             //Add land scan
-            f32 radarHeight = terrain.getHeight(localX,localZ) - dropWithCurvature - radarScannerHeight - tideHeight;
+            f32 terrainHeightAboveSea = terrain.getHeight(localX,localZ) - tideHeight;
+            f32 radarHeight = terrainHeightAboveSea - dropWithCurvature - radarScannerHeight;
             f32 localSlope = radarHeight/localRange;
             f32 heightAboveLine = radarHeight - scanSlope*localRange; //Find height above previous maximum scan slope
 
-            if (heightAboveLine>0 && localSlope>0) {
+            if (heightAboveLine>0 && terrainHeightAboveSea>0) {
                 f32 radarLocalGradient = heightAboveLine/cellLength;
                 scanSlope = localSlope; //Highest so far on scan
                 scanArray[currentScanAngle][currentStep] += radarFactorLand*std::atan(radarLocalGradient)*(2/PI)/std::pow(localRange/M_IN_NM,3); //make a reflection off a plane wall at 1nm have a magnitude of 1*radarFactorLand
