@@ -23,7 +23,7 @@
 #include "Network.hpp"
 #include "../Utilities.hpp"
 
-using namespace irr;
+////using namespace irr;
 
     EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
 	{
@@ -33,15 +33,15 @@ using namespace irr;
 		this->network = network; //Link to the network
     }
 
-    bool EventReceiver::OnEvent(const SEvent& event)
+    bool EventReceiver::OnEvent(const irr::SEvent& event)
 	{
 
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 
 
-            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
 
                 if (id == GUIMain::GUI_ID_ZOOMIN_BUTTON) {
                     model->increaseZoom();
@@ -153,19 +153,19 @@ using namespace irr;
 
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {
                 if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
-                    model->updateSelectedShip( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                    model->updateSelectedShip( ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
 
                 if (id==GUIMain::GUI_ID_LEG_LISTBOX) {
-                    model->updateSelectedLeg( ((gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                    model->updateSelectedLeg( ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_SCROLL_BAR_CHANGED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED) {
                 if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || id == GUIMain::GUI_ID_RAIN_SCROLLBAR || id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR) {
                     //Weather
                     //4 elements in 'Set weather' command: MCSW,weather,rain,vis
@@ -184,7 +184,7 @@ using namespace irr;
                 }
             }
             /*
-            if (event.GUIEvent.EventType==gui::EGDT_WINDOW_CLOSE) {
+            if (event.GUIEvent.EventType==irr::gui::EGDT_WINDOW_CLOSE) {
                 if (id==GUIMain::GUI_ID_WINDOW) {
                     return true; //Absorb event : TODO: Should this trigger program close?
                 }
@@ -196,7 +196,7 @@ using namespace irr;
         }
 
         //From keyboard
-        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 		{
 
             if (event.KeyInput.Shift) {
@@ -213,9 +213,9 @@ using namespace irr;
 		} //end of key down event
 
 		//From mouse
-		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 
-            if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ) {
 
                 //Check if we're over a gui element, and if so ignore the click
                 irr::gui::IGUIElement* overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(device->getCursorControl()->getPosition());
@@ -224,7 +224,7 @@ using namespace irr;
                 }
             }
 
-            if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {
                 model->setMouseDown(false);
             }
 

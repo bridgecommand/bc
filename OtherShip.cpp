@@ -25,7 +25,7 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace irr;
+//using namespace irr;
 
 OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
@@ -59,15 +59,15 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     std::string shipFileName = IniFile::iniFileToString(iniFilename,"FileName");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
+    irr::f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
 
-    f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
+    irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
 
     std::string shipFullPath = basePath + shipFileName;
 
     //load mesh
-    scene::IAnimatedMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
+    irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
@@ -80,11 +80,11 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
         shipMesh = smgr->addSphereMesh("Dummy");
     }
     ship = smgr->addAnimatedMeshSceneNode( shipMesh, 0, -1);
-    ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    ship->setPosition(core::vector3df(0,heightCorrection,0));
+    ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
+    ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 
-	ship->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-	ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+	ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+	ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
     length = ship->getBoundingBox().getExtent().Z*scaleFactor;
@@ -104,27 +104,27 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            ship->getMaterial(mat).MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-            ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
     //get light locations:
-    u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
+    irr::u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
     if (numberOfLights>0) {
-        for (u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {
-            f32 lightX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightX",currentLight));
-            f32 lightY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightY",currentLight));
-            f32 lightZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightZ",currentLight));
+        for (irr::u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {
+            irr::f32 lightX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightX",currentLight));
+            irr::f32 lightY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightY",currentLight));
+            irr::f32 lightZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightZ",currentLight));
 
-            u32 lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
-            u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
-            u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
+            irr::u32 lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
+            irr::u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
+            irr::u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
 
-            f32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
-            f32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
-            f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
+            irr::f32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
+            irr::f32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
+            irr::f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
             //correct to local scaled coordinates
@@ -135,7 +135,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,core::dimension2d<f32>(5, 5), core::vector3df(lightX,lightY,lightZ),video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(new NavLight (ship,smgr,irr::core::dimension2d<irr::f32>(5, 5), irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
         }
     }
 
@@ -167,17 +167,17 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     }
 
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos = xPos + sin(hdg*core::DEGTORAD)*spd*deltaTime;
-        zPos = zPos + cos(hdg*core::DEGTORAD)*spd*deltaTime;
+        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*spd*deltaTime;
+        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*spd*deltaTime;
     } else {
         positionManuallyUpdated = false;
     }
     yPos = tideHeight+heightCorrection;
 
     //Set position & speed by calling ship methods
-    //setPosition(core::vector3df(xPos,yPos,zPos));
-    ship->setPosition(core::vector3df(xPos,yPos,zPos));
-    ship->setRotation(core::vector3df(0, hdg+angleCorrection, 0)); //Global vectors
+    //setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    ship->setRotation(irr::core::vector3df(0, hdg+angleCorrection, 0)); //Global vectors
 
     //for each light, find range and angle
     for(std::vector<NavLight*>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {

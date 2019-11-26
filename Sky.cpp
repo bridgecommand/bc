@@ -17,16 +17,16 @@
 #include "Sky.hpp"
 #include "Constants.hpp"
 
-using namespace irr;
+//using namespace irr;
 
 Sky::Sky(irr::scene::ISceneManager* smgr)
 {
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
-    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+    driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, false);
     skyNode=smgr->addSkyDomeSceneNode(driver->getTexture("media/Sky_horiz_9.jpg"),16,16,1.0f,1.05f,3.5*M_IN_NM); //Fixme: Range should probably be dependent on fog & camera range.
-    driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-    skyNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    skyNode->setMaterialFlag(video::EMF_LIGHTING, true); //Turn on lighting, so the sky gets dark as ambient light goes down
+    driver->setTextureCreationFlag(irr::video::ETCF_CREATE_MIP_MAPS, true);
+    skyNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    skyNode->setMaterialFlag(irr::video::EMF_LIGHTING, true); //Turn on lighting, so the sky gets dark as ambient light goes down
 
 }
 

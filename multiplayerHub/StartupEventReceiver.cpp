@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
     StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::s32 listBoxID, irr::s32 okButtonID) //Constructor
 	{
@@ -28,13 +28,13 @@ using namespace irr;
 		scenarioSelected = -1; //Set as initially invalid
 	}
 
-    bool StartupEventReceiver::OnEvent(const SEvent& event)
+    bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
 	{
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 			//If OK button, or double click on list
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  )
+            if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
@@ -43,9 +43,9 @@ using namespace irr;
 
 		}
 
-		if (event.EventType == EET_KEY_INPUT_EVENT)
+		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 		{
-		    if (event.KeyInput.Key==KEY_RETURN) {
+		    if (event.KeyInput.Key==irr::KEY_RETURN) {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }

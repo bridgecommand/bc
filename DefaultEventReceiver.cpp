@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
     DefaultEventReceiver::DefaultEventReceiver(std::vector<std::string>* logMessages, irr::IrrlichtDevice* dev) //Constructor
 	{
@@ -28,19 +28,19 @@ using namespace irr;
         device = dev;
 	}
 
-	bool DefaultEventReceiver::OnEvent(const SEvent& event)
+	bool DefaultEventReceiver::OnEvent(const irr::SEvent& event)
 	{
 
         //From log
-        if (event.EventType == EET_LOG_TEXT_EVENT) {
+        if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
             //Store these in a global log.
             std::string eventText(event.LogEvent.Text);
             logMessages->push_back(eventText);
             return true;
         }
 
-        if (event.EventType == EET_KEY_INPUT_EVENT) {
-            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key ==  KEY_F4) { //Esc or F4 (for alt f4)
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
+            if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key ==  irr::KEY_F4) { //Esc or F4 (for alt f4)
                 device->closeDevice(); //Shutdown.
             }
 

@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 Terrain::Terrain()
 {
@@ -46,7 +46,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     std::string worldTerrainFile = worldPath;
     worldTerrainFile.append("/terrain.ini");
 
-    u32 numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
+    irr::u32 numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
     if (numberOfTerrains <= 0) {
         std::cerr << "Could not load terrain." << std::endl;
         exit(EXIT_FAILURE);
@@ -87,9 +87,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
-        irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,core::vector3df(0.f, terrainY, 0.f),core::vector3df(0.f, 0.f, 0.f),core::vector3df(scaleX,scaleY,scaleZ),video::SColor(255,255,255,255),5,scene::ETPS_17,0,true);
+        irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(scaleX,scaleY,scaleZ),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_17,0,true);
         //Load the map
-        io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
+        irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
         //Check the height map file has loaded and the terrain exists
         if (terrain==0 || heightMapFile == 0) {
             //Could not load terrain
@@ -99,18 +99,18 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         //Load the terrain and check success
         bool loaded = false;
-        //Check if extension is .f32 for binary floating point file
+        //Check if extension is .irr::f32 for binary floating point file
         std::string extension = "";
         if (heightMapName.length() > 3) {
             extension = heightMapName.substr(heightMapName.length() - 4,4);
             Utilities::to_lower(extension);
         }
-        if (extension.compare(".f32") == 0 ) {
+        if (extension.compare(".irr::f32") == 0 ) {
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
             //Set scales etc to be 1.0, so heights are used directly
-            terrain->setScale(core::vector3df(scaleX,1.0f,scaleZ));
-            terrain->setPosition(core::vector3df(0.f, 0.f, 0.f));
+            terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
+            terrain->setPosition(irr::core::vector3df(0.f, 0.f, 0.f));
         } else {
             loaded = terrain->loadHeightMap(heightMapFile);
         }
@@ -124,8 +124,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         heightMapFile->drop();
         //TODO: Do we need to drop terrain?
 
-        terrain->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-        terrain->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+        terrain->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+        terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
         //Todo: Anti-aliasing flag?
         terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
 
@@ -142,13 +142,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         } else {
             //Non-primary terrains need to be moved to account for their position (primary terrain starts at 0,0)
 
-            core::vector3df currentPos = terrain->getPosition();
+            irr::core::vector3df currentPos = terrain->getPosition();
             irr::f32 deltaX = (terrainLong - primeTerrainLong) * primeTerrainXWidth / primeTerrainLongExtent;
             irr::f32 deltaZ = (terrainLat - primeTerrainLat) * primeTerrainZWidth / primeTerrainLatExtent;
             irr::f32 newPosX = currentPos.X + deltaX;
             irr::f32 newPosY = currentPos.Y;
             irr::f32 newPosZ = currentPos.Z + deltaZ;
-            terrain->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+            terrain->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
         }
 
         terrains.push_back(terrain);
@@ -162,7 +162,7 @@ irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from glob
 {
     //Check down list, find highest number that does not return -FLT_MAX (or return -FLT_MAX if none)
     for (int i=(int)terrains.size()-1; i>=0; i--) {
-        f32 thisHeight = terrains.at(i)->getHeight(x,z);
+        irr::f32 thisHeight = terrains.at(i)->getHeight(x,z);
         if (thisHeight > -FLT_MAX) {
             return thisHeight;
         }
@@ -193,10 +193,10 @@ irr::f32 Terrain::zToLat(irr::f32 z) const{
 void Terrain::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     for (unsigned int i=0; i<terrains.size(); i++) {
-        core::vector3df currentPos = terrains.at(i)->getPosition();
+        irr::core::vector3df currentPos = terrains.at(i)->getPosition();
         irr::f32 newPosX = currentPos.X + deltaX;
         irr::f32 newPosY = currentPos.Y + deltaY;
         irr::f32 newPosZ = currentPos.Z + deltaZ;
-        terrains.at(i)->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+        terrains.at(i)->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
     }
 }

@@ -20,7 +20,7 @@
 #include <iostream>
 #include "Constants.hpp"
 
-using namespace irr;
+//using namespace irr;
 
 Light::Light()
 {
@@ -42,17 +42,17 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
 
     lightLevel = 0;
 
-    ambientColor = video::SColor(255,64,64,64);
+    ambientColor = irr::video::SColor(255,64,64,64);
     smgr->setAmbientLight(ambientColor);
 
     //add a directional light
     directionalLight = smgr->addLightSceneNode();
-    directionalLight->setLightType(video::ELT_DIRECTIONAL);
-    directionalLight->setRotation(core::vector3df(30,0,0)); //Light from South, 30 deg above horizon
+    directionalLight->setLightType(irr::video::ELT_DIRECTIONAL);
+    directionalLight->setRotation(irr::core::vector3df(30,0,0)); //Light from South, 30 deg above horizon
     //Set non-varying light data
     irr::video::SLight lightData = directionalLight->getLightData();
-    lightData.AmbientColor = video::SColor(255,0,0,0);
-    lightData.SpecularColor = video::SColor(255,0,0,0);
+    lightData.AmbientColor = irr::video::SColor(255,0,0,0);
+    lightData.SpecularColor = irr::video::SColor(255,0,0,0);
     lightData.Radius = 50000;
     directionalLight->setLightData(lightData);
 
@@ -75,10 +75,10 @@ void Light::update(irr::f32 scenarioTime)
 	if (hourTime >= (sunSet  + 0.5) && hourTime <= 24            ) {lightLevel = lightLow;}
 
 	//sinusoidal component
-	lightLevel = (s32)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
+	lightLevel = (irr::s32)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
 
     //do something with ambient colour
-    ambientColor=video::SColor(255,lightLevel,lightLevel,lightLevel);
+    ambientColor=irr::video::SColor(255,lightLevel,lightLevel,lightLevel);
     //update ambient light
     smgr->setAmbientLight(ambientColor);
 

@@ -27,7 +27,7 @@
 
 #include <cstdlib> //For rand()
 
-using namespace irr;
+//using namespace irr;
 
 void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
@@ -185,8 +185,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     rateOfTurn=0;
 
     //Scale
-    f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
-    f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
+    irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
+    irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(shipIniFilename,"AngleCorrection");
 
     //camera offset (in unscaled and uncorrected ship coords)
@@ -195,11 +195,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         std::cerr << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
         exit(EXIT_FAILURE);
     }
-    for(u32 i=1;i<=numberOfViews;i++) {
-        f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
-        f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
-        f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
-        views.push_back(core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
+    for(irr::u32 i=1;i<=numberOfViews;i++) {
+        irr::f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
+        irr::f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
+        irr::f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
+        views.push_back(irr::core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
     }
 
 	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
@@ -221,7 +221,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	screenDisplaySize *= scaleFactor;
 
     //Load the model
-    scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+	irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
@@ -236,28 +236,28 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     //If any part is partially transparent, make it fully transparent (for bridge windows etc!)
     if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
-        for(u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
+        for(irr::u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
             if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
 				//Hide this mesh buffer by scaling to zero size
-				smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),core::vector3df(0,0,0));
+				smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),irr::core::vector3df(0,0,0));
             }
         }
     }
 
 
-    ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,core::vector3df(0,0,0));
-    ship->setScale(core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    ship->setPosition(core::vector3df(0,heightCorrection,0));
+    ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+    ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
+    ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 
-    ship->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    ship->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            ship->getMaterial(mat).MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
+            ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
             //ship->getMaterial(mat).setFlag(video::EMF_ZWRITE_ENABLE,true);
-            ship->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+            ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
@@ -539,7 +539,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //Apply turn
-        hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
+        hdg += rateOfTurn*deltaTime*irr::core::RADTODEG; //Deg
 
         //Apply buffeting from waves
         irr::f32 buffetAngle= buffet*weather*sin(scenarioTime*2*PI/buffetPeriod)*deltaTime;//Deg
@@ -574,7 +574,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //MODE_AUTO
         if (!positionManuallyUpdated) {
             //Apply rate of turn
-            hdg += rateOfTurn*deltaTime*core::RADTODEG; //Deg
+            hdg += rateOfTurn*deltaTime*irr::core::RADTODEG; //Deg
         }
     }
 
@@ -587,12 +587,12 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
     //move, according to heading and speed
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xChange = sin(hdg*core::DEGTORAD)*spd*deltaTime + cos(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
-        zChange = cos(hdg*core::DEGTORAD)*spd*deltaTime - sin(hdg*core::DEGTORAD)*lateralSpd*deltaTime;
+        xChange = sin(hdg*irr::core::DEGTORAD)*spd*deltaTime + cos(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
+        zChange = cos(hdg*irr::core::DEGTORAD)*spd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
         if (getDepth() > 0) {
-            f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
+            irr::f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
             xChange += stream.X*deltaTime*streamScaling;
             zChange += stream.Y*deltaTime*streamScaling;
         }
@@ -611,7 +611,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Course over ground
         if (xChange!=0 || zChange!=0 ) {
-            cog = atan2(xChange,zChange)*core::RADTODEG;
+            cog = atan2(xChange,zChange)*irr::core::RADTODEG;
             if (cog >= 360) {cog -=360;}
             if (cog < 0) {cog +=360;}
         } else {
@@ -622,8 +622,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     //std::cout << "CoG: " << cog << " SoG: " << sog << std::endl;
 
     //Apply up/down motion from waves, with some filtering
-    f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
-    f32 factor = deltaTime/(timeConstant+deltaTime);
+    irr::f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
+    irr::f32 factor = deltaTime/(timeConstant+deltaTime);
     waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(xPos,zPos); //TODO: Check implementation of simple filter!
     yPos = tideHeight+heightCorrection + waveHeightFiltered;
 
@@ -634,7 +634,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         {roll = weather*rollAngle*sin(scenarioTime*2*PI/rollPeriod);}
 
     //Set position & angles
-    ship->setPosition(core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
     ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,pitch,roll));
 
 }

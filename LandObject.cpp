@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
@@ -39,12 +39,12 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     std::string objectFileName = IniFile::iniFileToString(objectIniFilename,"FileName", "object.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
+    irr::f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
 
     std::string objectFullPath = basePath + objectFileName;
 
     //Load the mesh
-    scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());
+    irr::scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());
 	//add to scene node
 	if (objectMesh==0) {
         //Failed to load mesh - load with dummy and continue
@@ -57,15 +57,15 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(landObject->getMaterialCount()>0) {
-        for(u32 mat=0;mat<landObject->getMaterialCount();mat++) {
-            landObject->getMaterial(mat).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
+        for(irr::u32 mat=0;mat<landObject->getMaterialCount();mat++) {
+            landObject->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
-    landObject->setScale(core::vector3df(objectScale,objectScale,objectScale));
+    landObject->setScale(irr::core::vector3df(objectScale,objectScale,objectScale));
     landObject->setRotation(irr::core::vector3df(0,rotation,0));
-    landObject->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-    landObject->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    landObject->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    landObject->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
 }
 
@@ -82,10 +82,10 @@ irr::core::vector3df LandObject::getPosition() const
 
 void LandObject::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
-    core::vector3df currentPos = landObject->getPosition();
+    irr::core::vector3df currentPos = landObject->getPosition();
     irr::f32 newPosX = currentPos.X + deltaX;
     irr::f32 newPosY = currentPos.Y + deltaY;
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
-    landObject->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+    landObject->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }

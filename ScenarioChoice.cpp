@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
 {
@@ -31,47 +31,47 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
 
 void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, OperatingMode::Mode& mode, std::string scenarioPath)
 {
-    video::IVideoDriver* driver = device->getVideoDriver();
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
     getScenarioList(scenarioList,scenarioPath); //Populate list
 
     //Get screen width
-    u32 su = driver->getScreenSize().Width;
-    u32 sh = driver->getScreenSize().Height;
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
 
     //Make gui elements
-    core::stringw titleText(LONGNAME.c_str());
+    irr::core::stringw titleText(LONGNAME.c_str());
     titleText.append(L"\nCopyright 2019 James Packer\n\n");
     titleText.append(L"Build: ");
-    titleText.append(core::stringw(__DATE__));
+    titleText.append(irr::core::stringw(__DATE__));
     titleText.append(L" ");
-    titleText.append(core::stringw(__TIME__));
-    core::dimension2d<u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),core::rect<s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
-    title->setTextAlignment(gui::EGUIA_CENTER,gui::EGUIA_CENTER);
+    titleText.append(irr::core::stringw(__TIME__));
+    irr::core::dimension2d<irr::u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
+    irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<irr::s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
+    title->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
-    gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),core::rect<s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
-    gui::IGUIListBox* scenarioListBox = gui->addListBox(core::rect<s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    gui::IGUIButton* okButton = gui->addButton(core::rect<s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
+    irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<irr::s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
+    irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<irr::s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
-    gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),core::rect<s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
-    gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
+    irr::gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),irr::core::rect<irr::s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
+    irr::gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
 
-    gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),core::rect<s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
-    gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,core::rect<s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
+    irr::gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),irr::core::rect<irr::s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
+    irr::gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
 
-    gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),core::rect<s32>(0.52*su,0.33*sh,1.00*su, 0.37*sh));
-    gui::IGUIEditBox* hostnameBox = gui->addEditBox(core::stringw(hostname.c_str()).c_str(),core::rect<s32>(0.52*su,0.38*sh,0.80*su,0.41*sh));
+    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.52*su,0.33*sh,1.00*su, 0.37*sh));
+    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.52*su,0.38*sh,0.80*su,0.41*sh));
     hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
 
     //add credits text
-    //gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),core::rect<s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
+    //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
-        scenarioListBox->addItem(core::stringw(it->c_str()).c_str()); //Note - odd conversion from char* to wchar*!
+        scenarioListBox->addItem(irr::core::stringw(it->c_str()).c_str()); //Note - odd conversion from char* to wchar*!
     }
     //select first one if possible
     if (scenarioListBox->getItemCount()>0) {
@@ -93,14 +93,14 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         if (device->isWindowActive())
         {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
-            driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, video::SColor(0,200,200,200));
+            driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
             gui->drawAll();
             driver->endScene();
         }
     }
 
     //Get name of selected scenario
-    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (s32)scenarioList.size()) {
+    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (irr::s32)scenarioList.size()) {
 		std::cerr << "No scenario selected." << std::endl;
 		exit(EXIT_FAILURE); //No scenario loaded
     }
@@ -143,13 +143,13 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
 void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {
 
-    io::IFileSystem* fileSystem = device->getFileSystem();
+	irr::io::IFileSystem* fileSystem = device->getFileSystem();
 	if (fileSystem==0) {
         std::cerr << "Could not get file system access." << std::endl;
         exit(EXIT_FAILURE); //Could not get file system
     }
     //store current dir
-    io::path cwd = fileSystem->getWorkingDirectory();
+	irr::io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to scenario dir
     if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
@@ -157,24 +157,24 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
         exit(EXIT_FAILURE); //Couldn't change to scenario dir
     }
 
-    io::IFileList* fileList = fileSystem->createFileList();
+    irr::io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
 		std::cerr << "Could not get file list for secenarios." << std::endl;
         exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
     }
 
     //List here
-    for (u32 i=0;i<fileList->getFileCount();i++) {
+    for (irr::u32 i=0;i<fileList->getFileCount();i++) {
         if (fileList->isDirectory(i)) {
-            const io::path& fileName = fileList->getFileName(i);
+            const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)
 
                 //Don't include scenarios ending in _mp (Multiplayer)
                 //Check if name ends with "_mp" for multiplayer:
                 bool multiplayerScenario = false;
                 if (fileName.size() >= 3) {
-                    const io::path endChars = fileName.subString(fileName.size()-3,3,true);
-                    if (endChars == io::path("_mp")) {
+                    const irr::io::path endChars = fileName.subString(fileName.size()-3,3,true);
+                    if (endChars == irr::io::path("_mp")) {
                         multiplayerScenario = true;
                     }
                 }

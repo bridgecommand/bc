@@ -17,7 +17,7 @@
 #include "RadarScreen.hpp"
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 RadarScreen::RadarScreen()
 {
@@ -38,27 +38,27 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
 	irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(size, size));
 
     radarScreen = smgr->addMeshSceneNode(radarPlane);
-    radarScreen->setMaterialFlag(video::EMF_LIGHTING, false);
+    radarScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
     this->parent = parent;
     this->offset = offset;
 	this->tilt = tilt;
 }
 
-void RadarScreen::setRadarDisplayRadius(u32 radiusPx)
+void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
 {
     radarRadiusPx = radiusPx;
 }
 
-void RadarScreen::update(video::IImage* radarImage)
+void RadarScreen::update(irr::video::IImage* radarImage)
 {
      //link camera rotation to shipNode
     // get transformation matrix of node
-    core::matrix4 m;
+    irr::core::matrix4 m;
     m.setRotationDegrees(parent->getRotation());
 
     // transform offset('offset' is relative to the local ship coordinates, and stays the same.)
     //'offsetTransformed' is transformed into the global coordinates
-    core::vector3df offsetTransformed;
+    irr::core::vector3df offsetTransformed;
     m.transformVect(offsetTransformed,offset);
 
     //move screen
@@ -66,7 +66,7 @@ void RadarScreen::update(video::IImage* radarImage)
 	radarScreen->setRotation(parent->getRotation()+irr::core::vector3df(-90+tilt,0,0));
 
     //Get old texture if it exists
-    video::ITexture* oldTexture = 0;
+	irr::video::ITexture* oldTexture = 0;
     if (radarScreen->getMaterialCount()>0) {
         oldTexture = radarScreen->getMaterial(0).getTexture(0);
     }
@@ -74,9 +74,9 @@ void RadarScreen::update(video::IImage* radarImage)
     radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
 
     //Scale the texture to get 1:1 image to screen pixel mapping
-    f32 radarTextureScaling=1;
+    irr::f32 radarTextureScaling=1;
     if (radarImage->getDimension().Width>0) {
-        radarTextureScaling = (f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
+        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.
 
