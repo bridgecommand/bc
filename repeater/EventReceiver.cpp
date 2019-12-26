@@ -23,7 +23,7 @@
 #include "Network.hpp"
 #include "../Utilities.hpp"
 
-using namespace irr;
+//using namespace irr;
 
     EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
 	{
@@ -33,12 +33,12 @@ using namespace irr;
 		this->network = network; //Link to the network
     }
 
-    bool EventReceiver::OnEvent(const SEvent& event)
+    bool EventReceiver::OnEvent(const irr::SEvent& event)
 	{
 
-        if (event.EventType == EET_GUI_EVENT && event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
+        if (event.EventType == irr::EET_GUI_EVENT && event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED )
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 			if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
                 gui->setMode(true);
 			}
@@ -47,9 +47,9 @@ using namespace irr;
 			}
         }
 
-        if (event.EventType== EET_KEY_INPUT_EVENT) {
+        if (event.EventType== irr::EET_KEY_INPUT_EVENT) {
             //Quit with esc or F4 (for alt-F4)
-            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key == KEY_F4) {
+            if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key == irr::KEY_F4) {
                 exit(EXIT_SUCCESS);
             }
         }

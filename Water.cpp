@@ -23,7 +23,7 @@
 #include "Water.hpp"
 #include "Utilities.hpp"
 
-using namespace irr;
+//using namespace irr;
 
 Water::Water()
 {
@@ -47,7 +47,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, irr::u32 dis
 
     waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,0,disableShaders);
 
-    //waterNode->setPosition(core::vector3df(0,-0.25f,0));
+    //waterNode->setPosition(irr::core::vector3df(0,-0.25f,0));
 
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
 
@@ -56,13 +56,13 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::f32 weather, irr::u32 dis
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
 {
     //Round these to nearest tileWidth
-    f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    f32 yPos = tideHeight;
-    f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+    irr::f32 yPos = tideHeight;
+    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
 
-    waterNode->setPosition(core::vector3df(xPos,yPos,zPos));
+    waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 
     //scale with weather
     //waterNode->setVerticalScale(sqrt(weather));

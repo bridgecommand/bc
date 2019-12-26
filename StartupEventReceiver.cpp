@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
 	{
@@ -36,23 +36,23 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
 		scenarioSelected = -1; //Set as initially invalid
 	}
 
-    bool StartupEventReceiver::OnEvent(const SEvent& event)
+    bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
 	{
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 			//If OK button, or double click on list
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  )
+            if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_CHECKBOX_CHANGED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED) {
                 if (id == secondaryBoxID || id == multiplayerBoxID) {
                     //Check state, and set hostname box and text visible
-                    if ( ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
+                    if ( ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
                         scenarioListBox->setVisible(false);
                         scenarioText->setVisible(false);
                         hostnameBox->setVisible(false);
@@ -74,15 +74,15 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
             }
 		}
 
-		if (event.EventType == EET_KEY_INPUT_EVENT)
+		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 		{
-		    if (event.KeyInput.Key==KEY_RETURN) {
+		    if (event.KeyInput.Key==irr::KEY_RETURN) {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
 		    }
 
-            if (event.KeyInput.Key == KEY_ESCAPE || event.KeyInput.Key ==  KEY_F4) {
+            if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key ==  irr::KEY_F4) {
                 device->closeDevice(); //Shutdown.
             }
 

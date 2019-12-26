@@ -22,7 +22,7 @@
 #include <iostream>
 #include <cmath>
 
-using namespace irr;
+//using namespace irr;
 
 Tide::Tide()
 {
@@ -56,7 +56,7 @@ void Tide::load(const std::string& worldName) {
 
     //Load other components
     tidalHarmonic loadingHarmonic;
-    for(u32 i=1;i<=numberOfHarmonics; i++) {
+    for(irr::u32 i=1;i<=numberOfHarmonics; i++) {
         loadingHarmonic.amplitude = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Amplitude",i));
         loadingHarmonic.offset = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Offset",i));
         loadingHarmonic.speed = IniFile::iniFileTof32(tideFilename,IniFile::enumerate1("Speed",i));
@@ -71,20 +71,20 @@ void Tide::load(const std::string& worldName) {
 
     //Load other components
     tidalDiamond loadingDiamond;
-    for(u32 i=1;i<=numberOfDiamonds; i++) {
+    for(irr::u32 i=1;i<=numberOfDiamonds; i++) {
         loadingDiamond.longitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Long",i));
         loadingDiamond.latitude =  IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate1("Lat",i));
 
         //Load and convert SpeedN, SpeedS and Direction into speedXNeaps, speedXSprings etc in m/s for each hour between 6 before to 6 after high tide
         for(int j = 0; j<13; j++) {
             int hour = j-6;
-            f32 speedNeaps = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedN",i,hour));
-            f32 speedSprings = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedS",i,hour));
-            f32 streamDirection = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("Direction",i,hour));
-            loadingDiamond.speedXSprings[i] = sin(streamDirection*core::DEGTORAD)*speedSprings*KTS_TO_MPS;
-            loadingDiamond.speedZSprings[i] = cos(streamDirection*core::DEGTORAD)*speedSprings*KTS_TO_MPS;
-            loadingDiamond.speedXNeaps[i] = sin(streamDirection*core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
-            loadingDiamond.speedZNeaps[i] = cos(streamDirection*core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            irr::f32 speedNeaps = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedN",i,hour));
+            irr::f32 speedSprings = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedS",i,hour));
+            irr::f32 streamDirection = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("Direction",i,hour));
+            loadingDiamond.speedXSprings[i] = sin(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedZSprings[i] = cos(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedXNeaps[i] = sin(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            loadingDiamond.speedZNeaps[i] = cos(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
             //std::cout << "Loading hour " << hour << " where direction is " << streamDirection << std::endl;
             //std::cout << "Loading from: " << IniFile::enumerate2("Direction",i,hour) << std::endl;
         }
@@ -106,7 +106,7 @@ irr::f32 Tide::getTideHeight() const {
 }
 
 irr::f32 Tide::calcTideHeight(uint64_t absoluteTime) const {
-    f32 calculatedHeight = 0;
+    irr::f32 calculatedHeight = 0;
 
     calculatedHeight = 0;
     irr::f64 timeHours = (irr::f64)absoluteTime/3600.0;
@@ -131,30 +131,30 @@ irr::f32 Tide::calcTideHeight(uint64_t absoluteTime) const {
 irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
 
 	//Default return value
-    core::vector2df tidalStream;
+    irr::core::vector2df tidalStream;
     tidalStream.X = 0;
     tidalStream.Y = 0;
 
     //Find time to nearest high tide. TideHour is time since high water, -ve if before high water, +ve if after
-    f32 tideHour = ((f32)absoluteTime - (f32)highTideTime(absoluteTime)) / SECONDS_IN_HOUR; //TODO: Check precision on this. Note we need to convert to signed number before subtraction!
+    irr::f32 tideHour = ((irr::f32)absoluteTime - (irr::f32)highTideTime(absoluteTime)) / SECONDS_IN_HOUR; //TODO: Check precision on this. Note we need to convert to signed number before subtraction!
 
-    f32 totalWeight = 0;
-    f32 weightedSumXSprings = 0;
-    f32 weightedSumZSprings = 0;
-    f32 weightedSumXNeaps = 0;
-    f32 weightedSumZNeaps = 0;
+    irr::f32 totalWeight = 0;
+    irr::f32 weightedSumXSprings = 0;
+    irr::f32 weightedSumZSprings = 0;
+    irr::f32 weightedSumXNeaps = 0;
+    irr::f32 weightedSumZNeaps = 0;
 
     //Interpolate to find tidal stream information at each tidal diamond for now, then use weighted average to get local tidal stream
     //Set tidalStream.X and tidalStream.Y (in m/s)
 
     for (unsigned int i = 0; i<tidalDiamonds.size(); i++) {
-        f32 distanceToDiamondLat = tidalDiamonds.at(i).latitude - latitude;
-        f32 distanceToDiamondLong = tidalDiamonds.at(i).longitude - longitude;
+        irr::f32 distanceToDiamondLat = tidalDiamonds.at(i).latitude - latitude;
+        irr::f32 distanceToDiamondLong = tidalDiamonds.at(i).longitude - longitude;
         //Convert from lat/long distance into rough distance in nm
         //1 minute of latitude is 1nm, and longitude needs to be scaled down by cos(lat)
 
-        f32 distanceToDiamond = std::pow(std::pow(distanceToDiamondLat,2) + std::pow(distanceToDiamondLong*cos(latitude*core::DEGTORAD),2),0.5)/60;
-        f32 thisWeight;
+        irr::f32 distanceToDiamond = std::pow(std::pow(distanceToDiamondLat,2) + std::pow(distanceToDiamondLong*cos(latitude*irr::core::DEGTORAD),2),0.5)/60;
+        irr::f32 thisWeight;
         if (fabs(distanceToDiamond) > 0.001) {
             thisWeight = 1/distanceToDiamond;
         } else {
@@ -163,12 +163,12 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
         totalWeight += thisWeight;
 
         //Interploate to get velocity component for current tide hour
-        f32 tideHourOffset = tideHour + 6; //Scale to 0->12 range to align with arrays for
+        irr::f32 tideHourOffset = tideHour + 6; //Scale to 0->12 range to align with arrays for
 
-        f32 speedXNeaps;
-        f32 speedZNeaps;
-        f32 speedXSprings;
-        f32 speedZSprings;
+        irr::f32 speedXNeaps;
+        irr::f32 speedZNeaps;
+        irr::f32 speedXSprings;
+        irr::f32 speedZSprings;
 
         if (floor(tideHourOffset) < 0) {
             //Below lower limit
@@ -186,7 +186,7 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
             //Normal range
             unsigned int prevIndex = floor(tideHourOffset);
             unsigned int nextIndex = ceil(tideHourOffset);
-            f32 interpCoeff = (tideHourOffset-prevIndex);
+            irr::f32 interpCoeff = (tideHourOffset-prevIndex);
             speedXNeaps = tidalDiamonds.at(i).speedXNeaps[prevIndex]*(1-interpCoeff) + tidalDiamonds.at(i).speedXNeaps[nextIndex]*interpCoeff;
             speedZNeaps = tidalDiamonds.at(i).speedZNeaps[prevIndex]*(1-interpCoeff) + tidalDiamonds.at(i).speedZNeaps[nextIndex]*interpCoeff;
             speedXSprings = tidalDiamonds.at(i).speedXSprings[prevIndex]*(1-interpCoeff) + tidalDiamonds.at(i).speedXSprings[nextIndex]*interpCoeff;
@@ -202,13 +202,13 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 
 	if (totalWeight > 0) {
 
-		f32 localXNeaps = weightedSumXNeaps / totalWeight;
-		f32 localZNeaps = weightedSumZNeaps / totalWeight;
-		f32 localXSprings = weightedSumXSprings / totalWeight;
-		f32 localZSprings = weightedSumZSprings / totalWeight;
+		irr::f32 localXNeaps = weightedSumXNeaps / totalWeight;
+		irr::f32 localZNeaps = weightedSumZNeaps / totalWeight;
+		irr::f32 localXSprings = weightedSumXSprings / totalWeight;
+		irr::f32 localZSprings = weightedSumZSprings / totalWeight;
 
 		//Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
-		f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
+		irr::f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
 		if (rangeOfDay <= meanRangeNeaps) {
 			tidalStream.X = localXNeaps;
 			tidalStream.Y = localZNeaps;
@@ -218,7 +218,7 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 			tidalStream.Y = localZSprings;
 		}
 		else if ((meanRangeSprings - meanRangeNeaps) > 0) {
-			f32 springsInterp = (rangeOfDay - meanRangeNeaps) / (meanRangeSprings - meanRangeNeaps);
+			irr::f32 springsInterp = (rangeOfDay - meanRangeNeaps) / (meanRangeSprings - meanRangeNeaps);
 			tidalStream.X = localXNeaps*(1 - springsInterp) + localXSprings*springsInterp;
 			tidalStream.Y = localZNeaps*(1 - springsInterp) + localZSprings*springsInterp;
 		}
@@ -230,16 +230,16 @@ irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {
     //return der(TideHeight) (in ?? units)
     //tim is absolute time tide is required for
 
-    f32 timeHours = f32(absoluteTime)/SECONDS_IN_HOUR;
-	f32 der=0;
+    irr::f32 timeHours = irr::f32(absoluteTime)/SECONDS_IN_HOUR;
+	irr::f32 der=0;
 
 	for (unsigned int i=1; i<tidalHarmonics.size(); i++) { //0th component has no gradient
         //;HarmonicHeight#=Tide(i,0)*Cos( Tide(i,1) + tim_hours*Tide(i,2)) ;tide(n,0) is amplitude, 1 is offset (rad), 2 is speed (rad/s)
-		f32 harmonicAngle=tidalHarmonics.at(i).offset+timeHours*tidalHarmonics.at(i).speed;
+		irr::f32 harmonicAngle=tidalHarmonics.at(i).offset+timeHours*tidalHarmonics.at(i).speed;
 		//reduce to range 0 to 360
 		harmonicAngle=harmonicAngle-floor(harmonicAngle/360)*360;
 
-		f32 harmonicDer=-1*tidalHarmonics.at(i).speed*tidalHarmonics.at(i).amplitude*sin(harmonicAngle*core::DEGTORAD);
+		irr::f32 harmonicDer=-1*tidalHarmonics.at(i).speed*tidalHarmonics.at(i).amplitude*sin(harmonicAngle*irr::core::DEGTORAD);
 		//
 		//	;a cos (w t + c)
 		//	;->

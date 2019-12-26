@@ -18,7 +18,7 @@
 #include "Utilities.hpp"
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
 Rain::Rain() {
 }
@@ -34,16 +34,16 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
 
     rainIntensity = 0.0;
     //Load rain.x, flip vertexes, and load rain1.jpg texture
-    scene::IMesh* rainMesh = smgr->getMesh("media/rain.x");
+    irr::scene::IMesh* rainMesh = smgr->getMesh("media/rain.x");
     //add to scene node
     irr::scene::IMeshManipulator* meshManipulator = smgr->getMeshManipulator();
     if (rainMesh!=0) {
-        //meshManipulator->scale(rainMesh,core::vector3df(5.0,5.0,5.0)); //Scale mesh - ToDo: Make this dependent on ship/bridge size
+        //meshManipulator->scale(rainMesh,irr::core::vector3df(5.0,5.0,5.0)); //Scale mesh - ToDo: Make this dependent on ship/bridge size
         meshManipulator->flipSurfaces(rainMesh);
         rainNode1 = smgr->addMeshSceneNode( rainMesh);
         rainNode2 = smgr->addMeshSceneNode( rainMesh);
-        rainNode1->setScale(core::vector3df(5.0,5.0,5.0));
-        rainNode2->setScale(core::vector3df(6.0,5.0,6.0));
+        rainNode1->setScale(irr::core::vector3df(5.0,5.0,5.0));
+        rainNode2->setScale(irr::core::vector3df(6.0,5.0,6.0));
     } else {
         //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
         dev->getLogger()->log("Failed to load rain mesh (rain.x)");
@@ -53,7 +53,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
 
     //set texture
     irr::video::ITexture* texture;
-    std::vector<io::path> textureNames;
+    std::vector<irr::io::path> textureNames;
     textureNames.push_back("./media/rain_0.png");
     textureNames.push_back("./media/rain_1.png");
     textureNames.push_back("./media/rain_2.png");
@@ -66,20 +66,20 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
     textureNames.push_back("./media/rain_9.png");
     textureNames.push_back("./media/rain_10.png");
 
-    for(std::vector<io::path>::iterator it = textureNames.begin(); it != textureNames.end(); ++it) {
+    for(std::vector<irr::io::path>::iterator it = textureNames.begin(); it != textureNames.end(); ++it) {
         texture = driver->getTexture(*it);
         if (texture!=0) {
             rainTextures.push_back(texture);
         }
     }
 
-    rainNode1->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
-    rainNode2->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
+    rainNode1->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
+    rainNode2->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
     applyTextures();
 
 }
 
-void Rain::setIntensity(f32 intensity) {
+void Rain::setIntensity(irr::f32 intensity) {
 
     if (intensity != rainIntensity && intensity <= 10 && intensity >= 0) {
 
@@ -91,8 +91,8 @@ void Rain::setIntensity(f32 intensity) {
 void Rain::applyTextures() {
     if (rainTextures.size()==11) { //Check all textures 0-10 are loaded
         //Round one up and one down so we can get half step rain intensity level.
-        u8 texture1 = Utilities::round(rainIntensity+0.25);
-        u8 texture2 = Utilities::round(rainIntensity-0.25);
+    	irr::u8 texture1 = Utilities::round(rainIntensity+0.25);
+    	irr::u8 texture2 = Utilities::round(rainIntensity-0.25);
         rainNode1->setMaterialTexture(0,rainTextures.at(texture1));
         rainNode2->setMaterialTexture(0,rainTextures.at(texture2));
     }
@@ -101,8 +101,8 @@ void Rain::applyTextures() {
 void Rain::update(irr::f32 scenarioTime) {
     //update rain animation
         //(Should move to its own class)
-        f32 rainAnimation1 = scenarioTime/2.0;
-        f32 rainAnimation2 = scenarioTime/2.2;
+        irr::f32 rainAnimation1 = scenarioTime/2.0;
+        irr::f32 rainAnimation2 = scenarioTime/2.2;
         rainAnimation1 = rainAnimation1 - (int)rainAnimation1;
         rainAnimation2 = rainAnimation2 - (int)rainAnimation2;
         rainNode1->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation1);

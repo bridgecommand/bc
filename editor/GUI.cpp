@@ -25,16 +25,16 @@
 #include <string>
 #include <algorithm>
 
-using namespace irr;
+//using namespace irr;
 
-GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes, bool multiplayer)
+GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string> ownShipTypes, std::vector<std::string> otherShipTypes, bool multiplayer)
 {
     this->device = device;
     guienv = device->getGUIEnvironment();
 
-    video::IVideoDriver* driver = device->getVideoDriver();
-    u32 su = driver->getScreenSize().Width;
-    u32 sh = driver->getScreenSize().Height;
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
 
     this->language = language;
     this->multiplayer = multiplayer;
@@ -42,90 +42,90 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     //gui
 
     //Add zoom buttons
-    zoomIn = guienv->addButton(core::rect<s32>(0.96*su,0.01*sh,0.99*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
-    zoomOut = guienv->addButton(core::rect<s32>(0.96*su,0.06*sh,0.99*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
+    zoomIn = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.01*sh,0.99*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
+    zoomOut = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.06*sh,0.99*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
 
     //Add a moveable window to put things in
-    guiWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.51*sh,0.49*su,0.99*sh));
+    guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.51*sh,0.49*su,0.99*sh));
     guiWindow->getCloseButton()->setVisible(false);
 
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", core::rect<s32>(0.01*su,0.05*sh,0.47*su,0.15*sh), true, false, guiWindow, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.01*su,0.05*sh,0.47*su,0.15*sh), true, false, guiWindow, -1, true); //Actual text set later
 
     //Add ship selector drop down
-    shipSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
-    guienv->addStaticText(language->translate("selectShip").c_str(),core::rect<s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
+    shipSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
+    guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
 
     //Add selectors to allow changing own and other ships (only one visible at a time)
-    guienv->addStaticText(language->translate("shipType").c_str(),core::rect<s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,false,guiWindow);
-    ownShipTypeSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OWNSHIPSELECT_COMBOBOX);
+    guienv->addStaticText(language->translate("shipType").c_str(),irr::core::rect<irr::s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,false,guiWindow);
+    ownShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OWNSHIPSELECT_COMBOBOX);
     for (int i = 0; i<ownShipTypes.size(); i++) {
-        ownShipTypeSelector->addItem( core::stringw(ownShipTypes.at(i).c_str()).c_str() );
+        ownShipTypeSelector->addItem( irr::core::stringw(ownShipTypes.at(i).c_str()).c_str() );
     }
-    otherShipTypeSelector = guienv->addComboBox(core::rect<s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OTHERSHIPSELECT_COMBOBOX);
+    otherShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OTHERSHIPSELECT_COMBOBOX);
     for (int i = 0; i<otherShipTypes.size(); i++) {
-        otherShipTypeSelector->addItem( core::stringw(otherShipTypes.at(i).c_str()).c_str() );
+        otherShipTypeSelector->addItem( irr::core::stringw(otherShipTypes.at(i).c_str()).c_str() );
     }
     otherShipTypeSelector->setVisible(false); //Initially show own ship selector.
 
     //Add leg selector drop down
-    legSelector  = guienv->addListBox(core::rect<s32>(0.18*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
-    guienv->addStaticText(language->translate("selectLeg").c_str(),core::rect<s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
+    legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
+    guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
 
     //Add edit boxes for this leg element
-    legCourseEdit   = guienv->addEditBox(L"C",core::rect<s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
-    legSpeedEdit    = guienv->addEditBox(L"S",core::rect<s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
-    legDistanceEdit = guienv->addEditBox(L"D",core::rect<s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
+    legCourseEdit   = guienv->addEditBox(L"C",irr::core::rect<irr::s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
+    legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
+    legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
 
-    guienv->addStaticText(language->translate("setCourse").c_str(),core::rect<s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
-    guienv->addStaticText(language->translate("setSpeed").c_str(),core::rect<s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
-    guienv->addStaticText(language->translate("setDistance").c_str(),core::rect<s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
 
     //Add buttons
-    changeLeg       = guienv->addButton(core::rect<s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-//    changeLegCourseSpeed = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
-    addShip         = guienv->addButton(core::rect<s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
-    addLeg          = guienv->addButton(core::rect<s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
-    deleteLeg       = guienv->addButton(core::rect<s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
-    moveShip        = guienv->addButton(core::rect<s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
+    changeLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+//    changeLegCourseSpeed = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    addShip         = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
+    addLeg          = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    moveShip        = guienv->addButton(irr::core::rect<irr::s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed. Set to true for initial load
     editBoxesNeedUpdating = true;
 
     //Add a window to allow general scenario parameters to be edited
-    generalDataWindow = guienv->addWindow(core::rect<s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
+    generalDataWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
     generalDataWindow->getCloseButton()->setVisible(false);
 
-    guienv->addStaticText(language->translate("startTime").c_str(),core::rect<s32>(0.010*su,0.05*sh,0.115*su,0.08*sh),false,false,generalDataWindow);
-    startHours = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.08*sh,0.035*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTHOURS_EDITBOX );
-    startMins = guienv->addEditBox(L"",core::rect<s32>(0.045*su,0.08*sh,0.070*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMINS_EDITBOX );
+    guienv->addStaticText(language->translate("startTime").c_str(),irr::core::rect<irr::s32>(0.010*su,0.05*sh,0.115*su,0.08*sh),false,false,generalDataWindow);
+    startHours = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.08*sh,0.035*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTHOURS_EDITBOX );
+    startMins = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.045*su,0.08*sh,0.070*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMINS_EDITBOX );
 
-    guienv->addStaticText(language->translate("startDate").c_str(),core::rect<s32>(0.130*su,0.05*sh,0.280*su,0.08*sh),false,false,generalDataWindow);
-    startYear = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.08*sh,0.180*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTYEAR_EDITBOX );
-    startMonth = guienv->addEditBox(L"",core::rect<s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMONTH_EDITBOX );
-    startDay = guienv->addEditBox(L"",core::rect<s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTDAY_EDITBOX );
+    guienv->addStaticText(language->translate("startDate").c_str(),irr::core::rect<irr::s32>(0.130*su,0.05*sh,0.280*su,0.08*sh),false,false,generalDataWindow);
+    startYear = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.08*sh,0.180*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTYEAR_EDITBOX );
+    startMonth = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMONTH_EDITBOX );
+    startDay = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTDAY_EDITBOX );
 
-    guienv->addStaticText(language->translate("sunRise").c_str(),core::rect<s32>(0.010*su,0.12*sh,0.115*su,0.15*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("sunSet").c_str(),core::rect<s32>(0.130*su,0.12*sh,0.280*su,0.15*sh),false,false,generalDataWindow);
-    sunRise = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
-    sunSet = guienv->addEditBox(L"",core::rect<s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
+    guienv->addStaticText(language->translate("sunRise").c_str(),irr::core::rect<irr::s32>(0.010*su,0.12*sh,0.115*su,0.15*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("sunSet").c_str(),irr::core::rect<irr::s32>(0.130*su,0.12*sh,0.280*su,0.15*sh),false,false,generalDataWindow);
+    sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
+    sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("weather").c_str(),core::rect<s32>(0.010*su,0.19*sh,0.130*su,0.22*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("rain").c_str(),core::rect<s32>(0.130*su,0.19*sh,0.250*su,0.22*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("visibility").c_str(),core::rect<s32>(0.250*su,0.19*sh,0.370*su,0.22*sh),false,false,generalDataWindow);
-    weather    = guienv->addComboBox(core::rect<s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
-    rain       = guienv->addComboBox(core::rect<s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
-    visibility = guienv->addComboBox(core::rect<s32>(0.250*su,0.22*sh,0.325*su,0.25*sh),generalDataWindow,GUI_ID_VISIBILITY_COMBOBOX);
+    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.19*sh,0.130*su,0.22*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.19*sh,0.250*su,0.22*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.19*sh,0.370*su,0.22*sh),false,false,generalDataWindow);
+    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
+    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
+    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.22*sh,0.325*su,0.25*sh),generalDataWindow,GUI_ID_VISIBILITY_COMBOBOX);
 
-    guienv->addStaticText(language->translate("scenario").c_str(),core::rect<s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
-    scenarioName = guienv->addEditBox(L"",core::rect<s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
-    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),core::rect<s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
+    guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
+    scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
+    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
 
-    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),core::rect<s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
-    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),core::rect<s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
+    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
+    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
 
-    apply = guienv->addButton(core::rect<s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
-    save = guienv->addButton(core::rect<s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
+    apply = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    save = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
 
     weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
     weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");
@@ -155,21 +155,21 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
     irr::f32 timeFloat = oldScenarioInfo.startTime/SECONDS_IN_HOUR;
     irr::u32 timeHrs = floor(timeFloat);
     irr::u32 timeMins = (timeFloat - timeHrs)*60;
-    core::stringw hoursString(timeHrs);
-    core::stringw minsString(timeMins);
-    if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
-    if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+    irr::core::stringw hoursString(timeHrs);
+    irr::core::stringw minsString(timeMins);
+    if (hoursString.size() == 1) hoursString = irr::core::stringw(L"0") + hoursString;
+    if (minsString.size() == 1) minsString = irr::core::stringw(L"0") + minsString;
     startHours->setText(hoursString.c_str());
     startMins->setText(minsString.c_str());
 
     startYear->setText((irr::core::stringw(oldScenarioInfo.startYear)).c_str());
 
-    core::stringw monthString(oldScenarioInfo.startMonth);
-    if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
+    irr::core::stringw monthString(oldScenarioInfo.startMonth);
+    if (monthString.size() == 1) monthString = irr::core::stringw(L"0") + monthString;
     startMonth->setText(monthString.c_str());
 
-    core::stringw dayString(oldScenarioInfo.startDay);
-    if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
+    irr::core::stringw dayString(oldScenarioInfo.startDay);
+    if (dayString.size() == 1) dayString = irr::core::stringw(L"0") + dayString;
     startDay->setText(dayString.c_str());
 
     //SunRise, SunSet, Weather, Rain
@@ -192,7 +192,7 @@ GUIMain::GUIMain(IrrlichtDevice* device, Lang* language, std::vector<std::string
         visibility->setSelected(visibility->getItemCount()-1);
     }
 
-    scenarioName->setText(core::stringw(oldScenarioInfo.scenarioName.c_str()).c_str());
+    scenarioName->setText(irr::core::stringw(oldScenarioInfo.scenarioName.c_str()).c_str());
 
     //These get updated in updateGuiData
     mapCentreX = 0;
@@ -240,13 +240,13 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     irr::f32 displayLat = fabs(mapCentreLat);
     irr::f32 displayLong = fabs(mapCentreLong);
 
-    f32 latMinutes = (displayLat - (int)displayLat)*60;
-    f32 lonMinutes = (displayLong - (int)displayLong)*60;
-    u8 latDegrees = (int) displayLat;
-    u8 lonDegrees = (int) displayLong;
+    irr::f32 latMinutes = (displayLat - (int)displayLat)*60;
+    irr::f32 lonMinutes = (displayLong - (int)displayLong)*60;
+    irr::u8 latDegrees = (int) displayLat;
+    irr::u8 lonDegrees = (int) displayLong;
 
     //update heading display element
-    core::stringw displayText = language->translate("pos");
+    irr::core::stringw displayText = language->translate("pos");
     displayText.append(irr::core::stringw(latDegrees));
     displayText.append(language->translate("deg"));
     displayText.append(f32To3dp(latMinutes).c_str());
@@ -274,10 +274,10 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
         irr::f32 timeFloat = scenarioInfo.startTime/SECONDS_IN_HOUR;
         irr::u32 timeHrs = floor(timeFloat);
         irr::u32 timeMins = (timeFloat - timeHrs)*60;
-        core::stringw hoursString(timeHrs);
-        core::stringw minsString(timeMins);
-        if (hoursString.size() == 1) hoursString = core::stringw(L"0") + hoursString;
-        if (minsString.size() == 1) minsString = core::stringw(L"0") + minsString;
+        irr::core::stringw hoursString(timeHrs);
+        irr::core::stringw minsString(timeMins);
+        if (hoursString.size() == 1) hoursString = irr::core::stringw(L"0") + hoursString;
+        if (minsString.size() == 1) minsString = irr::core::stringw(L"0") + minsString;
         startHours->setText(hoursString.c_str());
         startMins->setText(minsString.c_str());
     }
@@ -287,14 +287,14 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
 
     if (oldScenarioInfo.startMonth != scenarioInfo.startMonth) {
-        core::stringw monthString(scenarioInfo.startMonth);
-        if (monthString.size() == 1) monthString = core::stringw(L"0") + monthString;
+        irr::core::stringw monthString(scenarioInfo.startMonth);
+        if (monthString.size() == 1) monthString = irr::core::stringw(L"0") + monthString;
         startMonth->setText(monthString.c_str());
     }
 
     if (oldScenarioInfo.startDay != scenarioInfo.startDay) {
-        core::stringw dayString(scenarioInfo.startDay);
-        if (dayString.size() == 1) dayString = core::stringw(L"0") + dayString;
+        irr::core::stringw dayString(scenarioInfo.startDay);
+        if (dayString.size() == 1) dayString = irr::core::stringw(L"0") + dayString;
         startDay->setText(dayString.c_str());
     }
 
@@ -326,7 +326,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
         }
     }
     if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
-        scenarioName->setText(core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
+        scenarioName->setText(irr::core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
     }
 
     //Initially set name colour as default, unless a warning is shown
@@ -335,13 +335,13 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     //Check and warn about name validitiy for multiplayer
     if (multiplayer && ! scenarioInfo.multiplayerName) {
         //Name needs to have _mp at end
-        scenarioName->setOverrideColor(video::SColor(255, 255, 165, 0)); //Highlight in orange
+        scenarioName->setOverrideColor(irr::video::SColor(255, 255, 165, 0)); //Highlight in orange
         //Show relevant warning
         multiplayerNameWarning->setVisible(true);
         notMultiplayerNameWarning->setVisible(false);
     } else if (!multiplayer && scenarioInfo.multiplayerName) {
         //Name needs not to have _mp at end
-        scenarioName->setOverrideColor(video::SColor(255, 255, 165, 0)); //Highlight in orange
+        scenarioName->setOverrideColor(irr::video::SColor(255, 255, 165, 0)); //Highlight in orange
         //Show relevant warning
         notMultiplayerNameWarning->setVisible(true);
         multiplayerNameWarning->setVisible(false);
@@ -353,7 +353,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
 
     //Check and warn about scenario overwriting
     if (scenarioInfo.willOverwrite) {
-        scenarioName->setOverrideColor(video::SColor(255, 255, 0, 0)); //Highlight in red
+        scenarioName->setOverrideColor(irr::video::SColor(255, 255, 0, 0)); //Highlight in red
         overwriteWarning->setVisible(true); //Show warning
     } else {
         overwriteWarning->setVisible(false); //Hide warning
@@ -370,22 +370,22 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
     if (editBoxesNeedUpdating) {
         if (selectedShip >= 0 && selectedShip < otherShips.size() && selectedLeg >= 0 && selectedLeg < otherShips.at(selectedShip).legs.size()) {
-            legCourseEdit  ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
-            legSpeedEdit   ->setText(core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
+            legCourseEdit  ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
+            legSpeedEdit   ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
             //Distance
             if ( (selectedLeg+1) < otherShips.at(selectedShip).legs.size() ) {
                 //There is a next leg, so can check distance
                 irr::f32 legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
                 irr::f32 legDurationH = legDurationS / SECONDS_IN_HOUR;
                 irr::f32 legDistanceNm  = legDurationH * otherShips.at(selectedShip).legs.at(selectedLeg).speed;
-                legDistanceEdit->setText(core::stringw(legDistanceNm).c_str());
+                legDistanceEdit->setText(irr::core::stringw(legDistanceNm).c_str());
             } else {
                 legDistanceEdit->setText(L""); //No next leg, so can't find distance
             }
         } else if (selectedShip == -1) {
             //Own ship
-            legCourseEdit  ->setText((core::stringw(ownShipData.heading)).c_str());
-            legSpeedEdit   ->setText((core::stringw(ownShipData.initialSpeed)).c_str());
+            legCourseEdit  ->setText((irr::core::stringw(ownShipData.heading)).c_str());
+            legSpeedEdit   ->setText((irr::core::stringw(ownShipData.initialSpeed)).c_str());
             legDistanceEdit->setText(L"---");
         } else {
             //Set blank (invalid other ship or leg)
@@ -398,9 +398,9 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             otherShipTypeSelector->setVisible(false);
             ownShipTypeSelector->setVisible(true);
             //Find the ship name in the list that matches (if it exists)
-            core::stringw ownShipName = core::stringw(ownShipData.name.c_str());
+            irr::core::stringw ownShipName = irr::core::stringw(ownShipData.name.c_str());
             for(int i = 0; i < ownShipTypeSelector->getItemCount(); i++) {
-                core::stringw thisName(ownShipTypeSelector->getItem(i));
+                irr::core::stringw thisName(ownShipTypeSelector->getItem(i));
                 if (thisName.equals_ignore_case(ownShipName)) {ownShipTypeSelector->setSelected(i);}
             }
         } else {
@@ -409,9 +409,9 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             //Find the ship name in the list that matches (if it exists)
             if (selectedShip >= 0 && selectedShip < otherShips.size()) {
                 //Find the ship name in the list that matches (if it exists)
-                core::stringw otherShipName = core::stringw(otherShips.at(selectedShip).name.c_str());
+                irr::core::stringw otherShipName = irr::core::stringw(otherShips.at(selectedShip).name.c_str());
                 for(int i = 0; i < otherShipTypeSelector->getItemCount(); i++) {
-                    core::stringw thisName(otherShipTypeSelector->getItem(i));
+                    irr::core::stringw thisName(otherShipTypeSelector->getItem(i));
                     if (thisName.equals_ignore_case(otherShipName)) {otherShipTypeSelector->setSelected(i);}
                 }
             }
@@ -435,8 +435,8 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
     irr::s32 screenCentreX = width/2;
     irr::s32 screenCentreY = height/2;
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(screenCentreX,0),irr::core::position2d<s32>(screenCentreX,height),video::SColor(255, 255, 255, 255));
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<s32>(0,screenCentreY),irr::core::position2d<s32>(width,screenCentreY),video::SColor(255, 255, 255, 255));
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(screenCentreX,0),irr::core::position2d<irr::s32>(screenCentreX,height),irr::video::SColor(255, 255, 255, 255));
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(0,screenCentreY),irr::core::position2d<irr::s32>(width,screenCentreY),irr::video::SColor(255, 255, 255, 255));
 
     //Dimensions for dots
     irr::u32 dotHalfWidth = width/400;
@@ -446,25 +446,25 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     //Draw location of own ship
     irr::s32 ownRelPosX = 0 + mapOffsetX;
     irr::s32 ownRelPosY = 0 - mapOffsetZ;
-    device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 0, 0),irr::core::rect<s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
+    device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 0, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
     if (selectedShip == -1) {
         //Own ship selected
-        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4,video::SColor(255, 255, 0, 0),10);
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4,irr::video::SColor(255, 255, 0, 0),10);
     }
 
     //Heading line
     irr::s32 hdgLineX = ownRelPosX + width/10*sin(ownShipHeading * RAD_IN_DEG);
     irr::s32 hdgLineY = ownRelPosY + width/10*cos(ownShipHeading * RAD_IN_DEG);
-    irr::core::position2d<s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
-    irr::core::position2d<s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
-    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,video::SColor(255, 255, 0, 0));
+    irr::core::position2d<irr::s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
+    irr::core::position2d<irr::s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
+    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,irr::video::SColor(255, 255, 0, 0));
 
     //Draw location of buoys
     for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(video::SColor(255, 255, 255, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 255, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
     }
 
     //Draw location of ships
@@ -472,10 +472,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(video::SColor(255, 0, 0, 255),irr::core::rect<s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
         if (selectedShip == (it - otherShips.begin()) ) {
             //This ship selected
-            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,video::SColor(255, 0, 0, 255),10);
+            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,irr::video::SColor(255, 0, 0, 255),10);
         }
 
         //number
@@ -484,7 +484,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         //name
         label.append(" ");
         label.append(it->name.c_str());
-        guienv->getSkin()->getFont()->draw(label,irr::core::rect<s32>(screenCentreX+relPosX,screenCentreY-relPosY-0.025*height,screenCentreX+relPosX,screenCentreY-relPosY), video::SColor(128,0,0,255),true,true);
+        guienv->getSkin()->getFont()->draw(label,irr::core::rect<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY-0.025*height,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(128,0,0,255),true,true);
 
         //Draw leg information for each ship
         if (it->legs.size() > 0) {
@@ -492,7 +492,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
             irr::u32 currentLeg = 0;
             bool currentLegFound = false;
-            for (u32 i=0; i < (it->legs.size()-1); i++) {
+            for (irr::u32 i=0; i < (it->legs.size()-1); i++) {
                 if (time >= it->legs.at(i).startTime &&  time < it->legs.at(i+1).startTime) {
                     currentLeg = i;
                     currentLegFound = true;
@@ -520,10 +520,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         legEndX = legStartX + legLengthPx*sin(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
                         legEndY = legStartY - legLengthPx*cos(it->legs.at(currentLeg).bearing * RAD_IN_DEG);
 
-                        irr::core::position2d<s32> startLine (legStartX, legStartY);
-                        irr::core::position2d<s32> endLine (legEndX, legEndY);
+                        irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(128, 255, 255, 255));
 
                     } //Not infinite
 
@@ -544,10 +544,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         legEndY = legStartY - legLengthPx*cos(it->legs.at(i).bearing * RAD_IN_DEG);
 
                         //Draw
-                        irr::core::position2d<s32> startLine (legStartX, legStartY);
-                        irr::core::position2d<s32> endLine (legEndX, legEndY);
+                        irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
+                        irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine,video::SColor(128, 255, 255, 255));
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(128, 255, 255, 255));
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
@@ -565,8 +565,8 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
     bool initialiseList = (shipSelector->getItemCount() == 0); //If there were no items in list, then we're populating it for the first time (we'll use this to select the first item)
     shipSelector->clear();
     shipSelector->addItem(language->translate("own").c_str()); //add own ship (at index 0)
-    for(u32 i = 0; i<otherShips.size(); i++) { //Add other ships (at index 1,2,...)
-        core::stringw otherShipLabel(core::stringw(i+1));
+    for(irr::u32 i = 0; i<otherShips.size(); i++) { //Add other ships (at index 1,2,...)
+        irr::core::stringw otherShipLabel(irr::core::stringw(i+1));
         otherShipLabel.append(L" ");
         otherShipLabel.append(otherShips.at(i).name.c_str());
         shipSelector->addItem(otherShipLabel.c_str());
@@ -579,7 +579,7 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
         } else {
             shipSelector->setSelected(shipSelector->getItemCount()-1); //Select the newly added item (I think that the 'trigger gui event' should make sure that the model selection follows suit
         }
-        manuallyTriggerGUIEvent((gui::IGUIElement*)shipSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
+        manuallyTriggerGUIEvent((irr::gui::IGUIElement*)shipSelector, irr::gui::EGET_COMBO_BOX_CHANGED); //Trigger event here so any changes caused by the update are found
     } else {
         //Re-select previously selected item
         shipSelector->setSelected(shipSelectorSelection);
@@ -597,9 +597,9 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
     if(legSelector->getItemCount() != selectedShipNoLegs) {
         legSelector->clear();
         for(irr::u32 i = 0; i<selectedShipNoLegs; i++) {
-            legSelector->addItem(core::stringw(i+1).c_str());
+            legSelector->addItem(irr::core::stringw(i+1).c_str());
         }
-        manuallyTriggerGUIEvent((gui::IGUIElement*)legSelector, irr::gui::EGET_LISTBOX_CHANGED ); //Trigger event here so any changes caused by the update are found
+        manuallyTriggerGUIEvent((irr::gui::IGUIElement*)legSelector, irr::gui::EGET_LISTBOX_CHANGED ); //Trigger event here so any changes caused by the update are found
 
     } else {
         //don't clear and update, but show which legs are past, current and future
@@ -613,7 +613,7 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
                 //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
                 irr::u32 currentLeg = 0;
                 bool currentLegFound = false;
-                for (u32 i=0; i < (selectedShipLegs.size()-1); i++) {
+                for (irr::u32 i=0; i < (selectedShipLegs.size()-1); i++) {
                     if (time >= selectedShipLegs.at(i).startTime &&  time < selectedShipLegs.at(i+1).startTime) {
                         currentLeg = i;
                         currentLegFound = true;
@@ -624,19 +624,19 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
                 }
 
                 //Update text for past, current and future legs.
-                for (u32 i=0; i<legSelector->getItemCount(); i++) {
+                for (irr::u32 i=0; i<legSelector->getItemCount(); i++) {
                     if (i < currentLeg) {
-                        std::wstring label(core::stringw(i+1).c_str());
+                        std::wstring label(irr::core::stringw(i+1).c_str());
                         //label.append(language->translate("past").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
                     if (i == currentLeg) {
-                        std::wstring label(core::stringw(i+1).c_str());
+                        std::wstring label(irr::core::stringw(i+1).c_str());
                         //label.append(language->translate("current").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
                     if (i > currentLeg) {
-                        std::wstring label(core::stringw(i+1).c_str());
+                        std::wstring label(irr::core::stringw(i+1).c_str());
                         //label.append(language->translate("future").c_str());
                         legSelector->setItem(i,label.c_str(),-1);
                     }
@@ -651,7 +651,7 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
 bool GUIMain::manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType) {
 
     irr::SEvent triggerUpdateEvent;
-    triggerUpdateEvent.EventType = EET_GUI_EVENT;
+    triggerUpdateEvent.EventType = irr::EET_GUI_EVENT;
     triggerUpdateEvent.GUIEvent.Caller = caller;
     triggerUpdateEvent.GUIEvent.Element = 0;
     triggerUpdateEvent.GUIEvent.EventType = eType;
@@ -713,7 +713,7 @@ std::string GUIMain::getOtherShipTypeSelected() const {
 
 
 irr::core::vector2df GUIMain::getScreenCentrePosition() const {
-    return core::vector2df(mapCentreX, mapCentreZ);
+    return irr::core::vector2df(mapCentreX, mapCentreZ);
 }
 
 /*
