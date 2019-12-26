@@ -173,8 +173,10 @@ void Network::findOwnShipPositionData(const std::vector<std::string>& positionDa
         //In format rudder:wheel angle, so split to get wheel component, and just use cast to get rudder, discarding wheel part
         ownShipData.rudder = Utilities::lexical_cast<irr::f32>(positionData.at(8));
         std::vector<std::string> rudderWheelData = Utilities::split(positionData.at(8),':');
-        if (rudderWheelData.size() == 2) {
+        if (rudderWheelData.size() == 4) {
             ownShipData.wheel =  Utilities::lexical_cast<irr::f32>(rudderWheelData.at(1));
+            ownShipData.portEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
+            ownShipData.stbdEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
         }
 
     }

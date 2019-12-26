@@ -57,7 +57,7 @@ GUIMain::~GUIMain()
     heading->drop();
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle)
+void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM)
 {
 
     if(!modeChosen) {
@@ -150,6 +150,14 @@ void GUIMain::updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rud
             }
         }
         //End of draw scale
+
+        //Show engine RPM
+        core::stringw portRPM(portEngineRPM);
+        core::stringw stbdRPM(stbdEngineRPM);
+        guienv->getSkin()->getFont()->draw(portRPM,core::rect<s32>(0.25*su,0.515*sh,0.5*su,0.55*sh),video::SColor(255,0,0,0));
+        guienv->getSkin()->getFont()->draw(stbdRPM,core::rect<s32>(0.75*su,0.515*sh,1.0*su,0.55*sh),video::SColor(255,0,0,0));
+
+
 
     } else {
 

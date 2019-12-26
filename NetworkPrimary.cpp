@@ -342,6 +342,10 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getRudder()));
     stringToSend.append(":");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+    stringToSend.append(":");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortEngineRPM()));
+    stringToSend.append(":");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdEngineRPM()));
     stringToSend.append("#");
 
     //2 Numbers: Number Other, Number buoys, Number MOB #
