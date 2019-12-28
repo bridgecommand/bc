@@ -1,6 +1,6 @@
 ;setup names
 !define PROGRAMNAME "Bridge Command 5.4"
-!define OUTPUTFILE "bc541_setup.exe"
+!define OUTPUTFILE "bc542_setup.exe"
 !define INSTALLLOCATION "Bridge Command 5.4"
 !define SMFOLDER "Bridge Command 5.4"
 !define REGKEY "BridgeCommand5.4"
@@ -39,7 +39,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.bat /x *.depend /x *.layout /x *.cbp /x *.iobj /x *.ipdb /x *.pdb /x *.tmp /x *.gcc /x "Bridge Command Visual Studio" /x CompilingLinuxAndMac.txt /x Makefile /x controller /x repeater /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out /x Cubemaps_HLSL_Test /x "StraitOfJuanDeFuca" /x "h) Haro Strait" *.*
+File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.bat /x *.depend /x *.layout /x *.cbp /x *.iobj /x *.ipdb /x *.pdb /x *.tmp /x *.gcc /x "Bridge Command Visual Studio" /x CompilingLinuxAndMac.txt /x Makefile /x MakefileWithSound /x controller /x repeater /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out /x Cubemaps_HLSL_Test /x "StraitOfJuanDeFuca" /x "h) Haro Strait" *.*
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bridgecommand.exe"
