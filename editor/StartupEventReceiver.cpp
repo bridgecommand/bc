@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-using namespace irr;
+//using namespace irr;
 
     StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID) //Constructor
 	{
@@ -32,13 +32,13 @@ using namespace irr;
 		worldSelected = -1; //Set as initially invalid
 	}
 
-    bool StartupEventReceiver::OnEvent(const SEvent& event)
+    bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
 	{
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 			//If OK button, or double click on list, for scenario
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okScenarioButtonID ) || (event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  && id == scenarioListBoxID ) )
+            if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okScenarioButtonID ) || (event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  && id == scenarioListBoxID ) )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
@@ -46,7 +46,7 @@ using namespace irr;
             }
 
             //If OK button, or double click on list, for world
-            if ( (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == okWorldButtonID ) || (event.GUIEvent.EventType==gui::EGET_LISTBOX_SELECTED_AGAIN  && id == worldListBoxID ) )
+            if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okWorldButtonID ) || (event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  && id == worldListBoxID ) )
             {
                 if (worldListBox->getSelected() > -1 ) {
                     worldSelected = worldListBox->getSelected();

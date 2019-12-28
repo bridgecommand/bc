@@ -21,7 +21,7 @@
 #include <cmath> //For fmod()
 #include <cstdlib> //For rand()
 
-using namespace irr;
+//using namespace irr;
 
 NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
 
@@ -36,9 +36,9 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 
 	
 	lightNode->setMaterialTexture(0, lightTexture);
-	lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-	lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
-	lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+	lightNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+	lightNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+	lightNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
 
     //Fix angles if start is negative
     while (lightStartAngle < 0) {
@@ -85,7 +85,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 
     //find light position
     lightNode->updateAbsolutePosition(); //ToDo: This is needed, but seems odd that it's required
-    core::vector3df lightPosition = lightNode->getAbsolutePosition();
+    irr::core::vector3df lightPosition = lightNode->getAbsolutePosition();
 
     //Find the active camera
     irr::scene::ICameraSceneNode* camera = smgr->getActiveCamera();
@@ -97,11 +97,11 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 
     //find the HFOV
     irr::f32 hFOV = 2*atan(tan(camera->getFOV()/2)*camera->getAspectRatio()); //Convert from VFOV to hFOV
-    irr::f32 zoom = hFOV / (core::PI/2.0); //Zoom compared to standard 90 degree field of view
+    irr::f32 zoom = hFOV / (irr::core::PI/2.0); //Zoom compared to standard 90 degree field of view
 
     //scale so lights appear same size independent of range
-    f32 lightDistance=lightPosition.getDistanceFrom(viewPosition);
-    lightNode->setSize(core::dimension2df(lightDistance*0.01*zoom,lightDistance*0.01*zoom));
+    irr::f32 lightDistance=lightPosition.getDistanceFrom(viewPosition);
+    lightNode->setSize(irr::core::dimension2df(lightDistance*0.01*zoom,lightDistance*0.01*zoom));
 
     //set light visibility depending on range
     if (lightDistance > range) {
@@ -111,9 +111,9 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     }
 
     //set light visibility depending on angle: Set to false if not visible
-    f32 relativeAngleDeg = (viewPosition-lightPosition).getHorizontalAngle().Y; //Degrees: Angle from the light to viewpoint.
-    f32 parentAngleDeg = lightNode->getParent()->getRotation().Y;
-    f32 localRelativeAngleDeg = relativeAngleDeg-parentAngleDeg; //Angle from light to viewpoint, relative to light's parent coordinate system.
+    irr::f32 relativeAngleDeg = (viewPosition-lightPosition).getHorizontalAngle().Y; //Degrees: Angle from the light to viewpoint.
+    irr::f32 parentAngleDeg = lightNode->getParent()->getRotation().Y;
+    irr::f32 localRelativeAngleDeg = relativeAngleDeg-parentAngleDeg; //Angle from light to viewpoint, relative to light's parent coordinate system.
     if (!Angles::isAngleBetween(localRelativeAngleDeg,startAngle,endAngle)) {
         lightNode->setVisible(false);
     }
@@ -122,8 +122,8 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     //find length of sequence
     std::string::size_type sequenceLength = sequence.length();
     if (sequenceLength > 0) {
-        f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
-        u32 positionInSequence = timeInSequence;
+        irr::f32 timeInSequence = std::fmod(((scenarioTime+timeOffset) / charTime),sequenceLength);
+        irr::u32 positionInSequence = timeInSequence;
         if (positionInSequence>=sequenceLength) {positionInSequence = sequenceLength-1;} //Should not be required, but double check we're not off the end of the sequence
         if (sequence[positionInSequence] == 'D' || sequence[positionInSequence] == 'd') {
             lightNode->setVisible(false);
@@ -131,7 +131,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
     }
 
 	//set transparency dependent on light level, only changing if required, as this is a slow operation
-	u16 requiredAlpha = 255 - lightLevel;
+    irr::u16 requiredAlpha = 255 - lightLevel;
 	if (requiredAlpha != currentAlpha) {
 		
 		/*
@@ -142,11 +142,11 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 		lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		*/
 
-		setAlpha((u8)requiredAlpha, lightTexture);
+		setAlpha((irr::u8)requiredAlpha, lightTexture);
 		currentAlpha = requiredAlpha;
 	}
 
-    //this->lightLevel = (f32)lightLevel/256; //Convert to float for shader
+    //this->lightLevel = (irr::f32)lightLevel/256; //Convert to float for shader
 
 }
 
@@ -159,28 +159,28 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 		return false;
 	};
 
-	u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
-	u32 width = tex->getSize().Width;
-	u32 height = tex->getSize().Height;
+	irr::u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
+	irr::u32 width = tex->getSize().Width;
+	irr::u32 height = tex->getSize().Height;
 
 	
 
 	switch (tex->getColorFormat()) //getTexture Format, (nly 2 support alpha)
 	{
-	case video::ECF_A1R5G5B5: //see video::ECOLOR_FORMAT for more information on the texture formats.
+	case irr::video::ECF_A1R5G5B5: //see video::ECOLOR_FORMAT for more information on the texture formats.
 	{
 		//  printf("16BIT\n");
-		u16* Data = (u16*)tex->lock(); //get Data for 16-bit Texture
-		for (u32 i = 0; i < width; i++) {
-			for (u32 j = 0; j < height; j++) {
+		irr::u16* Data = (irr::u16*)tex->lock(); //get Data for 16-bit Texture
+		for (irr::u32 i = 0; i < width; i++) {
+			for (irr::u32 j = 0; j < height; j++) {
 				
-				f32 x = (s32)i - (s32)width / 2;
-				f32 y = (s32)j - (s32)height / 2;
-				f32 radSq = x*x + y*y;
+				irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
+				irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
+				irr::f32 radSq = x*x + y*y;
 				if (radSq <= width*width / 4) {
-					Data[i + j*width] = video::RGBA16(255, 255, 255, alpha);
+					Data[i + j*width] = irr::video::RGBA16(255, 255, 255, alpha);
 				} else {
-					Data[i + j*width] = video::RGBA16(255, 255, 255, 0);
+					Data[i + j*width] = irr::video::RGBA16(255, 255, 255, 0);
 				}
 				 
 
@@ -189,18 +189,18 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 		tex->unlock();
 		break;
 	};
-	case video::ECF_A8R8G8B8:
+	case irr::video::ECF_A8R8G8B8:
 	{
-		u32* Data = (u32*)tex->lock();
+		irr::u32* Data = (irr::u32*)tex->lock();
 		
 		irr::video::SColor pixelColor;
 
-		for (u32 i = 0; i < width; i++) {
-			for (u32 j = 0; j < height; j++) {
+		for (irr::u32 i = 0; i < width; i++) {
+			for (irr::u32 j = 0; j < height; j++) {
 				
-				f32 x = (s32)i - (s32)width / 2;
-				f32 y = (s32)j - (s32)height / 2;
-				f32 radSq = x*x + y*y;
+				irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
+				irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
+				irr::f32 radSq = x*x + y*y;
 				if (radSq <= width*width / 4) {
 					pixelColor.set(alpha, 255, 255, 255);
 				}
@@ -226,10 +226,10 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 
 void NavLight::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
-    core::vector3df currentPos = lightNode->getPosition();
+    irr::core::vector3df currentPos = lightNode->getPosition();
     irr::f32 newPosX = currentPos.X + deltaX;
     irr::f32 newPosY = currentPos.Y + deltaY;
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
-    lightNode->setPosition(core::vector3df(newPosX,newPosY,newPosZ));
+    lightNode->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }

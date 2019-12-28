@@ -18,7 +18,7 @@
 
 #include "IniFile.hpp"
 
-using namespace irr;
+//using namespace irr;
 
 Lang::Lang(std::string language)
 {
@@ -48,7 +48,7 @@ irr::core::stringw Lang::translate(std::string phraseName)
     }
 
     //convert to stringw
-    core::stringw returnPhrase(translatedPhrase.c_str());
+    irr::core::stringw returnPhrase(translatedPhrase.c_str());
 
     return returnPhrase;
 }

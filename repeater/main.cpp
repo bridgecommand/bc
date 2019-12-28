@@ -24,7 +24,7 @@
 #endif
 
 // Irrlicht Namespaces
-using namespace irr;
+//using namespace irr;
 
 //Set up global for ini reader to have access to irrlicht logger if needed.
 namespace IniFile {
@@ -88,9 +88,9 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
-    u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
 	if (fakeFullScreen) {
@@ -99,8 +99,8 @@ int main (int argc, char ** argv)
 
 	//Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
-		core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+		irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 		nulldevice->drop();
 		if (graphicsWidth == 0) {
 			if (fullScreen) {
@@ -122,7 +122,7 @@ int main (int argc, char ** argv)
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
     //Load UDP network settings
-    u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
@@ -140,7 +140,7 @@ int main (int argc, char ** argv)
 	}
 	Lang language(languageFile);
 
-	SIrrlichtCreationParameters deviceParameters;
+	irr::SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
 
@@ -154,7 +154,7 @@ int main (int argc, char ** argv)
 	if (fakeFullScreen) {
 
 		if (GetSystemMetrics(SM_CMONITORS) > 1) {
-			core::stringw locationMessageW = language.translate("moveMessage");
+			irr::core::stringw locationMessageW = language.translate("moveMessage");
 
 			std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
 			std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
@@ -212,26 +212,26 @@ int main (int argc, char ** argv)
 	}
 #endif
 
-    //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
 
-	deviceParameters.DriverType = video::EDT_OPENGL;
-	deviceParameters.WindowSize = core::dimension2d<u32>(graphicsWidth, graphicsHeight);
+	deviceParameters.DriverType = irr::video::EDT_OPENGL;
+	deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
 	deviceParameters.Bits = graphicsDepth;
 	deviceParameters.Fullscreen = fullScreen;
 
-	IrrlichtDevice* device = createDeviceEx(deviceParameters);
+	irr::IrrlichtDevice* device = createDeviceEx(deviceParameters);
 	if (device == 0) {
 		std::cerr << "Could not start - please check your graphics options." << std::endl;
 		exit(EXIT_FAILURE); //Could not get file system
 	}
 	
-	video::IVideoDriver* driver = device->getVideoDriver();
+	irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
 
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
-    io::IFileSystem* fileSystem = device->getFileSystem();
+	irr::io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
         std::cout << "Could not get filesystem" << std::endl;
@@ -240,7 +240,7 @@ int main (int argc, char ** argv)
     #endif
 
     //Set font : Todo - make this configurable
-    gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
     if (font == 0) {
         std::cout << "Could not load font, using default" << std::endl;
     } else {
@@ -255,9 +255,9 @@ int main (int argc, char ** argv)
     //Show user the hostname etc
     std::string ourHostName = asio::ip::host_name();
 
-    core::stringw patienceMessage = core::stringw(ourHostName.c_str());
+    irr::core::stringw patienceMessage = irr::core::stringw(ourHostName.c_str());
     patienceMessage.append(L":");
-    patienceMessage.append(core::stringw(network.getPort()));
+    patienceMessage.append(irr::core::stringw(network.getPort()));
 
 
     //GUI class
@@ -276,11 +276,11 @@ int main (int argc, char ** argv)
     EventReceiver receiver(device, &controller, &guiMain, &network);
     device->setEventReceiver(&receiver);
 
-    u32 timer = device->getTimer()->getRealTime();
+    irr::u32 timer = device->getTimer()->getRealTime();
 
     while(device->run()) {
 
-        driver->beginScene(true, false, video::SColor(0,200,200,200)); //Don't need to clear Z buffer
+        driver->beginScene(true, false, irr::video::SColor(0,200,200,200)); //Don't need to clear Z buffer
 
         //Read in data from network
         network.update(time, ownShipData);
@@ -291,7 +291,7 @@ int main (int argc, char ** argv)
         driver->endScene();
 
         //Pause if faster than 30 fps (33ms)
-        u32 newTimer = device->getTimer()->getRealTime();
+        irr::u32 newTimer = device->getTimer()->getRealTime();
         if (newTimer-timer<33) {
             device->sleep(33-(newTimer-timer));
         }

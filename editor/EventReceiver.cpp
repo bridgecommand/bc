@@ -24,7 +24,7 @@
 //#include "Network.hpp"
 #include "../Utilities.hpp"
 
-using namespace irr;
+//using namespace irr;
 
     EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui/*, Network* network*/) //Constructor
 	{
@@ -34,15 +34,15 @@ using namespace irr;
 		//this->network = network; //Link to the network
     }
 
-    bool EventReceiver::OnEvent(const SEvent& event)
+    bool EventReceiver::OnEvent(const irr::SEvent& event)
 	{
 
-        if (event.EventType == EET_GUI_EVENT)
+        if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			s32 id = event.GUIEvent.Caller->getID();
+			irr::s32 id = event.GUIEvent.Caller->getID();
 
 
-            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
 
                 if (id == GUIMain::GUI_ID_ZOOMIN_BUTTON) {
                     model->increaseZoom();
@@ -113,14 +113,14 @@ using namespace irr;
 
             }
 
-            if (event.GUIEvent.EventType==gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==gui::EGET_LISTBOX_CHANGED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {
                 if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
-                    model->updateSelectedShip( ((gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
+                    model->updateSelectedShip( ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
 
                 if (id==GUIMain::GUI_ID_LEG_LISTBOX) {
-                    model->updateSelectedLeg( ((gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                    model->updateSelectedLeg( ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
                     gui->updateEditBoxes();
                 }
 
@@ -139,7 +139,7 @@ using namespace irr;
             }
 
             //Check scenario name change, or user clicks on 'save or apply'. If so, apply general data changes to model.
-            if ((event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && (id == GUIMain::GUI_ID_APPLY_BUTTON || id == GUIMain::GUI_ID_SAVE_BUTTON)) || (event.GUIEvent.EventType==gui::EGET_EDITBOX_CHANGED && id == GUIMain::GUI_ID_SCENARIONAME_EDITBOX)) {
+            if ((event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && (id == GUIMain::GUI_ID_APPLY_BUTTON || id == GUIMain::GUI_ID_SAVE_BUTTON)) || (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED && id == GUIMain::GUI_ID_SCENARIONAME_EDITBOX)) {
                 GeneralData tempData;
                 tempData.startTime = gui->getStartTime();
                 tempData.startDay = gui->getStartDay();
@@ -156,14 +156,14 @@ using namespace irr;
             }
 
             //Check for Save button here (ensure 'Apply' gets run first!)
-            if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED && id == GUIMain::GUI_ID_SAVE_BUTTON) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == GUIMain::GUI_ID_SAVE_BUTTON) {
                 model->save();
             }
 
         }
 
         //From keyboard
-        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 		{
 
             if (event.KeyInput.Shift) {
@@ -180,9 +180,9 @@ using namespace irr;
 		} //end of key down event
 
 		//From mouse
-		if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 
-            if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ) {
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ) {
 
                 //Check if we're over a gui element, and if so ignore the click
                 irr::gui::IGUIElement* overElement = device->getGUIEnvironment()->getRootGUIElement()->getElementFromPoint(device->getCursorControl()->getPosition());
@@ -191,7 +191,7 @@ using namespace irr;
                 }
             }
 
-            if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP ) {
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {
                 model->setMouseDown(false);
             }
 

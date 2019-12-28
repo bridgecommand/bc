@@ -25,7 +25,7 @@
 
 #include <iostream> //debugging
 
-using namespace irr;
+//using namespace irr;
 
 OtherShips::OtherShips()
 {
@@ -46,13 +46,13 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
     //Store reference to model
     this->model = model;
 
-    for(u32 i=0;i<otherShipsData.size();i++)
+    for(irr::u32 i=0;i<otherShipsData.size();i++)
     {
         //Get ship type and construct filename
         std::string otherShipName = otherShipsData.at(i).shipName;
         //Get initial position
-        f32 shipX = model->longToX(otherShipsData.at(i).initialLong);
-        f32 shipZ = model->latToZ(otherShipsData.at(i).initialLat);
+        irr::f32 shipX = model->longToX(otherShipsData.at(i).initialLong);
+        irr::f32 shipZ = model->latToZ(otherShipsData.at(i).initialLat);
 
         //Load leg information
         std::vector<Leg> legs;
@@ -84,7 +84,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         }
 
         //Create otherShip and load into vector
-        otherShips.push_back(new OtherShip (otherShipName,core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (otherShipName,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
     }
 
 }
@@ -95,11 +95,11 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
 
         //Find local wave height
         irr::core::vector3df prevPosition = (*it)->getPosition();
-        f32 waveHeightFiltered = prevPosition.Y - tideHeight - (*it)->getHeightCorrection(); //Calculate the previous wave height:
+        irr::f32 waveHeightFiltered = prevPosition.Y - tideHeight - (*it)->getHeightCorrection(); //Calculate the previous wave height:
 
         //Apply up/down motion from waves, with some filtering
-        f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
-        f32 factor = deltaTime/(timeConstant+deltaTime);
+        irr::f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
+        irr::f32 factor = deltaTime/(timeConstant+deltaTime);
         waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
 
         (*it)->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);
@@ -128,7 +128,7 @@ irr::core::vector3df OtherShips::getPosition(int number) const
     if (number < (int)otherShips.size() && number >= 0) {
         return otherShips.at(number)->getPosition();
     } else {
-        return core::vector3df(0,0,0);
+        return irr::core::vector3df(0,0,0);
     }
 }
 
