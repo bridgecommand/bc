@@ -84,7 +84,8 @@ USERCPPFLAGS = -std=c++11 \
 	-I./libs/libsndfile/include \
 	-DASIO_STANDALONE \
 	-DASIO_HAS_STD_THREAD \
-	-DWITH_SOUND
+	-DWITH_SOUND \
+	-DFOR_DEB
 
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)

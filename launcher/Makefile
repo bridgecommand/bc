@@ -19,7 +19,7 @@ USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
 else
-USERCXXFLAGS = -O3 -ffast-math
+USERCXXFLAGS = -O3 -ffast-math -DFOR_DEB
 endif
 #USERCXXFLAGS = -g -Wall
 # linker flags such as additional libraries and link paths
