@@ -48,7 +48,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     irr::u32 numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
     if (numberOfTerrains <= 0) {
-        std::cerr << "Could not load terrain." << std::endl;
+        std::cerr << "Could not load terrain. No terrain defined in settings file." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -93,7 +93,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //Check the height map file has loaded and the terrain exists
         if (terrain==0 || heightMapFile == 0) {
             //Could not load terrain
-            std::cerr << "Could not load terrain." << std::endl;
+            std::cerr << "Could not load terrain. Height map file not loaded. " << heightMapPath << std::endl;
+            std::cerr << "Terrain: " << terrain << " heightMapFile: " << heightMapFile << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -105,7 +106,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             extension = heightMapName.substr(heightMapName.length() - 4,4);
             Utilities::to_lower(extension);
         }
-        if (extension.compare(".irr::f32") == 0 ) {
+        if (extension.compare(".f32") == 0 ) {
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
             //Set scales etc to be 1.0, so heights are used directly
@@ -117,7 +118,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         if (!loaded) {
             //Could not load terrain
-            std::cerr << "Could not load terrain." << std::endl;
+            std::cerr << "Could not load terrain at loadHeightMap stage." << std::endl;
             exit(EXIT_FAILURE);
         }
 
