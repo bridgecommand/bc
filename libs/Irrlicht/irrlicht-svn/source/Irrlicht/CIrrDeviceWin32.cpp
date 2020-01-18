@@ -187,9 +187,11 @@ namespace irr
 		activeJoystick.axisValid[3]= (info.lRx!=0) ? 1 : 0;
 		activeJoystick.axisValid[4]= (info.lRy!=0) ? 1 : 0;
 		activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
+		activeJoystick.axisValid[6] = (info.rglSlider[0] != 0) ? 1 : 0;
+		activeJoystick.axisValid[7] = (info.rglSlider[1] != 0) ? 1 : 0;
 
 		int caxis=0;
-		for (u8 i=0; i<6; i++)
+		for (u8 i=0; i<8; i++)
 		{
 			if (activeJoystick.axisValid[i])
 				caxis++;
@@ -242,7 +244,7 @@ void SJoystickWin32Control::pollJoysticks()
 			u16 dxAxis=0;
 			u16 irrAxis=0;
 
-			while (dxAxis < 6 && irrAxis <caps.dwAxes)
+			while (dxAxis < 8 && irrAxis <caps.dwAxes)
 			{
 				bool axisFound=0;
 				s32 axisValue=0;
