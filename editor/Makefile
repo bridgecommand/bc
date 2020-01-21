@@ -19,7 +19,7 @@ USERCPPFLAGS = -std=c++11
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
 else
-USERCXXFLAGS = -O3 -ffast-math -DFOR_DEB
+USERCXXFLAGS = -O3 -ffast-math
 endif
 # linker flags such as additional libraries and link paths
 ifeq ($(UNAME_S),Darwin)

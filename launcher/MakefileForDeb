@@ -3,7 +3,7 @@
 # and be sure that CXX is set to a valid compiler
 
 # Name of the executable created (.exe will be added automatically if necessary)
-Target := bridgecommand-ini
+Target := bridgecommand
 # List of source files, separated by spaces
 Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp
 # Path to Irrlicht directory, should contain include/ and lib/
@@ -19,7 +19,7 @@ USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
 else
-USERCXXFLAGS = -O3 -ffast-math
+USERCXXFLAGS = -O3 -ffast-math -DFOR_DEB
 endif
 #USERCXXFLAGS = -g -Wall
 # linker flags such as additional libraries and link paths
@@ -45,8 +45,7 @@ all:
 	$(info Building...)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 ifeq ($(UNAME_S),Darwin)
-	rm -f ../BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
-	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/ini
+	cp $(DESTPATH) ../BridgeCommand.app/Contents/MacOS/BridgeCommand
 endif
 
 clean:

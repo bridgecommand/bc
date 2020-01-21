@@ -84,7 +84,8 @@ USERCPPFLAGS = -std=c++11 \
 	-I./libs/libsndfile/include \
 	-DASIO_STANDALONE \
 	-DASIO_HAS_STD_THREAD \
-	-DWITH_SOUND
+	-DWITH_SOUND \
+	-DFOR_DEB
 
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
@@ -150,12 +151,12 @@ else
 endif
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 #Build additional programs
-	$(MAKE) -C launcher/ all
-	$(MAKE) -C controller/ all
-	$(MAKE) -C editor/ all
-	$(MAKE) -C iniEditor/ all
-	$(MAKE) -C multiplayerHub/ all
-	$(MAKE) -C repeater/ all
+	$(MAKE) -C launcher/ -f MakefileForDeb all
+	$(MAKE) -C controller/ -f MakefileForDeb all
+	$(MAKE) -C editor/ -f MakefileForDeb all
+	$(MAKE) -C iniEditor/ -f MakefileForDeb all
+	$(MAKE) -C multiplayerHub/ -f MakefileForDeb all
+	$(MAKE) -C repeater/ -f MakefileForDeb all
 ifeq ($(UNAME_S),Darwin)
 	cp $(DESTPATH) BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
 	rm -f BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/.gitignore
