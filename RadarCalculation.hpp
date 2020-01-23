@@ -104,7 +104,8 @@ class RadarCalculation
         void setCourseUp();
         void setHeadUp();
         bool getHeadUp() const; //Head or course up
-        void setArpaOn(bool on);
+		void toggleRadarOn();
+		void setArpaOn(bool on);
         void setRadarARPARel();
         void setRadarARPATrue();
         void setRadarARPAVectors(irr::f32 vectorMinutes);
@@ -122,6 +123,7 @@ class RadarCalculation
         std::vector<std::vector<irr::f32> > scanArrayAmplified;
         std::vector<std::vector<irr::f32> > scanArrayAmplifiedPrevious;
         std::vector<ARPAContact> arpaContacts;
+        bool radarOn;
         bool arpaOn;
         irr::u32 largestARPADisplayId;
         irr::f32 radarGain;

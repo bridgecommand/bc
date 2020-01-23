@@ -216,6 +216,11 @@
                     model->setAccelerator(1.0);
                 }
 
+				if (id == GUIMain::GUI_ID_RADAR_ONOFF_BUTTON)
+				{
+					model->toggleRadarOn();
+				}
+
                 if (id == GUIMain::GUI_ID_RADAR_INCREASE_BUTTON)
                 {
                     model->increaseRadarRange();

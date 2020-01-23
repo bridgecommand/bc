@@ -717,6 +717,11 @@ SimulationModel::~SimulationModel()
         return camera.getView();
     }
 
+	void SimulationModel::toggleRadarOn()
+	{
+		radarCalculation.toggleRadarOn();
+	}
+
     void SimulationModel::increaseRadarRange()
     {
         radarCalculation.increaseRange();

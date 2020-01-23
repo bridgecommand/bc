@@ -142,7 +142,8 @@ public:
     void changeView();
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
-    void increaseRadarRange();
+	void toggleRadarOn();
+	void increaseRadarRange();
     void decreaseRadarRange();
     void setRadarGain(irr::f32 value);
     void setRadarClutter(irr::f32 value);

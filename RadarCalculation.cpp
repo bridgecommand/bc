@@ -46,6 +46,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(64)
 
     EBLLastUpdated = clock();
 
+    radarOn = false;
+
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = false;
     stabilised = false;
@@ -335,6 +337,20 @@ bool RadarCalculation::getHeadUp() const//Head or course up
     return headUp;
 }
 
+void RadarCalculation::toggleRadarOn()
+{
+	radarOn = !radarOn;
+	
+	if (!radarOn) {
+		//Reset array to empty
+		for (irr::u32 i = 0; i < 360; i++) {
+			for (irr::u32 j = 0; j < rangeResolution; j++) {
+				scanArrayAmplified[i][j] = -1.0;
+			}
+		}
+	}
+}
+
 void RadarCalculation::setArpaOn(bool on)
 {
     arpaOn = on;
@@ -433,6 +449,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarScreenStale = false;
     }
 
+    /*
     //Find position of mouse cursor
     irr::f32 cursorRangeXNm = (irr::f32)mouseRelPosition.X/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
     irr::f32 cursorRangeYNm = -1.0*(irr::f32)mouseRelPosition.Y/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
@@ -440,10 +457,14 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     if (isMouseDown && pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5) <= radarRangeNm.at(radarRangeIndex) ) {
         std::cout << "Cursor E/W: " << cursorRangeXNm << " N/S:" << cursorRangeYNm << std::endl;
     }
+    */
+	
+    if (radarOn) {
+		scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+		updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
+    }
+	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 
-    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
-    updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-    render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 }
 
 

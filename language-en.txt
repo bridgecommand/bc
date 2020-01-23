@@ -35,6 +35,7 @@ wheelText="Wheel & Rudder position"
 rotText="Rate of turn"
 
 radarMainTab="Main"
+onoff="On/Off"
 radarEBLVRMTab="EBL\nVRM"
 radarPITab="PI"
 radarGuardZoneTab="Guard\nZone"

@@ -83,6 +83,7 @@ public:
         GUI_ID_BOWTHRUSTER_SCROLL_BAR,
         GUI_ID_STERNTHRUSTER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
+		GUI_ID_RADAR_ONOFF_BUTTON,
         GUI_ID_BIG_RADAR_BUTTON,
         GUI_ID_SMALL_RADAR_BUTTON,
         GUI_ID_RADAR_INCREASE_BUTTON,
@@ -167,6 +168,7 @@ private:
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
     irr::gui::IGUIButton* smallRadarButton;
+	irr::gui::IGUIButton* radarOnOffButton;
     irr::gui::IGUIButton* eblLeftButton;
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
