@@ -28,6 +28,8 @@ else (MSVC)
         X11
         Xcursor
     )
+
+    add_dependencies(bc-irrlicht bc-irrlicht-internal)
 endif (MSVC)
 
 target_include_directories(bc-irrlicht INTERFACE
