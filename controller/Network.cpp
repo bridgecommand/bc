@@ -128,8 +128,8 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
                 /* Store any relevant client information here. */
                 //event.peer -> data = "Client information";
                 break;
-            case ENET_EVENT_TYPE_RECEIVE:
 
+            case ENET_EVENT_TYPE_RECEIVE:
                 //receive it
                 receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain,mobVisible,mobData);
 
@@ -138,13 +138,16 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
 
                 /* Clean up the packet now that we're done using it. */
                 enet_packet_destroy (event.packet);
-
                 break;
-            case ENET_EVENT_TYPE_DISCONNECT:
-                printf ("%s disconected.\n", event.peer -> data);
-                /* Reset the peer's client information. */
-                event.peer -> data = NULL;
 
+            case ENET_EVENT_TYPE_DISCONNECT:
+                printf("%s disconected.\n", (const char *)event.peer->data);
+                /* Reset the peer's client information. */
+                event.peer->data = NULL;
+                break;
+
+            case ENET_EVENT_TYPE_NONE:
+                break; // ignore it
         }
     }
 }

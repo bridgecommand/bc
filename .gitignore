@@ -1,5 +1,6 @@
 *.o
 *.d
+*.a
 *.depend
 *.layout
 *.cscope_file_list
@@ -12,3 +13,8 @@
 *.iobj
 *.ipdb
 Thumbs.db
+build/
+libs/Irrlicht/irrlicht-svn/lib/Linux/
+libs/Irrlicht/irrlicht-svn/source/Irrlicht/src/
+libs/Irrlicht/irrlicht-svn/source/Irrlicht/tmp/
+*.kdev4
