@@ -162,6 +162,10 @@ int main()
 	if (directX == 1) {
 		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
 	}
+	irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
+	if (waterSegments == 0) {
+		waterSegments = 32;
+	}
     //Initial view configuration
     irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
     irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
@@ -525,7 +529,7 @@ int main()
 
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments);
 
     //Load the gui
     bool hideEngineAndRudder=false;

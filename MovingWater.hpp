@@ -38,6 +38,7 @@ namespace scene
 		//! constructor
 		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
 			irr::u32 disableShaders,
+			irr::u32 segments = 32,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0)
 			);

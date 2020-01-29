@@ -31,10 +31,10 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, irr::s32 id, irr::u32 disableShaders,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, irr::s32 id, irr::u32 disableShaders, irr::u32 segments,
 		const irr::core::vector3df& position, const irr::core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), segments(segments)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -83,7 +83,6 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
 	//FIXME: Hardcoded or defined in multiple places
 	tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 100, so visible jumps in water are minimised
-    segments = 32; //How many tiles per segment
     irr::f32 segmentSize = tileWidth / segments;
 
     ocean = new cOcean(segments, 0.00005f, vector2(32.0f,32.0f), tileWidth); //Note that the A and w parameters will get overwritten by ocean->resetParameters() dependent on the model's weather
