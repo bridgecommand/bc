@@ -42,7 +42,7 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -53,12 +53,12 @@ int main (int argc, char ** argv)
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-	//change up from BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
+    //change up from BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
     exeFolderPath.append("/../../../../Resources");
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+    #endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();

@@ -30,15 +30,15 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
 
     lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
 
-	lightNode->setColor(colour);
+    lightNode->setColor(colour);
 
-	lightTexture = smgr->getVideoDriver()->getTexture("media/particlewhite.png");
+    lightTexture = smgr->getVideoDriver()->getTexture("media/particlewhite.png");
 
-	
-	lightNode->setMaterialTexture(0, lightTexture);
-	lightNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-	lightNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-	lightNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    
+    lightNode->setMaterialTexture(0, lightTexture);
+    lightNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+    lightNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    lightNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
 
     //Fix angles if start is negative
     while (lightStartAngle < 0) {
@@ -61,7 +61,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     }
 
     //set initial alpha to implausible value
-	currentAlpha = -1;
+    currentAlpha = -1;
 }
 
 NavLight::~NavLight() {
@@ -130,21 +130,21 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
         }
     }
 
-	//set transparency dependent on light level, only changing if required, as this is a slow operation
+    //set transparency dependent on light level, only changing if required, as this is a slow operation
     irr::u16 requiredAlpha = 255 - lightLevel;
-	if (requiredAlpha != currentAlpha) {
-		
-		/*
-		//Reload light textures - required as setAlpha seems only to work once
-		lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
-		lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-		lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
-		lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		*/
+    if (requiredAlpha != currentAlpha) {
+        
+        /*
+        //Reload light textures - required as setAlpha seems only to work once
+        lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
+        lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+        lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
+        lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+        */
 
-		setAlpha((irr::u8)requiredAlpha, lightTexture);
-		currentAlpha = requiredAlpha;
-	}
+        setAlpha((irr::u8)requiredAlpha, lightTexture);
+        currentAlpha = requiredAlpha;
+    }
 
     //this->lightLevel = (irr::f32)lightLevel/256; //Convert to float for shader
 
@@ -154,74 +154,74 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 //Modified from http://irrlicht.sourceforge.net/forum/viewtopic.php?t=31400
 //FIXME: Check how the texture color format is set
 {
-	if (!tex)
-	{
-		return false;
-	};
+    if (!tex)
+    {
+        return false;
+    };
 
-	irr::u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
-	irr::u32 width = tex->getSize().Width;
-	irr::u32 height = tex->getSize().Height;
+    irr::u32 size = tex->getSize().Width*tex->getSize().Height;  // get Texture Size
+    irr::u32 width = tex->getSize().Width;
+    irr::u32 height = tex->getSize().Height;
 
-	
+    
 
-	switch (tex->getColorFormat()) //getTexture Format, (nly 2 support alpha)
-	{
-	case irr::video::ECF_A1R5G5B5: //see video::ECOLOR_FORMAT for more information on the texture formats.
-	{
-		//  printf("16BIT\n");
-		irr::u16* Data = (irr::u16*)tex->lock(); //get Data for 16-bit Texture
-		for (irr::u32 i = 0; i < width; i++) {
-			for (irr::u32 j = 0; j < height; j++) {
-				
-				irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
-				irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
-				irr::f32 radSq = x*x + y*y;
-				if (radSq <= width*width / 4) {
-					Data[i + j*width] = irr::video::RGBA16(255, 255, 255, alpha);
-				} else {
-					Data[i + j*width] = irr::video::RGBA16(255, 255, 255, 0);
-				}
-				 
+    switch (tex->getColorFormat()) //getTexture Format, (nly 2 support alpha)
+    {
+    case irr::video::ECF_A1R5G5B5: //see video::ECOLOR_FORMAT for more information on the texture formats.
+    {
+        //  printf("16BIT\n");
+        irr::u16* Data = (irr::u16*)tex->lock(); //get Data for 16-bit Texture
+        for (irr::u32 i = 0; i < width; i++) {
+            for (irr::u32 j = 0; j < height; j++) {
+                
+                irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
+                irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
+                irr::f32 radSq = x*x + y*y;
+                if (radSq <= width*width / 4) {
+                    Data[i + j*width] = irr::video::RGBA16(255, 255, 255, alpha);
+                } else {
+                    Data[i + j*width] = irr::video::RGBA16(255, 255, 255, 0);
+                }
+                 
 
-			}
-		}
-		tex->unlock();
-		break;
-	};
-	case irr::video::ECF_A8R8G8B8:
-	{
-		irr::u32* Data = (irr::u32*)tex->lock();
-		
-		irr::video::SColor pixelColor;
+            }
+        }
+        tex->unlock();
+        break;
+    };
+    case irr::video::ECF_A8R8G8B8:
+    {
+        irr::u32* Data = (irr::u32*)tex->lock();
+        
+        irr::video::SColor pixelColor;
 
-		for (irr::u32 i = 0; i < width; i++) {
-			for (irr::u32 j = 0; j < height; j++) {
-				
-				irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
-				irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
-				irr::f32 radSq = x*x + y*y;
-				if (radSq <= width*width / 4) {
-					pixelColor.set(alpha, 255, 255, 255);
-				}
-				else {
-					pixelColor.set(0, 255, 255, 255);
-				}
-				
-				Data[i + j*width] = pixelColor.color;
-			}
-		}
-		
-			//u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
-			//((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
-			
-		tex->unlock();
-		break;
-	};
-	default:
-		return false;
-	};
-	return true;
+        for (irr::u32 i = 0; i < width; i++) {
+            for (irr::u32 j = 0; j < height; j++) {
+                
+                irr::f32 x = (irr::s32)i - (irr::s32)width / 2;
+                irr::f32 y = (irr::s32)j - (irr::s32)height / 2;
+                irr::f32 radSq = x*x + y*y;
+                if (radSq <= width*width / 4) {
+                    pixelColor.set(alpha, 255, 255, 255);
+                }
+                else {
+                    pixelColor.set(0, 255, 255, 255);
+                }
+                
+                Data[i + j*width] = pixelColor.color;
+            }
+        }
+        
+            //u8 alphaToUse = ((u8*)&Data[i])[3] == 0 ? 0 : alpha; //If already transparent, leave as-is
+            //((u8*)&Data[i])[3] = alphaToUse;//get Data for 32-bit Texture
+            
+        tex->unlock();
+        break;
+    };
+    default:
+        return false;
+    };
+    return true;
 }
 
 void NavLight::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)

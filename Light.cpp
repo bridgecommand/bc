@@ -65,17 +65,17 @@ void Light::update(irr::f32 scenarioTime)
 
     //Light parameters
     irr::s32 lightLow=50;
-	irr::s32 lightHigh=205;
-	irr::s32 lightCos=45;
+    irr::s32 lightHigh=205;
+    irr::s32 lightCos=45;
 
     if (hourTime >= 0               && hourTime < (sunRise - 0.5)) {lightLevel = lightLow;}
-	if (hourTime >= (sunRise - 0.5) && hourTime < (sunRise + 0.5)) {lightLevel = (lightHigh-lightLow) * (hourTime - (sunRise - 0.5)) + lightLow;}
-	if (hourTime >= (sunRise + 0.5) && hourTime < (sunSet  - 0.5)) {lightLevel = lightHigh;}
-	if (hourTime >= (sunSet  - 0.5) && hourTime < (sunSet  + 0.5)) {lightLevel = (lightLow-lightHigh) * (hourTime - (sunSet - 0.5)) + lightHigh;}
-	if (hourTime >= (sunSet  + 0.5) && hourTime <= 24            ) {lightLevel = lightLow;}
+    if (hourTime >= (sunRise - 0.5) && hourTime < (sunRise + 0.5)) {lightLevel = (lightHigh-lightLow) * (hourTime - (sunRise - 0.5)) + lightLow;}
+    if (hourTime >= (sunRise + 0.5) && hourTime < (sunSet  - 0.5)) {lightLevel = lightHigh;}
+    if (hourTime >= (sunSet  - 0.5) && hourTime < (sunSet  + 0.5)) {lightLevel = (lightLow-lightHigh) * (hourTime - (sunSet - 0.5)) + lightHigh;}
+    if (hourTime >= (sunSet  + 0.5) && hourTime <= 24            ) {lightLevel = lightLow;}
 
-	//sinusoidal component
-	lightLevel = (irr::s32)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
+    //sinusoidal component
+    lightLevel = (irr::s32)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
 
     //do something with ambient colour
     ambientColor=irr::video::SColor(255,lightLevel,lightLevel,lightLevel);

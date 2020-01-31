@@ -12,20 +12,20 @@ namespace irr
 namespace gui
 {
 
-	class HeadingIndicator : public IGUIElement
-	{
-	public:
+    class HeadingIndicator : public IGUIElement
+    {
+    public:
 
-		//! constructor
-		HeadingIndicator(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle);
+        //! constructor
+        HeadingIndicator(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle);
 
-		//! destructor
-		virtual ~HeadingIndicator();
+        //! destructor
+        virtual ~HeadingIndicator();
 
-		//! draws the element and its children
-		virtual void draw();
+        //! draws the element and its children
+        virtual void draw();
 
-		virtual void setHeading(f32 heading);
+        virtual void setHeading(f32 heading);
 
     private:
 

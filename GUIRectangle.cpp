@@ -30,7 +30,7 @@ void IGUIRectangle::draw()
 {
 
 if (!IsVisible)
-		return;
+        return;
 
     IGUISkin* skin = Environment->getSkin();
 
@@ -39,14 +39,14 @@ if (!IsVisible)
 
     irr::u32 skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
 
-	// draws the background
-	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
-	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
-	if (showBorder)
+    // draws the background
+    //skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
+    //Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
+    if (showBorder)
         Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
-	//Draw children
-	IGUIElement::draw();
+    //Draw children
+    IGUIElement::draw();
 
 }
 

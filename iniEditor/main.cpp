@@ -216,7 +216,7 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -232,7 +232,7 @@ int main (int argc, char ** argv)
     //change to this path now
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+    #endif
 
     irr::u32 graphicsWidth = 800;
     irr::u32 graphicsHeight = 600;

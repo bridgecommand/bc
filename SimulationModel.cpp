@@ -42,7 +42,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         smgr = scene;
         driver = scene->getVideoDriver();
         guiMain = gui;
-		this->sound = sound;
+        this->sound = sound;
         isMouseDown = false;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
@@ -190,11 +190,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
 
         //make radar camera
         std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
-		irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
+        irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
         radarViews.push_back(ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
         radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,irr::core::PI/2.0,0,0);
-		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
-		radarCamera.updateViewport(1.0);
+        radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
+        radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
         radarCamera.setFarValue(1.2*0.5*ownShip.getScreenDisplaySize());
 
@@ -362,143 +362,143 @@ SimulationModel::~SimulationModel()
         otherShips.deleteLeg(shipNumber, legNumber, scenarioTime);
     }
 
-	std::string SimulationModel::getOwnShipEngineSound() const {
+    std::string SimulationModel::getOwnShipEngineSound() const {
 
-		//Check existence of sound file in base path, and if not fall back to default.
-		std::string soundPath = ownShip.getBasePath();
+        //Check existence of sound file in base path, and if not fall back to default.
+        std::string soundPath = ownShip.getBasePath();
 
-		{ //Create local scope for file
+        { //Create local scope for file
             soundPath.append("/Engine.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Check for lower case version
-		{
+        //Check for lower case version
+        {
             soundPath = ownShip.getBasePath();
             soundPath.append("/engine.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Fall back to default, again checking both upper and lower case
+        //Fall back to default, again checking both upper and lower case
 
-		{
+        {
             soundPath = "Sounds/Engine.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		{
+        {
             soundPath = "Sounds/engine.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//In case nothing found
-		return "";
+        //In case nothing found
+        return "";
 
-	}
+    }
 
-	std::string SimulationModel::getOwnShipWaveSound() const {
+    std::string SimulationModel::getOwnShipWaveSound() const {
 
-		//Check existence of sound file in base path, and if not fall back to default.
-		std::string soundPath = ownShip.getBasePath();
+        //Check existence of sound file in base path, and if not fall back to default.
+        std::string soundPath = ownShip.getBasePath();
 
-		{ //Create local scope for file
+        { //Create local scope for file
             soundPath.append("/Bwave.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Check for lower case version
-		{
+        //Check for lower case version
+        {
             soundPath = ownShip.getBasePath();
             soundPath.append("/bwave.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Fall back to default, again checking both upper and lower case
+        //Fall back to default, again checking both upper and lower case
 
-		{
+        {
             soundPath = "Sounds/Bwave.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		{
+        {
             soundPath = "Sounds/bwave.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//In case nothing found
-		return "";
+        //In case nothing found
+        return "";
 
-	}
+    }
 
-	std::string SimulationModel::getOwnShipHornSound() const {
+    std::string SimulationModel::getOwnShipHornSound() const {
 
-		//Check existence of sound file in base path, and if not fall back to default.
-		std::string soundPath = ownShip.getBasePath();
+        //Check existence of sound file in base path, and if not fall back to default.
+        std::string soundPath = ownShip.getBasePath();
 
-		{ //Create local scope for file
+        { //Create local scope for file
             soundPath.append("/Horn.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Check for lower case version
-		{
+        //Check for lower case version
+        {
             soundPath = ownShip.getBasePath();
             soundPath.append("/horn.wav");
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//Fall back to default, again checking both upper and lower case
+        //Fall back to default, again checking both upper and lower case
 
-		{
+        {
             soundPath = "Sounds/Horn.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		{
+        {
             soundPath = "Sounds/horn.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
             }
-		}
+        }
 
-		//In case nothing found
-		return "";
+        //In case nothing found
+        return "";
 
-	}
+    }
 
     void SimulationModel::setHeading(irr::f32 hdg)
     {
@@ -557,13 +557,13 @@ SimulationModel::~SimulationModel()
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setPortEngine(port); //This method limits the range applied
 
-		//Set engine sound level
-		if (ownShip.isSingleEngine()) {
-			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
-		}
-		else {
-			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
-		}
+        //Set engine sound level
+        if (ownShip.isSingleEngine()) {
+            sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+        }
+        else {
+            sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+        }
 
     }
 
@@ -572,8 +572,8 @@ SimulationModel::~SimulationModel()
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setStbdEngine(stbd); //This method limits the range applied
 
-		//Set engine sound level
-		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+        //Set engine sound level
+        sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
     }
 
     irr::f32 SimulationModel::getPortEngine() const
@@ -717,10 +717,10 @@ SimulationModel::~SimulationModel()
         return camera.getView();
     }
 
-	void SimulationModel::toggleRadarOn()
-	{
-		radarCalculation.toggleRadarOn();
-	}
+    void SimulationModel::toggleRadarOn()
+    {
+        radarCalculation.toggleRadarOn();
+    }
 
     void SimulationModel::increaseRadarRange()
     {
@@ -949,13 +949,13 @@ SimulationModel::~SimulationModel()
         return ownShip.getMaxSounderDepth();
     }
 
-	void SimulationModel::startHorn() {
-		sound->setVolumeHorn(1.0);
-	}
+    void SimulationModel::startHorn() {
+        sound->setVolumeHorn(1.0);
+    }
 
-	void SimulationModel::endHorn() {
-		sound->setVolumeHorn(0.0);
-	}
+    void SimulationModel::endHorn() {
+        sound->setVolumeHorn(0.0);
+    }
 
     void SimulationModel::update()
     {
@@ -1078,13 +1078,13 @@ SimulationModel::~SimulationModel()
         irr::u32 numberOfARPAContacts = radarCalculation.getARPAContacts();
         std::vector<irr::f32> CPAs;
         std::vector<irr::f32> TCPAs;
-		std::vector<irr::f32> headings;
-		std::vector<irr::f32> speeds;
+        std::vector<irr::f32> headings;
+        std::vector<irr::f32> speeds;
         for(unsigned int i = 0; i<numberOfARPAContacts; i++) {
             CPAs.push_back(radarCalculation.getARPACPA(i+1)); //i+1 as the user numbering starts at 1, not 0
             TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
-			headings.push_back(radarCalculation.getARPAHeading(i + 1));
-			speeds.push_back(radarCalculation.getARPASpeed(i + 1));
+            headings.push_back(radarCalculation.getARPAHeading(i + 1));
+            speeds.push_back(radarCalculation.getARPASpeed(i + 1));
         }
 
 
@@ -1113,15 +1113,15 @@ SimulationModel::~SimulationModel()
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
         guiData->CPAs = CPAs;
         guiData->TCPAs = TCPAs;
-		guiData->headings = headings;
-		guiData->speeds = speeds;
+        guiData->headings = headings;
+        guiData->speeds = speeds;
         guiData->currentTime = Utilities::timestampToString(absoluteTime);
         guiData->paused = paused;
         guiData->collided = collided;
         guiData->headUp = radarCalculation.getHeadUp();
 
 // DEE vvvv units are rad per second
-	guiData->RateOfTurn = ownShip.getRateOfTurn();
+    guiData->RateOfTurn = ownShip.getRateOfTurn();
 // DEE ^^^^
 
         //send data to gui

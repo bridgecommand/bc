@@ -33,23 +33,23 @@ namespace IniFile {
 
 #ifdef _WIN32
 static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
-	WPARAM wParam, LPARAM lParam)
+    WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-	case WM_COMMAND:
-	{
-		HWND hwndCtl = (HWND)lParam;
-		int code = HIWORD(wParam);
-	}
-	break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
+    switch (message)
+    {
+    case WM_COMMAND:
+    {
+        HWND hwndCtl = (HWND)lParam;
+        int code = HIWORD(wParam);
+    }
+    break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
 
-	}
+    }
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
 #endif
 
@@ -62,7 +62,7 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -73,12 +73,12 @@ int main (int argc, char ** argv)
             exeFolderPath = exePathString.substr(0, pos);
         }
     }
-	//change up from BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
+    //change up from BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
     exeFolderPath.append("/../../../../Resources");
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+    #endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
@@ -92,146 +92,146 @@ int main (int argc, char ** argv)
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
-	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
-	if (fakeFullScreen) {
-		fullScreen = true; //Fall back for non-windows
-	}
+    bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
+    if (fakeFullScreen) {
+        fullScreen = true; //Fall back for non-windows
+    }
 
-	//Sensible defaults if not set
-	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-		nulldevice->drop();
-		if (graphicsWidth == 0) {
-			if (fullScreen) {
-				graphicsWidth = deskres.Width;
-			}
-			else {
-				graphicsWidth = deskres.Width*0.9;
-			}
-		}
-		if (graphicsHeight == 0) {
-			if (fullScreen) {
-				graphicsHeight = deskres.Height;
-			}
-			else {
-				graphicsHeight = deskres.Height*0.9;
-			}
-		}
-	}
+    //Sensible defaults if not set
+    if (graphicsWidth == 0 || graphicsHeight == 0) {
+        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+        irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+        nulldevice->drop();
+        if (graphicsWidth == 0) {
+            if (fullScreen) {
+                graphicsWidth = deskres.Width;
+            }
+            else {
+                graphicsWidth = deskres.Width*0.9;
+            }
+        }
+        if (graphicsHeight == 0) {
+            if (fullScreen) {
+                graphicsHeight = deskres.Height;
+            }
+            else {
+                graphicsHeight = deskres.Height*0.9;
+            }
+        }
+    }
 
-	if (graphicsDepth == 0) { graphicsDepth = 32; }
+    if (graphicsDepth == 0) { graphicsDepth = 32; }
     //Load UDP network settings
     irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
 
-	//load language
-	std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
-	if (modifier.length() == 0) {
-		modifier = "en"; //Default
-	}
-	std::string languageFile = "languageRepeater-";
-	languageFile.append(modifier);
-	languageFile.append(".txt");
-	if (Utilities::pathExists(userFolder + languageFile)) {
-		languageFile = userFolder + languageFile;
-	}
-	Lang language(languageFile);
+    //load language
+    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+    if (modifier.length() == 0) {
+        modifier = "en"; //Default
+    }
+    std::string languageFile = "languageRepeater-";
+    languageFile.append(modifier);
+    languageFile.append(".txt");
+    if (Utilities::pathExists(userFolder + languageFile)) {
+        languageFile = userFolder + languageFile;
+    }
+    Lang language(languageFile);
 
-	irr::SIrrlichtCreationParameters deviceParameters;
+    irr::SIrrlichtCreationParameters deviceParameters;
 
 #ifdef _WIN32
 
-	HWND hWnd;
-	HINSTANCE hInstance = 0;
-	// create dialog
-	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
+    HWND hWnd;
+    HINSTANCE hInstance = 0;
+    // create dialog
+    const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
 
-	WNDCLASSEX wcex;
+    WNDCLASSEX wcex;
 
-	if (fakeFullScreen) {
+    if (fakeFullScreen) {
 
-		if (GetSystemMetrics(SM_CMONITORS) > 1) {
-			irr::core::stringw locationMessageW = language.translate("moveMessage");
+        if (GetSystemMetrics(SM_CMONITORS) > 1) {
+            irr::core::stringw locationMessageW = language.translate("moveMessage");
 
-			std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
-			std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
+            std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
+            std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
 
-			MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
-		}
+            MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
+        }
 
-		wcex.cbSize = sizeof(WNDCLASSEX);
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = DLGWINDOWEXTRA;
-		wcex.hInstance = hInstance;
-		wcex.hIcon = NULL;
-		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-		wcex.lpszMenuName = 0;
-		wcex.lpszClassName = Win32ClassName;
-		wcex.hIconSm = 0;
+        wcex.cbSize = sizeof(WNDCLASSEX);
+        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
+        wcex.cbClsExtra = 0;
+        wcex.cbWndExtra = DLGWINDOWEXTRA;
+        wcex.hInstance = hInstance;
+        wcex.hIcon = NULL;
+        wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+        wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+        wcex.lpszMenuName = 0;
+        wcex.lpszClassName = Win32ClassName;
+        wcex.hIconSm = 0;
 
-		RegisterClassEx(&wcex);
+        RegisterClassEx(&wcex);
 
-		//Find location of mouse cursor
-		POINT p;
-		int x = 0;
-		int y = 0;
-		if (GetCursorPos(&p))
-		{
-			//Find monitor this is on
-			HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
-			MONITORINFO mi;
-			RECT        rc;
+        //Find location of mouse cursor
+        POINT p;
+        int x = 0;
+        int y = 0;
+        if (GetCursorPos(&p))
+        {
+            //Find monitor this is on
+            HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
+            MONITORINFO mi;
+            RECT        rc;
 
-			mi.cbSize = sizeof(mi);
-			GetMonitorInfo(monitor, &mi);
-			rc = mi.rcMonitor;
+            mi.cbSize = sizeof(mi);
+            GetMonitorInfo(monitor, &mi);
+            rc = mi.rcMonitor;
 
-			//Set to fill current monitor
-			x = rc.left;
-			y = rc.top;
-			graphicsWidth = rc.right - rc.left;
-			graphicsHeight = rc.bottom - rc.top;
+            //Set to fill current monitor
+            x = rc.left;
+            y = rc.top;
+            graphicsWidth = rc.right - rc.left;
+            graphicsHeight = rc.bottom - rc.top;
 
-		}
+        }
 
 
-		DWORD style = WS_VISIBLE | WS_POPUP;
+        DWORD style = WS_VISIBLE | WS_POPUP;
 
-		hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
-			style, x, y, graphicsWidth, graphicsHeight,
-			NULL, NULL, hInstance, NULL);
+        hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+            style, x, y, graphicsWidth, graphicsHeight,
+            NULL, NULL, hInstance, NULL);
 
-		deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
+        deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
 
-	}
+    }
 #endif
 
     //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
 
-	deviceParameters.DriverType = irr::video::EDT_OPENGL;
-	deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
-	deviceParameters.Bits = graphicsDepth;
-	deviceParameters.Fullscreen = fullScreen;
+    deviceParameters.DriverType = irr::video::EDT_OPENGL;
+    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
+    deviceParameters.Bits = graphicsDepth;
+    deviceParameters.Fullscreen = fullScreen;
 
-	irr::IrrlichtDevice* device = createDeviceEx(deviceParameters);
-	if (device == 0) {
-		std::cerr << "Could not start - please check your graphics options." << std::endl;
-		exit(EXIT_FAILURE); //Could not get file system
-	}
-	
-	irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::IrrlichtDevice* device = createDeviceEx(deviceParameters);
+    if (device == 0) {
+        std::cerr << "Could not start - please check your graphics options." << std::endl;
+        exit(EXIT_FAILURE); //Could not get file system
+    }
+
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
 
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
-	irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
         std::cout << "Could not get filesystem" << std::endl;

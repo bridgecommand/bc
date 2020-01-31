@@ -35,8 +35,8 @@ namespace NumberToImage
 
         if (length > 0) {
 
-			std::vector<irr::video::IImage*> numberImages;
-			numberImages.resize(length);
+            std::vector<irr::video::IImage*> numberImages;
+            numberImages.resize(length);
             //video::IImage* numberImages[length];
             irr::u32 overallWidth = 0;
             irr::u32 maxHeight = 0;
@@ -62,7 +62,7 @@ namespace NumberToImage
             }
 
             if (overallWidth>0) {
-            	irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(overallWidth, maxHeight));
+                irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(overallWidth, maxHeight));
                 if (!numberImage) {
                     return 0;
                 }

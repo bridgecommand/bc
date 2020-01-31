@@ -101,8 +101,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Get name of selected scenario
     if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (irr::s32)scenarioList.size()) {
-		std::cerr << "No scenario selected." << std::endl;
-		exit(EXIT_FAILURE); //No scenario loaded
+        std::cerr << "No scenario selected." << std::endl;
+        exit(EXIT_FAILURE); //No scenario loaded
     }
 
     //Get hostname, and convert from wchar_t* to wstring to string
@@ -143,13 +143,13 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
 void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {
 
-	irr::io::IFileSystem* fileSystem = device->getFileSystem();
-	if (fileSystem==0) {
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem==0) {
         std::cerr << "Could not get file system access." << std::endl;
         exit(EXIT_FAILURE); //Could not get file system
     }
     //store current dir
-	irr::io::path cwd = fileSystem->getWorkingDirectory();
+    irr::io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to scenario dir
     if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
@@ -159,7 +159,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
     irr::io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
-		std::cerr << "Could not get file list for secenarios." << std::endl;
+        std::cerr << "Could not get file list for secenarios." << std::endl;
         exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
     }
 

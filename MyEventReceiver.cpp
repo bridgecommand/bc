@@ -25,25 +25,25 @@
 //using namespace irr;
 
     MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages) //Constructor
-	{
-		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI (Not currently used, all comms through model)
-		scrollBarPosSpeed = 0;
-		scrollBarPosHeading = 0;
+    {
+        this->model = model; //Link to the model
+        this->gui = gui; //Link to GUI (Not currently used, all comms through model)
+        scrollBarPosSpeed = 0;
+        scrollBarPosHeading = 0;
 
-		//store device
-		device = dev;
+        //store device
+        device = dev;
 
-		lastShownJoystickStatus = device->getTimer()->getRealTime()-5000;
+        lastShownJoystickStatus = device->getTimer()->getRealTime()-5000;
 
-		//set up joystick if present, and inform user what's available
-		dev->activateJoysticks(joystickInfo);
+        //set up joystick if present, and inform user what's available
+        dev->activateJoysticks(joystickInfo);
 
-		//Tell user about joysticks via the log
-		dev->getLogger()->log(""); //add a blank line
-		std::string joystickInfoMessage = "Number of joysticks detected: ";
-		joystickInfoMessage.append(std::string(irr::core::stringc(joystickInfo.size()).c_str()));
-		dev->getLogger()->log(joystickInfoMessage.c_str());
+        //Tell user about joysticks via the log
+        dev->getLogger()->log(""); //add a blank line
+        std::string joystickInfoMessage = "Number of joysticks detected: ";
+        joystickInfoMessage.append(std::string(irr::core::stringc(joystickInfo.size()).c_str()));
+        dev->getLogger()->log(joystickInfoMessage.c_str());
         for(unsigned int i = 0; i<joystickInfo.size(); i++) {
             //Print out name and number of each joystick
             joystickInfoMessage = "Joystick number: ";
@@ -54,26 +54,26 @@
         }
         dev->getLogger()->log(""); //add a blank line
 
-		this->joystickSetup = joystickSetup;
+        this->joystickSetup = joystickSetup;
 
-		//Indicate that previous joystick information hasn't been initialised
-		previousJoystickPort = INFINITY;
-		previousJoystickStbd = INFINITY;
-		previousJoystickRudder = INFINITY;
-		previousJoystickBowThruster = INFINITY;
-		previousJoystickSternThruster = INFINITY;
+        //Indicate that previous joystick information hasn't been initialised
+        previousJoystickPort = INFINITY;
+        previousJoystickStbd = INFINITY;
+        previousJoystickRudder = INFINITY;
+        previousJoystickBowThruster = INFINITY;
+        previousJoystickSternThruster = INFINITY;
 
-		this->logMessages = logMessages;
+        this->logMessages = logMessages;
 
         //assume mouse buttons not pressed initially
         leftMouseDown = false;
         rightMouseDown = false;
 
         shutdownDialogActive = false;
-	}
+    }
 
     bool MyEventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
 
 
 
@@ -105,8 +105,8 @@
         }
 
         if (event.EventType == irr::EET_GUI_EVENT)
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED)
             {
 
@@ -216,10 +216,10 @@
                     model->setAccelerator(1.0);
                 }
 
-				if (id == GUIMain::GUI_ID_RADAR_ONOFF_BUTTON)
-				{
-					model->toggleRadarOn();
-				}
+                if (id == GUIMain::GUI_ID_RADAR_ONOFF_BUTTON)
+                {
+                    model->toggleRadarOn();
+                }
 
                 if (id == GUIMain::GUI_ID_RADAR_INCREASE_BUTTON)
                 {
@@ -544,9 +544,9 @@
                             model->setAccelerator(3600.0);
                             break;
 
-						case irr::KEY_KEY_H:
-							model->startHorn();
-							break;
+                        case irr::KEY_KEY_H:
+                            model->startHorn();
+                            break;
 
                         //Camera look
                         case irr::KEY_UP:
@@ -623,7 +623,7 @@
 // DEE vvvv key rudder to port changed to rudder wheel to port
                         case irr::KEY_KEY_V:
 //                            model->setRudder(model->getRudder()-5);
-			    model->setWheel(model->getWheel()-1);
+                model->setWheel(model->getWheel()-1);
                             break;
 // DEE ^^^^
 
@@ -640,42 +640,42 @@
                     }
                 }
             }
-		}
+        }
 
-		if (event.EventType == irr::EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown) {
-			if (event.KeyInput.Key == irr::KEY_KEY_H) {
-				model->endHorn();
-			}
-		}
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown) {
+            if (event.KeyInput.Key == irr::KEY_KEY_H) {
+                model->endHorn();
+            }
+        }
 
-		//From joystick (actually polled, once per run():
+        //From joystick (actually polled, once per run():
         if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 
-        	irr::u8 thisJoystick = event.JoystickEvent.Joystick;
+            irr::u8 thisJoystick = event.JoystickEvent.Joystick;
 
-        	//Show joystick raw status in log window
-        	if (device->getTimer()->getRealTime() - lastShownJoystickStatus > 5000) {
+            //Show joystick raw status in log window
+            if (device->getTimer()->getRealTime() - lastShownJoystickStatus > 5000) {
 
-        		std::string joystickInfoMessage = "Joystick status (";
-        		joystickInfoMessage.append(irr::core::stringc(event.JoystickEvent.Joystick).c_str());
-        		joystickInfoMessage.append(")\n");
-        		device->getLogger()->log(joystickInfoMessage.c_str());
+                std::string joystickInfoMessage = "Joystick status (";
+                joystickInfoMessage.append(irr::core::stringc(event.JoystickEvent.Joystick).c_str());
+                joystickInfoMessage.append(")\n");
+                device->getLogger()->log(joystickInfoMessage.c_str());
 
-        		std::string thisJoystickStatus = "";
-        		for (irr::u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
-        			irr::s16 axisSetting = event.JoystickEvent.Axis[thisAxis];
-        			thisJoystickStatus.append(irr::core::stringc(axisSetting).c_str());
-        			thisJoystickStatus.append(" ");
-        		}
-        		device->getLogger()->log(thisJoystickStatus.c_str());
-        		device->getLogger()->log("");
+                std::string thisJoystickStatus = "";
+                for (irr::u8 thisAxis = 0; thisAxis < event.JoystickEvent.NUMBER_OF_AXES; thisAxis++) {
+                    irr::s16 axisSetting = event.JoystickEvent.Axis[thisAxis];
+                    thisJoystickStatus.append(irr::core::stringc(axisSetting).c_str());
+                    thisJoystickStatus.append(" ");
+                }
+                device->getLogger()->log(thisJoystickStatus.c_str());
+                device->getLogger()->log("");
 
-        		//If we've shown for all joysticks, don't show again.
-        		if (event.JoystickEvent.Joystick+1 == joystickInfo.size()) {
-        			lastShownJoystickStatus = device->getTimer()->getRealTime();
-        		}
+                //If we've shown for all joysticks, don't show again.
+                if (event.JoystickEvent.Joystick+1 == joystickInfo.size()) {
+                    lastShownJoystickStatus = device->getTimer()->getRealTime();
+                }
 
-        	}
+            }
 
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
@@ -850,13 +850,13 @@
     }
 
 /*
-	irr::s32 MyEventReceiver::GetScrollBarPosSpeed() const
-	{
-		return scrollBarPosSpeed;
-	}
+    irr::s32 MyEventReceiver::GetScrollBarPosSpeed() const
+    {
+        return scrollBarPosSpeed;
+    }
 
-	irr::s32 MyEventReceiver::GetScrollBarPosHeading() const
-	{
-		return scrollBarPosHeading;
-	}
+    irr::s32 MyEventReceiver::GetScrollBarPosHeading() const
+    {
+        return scrollBarPosHeading;
+    }
 */

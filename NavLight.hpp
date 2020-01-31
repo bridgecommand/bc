@@ -34,7 +34,7 @@ class NavLight {
     private:
         irr::scene::ISceneManager* smgr;
         irr::scene::IBillboardSceneNode* lightNode;
-		irr::video::ITexture* lightTexture;
+        irr::video::ITexture* lightTexture;
         irr::f32 startAngle;
         irr::f32 endAngle;
         irr::f32 range;

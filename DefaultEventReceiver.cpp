@@ -23,13 +23,13 @@
 //using namespace irr;
 
     DefaultEventReceiver::DefaultEventReceiver(std::vector<std::string>* logMessages, irr::IrrlichtDevice* dev) //Constructor
-	{
+    {
         this->logMessages = logMessages;
         device = dev;
-	}
+    }
 
-	bool DefaultEventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    bool DefaultEventReceiver::OnEvent(const irr::SEvent& event)
+    {
 
         //From log
         if (event.EventType == irr::EET_LOG_TEXT_EVENT) {

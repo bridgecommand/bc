@@ -22,15 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     //Dummy implementation of public interface
 
     Sound::Sound() {}
-	Sound::~Sound()  {}
-	void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {}
-	void Sound::StartSound() {}
-	void Sound::setVolumeWave(float vol) {}
-	void Sound::setVolumeEngine(float vol) {}
-	void Sound::setVolumeHorn(float vol) {}
-	float Sound::getVolumeWave() const {return 0;}
-	float Sound::getVolumeEngine() const {return 0;}
-	float Sound::getVolumeHorn() const {return 0;}
+    Sound::~Sound()  {}
+    void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {}
+    void Sound::StartSound() {}
+    void Sound::setVolumeWave(float vol) {}
+    void Sound::setVolumeEngine(float vol) {}
+    void Sound::setVolumeHorn(float vol) {}
+    float Sound::getVolumeWave() const {return 0;}
+    float Sound::getVolumeEngine() const {return 0;}
+    float Sound::getVolumeHorn() const {return 0;}
 
 #else // WITH_SOUND
 
@@ -50,117 +50,117 @@ Sound::Sound() {
 
 void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {
 
-	soundLoaded = false;
+    soundLoaded = false;
 
-	char buf[1024];
-	sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
+    char buf[1024];
+    sf_command(NULL, SFC_GET_LIB_VERSION, buf, sizeof(buf));
 
-	portAudioError = Pa_Initialize();
-	if (portAudioError != paNoError) {
-		std::cerr << "Pa_Initialize failed." << std::endl;
-		return;
-	}
+    portAudioError = Pa_Initialize();
+    if (portAudioError != paNoError) {
+        std::cerr << "Pa_Initialize failed." << std::endl;
+        return;
+    }
 
-	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
-	if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
-		std::cerr << "sf_error on engineSoundFile " << engineSoundFile.c_str() << std::endl;
-		return;
-	}
+    data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
+    if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
+        std::cerr << "sf_error on engineSoundFile " << engineSoundFile.c_str() << std::endl;
+        return;
+    }
 
-	/* Open the soundfiles */
-	data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
-	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
+    /* Open the soundfiles */
+    data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
+    if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
         std::cerr << "sf_error on waveSoundFile " << waveSoundFile.c_str() << std::endl;
-		return;
-	}
+        return;
+    }
 
-	data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
-	if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
+    data.fileHorn = sf_open(hornSoundFile.c_str(), SFM_READ, &data.infoHorn);
+    if (sf_error(data.fileHorn) != SF_ERR_NO_ERROR) {
         std::cerr << "sf_error on hornSoundFile" << hornSoundFile.c_str() << std::endl;
-		return;
-	}
+        return;
+    }
 
-	//Check key parameters are the same
-	if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.samplerate != data.infoEngine.samplerate) {
-		//Check wave vs engine
-		std::cerr << "Inconsistent formats of wave and engine sounds, wave sound not loaded." << std::endl;
-	} else {
-		waveSoundLoaded = true;
-	}
+    //Check key parameters are the same
+    if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.samplerate != data.infoEngine.samplerate) {
+        //Check wave vs engine
+        std::cerr << "Inconsistent formats of wave and engine sounds, wave sound not loaded." << std::endl;
+    } else {
+        waveSoundLoaded = true;
+    }
 
-	if (data.infoHorn.channels != data.infoEngine.channels || data.infoHorn.samplerate != data.infoEngine.samplerate ) {
-		//Check wave vs engine
-		std::cerr << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
-	} else {
-		hornSoundLoaded = true;
-	}
+    if (data.infoHorn.channels != data.infoEngine.channels || data.infoHorn.samplerate != data.infoEngine.samplerate ) {
+        //Check wave vs engine
+        std::cerr << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
+    } else {
+        hornSoundLoaded = true;
+    }
 
-	/* Open PaStream with values read from the file - all should be same, so any can be used*/
-	portAudioError = Pa_OpenDefaultStream(&stream
-		, 0                     /* no input */
-		, data.infoEngine.channels         /* stereo out */
-		, paFloat32             /* floating point */
-		, data.infoEngine.samplerate
-		, FRAMES_PER_BUFFER
-		, callback
-		, &data);        /* our sndfile data struct */
-	if (portAudioError != paNoError)
-	{
-		std::cerr << "Pa_OpenDefaultStream failed." << std::endl;
-		return;
-	}
+    /* Open PaStream with values read from the file - all should be same, so any can be used*/
+    portAudioError = Pa_OpenDefaultStream(&stream
+        , 0                     /* no input */
+        , data.infoEngine.channels         /* stereo out */
+        , paFloat32             /* floating point */
+        , data.infoEngine.samplerate
+        , FRAMES_PER_BUFFER
+        , callback
+        , &data);        /* our sndfile data struct */
+    if (portAudioError != paNoError)
+    {
+        std::cerr << "Pa_OpenDefaultStream failed." << std::endl;
+        return;
+    }
 
-	soundLoaded = true; // All OK if we've got here
-	std::cout << "Sound::load succeeded" << std::endl;
+    soundLoaded = true; // All OK if we've got here
+    std::cout << "Sound::load succeeded" << std::endl;
 }
 
 void Sound::StartSound() {
-	/* Start the stream */
+    /* Start the stream */
 
-	if (soundLoaded) {
-		portAudioError = Pa_StartStream(stream);
-		if (portAudioError != paNoError)
-		{
-			std::cerr << "Problem opening starting Stream" << std::endl;
-		}
-	}
+    if (soundLoaded) {
+        portAudioError = Pa_StartStream(stream);
+        if (portAudioError != paNoError)
+        {
+            std::cerr << "Problem opening starting Stream" << std::endl;
+        }
+    }
 
 }
 
 void Sound::setVolumeWave(float vol) {
-	Sound::waveVolume = vol;
+    Sound::waveVolume = vol;
 }
 
 void Sound::setVolumeEngine(float vol) {
-	Sound::engineVolume = vol;
+    Sound::engineVolume = vol;
 }
 
 void Sound::setVolumeHorn(float vol) {
-	Sound::hornVolume = vol;
+    Sound::hornVolume = vol;
 }
 
 float Sound::getVolumeWave() const {
-	return Sound::waveVolume;
+    return Sound::waveVolume;
 }
 
 float Sound::getVolumeEngine() const {
-	return Sound::engineVolume;
+    return Sound::engineVolume;
 }
 
 float Sound::getVolumeHorn() const {
-	return Sound::hornVolume;
+    return Sound::hornVolume;
 }
 
 Sound::~Sound() {
 
-	portAudioError = Pa_CloseStream(stream);
+    portAudioError = Pa_CloseStream(stream);
 
-	portAudioError = Pa_Terminate();
+    portAudioError = Pa_Terminate();
 
-	/* Close the soundfile */
-	sf_close(data.fileWave);
-	sf_close(data.fileEngine);
-	sf_close(data.fileHorn);
+    /* Close the soundfile */
+    sf_close(data.fileWave);
+    sf_close(data.fileEngine);
+    sf_close(data.fileHorn);
 }
 
 #endif // WITH_SOUND

@@ -73,7 +73,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     heightCorrection = yCorrection*scaleFactor;
 
     //add to scene node
-	if (shipMesh==0) {
+    if (shipMesh==0) {
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load other ship model:");
         dev->getLogger()->log(shipFullPath.c_str());
@@ -83,8 +83,8 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 
-	ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-	ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
     length = ship->getBoundingBox().getExtent().Z*scaleFactor;
@@ -103,7 +103,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     //speed and heading will come from leg data
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(ship->getMaterialCount()>0) {
+    if(ship->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
             ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
             ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;

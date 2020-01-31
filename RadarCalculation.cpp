@@ -339,16 +339,16 @@ bool RadarCalculation::getHeadUp() const//Head or course up
 
 void RadarCalculation::toggleRadarOn()
 {
-	radarOn = !radarOn;
-	
-	if (!radarOn) {
-		//Reset array to empty
-		for (irr::u32 i = 0; i < 360; i++) {
-			for (irr::u32 j = 0; j < rangeResolution; j++) {
-				scanArrayAmplified[i][j] = -1.0;
-			}
-		}
-	}
+    radarOn = !radarOn;
+
+    if (!radarOn) {
+        //Reset array to empty
+        for (irr::u32 i = 0; i < 360; i++) {
+            for (irr::u32 j = 0; j < rangeResolution; j++) {
+                scanArrayAmplified[i][j] = -1.0;
+            }
+        }
+    }
 }
 
 void RadarCalculation::setArpaOn(bool on)
@@ -414,24 +414,24 @@ irr::f32 RadarCalculation::getARPATCPA(irr::u32 contactID) const
 
 irr::f32 RadarCalculation::getARPASpeed(irr::u32 contactID) const
 {
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.speed;
-		}
-	}
-	return NAN; //If nothing found
+    //Get information for a contact by its user display ID (if it exists), in minutes
+    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+        if (arpaContacts.at(i).estimate.displayID == contactID) {
+            return arpaContacts.at(i).estimate.speed;
+        }
+    }
+    return NAN; //If nothing found
 }
 
 irr::f32 RadarCalculation::getARPAHeading(irr::u32 contactID) const
 {
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.absHeading;
-		}
-	}
-	return NAN; //If nothing found
+    //Get information for a contact by its user display ID (if it exists), in minutes
+    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+        if (arpaContacts.at(i).estimate.displayID == contactID) {
+            return arpaContacts.at(i).estimate.absHeading;
+        }
+    }
+    return NAN; //If nothing found
 }
 
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
@@ -458,12 +458,12 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         std::cout << "Cursor E/W: " << cursorRangeXNm << " N/S:" << cursorRangeYNm << std::endl;
     }
     */
-	
+
     if (radarOn) {
-		scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
-		updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
+        scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+        updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
     }
-	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+    render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 
 }
 
@@ -848,12 +848,12 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
     irr::f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
 
     //precalculate cell max/min range for speed outside nested loop
-	std::vector<irr::f32> cellMinRange;
-	std::vector<irr::f32> cellMaxRange;
-	//irr::f32 cellMinRange [rangeResolution];
+    std::vector<irr::f32> cellMinRange;
+    std::vector<irr::f32> cellMaxRange;
+    //irr::f32 cellMinRange [rangeResolution];
     //irr::f32 cellMaxRange [rangeResolution];
-	cellMinRange.push_back(0);
-	cellMaxRange.push_back(0);
+    cellMinRange.push_back(0);
+    cellMaxRange.push_back(0);
     for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that we start with the element at 1, so we've already pushed in a dummy entry at 0
         cellMinRange.push_back((currentStep-0.5)*(bitmapWidth*0.5/(float)rangeResolution));//Range in pixels from centre
         cellMaxRange.push_back((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
@@ -907,9 +907,9 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
                 //find sin and cos of PI angle (so we only need once)
                 irr::f32 sinPIbrg=sin(-1*(thisPIbrg + radarOffsetAngle)*RAD_IN_DEG);
-				irr::f32 cosPIbrg=cos(-1*(thisPIbrg + radarOffsetAngle)*RAD_IN_DEG);
+                irr::f32 cosPIbrg=cos(-1*(thisPIbrg + radarOffsetAngle)*RAD_IN_DEG);
 
-				//find central point on line
+                //find central point on line
                 irr::f32 x_a = -1*piRangePX * sin( (90-(-1*(thisPIbrg + radarOffsetAngle)))*RAD_IN_DEG ) + centrePixel;
                 irr::f32 z_a =    piRangePX * cos( (90-(-1*(thisPIbrg + radarOffsetAngle)))*RAD_IN_DEG ) + centrePixel;
 
@@ -920,15 +920,15 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                 irr::f32 x_1=x_a - halfChord * sinPIbrg;
                 irr::f32 z_1=z_a - halfChord * cosPIbrg;
                 irr::f32 x_2=x_a + halfChord * sinPIbrg;
-				irr::f32 z_2=z_a + halfChord * cosPIbrg;
+                irr::f32 z_2=z_a + halfChord * cosPIbrg;
 
-				drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,255,255,255,255);
+                drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,255,255,255,255);
 
-				//Show line number
-				//Find point towards centre from the line
-				irr::f32 xDirection = centrePixel-x_a;
-				irr::f32 yDirection = centrePixel-z_a;
-				if (x_a!=0 && z_a !=0) {
+                //Show line number
+                //Find point towards centre from the line
+                irr::f32 xDirection = centrePixel-x_a;
+                irr::f32 yDirection = centrePixel-z_a;
+                if (x_a!=0 && z_a !=0) {
 
                     irr::f32 mag = pow(pow(xDirection,2)+pow(yDirection,2),0.5);
                     xDirection/=mag;
@@ -943,7 +943,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                         idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<irr::s32>(xTextPos,yTextPos),sourceRect,irr::video::SColor(255,255,255,255));
                         idNumberImage->drop();
                     }
-				}
+                }
 
 
 
@@ -1142,74 +1142,74 @@ void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 cent
 
 irr::f32 RadarCalculation::rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading)
 {
-	//Special case is if heading and checkAngle are identical. In this case, return the centre point if it lies on the angle, and 0 if not
-	if (std::abs(Angles::normaliseAngle(checkAngle-heading)) < 0.001) {
-		if (Angles::normaliseAngle(irr::core::RADTODEG*std::atan2(centreX,centreZ)-checkAngle) < 0.1) {
-			return std::sqrt(std::pow(centreX,2) + std::pow(centreZ,2));
-		} else {
-			return 0;
-		}
-	}
+    //Special case is if heading and checkAngle are identical. In this case, return the centre point if it lies on the angle, and 0 if not
+    if (std::abs(Angles::normaliseAngle(checkAngle-heading)) < 0.001) {
+        if (Angles::normaliseAngle(irr::core::RADTODEG*std::atan2(centreX,centreZ)-checkAngle) < 0.1) {
+            return std::sqrt(std::pow(centreX,2) + std::pow(centreZ,2));
+        } else {
+            return 0;
+        }
+    }
 
-	irr::f32 lambda; //This is the distance from the centre of the contact
+    irr::f32 lambda; //This is the distance from the centre of the contact
 
-	lambda = (centreX - centreZ*tan(irr::core::DEGTORAD*checkAngle))/(cos(irr::core::DEGTORAD*heading)*tan(irr::core::DEGTORAD*checkAngle) - sin(irr::core::DEGTORAD*heading));
+    lambda = (centreX - centreZ*tan(irr::core::DEGTORAD*checkAngle))/(cos(irr::core::DEGTORAD*heading)*tan(irr::core::DEGTORAD*checkAngle) - sin(irr::core::DEGTORAD*heading));
 
-	irr::f32 distanceSqr = std::pow(lambda,2) + lambda*(2*centreX*sin(irr::core::DEGTORAD*heading) + 2*centreZ*cos(irr::core::DEGTORAD*heading)) + (std::pow(centreX,2) + std::pow(centreZ,2));
+    irr::f32 distanceSqr = std::pow(lambda,2) + lambda*(2*centreX*sin(irr::core::DEGTORAD*heading) + 2*centreZ*cos(irr::core::DEGTORAD*heading)) + (std::pow(centreX,2) + std::pow(centreZ,2));
 
-	irr::f32 distance = 0;
+    irr::f32 distance = 0;
 
-	if (distanceSqr > 0) {
-		distance = std::sqrt(distanceSqr);
-	}
+    if (distanceSqr > 0) {
+        distance = std::sqrt(distanceSqr);
+    }
 
-	return distance;
+    return distance;
 
 }
 
 irr::f32 RadarCalculation::radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity)
 //radarRange in metres
 {
-	irr::f32 radarNoiseVal = 0;
+    irr::f32 radarNoiseVal = 0;
 
-	if (radarRange != 0) {
+    if (radarRange != 0) {
 
-		irr::f32 randomValue = (irr::f32)rand()/RAND_MAX; //store this so we can manipulate the random distribution;
-		irr::f32 randomValueSea = (irr::f32)rand()/RAND_MAX; //different value for sea clutter;
+        irr::f32 randomValue = (irr::f32)rand()/RAND_MAX; //store this so we can manipulate the random distribution;
+        irr::f32 randomValueSea = (irr::f32)rand()/RAND_MAX; //different value for sea clutter;
 
-		//reshape the uniform random distribution into one with an infinite tail up to high values
-		irr::f32 randomValueWithTail=0;
-		if (randomValue > 0) {
+        //reshape the uniform random distribution into one with an infinite tail up to high values
+        irr::f32 randomValueWithTail=0;
+        if (randomValue > 0) {
             //3rd power is to shape distribution so sufficient high energy returns are generated
-			randomValueWithTail = randomValue * pow( (1/randomValue) - 1, 3);
-		}
+            randomValueWithTail = randomValue * pow( (1/randomValue) - 1, 3);
+        }
 
-		//same for sea clutter noise
-		irr::f32 randomValueWithTailSea=0;
-		if (randomValueSea > 0) {
+        //same for sea clutter noise
+        irr::f32 randomValueWithTailSea=0;
+        if (randomValueSea > 0) {
             if (radarInclinationAngle > 0) {
                 randomValueWithTailSea = 0; //if radar is scanning upwards, must be above sea surface, so don't add clutter
             } else {
                 //3rd power is to shape distribution so sufficient high energy returns are generated
                 randomValueWithTailSea = randomValueSea * pow((1/randomValueSea) - 1, 3);
             }
-		}
+        }
 
-		//less high power returns for rain clutter - roughly gaussian, so get an average of independent random numbers
-		irr::f32 randomValueWithTailRain = ((irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX)/4.0;
+        //less high power returns for rain clutter - roughly gaussian, so get an average of independent random numbers
+        irr::f32 randomValueWithTailRain = ((irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX + (irr::f32)rand()/RAND_MAX)/4.0;
 
-		//Apply directional correction to the clutter, so most is upwind, some is downwind. Mean value = 1
-		irr::f32 relativeWindAngle = (windDirectionDeg - radarBrgDeg)*RAD_IN_DEG;
-		irr::f32 windCorrectionFactor = 2.5*(0.5*(cos(2*relativeWindAngle)+1))*(0.5+sin(relativeWindAngle/2.0)*0.5);
-		randomValueWithTailSea = randomValueWithTailSea * windCorrectionFactor;
+        //Apply directional correction to the clutter, so most is upwind, some is downwind. Mean value = 1
+        irr::f32 relativeWindAngle = (windDirectionDeg - radarBrgDeg)*RAD_IN_DEG;
+        irr::f32 windCorrectionFactor = 2.5*(0.5*(cos(2*relativeWindAngle)+1))*(0.5+sin(relativeWindAngle/2.0)*0.5);
+        randomValueWithTailSea = randomValueWithTailSea * windCorrectionFactor;
 
-		//noise is constant
-		radarNoiseVal = radarNoiseLevel * randomValueWithTail;
-		//clutter falls off with distance^3, and is normalised for weather#=6
-		radarNoiseVal += radarSeaClutter * randomValueWithTailSea * (weather/6.0) * pow((M_IN_NM/radarRange),3);
-		//rain clutter falls off with distance^2, and is normalised for rainIntensity#=10
-		radarNoiseVal += radarRainClutter * randomValueWithTailRain * (rainIntensity/10.0)*(rainIntensity/10.0) * pow((M_IN_NM/radarRange),2);
-	}
+        //noise is constant
+        radarNoiseVal = radarNoiseLevel * randomValueWithTail;
+        //clutter falls off with distance^3, and is normalised for weather#=6
+        radarNoiseVal += radarSeaClutter * randomValueWithTailSea * (weather/6.0) * pow((M_IN_NM/radarRange),3);
+        //rain clutter falls off with distance^2, and is normalised for rainIntensity#=10
+        radarNoiseVal += radarRainClutter * randomValueWithTailRain * (rainIntensity/10.0)*(rainIntensity/10.0) * pow((M_IN_NM/radarRange),2);
+    }
 
-	return radarNoiseVal;
+    return radarNoiseVal;
 }

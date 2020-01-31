@@ -117,9 +117,9 @@ public:
     void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void deleteOtherShipLeg(int shipNumber, int legNumber);
-	std::string getOwnShipEngineSound() const;
-	std::string getOwnShipWaveSound() const;
-	std::string getOwnShipHornSound() const;
+    std::string getOwnShipEngineSound() const;
+    std::string getOwnShipWaveSound() const;
+    std::string getOwnShipHornSound() const;
 
 
     void setWeather(irr::f32 weather); //Range 0-12.
@@ -142,8 +142,8 @@ public:
     void changeView();
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
-	void toggleRadarOn();
-	void increaseRadarRange();
+    void toggleRadarOn();
+    void increaseRadarRange();
     void decreaseRadarRange();
     void setRadarGain(irr::f32 value);
     void setRadarClutter(irr::f32 value);
@@ -187,8 +187,8 @@ public:
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
 
-	void startHorn();
-	void endHorn();
+    void startHorn();
+    void endHorn();
 
     void update();
 
@@ -222,7 +222,7 @@ private:
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;
-	Sound* sound;
+    Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
     ManOverboard manOverboard;
 

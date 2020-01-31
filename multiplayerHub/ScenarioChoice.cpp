@@ -31,7 +31,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
 
 void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, std::string scenarioPath)
 {
-	irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
@@ -115,7 +115,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
 void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {
 
-	irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
     }

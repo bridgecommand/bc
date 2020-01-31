@@ -50,8 +50,8 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     //Load the mesh
     irr::scene::IMesh* buoyMesh = smgr->getMesh(buoyFullPath.c_str());
 
-	//add to scene node
-	if (buoyMesh==0) {
+    //add to scene node
+    if (buoyMesh==0) {
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load buoy model:");
         dev->getLogger()->log(buoyFullPath.c_str());
@@ -61,7 +61,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     }
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(buoy->getMaterialCount()>0) {
+    if(buoy->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<buoy->getMaterialCount();mat++) {
             buoy->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }

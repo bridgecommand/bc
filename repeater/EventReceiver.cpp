@@ -26,25 +26,25 @@
 //using namespace irr;
 
     EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
-	{
-		this->device = device; //Link to the irrlicht device
-		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI
-		this->network = network; //Link to the network
+    {
+        this->device = device; //Link to the irrlicht device
+        this->model = model; //Link to the model
+        this->gui = gui; //Link to GUI
+        this->network = network; //Link to the network
     }
 
     bool EventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
 
         if (event.EventType == irr::EET_GUI_EVENT && event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED )
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
-			if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
+            if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
                 gui->setMode(true);
-			}
-			if (id==GUIMain::GUI_ID_REPEATER_CHOICE) {
+            }
+            if (id==GUIMain::GUI_ID_REPEATER_CHOICE) {
                 gui->setMode(false);
-			}
+            }
         }
 
         if (event.EventType== irr::EET_KEY_INPUT_EVENT) {

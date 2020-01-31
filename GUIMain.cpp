@@ -215,7 +215,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             //rudderScrollbar->setVisible(false);
 
 // DEE vvvvv
-	    wheelScrollbar->setVisible(false); // not sure this should be hidden
+        wheelScrollbar->setVisible(false); // not sure this should be hidden
 //            wheelText->setVisible(false); // hide the wheel text
             rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
 // DEE ^^^^^
@@ -275,9 +275,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         radarText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
 
-		//Buttons for radar on/off
-		radarOnOffButton = guienv->addButton(irr::core::rect<irr::s32>(0.005*su, 0.010*sh, 0.055*su, 0.040*sh), mainRadarTab, GUI_ID_RADAR_ONOFF_BUTTON, language->translate("onoff").c_str());
-		//TODO: Complete this: To go where radar zoom + is, and squash these down a bit
+        //Buttons for radar on/off
+        radarOnOffButton = guienv->addButton(irr::core::rect<irr::s32>(0.005*su, 0.010*sh, 0.055*su, 0.040*sh), mainRadarTab, GUI_ID_RADAR_ONOFF_BUTTON, language->translate("onoff").c_str());
+        //TODO: Complete this: To go where radar zoom + is, and squash these down a bit
 
         //Buttons for full or small radar
         bigRadarButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
@@ -546,7 +546,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Items not to show if we're on full screen radar
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
-		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
+        rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
         hideInterfaceButton->setVisible(showInterface && !radarLarge);
         showInterfaceButton->setVisible(!showInterface && !radarLarge);
 
@@ -611,7 +611,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 // DEE vvvvv
 // this sets the scrollbar wheel position to match the guiData's idea of where it should be
-	wheelScrollbar->setPos(Utilities::round(guiData->wheel));
+    wheelScrollbar->setPos(Utilities::round(guiData->wheel));
 // DEE ^^^^^
 
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
@@ -660,15 +660,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Update ARPA data
         guiCPAs = guiData->CPAs;
         guiTCPAs = guiData->TCPAs;
-		guiARPAheadings = guiData->headings;
-		guiARPAspeeds = guiData->speeds;
+        guiARPAheadings = guiData->headings;
+        guiARPAspeeds = guiData->speeds;
     }
 
     void GUIMain::showLogWindow()
     {
 
-    	irr::gui::IGUIWindow* logWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.99*sh));
-    	irr::gui::IGUIListBox* logText = guienv->addListBox(irr::core::rect<irr::s32>(0.03*su,0.05*sh,0.95*su,0.95*sh),logWindow);
+        irr::gui::IGUIWindow* logWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.99*sh));
+        irr::gui::IGUIListBox* logText = guienv->addListBox(irr::core::rect<irr::s32>(0.03*su,0.05*sh,0.95*su,0.95*sh),logWindow);
 
         if (logWindow && logText && logMessages) {
 
@@ -803,8 +803,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
                 irr::f32 tcpa = guiTCPAs.at(i);
                 irr::f32 cpa  = guiCPAs.at(i);
-				irr::u32 arpahdg = round(guiARPAheadings.at(i));
-				irr::u32 arpaspd = round(guiARPAspeeds.at(i));
+                irr::u32 arpahdg = round(guiARPAheadings.at(i));
+                irr::u32 arpaspd = round(guiARPAspeeds.at(i));
 
                 irr::u32 tcpaMins = floor(tcpa);
                 irr::u32 tcpaSecs = floor(60*(tcpa - tcpaMins));
@@ -856,26 +856,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
                 arpaText->addItem(displayText.c_str());
                 arpaText2->addItem(displayText.c_str());
 
-				//Pad heading to three decimals
-				irr::core::stringw headingText = irr::core::stringw(arpahdg);
-				if (headingText.size() == 1) {
-					irr::core::stringw zeroPadded = L"00";
-					zeroPadded.append(headingText);
-					headingText = zeroPadded;
-				}
-				else if (headingText.size() == 2) {
-					irr::core::stringw zeroPadded = L"0";
-					zeroPadded.append(headingText);
-					headingText = zeroPadded;
-				}
+                //Pad heading to three decimals
+                irr::core::stringw headingText = irr::core::stringw(arpahdg);
+                if (headingText.size() == 1) {
+                    irr::core::stringw zeroPadded = L"00";
+                    zeroPadded.append(headingText);
+                    headingText = zeroPadded;
+                }
+                else if (headingText.size() == 2) {
+                    irr::core::stringw zeroPadded = L"0";
+                    zeroPadded.append(headingText);
+                    headingText = zeroPadded;
+                }
 
-				displayText = L">";
-				displayText.append(headingText);
-				displayText.append(L" ");
-				displayText.append(irr::core::stringw(arpaspd));
-				displayText.append(L" kts");
-				arpaText->addItem(displayText.c_str());
-				arpaText2->addItem(displayText.c_str());
+                displayText = L">";
+                displayText.append(headingText);
+                displayText.append(L" ");
+                displayText.append(irr::core::stringw(arpaspd));
+                displayText.append(L" kts");
+                arpaText->addItem(displayText.c_str());
+                arpaText2->addItem(displayText.c_str());
 
             }
         }
@@ -1075,5 +1075,5 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255,255,255,255),irr::core::rect<irr::s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh));
         guienv->getSkin()->getFont()->draw(language->translate("collided"),
             irr::core::rect<irr::s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh),
-			irr::video::SColor(255,255,0,0),true,true);
+            irr::video::SColor(255,255,0,0),true,true);
     }

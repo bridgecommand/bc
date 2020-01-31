@@ -91,8 +91,8 @@ void Rain::setIntensity(irr::f32 intensity) {
 void Rain::applyTextures() {
     if (rainTextures.size()==11) { //Check all textures 0-10 are loaded
         //Round one up and one down so we can get half step rain intensity level.
-    	irr::u8 texture1 = Utilities::round(rainIntensity+0.25);
-    	irr::u8 texture2 = Utilities::round(rainIntensity-0.25);
+        irr::u8 texture1 = Utilities::round(rainIntensity+0.25);
+        irr::u8 texture2 = Utilities::round(rainIntensity-0.25);
         rainNode1->setMaterialTexture(0,rainTextures.at(texture1));
         rainNode2->setMaterialTexture(0,rainTextures.at(texture2));
     }

@@ -21,23 +21,23 @@
 //using namespace irr;
 
     StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID) //Constructor
-	{
-		this->scenarioListBox = scenarioListBox;
-		this->worldListBox = worldListBox;
-		this->scenarioListBoxID = scenarioListBoxID;
-		this->worldListBoxID = worldListBoxID;
-		this->okScenarioButtonID = okScenarioButtonID;
-		this->okWorldButtonID = okWorldButtonID;
-		scenarioSelected = -1; //Set as initially invalid
-		worldSelected = -1; //Set as initially invalid
-	}
+    {
+        this->scenarioListBox = scenarioListBox;
+        this->worldListBox = worldListBox;
+        this->scenarioListBoxID = scenarioListBoxID;
+        this->worldListBoxID = worldListBoxID;
+        this->okScenarioButtonID = okScenarioButtonID;
+        this->okWorldButtonID = okWorldButtonID;
+        scenarioSelected = -1; //Set as initially invalid
+        worldSelected = -1; //Set as initially invalid
+    }
 
     bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
         if (event.EventType == irr::EET_GUI_EVENT)
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
-			//If OK button, or double click on list, for scenario
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
+            //If OK button, or double click on list, for scenario
             if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okScenarioButtonID ) || (event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  && id == scenarioListBoxID ) )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
@@ -54,7 +54,7 @@
             }
 
 
-		}
+        }
 
         return false;
     }

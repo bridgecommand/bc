@@ -45,8 +45,8 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 
     //Load the mesh
     irr::scene::IMesh* objectMesh = smgr->getMesh(objectFullPath.c_str());
-	//add to scene node
-	if (objectMesh==0) {
+    //add to scene node
+    if (objectMesh==0) {
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load land object model:");
         dev->getLogger()->log(objectFullPath.c_str());
@@ -56,7 +56,7 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     }
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(landObject->getMaterialCount()>0) {
+    if(landObject->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<landObject->getMaterialCount();mat++) {
             landObject->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }

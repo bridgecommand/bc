@@ -176,11 +176,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //calculate max speed from dynamics parameters
     // DEE this looks like it is in knots and not metres per second
     maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
-	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
+    maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
 
     //Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
-	model->setPortEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
-	model->setStbdEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
+    model->setPortEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
+    model->setStbdEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
     rudder=0;
     rateOfTurn=0;
 
@@ -202,26 +202,26 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         views.push_back(irr::core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
     }
 
-	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
-	screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
-	screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
-	screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
-	screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
-	//Default position out of view if not set
-	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z == 0) {
-		screenDisplayPosition.Y = 500;
-	}
+    screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
+    screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
+    screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
+    screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
+    screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
+    //Default position out of view if not set
+    if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z == 0) {
+        screenDisplayPosition.Y = 500;
+    }
 
-	if (screenDisplaySize <= 0) {
-		screenDisplaySize = 1;
-	}
-	screenDisplayPosition.X *= scaleFactor;
-	screenDisplayPosition.Y *= scaleFactor;
-	screenDisplayPosition.Z *= scaleFactor;
-	screenDisplaySize *= scaleFactor;
+    if (screenDisplaySize <= 0) {
+        screenDisplaySize = 1;
+    }
+    screenDisplayPosition.X *= scaleFactor;
+    screenDisplayPosition.Y *= scaleFactor;
+    screenDisplayPosition.Z *= scaleFactor;
+    screenDisplaySize *= scaleFactor;
 
     //Load the model
-	irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+    irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
@@ -238,8 +238,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
         for(irr::u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
             if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
-				//Hide this mesh buffer by scaling to zero size
-				smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),irr::core::vector3df(0,0,0));
+                //Hide this mesh buffer by scaling to zero size
+                smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),irr::core::vector3df(0,0,0));
             }
         }
     }
@@ -253,7 +253,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(ship->getMaterialCount()>0) {
+    if(ship->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
             ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
             //ship->getMaterial(mat).setFlag(video::EMF_ZWRITE_ENABLE,true);
@@ -412,22 +412,22 @@ irr::f32 OwnShip::getRoll() const
 
 std::string OwnShip::getBasePath() const
 {
-	return basePath;
+    return basePath;
 }
 
 irr::core::vector3df OwnShip::getScreenDisplayPosition() const
 {
-	return screenDisplayPosition;
+    return screenDisplayPosition;
 }
 
 irr::f32 OwnShip::getScreenDisplaySize() const
 {
-	return screenDisplaySize;
+    return screenDisplaySize;
 }
 
 irr::f32 OwnShip::getScreenDisplayTilt() const
 {
-	return screenDisplayTilt;
+    return screenDisplayTilt;
 }
 
 bool OwnShip::isSingleEngine() const
@@ -461,10 +461,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 drag;
         if (spd<0) { //Compensate for loss of sign when squaring
             drag = -1*dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
-		} else {
-			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
-		}
-		irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
+        } else {
+            drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
+        }
+        irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
         spd += acceleration*deltaTime;
 
         //Lateral dynamics
@@ -473,12 +473,12 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 lateralDrag;
         if (lateralSpd<0) { //Compensate for loss of sign when squaring
             lateralDrag = -1*dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
-		} else {
-			lateralDrag =    dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
-		}
-		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag)/shipMass;
-		//std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
-		lateralSpd += lateralAcceleration*deltaTime;
+        } else {
+            lateralDrag =    dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+        }
+        irr::f32 lateralAcceleration = (lateralThrust-lateralDrag)/shipMass;
+        //std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
+        lateralSpd += lateralAcceleration*deltaTime;
 
         //Turn dynamics
         //Rudder
@@ -494,17 +494,17 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         if (portThrust > 0) {
             propWalkTorquePort=1*propWalkAhead*(portThrust/maxForce);//Had modification for 'invertspeed'
         } else {
-			propWalkTorquePort=1*propWalkAstern*(portThrust/maxForce);
+            propWalkTorquePort=1*propWalkAstern*(portThrust/maxForce);
         }
-		if (stbdThrust > 0) {
+        if (stbdThrust > 0) {
             propWalkTorqueStbd=-1*propWalkAhead*(stbdThrust/maxForce);//Had modification for 'invertspeed'
         } else {
-			propWalkTorqueStbd=-1*propWalkAstern*(stbdThrust/maxForce);
+            propWalkTorqueStbd=-1*propWalkAstern*(stbdThrust/maxForce);
         }
-		propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
-		//Thrusters
-		irr::f32 thrusterTorque;
-		thrusterTorque = bowThruster*bowThrusterMaxForce*bowThrusterDistance - sternThruster*sternThrusterMaxForce*sternThrusterDistance;
+        propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
+        //Thrusters
+        irr::f32 thrusterTorque;
+        thrusterTorque = bowThruster*bowThrusterMaxForce*bowThrusterDistance - sternThruster*sternThrusterMaxForce*sternThrusterDistance;
         //Turn drag
         if (rateOfTurn<0) {
             dragTorque=-1*dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
@@ -549,19 +549,19 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
 
         // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
-	irr::f32 RudderPerSec=RudderAngularVelocity;
+    irr::f32 RudderPerSec=RudderAngularVelocity;
         irr::f32 MaxRudderInDtime=rudder+RudderPerSec*deltaTime;
         irr::f32 MinRudderInDtime=rudder-RudderPerSec*deltaTime;
 
         if (wheel>MaxRudderInDtime) {
-		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
-        	} else { // wheel < MaxRudderInDtime
+        rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
+            } else { // wheel < MaxRudderInDtime
                 if (wheel>MinRudderInDtime) {
-		rudder = wheel; // rudder can turn to the wheel setting
-			} else {
-				rudder = MinRudderInDtime; // rudder as far to port as time will allow
-				}
-		}
+        rudder = wheel; // rudder can turn to the wheel setting
+            } else {
+                rudder = MinRudderInDtime; // rudder as far to port as time will allow
+                }
+        }
 
 
         // DEE ^^^^^^^^^^^^^^^^^^

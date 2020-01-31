@@ -31,7 +31,7 @@ void HeadingIndicator::draw()
 {
 
 if (!IsVisible)
-		return;
+        return;
 
     IGUISkin* skin = Environment->getSkin();
 
@@ -41,13 +41,13 @@ if (!IsVisible)
     irr::u32 skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
     irr::gui::IGUIFont* font = skin->getFont();
 
-	// draws the background
-	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
-	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
-	Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+    // draws the background
+    //skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
+    //Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
+    Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
-	//Find the centre point
-	irr::core::vector2d<irr::s32> centrePoint = AbsoluteRect.getCenter();
+    //Find the centre point
+    irr::core::vector2d<irr::s32> centrePoint = AbsoluteRect.getCenter();
 
     //Find integer angles within +- angleRange degrees of heading
 
@@ -60,7 +60,7 @@ if (!IsVisible)
 
     //Draw tics
     irr::core::vector2d<irr::s32> startPoint;
-	irr::core::vector2d<irr::s32> endPoint;
+    irr::core::vector2d<irr::s32> endPoint;
 
     for (int ticAng = minAngle; ticAng<= maxAngle; ticAng++) {
         startPoint.X = centrePoint.X + pxPerDegree*(ticAng-heading);

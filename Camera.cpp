@@ -77,7 +77,7 @@ void Camera::lookDown()
 
 void Camera::setLookUp(irr::f32 angle)
 {
-	lookUpAngle = angle;
+    lookUpAngle = angle;
 }
 
 void Camera::lookLeft()

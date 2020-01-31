@@ -21,19 +21,19 @@
 //using namespace irr;
 
     StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::s32 listBoxID, irr::s32 okButtonID) //Constructor
-	{
-		this->scenarioListBox = scenarioListBox;
-		this->listBoxID = listBoxID;
-		this->okButtonID = okButtonID;
-		scenarioSelected = -1; //Set as initially invalid
-	}
+    {
+        this->scenarioListBox = scenarioListBox;
+        this->listBoxID = listBoxID;
+        this->okButtonID = okButtonID;
+        scenarioSelected = -1; //Set as initially invalid
+    }
 
     bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
         if (event.EventType == irr::EET_GUI_EVENT)
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
-			//If OK button, or double click on list
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
+            //If OK button, or double click on list
             if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
@@ -41,16 +41,16 @@
                 }
             }
 
-		}
+        }
 
-		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
-		{
-		    if (event.KeyInput.Key==irr::KEY_RETURN) {
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT)
+        {
+            if (event.KeyInput.Key==irr::KEY_RETURN) {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
-		    }
-		}
+            }
+        }
         return false;
     }
 

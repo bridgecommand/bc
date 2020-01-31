@@ -21,27 +21,27 @@
 //using namespace irr;
 
 StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
-	{
-		device = dev;
-		this->scenarioListBox = scenarioListBox;
-		this->scenarioText = scenarioText;
-		this->hostnameText = hostnameText;
-		this->hostnameBox = hostnameBox;
-		this->secondaryBox = secondaryBox;
-		this->multiplayerBox = multiplayerBox;
+    {
+        device = dev;
+        this->scenarioListBox = scenarioListBox;
+        this->scenarioText = scenarioText;
+        this->hostnameText = hostnameText;
+        this->hostnameBox = hostnameBox;
+        this->secondaryBox = secondaryBox;
+        this->multiplayerBox = multiplayerBox;
         this->listBoxID = listBoxID;
-		this->okButtonID = okButtonID;
-		this->secondaryBoxID = secondaryBoxID;
-		this->multiplayerBoxID = multiplayerBoxID;
-		scenarioSelected = -1; //Set as initially invalid
-	}
+        this->okButtonID = okButtonID;
+        this->secondaryBoxID = secondaryBoxID;
+        this->multiplayerBoxID = multiplayerBoxID;
+        scenarioSelected = -1; //Set as initially invalid
+    }
 
     bool StartupEventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
         if (event.EventType == irr::EET_GUI_EVENT)
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
-			//If OK button, or double click on list
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
+            //If OK button, or double click on list
             if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okButtonID ) || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  )
             {
                 if (scenarioListBox->getSelected() > -1 ) {
@@ -72,21 +72,21 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                     secondaryBox->setChecked(false);
                 }
             }
-		}
+        }
 
-		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
-		{
-		    if (event.KeyInput.Key==irr::KEY_RETURN) {
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT)
+        {
+            if (event.KeyInput.Key==irr::KEY_RETURN) {
                 if (scenarioListBox->getSelected() > -1 ) {
                     scenarioSelected = scenarioListBox->getSelected();
                 }
-		    }
+            }
 
             if (event.KeyInput.Key == irr::KEY_ESCAPE || event.KeyInput.Key ==  irr::KEY_F4) {
                 device->closeDevice(); //Shutdown.
             }
 
-		}
+        }
         return false;
     }
 

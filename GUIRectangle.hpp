@@ -12,18 +12,18 @@ namespace irr
 namespace gui
 {
 
-	class IGUIRectangle : public IGUIElement
-	{
-	public:
+    class IGUIRectangle : public IGUIElement
+    {
+    public:
 
-		//! constructor
-		IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder=true);
+        //! constructor
+        IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, core::rect<s32> rectangle, bool showBorder=true);
 
-		//! destructor
-		virtual ~IGUIRectangle();
+        //! destructor
+        virtual ~IGUIRectangle();
 
-		//! draws the element and its children
-		virtual void draw();
+        //! draws the element and its children
+        virtual void draw();
 
     private:
         bool showBorder;

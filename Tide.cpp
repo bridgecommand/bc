@@ -130,7 +130,7 @@ irr::f32 Tide::calcTideHeight(uint64_t absoluteTime) const {
 
 irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
 
-	//Default return value
+    //Default return value
     irr::core::vector2df tidalStream;
     tidalStream.X = 0;
     tidalStream.Y = 0;
@@ -200,29 +200,29 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 
     }
 
-	if (totalWeight > 0) {
+    if (totalWeight > 0) {
 
-		irr::f32 localXNeaps = weightedSumXNeaps / totalWeight;
-		irr::f32 localZNeaps = weightedSumZNeaps / totalWeight;
-		irr::f32 localXSprings = weightedSumXSprings / totalWeight;
-		irr::f32 localZSprings = weightedSumZSprings / totalWeight;
+        irr::f32 localXNeaps = weightedSumXNeaps / totalWeight;
+        irr::f32 localZNeaps = weightedSumZNeaps / totalWeight;
+        irr::f32 localXSprings = weightedSumXSprings / totalWeight;
+        irr::f32 localZSprings = weightedSumZSprings / totalWeight;
 
-		//Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
-		irr::f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
-		if (rangeOfDay <= meanRangeNeaps) {
-			tidalStream.X = localXNeaps;
-			tidalStream.Y = localZNeaps;
-		}
-		else if (rangeOfDay >= meanRangeSprings) {
-			tidalStream.X = localXSprings;
-			tidalStream.Y = localZSprings;
-		}
-		else if ((meanRangeSprings - meanRangeNeaps) > 0) {
-			irr::f32 springsInterp = (rangeOfDay - meanRangeNeaps) / (meanRangeSprings - meanRangeNeaps);
-			tidalStream.X = localXNeaps*(1 - springsInterp) + localXSprings*springsInterp;
-			tidalStream.Y = localZNeaps*(1 - springsInterp) + localZSprings*springsInterp;
-		}
-	} 
+        //Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
+        irr::f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
+        if (rangeOfDay <= meanRangeNeaps) {
+            tidalStream.X = localXNeaps;
+            tidalStream.Y = localZNeaps;
+        }
+        else if (rangeOfDay >= meanRangeSprings) {
+            tidalStream.X = localXSprings;
+            tidalStream.Y = localZSprings;
+        }
+        else if ((meanRangeSprings - meanRangeNeaps) > 0) {
+            irr::f32 springsInterp = (rangeOfDay - meanRangeNeaps) / (meanRangeSprings - meanRangeNeaps);
+            tidalStream.X = localXNeaps*(1 - springsInterp) + localXSprings*springsInterp;
+            tidalStream.Y = localZNeaps*(1 - springsInterp) + localZSprings*springsInterp;
+        }
+    }
     return tidalStream;
 }
 
@@ -231,23 +231,23 @@ irr::f32 Tide::getTideGradient(uint64_t absoluteTime) const {
     //tim is absolute time tide is required for
 
     irr::f32 timeHours = irr::f32(absoluteTime)/SECONDS_IN_HOUR;
-	irr::f32 der=0;
+    irr::f32 der=0;
 
-	for (unsigned int i=1; i<tidalHarmonics.size(); i++) { //0th component has no gradient
+    for (unsigned int i=1; i<tidalHarmonics.size(); i++) { //0th component has no gradient
         //;HarmonicHeight#=Tide(i,0)*Cos( Tide(i,1) + tim_hours*Tide(i,2)) ;tide(n,0) is amplitude, 1 is offset (rad), 2 is speed (rad/s)
-		irr::f32 harmonicAngle=tidalHarmonics.at(i).offset+timeHours*tidalHarmonics.at(i).speed;
-		//reduce to range 0 to 360
-		harmonicAngle=harmonicAngle-floor(harmonicAngle/360)*360;
+        irr::f32 harmonicAngle=tidalHarmonics.at(i).offset+timeHours*tidalHarmonics.at(i).speed;
+        //reduce to range 0 to 360
+        harmonicAngle=harmonicAngle-floor(harmonicAngle/360)*360;
 
-		irr::f32 harmonicDer=-1*tidalHarmonics.at(i).speed*tidalHarmonics.at(i).amplitude*sin(harmonicAngle*irr::core::DEGTORAD);
-		//
-		//	;a cos (w t + c)
-		//	;->
-		//	;-wa sin(w t + c)
+        irr::f32 harmonicDer=-1*tidalHarmonics.at(i).speed*tidalHarmonics.at(i).amplitude*sin(harmonicAngle*irr::core::DEGTORAD);
+        //
+        //	;a cos (w t + c)
+        //	;->
+        //	;-wa sin(w t + c)
 
-		der = der + harmonicDer;
-	}
-	return der;
+        der = der + harmonicDer;
+    }
+    return der;
 }
 
 uint64_t Tide::highTideTime(uint64_t startSearchTime, int searchDirection) const {
@@ -267,23 +267,23 @@ uint64_t Tide::highTideTime(uint64_t startSearchTime, int searchDirection) const
 
     int timestep = 10*60; //Find to nearest 10 minutes
 
-	if (searchDirection > 0) {
+    if (searchDirection > 0) {
         //look forward in time
-		for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=timestep) {
-			if (getTideGradient(t - timestep) > 0 && getTideGradient(t + timestep) < 0) {
-				return t;
-			}
-		}
-	} else {
+        for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=timestep) {
+            if (getTideGradient(t - timestep) > 0 && getTideGradient(t + timestep) < 0) {
+                return t;
+            }
+        }
+    } else {
         //look back in time
-		for (uint64_t t = startSearchTime-timestep; t>=startSearchTime-SECONDS_IN_DAY; t-=timestep) {
-			if (getTideGradient(t - timestep) > 0 && getTideGradient(t + timestep) < 0) {
-				return t;
-			}
-		}
-	}
-	//no time found, return 0
-	return 0;
+        for (uint64_t t = startSearchTime-timestep; t>=startSearchTime-SECONDS_IN_DAY; t-=timestep) {
+            if (getTideGradient(t - timestep) > 0 && getTideGradient(t + timestep) < 0) {
+                return t;
+            }
+        }
+    }
+    //no time found, return 0
+    return 0;
 }
 
 uint64_t Tide::lowTideTime(uint64_t startSearchTime, int searchDirection) const {
@@ -302,21 +302,21 @@ uint64_t Tide::lowTideTime(uint64_t startSearchTime, int searchDirection) const 
 
     int timestep = 10*60; //Find to nearest 10 minutes
 
-	if (searchDirection > 0) {
+    if (searchDirection > 0) {
         //look forward in time
-		for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=timestep) {
-			if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
-				return t;
-			}
-		}
-	} else {
+        for (uint64_t t = startSearchTime; t<=startSearchTime+SECONDS_IN_DAY; t+=timestep) {
+            if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
+                return t;
+            }
+        }
+    } else {
         //look back in time
-		for (uint64_t t = startSearchTime-timestep; t>=startSearchTime-SECONDS_IN_DAY; t-=timestep) {
-			if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
-				return t;
-			}
-		}
-	}
-	//no time found, return 0
-	return 0;
+        for (uint64_t t = startSearchTime-timestep; t>=startSearchTime-SECONDS_IN_DAY; t-=timestep) {
+            if (getTideGradient(t - timestep) < 0 && getTideGradient(t + timestep) > 0) {
+                return t;
+            }
+        }
+    }
+    //no time found, return 0
+    return 0;
 }

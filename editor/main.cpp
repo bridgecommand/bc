@@ -59,7 +59,7 @@ namespace IniFile {
 //To do: Utility function to find scenario list
 void getDirectoryList(irr::IrrlichtDevice* device, std::vector<std::string>&dirList, std::string path) {
 
-	irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
     if (fileSystem==0) {
         std::cout << "Failed to get access to file system" << std::endl;
         exit(EXIT_FAILURE);
@@ -102,7 +102,7 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
 //Will fill one of worldName of scenarioName, depending on user's selection.
 {
 
-	irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     //Get screen width
     irr::u32 su = driver->getScreenSize().Width;
@@ -355,7 +355,7 @@ int main (int argc, char ** argv)
 
     //Mac OS:
     //Find starting folder
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
     std::string exeFolderPath = "";
@@ -371,7 +371,7 @@ int main (int argc, char ** argv)
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+    #endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
@@ -422,7 +422,7 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->getSkin()->setFont(font);
     }
 
-	//Check if user scenario dir exists. If not, try to copy scenarios into the user dir.
+    //Check if user scenario dir exists. If not, try to copy scenarios into the user dir.
     checkUserScenarioDir();
 
     //Flush old key/clicks etc, with a 0.2s pause

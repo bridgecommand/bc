@@ -26,19 +26,19 @@
 ////using namespace irr;
 
     EventReceiver::EventReceiver(irr::IrrlichtDevice* device, ControllerModel* model, GUIMain* gui, Network* network) //Constructor
-	{
-		this->device = device; //Link to the irrlicht device
-		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI
-		this->network = network; //Link to the network
+    {
+        this->device = device; //Link to the irrlicht device
+        this->model = model; //Link to the model
+        this->gui = gui; //Link to GUI
+        this->network = network; //Link to the network
     }
 
     bool EventReceiver::OnEvent(const irr::SEvent& event)
-	{
+    {
 
         if (event.EventType == irr::EET_GUI_EVENT)
-		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+        {
+            irr::s32 id = event.GUIEvent.Caller->getID();
 
 
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
@@ -197,7 +197,7 @@
 
         //From keyboard
         if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
-		{
+        {
 
             if (event.KeyInput.Shift) {
                 //Shift down
@@ -210,10 +210,10 @@
                 //Shift and Ctrl not down
 
             }
-		} //end of key down event
+        } //end of key down event
 
-		//From mouse
-		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        //From mouse
+        if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 
             if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ) {
 
@@ -228,7 +228,7 @@
                 model->setMouseDown(false);
             }
 
-		} //end of mouse event
+        } //end of mouse event
 
 
         return false;

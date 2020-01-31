@@ -31,57 +31,57 @@ namespace irr
 namespace scene
 {
 
-	class MovingWaterSceneNode : public IMeshSceneNode, video::IShaderConstantSetCallBack
-	{
-	public:
+    class MovingWaterSceneNode : public IMeshSceneNode, video::IShaderConstantSetCallBack
+    {
+    public:
 
-		//! constructor
-		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
-			irr::u32 disableShaders,
-			irr::u32 segments = 32,
-			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& rotation = core::vector3df(0,0,0)
-			);
+        //! constructor
+        MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
+            irr::u32 disableShaders,
+            irr::u32 segments = 32,
+            const core::vector3df& position = core::vector3df(0,0,0),
+            const core::vector3df& rotation = core::vector3df(0,0,0)
+            );
 
-		//! destructor
-		//virtual ~MovingWaterSceneNode();
-		~MovingWaterSceneNode();
+        //! destructor
+        //virtual ~MovingWaterSceneNode();
+        ~MovingWaterSceneNode();
 
-		//! frame registration
-		//virtual void OnRegisterSceneNode();
-		void OnRegisterSceneNode();
+        //! frame registration
+        //virtual void OnRegisterSceneNode();
+        void OnRegisterSceneNode();
 
-		//! animated update
-		//virtual void OnAnimate(u32 timeMs);
-		void OnAnimate(u32 timeMs);
+        //! animated update
+        //virtual void OnAnimate(u32 timeMs);
+        void OnAnimate(u32 timeMs);
 
-		void OnSetConstants(video::IMaterialRendererServices* services, s32 userData);
+        void OnSetConstants(video::IMaterialRendererServices* services, s32 userData);
 
-		//! Update mesh
-		//virtual void setMesh(IMesh* mesh);
-		void setMesh(IMesh* mesh);
+        //! Update mesh
+        //virtual void setMesh(IMesh* mesh);
+        void setMesh(IMesh* mesh);
 
-		//! Returns type of the scene node
-		//virtual ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }
-		ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }
+        //! Returns type of the scene node
+        //virtual ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }
+        ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }
 
-		void setMaterialTexture(u32 textureLayer, video::ITexture * texture);
+        void setMaterialTexture(u32 textureLayer, video::ITexture * texture);
 
-		virtual void render();
-		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-		virtual IMesh* getMesh(void);
-		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh=0, s32 id=-1, bool zfailmethod=true, f32 infinity=1000.0f);
-		virtual void setReadOnlyMaterials(bool readonly);
-		virtual bool isReadOnlyMaterials() const;
+        virtual void render();
+        virtual const core::aabbox3d<f32>& getBoundingBox() const;
+        virtual IMesh* getMesh(void);
+        virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh=0, s32 id=-1, bool zfailmethod=true, f32 infinity=1000.0f);
+        virtual void setReadOnlyMaterials(bool readonly);
+        virtual bool isReadOnlyMaterials() const;
 
-		//void setVerticalScale(f32 scale);
-		void resetParameters(float A, vector2 w, float seaState);
+        //void setVerticalScale(f32 scale);
+        void resetParameters(float A, vector2 w, float seaState);
 
-		f32 getWaveHeight(f32 relPosX, f32 relPosZ) const;
-		irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
+        f32 getWaveHeight(f32 relPosX, f32 relPosZ) const;
+        irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
 
-	private:
+    private:
 
         //Shader related
         int matWorldViewProjection;//Identifiers, much faster than string matching...
@@ -94,7 +94,7 @@ namespace scene
         int idSeaState;
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
-		irr::u32 disableShaders;
+        irr::u32 disableShaders;
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
         irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
@@ -103,19 +103,19 @@ namespace scene
         irr::u32 segments;
 
         //f32 addWave(const core::vector3df &source, f32 time) const;
-		f32 lightLevel;
-		f32 seaState;
-		f32 tileWidth;
-		//f32 scaleFactorVertical;
-		IMesh* mesh;
-		IMesh* flatMesh;
-		cOcean* ocean;
+        f32 lightLevel;
+        f32 seaState;
+        f32 tileWidth;
+        //f32 scaleFactorVertical;
+        IMesh* mesh;
+        IMesh* flatMesh;
+        cOcean* ocean;
 
-		core::aabbox3d<f32> boundingBox;
+        core::aabbox3d<f32> boundingBox;
 
-		int localisnan(double x) const;
+        int localisnan(double x) const;
         int localisinf(double x) const;
-	};
+    };
 
 } // end namespace scene
 } // end namespace irr

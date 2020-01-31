@@ -53,9 +53,9 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     std::vector<irr::f32> CPAs;
     std::vector<irr::f32> TCPAs;
-	std::vector<irr::f32> headings;
-	std::vector<irr::f32> speeds;
-	std::string currentTime;
+    std::vector<irr::f32> headings;
+    std::vector<irr::f32> speeds;
+    std::string currentTime;
     bool paused;
     bool collided;
     bool headUp;
@@ -76,14 +76,14 @@ public:
         GUI_ID_STBD_SCROLL_BAR,
         GUI_ID_RUDDER_SCROLL_BAR,
 // DEE vvvv
-	GUI_ID_WHEEL_SCROLL_BAR,
+    GUI_ID_WHEEL_SCROLL_BAR,
         GUI_ID_RATE_OF_TURN_SCROLL_BAR,
-	GUI_ID_RATE_OF_TURN_INDICATOR,
+    GUI_ID_RATE_OF_TURN_INDICATOR,
 // DEE ^^^^
         GUI_ID_BOWTHRUSTER_SCROLL_BAR,
         GUI_ID_STERNTHRUSTER_SCROLL_BAR,
         GUI_ID_START_BUTTON,
-		GUI_ID_RADAR_ONOFF_BUTTON,
+        GUI_ID_RADAR_ONOFF_BUTTON,
         GUI_ID_BIG_RADAR_BUTTON,
         GUI_ID_SMALL_RADAR_BUTTON,
         GUI_ID_RADAR_INCREASE_BUTTON,
@@ -168,7 +168,7 @@ private:
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
     irr::gui::IGUIButton* smallRadarButton;
-	irr::gui::IGUIButton* radarOnOffButton;
+    irr::gui::IGUIButton* radarOnOffButton;
     irr::gui::IGUIButton* eblLeftButton;
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
@@ -234,8 +234,8 @@ private:
     irr::s32 smallRadarScreenRadius;
     std::vector<irr::f32> guiCPAs;
     std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
-	std::vector<irr::f32> guiARPAheadings;
-	std::vector<irr::f32> guiARPAspeeds; //in knots
+    std::vector<irr::f32> guiARPAheadings;
+    std::vector<irr::f32> guiARPAspeeds; //in knots
     std::string guiTime;
     bool singleEngine;
     bool hasBowThruster;

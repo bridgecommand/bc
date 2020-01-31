@@ -37,7 +37,7 @@ class RadarScreen
         irr::scene::ISceneNode* parent;
         irr::core::vector3df offset;
         irr::u32 radarRadiusPx;
-		irr::f32 tilt;
+        irr::f32 tilt;
 };
 
 #endif

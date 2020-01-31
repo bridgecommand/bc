@@ -69,7 +69,7 @@ int main()
     #endif // FOR_DEB
 
     //Mac OS:
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     //Find starting folder
     char exePath[1024];
     uint32_t pathSize = sizeof(exePath);
@@ -86,7 +86,7 @@ int main()
     //change to this path now, so ini file is read
     chdir(exeFolderPath.c_str());
     //Note, we use this again after the createDevice call
-	#endif
+    #endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
@@ -137,9 +137,9 @@ int main()
 
     //Chdir back on OSX
     //Mac OS:
-	#ifdef __APPLE__
+    #ifdef __APPLE__
     chdir(exeFolderPath.c_str());
-	#endif
+    #endif
 
     //Set font : Todo - make this configurable
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");

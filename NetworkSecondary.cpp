@@ -67,9 +67,9 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
     if (server == NULL)
     {
         std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
-		enet_deinitialize();
-		exit (EXIT_FAILURE);
-    } 
+        enet_deinitialize();
+        exit (EXIT_FAILURE);
+    }
 
 
 }

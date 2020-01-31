@@ -61,17 +61,17 @@ class OwnShip : public Ship
         irr::f32 getRudder() const; //-30 to 30
 
 
-	irr::f32 getWheel() const; // DEE -30 to +30
+    irr::f32 getWheel() const; // DEE -30 to +30
 
 
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
         irr::f32 getCOG() const;
         irr::f32 getSOG() const; //m/s
-		std::string getBasePath() const;
-		irr::core::vector3df getScreenDisplayPosition() const;
-		irr::f32 getScreenDisplaySize() const;
-		irr::f32 getScreenDisplayTilt() const;
+        std::string getBasePath() const;
+        irr::core::vector3df getScreenDisplayPosition() const;
+        irr::f32 getScreenDisplaySize() const;
+        irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
 
     protected:
@@ -79,7 +79,7 @@ class OwnShip : public Ship
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
-		std::string basePath; //The location the model is loaded from
+        std::string basePath; //The location the model is loaded from
         Terrain* terrain;
         SimulationModel* model;
         irr::f32 rollPeriod; //Roll period (s)  DEE this should be dynamically loaded
@@ -101,7 +101,7 @@ class OwnShip : public Ship
 
 // DEE vvvvvvv
         irr::f32 wheel; //-30 to + 30
-	irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
+    irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
 // DEE ^^^^^^^
 
         irr::f32 rudder; //-30 to + 30
@@ -143,8 +143,8 @@ class OwnShip : public Ship
         irr::f32 propWalkTorque;
         irr::f32 lateralSpd;
 
-		irr::f32 cog; //course over ground
-		irr::f32 sog; //m/s speed over ground
+        irr::f32 cog; //course over ground
+        irr::f32 sog; //m/s speed over ground
 
         irr::f32 waveHeightFiltered; //1st order transfer filtered response to waves
         //General settings
@@ -152,9 +152,9 @@ class OwnShip : public Ship
         bool depthSounder;
         irr::f32 maxSounderDepth;
 
-		irr::core::vector3df screenDisplayPosition;
-		irr::f32 screenDisplaySize;
-		irr::f32 screenDisplayTilt;
+        irr::core::vector3df screenDisplayPosition;
+        irr::f32 screenDisplaySize;
+        irr::f32 screenDisplayTilt;
 
 };
 
