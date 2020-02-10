@@ -26,8 +26,10 @@
 #include <sys/stat.h>
 #endif // _WIN32
 
+#define MAX_PX_IN_MAP 160000000
+
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData, irr::u32 _zoomLevels)
 {
 
     this->gui = gui;
@@ -40,14 +42,17 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     this->buoysData = buoysData;
     this->generalData = generalData;
     this->worldName = worldName;
+	this->zoomLevels = _zoomLevels;
 
     checkName();//Check if the scenario name (preset in generalData) will cause an overwrite, and if so, set flag in generalData
 
     unscaledMap = 0;
-    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
-        scaledMap[i] = 0;
+    for (unsigned int i = 0; i<zoomLevels; i++) {
+		std::cout << "Adding null scaled map levels" << std::endl;
+		scaledMap.push_back(0);
+		metresPerPx.push_back(0);
     }
-    currentZoom = 0;
+	currentZoom = 3;
 
 
     mapOffsetX = 0;
@@ -116,29 +121,37 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     irr::core::dimension2d<irr::u32> loadedSize = unscaledMap->getDimension();
 
     //Calculate scaling needed
-    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
-         irr::f32 scaling;
+    for (unsigned int i = 0; i<zoomLevels; i++) {
+         irr::f32 scaling = 0.00625 * pow(2, i);
 
-         //Todo: Implement this more sensibly
-         if (i==0) {
-             scaling = 0.025;
-         } else if (i==1) {
-             scaling = 0.05;
-         } else if (i==2) {
-             scaling = 0.1;
-         } else {
-             scaling = 0.2;
-         }
          irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
          irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
-         //Create scaled map with the same image format of the size required
-         scaledMap[i] = driver->createImage(unscaledMap->getColorFormat(),irr::core::dimension2d<irr::u32>(requiredWidth,requiredHeight));
-         //Copy and scale image
-         unscaledMap->copyToScaling(scaledMap[i]);
+		 if (requiredHeight * requiredWidth < MAX_PX_IN_MAP) {
 
-         //Save scale
-         metresPerPx[i] = terrainXWidth / requiredWidth;
+			 //Create scaled map with the same image format of the size required
+			 std::cout << "About to create empty scaled map " << i << std::endl;
+			 scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<irr::u32>(requiredWidth, requiredHeight));
+			 //Copy and scale image
+			 std::cout << "About to copy in for " << i << std::endl;
+			 //TODO: Check if empty scaled map has been created
+			 unscaledMap->copyToScaling(scaledMap.at(i));
+
+
+
+			 //Save scale
+			 metresPerPx.at(i) = terrainXWidth / requiredWidth;
+		 }
+		 else {
+			 //Don't try to create image
+			 zoomLevels = i;
+		 }
+		 if (currentZoom >= zoomLevels) {
+			 currentZoom = zoomLevels - 1;
+		 }
+		 if (currentZoom < 0) {
+			 currentZoom = 0;
+		 }
     }
 
     //Drop the unscaled map, as we don't need this again
@@ -150,8 +163,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
 //Destructor
 ControllerModel::~ControllerModel()
 {
-    for (unsigned int i = 0; i<ZOOMLEVELS; i++) {
-        scaledMap[i]->drop();
+    for (unsigned int i = 0; i<zoomLevels; i++) {
+        scaledMap.at(i)->drop();
     }
 }
 
@@ -180,7 +193,7 @@ void ControllerModel::update()
     //std::cout << mouseDown << std::endl;
 
     //Check if current zoom is valid, if not return.
-    if(!(currentZoom<ZOOMLEVELS)) {
+    if(!(currentZoom<zoomLevels)) {
         return;
     }
 
@@ -202,14 +215,14 @@ void ControllerModel::update()
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
     irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
-    irr::video::IImage* tempImage = driver->createImage(scaledMap[currentZoom]->getColorFormat(),screenSize); //Empty image
+    irr::video::IImage* tempImage = driver->createImage(scaledMap.at(currentZoom)->getColorFormat(),screenSize); //Empty image
     tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData->X/metresPerPx[currentZoom] + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData->Z/metresPerPx[currentZoom]    + driver->getScreenSize().Height/2 - scaledMap[currentZoom]->getDimension().Height + mapOffsetZ;
+    irr::s32 topLeftX = -1*ownShipData->X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
+    irr::s32 topLeftZ = ownShipData->Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
 
-    scaledMap[currentZoom]->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
+    scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     //Drop any previous textures
     for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
@@ -224,7 +237,7 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(*generalData,mapOffsetX,mapOffsetZ,metresPerPx[currentZoom],*ownShipData,*buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(*generalData,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),*ownShipData,*buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()
@@ -235,10 +248,10 @@ void ControllerModel::resetOffset()
 
 void ControllerModel::increaseZoom()
 {
-    if(currentZoom+1<ZOOMLEVELS) {
+    if(currentZoom+1<zoomLevels) {
         currentZoom++;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap[currentZoom]->getDimension().Width/(irr::f32)scaledMap[currentZoom-1]->getDimension().Width;
+        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom-1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }
@@ -249,7 +262,7 @@ void ControllerModel::decreaseZoom()
     if(currentZoom>0) {
         currentZoom--;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap[currentZoom]->getDimension().Width/(irr::f32)scaledMap[currentZoom+1]->getDimension().Width;
+        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom+1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }

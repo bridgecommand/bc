@@ -386,6 +386,11 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
+	if (zoomLevels == 0) {
+		zoomLevels = 4;
+	}
+
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
@@ -507,7 +512,7 @@ int main (int argc, char ** argv)
     }
 
     //Main model
-    ControllerModel controller(device, &language, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData);
+    ControllerModel controller(device, &language, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData, zoomLevels);
 
     //If an existing scenario, load data into these structures
     if(scenarioName.length() != 0) {

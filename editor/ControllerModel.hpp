@@ -30,15 +30,13 @@
 #include "GUI.hpp"
 #include "../Lang.hpp"
 
-#define ZOOMLEVELS 4
-
 class ControllerModel //Start of the 'Model' part of MVC
 {
 
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData);
+    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData, irr::u32 _zoomLevels);
     ~ControllerModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -76,6 +74,8 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
 
+	irr::u32 zoomLevels;
+
     //Data shared from main
     OwnShipEditorData* ownShipData;
     std::vector<PositionData>* buoysData;
@@ -84,7 +84,7 @@ private:
     std::string worldName;
 
     irr::video::IImage* unscaledMap;
-    irr::video::IImage* scaledMap[ZOOMLEVELS];
+    std::vector<irr::video::IImage*> scaledMap;
     irr::u32 currentZoom;
 
     irr::f32 terrainLong;
@@ -94,7 +94,7 @@ private:
     irr::f32 terrainXWidth;
     irr::f32 terrainZWidth;
 
-    irr::f32 metresPerPx[ZOOMLEVELS];
+    std::vector<irr::f32> metresPerPx;
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
