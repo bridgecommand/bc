@@ -46,7 +46,7 @@ RadarCalculation::RadarCalculation() : rangeResolution(64)
 
     EBLLastUpdated = clock();
 
-    radarOn = false;
+    radarOn = true;
 
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = false;
