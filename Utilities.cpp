@@ -14,7 +14,6 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include "Utilities.hpp"
 #include "Constants.hpp"
@@ -112,10 +111,10 @@ namespace Utilities
 
     std::string timestampToString(time_t timestamp, std::string format) {
         char buffer[80];
-        tm * timeinfo;
+        tm timeinfo;
 
-        timeinfo = gmtime(&timestamp);
-        strftime(buffer,80,format.c_str(),timeinfo);
+        gmtime_s(&timeinfo, &timestamp);
+        strftime(buffer,80,format.c_str(),&timeinfo);
         std::string returnString(buffer);
         return(returnString);
     }
@@ -153,11 +152,15 @@ namespace Utilities
 
         #ifdef _WIN32
             char* appdataLocation;
-            appdataLocation = getenv("APPDATA"); //TODO: Check this works on windows XP-10
+            size_t len;
+			errno_t err = _dupenv_s(&appdataLocation, &len, "APPDATA");
             if (appdataLocation!=NULL) {
                 userFolder = appdataLocation;
                 userFolder.append("/Bridge Command/");
             }
+			if (!err) {
+				free(appdataLocation);
+			}
         #else
             #ifdef __APPLE__
                 //Apple

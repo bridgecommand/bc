@@ -14,8 +14,6 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
-
 #include "GUI.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
@@ -691,12 +689,9 @@ int GUIMain::getSelectedLeg() const {
 
 std::string GUIMain::getOwnShipTypeSelected() const {
     //Todo: Instead of this, should probably use the strings directly from 'std::vector<std::string> ownShipTypes'
-
     if (ownShipTypeSelector->getSelected()<0) {return "";} //If nothing selected
     std::wstring wideName(ownShipTypeSelector->getItem(ownShipTypeSelector->getSelected()));
-    char narrowCharString[256];
-    wcstombs(narrowCharString,wideName.c_str(),256);
-    std::string nameString(narrowCharString);
+    std::string nameString(wideName.begin(), wideName.end());
     return nameString;
 }
 
@@ -705,9 +700,7 @@ std::string GUIMain::getOtherShipTypeSelected() const {
 
     if (otherShipTypeSelector->getSelected()<0) {return "";} //If nothing selected
     std::wstring wideName(otherShipTypeSelector->getItem(otherShipTypeSelector->getSelected()));
-    char narrowCharString[256];
-    wcstombs(narrowCharString,wideName.c_str(),256);
-    std::string nameString(narrowCharString);
+    std::string nameString(wideName.begin(),wideName.end());
     return nameString;
 }
 
@@ -783,10 +776,7 @@ std::string GUIMain::getScenarioName() const {
 
     //Convert from wide to narrow string: Todo: Think about having this all wide.
     std::wstring wideName(scenarioName->getText());
-    char narrowCharString[256];
-    wcstombs(narrowCharString,wideName.c_str(),256);
-
-    std::string scenarioNameString(narrowCharString);
+    std::string scenarioNameString(wideName.begin(),wideName.end());
 
     //Strip any invalid characters: /\*:"|?<>
     replace(scenarioNameString.begin(), scenarioNameString.end(),'/',' ');
