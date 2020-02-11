@@ -388,7 +388,7 @@ int main (int argc, char ** argv)
 
 	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {
-		zoomLevels = 4;
+		zoomLevels = 10;
 	}
 
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
