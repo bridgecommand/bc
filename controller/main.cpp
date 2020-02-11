@@ -73,6 +73,11 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
+	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
+	if (zoomLevels == 0) {
+		zoomLevels = 10;
+	}
+
     //Load UDP network settings
     irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
@@ -162,7 +167,7 @@ int main (int argc, char ** argv)
     //GUI class
     GUIMain guiMain(device, &language);
     //Main model
-    ControllerModel controller(device, &guiMain, worldName);
+    ControllerModel controller(device, &guiMain, worldName, zoomLevels);
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario

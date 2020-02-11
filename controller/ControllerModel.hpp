@@ -28,15 +28,13 @@
 
 #include "GUI.hpp"
 
-#define ZOOMLEVELS 4
-
 class ControllerModel //Start of the 'Model' part of MVC
 {
 
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, irr::u32 _zoomLevels);
     ~ControllerModel();
     void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData);
     void resetOffset(); //Re-centre the map on the own-ship
@@ -52,8 +50,10 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
 
+	irr::u32 zoomLevels;
+
     irr::video::IImage* unscaledMap;
-    irr::video::IImage* scaledMap[ZOOMLEVELS];
+    std::vector<irr::video::IImage*> scaledMap;
 
     irr::u32 currentZoom;
 
@@ -64,7 +64,7 @@ private:
     irr::f32 terrainXWidth;
     irr::f32 terrainZWidth;
 
-    irr::f32 metresPerPx[ZOOMLEVELS];
+    std::vector<irr::f32> metresPerPx;
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
