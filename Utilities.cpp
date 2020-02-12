@@ -113,7 +113,11 @@ namespace Utilities
         char buffer[80];
         tm timeinfo;
 
+#ifdef _WIN32
         gmtime_s(&timeinfo, &timestamp);
+#else
+        gmtime_r(&timestamp, &timeinfo);
+#endif
         strftime(buffer,80,format.c_str(),&timeinfo);
         std::string returnString(buffer);
         return(returnString);
