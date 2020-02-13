@@ -391,7 +391,7 @@ int main (int argc, char ** argv)
     {
 		std::string line;
 		std::string currentTabName = "[General]";
-		while ( std::getline (file,line) )
+		while ( std::getline (globalFile,line) )
 		{
 			line = Utilities::trim(line);
 			if (findCharOccurrences(line,"[") == 1 && findCharOccurrences(line,"]") == 1 ) {
@@ -405,7 +405,7 @@ int main (int argc, char ** argv)
 					thisEntry.settingName = splitLine.at(0);
 					thisEntry.settingValue = Utilities::trim(splitLine.at(1),"\"");
 					//check if a '_DESC' setting is available
-					thisEntry.description = IniFile::iniFileToString(iniFilename,thisEntry.settingName+"_DESC");
+					thisEntry.description = IniFile::iniFileToString(globalIniFilename,thisEntry.settingName+"_DESC");
 					//Check if this exists in the main iniFileStructure
 					bool found = false;
 
