@@ -313,6 +313,9 @@ int main (int argc, char ** argv)
     }
     //end copy
 
+    //Store a copy of the global ini filename
+    std::string globalIniFilename = iniFilename;
+
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -382,6 +385,64 @@ int main (int argc, char ** argv)
         }
     }
 
+    //Read the global ini file. If there are any lines that don't exist in the user's ini file, copy in
+    std::ifstream globalFile (globalIniFilename.c_str());
+    if (globalFile.is_open())
+    {
+		std::string line;
+		std::string currentTabName = "[General]";
+		while ( std::getline (file,line) )
+		{
+			line = Utilities::trim(line);
+			if (findCharOccurrences(line,"[") == 1 && findCharOccurrences(line,"]") == 1 ) {
+				//A section heading
+				currentTabName=line;
+			} else if (findCharOccurrences(line,"=") == 1 && findCharOccurrences(line,"_DESC") == 0 && findCharOccurrences(line,"_OPTION") == 0 ) {
+				//A normal entry
+				std::vector<std::string> splitLine = Utilities::split(line,'=');
+				if (splitLine.size() == 2) {
+					IniFileEntry thisEntry;
+					thisEntry.settingName = splitLine.at(0);
+					thisEntry.settingValue = Utilities::trim(splitLine.at(1),"\"");
+					//check if a '_DESC' setting is available
+					thisEntry.description = IniFile::iniFileToString(iniFilename,thisEntry.settingName+"_DESC");
+					//Check if this exists in the main iniFileStructure
+					bool found = false;
+
+					//TODO: Ignore 'joystick_map*' cases, ie force these to return found = true;
+
+					for (int i = 0; i < iniFileStructure.size(); i++) {
+						for (int j = 0; j < iniFileStructure.at(i).settings.size(); j++) {
+							std::string compare1 = iniFileStructure.at(i).settings.at(j).settingName;
+							std::string compare2 = thisEntry.settingName;
+							Utilities::to_lower(compare1);
+							Utilities::to_lower(compare2);
+							//Ignore 'joystick_map*' cases, as we don't want to copy these across even if different
+							if (compare2.find("joystick_map") != std::string::npos  || compare1.compare(compare2)==0 ) {
+								found = true;
+								break;
+							}
+						}
+						if (found) {
+							break;
+						}
+					}
+
+					//If not, find the corresponding tab, or fall back to the first tab
+					if (!found) {
+						//Add to corresponding tab
+						for (int i = 0; i < iniFileStructure.size(); i++) {
+							if (currentTabName.compare(iniFileStructure.at(i).tabName) == 0) {
+								iniFileStructure.at(i).settings.push_back(thisEntry);
+							}
+						}
+					}
+
+				}
+			}
+		}
+		globalFile.close();
+    }
 
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
