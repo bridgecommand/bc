@@ -109,6 +109,10 @@
 
                     model->addShip(newShipName,screenCentrePos);
                 }
+				if (id == GUIMain::GUI_ID_DELETESHIP_BUTTON) {
+					int ship = gui->getSelectedShip();
+					model->deleteShip(ship);
+				}
 
 
             }

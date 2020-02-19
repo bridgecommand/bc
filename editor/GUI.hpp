@@ -45,6 +45,7 @@ public:
         GUI_ID_CHANGE_BUTTON,
 //        GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDSHIP_BUTTON,
+		GUI_ID_DELETESHIP_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
         GUI_ID_MOVESHIP_BUTTON,
@@ -109,6 +110,7 @@ private:
     irr::gui::IGUIButton* changeLeg;
     //irr::gui::IGUIButton* changeLegCourseSpeed;
     irr::gui::IGUIButton* addShip;
+	irr::gui::IGUIButton* deleteShip;
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;

@@ -86,7 +86,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     addLeg          = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
     deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
     moveShip        = guienv->addButton(irr::core::rect<irr::s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
-
+	deleteShip		= guienv->addButton(irr::core::rect<irr::s32>(0.14*su, 0.20*sh, 0.17*su, 0.23*sh), guiWindow, GUI_ID_DELETESHIP_BUTTON, language->translate("deleteShip").c_str());
     //This is used to track when the edit boxes need updating, when ship or legs have changed. Set to true for initial load
     editBoxesNeedUpdating = true;
 

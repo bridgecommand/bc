@@ -34,6 +34,7 @@ changeLegCourseSpeed = "Change leg course & speed"
 addLeg = "Add leg (after selected)"
 addShip = "Add ship"
 deleteLeg = "Delete leg"
+deleteShip = "X"
 move = "Move ship"
 
 editScenario="Edit scenario"

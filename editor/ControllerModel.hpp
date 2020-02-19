@@ -56,6 +56,7 @@ public:
     void deleteLeg(irr::s32 ship, irr::s32 index);
     void addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance);
     void addShip(std::string name, irr::core::vector2df position);
+	void deleteShip(irr::s32 ship);
     void recalculateLegTimes();
 
     void changeOwnShipName(std::string name);

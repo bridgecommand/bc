@@ -430,6 +430,17 @@ void ControllerModel::addShip(std::string name, irr::core::vector2df position)
     recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
 }
 
+void ControllerModel::deleteShip(irr::s32 ship) 
+{
+	//If other ship:
+	if (ship > 0) {
+		int otherShipIndex = ship - 1;
+		if (otherShipIndex < otherShipsData->size()) {
+			otherShipsData->erase(otherShipsData->begin()+otherShipIndex);
+		}
+	}
+}
+
 void ControllerModel::recalculateLegTimes()
 {
     //Run through all othership legs, recalculating leg stop times
