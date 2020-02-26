@@ -402,14 +402,28 @@ int main()
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
 
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
-    if (font == 0) {
-        device->getLogger()->log("Could not load font, using default");
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
+	irr::u32 su = driver->getScreenSize().Width;
+	irr::u32 sh = driver->getScreenSize().Height;
+
+	//set size of camera window, based on actual window
+	graphicsWidth = su;
+	graphicsHeight = sh;
+	irr::u32 graphicsWidth3d = su;
+	irr::u32 graphicsHeight3d = sh * 0.6;
+	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
+	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+
+    //Set font : Use the default if window height is 600 or less, as it's better on a small screen
+	if (sh > 600) { 
+		irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/Lucida.xml");
+		if (font == 0) {
+			device->getLogger()->log("Could not load font, using default");
+		}
+		else {
+			//set skin default font
+			device->getGUIEnvironment()->getSkin()->setFont(font);
+		}
+	}
 
     //Choose scenario
     std::string scenarioName = "";
@@ -460,17 +474,6 @@ int main()
             file.close();
         }
     }
-
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
-
-	//set size of camera window, based on actual window
-	graphicsWidth = su;
-	graphicsHeight = sh;
-	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * 0.6;
-	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
 	//Show loading message
 
