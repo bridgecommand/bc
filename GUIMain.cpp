@@ -287,12 +287,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.050*sh,0.055*su,0.090*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.100*sh,0.055*su,0.140*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.045*sh,0.055*su,0.085*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.085*sh,0.055*su,0.125*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.150*sh,0.055*su,0.180*sh),mainRadarTab,GUI_ID_RADAR_NORTH_BUTTON,language->translate("northUp").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.180*sh,0.055*su,0.210*sh),mainRadarTab,GUI_ID_RADAR_COURSE_BUTTON,language->translate("courseUp").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.210*sh,0.055*su,0.240*sh),mainRadarTab,GUI_ID_RADAR_HEAD_BUTTON,language->translate("headUp").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.130*sh,0.055*su,0.160*sh),mainRadarTab,GUI_ID_RADAR_NORTH_BUTTON,language->translate("northUp").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.160*sh,0.055*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_COURSE_BUTTON,language->translate("courseUp").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.055*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_HEAD_BUTTON,language->translate("headUp").c_str());
 
         //Controls for small radar window
         radarGainScrollbar    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
