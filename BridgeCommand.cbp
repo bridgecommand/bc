@@ -19,8 +19,8 @@
 					<Add option="-L./libs/portaudio/lib" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
-					<Add library="sndfile" />
-					<Add library="portaudio" />
+					<Add library="portaudio_x86" />
+					<Add library="libs/libsndfile/lib/libsndfile-1.lib" />
 				</Linker>
 			</Target>
 			<Target title="Linux">

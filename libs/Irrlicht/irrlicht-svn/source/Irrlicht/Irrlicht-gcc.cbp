@@ -111,8 +111,10 @@
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
 					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
 					<Add library="kernel32" />
@@ -127,6 +129,10 @@
 					<Add library="uuid" />
 					<Add library="opengl32" />
 					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />

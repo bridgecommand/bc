@@ -356,11 +356,12 @@ int main()
 	//On Windows, redirect console stderr to log file
 	std::string userLog = userFolder + "log.txt";
 	std::cout << "User log file is " << userLog << std::endl;
+	/*
 	FILE * stream = 0;
 	#ifdef _WIN32
 	errno_t success = freopen_s(&stream, userLog.c_str(), "w", stderr);
 	#endif // _WIN32
-
+    */
 	if (device == 0) {
 		std::cerr << "Could not start - please check your graphics options." << std::endl;
 		return(EXIT_FAILURE); //Could not get file system
@@ -414,7 +415,7 @@ int main()
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
     //Set font : Use the default if window height is 600 or less, as it's better on a small screen
-	if (sh > 600) { 
+	if (sh > 600) {
 		irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/Lucida.xml");
 		if (font == 0) {
 			device->getLogger()->log("Could not load font, using default");
@@ -680,13 +681,18 @@ int main()
 	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
 	//Save log messages to user directory, into log.txt, overwrite old file with that name
 	std::ofstream logFile;
+	/*
 	if (stream) {
 		fclose(stream);
 		logFile.open(userLog, std::ofstream::app); //Append
 	}
 	else {
+	*/
 		logFile.open(userLog); //Overwrite
+	/*
 	}
+	*/
+
 
 	for (unsigned int i=0;i<logMessages.size();i++) {
         if (logFile.good()) {
