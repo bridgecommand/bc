@@ -15,7 +15,9 @@
 					<Add library="../libs/Irrlicht/irrlicht-svn/lib/Win32-gcc/libIrrlicht.a" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
+					<Add library="enet" />
 					<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
+					<Add directory="../libs/enet-1.3.14/bin/Release" />
 				</Linker>
 			</Target>
 			<Target title="Linux">
@@ -57,11 +59,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
+			<Add option="-fexceptions" />
 			<Add option="-DASIO_STANDALONE" />
 			<Add option="-DASIO_HAS_STD_THREAD" />
-			<Add option="-fexceptions" />
 			<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
 			<Add directory="../libs/asio/include" />
+			<Add directory="../libs/enet-1.3.14/include" />
 		</Compiler>
 		<Unit filename="../Constants.hpp" />
 		<Unit filename="../HeadingIndicator.cpp" />
@@ -76,42 +79,6 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
-		<Unit filename="../libs/enet/callbacks.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/callbacks.h" />
-		<Unit filename="../libs/enet/compress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/enet.h" />
-		<Unit filename="../libs/enet/host.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/list.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/list.h" />
-		<Unit filename="../libs/enet/packet.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/peer.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/protocol.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/protocol.h" />
-		<Unit filename="../libs/enet/time.h" />
-		<Unit filename="../libs/enet/types.h" />
-		<Unit filename="../libs/enet/unix.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/unix.h" />
-		<Unit filename="../libs/enet/utility.h" />
-		<Unit filename="../libs/enet/win32.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../libs/enet/win32.h" />
 		<Unit filename="ControllerModel.cpp" />
 		<Unit filename="ControllerModel.hpp" />
 		<Unit filename="EventReceiver.cpp" />

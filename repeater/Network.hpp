@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "../libs/enet/enet.h"
+#include <enet\enet.h>
 
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
