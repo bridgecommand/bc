@@ -20,7 +20,7 @@
 #include <string>
 
 #include "irrlicht.h"
-#include "libs/enet/enet.h"
+#include <enet\enet.h>
 #include "OperatingModeEnum.hpp"
 
 //Forward declarations
