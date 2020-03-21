@@ -25,6 +25,10 @@
 					<Add library="irrlicht" />
 					<Add directory="libs/enet-1.3.14/bin/Release" />
 				</Linker>
+				<ExtraCommands>
+					<Add after="useMinGWdll.bat" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 			<Target title="Linux">
 				<Option output="bridgecommand-bc" prefix_auto="1" extension_auto="1" />
