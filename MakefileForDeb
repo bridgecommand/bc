@@ -51,15 +51,15 @@ Sources += Tide.cpp
 Sources += Utilities.cpp
 Sources += Water.cpp
 
-Sources += libs/enet/callbacks.c
-Sources += libs/enet/compress.c
-Sources += libs/enet/host.c
-Sources += libs/enet/list.c
-Sources += libs/enet/packet.c
-Sources += libs/enet/peer.c
-Sources += libs/enet/protocol.c
-Sources += libs/enet/unix.c
-Sources += libs/enet/win32.c
+Sources += libs/enet-1.3.14/callbacks.c
+Sources += libs/enet-1.3.14/compress.c
+Sources += libs/enet-1.3.14/host.c
+Sources += libs/enet-1.3.14/list.c
+Sources += libs/enet-1.3.14/packet.c
+Sources += libs/enet-1.3.14/peer.c
+Sources += libs/enet-1.3.14/protocol.c
+Sources += libs/enet-1.3.14/unix.c
+Sources += libs/enet-1.3.14/win32.c
 
 Sources += libs/serial/src/impl/list_ports/list_ports_linux.cc
 Sources += libs/serial/src/impl/list_ports/list_ports_osx.cc
@@ -78,7 +78,7 @@ BinPath = .
 # preprocessor flags, e.g. defines and include paths
 UNAME_S := $(shell uname -s)
 USERCPPFLAGS = -std=c++11 \
-	-I./libs/enet/enet-1.3.11/include \
+	-I./libs/enet-1.3.14/include \
 	-I./libs/asio/include \
 	-I./libs/portaudio/include \
 	-I./libs/libsndfile/include \

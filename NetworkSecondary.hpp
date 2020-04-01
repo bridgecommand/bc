@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "libs/enet/enet.h"
+#include <enet/enet.h>
 
 //Forward declarations
 class SimulationModel;

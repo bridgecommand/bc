@@ -8,7 +8,7 @@ UNAME_S := $(shell uname -s)
 Target := bridgecommand-mh
 
 # List of source files, separated by spaces
-Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ../ScenarioDataStructure.cpp Network.cpp ScenarioChoice.cpp ShipPositions.cpp StartupEventReceiver.cpp ../libs/enet/callbacks.c ../libs/enet/compress.c ../libs/enet/host.c ../libs/enet/list.c ../libs/enet/packet.c ../libs/enet/peer.c ../libs/enet/protocol.c ../libs/enet/unix.c ../libs/enet/win32.c
+Sources := main.cpp  ../IniFile.cpp ../Lang.cpp ../Utilities.cpp ../ScenarioDataStructure.cpp Network.cpp ScenarioChoice.cpp ShipPositions.cpp StartupEventReceiver.cpp ../libs/enet-1.3.14/callbacks.c ../libs/enet-1.3.14/compress.c ../libs/enet-1.3.14/host.c ../libs/enet-1.3.14/list.c ../libs/enet-1.3.14/packet.c ../libs/enet-1.3.14/peer.c ../libs/enet-1.3.14/protocol.c ../libs/enet-1.3.14/unix.c ../libs/enet-1.3.14/win32.c
 # Path to Irrlicht directory, should contain include/ and lib/
 IrrlichtHome := ../libs/Irrlicht/irrlicht-svn
 # Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
@@ -16,7 +16,7 @@ BinPath = ..
 
 # general compiler settings (might need to be set when compiling the lib, too)
 # preprocessor flags, e.g. defines and include paths
-USERCPPFLAGS = -std=c++11 -I../libs/enet/enet-1.3.11/include
+USERCPPFLAGS = -std=c++11 -I../libs/enet-1.3.14/include
 # compiler flags such as optimization flags
 ifeq ($(UNAME_S),Darwin)
 USERCXXFLAGS = -O3 -ffast-math -mmacosx-version-min=10.7
