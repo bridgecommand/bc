@@ -63,7 +63,7 @@ echo "Version: $versionNo" >> $file
 echo "Maintainer: James Packer <james@bridgecommand.co.uk>" >> $file
 echo "Priority: optional" >> $file
 echo "Architecture: $arch" >> $file
-echo "Depends: libgl1-mesa-glx | libgl1-glvnd-nvidia-glx | libgl1-nvidia-glx | libgl1-nvidia-legacy-304xx-glx | libgl1-nvidia-legacy-340xx-glx, libxxf86vm1, libx11-6, libc6, libstdc++6, libgcc1, libasound2" >> $file
+echo "Depends: libgl1-mesa-glx | libgl1-glvnd-nvidia-glx | libgl1-nvidia-glx | libgl1-nvidia-legacy-304xx-glx | libgl1-nvidia-legacy-340xx-glx, libxxf86vm1, libx11-6, libc6, libstdc++6, libgcc1, libasound2, libportaudio2, libsndfile1" >> $file
 echo "Description: A ship simulation program" >> $file
 echo " For use in navigation and bridge training" >> $file
 
