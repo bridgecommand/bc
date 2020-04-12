@@ -148,6 +148,12 @@ int main()
         iniFilename = userFolder + iniFilename;
     }
 
+    #ifdef __arm__
+    if (IniFile::iniFileTou32(iniFileName, "PA_ALSA_PLUGHW") == 1) {
+        setenv("PA_ALSA_PLUGHW", "1", true);
+    }
+    #endif
+
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
