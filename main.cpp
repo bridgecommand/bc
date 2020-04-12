@@ -149,7 +149,7 @@ int main()
     }
 
     #ifdef __arm__
-    if (IniFile::iniFileTou32(iniFileName, "PA_ALSA_PLUGHW") == 1) {
+    if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
         setenv("PA_ALSA_PLUGHW", "1", true);
     }
     #endif
