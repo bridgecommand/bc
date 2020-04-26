@@ -117,11 +117,13 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     getDirectoryList(device,scenarioDirList,scenarioPath); //Populates scenarioDirList
 
     std::string worldPath = "World/";
-    if (Utilities::pathExists(userFolder + worldPath)) {
-        worldPath = userFolder + worldPath;
-    }
     std::vector<std::string> worldDirList;
     getDirectoryList(device,worldDirList,worldPath); //Populates worldDirList
+    if (Utilities::pathExists(userFolder + worldPath)) {
+        worldPath = userFolder + worldPath;
+        getDirectoryList(device,worldDirList,worldPath); //Append to worldDirList, for user specific world models
+    }
+
 
     const irr::s32 SCENARIO_BOX_ID = 101;
     const irr::s32 WORLD_BOX_ID = 102;
@@ -481,10 +483,17 @@ int main (int argc, char ** argv)
         otherShipModelPath = "Models/Othership/";
     }
 
-    if (Utilities::pathExists(userFolder + ownShipModelPath)) {ownShipModelPath = userFolder + ownShipModelPath;}
-    if (Utilities::pathExists(userFolder + otherShipModelPath)) {otherShipModelPath = userFolder + otherShipModelPath;}
     getDirectoryList(device,ownShipTypes,ownShipModelPath);
+    if (Utilities::pathExists(userFolder + ownShipModelPath)) {
+    	ownShipModelPath = userFolder + ownShipModelPath;
+    	getDirectoryList(device,ownShipTypes,ownShipModelPath); //Append models from userFolder
+    }
+
     getDirectoryList(device,otherShipTypes,otherShipModelPath);
+    if (Utilities::pathExists(userFolder + otherShipModelPath)) {
+    	otherShipModelPath = userFolder + otherShipModelPath;
+    	getDirectoryList(device,otherShipTypes,otherShipModelPath); //Append models from userFolder
+    }
 
     //GUI class
     GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes, multiplayer);
