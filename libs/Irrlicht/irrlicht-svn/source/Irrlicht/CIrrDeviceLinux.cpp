@@ -507,24 +507,6 @@ bool CIrrDeviceLinux::createWindow()
 			// Window managers are free to ignore positions above, so give it another shot
 			XMoveWindow(XDisplay,XWindow,x,y);
 		}
-		//TEST: BORDERLESS WINDOW
-		typedef struct
-		        {
-		        unsigned long   flags;
-		        unsigned long   functions;
-		        unsigned long   decorations;
-		        long            inputMode;
-		        unsigned long   status;
-		        } Hints;
-		Hints   hints;
-		Atom    property;
-		hints.flags = 2;        // Specify that we're changing the window decorations.
-		hints.decorations = 0;  // 0 (false) means that window decorations should go bye-bye.
-		property = XInternAtom(XDisplay,"_MOTIF_WM_HINTS",True);
-		if (property != 0) {
-			XChangeProperty(XDisplay,XWindow,property,property,32,PropModeReplace,(unsigned char *)&hints,5);
-		}
-		//END TEST
 	}
 	else
 	{
@@ -564,6 +546,26 @@ bool CIrrDeviceLinux::createWindow()
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(XDisplay, XWindow, StdHints, &num);
+
+	//JAMES: Boderless window, code from https://www.tonyobryan.com//index.php?article=9
+	if (CreationParams.X11borderless) {	
+		typedef struct
+			{
+			unsigned long   flags;
+			unsigned long   functions;
+			unsigned long   decorations;
+			long            inputMode;
+			unsigned long   status;
+			} Hints;
+		Hints   hints;
+		Atom    property;
+		hints.flags = 2;        // Specify that we're changing the window decorations.
+		hints.decorations = 0;  // 0 (false) means that window decorations should go bye-bye.
+		property = XInternAtom(XDisplay,"_MOTIF_WM_HINTS",True);
+		if (property != 0) {
+			XChangeProperty(XDisplay,XWindow,property,property,32,PropModeReplace,(unsigned char *)&hints,5);
+		}
+	} //END JAMES
 
 	// create an XImage for the software renderer
 	//(thx to Nadav for some clues on how to do that!)

@@ -159,9 +159,11 @@ int main()
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
+	#ifdef __APPLE__	
 	if (fakeFullScreen) {
-		fullScreen = true; //Fall back for non-windows
+		fullScreen = true; //Fall back for mac
 	}
+	#endif
 	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
     irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
 	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
@@ -237,7 +239,7 @@ int main()
 		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 		nulldevice->drop();
 		if (graphicsWidth == 0) {
-			if (fullScreen) {
+			if (fullScreen || fakeFullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = deskres.Width*0.8;
@@ -340,8 +342,14 @@ int main()
 	}
 #endif
 
-    //create device
+    //Use an extra SIrrlichtCreationParameters parameter, added to our version of the Irrlicht source, to request a borderless X11 window if requested
+    #ifdef __linux__
+    if (fakeFullScreen) {
+	deviceParameters.X11borderless=true; //Has an effect on X11 only
+    }
+    #endif
 
+    //create device
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
 	//Allow optional directX if available
 	if (directX==1) {

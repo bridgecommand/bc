@@ -47,6 +47,7 @@ namespace irr
 			DisplayAdapter(0),
 			DriverMultithreaded(false),
 			UsePerformanceTimer(true),
+			X11borderless(false), //JAMES
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
 		{
 		}
@@ -79,6 +80,7 @@ namespace irr
 			DriverMultithreaded = other.DriverMultithreaded;
 			DisplayAdapter = other.DisplayAdapter;
 			UsePerformanceTimer = other.UsePerformanceTimer;
+			X11borderless = other.X11borderless; //JAMES
 			return *this;
 		}
 
@@ -287,6 +289,11 @@ namespace irr
 		problems with speed stepping and other techniques.
 		*/
 		bool UsePerformanceTimer;
+
+		//! For X11 only, use window manager hints to request a borderless window. 
+		/** Default is false
+		*/
+		bool X11borderless; //JAMES
 
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
