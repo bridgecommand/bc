@@ -478,7 +478,7 @@ bool CIrrDeviceLinux::createWindow()
 
 		// create new Window
 		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = CreationParams.Fullscreen;
+		WndAttributes.override_redirect = CreationParams.Fullscreen || CreationParams.X11borderless; //JAMES
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
@@ -491,7 +491,7 @@ bool CIrrDeviceLinux::createWindow()
 		Atom wmDelete;
 		wmDelete = XInternAtom(XDisplay, wmDeleteWindow, True);
 		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
-		if (CreationParams.Fullscreen)
+		if (CreationParams.Fullscreen || CreationParams.X11borderless) //JAMES
 		{
 			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
 			int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
@@ -579,6 +579,8 @@ bool CIrrDeviceLinux::createWindow()
 	u32 borderWidth;
 	int x,y;
 	unsigned int bits;
+
+	
 
 	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
 	CreationParams.Bits = bits;
