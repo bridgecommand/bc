@@ -428,6 +428,8 @@ int main()
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
+	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
+
     //Set font : Use the default if window height is 600 or less, as it's better on a small screen
 	if (sh > 600) {
 		irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/Lucida.xml");

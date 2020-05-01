@@ -533,39 +533,9 @@ bool CIrrDeviceLinux::createWindow()
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
 
-	Window tmp;
-	u32 borderWidth;
-	int x,y;
-	unsigned int bits;
-
-	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
-	CreationParams.Bits = bits;
-	CreationParams.WindowSize.Width = Width;
-	CreationParams.WindowSize.Height = Height;
-
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(XDisplay, XWindow, StdHints, &num);
-
-	//JAMES: Boderless window, code from https://www.tonyobryan.com//index.php?article=9
-	if (CreationParams.X11borderless) {	
-		typedef struct
-			{
-			unsigned long   flags;
-			unsigned long   functions;
-			unsigned long   decorations;
-			long            inputMode;
-			unsigned long   status;
-			} Hints;
-		Hints   hints;
-		Atom    property;
-		hints.flags = 2;        // Specify that we're changing the window decorations.
-		hints.decorations = 0;  // 0 (false) means that window decorations should go bye-bye.
-		property = XInternAtom(XDisplay,"_MOTIF_WM_HINTS",True);
-		if (property != 0) {
-			XChangeProperty(XDisplay,XWindow,property,property,32,PropModeReplace,(unsigned char *)&hints,5);
-		}
-	} //END JAMES
 
 	// create an XImage for the software renderer
 	//(thx to Nadav for some clues on how to do that!)
@@ -588,6 +558,32 @@ bool CIrrDeviceLinux::createWindow()
 	Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", true);
 	if (WMCheck != None)
 		HasNetWM = true;
+
+	//JAMES: Boderless window, code from https://www.raspberrypi.org/forums/viewtopic.php?t=254924
+	if (CreationParams.X11borderless) {	
+		XEvent xev;
+		Atom wm_state = XInternAtom(XDisplay, "_NET_WM_STATE", False);
+		Atom fullscreen = XInternAtom(XDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+		memset(&xev,0,sizeof(xev));
+		xev.type = ClientMessage;
+		xev.xclient.window=XWindow;
+		xev.xclient.message_type = wm_state;
+		xev.xclient.format = 32;
+		xev.xclient.data.l[0] = 1; //_NET_WM_STATE_ADD
+		xev.xclient.data.l[1] = fullscreen;
+		xev.xclient.data.l[2] = 0;
+		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+	} //END JAMES
+
+	Window tmp;
+	u32 borderWidth;
+	int x,y;
+	unsigned int bits;
+
+	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
+	CreationParams.Bits = bits;
+	CreationParams.WindowSize.Width = Width;
+	CreationParams.WindowSize.Height = Height;
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
