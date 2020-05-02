@@ -576,19 +576,22 @@ bool CIrrDeviceLinux::createWindow()
 		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 		
 		//Which screen
+		XEvent xev2;
 		Atom fullmons = XInternAtom(XDisplay, "_NET_WM_FULLSCREEN_MONITORS", False);
-		memset(&xev,0,sizeof(xev));
-		xev.type = ClientMessage;
-		xev.xclient.window=XWindow;
-		xev.xclient.message_type = fullmons;
-		xev.xclient.format = 32;
-		xev.xclient.data.l[0] = 0; //Topmost
-		xev.xclient.data.l[1] = 0; //Bottommost
-		xev.xclient.data.l[2] = 0; //Leftmost
-		xev.xclient.data.l[3] = 0; //Rightmost
-		xev.xclient.data.l[4] = 0; //Source indication
-		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+		memset(&xev2,0,sizeof(xev2));
+		xev2.type = ClientMessage;
+		xev2.xclient.window=XWindow;
+		xev2.xclient.message_type = fullmons;
+		xev2.xclient.format = 32;
+		xev2.xclient.data.l[0] = 0; //Topmost
+		xev2.xclient.data.l[1] = 0; //Bottommost
+		xev2.xclient.data.l[2] = 0; //Leftmost
+		xev2.xclient.data.l[3] = 0; //Rightmost
+		xev2.xclient.data.l[4] = 0; //Source indication
+		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev2);
 		
+		XFlush(XDisplay);
+		sleep((u32)1000,false);
 		
 	} //END JAMES
 
