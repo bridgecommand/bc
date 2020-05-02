@@ -478,7 +478,7 @@ bool CIrrDeviceLinux::createWindow()
 
 		// create new Window
 		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = CreationParams.Fullscreen || CreationParams.X11borderless; //JAMES
+		WndAttributes.override_redirect = CreationParams.Fullscreen; //|| CreationParams.X11borderless; //JAMES
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
@@ -491,7 +491,7 @@ bool CIrrDeviceLinux::createWindow()
 		Atom wmDelete;
 		wmDelete = XInternAtom(XDisplay, wmDeleteWindow, True);
 		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
-		if (CreationParams.Fullscreen || CreationParams.X11borderless) //JAMES
+		if (CreationParams.Fullscreen /*|| CreationParams.X11borderless*/) //JAMES
 		{
 			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
 			int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
@@ -561,6 +561,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	//JAMES: Boderless window, code from https://www.raspberrypi.org/forums/viewtopic.php?t=254924
 	if (CreationParams.X11borderless) {	
+		//Full screen
 		XEvent xev;
 		Atom wm_state = XInternAtom(XDisplay, "_NET_WM_STATE", False);
 		Atom fullscreen = XInternAtom(XDisplay, "_NET_WM_STATE_FULLSCREEN", False);
@@ -573,6 +574,22 @@ bool CIrrDeviceLinux::createWindow()
 		xev.xclient.data.l[1] = fullscreen;
 		xev.xclient.data.l[2] = 0;
 		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+		
+		//Which screen
+		Atom fullmons = XInternAtom(XDisplay, "_NET_WM_FULLSCREEN_MONITORS", False);
+		memset(&xev,0,sizeof(xev));
+		xev.type = ClientMessage;
+		xev.xclient.window=XWindow;
+		xev.xclient.message_type = fullmons;
+		xev.xclient.format = 32;
+		xev.xclient.data.l[0] = 0; //Topmost
+		xev.xclient.data.l[1] = 0; //Bottommost
+		xev.xclient.data.l[2] = 0; //Leftmost
+		xev.xclient.data.l[3] = 0; //Rightmost
+		xev.xclient.data.l[4] = 0; //Source indication
+		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+		
+		
 	} //END JAMES
 
 	Window tmp;
