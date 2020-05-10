@@ -575,6 +575,7 @@ bool CIrrDeviceLinux::createWindow()
 		xev.xclient.data.l[2] = 0;
 		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
 		
+		/*
 		//Which screen
 		XEvent xev2;
 		Atom fullmons = XInternAtom(XDisplay, "_NET_WM_FULLSCREEN_MONITORS", False);
@@ -589,6 +590,7 @@ bool CIrrDeviceLinux::createWindow()
 		xev2.xclient.data.l[3] = 0; //Rightmost
 		xev2.xclient.data.l[4] = 0; //Source indication
 		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev2);
+		*/
 		
 		XFlush(XDisplay);
 		sleep((u32)1000,false);
