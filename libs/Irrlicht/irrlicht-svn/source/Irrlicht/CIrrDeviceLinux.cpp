@@ -478,7 +478,7 @@ bool CIrrDeviceLinux::createWindow()
 
 		// create new Window
 		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = CreationParams.Fullscreen;
+		WndAttributes.override_redirect = CreationParams.Fullscreen; //|| CreationParams.X11borderless; //JAMES
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
@@ -491,7 +491,7 @@ bool CIrrDeviceLinux::createWindow()
 		Atom wmDelete;
 		wmDelete = XInternAtom(XDisplay, wmDeleteWindow, True);
 		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
-		if (CreationParams.Fullscreen)
+		if (CreationParams.Fullscreen /*|| CreationParams.X11borderless*/) //JAMES
 		{
 			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
 			int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
@@ -533,16 +533,6 @@ bool CIrrDeviceLinux::createWindow()
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
 
-	Window tmp;
-	u32 borderWidth;
-	int x,y;
-	unsigned int bits;
-
-	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
-	CreationParams.Bits = bits;
-	CreationParams.WindowSize.Width = Width;
-	CreationParams.WindowSize.Height = Height;
-
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(XDisplay, XWindow, StdHints, &num);
@@ -568,6 +558,56 @@ bool CIrrDeviceLinux::createWindow()
 	Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", true);
 	if (WMCheck != None)
 		HasNetWM = true;
+
+	//JAMES: Boderless window, code from https://www.raspberrypi.org/forums/viewtopic.php?t=254924
+	if (CreationParams.X11borderless) {	
+		//Full screen
+		XEvent xev;
+		Atom wm_state = XInternAtom(XDisplay, "_NET_WM_STATE", False);
+		Atom fullscreen = XInternAtom(XDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+		memset(&xev,0,sizeof(xev));
+		xev.type = ClientMessage;
+		xev.xclient.window=XWindow;
+		xev.xclient.message_type = wm_state;
+		xev.xclient.format = 32;
+		xev.xclient.data.l[0] = 1; //_NET_WM_STATE_ADD
+		xev.xclient.data.l[1] = fullscreen;
+		xev.xclient.data.l[2] = 0;
+		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev);
+		
+		/*
+		//Which screen
+		XEvent xev2;
+		Atom fullmons = XInternAtom(XDisplay, "_NET_WM_FULLSCREEN_MONITORS", False);
+		memset(&xev2,0,sizeof(xev2));
+		xev2.type = ClientMessage;
+		xev2.xclient.window=XWindow;
+		xev2.xclient.message_type = fullmons;
+		xev2.xclient.format = 32;
+		xev2.xclient.data.l[0] = 0; //Topmost
+		xev2.xclient.data.l[1] = 0; //Bottommost
+		xev2.xclient.data.l[2] = 0; //Leftmost
+		xev2.xclient.data.l[3] = 0; //Rightmost
+		xev2.xclient.data.l[4] = 0; //Source indication
+		XSendEvent(XDisplay,DefaultRootWindow(XDisplay), False, SubstructureNotifyMask | SubstructureRedirectMask, &xev2);
+		*/
+		
+		XFlush(XDisplay);
+		sleep((u32)1000,false);
+		
+	} //END JAMES
+
+	Window tmp;
+	u32 borderWidth;
+	int x,y;
+	unsigned int bits;
+
+	
+
+	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
+	CreationParams.Bits = bits;
+	CreationParams.WindowSize.Width = Width;
+	CreationParams.WindowSize.Height = Height;
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
