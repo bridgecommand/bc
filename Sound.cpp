@@ -58,6 +58,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	portAudioError = Pa_Initialize();
 	if (portAudioError != paNoError) {
 		std::cerr << "Pa_Initialize failed." << std::endl;
+		std::cerr << "Error: " << Pa_GetErrorText(portAudioError) << std::endl;
 		return;
 	}
 
@@ -110,6 +111,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	if (portAudioError != paNoError)
 	{
 		std::cerr << "Pa_OpenDefaultStream failed." << std::endl;
+		std::cerr << "Error: " << Pa_GetErrorText(portAudioError) << std::endl;
 		return;
 	}
 
@@ -125,6 +127,7 @@ void Sound::StartSound() {
 		if (portAudioError != paNoError)
 		{
 			std::cerr << "Problem opening starting Stream" << std::endl;
+			std::cerr << "Error: " << Pa_GetErrorText(portAudioError) << std::endl;
 		}
 	}
 
@@ -156,7 +159,9 @@ float Sound::getVolumeHorn() const {
 
 Sound::~Sound() {
 
-	portAudioError = Pa_CloseStream(stream);
+	if (soundLoaded && stream) {
+	   portAudioError = Pa_CloseStream(stream);
+	}
 
 	portAudioError = Pa_Terminate();
 
