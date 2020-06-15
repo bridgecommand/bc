@@ -69,6 +69,9 @@ private:
     irr::f32 previousJoystickBowThruster;
     irr::f32 previousJoystickSternThruster;
 
+    irr::s32 mouseClickX;
+    irr::s32 mouseClickY;
+
     JoystickSetup joystickSetup;
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;

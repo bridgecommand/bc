@@ -89,8 +89,15 @@
 
         //From mouse - keep track of button press state
         if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-            if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ) {leftMouseDown=true;}
-            if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {leftMouseDown=false;}
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ) {
+                    leftMouseDown=true;
+                    //Log position of mouse click, so we can track relative movement
+                    mouseClickX = event.MouseInput.X;
+                    mouseClickY = event.MouseInput.Y;
+            }
+            if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {
+                    leftMouseDown=false;
+            }
             if (event.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN ) {
                 rightMouseDown=true;
                 //Force focus on right click
@@ -100,8 +107,31 @@
                     device->getGUIEnvironment()->setFocus(overElement);
                 }
             }
-            if (event.MouseInput.Event == irr::EMIE_RMOUSE_LEFT_UP ) {rightMouseDown=false;}
+            if (event.MouseInput.Event == irr::EMIE_RMOUSE_LEFT_UP ) {
+                    rightMouseDown=false;
+            }
             model->setMouseDown(leftMouseDown || rightMouseDown); //Set if either mouse is down
+
+            //Check mouse movement
+            if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && leftMouseDown) {
+                //Check if focus in on a gui element
+                irr::gui::IGUIElement* focussedElement;
+                focussedElement = device->getGUIEnvironment()->getFocus();
+                if (!focussedElement) {
+                    irr::s32 deltaX = event.MouseInput.X - mouseClickX;
+                    irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
+                    if (abs(deltaX) > abs(deltaY)) {
+                        if (deltaX > 0 ) {model->lookLeft();}
+                        if (deltaX < 0 ) {model->lookRight();}
+                    } else {
+                        if (deltaY > 0 ) {model->lookUp();}
+                        if (deltaY < 0 ) {model->lookDown();}
+                    }
+                }
+                //Store for next time
+                mouseClickX = event.MouseInput.X;
+                mouseClickY = event.MouseInput.Y;
+            }
         }
 
         if (event.EventType == irr::EET_GUI_EVENT)
