@@ -120,13 +120,7 @@
                 if (!focussedElement) {
                     irr::s32 deltaX = event.MouseInput.X - mouseClickX;
                     irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
-                    if (abs(deltaX) > abs(deltaY)) {
-                        if (deltaX > 0 ) {model->lookLeft();}
-                        if (deltaX < 0 ) {model->lookRight();}
-                    } else {
-                        if (deltaY > 0 ) {model->lookUp();}
-                        if (deltaY < 0 ) {model->lookDown();}
-                    }
+                    model->changeLookPx(deltaX,deltaY);
                 }
                 //Store for next time
                 mouseClickX = event.MouseInput.X;

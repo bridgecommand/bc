@@ -672,6 +672,13 @@ SimulationModel::~SimulationModel()
         camera.lookRight();
     }
 
+    void SimulationModel::changeLookPx(irr::s32 deltaX, irr::s32 deltaY)
+    {
+        irr::f32 proportionalX = deltaX/(irr::f32)driver->getScreenSize().Width;
+        irr::f32 proportionalY = deltaY/(irr::f32)driver->getScreenSize().Width;
+        camera.lookChange(proportionalX,proportionalY);
+    }
+
     void SimulationModel::lookStepLeft()
     {
         camera.lookStepLeft();

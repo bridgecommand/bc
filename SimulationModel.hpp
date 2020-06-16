@@ -133,6 +133,7 @@ public:
     void lookDown();
     void lookLeft();
     void lookRight();
+    void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
     void lookStepLeft();
     void lookStepRight();
     void lookAhead();

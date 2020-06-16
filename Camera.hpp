@@ -38,6 +38,7 @@ class Camera
 		void setLookUp(irr::f32 angle);
         void lookLeft();
         void lookRight();
+        void lookChange(irr::f32 deltaX, irr::f32 deltaY); //As a proportion of screen width
         void lookStepLeft();
         void lookStepRight();
         void lookAhead();

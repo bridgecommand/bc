@@ -98,6 +98,28 @@ void Camera::lookRight()
     }
 }
 
+void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proportion of screen width
+{
+    lookAngle -= deltaX*hFOV*irr::core::RADTODEG;
+    lookUpAngle += deltaY*hFOV*irr::core::RADTODEG; //hFOV for this, as both are scaled by screen width
+    if (lookAngle<0)
+    {
+        lookAngle+=360;
+    }
+    if (lookAngle>=360)
+    {
+        lookAngle-=360;
+    }
+    if (lookUpAngle>40)
+    {
+        lookUpAngle=40;
+    }
+    if (lookUpAngle<-40)
+    {
+        lookUpAngle=-40;
+    }
+}
+
 void Camera::lookStepLeft()
 {
     lookAngle -= hFOV*irr::core::RADTODEG;
