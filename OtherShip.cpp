@@ -91,6 +91,11 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
     width = ship->getBoundingBox().getExtent().X*scaleFactor;
     height = ship->getBoundingBox().getExtent().Y * 0.75 * scaleFactor; //Assume 3/4 of the mesh is above water
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    std::string logMessage = "Loading '";
+    logMessage.append(shipFullPath);
+    logMessage.append("' Length (m): ");
+    logMessage.append(std::to_string(length));
+    dev->getLogger()->log(logMessage.c_str());
 
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
     //FIXME: Note in documentation that this is height above waterline in model units
