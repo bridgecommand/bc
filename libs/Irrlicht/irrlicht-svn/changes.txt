@@ -15,6 +15,15 @@ CIrrDeviceMacOSX.mm
 [[NSApplication sharedApplication] activateIgnoringOtherApps : YES]; //JAMES - Ensure it's at the front when launched
 845:
 [Window setReleasedWhenClosed:FALSE]; //JAMES - Trying to avoid crash on close
+869:
+if (Window) {
+    [[Window contentView] setWantsBestResolutionOpenGLSurface:NO]; //JAMES - Always disable application HiDPI support
+    [(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context setView:[Window contentView]];
+} else {
+    [(NSView*)CreationParams.WindowId setWantsBestResolutionOpenGLSurface:NO]; //JAMES - Always disable application HiDPI support
+    [(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context setView:(NSView*)CreationParams.WindowId];
+}
+
 
 --------------------------
 Changes in 1.9 (not yet released)

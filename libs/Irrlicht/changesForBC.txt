@@ -3,7 +3,7 @@ The following modifications have been made for Bridge Command to the base Irrlic
 Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
 (CTerrainSceneNode.cpp)
 
-OSX specific code (CIrrDeviceMacOSX.mm) modified to avoid crash on close, and to bring window to front when launched (otherwise the window disappears when the program is selected in the launcher)
+OSX specific code (CIrrDeviceMacOSX.mm) modified to avoid crash on close, and to bring window to front when launched (otherwise the window disappears when the program is selected in the launcher). Additionally, the setWantsBestResolutionOpenGLSurface:NO property is set, so scaling is performed automatically (otherwise you get rendering in a quarter of the window)
 
 CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
 
