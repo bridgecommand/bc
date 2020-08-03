@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_subdirectory(libs/asio)
-add_subdirectory(libs/enet)
+add_subdirectory(libs/enet-1.3.14)
 add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
@@ -75,7 +75,7 @@ add_executable(bridgecommand-bc
 
 target_link_libraries(bridgecommand-bc PRIVATE
     bc-asio
-    bc-enet
+    enet
     bc-serial
     bc-irrlicht
     Threads::Threads
