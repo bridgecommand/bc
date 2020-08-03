@@ -12,6 +12,6 @@ add_executable(bridgecommand-mh
 )
 
 target_link_libraries(bridgecommand-mh
-    bc-enet
+    enet
     bc-irrlicht
 )

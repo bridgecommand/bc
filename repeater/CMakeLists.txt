@@ -18,7 +18,7 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(bridgecommand-rp
     bc-asio
-    bc-enet
+    enet
     bc-irrlicht
     Threads::Threads
 )

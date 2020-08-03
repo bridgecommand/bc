@@ -11,6 +11,8 @@ add_subdirectory(libs/enet-1.3.14)
 add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
+include_directories("libs/enet-1.3.14/include")
+
 # optional tools
 add_subdirectory(controller)
 add_subdirectory(editor)
@@ -21,6 +23,8 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
+
+
 
 set(BC_SOURCES
     main.cpp
