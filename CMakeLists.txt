@@ -24,7 +24,6 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
-FIND_PACKAGE( Portaudio REQUIRED )
 
 set(BC_SOURCES
     main.cpp
