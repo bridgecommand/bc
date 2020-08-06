@@ -12,7 +12,7 @@ add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
 include_directories("libs/enet-1.3.14/include")
-#add_definitions(-DWITH_SOUND)
+add_definitions(-DWITH_SOUND)
 
 # optional tools
 add_subdirectory(controller)
@@ -76,13 +76,40 @@ add_executable(bridgecommand-bc
     ${BC_SOURCES}
 )
 
-target_link_libraries(bridgecommand-bc PRIVATE
-    bc-asio
-    enet
-    bc-serial
-    bc-irrlicht
-    Threads::Threads
-    #sndfile
-    #portaudio
-    #asound
-)
+if (APPLE)
+    
+    add_library(sndfile STATIC IMPORTED) # or STATIC instead of SHARED
+    set_target_properties(sndfile PROPERTIES
+      IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/libs/libsndfile/lib/libsndfile.a"
+      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/libs/libsndfile/include"
+    )
+    add_library(portaudio STATIC IMPORTED) # or STATIC instead of SHARED
+    set_target_properties(portaudio PROPERTIES
+      IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/libs/portaudio/lib/libportaudio.a"
+      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/libs/portaudio/include"
+    )
+
+    target_link_libraries(bridgecommand-bc PRIVATE
+        bc-asio
+        enet
+        bc-serial
+        bc-irrlicht
+        Threads::Threads
+        sndfile
+        portaudio
+        "-framework AudioUnit"
+	    "-framework AudioToolbox"
+	    "-framework CoreAudio"
+    )
+else (APPLE)
+    target_link_libraries(bridgecommand-bc PRIVATE
+        bc-asio
+        enet
+        bc-serial
+        bc-irrlicht
+        Threads::Threads
+        sndfile
+        portaudio
+        asound
+    )
+endif (APPLE)
