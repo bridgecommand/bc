@@ -73,16 +73,16 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 
 	WindowsSTDIn  = GetStdHandle(STD_INPUT_HANDLE);
 	WindowsSTDOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	PCOORD Dimensions = 0;
 
 	if (CreationParams.Fullscreen)
 	{
 // Some mingw versions lack this define, so avoid it in case it does not exist
 #if (_WIN32_WINNT >= 0x0501) && defined(CONSOLE_FULLSCREEN_MODE)
-		if (SetConsoleDisplayMode(WindowsSTDOut, CONSOLE_FULLSCREEN_MODE, Dimensions))
+		PCOORD dimensions = 0;
+		if (SetConsoleDisplayMode(WindowsSTDOut, CONSOLE_FULLSCREEN_MODE, dimensions))
 		{
-			CreationParams.WindowSize.Width = Dimensions->X;
-			CreationParams.WindowSize.Width = Dimensions->Y;
+			CreationParams.WindowSize.Width = dimensions->X;
+			CreationParams.WindowSize.Width = dimensions->Y;
 		}
 #endif
 	}

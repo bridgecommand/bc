@@ -159,13 +159,13 @@ namespace irr
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
+			virtual const core::position2d<s32>& getPosition(bool updateCursor) _IRR_OVERRIDE_
 			{
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
+			virtual core::position2d<f32> getRelativePosition(bool updateCursor) _IRR_OVERRIDE_
 			{
 				if (!UseReferenceRect)
 				{

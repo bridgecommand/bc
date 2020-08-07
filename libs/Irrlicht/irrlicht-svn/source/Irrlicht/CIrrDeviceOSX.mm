@@ -693,8 +693,6 @@ bool CIrrDeviceMacOSX::createWindow()
             }
             
             Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:type defer:FALSE];
-            [Window setReleasedWhenClosed:FALSE]; //JAMES - Trying to avoid crash on close
-            [[NSApplication sharedApplication] activateIgnoringOtherApps : YES]; //JAMES - Ensure it's at the front when launched
 
             if (CreationParams.WindowPosition.X == -1 && CreationParams.WindowPosition.Y == -1)
                 [Window center];
@@ -760,8 +758,6 @@ bool CIrrDeviceMacOSX::createWindow()
                 if (error == CGDisplayNoErr)
                 {
                     Window = [[NSWindow alloc] initWithContentRect:[[NSScreen mainScreen] frame] styleMask:NSBorderlessWindowMask backing:type defer:FALSE screen:[NSScreen mainScreen]];
-                    [Window setReleasedWhenClosed:FALSE]; //JAMES - Trying to avoid crash on close
-                    [[NSApplication sharedApplication] activateIgnoringOtherApps : YES]; //JAMES - Ensure it's at the front when launched
                     
                     [Window setLevel: CGShieldingWindowLevel()];
                     [Window setBackgroundColor:[NSColor blackColor]];
@@ -866,14 +862,13 @@ void CIrrDeviceMacOSX::createDriver()
                     os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
                 }
                 
-                if (Window) {
+				if (Window) {
                     [[Window contentView] setWantsBestResolutionOpenGLSurface:NO]; //JAMES - Always disable application HiDPI support
                     [(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context setView:[Window contentView]];
                 } else {
                     [(NSView*)CreationParams.WindowId setWantsBestResolutionOpenGLSurface:NO]; //JAMES - Always disable application HiDPI support
                     [(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context setView:(NSView*)CreationParams.WindowId];
                 }
-                    
 
 #ifndef __MAC_10_6
                 CGLContextObj CGLContext = (CGLContextObj)[(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context CGLContextObj];
@@ -1198,7 +1193,12 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	}
 
 	if (post)
+	{
+		ievent.MouseInput.Shift = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask) != 0;
+		ievent.MouseInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
+		
 		postEventFromUser(ievent);
+	}
 
 	[NSApp sendEvent:(NSEvent *)event];
 }
@@ -1225,7 +1225,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 		x = (int)point.x;
 		y = (int)point.y;
 
-		const core::position2di& curr = ((CCursorControl *)CursorControl)->getPosition();
+		const core::position2di& curr = ((CCursorControl *)CursorControl)->getPosition(true);
 		if (curr.X != x || curr.Y != y)
 		{
 			// In fullscreen mode, events are not sent regularly so rely on polling
@@ -1265,7 +1265,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	c.y = p.y;
 
 #ifdef __MAC_10_6
-    CGEventRef ev = CGEventCreateMouseEvent(0, kCGEventMouseMoved, c, 0);
+    CGEventRef ev = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, c, static_cast<CGMouseButton>(kCGEventMouseMoved));
     CGEventPost(kCGHIDEventTap, ev);
     CFRelease(ev);
 #else
