@@ -7,5 +7,10 @@ OSX specific code (CIrrDeviceMacOSX.mm) modified to avoid crash on close, and to
 
 CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
 
+CIrrDeviceWin32.cpp changed to recognize up to 8 joystick axes
+
+CIrrDeviceLinux.cpp
+SIrrCreationParameters.h modified for borderless windows on X11
+
 All changes marked in source with //JAMES
 

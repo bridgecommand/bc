@@ -24,6 +24,9 @@ if (Window) {
     [(NSOpenGLContext*)ContextManager->getContext().OpenGLOSX.Context setView:(NSView*)CreationParams.WindowId];
 }
 
+CIrrDeviceWin32.cpp changed to recognize up to 8 joystick axes
+CIrrDeviceLinux.cpp modified for borderless windows on X11
+SIrrCreationParameters.h modified for borderless windows on X11
 
 --------------------------
 Changes in 1.9 (not yet released)
