@@ -82,24 +82,8 @@ namespace video
 #endif
 #endif
 #endif
-		//! Not used
-		ETS_COUNT
-	};
-
-	//! enumeration for signaling resources which were lost after the last render cycle
-	/** These values can be signaled by the driver, telling the app that some resources
-	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
-	but the content needs to be recreated by the application. */
-	enum E_LOST_RESOURCE
-	{
-		//! The whole device/driver is lost
-		ELR_DEVICE = 1,
-		//! All texture are lost, rare problem
-		ELR_TEXTURES = 2,
-		//! The Render Target Textures are lost, typical problem for D3D
-		ELR_RTTS = 4,
-		//! The HW buffers are lost, will be recreated automatically, but might require some more time this frame
-		ELR_HW_BUFFERS = 8
+		//! Only used internally
+		ETS_COUNT = ETS_TEXTURE_0 + _IRR_MATERIAL_MAX_TEXTURES_
 	};
 
 	//! Special render targets, which usually map to dedicated hardware
@@ -377,6 +361,17 @@ namespace video
 		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
 			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) = 0;
 
+		//! Creates an empty cubemap texture of specified size.
+		/** \param sideLen diameter of one side of the cube
+		\param name A name for the texture. Later calls of
+		getTexture() with this name will return this texture.
+		The name can _not_ be empty.
+		\param format Desired color format of the texture. Please note
+		that the driver may choose to create the texture in another
+		color format.
+		\return Pointer to the newly created texture. 	*/
+		virtual ITexture* addTextureCubemap(const irr::u32 sideLen, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)
@@ -389,6 +384,18 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
+
+		//! Adds a new render target texture with 6 sides for a cubemap map to the texture cache.
+		/** NOTE: Only supported on D3D9 so far.
+		\param sideLen Length of one cubemap side.
+		\param name A name for the texture. Later calls of getTexture() with this name will return this texture.
+		The name can _not_ be empty.
+		\param format The color format of the render target. Floating point formats are supported.
+		\return Pointer to the created texture or 0 if the texture
+		could not be created. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
 				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
@@ -501,11 +508,15 @@ namespace video
 				bool zeroTexels = false) const =0;
 
 		//! Creates a normal map from a height map texture.
-		/** If the target texture has 32 bit, the height value is
-		stored in the alpha component of the texture as addition. This
-		value is used by the video::EMT_PARALLAX_MAP_SOLID material and
-		similar materials.
-		\param texture Texture whose alpha channel is modified.
+		/** As input is considered to be a height map the texture is read like:
+		- For a 32-bit texture only the red channel is regarded
+		- For a 16-bit texture the rgb-values are averaged.
+		Output channels red/green for X/Y and blue for up (Z).
+		For a 32-bit texture we store additionally the height value in the 
+		alpha channel. This value is used by the video::EMT_PARALLAX_MAP_SOLID 
+		material and similar materials.
+		On the borders the texture is considered to repeat.
+		\param texture Height map texture which is converted to a normal map.
 		\param amplitude Constant value by which the height
 		information is multiplied.*/
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const =0;
@@ -776,9 +787,11 @@ namespace video
 		//! Draws a 2d image without any special effects
 		/** \param texture Pointer to texture to use.
 		\param destPos Upper left 2d destination position where the
-		image will be drawn. */
+		image will be drawn. 
+		\param useAlphaChannelOfTexture: If true, the alpha channel of
+		the texture is used to draw the image.*/
 		virtual void draw2DImage(const video::ITexture* texture,
-			const core::position2d<s32>& destPos) =0;
+			const core::position2d<s32>& destPos, bool useAlphaChannelOfTexture=false) =0;
 
 		//! Draws a 2d image using a color
 		/** (if color is other than
@@ -1216,7 +1229,10 @@ namespace video
 		\param data A byte array with pixel color information
 		\param ownForeignMemory If true, the image will use the data
 		pointer directly and own it afterward. If false, the memory
-		will by copied internally.
+		will by copied internally. 
+		WARNING: Setting this to 'true' will not work across dll boundaries.
+		So unless you link Irrlicht statically you should keep this to 'false'.
+		The parameter is mainly for internal usage.
 		\param deleteMemory Whether the memory is deallocated upon
 		destruction.
 		\return The created image.
@@ -1301,7 +1317,7 @@ namespace video
 		the E_MATERIAL_TYPE enum or a value which was returned by
 		addMaterialRenderer().
 		\return Pointer to material renderer or null if not existing. */
-		virtual IMaterialRenderer* getMaterialRenderer(u32 idx) =0;
+		virtual IMaterialRenderer* getMaterialRenderer(u32 idx) const = 0;
 
 		//! Get amount of currently available material renderers.
 		/** \return Amount of currently available material renderers. */
@@ -1326,6 +1342,16 @@ namespace video
 		addMaterialRenderer().
 		\param name: New name of the material renderer. */
 		virtual void setMaterialRendererName(s32 idx, const c8* name) =0;
+
+		//! Swap the material renderers used for certain id's
+		/** Swap the IMaterialRenderers responsible for rendering specific
+		 material-id's. This means every SMaterial using a MaterialType
+		 with one of the indices involved here will now render differently.
+		 \param idx1 First material index to swap. It must already exist or nothing happens.
+		 \param idx2 Second material index to swap. It must already exist or nothing happens.
+		 \param swapNames When true the renderer names also swap
+		                  When false the names will stay at the original index */
+		virtual void swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames=true) = 0;
 
 		//! Creates material attributes list from a material
 		/** This method is useful for serialization and more.
@@ -1497,6 +1523,9 @@ namespace video
 		//! Check if the driver supports creating textures with the given color format
 		/**	\return True if the format is available, false if not. */
 		virtual bool queryTextureFormat(ECOLOR_FORMAT format) const = 0;
+
+		//! Used by some SceneNodes to check if a material should be rendered in the transparent render pass
+		virtual bool needsTransparentRenderPass(const irr::video::SMaterial& material) const = 0;
 	};
 
 } // end namespace video

@@ -38,6 +38,8 @@ namespace scene
 		Note that the matrix will only stay as set by this method until
 		one of the following Methods are called: setNearValue,
 		setFarValue, setAspectRatio, setFOV.
+		NOTE: The frustum is not updated before render() is called
+		unless you explicitly call updateMatrices()
 		\param projection The new projection matrix of the camera.
 		\param isOrthogonal Set this to true if the matrix is an
 		orthogonal one (e.g. from matrix4::buildProjectionMatrixOrtho).
@@ -171,7 +173,7 @@ namespace scene
 		virtual bool getTargetAndRotationBinding(void) const =0;
 
 		//! Writes attributes of the camera node
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_
 		{
 			ISceneNode::serializeAttributes(out, options);
 
@@ -181,7 +183,7 @@ namespace scene
 		}
 
 		//! Reads attributes of the camera node
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_
 		{
 			ISceneNode::deserializeAttributes(in, options);
 			if (!in)
@@ -193,7 +195,7 @@ namespace scene
 
 	protected:
 
-		void cloneMembers(ICameraSceneNode* toCopyFrom)
+		void cloneMembers(const ICameraSceneNode* toCopyFrom)
 		{
 			IsOrthogonal = toCopyFrom->IsOrthogonal;
 		}

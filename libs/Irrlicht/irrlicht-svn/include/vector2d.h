@@ -64,6 +64,20 @@ public:
 	vector2d<T> operator/(const T v) const { return vector2d<T>(X / v, Y / v); }
 	vector2d<T>& operator/=(const T v) { X/=v; Y/=v; return *this; }
 
+	T& operator [](u32 index)
+	{
+		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+
+		return *(&X+index);
+	}
+
+	const T& operator [](u32 index) const
+	{
+		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+
+		return *(&X+index);
+	}
+
 	//! sort in order X, Y. Equality with rounding tolerance.
 	bool operator<=(const vector2d<T>&other) const
 	{
@@ -301,7 +315,7 @@ public:
 	\return An interpolated vector.  This vector is not modified. */
 	vector2d<T> getInterpolated(const vector2d<T>& other, f64 d) const
 	{
-		f64 inv = 1.0f - d;
+		const f64 inv = 1.0f - d;
 		return vector2d<T>((T)(other.X*inv + X*d), (T)(other.Y*inv + Y*d));
 	}
 
@@ -323,7 +337,7 @@ public:
 					(T)(Y * mul0 + v2.Y * mul1 + v3.Y * mul2));
 	}
 
-	/*! Test if this point and another 2 poitns taken as triplet
+	/*! Test if this point and another 2 points taken as triplet
 		are colinear, clockwise, anticlockwise. This can be used also
 		to check winding order in triangles for 2D meshes.
 		\return 0 if points are colinear, 1 if clockwise, 2 if anticlockwise

@@ -28,6 +28,13 @@ class Octree
 {
 public:
 
+	// TODO: Using reference counted class on the stack. 
+	//       Reason is likely that it really costs speed here otherwise.
+	//       But doing so prevents using VBO's with octrees.
+	//       Also it's just a bad idea, for example this is the reason 
+	//       we can't make the copy-constructor private for IReferenceCounted.
+	//       So would be nice to figure out how to put this on heap (and check 
+	//		if it's maybe cheap enough) or maybe stop using CMeshBuffer here.
 	struct SMeshChunk : public scene::CMeshBuffer<T>
 	{
 		SMeshChunk ()

@@ -76,7 +76,7 @@ CSoftwareTexture::~CSoftwareTexture()
 
 
 //! lock function
-void* CSoftwareTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 layer)
+void* CSoftwareTexture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E_TEXTURE_LOCK_FLAGS lockFlags)
 {
 	return Image->getData();
 }
@@ -129,12 +129,11 @@ CSoftwareRenderTarget::~CSoftwareRenderTarget()
 		Texture[0]->drop();
 }
 
-void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil)
+void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces)
 {
 	if (Texture != texture)
 	{
-		if (Texture[0])
-			Texture[0]->drop();
+		ITexture* prevTexture = Texture[0];
 
 		bool textureDetected = false;
 
@@ -149,6 +148,9 @@ void CSoftwareRenderTarget::setTexture(const core::array<ITexture*>& texture, IT
 				break;
 			}
 		}
+
+		if (prevTexture)
+			prevTexture->drop();
 
 		if (!textureDetected)
 			Texture[0] = 0;

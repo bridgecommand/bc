@@ -58,96 +58,105 @@ public:
 			DepthStencil->drop();
 	}
 
-	virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil) _IRR_OVERRIDE_
+	virtual void setTexture(const core::array<ITexture*>& textures, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_
 	{
-		bool textureUpdate = (Texture != texture) ? true : false;
-		bool depthStencilUpdate = (DepthStencil != depthStencil) ? true : false;
+		bool needSizeUpdate = false;
 
-		if (textureUpdate || depthStencilUpdate)
+		// Set color attachments.
+		if ((Texture != textures) || (CubeSurfaces != cubeSurfaces))
 		{
-			// Set color attachments.
+			needSizeUpdate = true;
 
-			if (textureUpdate)
+			core::array<ITexture*> prevTextures(Texture);
+
+			if (textures.size() > static_cast<u32>(ColorAttachment))
 			{
-				for (u32 i = 0; i < Texture.size(); ++i)
-				{
-					if (Texture[i])
-						Texture[i]->drop();
-				}
+				core::stringc message = "This GPU supports up to ";
+				message += static_cast<u32>(ColorAttachment);
+				message += " textures per render target.";
 
-				if (texture.size() > static_cast<u32>(ColorAttachment))
-				{
-					core::stringc message = "This GPU supports up to ";
-					message += static_cast<u32>(ColorAttachment);
-					message += " textures per render target.";
-
-					os::Printer::log(message.c_str(), ELL_WARNING);
-				}
-
-				Texture.set_used(core::min_(texture.size(), static_cast<u32>(ColorAttachment)));
-
-				for (u32 i = 0; i < Texture.size(); ++i)
-				{
-					TOpenGLTexture* currentTexture = (texture[i] && texture[i]->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(texture[i]) : 0;
-
-					GLuint textureID = 0;
-
-					if (currentTexture)
-					{
-						if (currentTexture->getType() == ETT_2D)
-							textureID = currentTexture->getOpenGLTextureName();
-						else
-							os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
-					}
-
-					if (textureID != 0)
-					{
-						Texture[i] = texture[i];
-						Texture[i]->grab();
-					}
-					else
-					{
-						Texture[i] = 0;
-					}
-				}
-
-				RequestTextureUpdate = true;
+				os::Printer::log(message.c_str(), ELL_WARNING);
 			}
 
-			// Set depth and stencil attachments.
+			Texture.set_used(core::min_(textures.size(), static_cast<u32>(ColorAttachment)));
 
-			if (depthStencilUpdate)
+			for (u32 i = 0; i < Texture.size(); ++i)
 			{
-				TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
+				TOpenGLTexture* currentTexture = (textures[i] && textures[i]->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(textures[i]) : 0;
 
 				GLuint textureID = 0;
 
 				if (currentTexture)
 				{
-					if (currentTexture->getType() == ETT_2D)
-						textureID = currentTexture->getOpenGLTextureName();
-					else
-						os::Printer::log("This driver doesn't support render to cubemaps.", ELL_WARNING);
+					textureID = currentTexture->getOpenGLTextureName();
 				}
 
-				const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
-
-				if (IImage::isDepthFormat(textureFormat))
+				if (textureID != 0)
 				{
-					DepthStencil = depthStencil;
-					DepthStencil->grab();
+					Texture[i] = textures[i];
+					Texture[i]->grab();
 				}
 				else
 				{
-					if (DepthStencil)
-						DepthStencil->drop();
-
-					DepthStencil = 0;
+					Texture[i] = 0;
 				}
-
-				RequestDepthStencilUpdate = true;
 			}
 
+			for (u32 i = 0; i < prevTextures.size(); ++i)
+			{
+				if (prevTextures[i])
+					prevTextures[i]->drop();
+			}
+
+			RequestTextureUpdate = true;
+		}
+
+		if (CubeSurfaces != cubeSurfaces)
+		{
+			CubeSurfaces = cubeSurfaces;
+			RequestTextureUpdate = true;
+		}
+
+		// Set depth and stencil attachments.
+		if (DepthStencil != depthStencil)
+		{
+			if (DepthStencil)
+			{
+				DepthStencil->drop();
+				DepthStencil = 0;
+			}
+
+			needSizeUpdate = true;
+			TOpenGLTexture* currentTexture = (depthStencil && depthStencil->getDriverType() == DriverType) ? static_cast<TOpenGLTexture*>(depthStencil) : 0;
+
+			if (currentTexture)
+			{	
+				if (currentTexture->getType() == ETT_2D)
+				{
+					GLuint textureID = currentTexture->getOpenGLTextureName();
+
+					const ECOLOR_FORMAT textureFormat = (textureID != 0) ? depthStencil->getColorFormat() : ECF_UNKNOWN;
+					if (IImage::isDepthFormat(textureFormat))
+					{
+						DepthStencil = depthStencil;
+						DepthStencil->grab();
+					}
+					else
+					{
+						os::Printer::log("Ignoring depth/stencil texture without depth color format.", ELL_WARNING);
+					}
+				}
+				else
+				{
+					os::Printer::log("This driver doesn't support depth/stencil to cubemaps.", ELL_WARNING);
+				}
+			}
+
+			RequestDepthStencilUpdate = true;
+		}
+
+		if (needSizeUpdate)
+		{
 			// Set size required for a viewport.
 
 			ITexture* firstTexture = getTexture();
@@ -178,12 +187,17 @@ public:
 
 				for (u32 i = 0; i < textureSize; ++i)
 				{
-					GLuint textureID = (Texture[i]) ? static_cast<TOpenGLTexture*>(Texture[i])->getOpenGLTextureName() : 0;
+					TOpenGLTexture* currentTexture = static_cast<TOpenGLTexture*>(Texture[i]);
+					GLuint textureID = currentTexture ? currentTexture->getOpenGLTextureName() : 0;
 
 					if (textureID != 0)
 					{
 						AssignedTexture[i] = GL_COLOR_ATTACHMENT0 + i;
-						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], GL_TEXTURE_2D, textureID, 0);
+						GLenum textarget = currentTexture->getType() == ETT_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP_POSITIVE_X + (int)CubeSurfaces[i];
+						Driver->irrGlFramebufferTexture2D(GL_FRAMEBUFFER, AssignedTexture[i], textarget, textureID, 0);
+#ifdef _DEBUG
+						Driver->testGLError(__LINE__);
+#endif
 					}
 					else if (AssignedTexture[i] != GL_NONE)
 					{
@@ -247,6 +261,9 @@ public:
 					AssignedDepth = false;
 					AssignedStencil = false;
 				}
+#ifdef _DEBUG
+				Driver->testGLError(__LINE__);
+#endif
 
 				RequestDepthStencilUpdate = false;
 			}
@@ -267,6 +284,11 @@ public:
 
 					Driver->irrGlDrawBuffers(bufferCount, AssignedTexture.pointer());
 				}
+
+#ifdef _DEBUG
+				Driver->testGLError(__LINE__);
+#endif
+
 			}
 
 #ifdef _DEBUG

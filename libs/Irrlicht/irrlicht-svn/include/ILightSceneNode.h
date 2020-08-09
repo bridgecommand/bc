@@ -51,6 +51,7 @@ public:
 	shadows. Setting the radius will also influence the attenuation, setting
 	it to (0,1/radius,0). If you want to override this behavior, set the
 	attenuation after the radius.
+	NOTE: On OpenGL only the attenuation is set, there's no hard range.
 	\param radius The new radius. */
 	virtual void setRadius(f32 radius) = 0;
 

@@ -7,7 +7,11 @@
 #include "ISceneManager.h"
 #include "S3DVertex.h"
 #include "os.h"
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
+#else
+#include "IShadowVolumeSceneNode.h"
+#endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "IAnimatedMeshMD3.h"
 #include "CSkinnedMesh.h"
 #include "IDummyTransformationSceneNode.h"
@@ -108,12 +112,12 @@ void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		if (FramesPerSecond > 0.f) //forwards...
 		{
 			if (CurrentFrameNr > EndFrame)
-				CurrentFrameNr = StartFrame + fmod(CurrentFrameNr - StartFrame, (f32)(EndFrame-StartFrame));
+				CurrentFrameNr = StartFrame + fmodf(CurrentFrameNr - StartFrame, (f32)(EndFrame-StartFrame));
 		}
 		else //backwards...
 		{
 			if (CurrentFrameNr < StartFrame)
-				CurrentFrameNr = EndFrame - fmod(EndFrame - CurrentFrameNr, (f32)(EndFrame-StartFrame));
+				CurrentFrameNr = EndFrame - fmodf(EndFrame - CurrentFrameNr, (f32)(EndFrame-StartFrame));
 		}
 	}
 	else
@@ -145,7 +149,7 @@ void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 
 void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 {
-	if (IsVisible)
+	if (IsVisible && Mesh)
 	{
 		// because this node supports rendering of mixed mode meshes consisting of
 		// transparent and solid material at the same time, we need to go through all
@@ -159,12 +163,12 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 		int solidCount = 0;
 
 		// count transparent and solid materials in this scene node
-		for (u32 i=0; i<Materials.size(); ++i)
+		const u32 numMaterials = ReadOnlyMaterials ? Mesh->getMeshBufferCount() : Materials.size();
+		for (u32 i=0; i<numMaterials; ++i)
 		{
-			video::IMaterialRenderer* rnd =
-				driver->getMaterialRenderer(Materials[i].MaterialType);
+			const video::SMaterial& material = ReadOnlyMaterials ? Mesh->getMeshBuffer(i)->getMaterial() : Materials[i];
 
-			if ((rnd && rnd->isTransparent()) || Materials[i].isTransparent())
+			if ( driver->needsTransparentRenderPass(material) )
 				++transparentCount;
 			else
 				++solidCount;
@@ -270,7 +274,7 @@ void CAnimatedMeshSceneNode::render()
 		return;
 
 
-	bool isTransparentPass =
+	const bool isTransparentPass =
 		SceneManager->getSceneNodeRenderPass() == scene::ESNRP_TRANSPARENT;
 
 	++PassCount;
@@ -325,8 +329,7 @@ void CAnimatedMeshSceneNode::render()
 	{
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
-			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
-			bool transparent = (rnd && rnd->isTransparent());
+			const bool transparent = driver->needsTransparentRenderPass(Materials[i]);
 
 			// only render transparent buffer if this is the transparent render pass
 			// and solid only in solid pass
@@ -529,11 +532,7 @@ const core::aabbox3d<f32>& CAnimatedMeshSceneNode::getBoundingBox() const
 }
 
 
-//! returns the material based on the zero based index i. To get the amount
-//! of materials used by this scene node, use getMaterialCount().
-//! This function is needed for inserting the node into the scene hirachy on a
-//! optimal position for minimizing renderstate changes, but can also be used
-//! to directly modify the material of a scene node.
+//! returns the material based on the zero based index i.
 video::SMaterial& CAnimatedMeshSceneNode::getMaterial(u32 i)
 {
 	if (i >= Materials.size())
@@ -556,6 +555,7 @@ u32 CAnimatedMeshSceneNode::getMaterialCount() const
 IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(
 		const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
 {
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
 		return 0;
 
@@ -567,6 +567,9 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(
 
 	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
 	return Shadow;
+#else
+	return 0;
+#endif
 }
 
 //! Returns a pointer to a child node, which has the same transformation as

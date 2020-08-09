@@ -126,6 +126,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 		// create the window, only if we do not use the null device
 		if (!createWindow())
 			return;
+		setResizable(param.WindowResizable);
 	}
 
 	// create cursor control
@@ -478,7 +479,7 @@ bool CIrrDeviceLinux::createWindow()
 
 		// create new Window
 		// Remove window manager decoration in fullscreen
-		WndAttributes.override_redirect = CreationParams.Fullscreen; //|| CreationParams.X11borderless; //JAMES
+		WndAttributes.override_redirect = CreationParams.Fullscreen;
 		XWindow = XCreateWindow(XDisplay,
 				RootWindow(XDisplay, VisualInfo->screen),
 				x, y, Width, Height, 0, VisualInfo->depth,
@@ -491,7 +492,7 @@ bool CIrrDeviceLinux::createWindow()
 		Atom wmDelete;
 		wmDelete = XInternAtom(XDisplay, wmDeleteWindow, True);
 		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
-		if (CreationParams.Fullscreen /*|| CreationParams.X11borderless*/) //JAMES
+		if (CreationParams.Fullscreen)
 		{
 			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
 			int grabKb = XGrabKeyboard(XDisplay, XWindow, True, GrabModeAsync,
@@ -532,6 +533,16 @@ bool CIrrDeviceLinux::createWindow()
 	WindowMinimized=false;
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
+
+	Window tmp;
+	u32 borderWidth;
+	int x,y;
+	unsigned int bits;
+
+	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
+	CreationParams.Bits = bits;
+	CreationParams.WindowSize.Width = Width;
+	CreationParams.WindowSize.Height = Height;
 
 	StdHints = XAllocSizeHints();
 	long num;
@@ -1020,7 +1031,7 @@ bool CIrrDeviceLinux::run()
 						{
 							char buf[8];
 							wchar_t wbuf[2];
-						} tmp = {0};
+						} tmp = {{0}};
 						XLookupString(&event.xkey, tmp.buf, sizeof(tmp.buf), &mp.X11Key, NULL);
 						irrevent.KeyInput.Char = tmp.wbuf[0];
 					}

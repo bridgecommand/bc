@@ -12,6 +12,7 @@
 #include "EFocusFlags.h"
 #include "IEventReceiver.h"
 #include "IXMLReader.h"
+#include "IXMLWriter.h"
 #include "path.h"
 
 namespace irr
@@ -21,7 +22,6 @@ namespace irr
 
 	namespace io
 	{
-		class IXMLWriter;
 		class IReadFile;
 		class IWriteFile;
 		class IFileSystem;
@@ -250,8 +250,13 @@ public:
 		const wchar_t* text=0, IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a modal screen.
-	/** This control stops its parent's members from being able to receive
-	input until its last child is removed, it then deletes itself.
+	/** Input focus stays with children of the modal screen. 
+	If you have some window x which should keep the input focus you 
+	do something like: addModalScreen()->addChild(x). And x will then get the focus 
+	and not lose it anymore. 
+	The  modal screen removes itself when it no longer has any children.
+	Note that it usually works badly to pass the modal screen already as parent when creating
+	a new element. It's better to add that new element later to the modal screen with addChild.
 	\param parent Parent gui element of the modal.
 	\return Pointer to the created modal. Returns 0 if an error occurred.
 	This pointer should not be dropped. See IReferenceCounted::drop() for

@@ -2,6 +2,9 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_OCTREE_SCENENODE_
+
 #include "COctreeSceneNode.h"
 #include "Octree.h"
 #include "ISceneManager.h"
@@ -11,7 +14,11 @@
 #include "IAnimatedMesh.h"
 #include "IMaterialRenderer.h"
 #include "os.h"
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
+#else
+#include "IShadowVolumeSceneNode.h"
+#endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "EProfileIDs.h"
 #include "IProfiler.h"
 
@@ -27,7 +34,7 @@ COctreeSceneNode::COctreeSceneNode(ISceneNode* parent, ISceneManager* mgr,
 	: IOctreeSceneNode(parent, mgr, id), StdOctree(0), LightMapOctree(0),
 	TangentsOctree(0), VertexType((video::E_VERTEX_TYPE)-1),
 	MinimalPolysPerNode(minimalPolysPerNode), Mesh(0), Shadow(0),
-	UseVBOs(EOV_USE_VBO_WITH_VISIBITLY), PolygonChecks(EOPC_BOX)
+	UseVBOs(EOV_NO_VBO), PolygonChecks(EOPC_BOX)
 {
 #ifdef _DEBUG
 	setDebugName("COctreeSceneNode");
@@ -72,10 +79,7 @@ void COctreeSceneNode::OnRegisterSceneNode()
 		// count transparent and solid materials in this scene node
 		for (u32 i=0; i<Materials.size(); ++i)
 		{
-			const video::IMaterialRenderer* const rnd =
-				driver->getMaterialRenderer(Materials[i].MaterialType);
-
-			if ((rnd && rnd->isTransparent()) || Materials[i].isTransparent())
+			if (driver->needsTransparentRenderPass(Materials[i]))
 				++transparentCount;
 			else
 				++solidCount;
@@ -138,7 +142,7 @@ void COctreeSceneNode::render()
 	if (!camera)
 		return;
 
-	bool isTransparentPass =
+	const bool isTransparentPass =
 		SceneManager->getSceneNodeRenderPass() == scene::ESNRP_TRANSPARENT;
 	++PassCount;
 
@@ -181,8 +185,7 @@ void COctreeSceneNode::render()
 				if ( 0 == d[i].CurrentSize )
 					continue;
 
-				const video::IMaterialRenderer* const rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
-				const bool transparent = (rnd && rnd->isTransparent());
+				const bool transparent = driver->needsTransparentRenderPass(Materials[i]);
 
 				// only render transparent buffer if this is the transparent render pass
 				// and solid only in solid pass
@@ -339,6 +342,7 @@ EOCTREE_POLYGON_CHECKS COctreeSceneNode::getPolygonChecks() const
 IShadowVolumeSceneNode* COctreeSceneNode::addShadowVolumeSceneNode(
 		const IMesh* shadowMesh, s32 id, bool zfailmethod, f32 infinity)
 {
+#ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_ 
 	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
 		return 0;
 
@@ -350,6 +354,9 @@ IShadowVolumeSceneNode* COctreeSceneNode::addShadowVolumeSceneNode(
 
 	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
 	return Shadow;
+#else
+	return 0;
+#endif
 }
 
 
@@ -568,11 +575,7 @@ bool COctreeSceneNode::createTree(IMesh* mesh)
 }
 
 
-//! returns the material based on the zero based index i. To get the amount
-//! of materials used by this scene node, use getMaterialCount().
-//! This function is needed for inserting the node into the scene hirachy on a
-//! optimal position for minimizing renderstate changes, but can also be used
-//! to directly modify the material of a scene node.
+//! returns the material based on the zero based index i. 
 video::SMaterial& COctreeSceneNode::getMaterial(u32 i)
 {
 	if ( i >= Materials.size() )
@@ -671,3 +674,4 @@ bool COctreeSceneNode::isReadOnlyMaterials() const
 } // end namespace scene
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_OCTREE_SCENENODE_

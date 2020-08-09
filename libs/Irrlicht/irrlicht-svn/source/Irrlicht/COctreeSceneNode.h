@@ -5,11 +5,7 @@
 #ifndef __C_OCTREE_SCENE_NODE_H_INCLUDED__
 #define __C_OCTREE_SCENE_NODE_H_INCLUDED__
 
-#ifdef __APPLE__
-#include "../../Include/IOctreeSceneNode.h"
-#else
 #include "IOctreeSceneNode.h"
-#endif
 #include "Octree.h"
 
 namespace irr
@@ -79,13 +75,17 @@ namespace scene
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
-		//! or to remove attached children.
+		//! or to remove attached child.
 		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
 
+		// TODO: Currently using VBO's will crash when reloading the model.
+		//       The reason is that COctreeSceneNode uses Octree::SMeshChunk 
+		//       which does use a an IReferenceCounted object on the stack.
+		//       Which breaks VBO's which correctly use reference counting.,
 		//! Set if/how vertex buffer object are used for the meshbuffers
 		/** NOTE: When there is already a mesh in the node this will rebuild
 		the octree. */
-		virtual void setUseVBO(EOCTREENODE_VBO useVBO) _IRR_OVERRIDE_;
+		virtual void setUseVBO(EOCTREENODE_VBO useVBO);
 
 		//! Get if/how vertex buffer object are used for the meshbuffers
 		virtual EOCTREENODE_VBO getUseVBO() const _IRR_OVERRIDE_;

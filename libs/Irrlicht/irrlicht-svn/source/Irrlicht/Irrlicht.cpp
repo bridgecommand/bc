@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-static const char* const copyright = "Irrlicht Engine (c) 2002-2012 Nikolaus Gebhardt";
+static const char* const copyright = "Irrlicht Engine (c) 2002-2017 Nikolaus Gebhardt";	// put string in binary
 
 #ifdef _IRR_WINDOWS_
 	#include <windows.h>
@@ -46,6 +46,8 @@ namespace irr
 			u32 bits, bool fullscreen,
 			bool stencilbuffer, bool vsync, IEventReceiver* res)
 	{
+		(void)copyright;	// prevent unused variable warning
+
 		SIrrlichtCreationParameters p;
 		p.DriverType = driverType;
 		p.WindowSize = windowSize;
@@ -113,6 +115,7 @@ namespace core
 namespace video
 {
 	SMaterial IdentityMaterial;
+	u32 MATERIAL_MAX_TEXTURES_USED = MATERIAL_MAX_TEXTURES;
 }
 
 } // end namespace irr

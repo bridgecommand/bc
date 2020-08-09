@@ -54,7 +54,6 @@ public:
 		core::list<IGUIElement*>::Iterator it = Children.begin();
 		for (; it != Children.end(); ++it)
 		{
-			(*it)->sendRemoveEvent();
 			(*it)->Parent = 0;
 			(*it)->drop();
 		}
@@ -290,7 +289,6 @@ public:
 		for (; it != Children.end(); ++it)
 			if ((*it) == child)
 			{
-				(*it)->sendRemoveEvent();
 				(*it)->Parent = 0;
 				(*it)->drop();
 				Children.erase(it);
@@ -526,7 +524,7 @@ public:
 
 
 	//! Called if an event happened.
-	virtual bool OnEvent(const SEvent& event)
+	virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_
 	{
 		return Parent ? Parent->OnEvent(event) : false;
 	}
@@ -771,11 +769,12 @@ public:
 	//! Writes attributes of the scene node.
 	/** Implement this to expose the attributes of your scene node for
 	scripting languages, editors, debuggers or xml serialization purposes. */
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_
 	{
 		out->addString("Name", Name.c_str());
 		out->addInt("Id", ID );
 		out->addString("Caption", getText());
+		out->addString("ToolTip", getToolTipText().c_str());
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
@@ -795,31 +794,32 @@ public:
 	//! Reads attributes of the scene node.
 	/** Implement this to set the attributes of your scene node for
 	scripting languages, editors, debuggers or xml deserialization purposes. */
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_
 	{
-		setName(in->getAttributeAsString("Name"));
-		setID(in->getAttributeAsInt("Id"));
-		setText(in->getAttributeAsStringW("Caption").c_str());
-		setVisible(in->getAttributeAsBool("Visible"));
-		setEnabled(in->getAttributeAsBool("Enabled"));
-		IsTabStop = in->getAttributeAsBool("TabStop");
-		IsTabGroup = in->getAttributeAsBool("TabGroup");
-		TabOrder = in->getAttributeAsInt("TabOrder");
+		setName(in->getAttributeAsString("Name", Name));
+		setID(in->getAttributeAsInt("Id", ID));
+		setText(in->getAttributeAsStringW("Caption", Text).c_str());
+		setToolTipText(in->getAttributeAsStringW("ToolTip").c_str());
+		setVisible(in->getAttributeAsBool("Visible", IsVisible));
+		setEnabled(in->getAttributeAsBool("Enabled", IsEnabled));
+		IsTabStop = in->getAttributeAsBool("TabStop", IsTabStop);
+		IsTabGroup = in->getAttributeAsBool("TabGroup", IsTabGroup);
+		TabOrder = in->getAttributeAsInt("TabOrder", TabOrder);
 
-		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
+		core::position2di p = in->getAttributeAsPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
 		setMaxSize(core::dimension2du(p.X,p.Y));
 
-		p = in->getAttributeAsPosition2d("MinSize");
+		p = in->getAttributeAsPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		setMinSize(core::dimension2du(p.X,p.Y));
 
-		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
-			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames),
-			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames),
-			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames));
+		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames, AlignLeft),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames, AlignRight),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames, AlignTop),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames, AlignBottom));
 
-		setRelativePosition(in->getAttributeAsRect("Rect"));
+		setRelativePosition(in->getAttributeAsRect("Rect", DesiredRect));
 
-		setNotClipped(in->getAttributeAsBool("NoClip"));
+		setNotClipped(in->getAttributeAsBool("NoClip", NoClip));
 	}
 
 protected:
@@ -962,21 +962,6 @@ protected:
 			{
 				(*it)->recalculateAbsolutePosition(recursive);
 			}
-		}
-	}
-
-	// Inform gui-environment that an element got removed from the gui-graph
-	void sendRemoveEvent()
-	{
-		if ( Environment )
-		{
-			SEvent removeEvent;
-			removeEvent.EventType = EET_GUI_EVENT;
-			removeEvent.GUIEvent.Caller = this;
-			removeEvent.GUIEvent.Element = 0;
-			removeEvent.GUIEvent.EventType = EGET_ELEMENT_REMOVED;
-
-			Environment->postEventFromUser(removeEvent);
 		}
 	}
 

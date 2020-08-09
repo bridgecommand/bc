@@ -102,6 +102,8 @@ namespace video
 		virtual ITexture* addTextureCubemap(const io::path& name, IImage* imagePosX, IImage* imageNegX, IImage* imagePosY,
 			IImage* imageNegY, IImage* imagePosZ, IImage* imageNegZ) _IRR_OVERRIDE_;
 
+		virtual ITexture* addTextureCubemap(const irr::u32 sideLen, const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) _IRR_OVERRIDE_;
+
 		virtual bool setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor = SColor(255,0,0,0),
 			f32 clearDepth = 1.f, u8 clearStencil = 0) _IRR_OVERRIDE_;
 
@@ -139,7 +141,7 @@ namespace video
 			SColor color = SColor(255,255,255,255)) _IRR_OVERRIDE_;
 
 		//! draws an 2d image
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos) _IRR_OVERRIDE_;
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos, bool useAlphaChannelOfTexture) _IRR_OVERRIDE_;
 
 		//! draws a set of 2d images, using a color and the alpha
 		/** channel of the texture if desired. The images are drawn
@@ -318,6 +320,10 @@ namespace video
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN) _IRR_OVERRIDE_;
+
+		//! Creates a render target texture for a cubemap
+		ITexture* addRenderTargetTextureCubemap(const irr::u32 sideLen,
+				const io::path& name, const ECOLOR_FORMAT format) _IRR_OVERRIDE_;
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
 		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color, bool zeroTexels) const _IRR_OVERRIDE_;
@@ -527,7 +533,7 @@ namespace video
 			s32 userData=0) _IRR_OVERRIDE_;
 
 		//! Returns pointer to material renderer or null
-		virtual IMaterialRenderer* getMaterialRenderer(u32 idx) _IRR_OVERRIDE_;
+		virtual IMaterialRenderer* getMaterialRenderer(u32 idx) const _IRR_OVERRIDE_;
 
 		//! Returns amount of currently available material renderers.
 		virtual u32 getMaterialRendererCount() const _IRR_OVERRIDE_;
@@ -552,7 +558,7 @@ namespace video
 			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData = 0, E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) _IRR_OVERRIDE_;
+			s32 userData = 0) _IRR_OVERRIDE_;
 
 		//! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 		//! but tries to load the programs from files.
@@ -571,7 +577,7 @@ namespace video
 			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData = 0, E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) _IRR_OVERRIDE_;
+			s32 userData = 0) _IRR_OVERRIDE_;
 
 		//! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 		//! but tries to load the programs from files.
@@ -590,7 +596,7 @@ namespace video
 			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData = 0, E_GPU_SHADING_LANGUAGE shadingLang = EGSL_DEFAULT) _IRR_OVERRIDE_;
+			s32 userData = 0) _IRR_OVERRIDE_;
 
 		//! Returns a pointer to the mesh manipulator.
 		virtual scene::IMeshManipulator* getMeshManipulator() _IRR_OVERRIDE_;
@@ -608,6 +614,9 @@ namespace video
 
 		//! Sets the name of a material renderer.
 		virtual void setMaterialRendererName(s32 idx, const char* name) _IRR_OVERRIDE_;
+
+		//! Swap the material renderers used for certain id's
+		virtual void swapMaterialRenderers(u32 idx1, u32 idx2, bool swapNames) _IRR_OVERRIDE_;
 
 		//! Creates material attributes list from a material, usable for serialization and more.
 		virtual io::IAttributes* createAttributesFromMaterial(const video::SMaterial& material,
@@ -657,6 +666,9 @@ namespace video
 
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const _IRR_OVERRIDE_;
+
+		//! Used by some SceneNodes to check if a material should be rendered in the transparent render pass
+		virtual bool needsTransparentRenderPass(const irr::video::SMaterial& material) const _IRR_OVERRIDE_;
 
 		//! Color conversion convenience function
 		/** Convert an image (as array of pixels) from source to destination
@@ -734,24 +746,18 @@ namespace video
 			return (f32) getAverage ( p[(y * pitch) + x] );
 		}
 
-		inline bool getWriteZBuffer(const SMaterial&material) const
+		inline bool getWriteZBuffer(const SMaterial& material) const
 		{
-			if (material.ZWriteEnable)
+			switch ( material.ZWriteEnable )
 			{
-				if (!AllowZWriteOnTransparent)
-				{
-					switch (material.ZWriteFineControl)
-					{
-					case EZI_ONLY_NON_TRANSPARENT:
-						return !material.isTransparent();
-					case EZI_ZBUFFER_FLAG:
-						return true;
-					}
-				}
-				else
+				case video::EZW_OFF:
+					return false;
+				case video::EZW_AUTO:
+					return AllowZWriteOnTransparent || ! needsTransparentRenderPass(material);
+				case video::EZW_ON:
 					return true;
 			}
-			return false;
+			return true; // never should get here, but some compilers don't know and complain
 		}
 
 		struct SSurface
@@ -774,7 +780,7 @@ namespace video
 		{
 			SDummyTexture(const io::path& name, E_TEXTURE_TYPE type) : ITexture(name, type) {};
 
-			virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_ { return 0; }
+			virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) _IRR_OVERRIDE_ { return 0; }
 			virtual void unlock()_IRR_OVERRIDE_ {}
 			virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_ {}
 		};

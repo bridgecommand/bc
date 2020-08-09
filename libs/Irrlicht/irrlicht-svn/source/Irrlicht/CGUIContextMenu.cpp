@@ -88,6 +88,7 @@ u32 CGUIContextMenu::insertItem(u32 idx, const wchar_t* text, s32 commandId, boo
 	s.IsSeparator = (text == 0);
 	s.SubMenu = 0;
 	s.CommandId = commandId;
+	s.PosY = 0;
 
 	if (hasSubMenu)
 	{
@@ -289,12 +290,12 @@ bool CGUIContextMenu::OnEvent(const SEvent& event)
 					{
 						setEventParent(p);
 
-						SEvent event;
-						event.EventType = EET_GUI_EVENT;
-						event.GUIEvent.Caller = this;
-						event.GUIEvent.Element = 0;
-						event.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
-						if ( !p->OnEvent(event) )
+						SEvent eventClose;
+						eventClose.EventType = EET_GUI_EVENT;
+						eventClose.GUIEvent.Caller = this;
+						eventClose.GUIEvent.Element = 0;
+						eventClose.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
+						if ( !p->OnEvent(eventClose) )
 						{
 							if ( CloseHandling & ECMC_HIDE )
 							{

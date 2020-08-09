@@ -20,6 +20,19 @@ namespace video
 namespace scene
 {
 
+	enum ECUBE_MESH_TYPE
+	{
+		//! Single buffer with 12 different vertices, normals are average of adjacent planes
+		//! Order for outgoing (front-face) normals of planes would be: NEG_Z, POS_X, POS_Z, NEG_X, POS_Y, NEG_Y
+		ECMT_1BUF_12VTX_NA,
+
+		//! One buffer per side, each with 4 vertices, normals are perpendicular to sides
+		//! Note: You probably will have to scale down your texture uv's to avoid white lines at borders 
+		//        as this mesh sets them to 0,1 values. We can't do that when creating the mesh as it 
+		//        depends on texture resolution which we don't know at that point.
+		ECMT_6BUF_4VTX_NP
+	};
+
 //! Helper class for creating geometry on the fly.
 /** You can get an instance of this class through ISceneManager::getGeometryCreator() */
 class IGeometryCreator : public IReferenceCounted
@@ -29,9 +42,10 @@ public:
 	//! Creates a simple cube mesh.
 	/**
 	\param size Dimensions of the cube.
+	\param type One of ECUBE_MESH_TYPE. So you can chose between cubes with single material or independent materials per side.
 	\return Generated mesh.
 	*/
-	virtual IMesh* createCubeMesh(const core::vector3df& size=core::vector3df(5.f,5.f,5.f)) const =0;
+	virtual IMesh* createCubeMesh(const core::vector3df& size=core::vector3df(5.f,5.f,5.f), ECUBE_MESH_TYPE type = ECMT_1BUF_12VTX_NA) const =0;
 
 	//! Create a pseudo-random mesh representing a hilly terrain.
 	/**
@@ -138,13 +152,21 @@ public:
 	\param tesselation Number of quads around the circumference of the cylinder.
 	\param color The color of the cylinder.
 	\param closeTop If true, close the ends of the cylinder, otherwise leave them open.
-	\param oblique (to be documented)
+	\param oblique X-offset (shear) of top compared to bottom. 
+	\param normalType When 0 side normals are radial from origin. Note that origin is at the bottom.
+	                  When 1 side normals are flat along top/bottom polygons.
+			NOTE: To get normals which are perpendicular to the side of an oblique 
+			cylinder, don't use the oblique parameter. Instead set normalType to 1 
+			and create a cylinder with oblique set to 0. Then use 
+			IMeshManipulator::transform with a shear matrix on the returned mesh.
+			You get a shear matrix for an identical effect of this oblique parameter when you 
+			set the 4th element of an identity matrix to (oblique/length).
 	\return Generated mesh.
 	*/
 	virtual IMesh* createCylinderMesh(f32 radius, f32 length,
 			u32 tesselation,
 			const video::SColor& color=video::SColor(0xffffffff),
-			bool closeTop=true, f32 oblique=0.f) const =0;
+			bool closeTop=true, f32 oblique=0.f, u32 normalType=0) const =0;
 
 	//! Create a cone mesh.
 	/**

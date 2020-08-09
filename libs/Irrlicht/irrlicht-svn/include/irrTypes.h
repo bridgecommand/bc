@@ -210,7 +210,7 @@ virtual void somefunc() _IRR_OVERRIDE_;
 #define _IRR_OVERRIDE_ override
 #elif (_MSC_VER >= 1600 ) /* supported since MSVC 2010 */
 #define _IRR_OVERRIDE_ override
-#elif (__clang_major__ >= 3)
+#elif (__clang_major__ >= 3 && __has_feature(cxx_override_control))
 #define _IRR_OVERRIDE_ override
 #else
 #define _IRR_OVERRIDE_
@@ -244,9 +244,4 @@ code like 'code', but some generate warnings so we use this macro here */
 		((irr::u32)(irr::u8)(c0) | ((irr::u32)(irr::u8)(c1) << 8) | \
 		((irr::u32)(irr::u8)(c2) << 16) | ((irr::u32)(irr::u8)(c3) << 24 ))
 
-#if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-#define _strcmpi(a,b) strcmpi(a,b)
-#endif
-
 #endif // __IRR_TYPES_H_INCLUDED__
-

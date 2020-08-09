@@ -81,7 +81,7 @@ void CGUIImage::draw()
 		core::rect<s32> sourceRect(SourceRect);
 		if (sourceRect.getWidth() == 0 || sourceRect.getHeight() == 0)
 		{
-			sourceRect = core::rect<s32>(core::dimension2di(Texture->getSize()));
+			sourceRect = core::rect<s32>(core::dimension2di(Texture->getOriginalSize()));
 		}
 
 		if (ScaleImage)
@@ -200,7 +200,7 @@ void CGUIImage::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 	setImage(in->getAttributeAsTexture("Texture", Texture));
 	setUseAlphaChannel(in->getAttributeAsBool("UseAlphaChannel", UseAlphaChannel));
 	setColor(in->getAttributeAsColor("Color", Color));
-	setScaleImage(in->getAttributeAsBool("ScaleImage", UseAlphaChannel));
+	setScaleImage(in->getAttributeAsBool("ScaleImage", ScaleImage));
 	setSourceRect(in->getAttributeAsRect("SourceRect", SourceRect));
 
 	DrawBounds.UpperLeftCorner.X = in->getAttributeAsFloat("DrawBoundsX1", DrawBounds.UpperLeftCorner.X);

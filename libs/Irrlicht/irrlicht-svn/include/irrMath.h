@@ -243,7 +243,7 @@ namespace core
 
 	//! returns if a equals b, taking possible rounding errors into account
 	template <class T>
-	inline bool equals(const T a, const T b, const T tolerance = roundingError<T>()) 
+	inline bool equals(const T a, const T b, const T tolerance = roundingError<T>())
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
@@ -283,8 +283,8 @@ namespace core
 		// by one integer number. Also works the other way round, an integer of 1 interpreted as float
 		// is for example the smallest possible float number.
 
-		FloatIntUnion32 fa(a);
-		FloatIntUnion32 fb(b);
+		const FloatIntUnion32 fa(a);
+		const FloatIntUnion32 fb(b);
 
 		// Different signs, we could maybe get difference to 0, but so close to 0 using epsilons is better.
 		if ( fa.sign() != fb.sign() )
@@ -296,7 +296,7 @@ namespace core
 		}
 
 		// Find the difference in ULPs.
-		int ulpsDiff = abs_(fa.i- fb.i);
+		const int ulpsDiff = abs_(fa.i- fb.i);
 		if (ulpsDiff <= maxUlpDiff)
 			return true;
 
@@ -483,23 +483,12 @@ namespace core
 		state ^= ( ( -condition >> 31 ) ^ state ) & mask;
 	}
 
+	// NOTE: This is not as exact as the c99/c++11 round function, especially at high numbers starting with 8388609
+	//       (only low number which seems to go wrong is 0.49999997 which is rounded to 1)
+	//      Also negative 0.5 is rounded up not down unlike with the standard function (p.E. input -0.5 will be 0 and not -1)
 	inline f32 round_( f32 x )
 	{
 		return floorf( x + 0.5f );
-	}
-
-	REALINLINE void clearFPUException ()
-	{
-#ifdef IRRLICHT_FAST_MATH
-		return;
-	#ifdef feclearexcept
-		feclearexcept(FE_ALL_EXCEPT);
-	#elif defined(_MSC_VER)
-		__asm fnclex;
-	#elif defined(__GNUC__) && defined(__x86__)
-		__asm__ __volatile__ ("fclex \n\t");
-	#endif
-#endif
 	}
 
 	// calculate: sqrt ( x )
@@ -538,7 +527,10 @@ namespace core
 	REALINLINE f32 reciprocal_squareroot(const f32 f)
 	{
 #if defined ( IRRLICHT_FAST_MATH )
-	#if defined(_MSC_VER)
+		// NOTE: Unlike comment below says I found inaccuracies already at 4'th significant bit.
+		// p.E: Input 1, expected 1, got 0.999755859
+
+	#if defined(_MSC_VER) && !defined(_WIN64)
 		// SSE reciprocal square root estimate, accurate to 12 significant
 		// bits of the mantissa
 		f32 recsqrt;
@@ -570,12 +562,13 @@ namespace core
 	REALINLINE f32 reciprocal( const f32 f )
 	{
 #if defined (IRRLICHT_FAST_MATH)
+		// NOTE: Unlike with 1.f / f the values very close to 0 return -nan instead of inf
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
 		// bi ts of the mantissa
 		// One Newton-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(_WIN64)
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f
@@ -617,7 +610,7 @@ namespace core
 		// bi ts of the mantissa
 		// One Newton-Raphson Iteration:
 		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(_WIN64)
 		f32 rec;
 		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
 		__asm movss xmm1, f               // xmm1 = f
@@ -640,7 +633,7 @@ namespace core
 		return rec;
 */
 /*
-		register u32 x = 0x7F000000 - IR ( p );
+		u32 x = 0x7F000000 - IR ( p );
 		const f32 r = FR ( x );
 		return r * (2.0f - p * r);
 */
@@ -652,94 +645,18 @@ namespace core
 
 	REALINLINE s32 floor32(f32 x)
 	{
-#ifdef IRRLICHT_FAST_MATH
-		const f32 h = 0.5f;
-
-		s32 t;
-
-#if defined(_MSC_VER)
-		__asm
-		{
-			fld	x
-			fsub	h
-			fistp	t
-		}
-#elif defined(__GNUC__)
-		__asm__ __volatile__ (
-			"fsub %2 \n\t"
-			"fistpl %0"
-			: "=m" (t)
-			: "t" (x), "f" (h)
-			: "st"
-			);
-#else
 		return (s32) floorf ( x );
-#endif
-		return t;
-#else // no fast math
-		return (s32) floorf ( x );
-#endif
 	}
-
 
 	REALINLINE s32 ceil32 ( f32 x )
 	{
-#ifdef IRRLICHT_FAST_MATH
-		const f32 h = 0.5f;
-
-		s32 t;
-
-#if defined(_MSC_VER)
-		__asm
-		{
-			fld	x
-			fadd	h
-			fistp	t
-		}
-#elif defined(__GNUC__)
-		__asm__ __volatile__ (
-			"fadd %2 \n\t"
-			"fistpl %0 \n\t"
-			: "=m"(t)
-			: "t"(x), "f"(h)
-			: "st"
-			);
-#else
 		return (s32) ceilf ( x );
-#endif
-		return t;
-#else // not fast math
-		return (s32) ceilf ( x );
-#endif
 	}
 
-
-
+	// NOTE: Please check round_ documentation about some inaccuracies in this compared to standard library round function.
 	REALINLINE s32 round32(f32 x)
 	{
-#if defined(IRRLICHT_FAST_MATH)
-		s32 t;
-
-#if defined(_MSC_VER)
-		__asm
-		{
-			fld   x
-			fistp t
-		}
-#elif defined(__GNUC__)
-		__asm__ __volatile__ (
-			"fistpl %0 \n\t"
-			: "=m"(t)
-			: "t"(x)
-			: "st"
-			);
-#else
 		return (s32) round_(x);
-#endif
-		return t;
-#else // no fast math
-		return (s32) round_(x);
-#endif
 	}
 
 	inline f32 f32_max3(const f32 a, const f32 b, const f32 c)
@@ -766,4 +683,3 @@ namespace core
 #endif
 
 #endif
-

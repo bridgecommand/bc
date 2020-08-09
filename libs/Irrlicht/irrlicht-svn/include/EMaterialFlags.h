@@ -66,6 +66,9 @@ namespace video
 		EMF_NORMALIZE_NORMALS = 0x1000,
 
 		//! Access to all layers texture wrap settings. Overwrites separate layer settings.
+		/** Note that if you want to change TextureWrapU, TextureWrapV, TextureWrapW 
+		independently, then you can't work with this flag, but will have to set the variables
+		directly. */
 		EMF_TEXTURE_WRAP = 0x2000,
 
 		//! AntiAliasing mode

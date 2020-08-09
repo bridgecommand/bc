@@ -99,6 +99,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const _IRR_OVERRIDE_;
 
 		virtual ITexture* createDeviceDependentTexture(const io::path& name, IImage* image) _IRR_OVERRIDE_;
+		virtual ITexture* createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image) _IRR_OVERRIDE_;
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
@@ -120,7 +121,7 @@ namespace video
 	protected:
 
 		//! sets a render target
-		void setRenderTarget(video::CImage* image);
+		void setRenderTargetImage(video::CImage* image);
 
 		//! sets the current Texture
 		bool setActiveTexture(u32 stage, video::ITexture* texture);

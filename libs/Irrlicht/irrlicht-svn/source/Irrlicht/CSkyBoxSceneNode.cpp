@@ -39,7 +39,7 @@ CSkyBoxSceneNode::CSkyBoxSceneNode(video::ITexture* top, video::ITexture* bottom
 	video::SMaterial mat;
 	mat.Lighting = false;
 	mat.ZBuffer = video::ECFN_DISABLED;
-	mat.ZWriteEnable = false;
+	mat.ZWriteEnable = video::EZW_OFF;
 	mat.AntiAliasing=0;
 	mat.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	mat.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
@@ -196,7 +196,7 @@ void CSkyBoxSceneNode::render()
 			core::rect<s32> rctDest(core::position2d<s32>(-1,0),
 									core::dimension2di(driver->getCurrentRenderTargetSize()));
 			core::rect<s32> rctSrc(core::position2d<s32>(0,0),
-									core::dimension2di(tex->getSize()));
+									core::dimension2di(tex->getOriginalSize()));
 
 			driver->draw2DImage(tex, rctDest, rctSrc);
 		}
@@ -221,11 +221,7 @@ void CSkyBoxSceneNode::OnRegisterSceneNode()
 }
 
 
-//! returns the material based on the zero based index i. To get the amount
-//! of materials used by this scene node, use getMaterialCount().
-//! This function is needed for inserting the node into the scene hirachy on a
-//! optimal position for minimizing renderstate changes, but can also be used
-//! to directly modify the material of a scene node.
+//! returns the material based on the zero based index i.
 video::SMaterial& CSkyBoxSceneNode::getMaterial(u32 i)
 {
 	return Material[i];

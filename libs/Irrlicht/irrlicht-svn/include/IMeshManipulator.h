@@ -144,18 +144,44 @@ namespace scene
 
 		//! Applies a transformation to a mesh
 		/** \param mesh Mesh on which the operation is performed.
-		\param m transformation matrix. */
-		void transform(IMesh* mesh, const core::matrix4& m) const
+		\param m transformation matrix. 
+		\param normalsUpdate When 0 - don't update normals. 
+		                     When 1 - update normals with inverse transposed of the transformation matrix
+		*/
+		void transform(IMesh* mesh, const core::matrix4& m, u32 normalsUpdate = 0) const
 		{
 			apply(SVertexPositionTransformManipulator(m), mesh, true);
+
+			if ( normalsUpdate == 1 )
+			{
+				core::matrix4 invT;
+				if ( m.getInverse(invT) )
+				{
+					invT = invT.getTransposed();
+					apply(SVertexNormalTransformManipulator(invT), mesh, false);
+				}
+			}
 		}
 
 		//! Applies a transformation to a meshbuffer
 		/** \param buffer Meshbuffer on which the operation is performed.
-		\param m transformation matrix. */
-		void transform(IMeshBuffer* buffer, const core::matrix4& m) const
+		\param m transformation matrix. 
+		\param normalsUpdate When 0 - don't update normals. 
+		                     When 1 - update normals with inverse transposed of the transformation matrix
+		*/
+		void transform(IMeshBuffer* buffer, const core::matrix4& m, u32 normalsUpdate = 0) const
 		{
 			apply(SVertexPositionTransformManipulator(m), buffer, true);
+
+			if ( normalsUpdate == 1 )
+			{
+				core::matrix4 invT;
+				if ( m.getInverse(invT) )
+				{
+					invT = invT.getTransposed();
+					apply(SVertexNormalTransformManipulator(invT), buffer, false);
+				}
+			}
 		}
 
 		//! Applies a transformation to a mesh

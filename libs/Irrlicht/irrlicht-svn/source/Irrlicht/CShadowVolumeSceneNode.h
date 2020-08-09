@@ -33,6 +33,17 @@ namespace scene
 		/** Called each render cycle from Animated Mesh SceneNode render method. */
 		virtual void updateShadowVolumes() _IRR_OVERRIDE_;
 
+		//! Set optimization used to create shadow volumes
+		/** Default is ESV_SILHOUETTE_BY_POS. If the shadow 
+		looks bad then give ESV_NONE a try (which will be slower). */
+		virtual void setOptimization(ESHADOWVOLUME_OPTIMIZATION optimization) _IRR_OVERRIDE_;
+
+		//! Get currently active optimization used to create shadow volumes
+		virtual ESHADOWVOLUME_OPTIMIZATION getOptimization() const _IRR_OVERRIDE_
+		{
+			return Optimization;
+		}
+
 		//! pre render method
 		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
 
@@ -49,8 +60,8 @@ namespace scene
 
 		typedef core::array<core::vector3df> SShadowVolume;
 
-		void createShadowVolume(const core::vector3df& pos, bool isDirectional=false);
-		u32 createEdgesAndCaps(const core::vector3df& light, SShadowVolume* svp, core::aabbox3d<f32>* bb);
+		void createShadowVolume(const core::vector3df& pos, bool isDirectional);
+		u32 createEdgesAndCaps(const core::vector3df& light, bool isDirectional, SShadowVolume* svp, core::aabbox3d<f32>* bb);
 
 		//! Generates adjacency information based on mesh indices.
 		void calculateAdjacency();
@@ -69,6 +80,7 @@ namespace scene
 		core::array<u16> Edges;
 		// tells if face is front facing
 		core::array<bool> FaceData;
+		bool AdjacencyDirtyFlag;
 
 		const scene::IMesh* ShadowMesh;
 
@@ -77,8 +89,8 @@ namespace scene
 		u32 ShadowVolumesUsed;
 
 		f32 Infinity;
-
 		bool UseZFailMethod;
+		ESHADOWVOLUME_OPTIMIZATION Optimization;
 	};
 
 } // end namespace scene

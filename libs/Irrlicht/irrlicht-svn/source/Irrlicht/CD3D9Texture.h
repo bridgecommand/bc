@@ -28,11 +28,11 @@ class CD3D9Texture : public ITexture
 public:
 	CD3D9Texture(const io::path& name, const core::array<IImage*>& image, E_TEXTURE_TYPE type, CD3D9Driver* driver);
 
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name, E_TEXTURE_TYPE type, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	virtual ~CD3D9Texture();
 
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) _IRR_OVERRIDE_;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) _IRR_OVERRIDE_;
 
 	virtual void unlock() _IRR_OVERRIDE_;
 
@@ -53,7 +53,19 @@ private:
 
 	void getImageValues(const IImage* image);
 
-	void uploadTexture(u32 layer, u32 level, void* data);
+	void uploadTexture(void* data, u32 mipmapLevel, u32 layer);
+
+	//! Helper function for mipmap generation.
+	bool createManualMipMaps(u32 level);
+
+	//! Helper function for mipmap generation.
+	void copy16BitMipMap(char* src, char* tgt,
+		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
+
+	//! Helper function for mipmap generation.
+	void copy32BitMipMap(char* src, char* tgt,
+		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
+
 
 	CD3D9Driver* Driver;
 
@@ -62,8 +74,9 @@ private:
 	bool LockReadOnly;
 	void* LockData;
 	u32 LockLayer;
+	u32 MipLevelLocked;
 
-	bool AutoGenerateMipMaps;
+	bool HardwareMipMaps;
 
 	IDirect3DDevice9* Device;
 	IDirect3DTexture9* Texture;

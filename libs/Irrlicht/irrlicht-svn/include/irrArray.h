@@ -76,7 +76,7 @@ public:
 		allocated = new_size;
 
 		// copy old data
-		s32 end = used < new_size ? used : new_size;
+		const s32 end = used < new_size ? used : new_size;
 
 		for (s32 i=0; i<end; ++i)
 		{
@@ -604,6 +604,9 @@ public:
 		other.is_sorted = helper_is_sorted;
 	}
 
+	typedef TAlloc allocator_type;
+	typedef T value_type;
+	typedef u32 size_type;
 
 private:
 	T* data;

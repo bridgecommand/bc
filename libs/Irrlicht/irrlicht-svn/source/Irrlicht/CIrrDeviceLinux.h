@@ -156,12 +156,12 @@ namespace irr
 		void initXAtoms();
 
 		bool switchToFullscreen(bool reset=false);
-	
-#ifdef _IRR_COMPILE_WITH_X11_	
+
+#ifdef _IRR_COMPILE_WITH_X11_
 		bool createInputContext();
 		void destroyInputContext();
 		EKEY_CODE getKeyCode(XEvent &event);
-#endif	
+#endif
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -247,16 +247,18 @@ namespace irr
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
+			virtual const core::position2d<s32>& getPosition(bool updateCursor) _IRR_OVERRIDE_
 			{
-				updateCursorPos();
+				if ( updateCursor )
+					updateCursorPos();
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
+			virtual core::position2d<f32> getRelativePosition(bool updateCursor) _IRR_OVERRIDE_
 			{
-				updateCursorPos();
+				if ( updateCursor )
+					updateCursorPos();
 
 				if (!UseReferenceRect)
 				{
@@ -338,15 +340,6 @@ namespace irr
 					&tmp, &tmp,
 					&itmp1, &itmp2,
 					&CursorPos.X, &CursorPos.Y, &maskreturn);
-
-				if (CursorPos.X < 0)
-					CursorPos.X = 0;
-				if (CursorPos.X > (s32) Device->Width)
-					CursorPos.X = Device->Width;
-				if (CursorPos.Y < 0)
-					CursorPos.Y = 0;
-				if (CursorPos.Y > (s32) Device->Height)
-					CursorPos.Y = Device->Height;
 #endif
 			}
 

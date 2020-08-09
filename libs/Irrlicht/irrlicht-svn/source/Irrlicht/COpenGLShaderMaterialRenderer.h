@@ -21,7 +21,7 @@ namespace video
 class COpenGLDriver;
 class IShaderConstantSetCallBack;
 
-//! Class for using vertex and pixel shaders with OpenGL
+//! Class for using vertex and pixel shaders with OpenGL (asm not glsl!)
 class COpenGLShaderMaterialRenderer : public IMaterialRenderer
 {
 public:
@@ -44,6 +44,12 @@ public:
 	//! Returns if the material is transparent.
 	virtual bool isTransparent() const _IRR_OVERRIDE_;
 
+	//! Access the callback provided by the users when creating shader materials
+	virtual IShaderConstantSetCallBack* getShaderConstantSetCallBack() const _IRR_OVERRIDE_
+	{ 
+		return CallBack;
+	}
+
 protected:
 
 	//! constructor only for use by derived classes who want to
@@ -63,6 +69,13 @@ protected:
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 
+	// I didn't write this, but here's my understanding:
+	// Those flags seem to be exclusive so far (so could be an enum). 
+	// Maybe the idea was to make them non-exclusive in future (basically having a shader-material)
+	// Actually currently there's not even any need to cache them (probably even slower than not doing so).
+	// They seem to be mostly for downward compatibility. 
+	// I suppose the idea is to use SMaterial.BlendOperation + SMaterial.BlendFactor and a simple non-transparent type as base for more flexibility in the future.
+	// Note that SMaterial.BlendOperation + SMaterial.BlendFactor are in some drivers already evaluated before OnSetMaterial.
 	bool Alpha;
 	bool Blending;
 	bool FixedBlending;

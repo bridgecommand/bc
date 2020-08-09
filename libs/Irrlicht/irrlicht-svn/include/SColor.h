@@ -29,9 +29,12 @@ namespace video
 		ECF_R5G6B5,
 
 		//! 24 bit color, no alpha channel, but 8 bit for red, green and blue.
+		//! Warning: 24 bit formats tend to be badly supported. Depending on driver it's usually converted to another
+		//           format or even not working at all. It's mostly better to use 16-bit or 32-bit formats.
 		ECF_R8G8B8,
 
 		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
+		//! Warning: This tends to be BGRA in memory (it's ARGB on file, but with usual big-endian memory it's flipped)
 		ECF_A8R8G8B8,
 
 		/** Compressed image formats. **/
@@ -447,7 +450,7 @@ namespace video
 
 		//! Interpolates the color with a f32 value to another color
 		/** \param other: Other color
-		\param d: value between 0.0f and 1.0f
+		\param d: value between 0.0f and 1.0f. d=0 returns other, d=1 returns this, values between interpolate.
 		\return Interpolated color. */
 		SColor getInterpolated(const SColor &other, f32 d) const
 		{
@@ -502,7 +505,7 @@ namespace video
 					break;
 				case ECF_R8G8B8:
 					{
-						u8* p = (u8*)data;
+						const u8* p = (u8*)data;
 						set(255, p[0],p[1],p[2]);
 					}
 					break;

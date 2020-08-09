@@ -86,6 +86,8 @@ public:
 	static void convert_R5G6B5toA1R5G5B5(const void* sP, s32 sN, void* dP);
 	static void convert_viaFormat(const void* sP, ECOLOR_FORMAT sF, s32 sN,
 				void* dP, ECOLOR_FORMAT dF);
+	// Check if convert_viaFormat is usable
+	static bool canConvertFormat(ECOLOR_FORMAT sourceFormat, ECOLOR_FORMAT destFormat);
 };
 
 

@@ -83,7 +83,6 @@ namespace
 	const core::stringc scaleNodeName =        "scale";
 	const core::stringc translateNodeName =    "translate";
 	const core::stringc skewNodeName =         "skew";
-	const core::stringc bboxNodeName =         "boundingbox";
 	const core::stringc minNodeName =          "min";
 	const core::stringc maxNodeName =          "max";
 	const core::stringc instanceName =         "instance";
@@ -144,14 +143,14 @@ namespace
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
-			scene::ISceneManager* mgr)
+			scene::ISceneManager* mgr) _IRR_OVERRIDE_
 		{
 			// empty implementation
 			return 0;
 		}
 
 		//! returns id of this prefab
-		virtual const core::stringc& getId()
+		virtual const core::stringc& getId() _IRR_OVERRIDE_
 		{
 			return Id;
 		}
@@ -178,7 +177,7 @@ namespace
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
-			scene::ISceneManager* mgr)
+			scene::ISceneManager* mgr) _IRR_OVERRIDE_
 		{
 			#ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA: Constructing light instance", Id.c_str(), ELL_DEBUG);
@@ -214,7 +213,7 @@ namespace
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
-			scene::ISceneManager* mgr)
+			scene::ISceneManager* mgr) _IRR_OVERRIDE_
 		{
 			#ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA: Constructing mesh instance", Id.c_str(), ELL_DEBUG);
@@ -252,7 +251,7 @@ namespace
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
-			scene::ISceneManager* mgr)
+			scene::ISceneManager* mgr) _IRR_OVERRIDE_
 		{
 			#ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA: Constructing camera instance", Id.c_str(), ELL_DEBUG);
@@ -286,7 +285,7 @@ namespace
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
-			scene::ISceneManager* mgr)
+			scene::ISceneManager* mgr) _IRR_OVERRIDE_
 		{
 			#ifdef COLLADA_READER_DEBUG
 			os::Printer::log("COLLADA: Constructing scene instance", Id.c_str(), ELL_DEBUG);
@@ -332,6 +331,22 @@ CColladaFileLoader::CColladaFileLoader(scene::ISceneManager* smgr,
 	#ifdef _DEBUG
 	setDebugName("CColladaFileLoader");
 	#endif
+
+	// Escape characters, see https://www.w3schools.com/tags/ref_urlencode.asp
+	// TODO: There should be more, but usually people just escape the space character anyway.
+	//       And I'm not sure if our xml files are utf-8 or windows-1252, so let's avoid the ambiguous ones.
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(' ', "%20"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('"', "%22"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('#', "%23"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('$', "%24"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('%', "%25"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('&', "%26"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('\'', "%27"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('(', "%28"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL(')', "%29"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('/', "%2F"));
+	EscapeCharsAnyURI.push_back(EscapeCharacterURL('\\', "%5C"));
+
 
 	TextureLoader = new CMeshTextureLoader( FileSystem, SceneManager->getVideoDriver() );
 }
@@ -645,7 +660,6 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 	// read the scene
 
 	core::matrix4 transform; // transformation of this node
-	core::aabbox3df bbox;
 	scene::IDummyTransformationSceneNode* node = 0;
 
 	while(reader->read())
@@ -672,9 +686,6 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 			else
 			if (translateNodeName == reader->getNodeName())
 				transform *= readTranslateNode(reader);
-			else
-			if (bboxNodeName == reader->getNodeName())
-				readBboxNode(reader, bbox);
 			else
 			if (nodeSectionName == reader->getNodeName())
 			{
@@ -751,7 +762,6 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 	#endif
 
 	core::matrix4 transform; // transformation of this node
-	core::aabbox3df bbox;
 	scene::ISceneNode* node = 0; // instance
 	CScenePrefab* nodeprefab = 0; // prefab for library_nodes usage
 
@@ -791,9 +801,6 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 			else
 			if (translateNodeName == reader->getNodeName())
 				transform *= readTranslateNode(reader);
-			else
-			if (bboxNodeName == reader->getNodeName())
-				readBboxNode(reader, bbox);
 			else
 			if ((instanceName == reader->getNodeName()) ||
 				(instanceNodeName == reader->getNodeName()) ||
@@ -879,10 +886,20 @@ core::matrix4 CColladaFileLoader::readLookAtNode(io::IXMLReaderUTF8* reader)
 	f32 floats[9];
 	readFloatsInsideElement(reader, floats, 9);
 
-	mat.buildCameraLookAtMatrixLH(
-		core::vector3df(floats[0], floats[1], floats[2]),
-		core::vector3df(floats[3], floats[4], floats[5]),
-		core::vector3df(floats[6], floats[7], floats[8]));
+	if (FlipAxis)
+	{
+		mat.buildCameraLookAtMatrixLH(
+			core::vector3df(floats[0], floats[2], floats[1]),
+			core::vector3df(floats[3], floats[5], floats[4]),
+			core::vector3df(floats[6], floats[8], floats[7]));
+	}
+	else
+	{
+		mat.buildCameraLookAtMatrixLH(
+			core::vector3df(floats[0], floats[1], floats[2]*-1.f),
+			core::vector3df(floats[3], floats[4], floats[5]*-1.f),
+			core::vector3df(floats[6], floats[7], floats[8]*-1.f));
+	}
 
 	return mat;
 }
@@ -903,6 +920,8 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 	readFloatsInsideElement(reader, floats, 7);
 
 	// build skew matrix from these 7 floats
+	// TODO: missing example, not sure if rotation is in correct direction.
+	// TODO: shouldn't FlipAxis also be regarded here?
 	core::quaternion q;
 	q.fromAngleAxis(floats[0]*core::DEGTORAD, core::vector3df(floats[1], floats[2], floats[3]));
 	mat = q.getMatrix();
@@ -931,52 +950,11 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 		mat[6]=0.f;
 	}
 
-	return mat;
+	if ( FlipAxis )
+		return mat;
+	else
+		return flipZAxis(mat);
 }
-
-
-//! reads a <boundingbox> element and its content and stores it in bbox
-void CColladaFileLoader::readBboxNode(io::IXMLReaderUTF8* reader,
-		core::aabbox3df& bbox)
-{
-	#ifdef COLLADA_READER_DEBUG
-	os::Printer::log("COLLADA reading boundingbox node", ELL_DEBUG);
-	#endif
-
-	bbox.reset(core::aabbox3df());
-
-	if (reader->isEmptyElement())
-		return;
-
-	f32 floats[3];
-
-	while(reader->read())
-	{
-		if (reader->getNodeType() == io::EXN_ELEMENT)
-		{
-			if (minNodeName == reader->getNodeName())
-			{
-				readFloatsInsideElement(reader, floats, 3);
-				bbox.MinEdge.set(floats[0], floats[1], floats[2]);
-			}
-			else
-			if (maxNodeName == reader->getNodeName())
-			{
-				readFloatsInsideElement(reader, floats, 3);
-				bbox.MaxEdge.set(floats[0], floats[1], floats[2]);
-			}
-			else
-				skipSection(reader, true); // ignore all other sections
-		}
-		else
-		if (reader->getNodeType() == io::EXN_ELEMENT_END)
-		{
-			if (bboxNodeName == reader->getNodeName())
-				break;
-		}
-	}
-}
-
 
 //! reads a <matrix> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
@@ -990,6 +968,7 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 		return mat;
 
 	readFloatsInsideElement(reader, mat.pointer(), 16);
+
 	// put translation into the correct place
 	if (FlipAxis)
 	{
@@ -1008,7 +987,7 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 		return mat2;
 	}
 	else
-		return core::matrix4(mat, core::matrix4::EM4CONST_TRANSPOSED);
+		return flipZAxis(core::matrix4(mat, core::matrix4::EM4CONST_TRANSPOSED));
 }
 
 
@@ -1026,7 +1005,7 @@ core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader
 	f32 floats[1];
 	readFloatsInsideElement(reader, floats, 1);
 
-	// TODO: build perspecitve matrix from this float
+	// TODO: build perspective matrix from this float
 
 	os::Printer::log("COLLADA loader warning: <perspective> not implemented yet.", ELL_WARNING);
 
@@ -1047,6 +1026,7 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 
 	f32 floats[4];
 	readFloatsInsideElement(reader, floats, 4);
+	floats[3] *= -1.f; // to left handed rotation
 
 	if (!core::iszero(floats[3]))
 	{
@@ -1054,7 +1034,7 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 		if (FlipAxis)
 			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[2], floats[1]));
 		else
-			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]));
+			q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]*-1.f));
 		return q.getMatrix();
 	}
 	else
@@ -1102,7 +1082,7 @@ core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 	if (FlipAxis)
 		mat.setTranslation(core::vector3df(floats[0], floats[2], floats[1]));
 	else
-		mat.setTranslation(core::vector3df(floats[0], floats[1], floats[2]));
+		mat.setTranslation(core::vector3df(floats[0], floats[1], floats[2]*-1.f));
 
 	return mat;
 }
@@ -1245,6 +1225,7 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 					reader->read();
 					image.Source = reader->getNodeData();
 					image.Source.trim();
+					unescape(image.Source);
 					image.SourceIsFilename=true;
 				}
 				else
@@ -1560,7 +1541,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	if ((effect->Transparency != 0.0f) && (effect->Transparency != 1.0f))
 	{
 		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
-		effect->Mat.ZWriteEnable = false;
+		effect->Mat.ZWriteEnable = video::EZW_OFF;
 	}
 
 	video::E_TEXTURE_CLAMP twu = video::ETC_REPEAT;
@@ -1677,7 +1658,7 @@ void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, con
 						if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
 						{
 							toBind[i]->getMaterial().MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
-							toBind[i]->getMaterial().ZWriteEnable = false;
+							toBind[i]->getMaterial().ZWriteEnable = video::EZW_OFF;
 						}
 					}
 					SceneManager->getMeshManipulator()->setVertexColors(&tmpmesh,material->Mat.DiffuseColor);
@@ -2181,7 +2162,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						else
 						{
 							vtx.Pos.Y = localInputs[k].Data[idx+1];
-							vtx.Pos.Z = localInputs[k].Data[idx+2];
+							vtx.Pos.Z = localInputs[k].Data[idx+2] * -1.f;
 						}
 						break;
 					case ECIS_NORMAL:
@@ -2194,7 +2175,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						else
 						{
 							vtx.Normal.Y = localInputs[k].Data[idx+1];
-							vtx.Normal.Z = localInputs[k].Data[idx+2];
+							vtx.Normal.Z = localInputs[k].Data[idx+2] * -1.f;
 						}
 						break;
 					case ECIS_TEXCOORD:
@@ -2235,26 +2216,14 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			if (polygonsSectionName == polygonType &&
 				indices.size() > 3)
 			{
-				// need to tesselate for polygons of 4 or more vertices
+				// need to tessellate for polygons of 4 or more vertices
 				// for now we naively turn interpret it as a triangle fan
-				// as full tesselation is problematic
-				if (FlipAxis)
+				// as full tessellation is problematic
+				for (u32 ind = 0; ind+2 < indices.size(); ++ind)
 				{
-					for (u32 ind = indices.size()-3; ind>0 ; --ind)
-					{
-						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-					}
-				}
-				else
-				{
-					for (u32 ind = 0; ind+2 < indices.size(); ++ind)
-					{
-						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-					}
+					mbuffer->Indices.push_back(indices[0]);
+					mbuffer->Indices.push_back(indices[ind+2]);
+					mbuffer->Indices.push_back(indices[ind+1]);
 				}
 			}
 			else
@@ -2262,18 +2231,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				// it's just triangles
 				for (u32 ind = 0; ind < indices.size(); ind+=3)
 				{
-					if (FlipAxis)
-					{
-						mbuffer->Indices.push_back(indices[ind+2]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+0]);
-					}
-					else
-					{
-						mbuffer->Indices.push_back(indices[ind+0]);
-						mbuffer->Indices.push_back(indices[ind+1]);
-						mbuffer->Indices.push_back(indices[ind+2]);
-					}
+					mbuffer->Indices.push_back(indices[ind+2]);
+					mbuffer->Indices.push_back(indices[ind+1]);
+					mbuffer->Indices.push_back(indices[ind+0]);
 				}
 			}
 
@@ -2799,8 +2759,8 @@ void CColladaFileLoader::clearData()
 //! changes the XML URI into an internal id
 void CColladaFileLoader::uriToId(core::stringc& str)
 {
-	// currently, we only remove the # from the begin if there
-	// because we simply don't support referencing other files.
+	// Currently, we only remove the # from the beginning
+	// as we don't support referencing other files.
 	if (!str.size())
 		return;
 
@@ -2981,6 +2941,60 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader, io::IAttribut
 			{
 				if (newParamName == reader->getNodeName())
 					break;
+			}
+		}
+	}
+}
+
+core::matrix4 CColladaFileLoader::flipZAxis(const core::matrix4& m)
+{
+	core::matrix4 matrix(m);
+	matrix[2] *= -1.f;
+	matrix[6] *= -1.f;
+	matrix[8] *= -1.f;
+	matrix[9] *= -1.f;
+	matrix[11] *= -1.f;
+	matrix[14] *= -1.f;	
+
+	return matrix;
+}
+
+void CColladaFileLoader::unescape(irr::core::stringc& uri)
+{
+	u32 len = uri.size();
+	for (u32 i=0; i<len-1; ++i)
+	{
+		if (uri[i] == '%' )
+		{
+			if (uri[i+1] == '%')
+			{
+				++i;
+				continue;
+			}
+
+			for (u32 e = 0; e < EscapeCharsAnyURI.size(); ++e)
+			{
+				const irr::core::stringc& escapeString = EscapeCharsAnyURI[e].Escape;
+				const u32 escapeLen = escapeString.size();
+				bool equals = true;
+				for ( u32 c = 1; c<escapeLen; ++c)	// string compare (and we already know first on fits as always '%')
+				{
+					if ( uri[i+c] != escapeString[c] )
+					{
+						equals = false;
+						break;
+					}
+				}
+
+				if ( equals )
+				{
+					uri[i] = EscapeCharsAnyURI[e].Character;
+					// TODO: core::string has no erase function which erases more than one char at a time currently
+					for ( u32 a=0;a<escapeLen-1; ++a)
+						uri.erase(i+1);
+					len -= escapeLen-1;
+					break;
+				}
 			}
 		}
 	}

@@ -262,6 +262,20 @@ namespace scene
 		core::matrix4 Transformation;
 	};
 
+	//! Vertex manipulator which transforms the normal of the vertex
+	class SVertexNormalTransformManipulator : public IVertexManipulator
+	{
+	public:
+		SVertexNormalTransformManipulator(const core::matrix4& m) : Transformation(m) {}
+		template <typename VType>
+		void operator()(VType& vertex) const
+		{
+			Transformation.transformVect(vertex.Normal);
+		}
+	private:
+		core::matrix4 Transformation;
+	};
+
 	//! Vertex manipulator which scales the TCoords of the vertex
 	class SVertexTCoordsScaleManipulator : public IVertexManipulator
 	{

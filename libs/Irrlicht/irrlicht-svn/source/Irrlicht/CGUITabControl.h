@@ -25,19 +25,9 @@ namespace gui
 	public:
 
 		//! constructor
-		CGUITab(s32 number, IGUIEnvironment* environment,
+		CGUITab(IGUIEnvironment* environment,
 			IGUIElement* parent, const core::rect<s32>& rectangle,
 			s32 id);
-
-		//! destructor
-		//virtual ~CGUITab();
-
-		//! Returns number of this tab in tabcontrol. Can be accessed
-		//! later IGUITabControl::getTab() by this number.
-		virtual s32 getNumber() const _IRR_OVERRIDE_;
-
-		//! Sets the number
-		virtual void setNumber(s32 n);
 
 		//! draws the element and its children
 		virtual void draw() _IRR_OVERRIDE_;
@@ -65,12 +55,8 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
 
-		//! only for internal use by CGUITabControl
-		void refreshSkinColors();
-
 	private:
 
-		s32 Number;
 		video::SColor BackColor;
 		bool OverrideTextColorEnabled;
 		video::SColor TextColor;
@@ -94,11 +80,16 @@ namespace gui
 		//! Adds a tab
 		virtual IGUITab* addTab(const wchar_t* caption, s32 id=-1) _IRR_OVERRIDE_;
 
-		//! Adds a tab that has already been created
-		virtual void addTab(CGUITab* tab);
+		//! Adds an existing tab
+		virtual s32 addTab(IGUITab* tab) _IRR_OVERRIDE_;
 
 		//! Insert the tab at the given index
 		virtual IGUITab* insertTab(s32 idx, const wchar_t* caption, s32 id=-1) _IRR_OVERRIDE_;
+
+		//! Insert an existing tab
+		/** Note that it will also add the tab as a child of this TabControl.
+		\return Index of added tab (should be same as the one passed) or -1 for failure*/
+		virtual s32 insertTab(s32 idx, IGUITab* tab, bool serializationMode) _IRR_OVERRIDE_;
 
 		//! Removes a tab from the tabcontrol
 		virtual void removeTab(s32 idx) _IRR_OVERRIDE_;
@@ -117,6 +108,9 @@ namespace gui
 
 		//! Brings a tab to front.
 		virtual bool setActiveTab(IGUITab *tab) _IRR_OVERRIDE_;
+
+		//! For given given tab find it's zero-based index (or -1 for not found)
+		virtual s32 getTabIndex(const IGUIElement *tab) const _IRR_OVERRIDE_;
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const _IRR_OVERRIDE_;
@@ -173,13 +167,15 @@ namespace gui
 		bool needScrollControl( s32 startIndex=0, bool withScrollControl=false );
 		s32 calcTabWidth(s32 pos, IGUIFont* font, const wchar_t* text, bool withScrollControl ) const;
 		core::rect<s32> calcTabPos();
+		void setVisibleTab(s32 idx);
+		void removeTabButNotChild(s32 idx);
 
 		void recalculateScrollButtonPlacement();
 		void recalculateScrollBar();
 		void refreshSprites();
 
-		core::array<CGUITab*> Tabs;	// CGUITab* because we need setNumber (which is certainly not nice)
-		s32 ActiveTab;
+		core::array<IGUITab*> Tabs;
+		s32 ActiveTabIndex;
 		bool Border;
 		bool FillBackground;
 		bool ScrollControl;

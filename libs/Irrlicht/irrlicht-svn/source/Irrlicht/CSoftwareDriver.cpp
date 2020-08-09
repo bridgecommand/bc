@@ -59,7 +59,7 @@ CSoftwareDriver::CSoftwareDriver(const core::dimension2d<u32>& windowSize, bool 
 
 	// select render target
 
-	setRenderTarget(BackBuffer);
+	setRenderTargetImage(BackBuffer);
 
 	// select the right renderer
 
@@ -139,7 +139,7 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 					renderer = ETR_TEXTURE_GOURAUD_ADD;
 				}
 				else
-				if ((Material.ZBuffer==ECFN_DISABLED) && !Material.ZWriteEnable)
+				if ((Material.ZBuffer==ECFN_DISABLED) && Material.ZWriteEnable == video::EZW_OFF)
 					renderer = ETR_TEXTURE_GOURAUD_NOZ;
 				else
 				{
@@ -252,6 +252,11 @@ ITexture* CSoftwareDriver::createDeviceDependentTexture(const io::path& name, II
 	return texture;
 }
 
+ITexture* CSoftwareDriver::createDeviceDependentTextureCubemap(const io::path& name, const core::array<IImage*>& image)
+{
+	return 0;
+}
+
 bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor clearColor, f32 clearDepth, u8 clearStencil)
 {
 	if (target && target->getDriverType() != EDT_SOFTWARE)
@@ -269,11 +274,11 @@ bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SC
 	if (RenderTargetTexture)
 	{
 		RenderTargetTexture->grab();
-		setRenderTarget(((CSoftwareTexture*)RenderTargetTexture)->getTexture());
+		setRenderTargetImage(((CSoftwareTexture*)RenderTargetTexture)->getTexture());
 	}
 	else
 	{
-		setRenderTarget(BackBuffer);
+		setRenderTargetImage(BackBuffer);
 	}
 
 	clearBuffers(clearFlag, clearColor, clearDepth, clearStencil);
@@ -283,7 +288,7 @@ bool CSoftwareDriver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SC
 
 
 //! sets a render target
-void CSoftwareDriver::setRenderTarget(video::CImage* image)
+void CSoftwareDriver::setRenderTargetImage(video::CImage* image)
 {
 	if (RenderTargetSurface)
 		RenderTargetSurface->drop();
@@ -491,7 +496,7 @@ void CSoftwareDriver::drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices
 	worldinv.makeInverse();
 
 	// calculate view frustum planes
-	scene::SViewFrustum frustum(TransformationMatrix[ETS_PROJECTION] * TransformationMatrix[ETS_VIEW]);
+	scene::SViewFrustum frustum(TransformationMatrix[ETS_PROJECTION] * TransformationMatrix[ETS_VIEW], true);
 
 	// copy and transform clipping planes ignoring far plane
 	core::plane3df planes[5]; // ordered by near, left, right, bottom, top
@@ -771,7 +776,7 @@ void CSoftwareDriver::OnResize(const core::dimension2d<u32>& size)
 		BackBuffer = new CImage(ECF_A1R5G5B5, realSize);
 
 		if (resetRT)
-			setRenderTarget(BackBuffer);
+			setRenderTargetImage(BackBuffer);
 	}
 }
 

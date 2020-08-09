@@ -88,10 +88,15 @@ bool CD3D9HLSLMaterialRenderer::createHLSLVertexShader(const char* vertexShaderP
 
 #ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
+	size_t dataLen_t = strlen(vertexShaderProgram);
+	UINT dataLen = (UINT)dataLen_t;
+	if ( dataLen != dataLen_t )
+		return false;
+
 	// compile without debug info
 	HRESULT h = stubD3DXCompileShader(
 		vertexShaderProgram,
-		strlen(vertexShaderProgram),
+		dataLen,
 		0, // macros
 		0, // no includes
 		shaderEntryPointName,
@@ -190,10 +195,15 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 
 #ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
+	size_t dataLen_t = strlen(pixelShaderProgram);
+	UINT dataLen = (UINT)dataLen_t;
+	if ( dataLen != dataLen_t )
+		return false;
+
 	// compile without debug info
 	HRESULT h = stubD3DXCompileShader(
 		pixelShaderProgram,
-		strlen(pixelShaderProgram),
+		dataLen,
 		0, // macros
 		0, // no includes
 		shaderEntryPointName,
@@ -357,6 +367,14 @@ bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, s32 index,
 	}
 
 	return true;
+}
+
+
+bool CD3D9HLSLMaterialRenderer::setVariable(bool vertexShader, s32 index,
+					const u32* ints, int count)
+{
+	os::Printer::log("Error DirectX 9 does not support unsigned integer constants in shaders.", ELL_ERROR);
+	return false;
 }
 
 

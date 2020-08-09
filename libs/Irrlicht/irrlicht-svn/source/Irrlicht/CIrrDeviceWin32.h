@@ -148,11 +148,9 @@ namespace irr
 				while ( gotCursorInfo )
 				{
 #ifdef CURSOR_SUPPRESSED
-					// new flag for Windows 8, where cursor
-					// might be suppressed for touch interface
-					if (info.flags == CURSOR_SUPPRESSED)
+					// Since Windows 8 the cursor can be suppressed by a touch interface
+					if (visible && info.flags == CURSOR_SUPPRESSED)
 					{
-						visible=false;
 						break;
 					}
 #endif
@@ -173,6 +171,16 @@ namespace irr
 					// yes, it really must be set each time
 					info.cbSize = sizeof(CURSORINFO);
 					gotCursorInfo = GetCursorInfo(&info);
+
+#ifdef CURSOR_SUPPRESSED
+					// Not sure if a cursor which we tried to hide still can be suppressed.
+					// I have no touch-display for testing this and MSDN doesn't describe it.
+					// But adding this check shouldn't hurt and might prevent an endless loop.
+					if (!visible && info.flags == CURSOR_SUPPRESSED)
+					{
+						break;
+					}
+#endif
 				}
 				IsVisible = visible;
 			}
@@ -224,16 +232,18 @@ namespace irr
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
+			virtual const core::position2d<s32>& getPosition(bool updateCursor) _IRR_OVERRIDE_
 			{
-				updateInternalCursorPosition();
+				if ( updateCursor )
+					updateInternalCursorPosition();
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
+			virtual core::position2d<f32> getRelativePosition(bool updateCursor) _IRR_OVERRIDE_
 			{
-				updateInternalCursorPosition();
+				if ( updateCursor )
+					updateInternalCursorPosition();
 
 				if (!UseReferenceRect)
 				{
@@ -417,6 +427,8 @@ namespace irr
 		void getWindowsVersion(core::stringc& version);
 
 		void resizeIfNecessary();
+
+		DWORD getWindowStyle(bool fullscreen, bool resizable) const;
 
 		HWND HWnd;
 

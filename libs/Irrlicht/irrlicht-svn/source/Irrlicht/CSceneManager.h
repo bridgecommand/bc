@@ -18,7 +18,6 @@ namespace irr
 {
 namespace io
 {
-	class IXMLWriter;
 	class IFileSystem;
 }
 namespace scene
@@ -409,6 +408,9 @@ namespace scene
 		//! Returns the current color of shadows.
 		virtual video::SColor getShadowColor() const _IRR_OVERRIDE_;
 
+		//! Create a shadow volume scene node to be used with custom nodes
+		virtual IShadowVolumeSceneNode* createShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent, s32 id, bool zfailmethod, f32 infinity) _IRR_OVERRIDE_;
+
 		//! Adds a scene node to the deletion queue.
 		virtual void addToDeletionQueue(ISceneNode* node) _IRR_OVERRIDE_;
 
@@ -630,6 +632,7 @@ namespace scene
 		core::array<DefaultNodeEntry> SolidNodeList;
 		core::array<TransparentNodeEntry> TransparentNodeList;
 		core::array<TransparentNodeEntry> TransparentEffectNodeList;
+		core::array<ISceneNode*> GuiNodeList;
 
 		core::array<IMeshLoader*> MeshLoaderList;
 		core::array<ISceneLoader*> SceneLoaderList;

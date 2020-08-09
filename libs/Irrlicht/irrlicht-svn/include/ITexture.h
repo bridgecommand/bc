@@ -18,7 +18,7 @@ namespace video
 {
 
 
-//! Enumeration flags telling the video driver in which format textures should be created.
+//! Enumeration flags used to tell the video driver with setTextureCreationFlag in which format textures should be created.
 enum E_TEXTURE_CREATION_FLAG
 {
 	/** Forces the driver to create 16 bit textures always, independent of
@@ -28,16 +28,19 @@ enum E_TEXTURE_CREATION_FLAG
 	the space in memory.
 	When using this flag, it does not make sense to use the flags
 	ETCF_ALWAYS_32_BIT, ETCF_OPTIMIZED_FOR_QUALITY, or
-	ETCF_OPTIMIZED_FOR_SPEED at the same time. */
+	ETCF_OPTIMIZED_FOR_SPEED at the same time. 
+	Not all texture formats are affected (usually those up to ECF_A8R8G8B8). */
 	ETCF_ALWAYS_16_BIT = 0x00000001,
 
 	/** Forces the driver to create 32 bit textures always, independent of
 	which format the file on disk has. Please note that some drivers (like
 	the software device) will ignore this, because they are only able to
 	create and use 16 bit textures.
+	Default is true.
 	When using this flag, it does not make sense to use the flags
 	ETCF_ALWAYS_16_BIT, ETCF_OPTIMIZED_FOR_QUALITY, or
-	ETCF_OPTIMIZED_FOR_SPEED at the same time. */
+	ETCF_OPTIMIZED_FOR_SPEED at the same time. 
+	Not all texture formats are affected (usually those up to ECF_A8R8G8B8). */
 	ETCF_ALWAYS_32_BIT = 0x00000002,
 
 	/** Lets the driver decide in which format the textures are created and
@@ -45,20 +48,27 @@ enum E_TEXTURE_CREATION_FLAG
 	chooses the format in which the texture was stored on disk.
 	When using this flag, it does not make sense to use the flags
 	ETCF_ALWAYS_16_BIT, ETCF_ALWAYS_32_BIT, or ETCF_OPTIMIZED_FOR_SPEED at
-	the same time. */
+	the same time. 
+	Not all texture formats are affected (usually those up to ECF_A8R8G8B8). */
 	ETCF_OPTIMIZED_FOR_QUALITY = 0x00000004,
 
 	/** Lets the driver decide in which format the textures are created and
 	tries to create them maximizing render speed.
 	When using this flag, it does not make sense to use the flags
 	ETCF_ALWAYS_16_BIT, ETCF_ALWAYS_32_BIT, or ETCF_OPTIMIZED_FOR_QUALITY,
-	at the same time. */
+	at the same time. 
+	Not all texture formats are affected (usually those up to ECF_A8R8G8B8). */
 	ETCF_OPTIMIZED_FOR_SPEED = 0x00000008,
 
-	/** Automatically creates mip map levels for the textures. */
+	/** Creates textures with mipmap levels. 
+	If disabled textures can not have mipmaps.
+	Default is true. */
 	ETCF_CREATE_MIP_MAPS = 0x00000010,
 
-	/** Discard any alpha layer and use non-alpha color format. */
+	/** Discard any alpha layer and use non-alpha color format. 
+	Warning: This may lead to getting 24-bit texture formats which 
+	         are often badly supported by drivers. So it's generally
+			 not recommended to enable this flag.	*/
 	ETCF_NO_ALPHA_CHANNEL = 0x00000020,
 
 	//! Allow the Driver to use Non-Power-2-Textures
@@ -66,10 +76,26 @@ enum E_TEXTURE_CREATION_FLAG
 	ETCF_ALLOW_NON_POWER_2 = 0x00000040,
 
 	//! Allow the driver to keep a copy of the texture in memory
-	/** This makes calls to ITexture::lock a lot faster, but costs main memory.
-	Default is off, except for font-texture which always enable this flag.
-	Currently only used in combination with OpenGL drivers.	*/
+	/** Enabling this makes calls to ITexture::lock a lot faster, but costs main memory.
+	Currently only used in combination with OpenGL drivers.
+	NOTE: Disabling this does not yet work correctly with alpha-textures.
+	So the default is on for now (but might change with Irrlicht 1.9 if we get the alpha-troubles fixed).
+	*/
 	ETCF_ALLOW_MEMORY_COPY = 0x00000080,
+
+	//! Enable automatic updating mip maps when the base texture changes.
+	/** Default is true.
+	This flag is only used when ETCF_CREATE_MIP_MAPS is also enabled and if the driver supports it.
+	Please note:
+	- On D3D (and maybe older OGL?) you can no longer manually set mipmap data when enabled 
+	 (for example mips from image loading will be ignored).
+	- On D3D (and maybe older OGL?) texture locking for mipmap levels usually won't work anymore.
+	- On new OGL this flag is ignored.
+	- When disabled you do _not_ get hardware mipmaps on D3D, so mipmap generation can be slower.
+	- When disabled you can still update your mipmaps when the texture changed by manually calling regenerateMipMapLevels.
+	- You can still call regenerateMipMapLevels when this flag is enabled (it will be a hint on d3d to update mips immediately)
+	  */
+	ETCF_AUTO_GENERATE_MIP_MAPS = 0x00000100,
 
 	/** This flag is never used, it only forces the compiler to compile
 	these enumeration values to 32 bit. */
@@ -92,6 +118,30 @@ enum E_TEXTURE_LOCK_MODE
 	ETLM_WRITE_ONLY
 };
 
+//! Additional bitflags for ITexture::lock() call
+enum E_TEXTURE_LOCK_FLAGS
+{
+	ETLF_NONE = 0,
+
+	//! Flip left-bottom origin rendertarget textures upside-down
+	/** Irrlicht usually has all textures with left-top as origin.
+	And for drivers with a left-bottom origin coordinate system (OpenGL)
+	Irrlicht modifies the texture-matrix in the fixed function pipeline to make
+	the textures show up correctly (shader coders have to handle upside down 
+	textures themselves).
+	But rendertarget textures (RTT's) are written by drivers the way the 
+	coordinate system of that driver works. So on OpenGL images tend to look 
+	upside down (aka Y coordinate going up) on lock() when this flag isn't set.
+	When the flag is set it will flip such textures on lock() to make them look
+	like non-rtt textures (origin left-top). Note that this also means the texture
+	will be uploaded flipped on unlock. So mostly you want to have this flag set 
+	when you want to look at the texture or save it, but unset if you want to 
+	upload it again to the card.
+	If you disable this flag you get the memory just as it is on the graphic card.
+	For backward compatibility reasons this flag is enabled by default. */
+	ETLF_FLIP_Y_UP_RTT = 1	
+};
+
 //! Where did the last IVideoDriver::getTexture call find this texture
 enum E_TEXTURE_SOURCE
 {
@@ -103,6 +153,16 @@ enum E_TEXTURE_SOURCE
 
 	//! Texture had to be loaded
 	ETS_FROM_FILE
+};
+
+//! Enumeration describing the type of ITexture.
+enum E_TEXTURE_TYPE
+{
+	//! 2D texture.
+	ETT_2D,
+
+	//! Cubemap texture.
+	ETT_CUBEMAP
 };
 
 //! Interface of a Video Driver dependent Texture.
@@ -139,15 +199,20 @@ public:
 	only mode or read from in write only mode.
 	Support for this feature depends on the driver, so don't rely on the
 	texture being write-protected when locking with read-only, etc.
+	\param mipmapLevel NOTE: Currently broken, sorry, we try if we can repair it for 1.9 release.
+	Number of the mipmapLevel to lock. 0 is main texture.
+	Non-existing levels will silently fail and return 0.
 	\param layer It determines which cubemap face or texture array layer should be locked.
+	\param lockFlags See E_TEXTURE_LOCK_FLAGS documentation.
 	\return Returns a pointer to the pixel data. The format of the pixel can
 	be determined by using getColorFormat(). 0 is returned, if
 	the texture cannot be locked. */
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 layer = 0) = 0;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) = 0;
 
 	//! Unlock function. Must be called after a lock() to the texture.
 	/** One should avoid to call unlock more than once before another lock.
-	The last locked mip level will be unlocked. */
+	The last locked mip level will be unlocked. 
+	You may want to call regenerateMipMapLevels() after this when you changed any data.	*/
 	virtual void unlock() = 0;
 
 	//! Regenerates the mip map levels of the texture.
@@ -157,8 +222,8 @@ public:
 	data. The data has to be a continuous pixel data for all mipmaps until
 	1x1 pixel. Each mipmap has to be half the width and height of the previous
 	level. At least one pixel will be always kept.
-	\param layer It informs a texture about layer which needs
-	mipmaps regeneration. */
+	\param layer It informs a texture about which cubemap or texture array layer 
+	needs mipmap regeneration. */
 	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) = 0;
 
 	//! Get original size of the texture.
@@ -185,6 +250,12 @@ public:
 	//! Get the color format of texture.
 	/** \return The color format of texture. */
 	ECOLOR_FORMAT getColorFormat() const { return ColorFormat; };
+
+	//! Get the original color format
+	/** When create textures from image data we will often use different color formats.
+	For example depending on driver TextureCreationFlag's. 
+	This can give you the original format which the image used to create the texture had	*/
+	ECOLOR_FORMAT getOriginalColorFormat() const { return OriginalColorFormat; };
 
 	//! Get pitch of the main texture (in bytes).
 	/** The pitch is the amount of bytes used for a row of pixels in a

@@ -23,10 +23,10 @@ namespace gui
 // ------------------------------------------------------------------
 
 //! constructor
-CGUITab::CGUITab(s32 number, IGUIEnvironment* environment,
+CGUITab::CGUITab(IGUIEnvironment* environment,
 	IGUIElement* parent, const core::rect<s32>& rectangle,
 	s32 id)
-	: IGUITab(environment, parent, id, rectangle), Number(number),
+	: IGUITab(environment, parent, id, rectangle),
 		BackColor(0,0,0,0), OverrideTextColorEnabled(false), TextColor(255,0,0,0),
 		DrawBackground(false)
 {
@@ -37,29 +37,6 @@ CGUITab::CGUITab(s32 number, IGUIEnvironment* environment,
 	const IGUISkin* const skin = environment->getSkin();
 	if (skin)
 		TextColor = skin->getColor(EGDC_BUTTON_TEXT);
-}
-
-
-//! Returns number of tab in tabcontrol. Can be accessed
-//! later IGUITabControl::getTab() by this number.
-s32 CGUITab::getNumber() const
-{
-	return Number;
-}
-
-
-//! Sets the number
-void CGUITab::setNumber(s32 n)
-{
-	Number = n;
-}
-
-void CGUITab::refreshSkinColors()
-{
-	if ( !OverrideTextColorEnabled )
-	{
-		TextColor = Environment->getSkin()->getColor(EGDC_BUTTON_TEXT);
-	}
 }
 
 //! draws the element and its children
@@ -101,9 +78,11 @@ void CGUITab::setTextColor(video::SColor c)
 
 video::SColor CGUITab::getTextColor() const
 {
-	return TextColor;
+	if ( OverrideTextColorEnabled )
+		return TextColor;
+	else
+		return Environment->getSkin()->getColor(EGDC_BUTTON_TEXT);
 }
-
 
 //! returns true if the tab is drawing its background, false if not
 bool CGUITab::isDrawingBackground() const
@@ -124,7 +103,9 @@ void CGUITab::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteO
 {
 	IGUITab::serializeAttributes(out,options);
 
-	out->addInt		("TabNumber",		Number);
+	IGUITabControl* parentTabControl = Parent && Parent->getType() == EGUIET_TAB_CONTROL ? static_cast<IGUITabControl*>(Parent) : 0;
+	if ( parentTabControl )
+		out->addInt		("TabNumber",	parentTabControl->getTabIndex(this));	// order of children and tabs can be different, so we save tab-number
 	out->addBool	("DrawBackground",	DrawBackground);
 	out->addColor	("BackColor",		BackColor);
 	out->addBool	("OverrideTextColorEnabled", OverrideTextColorEnabled);
@@ -138,21 +119,20 @@ void CGUITab::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrite
 {
 	IGUITab::deserializeAttributes(in,options);
 
-	setNumber(in->getAttributeAsInt("TabNumber"));
-	setDrawBackground(in->getAttributeAsBool("DrawBackground"));
-	setBackgroundColor(in->getAttributeAsColor("BackColor"));
-	bool override = in->getAttributeAsBool("OverrideTextColorEnabled");
-	setTextColor(in->getAttributeAsColor("TextColor"));
-	if ( !override )
-	{
-		OverrideTextColorEnabled = false;
-	}
+	setDrawBackground(in->getAttributeAsBool("DrawBackground", DrawBackground));
+	setBackgroundColor(in->getAttributeAsColor("BackColor", BackColor));
+	bool overrideColor = in->getAttributeAsBool("OverrideTextColorEnabled", OverrideTextColorEnabled);
+	setTextColor(in->getAttributeAsColor("TextColor", TextColor));
+	OverrideTextColorEnabled = overrideColor;	// because setTextColor does set OverrideTextColorEnabled always to true
 
-	if (Parent && Parent->getType() == EGUIET_TAB_CONTROL)
+	IGUITabControl* parentTabControl = Parent && Parent->getType() == EGUIET_TAB_CONTROL ? static_cast<IGUITabControl*>(Parent) : 0;
+	if (parentTabControl)
 	{
-		((CGUITabControl*)Parent)->addTab(this);
-		if (isVisible())
-			((CGUITabControl*)Parent)->setActiveTab(this);
+		s32 idx = in->getAttributeAsInt("TabNumber", -1);
+		if ( idx >= 0 )
+			parentTabControl->insertTab(idx, this, true);
+		else
+			parentTabControl->addTab(this);
 	}
 }
 
@@ -165,7 +145,7 @@ void CGUITab::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrite
 CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	IGUIElement* parent, const core::rect<s32>& rectangle,
 	bool fillbackground, bool border, s32 id)
-	: IGUITabControl(environment, parent, id, rectangle), ActiveTab(-1),
+	: IGUITabControl(environment, parent, id, rectangle), ActiveTabIndex(-1),
 	Border(border), FillBackground(fillbackground), ScrollControl(false), TabHeight(0), VerticalAlignment(EGUIA_UPPERLEFT),
 	UpButton(0), DownButton(0), TabMaxWidth(0), CurrentScrollTabIndex(0), TabExtraWidth(20)
 {
@@ -235,34 +215,34 @@ void CGUITabControl::refreshSprites()
 	if (skin)
 	{
 		color = skin->getColor(isEnabled() ? EGDC_WINDOW_SYMBOL : EGDC_GRAY_WINDOW_SYMBOL);
-	}
 
-	if (UpButton)
-	{
-		UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_LEFT), color);
-		UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_LEFT), color);
-	}
+		if (UpButton)
+		{
+			UpButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_LEFT), color);
+			UpButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_LEFT), color);
+		}
 
-	if (DownButton)
-	{
-		DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_RIGHT), color);
-		DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_RIGHT), color);
+		if (DownButton)
+		{
+			DownButton->setSprite(EGBS_BUTTON_UP, skin->getIcon(EGDI_CURSOR_RIGHT), color);
+			DownButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_RIGHT), color);
+		}
 	}
 }
 
 //! Adds a tab
 IGUITab* CGUITabControl::addTab(const wchar_t* caption, s32 id)
 {
-	CGUITab* tab = new CGUITab(Tabs.size(), Environment, this, calcTabPos(), id);
+	CGUITab* tab = new CGUITab(Environment, this, calcTabPos(), id);
 
 	tab->setText(caption);
 	tab->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	tab->setVisible(false);
-	Tabs.push_back(tab);
+	Tabs.push_back(tab);	// no grab as new already creates a reference
 
-	if (ActiveTab == -1)
+	if (ActiveTabIndex == -1)
 	{
-		ActiveTab = 0;
+		ActiveTabIndex = Tabs.size()-1;
 		tab->setVisible(true);
 	}
 
@@ -273,65 +253,33 @@ IGUITab* CGUITabControl::addTab(const wchar_t* caption, s32 id)
 
 
 //! adds a tab which has been created elsewhere
-void CGUITabControl::addTab(CGUITab* tab)
+s32 CGUITabControl::addTab(IGUITab* tab)
 {
-	if (!tab)
-		return;
-
-	// check if its already added
-	for (u32 i=0; i < Tabs.size(); ++i)
-	{
-		if (Tabs[i] == tab)
-			return;
-	}
-
-	tab->grab();
-
-	if (tab->getNumber() == -1)
-		tab->setNumber((s32)Tabs.size());
-
-	while (tab->getNumber() >= (s32)Tabs.size())
-		Tabs.push_back(0);
-
-	if (Tabs[tab->getNumber()])
-	{
-		Tabs.push_back(Tabs[tab->getNumber()]);
-		Tabs[Tabs.size()-1]->setNumber(Tabs.size());
-	}
-	Tabs[tab->getNumber()] = tab;
-
-	if (ActiveTab == -1)
-		ActiveTab = tab->getNumber();
-
-
-	if (tab->getNumber() == ActiveTab)
-	{
-		setActiveTab(ActiveTab);
-	}
+	return insertTab( Tabs.size(), tab, false);
 }
 
 //! Insert the tab at the given index
 IGUITab* CGUITabControl::insertTab(s32 idx, const wchar_t* caption, s32 id)
 {
-	if ( idx < 0 || idx > (s32)Tabs.size() )	// idx == Tabs.size() is indeed ok here as core::array can handle that
+	if ( idx < 0 || idx > (s32)Tabs.size() )	// idx == Tabs.size() is indeed OK here as core::array can handle that
 		return NULL;
 
-	CGUITab* tab = new CGUITab(idx, Environment, this, calcTabPos(), id);
+	CGUITab* tab = new CGUITab(Environment, this, calcTabPos(), id);
 
 	tab->setText(caption);
 	tab->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	tab->setVisible(false);
 	Tabs.insert(tab, (u32)idx);
 
-	if (ActiveTab == -1)
+	if (ActiveTabIndex == -1)
 	{
-		ActiveTab = 0;
+		ActiveTabIndex = (u32)idx;
 		tab->setVisible(true);
 	}
-
-	for ( u32 i=(u32)idx+1; i < Tabs.size(); ++i )
+	else if ( idx <= ActiveTabIndex )
 	{
-		Tabs[i]->setNumber(i);
+		++ActiveTabIndex;
+		setVisibleTab(ActiveTabIndex);
 	}
 
 	recalculateScrollBar();
@@ -339,17 +287,102 @@ IGUITab* CGUITabControl::insertTab(s32 idx, const wchar_t* caption, s32 id)
 	return tab;
 }
 
+s32 CGUITabControl::insertTab(s32 idx, IGUITab* tab, bool serializationMode)
+{
+	if (!tab)
+		return -1;
+	if ( idx > (s32)Tabs.size() && !serializationMode )	// idx == Tabs.size() is indeed OK here as core::array can handle that
+		return -1;
+	// Not allowing to add same tab twice as it would make things complicated (serialization or setting active visible)
+	if ( getTabIndex(tab) >= 0 )
+		return -1;
+
+	if ( idx < 0 )
+		idx = (s32)Tabs.size();
+
+	if ( tab->getParent() != this )
+		this->addChildToEnd(tab);
+
+	tab->setVisible(false);
+
+	tab->grab();
+
+	if ( serializationMode)
+	{
+		while ( idx >= (s32)Tabs.size() )
+		{
+			Tabs.push_back(0);
+		}
+		Tabs[idx] = tab;
+
+		if ( idx == ActiveTabIndex)	// in serialization that can happen for any index
+		{
+			setVisibleTab(ActiveTabIndex);
+			tab->setVisible(true);
+		}
+	}
+	else
+	{
+		Tabs.insert(tab, (u32)idx);
+
+		if (ActiveTabIndex == -1)
+		{
+			ActiveTabIndex = idx;
+			setVisibleTab(ActiveTabIndex);
+		}
+		else if ( idx <= ActiveTabIndex)
+		{
+			++ActiveTabIndex;
+			setVisibleTab(ActiveTabIndex);
+		}
+	}
+
+	recalculateScrollBar();
+
+	return idx;
+}
+
+//! Removes a child.
+void CGUITabControl::removeChild(IGUIElement* child)
+{
+	s32 idx = getTabIndex(child);
+	if ( idx >= 0 )
+		removeTabButNotChild(idx);
+
+	// remove real element
+	IGUIElement::removeChild(child);
+
+	recalculateScrollBar();
+}
+
+
 //! Removes a tab from the tabcontrol
 void CGUITabControl::removeTab(s32 idx)
 {
 	if ( idx < 0 || idx >= (s32)Tabs.size() )
 		return;
 
+	removeChild(Tabs[(u32)idx]);
+}
+
+void CGUITabControl::removeTabButNotChild(s32 idx)
+{
+	if ( idx < 0 || idx >= (s32)Tabs.size() )
+		return;
+
 	Tabs[(u32)idx]->drop();
 	Tabs.erase((u32)idx);
-	for ( u32 i=(u32)idx; i < Tabs.size(); ++i )
+
+	if ( idx < ActiveTabIndex )
 	{
-		Tabs[i]->setNumber(i);
+		--ActiveTabIndex;
+		setVisibleTab(ActiveTabIndex);
+	}
+	else if ( idx == ActiveTabIndex )
+	{
+		if ( (u32)idx == Tabs.size() )
+			--ActiveTabIndex;
+		setVisibleTab(ActiveTabIndex);
 	}
 }
 
@@ -359,9 +392,14 @@ void CGUITabControl::clear()
 	for (u32 i=0; i<Tabs.size(); ++i)
 	{
 		if (Tabs[i])
+		{
+			IGUIElement::removeChild(Tabs[i]);
 			Tabs[i]->drop();
+		}
 	}
 	Tabs.clear();
+
+	recalculateScrollBar();
 }
 
 //! Returns amount of tabs in the tabcontrol
@@ -374,7 +412,7 @@ s32 CGUITabControl::getTabCount() const
 //! Returns a tab based on zero based index
 IGUITab* CGUITabControl::getTab(s32 idx) const
 {
-	if ((u32)idx >= Tabs.size())
+	if (idx < 0 || (u32)idx >= Tabs.size())
 		return 0;
 
 	return Tabs[idx];
@@ -386,7 +424,6 @@ bool CGUITabControl::OnEvent(const SEvent& event)
 {
 	if (isEnabled())
 	{
-
 		switch(event.EventType)
 		{
 		case EET_GUI_EVENT:
@@ -412,9 +449,9 @@ bool CGUITabControl::OnEvent(const SEvent& event)
 		case EET_MOUSE_INPUT_EVENT:
 			switch(event.MouseInput.Event)
 			{
-			case EMIE_LMOUSE_PRESSED_DOWN:
-				// todo: dragging tabs around
-				return true;
+			//case EMIE_LMOUSE_PRESSED_DOWN:
+			//	// todo: dragging tabs around
+			//	return true;
 			case EMIE_LMOUSE_LEFT_UP:
 			{
 				s32 idx = getTabAt(event.MouseInput.X, event.MouseInput.Y);
@@ -509,16 +546,18 @@ bool CGUITabControl::needScrollControl(s32 startIndex, bool withScrollControl)
 		// get Text
 		const wchar_t* text = 0;
 		if (Tabs[i])
+		{
 			text = Tabs[i]->getText();
 
-		// get text length
-		s32 len = calcTabWidth(pos, font, text, false);	// always without withScrollControl here or len would be shortened
+			// get text length
+			s32 len = calcTabWidth(pos, font, text, false);	// always without withScrollControl here or len would be shortened
 
-		frameRect.LowerRightCorner.X += len;
+			frameRect.LowerRightCorner.X += len;
 
-		frameRect.UpperLeftCorner.X = pos;
-		frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + len;
-		pos += len;
+			frameRect.UpperLeftCorner.X = pos;
+			frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + len;
+			pos += len;
+		}
 
 		if ( withScrollControl && pos > UpButton->getAbsolutePosition().UpperLeftCorner.X - 2)
 			return true;
@@ -610,7 +649,7 @@ void CGUITabControl::draw()
 	s32 right = 0;
 
 	//const wchar_t* activetext = 0;
-	CGUITab *activeTab = 0;
+	IGUITab *activeTab = 0;
 
 	// Draw all tab-buttons except the active one
 	for (u32 i=CurrentScrollTabIndex; i<Tabs.size(); ++i)
@@ -634,10 +673,7 @@ void CGUITabControl::draw()
 
 		pos += len;
 
-		if ( text )
-			Tabs[i]->refreshSkinColors();
-
-		if ((s32)i == ActiveTab)
+		if ((s32)i == ActiveTabIndex)
 		{
 			// for active button just remember values
 			left = frameRect.UpperLeftCorner.X;
@@ -925,7 +961,7 @@ s32 CGUITabControl::getTabAt(s32 xpos, s32 ypos) const
 //! Returns which tab is currently active
 s32 CGUITabControl::getActiveTab() const
 {
-	return ActiveTab;
+	return ActiveTabIndex;
 }
 
 
@@ -935,15 +971,13 @@ bool CGUITabControl::setActiveTab(s32 idx)
 	if ((u32)idx >= Tabs.size())
 		return false;
 
-	bool changed = (ActiveTab != idx);
+	bool changed = (ActiveTabIndex != idx);
 
-	ActiveTab = idx;
+	ActiveTabIndex = idx;
 
-	for (s32 i=0; i<(s32)Tabs.size(); ++i)
-		if (Tabs[i])
-			Tabs[i]->setVisible( i == ActiveTab );
+	setVisibleTab(ActiveTabIndex);
 
-	if (changed)
+	if (changed && Parent)
 	{
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
@@ -956,49 +990,27 @@ bool CGUITabControl::setActiveTab(s32 idx)
 	return true;
 }
 
+void CGUITabControl::setVisibleTab(s32 idx)
+{
+	for (u32 i=0; i<Tabs.size(); ++i)
+		if (Tabs[i])
+			Tabs[i]->setVisible( (s32)i == idx );
+}
+
 
 bool CGUITabControl::setActiveTab(IGUITab *tab)
 {
-	for (s32 i=0; i<(s32)Tabs.size(); ++i)
-		if (Tabs[i] == tab)
-			return setActiveTab(i);
-	return false;
+	return setActiveTab(getTabIndex(tab));
 }
 
-
-//! Removes a child.
-void CGUITabControl::removeChild(IGUIElement* child)
+s32 CGUITabControl::getTabIndex(const IGUIElement *tab) const
 {
-	bool isTab = false;
+	for (u32 i=0; i<Tabs.size(); ++i)
+		if (Tabs[i] == tab)
+			return (s32)i;
 
-	u32 i=0;
-	// check if it is a tab
-	while (i<Tabs.size())
-	{
-		if (Tabs[i] == child)
-		{
-			Tabs[i]->drop();
-			Tabs.erase(i);
-			isTab = true;
-		}
-		else
-			++i;
-	}
-
-	// reassign numbers
-	if (isTab)
-	{
-		for (i=0; i<Tabs.size(); ++i)
-			if (Tabs[i])
-				Tabs[i]->setNumber(i);
-	}
-
-	// remove real element
-	IGUIElement::removeChild(child);
-
-	recalculateScrollBar();
+	return -1;
 }
-
 
 //! Update the position of the element, decides scroll button status
 void CGUITabControl::updateAbsolutePosition()
@@ -1013,7 +1025,7 @@ void CGUITabControl::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 {
 	IGUITabControl::serializeAttributes(out,options);
 
-	out->addInt ("ActiveTab",	ActiveTab);
+	out->addInt ("ActiveTab",	ActiveTabIndex);
 	out->addBool("Border",		Border);
 	out->addBool("FillBackground",	FillBackground);
 	out->addInt ("TabHeight",	TabHeight);
@@ -1028,14 +1040,14 @@ void CGUITabControl::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	Border          = in->getAttributeAsBool("Border");
 	FillBackground  = in->getAttributeAsBool("FillBackground");
 
-	ActiveTab = -1;
+	ActiveTabIndex = -1;
 
 	setTabHeight(in->getAttributeAsInt("TabHeight"));
 	TabMaxWidth     = in->getAttributeAsInt("TabMaxWidth");
 
 	IGUITabControl::deserializeAttributes(in,options);
 
-	setActiveTab(in->getAttributeAsInt("ActiveTab"));
+	ActiveTabIndex = in->getAttributeAsInt("ActiveTab", -1);	// not setActiveTab as tabs are loaded later
 	setTabVerticalAlignment( static_cast<EGUI_ALIGNMENT>(in->getAttributeAsEnumeration("TabVerticalAlignment" , GUIAlignmentNames)) );
 }
 

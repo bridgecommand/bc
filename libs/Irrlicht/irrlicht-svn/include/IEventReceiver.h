@@ -252,11 +252,6 @@ namespace irr
 			//! may be removed by Irrlicht 1.9
 			EGET_TREEVIEW_NODE_COLLAPS = EGET_TREEVIEW_NODE_COLLAPSE,
 
-			//! Information that an element got removed from the gui-graph.
-			/** NOTE: This event is not passed on to all element parents, but only the
-			gui environment (and user receiver). */
-			EGET_ELEMENT_REMOVED,
-
 			//! No real event. Just for convenience to get number of events
 			EGET_COUNT
 		};
@@ -473,8 +468,8 @@ struct SJoystickInfo
 	u32 Axes;
 
 	//! An indication of whether the joystick has a POV hat.
-	/** A Windows device will identify the presence or absence or the POV hat.  A
-	 *  Linux device cannot, and will always return POV_HAT_UNKNOWN. */
+	/** A Windows device will identify the presence or absence of the POV hat.
+	 *  A Linux device cannot, and will always return POV_HAT_UNKNOWN. */
 	enum
 	{
 		//! A hat is definitely present.

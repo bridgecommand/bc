@@ -340,6 +340,13 @@ private:
 	//! read a parameter and value
 	void readParameter(io::IXMLReaderUTF8* reader, io::IAttributes* parameters);
 
+	//! Flip z axis in matrix around to convert between right-handed and left-handed coordinate system.
+	//! Note that function is symmetric (no difference if called before or after a transpose).
+	core::matrix4 flipZAxis(const core::matrix4& m);
+
+	//! replace escape characters with the unescaped ones
+	void unescape(irr::core::stringc& uri);
+
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
 
@@ -365,6 +372,19 @@ private:
 	core::array< core::array<irr::scene::IMeshBuffer*> > MeshesToBind;
 
 	bool CreateInstances;
+
+	struct EscapeCharacterURL
+	{
+		EscapeCharacterURL(irr::c8 c, const irr::c8* e)
+			: Character(c)
+		{
+			Escape = e;
+		}
+
+		irr::c8 Character;		// unescaped (like ' ')
+		irr::core::stringc Escape;	// escaped (like '%20')
+	};
+	irr::core::array<EscapeCharacterURL> EscapeCharsAnyURI;
 };
 
 

@@ -59,6 +59,7 @@ void CTriangleBBSelector::fillTriangles() const
 	{
 		// construct triangles
 		const core::aabbox3d<f32>& box = SceneNode->getBoundingBox();
+		BoundingBox = box;
 		core::vector3df edges[8];
 		box.getEdges(edges);
 
