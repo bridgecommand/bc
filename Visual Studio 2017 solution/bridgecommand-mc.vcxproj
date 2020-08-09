@@ -91,6 +91,7 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win32-visualstudio;..\libs\enet-1.3.14</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command>call useVSdll.bat</Command>
@@ -120,6 +121,7 @@
       <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win32-visualstudio;..\libs\enet-1.3.14</AdditionalLibraryDirectories>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
       <Command>call useVSdll.bat</Command>
@@ -141,15 +143,6 @@
   <ItemGroup>
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\Lang.cpp" />
-    <ClCompile Include="..\libs\enet\callbacks.c" />
-    <ClCompile Include="..\libs\enet\compress.c" />
-    <ClCompile Include="..\libs\enet\host.c" />
-    <ClCompile Include="..\libs\enet\list.c" />
-    <ClCompile Include="..\libs\enet\packet.c" />
-    <ClCompile Include="..\libs\enet\peer.c" />
-    <ClCompile Include="..\libs\enet\protocol.c" />
-    <ClCompile Include="..\libs\enet\unix.c" />
-    <ClCompile Include="..\libs\enet\win32.c" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
@@ -168,15 +161,6 @@
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\Lang.hpp" />
     <ClInclude Include="..\Leg.hpp" />
-    <ClInclude Include="..\libs\enet\callbacks.h" />
-    <ClInclude Include="..\libs\enet\enet.h" />
-    <ClInclude Include="..\libs\enet\list.h" />
-    <ClInclude Include="..\libs\enet\protocol.h" />
-    <ClInclude Include="..\libs\enet\time.h" />
-    <ClInclude Include="..\libs\enet\types.h" />
-    <ClInclude Include="..\libs\enet\unix.h" />
-    <ClInclude Include="..\libs\enet\utility.h" />
-    <ClInclude Include="..\libs\enet\win32.h" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\controller\ControllerModel.hpp" />
     <ClInclude Include="..\controller\EventReceiver.hpp" />
