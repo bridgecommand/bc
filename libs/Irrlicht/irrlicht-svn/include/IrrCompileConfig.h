@@ -202,10 +202,10 @@ comment this define out */
 
 //! Define _IRR_COMPILE_WITH_BURNINGSVIDEO_ to compile the Irrlicht engine with Burning's video driver
 /** If you do not need this software driver, you can comment this define out. */
-#define _IRR_COMPILE_WITH_BURNINGSVIDEO_
-#ifdef NO_IRR_COMPILE_WITH_BURNINGSVIDEO_
+//#define _IRR_COMPILE_WITH_BURNINGSVIDEO_
+//#ifdef NO_IRR_COMPILE_WITH_BURNINGSVIDEO_
 #undef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-#endif
+//#endif
 
 //! Define _IRR_COMPILE_WITH_X11_ to compile the Irrlicht engine with X11 support.
 /** If you do not wish the engine to be compiled with X11, comment this
