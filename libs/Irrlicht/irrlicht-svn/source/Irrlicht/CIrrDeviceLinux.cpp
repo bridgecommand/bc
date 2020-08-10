@@ -534,6 +534,7 @@ bool CIrrDeviceLinux::createWindow()
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
 
+	/*	
 	Window tmp;
 	u32 borderWidth;
 	int x,y;
@@ -543,6 +544,7 @@ bool CIrrDeviceLinux::createWindow()
 	CreationParams.Bits = bits;
 	CreationParams.WindowSize.Width = Width;
 	CreationParams.WindowSize.Height = Height;
+	*/
 
 	StdHints = XAllocSizeHints();
 	long num;
