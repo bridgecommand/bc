@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -308,6 +308,8 @@
 		5E79089B1C10FEF900DFE7FE /* CB3DMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E7908981C10FE4A00DFE7FE /* CB3DMeshWriter.cpp */; };
 		5E8570BC1B7F9AC400B267D2 /* CIrrDeviceConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E8570BA1B7F9AC400B267D2 /* CIrrDeviceConsole.cpp */; };
 		5E8570BD1B7F9AC400B267D2 /* CIrrDeviceConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E8570BB1B7F9AC400B267D2 /* CIrrDeviceConsole.h */; };
+		8493BC02249DEBB30092813E /* IOctreeSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 8493BC01249DEBB20092813E /* IOctreeSceneNode.h */; };
+		8493BC04249DED3F0092813E /* IMemoryReadFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 8493BC03249DED3F0092813E /* IMemoryReadFile.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1034,6 +1036,8 @@
 		5E8570BA1B7F9AC400B267D2 /* CIrrDeviceConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceConsole.cpp; sourceTree = "<group>"; };
 		5E8570BB1B7F9AC400B267D2 /* CIrrDeviceConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceConsole.h; sourceTree = "<group>"; };
 		5EC24F5E1B8B861200DCA615 /* exampleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = exampleHelper.h; path = ../../include/exampleHelper.h; sourceTree = "<group>"; };
+		8493BC01249DEBB20092813E /* IOctreeSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IOctreeSceneNode.h; path = ../../include/IOctreeSceneNode.h; sourceTree = "<group>"; };
+		8493BC03249DED3F0092813E /* IMemoryReadFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMemoryReadFile.h; path = ../../include/IMemoryReadFile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1169,6 +1173,7 @@
 				5E34C7401B7F4AFC00F212E8 /* IMeshTextureLoader.h */,
 				5E34C7411B7F4AFC00F212E8 /* IMeshWriter.h */,
 				5E34C7421B7F4AFC00F212E8 /* IMetaTriangleSelector.h */,
+				8493BC01249DEBB20092813E /* IOctreeSceneNode.h */,
 				5E34C7441B7F4AFC00F212E8 /* IParticleAffector.h */,
 				5E34C7451B7F4AFC00F212E8 /* IParticleAnimatedMeshSceneNodeEmitter.h */,
 				5E34C7461B7F4AFC00F212E8 /* IParticleAttractionAffector.h */,
@@ -1226,6 +1231,7 @@
 				5E34C7101B7F4AFC00F212E8 /* IFileArchive.h */,
 				5E34C7111B7F4AFC00F212E8 /* IFileList.h */,
 				5E34C7121B7F4AFC00F212E8 /* IFileSystem.h */,
+				8493BC03249DED3F0092813E /* IMemoryReadFile.h */,
 				5E34C7551B7F4AFC00F212E8 /* IReadFile.h */,
 				5E34C7631B7F4AFC00F212E8 /* irrXML.h */,
 				5E34C77B1B7F4AFC00F212E8 /* IWriteFile.h */,
@@ -2065,7 +2071,9 @@
 			files = (
 				5E8570BD1B7F9AC400B267D2 /* CIrrDeviceConsole.h in Headers */,
 				5E7908961C10EEC000DFE7FE /* COpenGLCommon.h in Headers */,
+				8493BC04249DED3F0092813E /* IMemoryReadFile.h in Headers */,
 				5E7908951C10EEC000DFE7FE /* COpenGLCacheHandler.h in Headers */,
+				8493BC02249DEBB30092813E /* IOctreeSceneNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2095,7 +2103,7 @@
 		5E34C6D91B7F4A0C00F212E8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 1150;
 				TargetAttributes = {
 					5E34C9F21B7F6E3400F212E8 = {
 						CreatedOnToolsVersion = 6.1;
@@ -2103,10 +2111,11 @@
 				};
 			};
 			buildConfigurationList = 5E34C6DC1B7F4A0C00F212E8 /* Build configuration list for PBXProject "Irrlicht" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 5E34C6D81B7F4A0C00F212E8;
@@ -2431,12 +2440,13 @@
 		5E34C6DD1B7F4A0C00F212E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEPLOYMENT_LOCATION = YES;
 				ENABLE_TESTABILITY = YES;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1";
 				INSTALL_PATH = /;
 				ONLY_ACTIVE_ARCH = YES;
-                CLANG_CXX_LIBRARY = "libc++";
                 MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Debug;
@@ -2444,10 +2454,11 @@
 		5E34C6DE1B7F4A0C00F212E8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEPLOYMENT_LOCATION = YES;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "NDEBUG=1";
 				INSTALL_PATH = /;
-                CLANG_CXX_LIBRARY = "libc++";
                 MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
@@ -2457,6 +2468,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -2484,8 +2496,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Irrlicht;
 				SDKROOT = macosx;
-                CLANG_CXX_LIBRARY = "libc++";
-                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Debug;
 		};
@@ -2494,6 +2504,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -2519,8 +2530,6 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = Irrlicht;
 				SDKROOT = macosx;
-                CLANG_CXX_LIBRARY = "libc++";
-                MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};
 			name = Release;
 		};
