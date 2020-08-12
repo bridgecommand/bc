@@ -257,6 +257,13 @@ int main()
 
         driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
 
+        //std::cout << "Time: " << absoluteTime << std::endl;
+        #ifdef _WIN32
+        Sleep(1000);
+        #else
+        sleep(1); //Todo: Make a better way of pausing so we don't flood clients with data!
+        #endif
+
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = currentTime-previousTime;
@@ -266,13 +273,6 @@ int main()
 
         scenarioTime += deltaTime;
         absoluteTime = Utilities::round(scenarioTime) + scenarioOffsetTime;
-
-        //std::cout << "Time: " << absoluteTime << std::endl;
-        #ifdef _WIN32
-        Sleep(1000);
-        #else
-        sleep(1); //Todo: Make a better way of pausing so we don't flood clients with data!
-        #endif
 
         std::string timeString = makeTimeString(absoluteTime,scenarioOffsetTime,scenarioTime,accelerator);
 
@@ -312,7 +312,7 @@ int main()
                     otherShipsString.append(",");
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipBearing));
                     otherShipsString.append(",");
-                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipSpeed));
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS));
                     otherShipsString.append(",");
                     otherShipsString.append("0,0,0"); //SART enabled, number of legs,leg info
                     otherShipsString.append("|"); //End of other ship record
@@ -386,7 +386,7 @@ int main()
 
             shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
             std::string thisShipNumber = Utilities::lexical_cast<std::string>(i+1);
-            std::string stringSpeed = Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS);
+            std::string stringSpeed = Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS); //Should be in knots
             std::string stringHeading = Utilities::lexical_cast<std::string>(thisOtherShipBearing);
             irr::core::stringw thisShipInfo = language.translate("ship");
             thisShipInfo.append(L": ");

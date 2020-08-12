@@ -40,7 +40,7 @@ void ShipPositions::getShipPosition(const unsigned int& shipNumber, const irr::f
 {
     if (shipNumber < shipData.size()) {
         //Extrapolate from last recorded point
-        speed = shipData.at(shipNumber).speed;
+        speed = shipData.at(shipNumber).speed; //In m/s
         bearing = shipData.at(shipNumber).bearing;
 
         irr::f32 deltaTime = scenarioTime - shipData.at(shipNumber).timeStored;
@@ -49,6 +49,8 @@ void ShipPositions::getShipPosition(const unsigned int& shipNumber, const irr::f
 
         positionX = shipData.at(shipNumber).positionX + deltaX;
         positionZ = shipData.at(shipNumber).positionZ + deltaZ;
+
+        //speed*=MPS_TO_KTS; //Convert for knots
 
     } else {
         speed = 0;
