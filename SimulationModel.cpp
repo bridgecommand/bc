@@ -815,6 +815,41 @@ SimulationModel::~SimulationModel()
         radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
+    irr::u32 SimulationModel::getARPAContacts() const
+    {
+        return radarCalculation.getARPAContacts();
+    }
+    
+    irr::f32 SimulationModel::getARPACPA(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPACPA(contactID);
+    }
+
+    irr::f32 SimulationModel::getARPATCPA(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPATCPA(contactID);
+    }
+
+	irr::f32 SimulationModel::getARPASpeed(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPASpeed(contactID);
+    }
+
+	irr::f32 SimulationModel::getARPAHeading(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPAHeading(contactID);
+    }
+
+    irr::f32 SimulationModel::getARPARange(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPARange(contactID);
+    }
+
+	irr::f32 SimulationModel::getARPABearing(irr::u32 contactID) const
+    {
+        return radarCalculation.getARPABearing(contactID);
+    }
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();

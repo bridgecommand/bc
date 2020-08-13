@@ -27,7 +27,7 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string udpHo
     this->model = model; //Link to the model
     device = dev; //Store pointer to irrlicht device
 
-    maxMessages=6;
+    maxMessages=7;
 
     messageToSend = "";
     currentMessageType=0;
@@ -126,31 +126,92 @@ void NMEA::updateNMEA()
     irr::u8 lonDegrees = (int) lon;
 
     char messageBuffer[256];
+    std::string messageString;
 
     //Todo: Replace with select/case block:
     if (currentMessageType        == 0)
     {
         snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
     }
     else if (currentMessageType == 1)
     {
         snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,%s,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,timeString.c_str());
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
     }
     else if (currentMessageType == 2)
     {
         snprintf(messageBuffer,100,"$GPGGA,%s,%02u%06.3f,%c,%03u%06.3f,%c,8,8,0.9,0.0,M,0.0,M,,",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
     }
     else if (currentMessageType == 3)
     {
         snprintf(messageBuffer,100,"$IIRSA,%d,A,,",rudderAngle);
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
     }
     else if (currentMessageType == 4)
     {
         snprintf(messageBuffer,100,"$IIRPM,S,1,%d,100,A",portRPM); //'S' is for shaft, '100' is pitch
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
     }
     else if (currentMessageType == 5)
     {
         snprintf(messageBuffer,100,"$IIRPM,S,2,%d,100,A",stbdRPM);
+        messageString.append(messageBuffer);
+        messageToSend = addChecksum(messageString);
+    }
+    else if (currentMessageType == 6)
+    {
+        messageToSend = "";
+        if (model->getARPAContacts() > 0) {
+            /*TTM Message from https://gpsd.gitlab.io/gpsd/NMEA.html#_ttm_tracked_target_message 
+            Target Number (0-99)
+            Target Distance
+            Bearing from own ship
+            T = True, R = Relative
+            Target Speed
+            Target Course
+            T = True, R = Relative
+            Distance of closest-point-of-approach
+            Time until closest-point-of-approach "-" means increasing, minutes
+            Speed/distance units, K/N
+            Target name
+            Target Status (L=Lost Q=Acquiring T=Tracking).
+            Reference Target
+            UTC of data (NMEA 3 and above)
+            Type, A = Auto, M = Manual, R = Reported (NMEA 3 and above)
+            Checksum*/
+            //To think about/add: Lost contacts? Manually aquired contacts?
+            for (int i = 0; i<model->getARPAContacts();i++) {
+                
+                int arpaID = i+1;
+                //TCPA in minutes, '-' if increasing
+                char tcpa[10] = "-";
+                if (model->getARPATCPA(arpaID)>0) {
+                    snprintf(tcpa,10,"%f",model->getARPATCPA(arpaID));
+                }
+
+                snprintf(messageBuffer,100,"$RATTM,%d,%f,%f,T,%f,%f,T,%f,%s,N,Tgt %d,T,,%s,A",
+                arpaID,
+                model->getARPARange(arpaID),
+                model->getARPABearing(arpaID),
+                model->getARPASpeed(arpaID),
+                model->getARPAHeading(arpaID),
+                model->getARPACPA(arpaID),
+                tcpa,
+                arpaID,
+                timeString.c_str()
+                );
+                messageString = "";
+                messageString.append(messageBuffer);
+                messageToSend.append(addChecksum(messageString));
+            }
+        }
     }
 
     currentMessageType++;
@@ -158,10 +219,6 @@ void NMEA::updateNMEA()
     {
         currentMessageType = 0;
     }
-
-    std::string messageString(messageBuffer);
-
-    messageToSend = addChecksum(messageString);
 }
 
 void NMEA::sendNMEASerial()
