@@ -55,7 +55,7 @@
         //Reflections
         vec2 perturbation = Normal.xz*distanceSmoothing;
         vec2 ProjectedReflectionTexCoords = reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation;
-        //Todo: Think about increasing the size of the reflection map, and re-projecting here, to avoid edge effects. Correct for double size reflection map (0->0.25, 0.5->0.5, 1->0.75). This isn't quite right, as the response isn't linear
+
         ProjectedReflectionTexCoords = ProjectedReflectionTexCoords;
         ProjectedReflectionTexCoords = clamp(ProjectedReflectionTexCoords,0.0,1.0);
         vec4 reflectionColour = texture2D(reflectionMap, ProjectedReflectionTexCoords );
@@ -63,8 +63,8 @@
         //Fade out reflection at high sea state:
         reflectionColour = mix(reflectionColour,vec4(0.0,0.0,0.0,1.0),seaState/12.0);
 
-        //Mix the two
-        vec4 outputColour = mix(reflectionColour, simpleShading,0.75);
+        //Mix the two, more reflection at night so lights show up
+        vec4 outputColour = mix(reflectionColour, simpleShading,0.8+lightLevel/6.0);
 
         //Todo: Think about white shading if normal is near upwards, and height is high (i.e. at a crest)
 
