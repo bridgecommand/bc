@@ -110,9 +110,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         //Add terrain: Needs to happen first, so the terrain parameters are available
         terrain.load(worldPath, smgr);
 
-        //add water
-        water.load(smgr,weather,disableShaders,waterSegments);
-
         //sky box/dome
         Sky sky (smgr);
 
@@ -121,6 +118,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         if(mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
+
+        //add water
+        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterSegments);
 
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine

@@ -31,7 +31,7 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, irr::s32 id, irr::u32 disableShaders, irr::u32 segments,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, irr::s32 id, irr::u32 disableShaders, irr::u32 segments,
 		const irr::core::vector3df& position, const irr::core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
 	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), segments(segments)
@@ -43,6 +43,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 	//scaleFactorVertical = 1.0;
 
 	driver = mgr->getVideoDriver();
+	ownShipSceneNode = ownShip;
 
 
 	//From Mel demo (http://irrlicht.sourceforge.net/forum/viewtopic.php?f=9&t=51130&start=15#p296723) START
@@ -361,6 +362,13 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 
 		setVisible(false); //hide the water
 
+		bool reShowOwnShip = false;
+
+		if (ownShipSceneNode->isVisible()) {
+			ownShipSceneNode->setVisible(false);
+			reShowOwnShip = true;
+		}
+
 		//reflection
 		driver->setRenderTarget(_reflectionMap, irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH); //render to reflection
 
@@ -373,7 +381,9 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 
 		//set FOV and far value from current camera
 		_camera->setFarValue(currentCamera->getFarValue());
-		_camera->setFOV(currentCamera->getFOV());
+		irr::f32 renderScale = 1.5; //This matches the scaling in the shader, to avoid artefacts near the edge of the screen
+		irr::f32 renderFOV = 2*atan(renderScale * tan(currentCamera->getFOV()/2));
+		_camera->setFOV(renderFOV);
 
 		irr::core::vector3df position = currentCamera->getAbsolutePosition();
 		position.Y = -position.Y + 2 * RelativeTranslation.Y; //position of the water
@@ -404,6 +414,10 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 		SceneManager->setActiveCamera(currentCamera);
 
 		setVisible(true); //show it again
+
+		if (reShowOwnShip) {
+			ownShipSceneNode->setVisible(true);
+		}
 
         //Reset :: Fixme: Doesn't seem to be working on old PC
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change

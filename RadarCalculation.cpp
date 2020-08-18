@@ -789,6 +789,8 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
                     different */
 
+                    
+
                     //If ID is 0 (unassigned), set id and increment
                     if (arpaContacts.at(i).estimate.displayID==0) {
                         arpaContacts.at(i).estimate.displayID = ++largestARPADisplayId;

@@ -36,7 +36,7 @@ namespace scene
 	public:
 
 		//! constructor
-		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr,	s32 id,
+		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip,	s32 id,
 			irr::u32 disableShaders,
 			irr::u32 segments = 32,
 			const core::vector3df& position = core::vector3df(0,0,0),
@@ -110,6 +110,8 @@ namespace scene
 		IMesh* mesh;
 		IMesh* flatMesh;
 		cOcean* ocean;
+
+		ISceneNode* ownShipSceneNode;
 
 		core::aabbox3d<f32> boundingBox;
 
