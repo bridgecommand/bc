@@ -95,7 +95,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
                     lightHeight/=buoyNode->getScale().Y;
                 }
                 //Create buoy light as a child of the buoy
-                buoysLights.push_back(new NavLight (buoyNode,smgr,irr::core::dimension2d<irr::f32>(5, 5), irr::core::vector3df(0,lightHeight,0),irr::video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
+                buoysLights.push_back(new NavLight (buoyNode,smgr, irr::core::vector3df(0,lightHeight,0),irr::video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
             }
         }
     }

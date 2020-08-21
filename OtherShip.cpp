@@ -140,7 +140,7 @@ OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& locati
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,irr::core::dimension2d<irr::f32>(5, 5), irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
         }
     }
 

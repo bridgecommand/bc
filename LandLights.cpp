@@ -68,7 +68,7 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
             lightRange = lightRange * M_IN_NM;
 
 
-            landLights.push_back(new NavLight (0,smgr,irr::core::dimension2d<irr::f32>(5, 5), irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
+            landLights.push_back(new NavLight (0,smgr, irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
         }
     }
 

@@ -23,20 +23,21 @@
 
 //using namespace irr;
 
-NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::dimension2d<irr::f32> lightSize, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
+NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence, irr::u32 phaseStart) {
 
     //Store the scene manager, so we can find the active camera
     this->smgr = smgr;
 
-    lightNode = smgr->addBillboardSceneNode(parent, lightSize, position);
+    irr::f32 lightSize = 0.5;
+    if (parent->getScale().X > 0) {
+        lightSize /= parent->getScale().X; //Assume scale in all directions is the same
+    }
 
-	lightNode->setColor(colour);
+    lightNode = smgr->addSphereSceneNode(lightSize,4,parent,-1, position);
 
-	lightTexture = smgr->getVideoDriver()->getTexture("media/particlewhite.png");
+    smgr->getMeshManipulator()->setVertexColors(lightNode->getMesh(),colour);
 
-	
-	lightNode->setMaterialTexture(0, lightTexture);
-	lightNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+    lightNode->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
 	lightNode->setMaterialFlag(irr::video::EMF_LIGHTING, false);
 	lightNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
 
@@ -101,7 +102,7 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 
     //scale so lights appear same size independent of range
     irr::f32 lightDistance=lightPosition.getDistanceFrom(viewPosition);
-    lightNode->setSize(irr::core::dimension2df(lightDistance*0.01*zoom,lightDistance*0.01*zoom));
+    lightNode->setScale(irr::core::vector3df(lightDistance*0.01*zoom,lightDistance*0.01*zoom,lightDistance*0.01*zoom));
 
     //set light visibility depending on range
     if (lightDistance > range) {
@@ -133,23 +134,15 @@ void NavLight::update(irr::f32 scenarioTime, irr::u32 lightLevel) {
 	//set transparency dependent on light level, only changing if required, as this is a slow operation
     irr::u16 requiredAlpha = 255 - lightLevel;
 	if (requiredAlpha != currentAlpha) {
-		
-		/*
-		//Reload light textures - required as setAlpha seems only to work once
-		lightNode->setMaterialTexture(0, smgr->getVideoDriver()->getTexture("media/particlewhite.png"));
-		lightNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-		lightNode->setMaterialFlag(video::EMF_LIGHTING, false);
-		lightNode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		*/
 
-		setAlpha((irr::u8)requiredAlpha, lightTexture);
+		//setAlpha((irr::u8)requiredAlpha, lightTexture);
+        smgr->getMeshManipulator()->setVertexColorAlpha(lightNode->getMesh(),requiredAlpha);
 		currentAlpha = requiredAlpha;
 	}
 
-    //this->lightLevel = (irr::f32)lightLevel/256; //Convert to float for shader
-
 }
 
+/*
 bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 //Modified from http://irrlicht.sourceforge.net/forum/viewtopic.php?t=31400
 //FIXME: Check how the texture color format is set
@@ -223,6 +216,7 @@ bool NavLight::setAlpha(irr::u8 alpha, irr::video::ITexture* tex)
 	};
 	return true;
 }
+*/
 
 void NavLight::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
