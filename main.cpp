@@ -461,7 +461,7 @@ int main()
 
     OperatingMode::Mode mode = OperatingMode::Normal;
     ScenarioChoice scenarioChoice(device,&language);
-    scenarioChoice.chooseScenario(scenarioName, hostname, mode, scenarioPath);
+    scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
 
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {

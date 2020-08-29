@@ -20,13 +20,15 @@
 
 //using namespace irr;
 
-StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
+StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
 	{
 		device = dev;
 		this->scenarioListBox = scenarioListBox;
 		this->scenarioText = scenarioText;
 		this->hostnameText = hostnameText;
 		this->hostnameBox = hostnameBox;
+		this->portText = portText;
+		this->portBox = portBox;
 		this->secondaryBox = secondaryBox;
 		this->multiplayerBox = multiplayerBox;
         this->listBoxID = listBoxID;
@@ -57,11 +59,15 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                         scenarioText->setVisible(false);
                         hostnameBox->setVisible(false);
                         hostnameText->setVisible(false);
+                        portText->setVisible(true);
+                        portBox->setVisible(true);
                     } else {
                         scenarioListBox->setVisible(true);
                         scenarioText->setVisible(true);
                         hostnameBox->setVisible(true);
                         hostnameText->setVisible(true);
+                        portText->setVisible(false);
+                        portBox->setVisible(false);
                     }
                 }
                 //Only one check box should be on

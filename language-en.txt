@@ -11,6 +11,8 @@ moveMessage="Please move this message box to the monitor where Bridge Command sh
 multiplayer="Multiplayer mode"
 hostname="Optional: Hostname for controller/secondary display."
 hostnameHelp="Hostnames:\nStart secondary displays or controller sessions first.\nThese will show the hostname and port.\nEnter these here, as hostname:port\nUse commas to separate hostnames."
+udpListenPort="Port to receive data on:"
+udpListenPortHelp="In general leave this as the default. It can be changed if more than one instance of the program is running on this computer."
 loadingmsg="Loading scenario..."
 
 pausedbutton="PAUSED: CLICK HERE TO START\n\nKeyboard usage:\nArrow keys - look around\n    Ctrl + Arrow keys: Look ahead/port/stbd/astern\n    Shift + L/R Arrow keys: Look around in steps\nSpace: Change view\n0-7: Time compression\n'H': Horn\n'M': Release man overboard dummy\nCtrl + 'M': Retrieve man overboard dummy\n'A'/'Z': Control port engine\n'S'/'X': Control stbd engine\n'D'/'C': Control both engines\n'V'/'B':Control rudder\nEsc: Quit"
