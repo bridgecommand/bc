@@ -9,6 +9,12 @@ cp bridgecommand-mh BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/mh
 cp bridgecommand-rp BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/rp
 
 rm -f BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Contents/MacOS/.gitignore
 rm -rf BridgeCommand.app/Contents/Resources/media
 rm -rf BridgeCommand.app/Contents/Resources/Models
 rm -rf BridgeCommand.app/Contents/Resources/Scenarios
@@ -26,7 +32,8 @@ cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
 cp -a mph.ini BridgeCommand.app/Contents/Resources/mph.ini
 cp -a repeater.ini BridgeCommand.app/Contents/Resources/repeater.ini
-cp -a language-en.txt BridgeCommand.app/Contents/Resources/language-en.txt
+#cp -a language-en.txt BridgeCommand.app/Contents/Resources/language-en.txt
+cat language-en.txt | sed -E 's/Ctrl/Cmd/g' > BridgeCommand.app/Contents/Resources/language-en.txt
 cp -a languageController-en.txt BridgeCommand.app/Contents/Resources/languageController-en.txt
 cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMultiplayer-en.txt
 cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher-en.txt
