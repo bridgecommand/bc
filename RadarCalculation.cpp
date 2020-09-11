@@ -34,7 +34,7 @@
 
 ////using namespace irr;
 
-RadarCalculation::RadarCalculation() : rangeResolution(64)
+RadarCalculation::RadarCalculation() : rangeResolution(128)
 {
     //Initial values for controls, all 0-100:
     radarGain = 50;
@@ -107,7 +107,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         //Initial radar range
         radarRangeIndex=3;
 
-        scanAngleStep=2; //Radar angular resolution (integer degree)
+        scanAngleStep=1; //Radar angular resolution (integer degree)
         radarScannerHeight = 2.0;
         radarNoiseLevel = 0.000000000005;
         radarSeaClutter = 0.000000001;
@@ -141,7 +141,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         //Radar angular resolution (integer degree)
         scanAngleStep=IniFile::iniFileTou32(radarConfigFile,"radar_sensitivity");
-        if (scanAngleStep < 1 || scanAngleStep > 180) {scanAngleStep = 2;}
+        if (scanAngleStep < 1 || scanAngleStep > 180) {scanAngleStep = 1;}
 
         //Radar scanner height (Metres)
         radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
@@ -340,7 +340,7 @@ bool RadarCalculation::getHeadUp() const//Head or course up
 void RadarCalculation::toggleRadarOn()
 {
 	radarOn = !radarOn;
-	
+
 	if (!radarOn) {
 		//Reset array to empty
 		for (irr::u32 i = 0; i < 360; i++) {
@@ -480,7 +480,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         std::cout << "Cursor E/W: " << cursorRangeXNm << " N/S:" << cursorRangeYNm << std::endl;
     }
     */
-	
+
     if (radarOn) {
 		scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
 		updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
@@ -789,7 +789,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
                     different */
 
-                    
+
 
                     //If ID is 0 (unassigned), set id and increment
                     if (arpaContacts.at(i).estimate.displayID==0) {
