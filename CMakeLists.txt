@@ -13,7 +13,7 @@ add_subdirectory(libs/serial)
 
 include_directories("libs/enet-1.3.14/include")
 add_definitions(-DWITH_SOUND)
-add_definitions(-DFOR_DEB)
+# add_definitions(-DFOR_DEB)
 
 if (APPLE)
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7")
