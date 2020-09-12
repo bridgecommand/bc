@@ -29,7 +29,7 @@ NavLight::NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* sm
     this->smgr = smgr;
 
     irr::f32 lightSize = 0.5;
-    if (parent->getScale().X > 0) {
+    if (parent && parent->getScale().X > 0) {
         lightSize /= parent->getScale().X; //Assume scale in all directions is the same
     }
 
