@@ -13,6 +13,7 @@ add_subdirectory(libs/serial)
 
 include_directories("libs/enet-1.3.14/include")
 add_definitions(-DWITH_SOUND)
+add_definitions(-DFOR_DEB)
 
 # optional tools
 add_subdirectory(controller)
