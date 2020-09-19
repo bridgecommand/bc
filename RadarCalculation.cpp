@@ -493,7 +493,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
-    const irr::u32 SECONDS_BETWEEN_SCANS = 20;
+    const irr::u32 SECONDS_BETWEEN_SCANS = 2;
 
     irr::core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
@@ -785,27 +785,51 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     arpaContacts.at(i).estimate.lost=true;
                     //std::cout << "Contact " << i << " lost" << std::endl;
                 } else if (!arpaContacts.at(i).estimate.stationary) {
-                    /* Update contact tracking: Initially based on latest scan, and 6 scans back if available, or earliest otherwise
-                    TODO: Improve the logic of this, probably getting longest time possible before the behaviour was significantly
-                    different */
-
-
-
                     //If ID is 0 (unassigned), set id and increment
                     if (arpaContacts.at(i).estimate.displayID==0) {
                         arpaContacts.at(i).estimate.displayID = ++largestARPADisplayId;
                     }
 
-                    irr::s32 stepsBack = 6;
+                    irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
+                    irr::s32 recentStepsBack = 10; //Shorter time for tracking (if motion has changed significantly)
 
                     irr::s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
                     irr::s32 referenceScanIndex = currentScanIndex - stepsBack;
                     if (referenceScanIndex < 0) {
                         referenceScanIndex = 0;
                     }
-
+                    
                     ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
                     ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
+
+                    //Check if heading/speed has changed dramatically, by taking last 10 scans. If so, reduce steps back to 10
+                    irr::s32 actualStepsBack = currentScanIndex - referenceScanIndex;
+                    if (actualStepsBack > recentStepsBack) {
+                        ARPAScan recentScanData = arpaContacts.at(i).scans.at(currentScanIndex-recentStepsBack);
+                        irr::f32 deltaTimeRecent = currentScanData.timeStamp - recentScanData.timeStamp;
+                        irr::f32 deltaTimeFull   = currentScanData.timeStamp - referenceScanData.timeStamp;
+                        if (deltaTimeRecent>0 && deltaTimeFull > 0) {
+                            irr::f32 deltaXRecent = currentScanData.x - recentScanData.x;
+                            irr::f32 deltaZRecent = currentScanData.z - recentScanData.z;
+                            irr::f32 deltaXFull   = currentScanData.x - referenceScanData.x;
+                            irr::f32 deltaZFull   = currentScanData.z - referenceScanData.z;
+
+                            //Absolute vector
+                            irr::f32 absVectorXRecent = deltaXRecent/deltaTimeRecent; //m/s
+                            irr::f32 absVectorZRecent = deltaZRecent/deltaTimeRecent; //m/s
+                            irr::f32 absVectorXFull = deltaXFull/deltaTimeFull; //m/s
+                            irr::f32 absVectorZFull = deltaZFull/deltaTimeFull; //m/s
+
+                            //Difference in estimation
+                            irr::f32 changeX = absVectorXRecent - absVectorXFull;
+                            irr::f32 changeZ = absVectorZRecent - absVectorZFull;
+
+                            //If speed estimates differ by more than 1m/s in either direction, prefer the more recent estimate. Otherwise, leave unchanged
+                            if (std::abs(changeX) > 1.0 || std::abs(changeZ) > 1.0) {
+                                referenceScanData = recentScanData; //It seems like the course or speed has changed significantly
+                            }
+                        }
+                    }
 
                     //Find difference in time, position x, position z
                     irr::f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
