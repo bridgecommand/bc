@@ -90,6 +90,8 @@
 		<Unit filename="GUI.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
+		<Unit filename="AISOverUDP.cpp" />
+		<Unit filename="AISOverUDP.hpp" />
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />

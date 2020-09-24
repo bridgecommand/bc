@@ -3,11 +3,13 @@
 #include <cstdio>
 #include <vector>
 #include <asio.hpp>
+#include <thread>
 
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
 #include "Network.hpp"
+#include "AISOverUDP.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
 #include "EventReceiver.hpp"
@@ -126,6 +128,8 @@ int main (int argc, char ** argv)
     //Network class
     Network network(udpPort);
 
+    //AISOverUDP aisUdp(35678); //Connect to AIS over UDP: Todo: make port configurable, and only do this if needed
+
     //Find our hostname to tell user
     std::string ourHostName = asio::ip::host_name();
     irr::core::stringw patienceMessage = language.translate("startBC");
@@ -183,6 +187,9 @@ int main (int argc, char ** argv)
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain, &network);
     device->setEventReceiver(&receiver);
+
+    //Start listening for AIS data
+    std::thread aisThreadObject(&AISOverUDP::AISThread,AISOverUDP(35678)); //TODO - Remove hardcoding of port, and only start if needed
 
     while(device->run()) {
 

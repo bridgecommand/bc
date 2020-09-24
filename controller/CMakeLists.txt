@@ -5,6 +5,7 @@ add_executable(bridgecommand-mc
     GUI.cpp
     main.cpp
     Network.cpp
+    AISOverUDP.cpp
     ../IniFile.cpp
     ../Lang.cpp
     ../Utilities.cpp

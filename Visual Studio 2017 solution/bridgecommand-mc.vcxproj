@@ -154,6 +154,7 @@
     <ClCompile Include="..\controller\EventReceiver.cpp" />
     <ClCompile Include="..\controller\GUI.cpp" />
     <ClCompile Include="..\controller\Network.cpp" />
+    <ClCompile Include="..\controller\AISOverUDP.cpp" />
     <ClCompile Include="..\controller\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +167,7 @@
     <ClInclude Include="..\controller\EventReceiver.hpp" />
     <ClInclude Include="..\controller\GUI.hpp" />
     <ClInclude Include="..\controller\Network.hpp" />
+    <ClInclude Include="..\controller\AISOverUDP.hpp" />
     <ClInclude Include="..\controller\OtherShipDataStruct.hpp" />
     <ClInclude Include="..\controller\PositionDataStruct.hpp" />
     <ClInclude Include="..\controller\ShipDataStruct.hpp" />
