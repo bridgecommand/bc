@@ -17,6 +17,10 @@
 #include "AISOverUDP.hpp"
 #include <vector>
 #include <iostream>
+#include <mutex>
+
+extern int terminateAISThread;
+extern std::mutex terminateAISThread_mutex;
 
 AISOverUDP::AISOverUDP(int port) {
     _port = port;
@@ -33,6 +37,14 @@ void AISOverUDP::AISThread()
 
     for (;;)
     {
+      
+      //Check if we've been asked to stop
+      terminateAISThread_mutex.lock();
+      if (terminateAISThread!=0) {
+        break;
+      }
+      terminateAISThread_mutex.unlock();
+      
       try {
 
         //unsigned char buf[128];
@@ -51,10 +63,6 @@ void AISOverUDP::AISThread()
         setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
         #endif
 
-
-
-
-
         //Read from UDP socket
         #ifdef WIN32
         int nread = ::recv(socket.native_handle(), buf, sizeof(buf),0);
@@ -70,5 +78,7 @@ void AISOverUDP::AISThread()
         std::cerr << e.what() << std::endl;
       }
     }
+
+    std::cout << "Ending AIS UDP" << std::endl;
 
 }

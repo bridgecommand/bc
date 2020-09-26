@@ -4,6 +4,7 @@
 #include <vector>
 #include <asio.hpp>
 #include <thread>
+#include <mutex>
 
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
@@ -26,6 +27,10 @@
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
+
+//Global to ask AIS UDP thread to stop
+int terminateAISThread = 0;
+std::mutex terminateAISThread_mutex;
 
 // Irrlicht Namespaces
 //using namespace irr;
@@ -203,6 +208,12 @@ int main (int argc, char ** argv)
 
         driver->endScene();
     }
+
+    //Stop listening for AIS data
+    terminateAISThread_mutex.lock();
+    terminateAISThread=1;
+    terminateAISThread_mutex.unlock();
+    aisThreadObject.join();
 
     return(0);
 }
