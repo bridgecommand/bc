@@ -34,20 +34,34 @@ void AISOverUDP::AISThread()
     for (;;)
     {
       try {
-        
-        unsigned char buf[128];
+
+        //unsigned char buf[128];
+        char buf[128];
 
         std::cout << "Waiting for data 1." << std::endl;
-        
+
         //This is all with low level socket functions, not actually asio. Needs to be checked on Windows!
-        
+
         //Set timeout
+        #ifdef WIN32
+        DWORD timeout = 1000;
+        setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(DWORD))!=0;
+        #else
         struct timeval tv = { 1, 0 };
         setsockopt(socket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-        
+        #endif
+
+
+
+
+
         //Read from UDP socket
+        #ifdef WIN32
+        int nread = ::recv(socket.native_handle(), buf, sizeof(buf),0);
+        #else
         ssize_t nread = ::read(socket.native_handle(), buf, sizeof(buf));
-        
+        #endif
+
         if (nread>0) {
           std::cout << "Received: " << buf << std::endl;
         }
