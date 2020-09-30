@@ -155,6 +155,12 @@
     <ClCompile Include="..\controller\GUI.cpp" />
     <ClCompile Include="..\controller\Network.cpp" />
     <ClCompile Include="..\controller\AISOverUDP.cpp" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\access.c" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\imo.c" />
+		<ClCompile Include="..\controller\libs\aisparser\c\src\nmea.c" />
+		<ClCompile Include="..\controller\libs\aisparser\c\src\seaway.c" />
+		<ClCompile Include="..\controller\libs\aisparser\c\src\sixbit.c" />
+		<ClCompile Include="..\controller\libs\aisparser\c\src\vdm_parse.c" />
     <ClCompile Include="..\controller\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +177,13 @@
     <ClInclude Include="..\controller\OtherShipDataStruct.hpp" />
     <ClInclude Include="..\controller\PositionDataStruct.hpp" />
     <ClInclude Include="..\controller\ShipDataStruct.hpp" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\access.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\imo.h" />
+		<ClInclude Include="..\controller\libs\aisparser\c\src\nmea.h" />
+		<ClInclude Include="..\controller\libs\aisparser\c\src\portable.h" />
+		<ClInclude Include="..\controller\libs\aisparser\c\src\seaway.h" />
+		<ClInclude Include="..\controller\libs\aisparser\c\src\sixbit.h" />
+		<ClInclude Include="..\controller\libs\aisparser\c\src\vdm_parse.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />

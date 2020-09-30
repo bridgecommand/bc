@@ -95,6 +95,19 @@
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />
+		<Unit filename="libs/aisparser/c/src/access.c" />
+		<Unit filename="libs/aisparser/c/src/access.h" />
+		<Unit filename="libs/aisparser/c/src/imo.c" />
+		<Unit filename="libs/aisparser/c/src/imo.h" />
+		<Unit filename="libs/aisparser/c/src/nmea.c" />
+		<Unit filename="libs/aisparser/c/src/nmea.h" />
+		<Unit filename="libs/aisparser/c/src/portable.h" />
+		<Unit filename="libs/aisparser/c/src/seaway.c" />
+		<Unit filename="libs/aisparser/c/src/seaway.h" />
+		<Unit filename="libs/aisparser/c/src/sixbit.c" />
+		<Unit filename="libs/aisparser/c/src/sixbit.h" />
+		<Unit filename="libs/aisparser/c/src/vdm_parse.c" />
+		<Unit filename="libs/aisparser/c/src/vdm_parse.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
