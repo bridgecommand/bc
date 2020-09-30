@@ -18,6 +18,10 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
+#include "libs/aisparser/c/src/portable.h"
+#include "libs/aisparser/c/src/nmea.h"
+#include "libs/aisparser/c/src/sixbit.h"
+#include "libs/aisparser/c/src/vdm_parse.h"
 
 extern int terminateAISThread;
 extern std::mutex terminateAISThread_mutex;
@@ -34,6 +38,11 @@ void AISOverUDP::AISThread()
     socket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), _port));
 
     std::cout << "Set up on port " << _port << std::endl;
+
+    ais_state ais = {};
+    aismsg_1  msg_1 = {};
+    aismsg_2  msg_2 = {};
+    aismsg_3  msg_3 = {};
 
     for (;;)
     {
@@ -72,6 +81,19 @@ void AISOverUDP::AISThread()
 
         if (nread>0) {
           std::cout << "Received: " << buf << std::endl;
+
+          if (assemble_vdm( &ais, buf ) == 0) {
+            ais.msgid = (unsigned char) get_6bit( &ais.six_state, 6 );
+            std::cout << "Recieved AIS Message type " << (int)ais.msgid << std::endl;
+            if( (ais.msgid == 1)&&(parse_ais_1( &ais, &msg_1 ) == 0) ) {  
+              double lat;
+              double lon;
+              pos2ddd(msg_1.latitude,msg_1.longitude,&lat,&lon); //Convert to decimal lat and long
+
+              std::cout << "Received AIS Message type 1: COG:" << msg_1.cog << " SOG:" << msg_1.sog << " MMSI:" << msg_1.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+            }
+          }
+
         }
 
       } catch (std::exception& e) {

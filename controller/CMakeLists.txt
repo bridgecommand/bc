@@ -1,4 +1,6 @@
 
+add_subdirectory(libs/aisparser)
+
 add_executable(bridgecommand-mc
     ControllerModel.cpp
     EventReceiver.cpp
@@ -18,5 +20,6 @@ target_link_libraries(bridgecommand-mc
     bc-asio
     enet
     bc-irrlicht
+    bc-aisparser
     Threads::Threads
 )
