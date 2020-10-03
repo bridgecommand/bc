@@ -43,6 +43,8 @@ private:
     irr::IrrlichtDevice* device;
     int port;
 
+    bool networkRequested;
+
     ENetHost* client; //One client
     ENetEvent event;
 

@@ -192,6 +192,7 @@
     <ClCompile Include="..\Tide.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
     <ClCompile Include="..\Water.cpp" />
+    <ClCompile Include="..\iprof.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Angles.hpp" />
@@ -242,6 +243,8 @@
     <ClInclude Include="..\Tide.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\Water.hpp" />
+    <ClInclude Include="..\iprof.hpp" />
+		<ClInclude Include="..\hitime.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />
