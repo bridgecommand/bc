@@ -62,75 +62,79 @@ NetworkPrimary::~NetworkPrimary() //Destructor
 
 void NetworkPrimary::connectToServer(std::string hostnames)
 {
-
     //hostname may be multiple comma separated names
+    hostnames = Utilities::trim(hostnames);
     std::vector<std::string> multipleHostnames = Utilities::split(hostnames,',');
 
-    //Ensure there's at least one entry
+    //Ensure there's at least one entry, or don't use networking
     if (multipleHostnames.size() < 1 ) {
-        multipleHostnames.push_back(""); //Add an empty record
+        networkRequested = false;
+    } else {
+        networkRequested = true;
     }
 
-    //Trim each hostname (for spaces etc), and make lower case
-    for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
-        multipleHostnames.at(i) = Utilities::trim(multipleHostnames.at(i));
-        Utilities::to_lower(multipleHostnames.at(i));
-    }
+    if (networkRequested) { //Only bother with networking if the user actually wants to!
+        //Trim each hostname (for spaces etc), and make lower case
+        for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
+            multipleHostnames.at(i) = Utilities::trim(multipleHostnames.at(i));
+            Utilities::to_lower(multipleHostnames.at(i));
+        }
 
-    //Set up a peer for each hostname
-    for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
-        ENetAddress address;
-        ENetPeer* peer;
+        //Set up a peer for each hostname
+        for (unsigned int i = 0; i<multipleHostnames.size(); i++) {
+            ENetAddress address;
+            ENetPeer* peer;
 
-        std::string thisHostname = multipleHostnames.at(i);
-        //Todo: validate this?
+            std::string thisHostname = multipleHostnames.at(i);
+            //Todo: validate this?
 
-        //Check if the string contains a ':', and if so, split into hostname and port part
-        if (thisHostname.find(':') != std::string::npos) {
-            std::vector<std::string> splitHostname = Utilities::split(thisHostname,':');
-            if (splitHostname.size()==2) {
-                thisHostname = splitHostname.at(0);
-                address.port = Utilities::lexical_cast<enet_uint16>(splitHostname.at(1));
+            //Check if the string contains a ':', and if so, split into hostname and port part
+            if (thisHostname.find(':') != std::string::npos) {
+                std::vector<std::string> splitHostname = Utilities::split(thisHostname,':');
+                if (splitHostname.size()==2) {
+                    thisHostname = splitHostname.at(0);
+                    address.port = Utilities::lexical_cast<enet_uint16>(splitHostname.at(1));
+                } else {
+                    address.port = port; //Fall back to default
+                }
             } else {
-                address.port = port; //Fall back to default
-            }
-        } else {
-            address.port = port;
+                address.port = port;
 
-            //Count number of instances of this earlier in list, and if so, increment port, so
-            //localhost,localhost,localhost would become like localhost:port,localhost:port+1,localhost:port+2
-            for (unsigned int j=0; j<i; j++) {
-                if (thisHostname.compare(multipleHostnames.at(j))==0) {
-                    address.port++;
+                //Count number of instances of this earlier in list, and if so, increment port, so
+                //localhost,localhost,localhost would become like localhost:port,localhost:port+1,localhost:port+2
+                for (unsigned int j=0; j<i; j++) {
+                    if (thisHostname.compare(multipleHostnames.at(j))==0) {
+                        address.port++;
+                    }
                 }
             }
-        }
 
-        /* Connect to some.server.net:18304. */
-        enet_address_set_host (& address, thisHostname.c_str());
+            /* Connect to some.server.net:18304. */
+            enet_address_set_host (& address, thisHostname.c_str());
 
-        /* Initiate the connection, allocating the two channels 0 and 1. */
-        peer = enet_host_connect (client, & address, 2, 0);
-        //Note we don't store peer pointer, as we broadcast to all connected peers.
-        if (peer == NULL)
-        {
-            std::cerr << "No available peers for initiating an ENet connection." << std::endl;
-			enet_deinitialize();
-			exit(EXIT_FAILURE);
-        }
-        /* Wait up to 1 second for the connection attempt to succeed. */
-        if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-            //std::string logMessage = "ENet connection succeeded to: ";
-            //logMessage.append(thisHostname);
-            device->getLogger()->log("ENet connection succeeded to:");
-            device->getLogger()->log(thisHostname.c_str());
-        } else {
-            /* Either the 1 second is up or a disconnect event was */
-            /* received. Reset the peer in the event the 1 second */
-            /* had run out without any significant event. */
-            enet_peer_reset (peer);
-            device->getLogger()->log("ENet connection failed to:");
-            device->getLogger()->log(thisHostname.c_str());
+            /* Initiate the connection, allocating the two channels 0 and 1. */
+            peer = enet_host_connect (client, & address, 2, 0);
+            //Note we don't store peer pointer, as we broadcast to all connected peers.
+            if (peer == NULL)
+            {
+                std::cerr << "No available peers for initiating an ENet connection." << std::endl;
+                enet_deinitialize();
+                exit(EXIT_FAILURE);
+            }
+            /* Wait up to 1 second for the connection attempt to succeed. */
+            if (enet_host_service (client, & event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+                //std::string logMessage = "ENet connection succeeded to: ";
+                //logMessage.append(thisHostname);
+                device->getLogger()->log("ENet connection succeeded to:");
+                device->getLogger()->log(thisHostname.c_str());
+            } else {
+                /* Either the 1 second is up or a disconnect event was */
+                /* received. Reset the peer in the event the 1 second */
+                /* had run out without any significant event. */
+                enet_peer_reset (peer);
+                device->getLogger()->log("ENet connection failed to:");
+                device->getLogger()->log(thisHostname.c_str());
+            }
         }
     }
 }
@@ -147,6 +151,9 @@ void NetworkPrimary::setModel(SimulationModel* model) //This MUST be called befo
 
 void NetworkPrimary::update()
 {
+    if (!networkRequested) {
+        return;
+    }
     receiveNetwork();
     sendNetwork();
 }
@@ -158,6 +165,9 @@ int NetworkPrimary::getPort()
 
 void NetworkPrimary::receiveNetwork()
 {
+    if (!networkRequested) {
+        return;
+    }
 
     if (model==0) {
         std::cerr << "Network not linked to model" << std::endl;
@@ -283,6 +293,10 @@ void NetworkPrimary::receiveNetwork()
 
 void NetworkPrimary::sendNetwork()
 {
+    if (!networkRequested) {
+        return;
+    }
+    
     std::string stringToSend;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
         stringToSend = generateSendStringScn();

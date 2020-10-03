@@ -16,6 +16,8 @@
 
 #include "RadarCalculation.hpp"
 
+//#include "iprof.hpp"
+
 #include "Terrain.hpp"
 #include "OwnShip.hpp"
 #include "Buoys.hpp"
@@ -459,6 +461,8 @@ irr::f32 RadarCalculation::getARPABearing(irr::u32 contactID) const
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
+    //IPROF_FUNC;
+
     //Reset screen if needed
     if(radarScreenStale) {
         radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
@@ -493,6 +497,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
+    //IPROF_FUNC;
     const irr::u32 SECONDS_BETWEEN_SCANS = 2;
 
     irr::core::vector3df position = ownShip.getPosition();
@@ -740,6 +745,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
+    //IPROF_FUNC;
     //Own ship absolute position
     irr::core::vector3df position = ownShip.getPosition();
     //Get absolute position relative to SW corner of world model
@@ -883,6 +889,8 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
 void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed)
 {
+    
+    //IPROF_FUNC;
     //*************************
     //generate image from array
     //*************************
@@ -1066,6 +1074,9 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading)
 //draw a bounded sector
 {
+
+    //IPROF_FUNC;
+
     if (headUp) {
         startAngle -= ownShipHeading;
         endAngle -= ownShipHeading;
@@ -1087,13 +1098,13 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
     irr::f32 point4Y = centreY - cosEndAngle*innerRadius;
 
     //find the 'bounding box'
-    irr::f32 minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
-    irr::f32 maxX = std::max(std::max(point1X,point2X),std::max(point3X,point4X));
-    irr::f32 minY = std::min(std::min(point1Y,point2Y),std::min(point3Y,point4Y));
-    irr::f32 maxY = std::max(std::max(point1Y,point2Y),std::max(point3Y,point4Y));
+    irr::s32 minX = std::min(std::min(point1X,point2X),std::min(point3X,point4X));
+    irr::s32 maxX = std::max(std::max(point1X,point2X),std::max(point3X,point4X));
+    irr::s32 minY = std::min(std::min(point1Y,point2Y),std::min(point3Y,point4Y));
+    irr::s32 maxY = std::max(std::max(point1Y,point2Y),std::max(point3Y,point4Y));
 
-    irr::f32 innerRadiusSqr = std::pow(innerRadius,2);
-    irr::f32 outerRadiusSqr = std::pow(outerRadius,2);
+    irr::f32 innerRadiusSqr = innerRadius*innerRadius;
+    irr::f32 outerRadiusSqr = outerRadius*outerRadius;
 
     //draw the points
     for (int i = minX;i<=maxX;i++) {
@@ -1118,6 +1129,7 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
             }
         }
     }
+    
 }
 
 void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end

@@ -31,6 +31,7 @@ set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 
 set(BC_SOURCES
+    iprof.cpp
     main.cpp
     Angles.cpp
     Buoy.cpp

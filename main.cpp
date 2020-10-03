@@ -15,6 +15,11 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 // main.cpp
+
+#define DISABLE_IPROF
+
+#include "iprof.hpp"
+
 // Include the Irrlicht header
 #include "irrlicht.h"
 
@@ -114,6 +119,7 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 int main()
 {
 
+    IPROF_FUNC;
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB
@@ -601,12 +607,14 @@ int main()
     while(device->run())
     {
 
+        { IPROF("Network");
 //        networkProfile.tic();
         network->update();
 //        networkProfile.toc();
 
         //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
 //        nmeaProfile.tic();
+        }{ IPROF("NMEA"); 
         if (device->getTimer()->getTime() >= nextNMEATime) {
 
             if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
@@ -626,6 +634,7 @@ int main()
 //        nmeaProfile.toc();
 
 //        modelProfile.tic();
+        }{ IPROF("Model");
         model.update();
 //        modelProfile.toc();
 
@@ -633,13 +642,17 @@ int main()
         //Set up
 
 //        renderSetupProfile.tic();
+        }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();
 
+        }
         bool fullScreenRadar = guiMain.getLargeRadar();
+        { IPROF("Render radar");
+        
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
@@ -657,6 +670,7 @@ int main()
  //       renderRadarProfile.toc();
 
  //       renderProfile.tic();
+        }{ IPROF("Render");
 
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
@@ -676,16 +690,27 @@ int main()
  //       renderProfile.toc();
 
  //       guiProfile.tic();
+        }{ IPROF("GUI");
         //gui
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
  //       guiProfile.toc();
-
+        }{ IPROF("End scene");
  //       renderFinishProfile.tic();
         driver->endScene();
  //       renderFinishProfile.toc();
+        }
 
     }
+
+    #ifndef DISABLE_IPROF
+    InternalProfiler::aggregateEntries();
+    
+    std::cout << "\nThe profiler stats so far:\n"
+           "WHAT: AVG_TIME (TOTAL_TIME / TIMES_EXECUTED)"
+           "\nAll times in micro seconds\n"
+        << InternalProfiler::stats << std::endl;
+    #endif
 
     //networking should be stopped (presumably with destructor when it goes out of scope?)
     device->getLogger()->log("About to stop network");
