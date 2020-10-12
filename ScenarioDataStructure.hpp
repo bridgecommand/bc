@@ -47,6 +47,7 @@ class LegData {
 class OtherShipData {
     public:
     std::string shipName;
+    irr::u32 mmsi;
     irr::f32 initialLong, initialLat;
     std::vector<LegData> legs;
 

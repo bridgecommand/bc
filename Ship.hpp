@@ -43,6 +43,7 @@ class Ship
         irr::f32 getSpeed() const; //m/s
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         void setPosition(irr::f32 xPos, irr::f32 yPos);
+        irr::u32 getMMSI() const;
 
     protected:
 
@@ -58,6 +59,7 @@ class Ship
         irr::f32 angleCorrection;
         int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
+        irr::u32 mmsi;
         enum CONTROL_MODE
         {
             MODE_AUTO = 0,

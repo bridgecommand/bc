@@ -54,6 +54,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         irr::f32 shipX = model->longToX(otherShipsData.at(i).initialLong);
         irr::f32 shipZ = model->latToZ(otherShipsData.at(i).initialLat);
 
+        //Set MMSI
+        irr::u32 mmsi = otherShipsData.at(i).mmsi;
+
         //Load leg information
         std::vector<Leg> legs;
         irr::f32 legStartTime = scenarioStartTime;
@@ -84,7 +87,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         }
 
         //Create otherShip and load into vector
-        otherShips.push_back(new OtherShip (otherShipName,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (otherShipName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
     }
 
 }

@@ -48,6 +48,8 @@ std::string OtherShipData::serialise()
     std::string serialised;
     serialised.append(shipName);
     serialised.append("|");
+    serialised.append(Utilities::lexical_cast<std::string>(mmsi));
+    serialised.append("|");
     serialised.append(Utilities::lexical_cast<std::string>(initialLong));
     serialised.append("|");
     serialised.append(Utilities::lexical_cast<std::string>(initialLat));
@@ -66,11 +68,12 @@ void OtherShipData::deserialise(std::string data)
     std::vector<std::string> splitData = Utilities::split(data,'|');
     if (splitData.size() == 4) {
         shipName = splitData.at(0);
-        initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(1));
-        initialLat = Utilities::lexical_cast<irr::f32>(splitData.at(2));
+        mmsi = Utilities::lexical_cast<irr::f32>(splitData.at(1));
+        initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
+        initialLat = Utilities::lexical_cast<irr::f32>(splitData.at(3));
         //clear any existing legs data
         legs.clear();
-        std::vector<std::string> legsVector = Utilities::split(splitData.at(3),'/');
+        std::vector<std::string> legsVector = Utilities::split(splitData.at(4),'/');
         for(unsigned int i=0; i<legsVector.size(); i++) {
             LegData tempLeg;
             tempLeg.deserialise(legsVector.at(i));

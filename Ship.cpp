@@ -28,6 +28,7 @@ Ship::Ship()
     //Default to run on defined spd and hdg
     controlMode = MODE_AUTO;
     positionManuallyUpdated = false; //Used to track if position has been manually updated, and shouldn't have position update applied this loop
+    mmsi = 0;
 }
 
 Ship::~Ship()
@@ -94,6 +95,11 @@ irr::f32 Ship::getHeading() const
 irr::f32 Ship::getSpeed() const
 {
     return spd;
+}
+
+irr::u32 Ship::getMMSI() const
+{
+    return mmsi;
 }
 
 void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)

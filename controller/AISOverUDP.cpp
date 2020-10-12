@@ -40,9 +40,10 @@ void AISOverUDP::AISThread()
     std::cout << "Set up on port " << _port << std::endl;
 
     ais_state ais = {};
-    aismsg_1  msg_1 = {};
-    aismsg_2  msg_2 = {};
-    aismsg_3  msg_3 = {};
+    aismsg_1 msg_1 = {};
+    aismsg_2 msg_2 = {};
+    aismsg_3 msg_3 = {};
+    aismsg_5 msg_5 = {};
 
     for (;;)
     {
@@ -89,8 +90,19 @@ void AISOverUDP::AISThread()
               double lat;
               double lon;
               pos2ddd(msg_1.latitude,msg_1.longitude,&lat,&lon); //Convert to decimal lat and long
-
               std::cout << "Received AIS Message type 1: COG:" << msg_1.cog << " SOG:" << msg_1.sog << " MMSI:" << msg_1.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+            } else if( (ais.msgid == 2)&&(parse_ais_2( &ais, &msg_2 ) == 0) ) {  
+              double lat;
+              double lon;
+              pos2ddd(msg_2.latitude,msg_2.longitude,&lat,&lon); //Convert to decimal lat and long
+              std::cout << "Received AIS Message type 2: COG:" << msg_2.cog << " SOG:" << msg_2.sog << " MMSI:" << msg_2.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+            } else if( (ais.msgid == 3)&&(parse_ais_3( &ais, &msg_3 ) == 0) ) {  
+              double lat;
+              double lon;
+              pos2ddd(msg_3.latitude,msg_3.longitude,&lat,&lon); //Convert to decimal lat and long
+              std::cout << "Received AIS Message type 3: COG:" << msg_3.cog << " SOG:" << msg_3.sog << " MMSI:" << msg_3.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+            } else if( (ais.msgid == 5)&&(parse_ais_5( &ais, &msg_5 ) == 0) ) {  
+              std::cout << "Received AIS Message type 5: MMSI:" << msg_5.userid << " Name:" << msg_5.name << std::endl;
             }
           }
 

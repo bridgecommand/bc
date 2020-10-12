@@ -27,7 +27,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name,const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information

@@ -258,6 +258,7 @@ namespace Utilities
         {
             OtherShipData thisOtherShip;
             thisOtherShip.shipName    = IniFile::iniFileToString(scenarioOtherShipsFilename,IniFile::enumerate1("Type",i));
+            thisOtherShip.mmsi    = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("MMSI",i));
             thisOtherShip.initialLong = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLong",i));
             thisOtherShip.initialLat  = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLat",i));
 
