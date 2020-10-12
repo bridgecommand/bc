@@ -66,7 +66,7 @@ std::string OtherShipData::serialise()
 void OtherShipData::deserialise(std::string data)
 {
     std::vector<std::string> splitData = Utilities::split(data,'|');
-    if (splitData.size() == 4) {
+    if (splitData.size() == 5) {
         shipName = splitData.at(0);
         mmsi = Utilities::lexical_cast<irr::f32>(splitData.at(1));
         initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));

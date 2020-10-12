@@ -292,7 +292,13 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
 
         //number
         int thisShipNumber = 1 + it - otherShips.begin();
-        guienv->getSkin()->getFont()->draw(irr::core::stringw(thisShipNumber),irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
+        irr::core::stringw displayNumber = irr::core::stringw(thisShipNumber);
+        if (it->mmsi != 0) {
+            displayNumber.append(L" (MMSI:");
+            displayNumber.append(irr::core::stringw(it->mmsi));
+            displayNumber.append(L")");
+        }
+        guienv->getSkin()->getFont()->draw(displayNumber,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
 
         //Draw leg information for each ship
         if (it->legs.size() > 0) {

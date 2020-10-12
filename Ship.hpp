@@ -44,6 +44,7 @@ class Ship
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         void setPosition(irr::f32 xPos, irr::f32 yPos);
         irr::u32 getMMSI() const;
+        void setMMSI(irr::u32 mmsi);
 
     protected:
 

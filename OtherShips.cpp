@@ -178,6 +178,22 @@ void OtherShips::setSpeed(int number, irr::f32 speed)
     }
 }
 
+irr::u32 OtherShips::getMMSI(int number) const
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getMMSI();
+    } else {
+        return 0;
+    }
+}
+
+void OtherShips::setMMSI(int number, irr::u32 mmsi)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        otherShips.at(number)->setMMSI(mmsi);
+    }
+}
+
 void OtherShips::setPos(int number, irr::f32 positionX, irr::f32 positionZ)
 {
     if (number < (int)otherShips.size() && number >= 0) {

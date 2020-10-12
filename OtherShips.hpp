@@ -45,7 +45,9 @@ class OtherShips
         irr::f32 getWidth(int number) const;
         irr::f32 getHeading(int number) const;
         irr::f32 getSpeed(int number) const; //Speed in m/s
+        irr::u32 getMMSI(int number) const;
         void setSpeed(int number, irr::f32 speed); //Speed in m/s
+        void setMMSI(int number, irr::u32 mmsi);
         void setPos(int number, irr::f32 positionX, irr::f32 positionZ);
         void setHeading(int number, irr::f32 hdg);
         std::vector<Leg> getLegs(int number) const;

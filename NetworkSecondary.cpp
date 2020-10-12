@@ -226,7 +226,7 @@ void NetworkSecondary::receiveMessage()
                     if (numberOthers == otherShipsDataString.size()) {
                         for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-                            if (thisShipData.size() == 7) { //7 elements for each ship
+                            if (thisShipData.size() == 8) { //8 elements for each ship
                                 //Update data
                                 model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
                                 model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);

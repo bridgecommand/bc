@@ -108,6 +108,7 @@ public:
     irr::f32 getOtherShipPosZ(int number) const;
     irr::f32 getOtherShipHeading(int number) const;
     irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
+    irr::u32 getOtherShipMMSI(int number) const;
     void setOtherShipHeading(int number, irr::f32 hdg);
     void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
     void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s

@@ -102,6 +102,11 @@ irr::u32 Ship::getMMSI() const
     return mmsi;
 }
 
+void Ship::setMMSI(irr::u32 mmsi)
+{
+    this->mmsi = mmsi;
+}
+
 void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     xPos += deltaX;

@@ -35,6 +35,7 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
     hdg = 0;
 
     this->name = name;
+    this->mmsi = mmsi;
 
     std::string basePath = "Models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();

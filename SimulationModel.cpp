@@ -326,6 +326,10 @@ SimulationModel::~SimulationModel()
         return otherShips.getSpeed(number);
     }
 
+    irr::u32 SimulationModel::getOtherShipMMSI(int number) const{
+        return otherShips.getMMSI(number);
+    }
+
     void SimulationModel::setOtherShipHeading(int number, irr::f32 hdg){
         otherShips.setHeading(number, hdg);
     }
