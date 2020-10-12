@@ -22,6 +22,8 @@ rain = "Rain"
 visibility="Visibility"
 setDistance = "Distance (Nm)"
 
+setMMSI = "Set MMSI"
+
 releaseMOB = "Release\nMOB"
 retrieveMOB = "Retrieve\nMOB"
 

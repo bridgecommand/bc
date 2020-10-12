@@ -37,12 +37,14 @@ public:
         //GUI_ID_WEATHER_WINDOW,
         GUI_ID_SHIP_COMBOBOX,
         GUI_ID_LEG_LISTBOX,
+        GUI_ID_MMSI_EDITBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
         GUI_ID_CHANGE_BUTTON,
         GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDLEG_BUTTON,
+        GUI_ID_SETMMSI_BUTTON,
         GUI_ID_DELETELEG_BUTTON,
         GUI_ID_MOVESHIP_BUTTON,
         GUI_ID_RELEASEMOB_BUTTON,
@@ -59,6 +61,7 @@ public:
     irr::f32 getEditBoxCourse() const;
     irr::f32 getEditBoxSpeed() const;
     irr::f32 getEditBoxDistance() const;
+    irr::u32 getEditBoxMMSI() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
     irr::core::vector2df getScreenCentrePosition() const;
@@ -87,11 +90,13 @@ private:
     irr::gui::IGUIEditBox* legCourseEdit;
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
+    irr::gui::IGUIEditBox* mmsiEdit;
     irr::gui::IGUIButton* changeLeg;
     irr::gui::IGUIButton* changeLegCourseSpeed;
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
+    irr::gui::IGUIButton* setMMSI;
     irr::gui::IGUIScrollBar* weatherBar;
     irr::gui::IGUIScrollBar* rainBar;
     irr::gui::IGUIScrollBar* visibilityBar;

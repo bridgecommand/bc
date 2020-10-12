@@ -54,6 +54,10 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
     shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
 
+    //Add MMSI editing
+    mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,guiWindow,GUI_ID_MMSI_EDITBOX);
+    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
+
     //Add leg selector drop down
     legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
     legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
@@ -197,6 +201,9 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
     if (editBoxesNeedUpdating) {
+        if (selectedShip >= 0 && selectedShip < otherShips.size()) {
+            mmsiEdit->setText(irr::core::stringw(otherShips.at(selectedShip).mmsi).c_str());
+        }
         if (selectedShip >= 0 && selectedShip < otherShips.size() && selectedLeg >= 0 && selectedLeg < otherShips.at(selectedShip).legs.size()) {
             legCourseEdit  ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
             legSpeedEdit   ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
@@ -480,6 +487,12 @@ irr::f32 GUIMain::getEditBoxDistance() const {
     wchar_t* endPtr;
     irr::f32 distance = wcstof(legDistanceEdit->getText(), &endPtr); //TODO: Check portability
     return distance;
+}
+
+irr::u32 GUIMain::getEditBoxMMSI() const {
+    wchar_t* endPtr;
+    irr::u32 mmsi = wcstol(mmsiEdit->getText(),&endPtr,10); //TODO: Check portability
+    return mmsi;
 }
 
 int GUIMain::getSelectedShip() const {
