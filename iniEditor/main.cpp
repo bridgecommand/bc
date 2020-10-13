@@ -239,10 +239,6 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
-
-
-
-
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -389,7 +385,8 @@ int main (int argc, char ** argv)
     std::ifstream globalFile (globalIniFilename.c_str());
     if (globalFile.is_open())
     {
-		std::string line;
+		//std::cout << "Opened global ini file " << globalIniFilename << std::endl;
+        std::string line;
 		std::string currentTabName = "[General]";
 		while ( std::getline (globalFile,line) )
 		{
@@ -408,6 +405,8 @@ int main (int argc, char ** argv)
 					thisEntry.description = IniFile::iniFileToString(globalIniFilename,thisEntry.settingName+"_DESC");
 					//Check if this exists in the main iniFileStructure
 					bool found = false;
+
+                    //std::cout << "Entry: " << thisEntry.settingName << ":" << thisEntry.settingValue << std::endl;
 
 					//TODO: Ignore 'joystick_map*' cases, ie force these to return found = true;
 
@@ -431,11 +430,13 @@ int main (int argc, char ** argv)
 					//If not, find the corresponding tab, or fall back to the first tab
 					if (!found) {
 						//Add to corresponding tab
+                        int whichTab = 0;
 						for (int i = 0; i < iniFileStructure.size(); i++) {
 							if (currentTabName.compare(iniFileStructure.at(i).tabName) == 0) {
-								iniFileStructure.at(i).settings.push_back(thisEntry);
+								whichTab = i;
 							}
 						}
+                        iniFileStructure.at(whichTab).settings.push_back(thisEntry);
 					}
 
 				}
