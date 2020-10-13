@@ -91,6 +91,9 @@ int main (int argc, char ** argv)
         udpPort = 18304;
     }
 
+    //Listen on UDP for AIS data if set
+    irr::u32 aisPort = IniFile::iniFileTou32(iniFilename, "ais_udp_port");
+
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
@@ -194,7 +197,11 @@ int main (int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     //Start listening for AIS data
-    std::thread aisThreadObject(&AISOverUDP::AISThread,AISOverUDP(35678)); //TODO - Remove hardcoding of port, and only start if needed
+    std::thread* aisThreadObject=0;
+    
+    if (aisPort !=0) {
+        aisThreadObject = new std::thread(&AISOverUDP::AISThread,AISOverUDP(aisPort)); //TODO - Remove hardcoding of port, and only start if needed
+    }
 
     while(device->run()) {
 
@@ -213,7 +220,10 @@ int main (int argc, char ** argv)
     terminateAISThread_mutex.lock();
     terminateAISThread=1;
     terminateAISThread_mutex.unlock();
-    aisThreadObject.join();
+    if (aisThreadObject!=0) {
+        aisThreadObject->join();
+        delete aisThreadObject;
+    }
 
     return(0);
 }
