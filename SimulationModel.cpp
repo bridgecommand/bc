@@ -330,6 +330,10 @@ SimulationModel::~SimulationModel()
         return otherShips.getMMSI(number);
     }
 
+    void SimulationModel::setOtherShipMMSI(int number, irr::u32 mmsi) {
+        otherShips.setMMSI(number,mmsi);
+    }
+
     void SimulationModel::setOtherShipHeading(int number, irr::f32 hdg){
         otherShips.setHeading(number, hdg);
     }

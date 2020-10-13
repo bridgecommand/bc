@@ -112,6 +112,7 @@ public:
     void setOtherShipHeading(int number, irr::f32 hdg);
     void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
     void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
+    void setOtherShipMMSI(int number, irr::u32 mmsi);
     std::vector<Leg> getOtherShipLegs(int number) const;
     irr::f32 getBuoyPosX(int number) const;
     irr::f32 getBuoyPosZ(int number) const;

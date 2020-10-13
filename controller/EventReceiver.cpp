@@ -141,6 +141,20 @@
                     //std::cout << messageToSend << std::endl;
                 }
 
+                if (id == GUIMain::GUI_ID_SETMMSI_BUTTON) {
+
+                    int ship = gui->getSelectedShip();
+                    int mmsi = gui->getEditBoxMMSI();
+                    
+                    std::string messageToSend = "MCMM,";
+                    messageToSend.append(Utilities::lexical_cast<std::string>(ship));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(mmsi));
+                    messageToSend.append("#");
+                    network->setStringToSend(messageToSend);
+                    //std::cout << messageToSend << std::endl;
+                }
+
                 if (id == GUIMain::GUI_ID_RELEASEMOB_BUTTON) {
                     std::string messageToSend = "MCMO,1#";
                     network->setStringToSend(messageToSend);

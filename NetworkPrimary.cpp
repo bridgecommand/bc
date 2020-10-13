@@ -273,6 +273,14 @@ void NetworkPrimary::receiveNetwork()
                                             model->retrieveManOverboard();
                                         }
                                     }
+                                } else if (thisCommand.substr(0,2).compare("MM") == 0) {
+                                    //'MM', Set MMSI
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size()==3) {
+                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
+                                        model->setOtherShipMMSI(shipNo,mmsi);
+                                    }
                                 }
 
                             } //This command has at least three characters
