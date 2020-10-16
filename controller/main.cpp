@@ -28,9 +28,11 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-//Global to ask AIS UDP thread to stop
+//Global to communicate with AIS thread
 int terminateAISThread = 0;
 std::mutex terminateAISThread_mutex;
+std::vector<AISData> aisDataVector;
+std::mutex aisDataVectorMutex;
 
 // Irrlicht Namespaces
 //using namespace irr;
@@ -137,6 +139,7 @@ int main (int argc, char ** argv)
     Network network(udpPort);
 
     //AISOverUDP aisUdp(35678); //Connect to AIS over UDP: Todo: make port configurable, and only do this if needed
+    std::vector<AISData> localAISData; //A copy of AIS data held on the main thread
 
     //Find our hostname to tell user
     std::string ourHostName = asio::ip::host_name();
@@ -210,8 +213,19 @@ int main (int argc, char ** argv)
         //Read in data from network
         network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
 
+        //If listening to AIS Data, get a local copy from the AIS thread that we can pass to the controller
+        if (aisPort!=0) {
+            aisDataVectorMutex.lock();
+            localAISData = aisDataVector; //Get a copy of the data that has been put on the vector by the AIS thread
+            aisDataVector.clear(); //Empty it, as we will deal with all of the data on the main thread
+            aisDataVectorMutex.unlock();
+        }
+        if (localAISData.size() > 0) {
+            std::cout << "AIS Data size: " << localAISData.size() << std::endl;
+        }
+
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
+        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData);
 
         driver->endScene();
     }

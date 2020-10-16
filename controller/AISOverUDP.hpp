@@ -19,6 +19,16 @@
 
 #include <asio.hpp> //Raw UDP for receiving AIS
 
+struct AISData {
+    double latitude;
+    double longitude;
+    int cog;
+    int sog;
+    unsigned long mmsi;
+    std::string name;
+    unsigned int messageID;
+};
+
 class AISOverUDP {
 
 public:

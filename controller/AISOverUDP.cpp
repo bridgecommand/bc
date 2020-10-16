@@ -25,6 +25,8 @@
 
 extern int terminateAISThread;
 extern std::mutex terminateAISThread_mutex;
+extern std::vector<AISData> aisDataVector;
+extern std::mutex aisDataVectorMutex;
 
 AISOverUDP::AISOverUDP(int port) {
     _port = port;
@@ -37,7 +39,7 @@ void AISOverUDP::AISThread()
     socket.open(asio::ip::udp::v4());
     socket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), _port));
 
-    std::cout << "Set up on port " << _port << std::endl;
+    std::cout << "AIS set up on port " << _port << std::endl;
 
     ais_state ais = {};
     aismsg_1 msg_1 = {};
@@ -51,6 +53,7 @@ void AISOverUDP::AISThread()
       //Check if we've been asked to stop
       terminateAISThread_mutex.lock();
       if (terminateAISThread!=0) {
+        terminateAISThread_mutex.unlock();
         break;
       }
       terminateAISThread_mutex.unlock();
@@ -60,7 +63,7 @@ void AISOverUDP::AISThread()
         //unsigned char buf[128];
         char buf[128];
 
-        std::cout << "Waiting for data 1." << std::endl;
+        //std::cout << "Waiting for data 1." << std::endl;
 
         //This is all with low level socket functions, not actually asio. Needs to be checked on Windows!
 
@@ -81,28 +84,65 @@ void AISOverUDP::AISThread()
         #endif
 
         if (nread>0) {
-          std::cout << "Received: " << buf << std::endl;
+          //std::cout << "Received: " << buf << std::endl;
 
           if (assemble_vdm( &ais, buf ) == 0) {
             ais.msgid = (unsigned char) get_6bit( &ais.six_state, 6 );
-            std::cout << "Recieved AIS Message type " << (int)ais.msgid << std::endl;
+            //std::cout << "Recieved AIS Message type " << (int)ais.msgid << std::endl;
             if( (ais.msgid == 1)&&(parse_ais_1( &ais, &msg_1 ) == 0) ) {  
               double lat;
               double lon;
               pos2ddd(msg_1.latitude,msg_1.longitude,&lat,&lon); //Convert to decimal lat and long
-              std::cout << "Received AIS Message type 1: COG:" << msg_1.cog << " SOG:" << msg_1.sog << " MMSI:" << msg_1.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              //std::cout << "Received AIS Message type 1: COG:" << msg_1.cog << " SOG:" << msg_1.sog << " MMSI:" << msg_1.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              AISData aisData = {};
+              aisData.mmsi = msg_1.userid;
+              aisData.cog = msg_1.cog;
+              aisData.sog = msg_1.sog;
+              aisData.messageID = 1;
+              aisData.latitude = lat;
+              aisData.longitude = lon;
+              aisDataVectorMutex.lock();
+              aisDataVector.push_back(aisData);
+              aisDataVectorMutex.unlock();
             } else if( (ais.msgid == 2)&&(parse_ais_2( &ais, &msg_2 ) == 0) ) {  
               double lat;
               double lon;
               pos2ddd(msg_2.latitude,msg_2.longitude,&lat,&lon); //Convert to decimal lat and long
-              std::cout << "Received AIS Message type 2: COG:" << msg_2.cog << " SOG:" << msg_2.sog << " MMSI:" << msg_2.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              //std::cout << "Received AIS Message type 2: COG:" << msg_2.cog << " SOG:" << msg_2.sog << " MMSI:" << msg_2.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              AISData aisData = {};
+              aisData.mmsi = msg_2.userid;
+              aisData.cog = msg_2.cog;
+              aisData.sog = msg_2.sog;
+              aisData.messageID = 2;
+              aisData.latitude = lat;
+              aisData.longitude = lon;
+              aisDataVectorMutex.lock();
+              aisDataVector.push_back(aisData);
+              aisDataVectorMutex.unlock();
             } else if( (ais.msgid == 3)&&(parse_ais_3( &ais, &msg_3 ) == 0) ) {  
               double lat;
               double lon;
               pos2ddd(msg_3.latitude,msg_3.longitude,&lat,&lon); //Convert to decimal lat and long
-              std::cout << "Received AIS Message type 3: COG:" << msg_3.cog << " SOG:" << msg_3.sog << " MMSI:" << msg_3.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              //std::cout << "Received AIS Message type 3: COG:" << msg_3.cog << " SOG:" << msg_3.sog << " MMSI:" << msg_3.userid << " Lat:" << lat << " Long: " << lon << std::endl;
+              AISData aisData = {};
+              aisData.mmsi = msg_3.userid;
+              aisData.cog = msg_3.cog;
+              aisData.sog = msg_3.sog;
+              aisData.messageID = 3;
+              aisData.latitude = lat;
+              aisData.longitude = lon;
+              aisDataVectorMutex.lock();
+              aisDataVector.push_back(aisData);
+              aisDataVectorMutex.unlock();
             } else if( (ais.msgid == 5)&&(parse_ais_5( &ais, &msg_5 ) == 0) ) {  
-              std::cout << "Received AIS Message type 5: MMSI:" << msg_5.userid << " Name:" << msg_5.name << std::endl;
+              //std::cout << "Received AIS Message type 5: MMSI:" << msg_5.userid << " Name:" << msg_5.name << std::endl;
+              AISData aisData = {};
+              aisData.mmsi = msg_5.userid;
+              aisData.name = std::string(msg_5.name);
+              aisData.messageID = 5;
+              aisDataVectorMutex.lock();
+              aisDataVector.push_back(aisData);
+              aisDataVectorMutex.unlock();
             }
           }
 
