@@ -138,7 +138,6 @@ int main (int argc, char ** argv)
     //Network class
     Network network(udpPort);
 
-    //AISOverUDP aisUdp(35678); //Connect to AIS over UDP: Todo: make port configurable, and only do this if needed
     std::vector<AISData> localAISData; //A copy of AIS data held on the main thread
 
     //Find our hostname to tell user
@@ -182,7 +181,7 @@ int main (int argc, char ** argv)
     //GUI class
     GUIMain guiMain(device, &language);
     //Main model
-    ControllerModel controller(device, &guiMain, worldName, zoomLevels);
+    ControllerModel controller(device, &guiMain, &network, worldName, zoomLevels);
 
     //Create data structures to hold own ship, other ship and buoy data
     irr::f32 time = 0; //Time since start of day 1 of the scenario

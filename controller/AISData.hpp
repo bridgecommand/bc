@@ -14,22 +14,19 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-#ifndef __AISUDP_HPP_INCLUDED__
-#define __AISUDP_HPP_INCLUDED__
+#ifndef __AISData_HPP_INCLUDED__
+#define __AISData_HPP_INCLUDED__
 
-#include <asio.hpp> //Raw UDP for receiving AIS
-#include "AISData.hpp"
+#include <string>
 
-class AISOverUDP {
-
-public:
-    AISOverUDP(int port);
-    //~AISOverUDP();
-
-    void AISThread();
-
-private:
-    int _port;
-
+struct AISData {
+    double latitude;
+    double longitude;
+    int cog;
+    int sog;
+    unsigned long mmsi;
+    std::string name;
+    unsigned int messageID;
 };
+
 #endif

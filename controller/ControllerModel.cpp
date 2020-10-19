@@ -23,10 +23,11 @@
 #define MAX_PX_IN_MAP 160000000
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, irr::u32 _zoomLevels)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels)
 {
 
     this->gui = gui;
+    this->network = network;
     this->device = device;
     driver = device->getVideoDriver();
 	this->zoomLevels = _zoomLevels;
@@ -205,6 +206,20 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     irr::video::ITexture* displayMapTexture = driver->addTexture("DisplayTexture", tempImage);
 
     tempImage->drop();
+
+    //Process the AIS data here:
+    //Check for new AIS data
+    if (aisData.size()>0) {
+        //We need to: 
+        //Check if a record exists for this MMSI. 
+        //  If not, create a new record.
+        //Update the record (either position etc or name)
+        //Check if this MMSI matches an other ship MMSI. 
+        //  If so
+        //      Make sure it isn't displayed in the GUI  
+        //      If it's a message ID 1-3, send a position update via the network.
+        //  If not, make sure it's displayed in the GUI, with MMSI and name if known
+    }
 
     //Send the current data to the gui, and update it
     gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);

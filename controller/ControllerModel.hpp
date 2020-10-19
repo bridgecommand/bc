@@ -25,7 +25,8 @@
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
-#include "AISOverUDP.hpp"
+#include "AISData.hpp"
+#include "Network.hpp"
 
 #include "GUI.hpp"
 
@@ -35,7 +36,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, std::string worldName, irr::u32 _zoomLevels);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels);
     ~ControllerModel();
     void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData);
     void resetOffset(); //Re-centre the map on the own-ship
@@ -48,6 +49,7 @@ public:
 private:
 
     GUIMain* gui;
+    Network* network;
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
 
