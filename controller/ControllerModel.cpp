@@ -161,6 +161,16 @@ ControllerModel::~ControllerModel()
 
 }
 
+irr::f32 ControllerModel::longToX(irr::f32 longitude) const
+{
+    return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
+}
+
+irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
+{
+    return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
+}
+
 void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData)
 {
     //Check if current zoom is valid, if not return.
@@ -211,6 +221,9 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     //Check for new AIS data
     for (int i=0;i<aisData.size();i++) {
         
+        //If message type is 1,2 or 3, calculate X and Z position
+        
+
         //Check if a record exists for this MMSI. If not, create a new record.
         int aisShipsId = -1;
         for (int j=0;j<aisShips.size();j++) {
@@ -223,6 +236,8 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
             //Not found, add a new record
             aisShips.push_back(aisData.at(i));
             aisShipsId = aisShips.size()-1;
+            aisShips.at(aisShipsId).X = longToX(aisData.at(i).longitude);
+            aisShips.at(aisShipsId).Z = latToZ(aisData.at(i).latitude);
         } else {
             //Found, update record
             if (aisData.at(i).messageID == 1 || aisData.at(i).messageID == 2 || aisData.at(i).messageID == 3) {
@@ -230,6 +245,8 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
                 aisShips.at(aisShipsId).latitude = aisData.at(i).latitude;
                 aisShips.at(aisShipsId).longitude = aisData.at(i).longitude;
                 aisShips.at(aisShipsId).sog = aisData.at(i).sog;
+                aisShips.at(aisShipsId).X = longToX(aisData.at(i).longitude);
+                aisShips.at(aisShipsId).Z = latToZ(aisData.at(i).latitude);
             } else if (aisData.at(i).messageID == 5) {
                 aisShips.at(aisShipsId).name = aisData.at(i).name;
             }
@@ -245,7 +262,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     //TODO: Send aisShips to the GUI to display.
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
 }
 
 void ControllerModel::resetOffset()

@@ -22,6 +22,8 @@
 struct AISData {
     double latitude;
     double longitude;
+    double X; //Calculated in ControllerModel, not set before this
+    double Z; //Calculated in ControllerModel, not set before this
     int cog;
     int sog;
     unsigned long mmsi;

@@ -120,7 +120,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -196,7 +196,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     dataDisplay->setText(displayText.c_str());
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips, selectedShip, selectedLeg, mobVisible, mobPosX, mobPosZ);
+    drawInformationOnMap(time, mapOffsetX, mapOffsetZ, metresPerPx, ownShipPosX, ownShipPosZ, ownShipHeading, buoys, otherShips, aisData, selectedShip, selectedLeg, mobVisible, mobPosX, mobPosZ);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -238,7 +238,7 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
 {
 
     //draw cross hairs
@@ -373,6 +373,51 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             } //If not currently on the last leg
         }//If Legs.size() >0
     } //Loop for each ship
+
+    //Draw AIS data
+    for(std::vector<AISData>::const_iterator it = aisData.begin(); it != aisData.end(); ++it) {
+        //Check if MMSI matches an own ship, if so, don't show
+        bool showThisAISContact = true;
+        for(std::vector<OtherShipDisplayData>::const_iterator it2 = otherShips.begin(); it2 != otherShips.end(); ++it2) {
+            if (it2->mmsi == it->mmsi) {
+                showThisAISContact = false;
+            }
+        }
+
+        if (showThisAISContact) {
+            
+            irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
+            irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
+            device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        
+            //std::cout << "Displaying MMSI " << it->mmsi << " at " << relPosX << " " << relPosY << std::endl;
+
+            //number
+            irr::core::stringw displayAIS = L"AIS: MMSI ";
+            displayAIS.append(irr::core::stringw(it->mmsi));
+            displayAIS.append(L" ");
+            displayAIS.append(irr::core::stringw(it->name.c_str()));
+            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
+
+            //Show cog if known. AIS COG is: 3600 for unknown, otherwise COG is AIS COG/10. SOG: 1023 is unknown, otherwise knots is AIS SOG/10
+            if (it->cog != 3600) {
+                irr::f32 cog = (irr::f32)it->cog/10.0;
+                irr::f32 sog = 0;
+                if (it->sog != 1023) {
+                    sog = (irr::f32)it->sog/10.0;
+                }
+                irr::f32 cogLineLength = sog; //In pixels
+                irr::f32 cogLineX = relPosX + cogLineLength*sin(cog * RAD_IN_DEG);
+                irr::f32 cogLineY = relPosY + cogLineLength*cos(cog * RAD_IN_DEG);
+                //Draw
+                irr::core::position2d<irr::s32> startLine (screenCentreX + relPosX, screenCentreY - relPosY);
+                irr::core::position2d<irr::s32> endLine (screenCentreX + cogLineX, screenCentreY - cogLineY);
+                device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(255,0,0,255));
+            }
+        }
+
+    }
+
 }
 
 void GUIMain::updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
