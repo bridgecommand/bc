@@ -254,12 +254,31 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
 
         if (aisData.at(i).messageID == 1 || aisData.at(i).messageID == 2 || aisData.at(i).messageID == 3) {
             //Send a message to update the othership leg position, if the MMSI matches an own ship
+
+            bool sendNetworkUpdate = false;
+            int otherShipNumber = 0;
+            for(int j = 0; j < otherShipsData.size(); j++) {
+                if (otherShipsData.at(j).mmsi == aisShips.at(aisShipsId).mmsi) {
+                    sendNetworkUpdate = true;
+                    otherShipNumber = i+1; //For the network message the first other ship is 1.
+                }
+            }
+
+            if (sendNetworkUpdate) {
+                std::string messageToSend = "MCRS,";
+                messageToSend.append(Utilities::lexical_cast<std::string>(otherShipNumber));
+                messageToSend.append(",");
+                messageToSend.append(Utilities::lexical_cast<std::string>(aisShips.at(aisShipsId).X));
+                messageToSend.append(",");
+                messageToSend.append(Utilities::lexical_cast<std::string>(aisShips.at(aisShipsId).Z));
+                messageToSend.append("#");
+                network->setStringToSend(messageToSend);
+            }
+
         }
         
     
     }
-
-    //TODO: Send aisShips to the GUI to display.
 
     //Send the current data to the gui, and update it
     gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
