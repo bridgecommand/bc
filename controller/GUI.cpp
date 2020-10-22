@@ -388,7 +388,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             
             irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
             irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
-            device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+            device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 255, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
         
             //std::cout << "Displaying MMSI " << it->mmsi << " at " << relPosX << " " << relPosY << std::endl;
 
@@ -397,7 +397,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             displayAIS.append(irr::core::stringw(it->mmsi));
             displayAIS.append(L" ");
             displayAIS.append(irr::core::stringw(it->name.c_str()));
-            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
+            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,255,0),true,true);
 
             //Show cog if known. AIS COG is: 3600 for unknown, otherwise COG is AIS COG/10. SOG: 1023 is unknown, otherwise knots is AIS SOG/10
             if (it->cog != 3600) {
@@ -412,7 +412,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                 //Draw
                 irr::core::position2d<irr::s32> startLine (screenCentreX + relPosX, screenCentreY - relPosY);
                 irr::core::position2d<irr::s32> endLine (screenCentreX + cogLineX, screenCentreY - cogLineY);
-                device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(255,0,0,255));
+                device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(255,0,255,0));
             }
         }
 
