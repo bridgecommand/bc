@@ -76,6 +76,8 @@ private:
     irr::s32 mapOffsetX; //Pixel offset of maps, to allow click and drag.
     irr::s32 mapOffsetZ;
 
+    std::vector<AISData> aisShips;
+
     irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
     irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
 

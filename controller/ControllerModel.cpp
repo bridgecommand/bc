@@ -209,17 +209,40 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
 
     //Process the AIS data here:
     //Check for new AIS data
-    if (aisData.size()>0) {
-        //We need to: 
-        //Check if a record exists for this MMSI. 
-        //  If not, create a new record.
-        //Update the record (either position etc or name)
-        //Check if this MMSI matches an other ship MMSI. 
-        //  If so
-        //      Make sure it isn't displayed in the GUI  
-        //      If it's a message ID 1-3, send a position update via the network.
-        //  If not, make sure it's displayed in the GUI, with MMSI and name if known
+    for (int i=0;i<aisData.size();i++) {
+        
+        //Check if a record exists for this MMSI. If not, create a new record.
+        int aisShipsId = -1;
+        for (int j=0;j<aisShips.size();j++) {
+            if (aisShips.at(j).mmsi == aisData.at(i).mmsi) {
+                aisShipsId = j;
+            }
+        }
+        
+        if (aisShipsId == -1) {
+            //Not found, add a new record
+            aisShips.push_back(aisData.at(i));
+            aisShipsId = aisShips.size()-1;
+        } else {
+            //Found, update record
+            if (aisData.at(i).messageID == 1 || aisData.at(i).messageID == 2 || aisData.at(i).messageID == 3) {
+                aisShips.at(aisShipsId).cog = aisData.at(i).cog;
+                aisShips.at(aisShipsId).latitude = aisData.at(i).latitude;
+                aisShips.at(aisShipsId).longitude = aisData.at(i).longitude;
+                aisShips.at(aisShipsId).sog = aisData.at(i).sog;
+            } else if (aisData.at(i).messageID == 5) {
+                aisShips.at(aisShipsId).name = aisData.at(i).name;
+            }
+        }
+
+        if (aisData.at(i).messageID == 1 || aisData.at(i).messageID == 2 || aisData.at(i).messageID == 3) {
+            //Send a message to update the othership leg position, if the MMSI matches an own ship
+        }
+        
+    
     }
+
+    //TODO: Send aisShips to the GUI to display.
 
     //Send the current data to the gui, and update it
     gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData, mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain);
