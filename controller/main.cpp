@@ -219,9 +219,6 @@ int main (int argc, char ** argv)
             aisDataVector.clear(); //Empty it, as we will deal with all of the data on the main thread
             aisDataVectorMutex.unlock();
         }
-        if (localAISData.size() > 0) {
-            std::cout << "AIS Data size: " << localAISData.size() << std::endl;
-        }
 
         //Update the internal model, and call the gui
         controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData);

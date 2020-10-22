@@ -260,7 +260,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
             for(int j = 0; j < otherShipsData.size(); j++) {
                 if (otherShipsData.at(j).mmsi == aisShips.at(aisShipsId).mmsi) {
                     sendNetworkUpdate = true;
-                    otherShipNumber = i+1; //For the network message the first other ship is 1.
+                    otherShipNumber = j+1; //For the network message the first other ship is 1.
                 }
             }
 
