@@ -54,6 +54,7 @@ class OtherShips
         void changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         void addLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
         void deleteLeg(int shipNumber, int legNumber, irr::f32 scenarioTime);
+        void resetLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime);
         std::string getName(int number) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 

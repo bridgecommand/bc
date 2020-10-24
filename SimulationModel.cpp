@@ -370,6 +370,10 @@ SimulationModel::~SimulationModel()
         otherShips.deleteLeg(shipNumber, legNumber, scenarioTime);
     }
 
+    void SimulationModel::resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm) {
+        otherShips.resetLegs(shipNumber, course, speedKts, distanceNm, scenarioTime);
+    }
+
 	std::string SimulationModel::getOwnShipEngineSound() const {
 
 		//Check existence of sound file in base path, and if not fall back to default.

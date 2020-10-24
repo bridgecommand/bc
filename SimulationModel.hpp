@@ -119,6 +119,7 @@ public:
     void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
     void deleteOtherShipLeg(int shipNumber, int legNumber);
+    void resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm);
 	std::string getOwnShipEngineSound() const;
 	std::string getOwnShipWaveSound() const;
 	std::string getOwnShipHornSound() const;

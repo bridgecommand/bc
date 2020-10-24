@@ -331,6 +331,31 @@ void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
 
 }
 
+void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime)
+{
+    legs.clear();
+
+    Leg currentLeg;
+    currentLeg.bearing = course;
+    currentLeg.speed = speedKts;
+    currentLeg.startTime = scenarioTime;
+    currentLeg.distance = distanceNm;
+
+    //Use distance to calculate startTime of next leg, and stored for later reference.
+    currentLeg.distance = distanceNm;
+    irr::f32 mainLegEndTime = scenarioTime + SECONDS_IN_HOUR*(distanceNm/fabs(speedKts)); // nm/kts -> hours, so convert to seconds
+
+    legs.push_back(currentLeg);
+
+    //Add a stop leg here
+    Leg stopLeg;
+    stopLeg.bearing=course;
+    stopLeg.speed=0;
+    stopLeg.distance=0;
+    stopLeg.startTime = mainLegEndTime;
+    legs.push_back(stopLeg);
+}
+
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Similar code in Buoy.cpp

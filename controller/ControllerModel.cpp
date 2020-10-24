@@ -265,12 +265,27 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
             }
 
             if (sendNetworkUpdate) {
-                std::string messageToSend = "MCRS,";
+                
+                //Get COG in degrees and SOG in Nm, from AIS coding
+                irr::f32 cogFromAIS = 0;
+                if (aisShips.at(aisShipsId).cog != 3600) {
+                    cogFromAIS = (irr::f32)aisShips.at(aisShipsId).cog/10.0;
+                }
+                irr::f32 sogFromAIS = 0;
+                if (aisShips.at(aisShipsId).sog != 1023) {
+                    sogFromAIS = (irr::f32)aisShips.at(aisShipsId).sog/10.0;
+                }
+                
+                std::string messageToSend = "MCRL,"; //Reset legs, to give a single leg, and set position
                 messageToSend.append(Utilities::lexical_cast<std::string>(otherShipNumber));
                 messageToSend.append(",");
                 messageToSend.append(Utilities::lexical_cast<std::string>(aisShips.at(aisShipsId).X));
                 messageToSend.append(",");
                 messageToSend.append(Utilities::lexical_cast<std::string>(aisShips.at(aisShipsId).Z));
+                messageToSend.append(",");
+                messageToSend.append(Utilities::lexical_cast<std::string>(cogFromAIS));
+                messageToSend.append(",");
+                messageToSend.append(Utilities::lexical_cast<std::string>(sogFromAIS));
                 messageToSend.append("#");
                 network->setStringToSend(messageToSend);
             }

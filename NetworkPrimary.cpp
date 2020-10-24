@@ -246,7 +246,21 @@ void NetworkPrimary::receiveNetwork()
                                             model->setOtherShipPos(shipNo,positionX,positionZ);
                                         }
                                     }
-
+                                } else if (thisCommand.substr(0,2).compare("RL") == 0) {
+                                    //'RL' reset legs and position, used for AIS contacts
+                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                    if (parts.size() == 6) {
+                                        //6 elements in 'Reset legs' command: RS,shipNo,posX,posZ
+                                        int shipNo =         Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                        irr::f32 cog =       Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                        irr::f32 sog =       Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                        if (shipNo>=0){
+                                            model->setOtherShipPos(shipNo,positionX,positionZ);
+                                            model->resetOtherShipLegs(shipNo,cog,sog,1); //Hard coded 1Nm distance
+                                        }
+                                    }
 
                                 } else if (thisCommand.substr(0,2).compare("SW") == 0) {
                                     //'SW' Set weather

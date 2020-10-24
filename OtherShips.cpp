@@ -243,6 +243,14 @@ void OtherShips::deleteLeg(int shipNumber, int legNumber, irr::f32 scenarioTime)
     }
 }
 
+void OtherShips::resetLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime)
+{
+    //Check if ship exists
+    if (shipNumber < (int)otherShips.size() && shipNumber >= 0) {
+        otherShips.at(shipNumber)->resetLegs(course, speedKts, distanceNm, scenarioTime);
+    }
+}
+
 std::string OtherShips::getName(int number) const
 {
     if(number < (int)otherShips.size() && number >= 0) {
