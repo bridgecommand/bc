@@ -52,6 +52,12 @@
                     model->decreaseZoom();
                 }
 
+                if (id == GUIMain::GUI_ID_SETMMSI_BUTTON) {
+                    irr::u32 mmsi = gui->getEditBoxMMSI();
+                    int ship = gui->getSelectedShip();
+                    model->setMMSI(ship,mmsi);
+                }
+
                 if (id == GUIMain::GUI_ID_CHANGE_BUTTON) {
                     //Get data from gui
 

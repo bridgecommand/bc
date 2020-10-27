@@ -37,12 +37,14 @@ public:
     {
         GUI_ID_SHIP_COMBOBOX = 101,
         GUI_ID_LEG_LISTBOX,
+        GUI_ID_MMSI_EDITBOX,
         GUI_ID_COURSE_EDITBOX,
         GUI_ID_SPEED_EDITBOX,
         GUI_ID_DISTANCE_EDITBOX,
         GUI_ID_ZOOMIN_BUTTON,
         GUI_ID_ZOOMOUT_BUTTON,
         GUI_ID_CHANGE_BUTTON,
+        GUI_ID_SETMMSI_BUTTON,
 //        GUI_ID_CHANGE_COURSESPEED_BUTTON,
         GUI_ID_ADDSHIP_BUTTON,
 		GUI_ID_DELETESHIP_BUTTON,
@@ -84,6 +86,7 @@ public:
     irr::f32 getWeather() const;
     irr::f32 getRain() const;
     irr::f32 getVisibility() const;
+    irr::u32 getEditBoxMMSI() const;
     std::string getScenarioName() const;
     irr::core::vector2df getScreenCentrePosition() const;
 
@@ -107,6 +110,7 @@ private:
     irr::gui::IGUIEditBox* legCourseEdit;
     irr::gui::IGUIEditBox* legSpeedEdit;
     irr::gui::IGUIEditBox* legDistanceEdit;
+    irr::gui::IGUIEditBox* mmsiEdit;
     irr::gui::IGUIButton* changeLeg;
     //irr::gui::IGUIButton* changeLegCourseSpeed;
     irr::gui::IGUIButton* addShip;
@@ -114,6 +118,7 @@ private:
     irr::gui::IGUIButton* addLeg;
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
+    irr::gui::IGUIButton* setMMSI;
 
     irr::gui::IGUIComboBox* ownShipTypeSelector;
     irr::gui::IGUIComboBox* otherShipTypeSelector;

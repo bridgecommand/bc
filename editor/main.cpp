@@ -575,6 +575,7 @@ int main (int argc, char ** argv)
             thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
             thisShip.Z = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
             thisShip.name = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
+            thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
             int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
 
             irr::f32 legStartTime = generalData.startTime; //Legs start at the start of the scenario

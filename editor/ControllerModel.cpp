@@ -374,6 +374,17 @@ void ControllerModel::deleteLeg(irr::s32 ship, irr::s32 index)
     }
 }
 
+void ControllerModel::setMMSI(irr::s32 ship, int mmsi)
+{
+    //If other ship:
+    if (ship>0) {
+        int otherShipIndex = ship-1;
+        if (otherShipIndex < otherShipsData->size()) {
+            otherShipsData->at(otherShipIndex).mmsi = mmsi;
+        }
+    }   
+}
+
 void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
 {
     //If other ship:
@@ -417,6 +428,7 @@ void ControllerModel::addShip(std::string name, irr::core::vector2df position)
     newShip.X = position.X;
     newShip.Z = position.Y;
     newShip.name = name;
+    newShip.mmsi = 0;
     //Add a 'stop' leg
     Leg stopLeg;
     stopLeg.bearing=0;
@@ -540,6 +552,7 @@ void ControllerModel::save()
         otherFile << "Type(" << i << ")=\"" << otherShipsData->at(i-1).name << "\"" << std::endl;
         otherFile << "InitLong(" << i << ")=" << xToLong(otherShipsData->at(i-1).X) << std::endl;
         otherFile << "InitLat(" << i << ")=" << zToLat(otherShipsData->at(i-1).Z) << std::endl;
+        otherFile << "mmsi(" << i << ")=" << otherShipsData->at(i-1).mmsi << std::endl;
         //Don't save last leg, as this is an automatically added 'stop' leg.
         otherFile << "Legs(" << i << ")=" << otherShipsData->at(i-1).legs.size() - 1 << std::endl;
 
