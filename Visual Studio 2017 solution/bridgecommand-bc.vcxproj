@@ -191,6 +191,7 @@
     <ClCompile Include="..\Terrain.cpp" />
     <ClCompile Include="..\Tide.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
+	<ClCompile Include="..\ExitMessage.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
   </ItemGroup>
@@ -242,6 +243,7 @@
     <ClInclude Include="..\Terrain.hpp" />
     <ClInclude Include="..\Tide.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
+	<ClInclude Include="..\ExitMessage.hpp" />
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
 		<ClInclude Include="..\hitime.hpp" />
