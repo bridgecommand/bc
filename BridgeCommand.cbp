@@ -98,6 +98,8 @@
 		<Unit filename="Constants.hpp" />
 		<Unit filename="DefaultEventReceiver.cpp" />
 		<Unit filename="DefaultEventReceiver.hpp" />
+		<Unit filename="ExitMessage.cpp" />
+		<Unit filename="ExitMessage.hpp" />
 		<Unit filename="FFTWave.cpp" />
 		<Unit filename="FFTWave.hpp" />
 		<Unit filename="GUIMain.cpp" />
@@ -177,10 +179,13 @@
 		<Unit filename="Utilities.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
+		<Unit filename="hitime.hpp" />
 		<Unit filename="icon.rc">
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="iprof.cpp" />
+		<Unit filename="iprof.hpp" />
 		<Unit filename="language.txt" />
 		<Unit filename="libs/serial/impl/unix.h" />
 		<Unit filename="libs/serial/impl/win.h" />
@@ -194,9 +199,6 @@
 		<Unit filename="libs/serial/v8stdint.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="profile.hpp" />
-		<Unit filename="iprof.cpp" />
-		<Unit filename="iprof.hpp" />
-		<Unit filename="hitime.hpp" />
 		<Unit filename="shaders/NavLight_ps.glsl" />
 		<Unit filename="shaders/NavLight_vs.glsl" />
 		<Unit filename="shaders/Water_ps.glsl" />

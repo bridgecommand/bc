@@ -18,6 +18,8 @@
 #include "StartupEventReceiver.hpp"
 #include "Constants.hpp"
 
+#include "ExitMessage.hpp"
+
 #include <iostream>
 
 //using namespace irr;
@@ -106,10 +108,11 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         }
     }
 
+
+
     //Get name of selected scenario
     if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (irr::s32)scenarioList.size()) {
-		std::cerr << "No scenario selected." << std::endl;
-		exit(EXIT_FAILURE); //No scenario loaded
+		ExitMessage::exitWithMessage("No scenario selected.");
     }
 
     //Get hostname, and convert from wchar_t* to wstring to string
@@ -159,22 +162,19 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
 	irr::io::IFileSystem* fileSystem = device->getFileSystem();
 	if (fileSystem==0) {
-        std::cerr << "Could not get file system access." << std::endl;
-        exit(EXIT_FAILURE); //Could not get file system
+        ExitMessage::exitWithMessage("Could not get file system access.");
     }
     //store current dir
 	irr::io::path cwd = fileSystem->getWorkingDirectory();
 
     //change to scenario dir
     if (!fileSystem->changeWorkingDirectoryTo(scenarioPath.c_str())) {
-        std::cerr << "Could not get change working directory to scenario directory." << std::endl;
-        exit(EXIT_FAILURE); //Couldn't change to scenario dir
+        ExitMessage::exitWithMessage("Could not get change working directory to scenario directory.");
     }
 
     irr::io::IFileList* fileList = fileSystem->createFileList();
     if (fileList==0) {
-		std::cerr << "Could not get file list for secenarios." << std::endl;
-        exit(EXIT_FAILURE); //Could not get file list for scenarios TODO: Message for user
+		ExitMessage::exitWithMessage("Could not get file list for secenarios.");
     }
 
     //List here
@@ -203,7 +203,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
 
     //change back
     if (!fileSystem->changeWorkingDirectoryTo(cwd)) {
-        exit(EXIT_FAILURE); //Couldn't change dir back
+        ExitMessage::exitWithMessage("Can't return to normal working directory.");
     }
     fileList->drop();
 }
