@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ExitMessage.hpp"
+#include <iostream>
 
 #ifdef __WIN32
 #include <windows.h>
@@ -26,6 +27,8 @@ namespace ExitMessage {
 
         #ifdef __WIN32
         int msgboxID = MessageBox(NULL, message.c_str(), (LPCSTR)"Error", MB_ICONERROR);
+        #else
+        std::cerr << "Error: " << message << std::endl;
         #endif // __WIN32
 
         exit(EXIT_FAILURE);
