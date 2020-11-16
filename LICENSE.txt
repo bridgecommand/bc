@@ -21,9 +21,9 @@ distributed with Bridge Command.
 Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), the ENet 
 networking library (http://enet.bespin.org), ASIO, PortAudio, water based on Keith 
 Lantz FFT water implementation and the RealisticWaterSceneNode by elvman 
-(https://github.com/elvman/RealisticWaterSceneNode), and the Serial library by 
-William Woodall. Bridge Command depends on libsndfile, which is released under the 
-GNU Lesser General Public License version 2.1 or 3.
+(https://github.com/elvman/RealisticWaterSceneNode), AIS Parser by Brian C. Lane,  
+and the Serial library by William Woodall. Bridge Command depends on libsndfile, 
+which is released under the GNU Lesser General Public License version 2.1 or 3.
 
 The Irrlicht Engine is based in part on the work of the Independent JPEG Group, 
 the zlib, and libpng.

@@ -45,7 +45,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2019 James Packer\n\n");
+    titleText.append(L"\nCopyright 2020 James Packer\n\n");
     titleText.append(L"Build: ");
     titleText.append(irr::core::stringw(__DATE__));
     titleText.append(L" ");

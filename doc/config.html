@@ -166,11 +166,17 @@ NMEA_ComPort=""
 <h4>Example map.ini file</h4>
 
 <pre>
+[General]
 graphics_mode=2
 graphics_width=800
 graphics_height=600
 graphics_depth=32
+zoom_levels=10
 udp_send_port=18304
+[AIS over UDP]
+ais_udp_port=0
+[Language]
+lang="en"
 </pre>
 
 <h4>Parameters and descriptions</h4>
@@ -179,8 +185,10 @@ udp_send_port=18304
 <ul>
 <li>graphics_mode: 1 is full screen, 2 is windowed</li>
 <li>graphics_width: This sets the screen width. If running full screen, this should be a width your graphics card supports.</li>
-<li>graphics_height: This sets the screen height. It should be 0.75x the graphics_width value, and should also be supported by your graphics card.</li>
+<li>graphics_height: This sets the screen height. This should also be supported by your graphics card if full screen.</li>
 <li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
+<li>zoom_levels: How many zoom steps are available.</li>
+<li>ais_udp_port: If non-zero, the port to listen on for incoming raw AIS data.</li>
 <li>udp_send_port: The port used by the Map Controller to send UDP data to Bridge Command.</li>
 </ul>
 </p>
