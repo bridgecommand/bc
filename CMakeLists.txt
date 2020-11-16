@@ -75,6 +75,7 @@ set(BC_SOURCES
     Terrain.cpp
     Tide.cpp
     Utilities.cpp
+	ExitMessage.cpp
     Water.cpp
 )
 
