@@ -232,11 +232,6 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    irr::u32 graphicsWidth = 200;
-    irr::u32 graphicsHeight = 465;
-    irr::u32 graphicsDepth = 32;
-    bool fullScreen = false;
-
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
@@ -261,6 +256,20 @@ int main (int argc, char ** argv)
 
     Lang language(languageFile);
 
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+
+    irr::u32 graphicsWidth = 200 + (fontSize - 13) * 16;
+    irr::u32 graphicsHeight = 465 + (fontSize - 13) * 35;
+    irr::u32 graphicsDepth = 32;
+    bool fullScreen = false;
+
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -274,28 +283,41 @@ int main (int argc, char ** argv)
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
 
+    std::string fontPath = "media/fonts/NotoSans-Regular-" + std::to_string(fontSize) + ".xml";
     //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
     } else {
         //set skin default font
         device->getGUIEnvironment()->getSkin()->setFont(font);
     }
 
-    //Add launcher buttons
-    irr::gui::IGUIButton* launchBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,10,190,75),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    irr::gui::IGUIButton* launchED = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,100,190,130),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
-    irr::gui::IGUIButton* launchMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,140,190,170),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
-    irr::gui::IGUIButton* launchRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,180,190,210),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
-    irr::gui::IGUIButton* launchMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,220,190,250),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+    //Add launcher buttons with layout in viewport due to scaling
 
-    irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,275,190,300),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,310,190,335),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,345,190,370),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
-    irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,380,190,405),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+    short bC = graphicsWidth / 20;       // padding ...
+    short bR = bC / 3 * 2 + 1;
 
-    irr::gui::IGUIButton* launchDOC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(10,430,190,455),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    short bW = graphicsWidth - (2 * bC); // size ...
+    short bH = 30 * (fontSize / 13.) + 1;
+
+    short x1 = bC;                       // location ...
+    short x2 = x1 + bW;
+    short y1, y2;
+
+    y1 =        bR; y2 = y1 + 2*bH; irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
+    
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);

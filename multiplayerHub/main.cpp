@@ -112,43 +112,11 @@ int main()
         iniFilename = userFolder + iniFilename;
     }
 
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
-    int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-
-    //Sensible defaults if not set
-    if (graphicsWidth==0) {graphicsWidth=800;}
-    if (graphicsHeight==0) {graphicsHeight=600;}
-    if (graphicsDepth==0) {graphicsDepth=32;}
-    if (port == 0) {port = 18304;}
-
-
-    //Startup irrlicht
-    //create device
-    irr::SIrrlichtCreationParameters deviceParameters;
-    deviceParameters.DriverType = irr::video::EDT_OPENGL;
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
-    deviceParameters.Bits = graphicsDepth;
-    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
-    device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
-    irr::video::IVideoDriver* driver = device->getVideoDriver();
-    irr::scene::ISceneManager* smgr = device->getSceneManager();
-
     //Chdir back on OSX
     //Mac OS:
 	#ifdef __APPLE__
     chdir(exeFolderPath.c_str());
 	#endif
-
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
 
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
@@ -161,6 +129,50 @@ int main()
         languageFile = userFolder + languageFile;
     }
     Lang language(languageFile);
+
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+    
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+
+    //Sensible defaults if not set
+    if (graphicsWidth==0) {graphicsWidth=800;}
+    if (graphicsHeight==0) {graphicsHeight=600;}
+    if (graphicsDepth==0) {graphicsDepth=32;}
+    if (port == 0) {port = 18304;}
+
+    graphicsWidth *= fontScale;
+    graphicsHeight *= (1.1*fontScale);
+
+    //Startup irrlicht
+    //create device
+    irr::SIrrlichtCreationParameters deviceParameters;
+    deviceParameters.DriverType = irr::video::EDT_OPENGL;
+    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.Bits = graphicsDepth;
+    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
+    device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+    irr::scene::ISceneManager* smgr = device->getSceneManager();
+
+    std::string fontPath = "media/fonts/NotoSans-Regular-" + std::to_string(fontSize) + ".xml";
+    //Set font : Todo - make this configurable
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
 
     //Get user input for hostnames and scenario name
     std::string hostnames;

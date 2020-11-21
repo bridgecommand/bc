@@ -436,17 +436,24 @@ int main()
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
-    //Set font : Use the default if window height is 600 or less, as it's better on a small screen
-	if (sh > 600) {
-		irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/Lucida.xml");
-		if (font == 0) {
-			device->getLogger()->log("Could not load font, using default");
-		}
-		else {
-			//set skin default font
-			device->getGUIEnvironment()->getSkin()->setFont(font);
-		}
-	}
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+
+    std::string fontPath = "media/fonts/NotoSans-Regular-" + std::to_string(fontSize) + ".xml";
+    //Set font : Todo - make this configurable
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
 
     //Choose scenario
     std::string scenarioName = "";
