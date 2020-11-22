@@ -234,28 +234,6 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    irr::u32 graphicsWidth = 800;
-    irr::u32 graphicsHeight = 600;
-    irr::u32 graphicsDepth = 32;
-    bool fullScreen = false;
-
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    irr::video::IVideoDriver* driver = device->getVideoDriver();
-
-    irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
-
-    //Set gui colours
-    irr::gui::IGUISkin* skin = environment->getSkin();
-
-    skin->setColor(irr::gui::EGDC_3D_DARK_SHADOW ,irr::video::SColor(255,128,128,128));
-    skin->setColor(irr::gui::EGDC_3D_SHADOW ,irr::video::SColor(255,190,190,190));
-    skin->setColor(irr::gui::EGDC_3D_FACE ,irr::video::SColor(255,235,235,235));
-    skin->setColor(irr::gui::EGDC_3D_LIGHT ,irr::video::SColor(255,255,255,255));
-
-    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
-    irr::u32 width = screenSize.Width;
-    irr::u32 height = screenSize.Height;
-
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     irr::io::IFileSystem* fileSystem = device->getFileSystem();
@@ -315,15 +293,6 @@ int main (int argc, char ** argv)
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
-    }
-
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = environment->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
-    } else {
-        //set skin default font
-        environment->getSkin()->setFont(font);
     }
 
     //Vector to hold values read into file
@@ -458,9 +427,50 @@ int main (int argc, char ** argv)
 
     Lang language(languageFile);
 
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+    
+    irr::u32 graphicsWidth = 800 * fontScale;
+    irr::u32 graphicsHeight = 600 * fontScale;
+    irr::u32 graphicsDepth = 32;
+    bool fullScreen = false;
+
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+
+    irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
+
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    irr::gui::IGUIFont *font = environment->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        environment->getSkin()->setFont(font);
+    }
+
+    //Set gui colours
+    irr::gui::IGUISkin* skin = environment->getSkin();
+
+    skin->setColor(irr::gui::EGDC_3D_DARK_SHADOW ,irr::video::SColor(255,128,128,128));
+    skin->setColor(irr::gui::EGDC_3D_SHADOW ,irr::video::SColor(255,190,190,190));
+    skin->setColor(irr::gui::EGDC_3D_FACE ,irr::video::SColor(255,235,235,235));
+    skin->setColor(irr::gui::EGDC_3D_LIGHT ,irr::video::SColor(255,255,255,255));
+
+    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
+    irr::u32 width = screenSize.Width;
+    irr::u32 height = screenSize.Height;
+
     //Do set-up here
 
-    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
+    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(10,height-90, 150*fontScale, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
 
     irr::gui::IGUITabControl* tabbedPane = environment->addTabControl( irr::core::rect<irr::s32>(10,10,width-10,height-100),0,true);
 

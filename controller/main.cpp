@@ -77,8 +77,18 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width") * fontScale;
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height") * fontScale;
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
@@ -125,10 +135,11 @@ int main (int argc, char ** argv)
     }
     Lang language(languageFile);
 
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
     } else {
         //set skin default font
         device->getGUIEnvironment()->getSkin()->setFont(font);
