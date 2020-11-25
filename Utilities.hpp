@@ -39,6 +39,7 @@ namespace Utilities
 
     std::string timestampToString(time_t timestamp, std::string format);
     std::string timestampToString(time_t timestamp);
+    std::string ttos(time_t timestamp);
 
     std::string trim(std::string inString, std::string trimChrs = " \f\n\r\t\v");
     std::wstring trim(std::wstring inString, std::wstring trimChrs = L" \f\n\r\t\v");

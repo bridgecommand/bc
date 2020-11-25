@@ -27,10 +27,8 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string udpHo
     this->model = model; //Link to the model
     device = dev; //Store pointer to irrlicht device
 
-    maxMessages=7;
-
     messageToSend = "";
-    currentMessageType=0;
+    currentMessageType = 0;
 
     //Set up UDP
 
@@ -86,139 +84,136 @@ NMEA::~NMEA()
 void NMEA::updateNMEA()
 {
 
-    std::string timeString = Utilities::timestampToString(
-                                 model->getTimestamp(), "%H%M%S");
-    std::string dateString = Utilities::timestampToString(
-                                 model->getTimestamp(), "%d%m%y");
+    std::string dateTimeString = Utilities::ttos(model->getTimestamp());
+
+    std::string dateString = dateTimeString.substr(0, 8);
+    std::string timeString = dateTimeString.substr(8, 6);
+
+    const char *year = dateString.substr(0, 4).c_str();
+    const char *mon  = dateString.substr(4, 2).c_str();
+    const char *mday = dateString.substr(6, 2).c_str();
+
+    const char *hour = timeString.substr(0, 4).c_str();
+    const char *min  = timeString.substr(4, 2).c_str();
+    const char *sec  = timeString.substr(6, 2).c_str();
 
     int rudderAngle = Utilities::round(model->getRudder());
-    int portRPM = Utilities::round(model->getPortEngineRPM());
-    int stbdRPM = Utilities::round(model->getStbdEngineRPM());
+
+    int engineRPM[] = {
+        Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
+        Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
+    };
 
     irr::f32 lat = model->getLat();
     irr::f32 lon = model->getLong();
+
     irr::f32 cog = model->getCOG();
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;
-    char eastWest;
-    char northSouth;
-    if (lat >= 0)
-    {
-        northSouth='N';
-    }
-    else
-    {
-        northSouth='S';
-    }
-    if (lon >= 0)
-    {
-        eastWest='E';
-    }
-    else
-    {
-        eastWest='W';
-    }
+
+    irr::f32 hdg = model->getHeading();
+    irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
+
+    char eastWest = easting[lon < 0];
+    char northSouth = northing[lat < 0];
+
     lat = fabs(lat);
     lon = fabs(lon);
-
     irr::f32 latMinutes = (lat - (int)lat)*60;
     irr::f32 lonMinutes = (lon - (int)lon)*60;
     irr::u8 latDegrees = (int) lat;
     irr::u8 lonDegrees = (int) lon;
 
-    char messageBuffer[256];
-    std::string messageString;
+    char messageBuffer[maxSentenceChars] = "";
 
-    //Todo: Replace with select/case block:
-    if (currentMessageType        == 0)
-    {
-        snprintf(messageBuffer,100,"$GPRMC,%s,A,%02u%06.3f,%c,%03u%06.3f,%c,%.2f,%2f,%s,,,A",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,dateString.c_str()); //FIXME: SOG -> knots, COG->degrees
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 1)
-    {
-        snprintf(messageBuffer,100,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,%s,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,timeString.c_str());
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 2)
-    {
-        snprintf(messageBuffer,100,"$GPGGA,%s,%02u%06.3f,%c,%03u%06.3f,%c,8,8,0.9,0.0,M,0.0,M,,",timeString.c_str(),latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 3)
-    {
-        snprintf(messageBuffer,100,"$IIRSA,%d,A,,",rudderAngle);
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 4)
-    {
-        snprintf(messageBuffer,100,"$IIRPM,S,1,%d,100,A",portRPM); //'S' is for shaft, '100' is pitch
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 5)
-    {
-        snprintf(messageBuffer,100,"$IIRPM,S,2,%d,100,A",stbdRPM);
-        messageString.append(messageBuffer);
-        messageToSend = addChecksum(messageString);
-    }
-    else if (currentMessageType == 6)
-    {
-        messageToSend = "";
-        if (model->getARPAContacts() > 0) {
-            /*TTM Message from https://gpsd.gitlab.io/gpsd/NMEA.html#_ttm_tracked_target_message 
-            Target Number (0-99)
-            Target Distance
-            Bearing from own ship
-            T = True, R = Relative
-            Target Speed
-            Target Course
-            T = True, R = Relative
-            Distance of closest-point-of-approach
-            Time until closest-point-of-approach "-" means increasing, minutes
-            Speed/distance units, K/N
-            Target name
-            Target Status (L=Lost Q=Acquiring T=Tracking).
-            Reference Target
-            UTC of data (NMEA 3 and above)
-            Type, A = Auto, M = Manual, R = Reported (NMEA 3 and above)
-            Checksum*/
-            //To think about/add: Lost contacts? Manually aquired contacts?
-            for (int i = 0; i<model->getARPAContacts();i++) {
-                
-                int arpaID = i+1;
-                //TCPA in minutes, '-' if increasing
-                char tcpa[10] = "-";
-                if (model->getARPATCPA(arpaID)>0) {
-                    snprintf(tcpa,10,"%f",model->getARPATCPA(arpaID));
-                }
-
-                snprintf(messageBuffer,100,"$RATTM,%d,%f,%f,T,%f,%f,T,%f,%s,N,Tgt %d,T,,%s,A",
-                arpaID,
-                model->getARPARange(arpaID),
-                model->getARPABearing(arpaID),
-                model->getARPASpeed(arpaID),
-                model->getARPAHeading(arpaID),
-                model->getARPACPA(arpaID),
-                tcpa,
-                arpaID,
-                timeString.c_str()
-                );
-                messageString = "";
-                messageString.append(messageBuffer);
-                messageToSend.append(addChecksum(messageString));
+    switch (currentMessageType) { // EN 61162-1:2011
+        case RMC: // 8.3.69 Recommended minimum navigation information
+            snprintf(messageBuffer,maxSentenceChars,"$GPRMC,%s%s%s.00,A,%02u%06.3f,%c,%03u%06.3f,%c,%.1f,%.1f,%s%s%s,,,A,S",hour,min,sec,latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,sog,cog,year,mon,mday); //FIXME: SOG -> knots, COG->degrees
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case GLL: // 8.3.36 Geographic position – Latitude/longitude
+            snprintf(messageBuffer,maxSentenceChars,"$GPGLL,%02u%06.3f,%c,%03u%06.3f,%c,%s%s%s.00,A,A",latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest,hour,min,sec);
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case GGA: // 8.3.35 Global positioning system (GPS) fix data
+            snprintf(messageBuffer,maxSentenceChars,"$GPGGA,%s%s%s.00,%02u%06.3f,%c,%03u%06.3f,%c,1,12,0.0,0.0,M,0.0,M,,",hour,min,sec,latDegrees,latMinutes,northSouth,lonDegrees,lonMinutes,eastWest); //Hardcoded NMEA Quality 8, Satellites 8, HDOP 0.9
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case RSA: // 8.3.73 Rudder sensor angle
+            snprintf(messageBuffer,maxSentenceChars,"$IIRSA,%.1f,A,,V",rudderAngle); // starboard (or single), A is valid, port sensor is null, thus V for invalid
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case RPM: // 8.3.72 Revolutions
+            for (int i=0; i<2; i++) {
+                snprintf(messageBuffer,maxSentenceChars,"$IIRPM,S,%d,%d,100,A",i+1,engineRPM[i]); // 'S' is for shaft, '100' is pitch (fixed)
+                messageToSend.append(addChecksum(std::string(messageBuffer)));
             }
-        }
+            break;
+        case TTM: // 8.3.85 Tracked target message
+            if (model->getARPAContacts() > 0) {
+                //To think about/add: Lost contacts? Manually aquired contacts?
+                for (int i=0; i<model->getARPAContacts(); i++) {
+                    int arpaID = i+1;
+                    snprintf(messageBuffer,maxSentenceChars,"$RATTM,%02d,%.1f,%.1f,T,%.1f,%.1f,T,%.1f,%.1f,N,TGT%02d,T,,%s.00,A",
+                        arpaID,
+                        model->getARPARange(arpaID),
+                        model->getARPABearing(arpaID),
+                        model->getARPASpeed(arpaID),
+                        model->getARPAHeading(arpaID), // is this the (relative) course since heading is related to orientation in world reference?
+                        model->getARPACPA(arpaID),
+                        model->getARPATCPA(arpaID),
+                        arpaID,
+                        timeString.c_str()
+                    );
+                    messageToSend.append(addChecksum(std::string(messageBuffer)));
+                }
+            }
+            break;
+        /*
+        case RSD: // 8.3.74 Radar system data
+            snprintf(messageBuffer,maxSentenceChars,"$RARSD,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        case ZDA: // 8.3.106 Time and date
+            snprintf(messageBuffer,maxSentenceChars,"$RAZDA,%s%s%s.00,%s,%s,%s,00,00",hour,min,sec,mday,mon,year);
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        /*
+        case OSD: // 8.3.64 Own ship data
+            snprintf(messageBuffer,maxSentenceChars,"$RAOSD,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        /*
+        /*
+        case POS: // 8.3.65 Device position and ship dimensions report or configuration command
+            snprintf(messageBuffer,maxSentenceChars,"$INPOS,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        case DTM: // 8.3.27 Datum reference
+            snprintf(messageBuffer,maxSentenceChars,"$RADTM,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case HDT: // 8.3.44 Heading true
+            snprintf(messageBuffer,maxSentenceChars,"$HEHDT,%.1f,T",hdg); // T = true north
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case ROT: // 8.3.71 Rate of turn
+            snprintf(messageBuffer,maxSentenceChars,"$TIROT,%.1f,A",rot);  // A = data valid
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        /*
+        case VTG: // 8.3.98 Course over ground and ground speed
+            snprintf(messageBuffer,maxSentenceChars,"$VDVTG,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        default:
+            break;
     }
 
-    currentMessageType++;
-    if (currentMessageType == maxMessages)
-    {
-        currentMessageType = 0;
-    }
+    currentMessageType += 1;
+    currentMessageType %= maxMessages;
 }
 
 void NMEA::sendNMEASerial()
@@ -230,34 +225,29 @@ void NMEA::sendNMEASerial()
 }
 
 void NMEA::sendNMEAUDP()
-{
-    try {
-        asio::ip::udp::socket socket(io_service);
-        socket.open(asio::ip::udp::v4());
-        socket.send_to(asio::buffer(messageToSend),receiver_endpoint);
-    } catch (std::exception& e) {
-        device->getLogger()->log(e.what());
+{    
+    if (messageToSend != "") {
+        try {
+            asio::ip::udp::socket socket(io_service);
+            socket.open(asio::ip::udp::v4());
+            socket.send_to(asio::buffer(messageToSend),receiver_endpoint);
+            messageToSend = "";
+        } catch (std::exception& e) {
+            device->getLogger()->log(e.what());
+        }
     }
-
 }
 
 std::string NMEA::addChecksum(std::string messageIn)
 {
-
-    char checksumBuffer[6];
-
+    char checksumBuffer[3];
     //Get checksum
     unsigned char checksum=0;
-
     irr::u8 s = messageIn.length();
     for(int i = 1; i<s; i++)
     {
         checksum^= messageIn.at(i);
     }
-    snprintf(checksumBuffer,sizeof(checksumBuffer),"*%02X\r\n",checksum);
-
-    std::string checksumString(checksumBuffer);
-    messageIn.append(checksumString);
-    return messageIn;
-
+    snprintf(checksumBuffer,sizeof(checksumBuffer),"%02X",checksum);
+    return messageIn + "*" + std::string(checksumBuffer) + "\r\n";
 }
