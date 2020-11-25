@@ -42,7 +42,7 @@ private:
     serial::Serial mySerialPort;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    const int maxMessages = VTG - RMC; // how many messages are defined
+    const int maxMessages = (VTG - RMC) + 1; // how many messages are defined
     const int maxSentenceChars = 79; // iaw EN 61162-1:2011
     const char northing[2] = {'N', 'S'};
     const char easting[2] = {'E', 'W'};

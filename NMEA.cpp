@@ -191,7 +191,7 @@ void NMEA::updateNMEA()
             break;
         */
         case DTM: // 8.3.27 Datum reference
-            snprintf(messageBuffer,maxSentenceChars,"$RADTM,");
+            snprintf(messageBuffer,maxSentenceChars,"$RADTM,W84,,,,,,,");
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         case HDT: // 8.3.44 Heading true
