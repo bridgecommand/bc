@@ -34,6 +34,7 @@ public:
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
+    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, RSD, ZDA, OSD, POS, DTM, HDT, ROT, VTG };
 
 private:
     irr::IrrlichtDevice* device;
@@ -41,12 +42,14 @@ private:
     serial::Serial mySerialPort;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    int maxMessages; //How many messages are defined
-    int currentMessageType; //Sequentially send different sentences
+    const int maxMessages = (VTG - RMC) + 1; // how many messages are defined
+    const int maxSentenceChars = 79; // iaw EN 61162-1:2011
+    const char northing[2] = {'N', 'S'};
+    const char easting[2] = {'E', 'W'};
+    int currentMessageType; // sequentially send different sentences
     asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
     //asio::ip::udp::socket* socket;
-
 };
 
 #endif // __NMEA_HPP_INCLUDED__

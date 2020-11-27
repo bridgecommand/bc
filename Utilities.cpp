@@ -124,6 +124,14 @@ namespace Utilities
         return timestampToString(timestamp, "%d %b %Y %H:%M:%S"); //Default date/time format
     }
 
+    std::string ttos(time_t timestamp) {
+        struct tm ts;
+        ts = *gmtime(&timestamp);
+        char timeBuffer[(4+2*2)+(2*3)+1];
+        snprintf(timeBuffer,15,"%04d%02d%02d%02d%02d%02d",1900+ts.tm_year,ts.tm_mon+1,ts.tm_mday,ts.tm_hour,ts.tm_min,ts.tm_sec);
+        return(std::string(timeBuffer));
+    }
+
     std::vector<std::string> split(const std::string &inputString, char delim) {
         //from http://stackoverflow.com/questions/236129/split-a-string-in-c, Evan Teran answer
         std::vector<std::string> splitStrings;
