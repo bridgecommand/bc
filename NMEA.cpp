@@ -97,7 +97,7 @@ void NMEA::updateNMEA()
     const char *min  = timeString.substr(4, 2).c_str();
     const char *sec  = timeString.substr(6, 2).c_str();
 
-    int rudderAngle = Utilities::round(model->getRudder());
+    irr::f32 rudderAngle = model->getRudder();
 
     int engineRPM[] = {
         Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
@@ -123,7 +123,10 @@ void NMEA::updateNMEA()
     irr::u8 latDegrees = (int) lat;
     irr::u8 lonDegrees = (int) lon;
 
-    char messageBuffer[maxSentenceChars] = "";
+    char messageBuffer[maxSentenceChars];
+    for (int i = 0; i<maxSentenceChars; i++) { //Avoid error about variable size object initialization
+        messageBuffer[i]=0;
+    }
 
     switch (currentMessageType) { // EN 61162-1:2011
         case RMC: // 8.3.69 Recommended minimum navigation information
