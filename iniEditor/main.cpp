@@ -68,7 +68,7 @@ void saveFile(irr::IrrlichtDevice* device, std::string iniFilename, irr::gui::IG
 
             //Get tab name - convert from stringw to std::string, loosing any extended character info.
             std::string sectionName(irr::core::stringc(tabbedPane->getTab(i)->getText()).c_str());
-            file << sectionName << std::endl;
+            file << "[" + sectionName + "]" << std::endl;
 
             //For each table, get contents, including description
             irr::core::list<irr::gui::IGUIElement*> tabChildren = tabbedPane->getTab(i)->getChildren();
@@ -234,28 +234,6 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    irr::u32 graphicsWidth = 800;
-    irr::u32 graphicsHeight = 600;
-    irr::u32 graphicsDepth = 32;
-    bool fullScreen = false;
-
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
-    irr::video::IVideoDriver* driver = device->getVideoDriver();
-
-    irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
-
-    //Set gui colours
-    irr::gui::IGUISkin* skin = environment->getSkin();
-
-    skin->setColor(irr::gui::EGDC_3D_DARK_SHADOW ,irr::video::SColor(255,128,128,128));
-    skin->setColor(irr::gui::EGDC_3D_SHADOW ,irr::video::SColor(255,190,190,190));
-    skin->setColor(irr::gui::EGDC_3D_FACE ,irr::video::SColor(255,235,235,235));
-    skin->setColor(irr::gui::EGDC_3D_LIGHT ,irr::video::SColor(255,255,255,255));
-
-    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
-    irr::u32 width = screenSize.Width;
-    irr::u32 height = screenSize.Height;
-
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
     irr::io::IFileSystem* fileSystem = device->getFileSystem();
@@ -315,15 +293,6 @@ int main (int argc, char ** argv)
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
-    }
-
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = environment->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
-    } else {
-        //set skin default font
-        environment->getSkin()->setFont(font);
     }
 
     //Vector to hold values read into file
@@ -458,24 +427,68 @@ int main (int argc, char ** argv)
 
     Lang language(languageFile);
 
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+    
+    irr::u32 graphicsWidth = 800 * fontScale;
+    irr::u32 graphicsHeight = 600 * fontScale;
+    irr::u32 graphicsDepth = 32;
+    bool fullScreen = false;
+
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::video::IVideoDriver* driver = device->getVideoDriver();
+
+    irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
+
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    irr::gui::IGUIFont *font = environment->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        environment->getSkin()->setFont(font);
+    }
+
+    //Set gui colours
+    irr::gui::IGUISkin* skin = environment->getSkin();
+
+    skin->setColor(irr::gui::EGDC_3D_DARK_SHADOW ,irr::video::SColor(255,128,128,128));
+    skin->setColor(irr::gui::EGDC_3D_SHADOW ,irr::video::SColor(255,190,190,190));
+    skin->setColor(irr::gui::EGDC_3D_FACE ,irr::video::SColor(255,235,235,235));
+    skin->setColor(irr::gui::EGDC_3D_LIGHT ,irr::video::SColor(255,255,255,255));
+
+    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
+    irr::u32 width = screenSize.Width;
+    irr::u32 height = screenSize.Height;
+
     //Do set-up here
 
-    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(10,height-90, 150, height - 10),0,SAVE_BUTTON,language.translate("save").c_str());
+    int pad = 10;
 
-    irr::gui::IGUITabControl* tabbedPane = environment->addTabControl( irr::core::rect<irr::s32>(10,10,width-10,height-100),0,true);
+    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(pad, height-(50*fontScale), 150*fontScale, height-pad),0,SAVE_BUTTON,language.translate("save").c_str());
+
+    irr::gui::IGUITabControl* tabbedPane = environment->addTabControl( irr::core::rect<irr::s32>(pad,pad,width-pad,height-(50*fontScale)-pad),0,true);
 
     //Add tab entry here
     for(int i = 0; i<iniFileStructure.size(); i++) {
-        irr::gui::IGUITab* thisTab = tabbedPane->addTab((irr::core::stringw(iniFileStructure.at(i).tabName.c_str())).c_str());
+        std::string tabName = iniFileStructure.at(i).tabName;
+        irr::gui::IGUITab* thisTab = tabbedPane->addTab((irr::core::stringw(tabName.substr(1,tabName.length()-2).c_str())).c_str());
 
         //Add tab contents in a table
-        irr::gui::IGUITable* thisTable = environment->addTable(irr::core::rect<irr::s32>(10,10,width-30,height-170),thisTab);
+        irr::gui::IGUITable* thisTable = environment->addTable(irr::core::rect<irr::s32>(pad,pad,width-(3*pad),height-(50*fontScale)-2*(3*pad)),thisTab);
 
         thisTable->addColumn(language.translate("name").c_str());
         thisTable->addColumn(language.translate("value").c_str());
         thisTable->addColumn(language.translate("description").c_str());
-        thisTable->setColumnWidth(0,150);
-        thisTable->setColumnWidth(2,2000);
+        thisTable->setColumnWidth(0,150*fontScale);
+        thisTable->setColumnWidth(2,2*width);
         thisTable->setToolTipText(language.translate("doubleClick").c_str());
 
         for (int j = 0; j<iniFileStructure.at(i).settings.size(); j++) {
@@ -484,8 +497,6 @@ int main (int argc, char ** argv)
             thisTable->setCellText(j,1,irr::core::stringw(iniFileStructure.at(i).settings.at(j).settingValue.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
             thisTable->setCellText(j,2,irr::core::stringw(iniFileStructure.at(i).settings.at(j).description.c_str()).c_str()/*,video::SColor (255, 255, 255, 255)*/ );
         }
-
-
 
     }
 
