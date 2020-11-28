@@ -112,12 +112,6 @@ int main()
         iniFilename = userFolder + iniFilename;
     }
 
-    //Chdir back on OSX
-    //Mac OS:
-	#ifdef __APPLE__
-    chdir(exeFolderPath.c_str());
-	#endif
-
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
         modifier = "en"; //Default
@@ -160,6 +154,12 @@ int main()
     device->setWindowCaption(L"Multiplayer Hub"); //Fixme - odd conversion from char* to wchar*!
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     irr::scene::ISceneManager* smgr = device->getSceneManager();
+
+    //Chdir back on OSX
+    //Mac OS:
+	#ifdef __APPLE__
+    chdir(exeFolderPath.c_str());
+	#endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
     std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";

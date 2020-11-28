@@ -234,16 +234,6 @@ int main (int argc, char ** argv)
     //Note, we use this again after the createDevice call
 	#endif
 
-    #ifdef __APPLE__
-    //Mac OS - cd back to original dir - seems to be changed during createDevice
-    irr::io::IFileSystem* fileSystem = device->getFileSystem();
-    if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
-        std::cout << "Could not get filesystem" << std::endl;
-    }
-    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
-    #endif
-
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
     std::cout << "User folder is " << userFolder << std::endl;
@@ -445,6 +435,16 @@ int main (int argc, char ** argv)
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
+
+    #ifdef __APPLE__
+    //Mac OS - cd back to original dir - seems to be changed during createDevice
+    irr::io::IFileSystem* fileSystem = device->getFileSystem();
+    if (fileSystem==0) {
+        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+        std::cout << "Could not get filesystem" << std::endl;
+    }
+    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+    #endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
     std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
