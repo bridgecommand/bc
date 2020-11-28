@@ -239,6 +239,15 @@ int main()
         udpPort = 18304;
     }
 
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
 		irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
@@ -248,7 +257,7 @@ int main()
 			if (fullScreen || fakeFullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
-				graphicsWidth = deskres.Width*0.8;
+				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
 			}
 		}
 		if (graphicsHeight == 0) {
@@ -256,7 +265,7 @@ int main()
 				graphicsHeight = deskres.Height;
 			}
 			else {
-				graphicsHeight = deskres.Height*0.8;
+				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
 			}
 		}
 	}
@@ -436,17 +445,15 @@ int main()
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
-    //Set font : Use the default if window height is 600 or less, as it's better on a small screen
-	if (sh > 600) {
-		irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/Lucida.xml");
-		if (font == 0) {
-			device->getLogger()->log("Could not load font, using default");
-		}
-		else {
-			//set skin default font
-			device->getGUIEnvironment()->getSkin()->setFont(font);
-		}
-	}
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
 
     //Choose scenario
     std::string scenarioName = "";

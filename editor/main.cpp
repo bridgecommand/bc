@@ -383,10 +383,23 @@ int main (int argc, char ** argv)
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }
+
+    int fontSize = 13;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale < 1) {
+        fontScale = 1;
+    } else {
+        fontSize = 16;
+    }
+    fontSize = (int)(fontSize * fontScale + 0.5);
+
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+
+    if (graphicsWidth == 0) { graphicsWidth = 1200 * fontScale; }
+    if (graphicsHeight == 0) { graphicsHeight = 900 * fontScale; }
 
 	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {
@@ -396,6 +409,16 @@ int main (int argc, char ** argv)
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
+
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    } else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
 
     #ifdef __APPLE__
     //Mac OS - cd back to original dir - seems to be changed during createDevice
@@ -419,15 +442,6 @@ int main (int argc, char ** argv)
         languageFile = userFolder + languageFile;
     }
     Lang language(languageFile);
-
-    //Set font : Todo - make this configurable
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont("media/lucida.xml");
-    if (font == 0) {
-        std::cout << "Could not load font, using default" << std::endl;
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
 
 	//Check if user scenario dir exists. If not, try to copy scenarios into the user dir.
     checkUserScenarioDir();
