@@ -88,7 +88,7 @@ int main (int argc, char ** argv)
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
         if (graphicsWidth==0) {graphicsWidth=1200*fontScale;}
-    if (graphicsHeight==0) {graphicsHeight=900*fontScale*1.1;}
+    if (graphicsHeight==0) {graphicsHeight=900*fontScale;}
 
 	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {
