@@ -126,11 +126,6 @@ int main()
 
     int fontSize = 13;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale < 1) {
-        fontScale = 1;
-    } else {
-        fontSize = 16;
-    }
     fontSize = (int)(fontSize * fontScale + 0.5);
     
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
@@ -140,7 +135,7 @@ int main()
 
     //Sensible defaults if not set
     if (graphicsWidth==0) {graphicsWidth=1200*fontScale;}
-    if (graphicsHeight==0) {graphicsHeight=900*fontScale*1.1;}
+    if (graphicsHeight==0) {graphicsHeight=900*fontScale;}
     if (graphicsDepth==0) {graphicsDepth=32;}
     if (port == 0) {port = 18304;}
 
