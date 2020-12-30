@@ -241,7 +241,11 @@ int main()
 
     int fontSize = 13;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    fontSize = (int)(fontSize * fontScale + 0.5);
+    if (fontScale > 0) {
+        fontSize = (int)(fontSize * fontScale + 0.5);
+    } else {
+	fontScale = 1.0;
+    }
 
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
