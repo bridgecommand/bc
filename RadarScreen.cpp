@@ -17,6 +17,8 @@
 #include "RadarScreen.hpp"
 #include <iostream>
 
+#include "iprof.hpp"
+
 //using namespace irr;
 
 RadarScreen::RadarScreen()
@@ -51,38 +53,46 @@ void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
 
 void RadarScreen::update(irr::video::IImage* radarImage)
 {
-     //link camera rotation to shipNode
-    // get transformation matrix of node
     irr::core::matrix4 m;
+    irr::core::vector3df offsetTransformed;
+    irr::video::ITexture* oldTexture = 0;
+    
+    { IPROF("link camera rotation");
+    //link camera rotation to shipNode
+    // get transformation matrix of node
     m.setRotationDegrees(parent->getRotation());
 
     // transform offset('offset' is relative to the local ship coordinates, and stays the same.)
     //'offsetTransformed' is transformed into the global coordinates
-    irr::core::vector3df offsetTransformed;
+    
     m.transformVect(offsetTransformed,offset);
 
     //move screen
     radarScreen->setPosition(parent->getPosition() + offsetTransformed);
 	radarScreen->setRotation(parent->getRotation()+irr::core::vector3df(-90+tilt,0,0));
 
+    }{ IPROF("Get old texture");
+
     //Get old texture if it exists
-	irr::video::ITexture* oldTexture = 0;
+	
     if (radarScreen->getMaterialCount()>0) {
         oldTexture = radarScreen->getMaterial(0).getTexture(0);
     }
+    }{ IPROF("Make texture from image");
     //make texture from image and apply to the screen
     radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
-
+    }{ IPROF("Scale texture");
     //Scale the texture to get 1:1 image to screen pixel mapping
     irr::f32 radarTextureScaling=1;
     if (radarImage->getDimension().Width>0) {
         radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.
-
+    }{ IPROF("Remove old texture");
     //Remove old texture if it exists
     if (oldTexture!=0) {
             driver->removeTexture(oldTexture);
+    }
     }
 
 }

@@ -16,7 +16,7 @@
 
 // main.cpp
 
-#define DISABLE_IPROF
+//#define DISABLE_IPROF
 
 #include "iprof.hpp"
 

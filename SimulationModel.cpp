@@ -30,6 +30,8 @@
 #include <cmath>
 #include <fstream>
 
+#include "iprof.hpp"
+
 //#include <ctime>
 
 //using namespace irr;
@@ -178,7 +180,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
-        irr::u32 radarTextureSize = driver->getScreenSize().Height; // Conservative estimate - can't be bigger than screen height.
+        irr::u32 radarTextureSize = driver->getScreenSize().Height; // Conservative estimate - can't be bigger than screen height. TODO: Think about this - may be better to have two images, one for small radar, and one for big!
         //Find next power of 2 size
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
 
@@ -1017,6 +1019,18 @@ SimulationModel::~SimulationModel()
 
 // DEE vvvv debug I think that this is effectively the CLOCK
 
+        //Declare here, so scope added as part of profiling isn't a problem
+        irr::u32 lightLevel;
+        irr::f32 elevAngle;
+        irr::core::vector2di cursorPositionRadar;
+        std::vector<irr::f32> CPAs;
+        std::vector<irr::f32> TCPAs;
+		std::vector<irr::f32> headings;
+		std::vector<irr::f32> speeds;
+        bool paused;
+        bool collided;
+
+        { IPROF("Increment time");
 
         // move time along .. this goes before everything else in the cycle
 
@@ -1034,49 +1048,60 @@ SimulationModel::~SimulationModel()
         loopNumber++;
 
         // end move time along
-
+        }{ IPROF("Set radar display radius");
 
 
         //Ensure we have the right radar screen resolution
         setRadarDisplayRadius(guiMain->getRadarPixelRadius());
 
+        }{ IPROF("Update tide");
+
         //Update tide height and tidal stream here.
         tide.update(absoluteTime);
         tideHeight = tide.getTideHeight();
+
+        }{ IPROF("Update lighting");
 
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
         driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
-        irr::u32 lightLevel = light.getLightLevel();
+        lightLevel = light.getLightLevel();
 
+        }{ IPROF("Update rain");
         //update rain
         rain.setIntensity(rainIntensity);
         rain.update(scenarioTime);
 
+        }{ IPROF("Update other ships");
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel); //Update other ship motion (based on leg information), and light visibility.
 
+        }{ IPROF("Update buoys");
         //update buoys (for lights)
         buoys.update(deltaTime,scenarioTime,tideHeight,lightLevel);
 
+        }{ IPROF("Update land lights");
         //Update land lights
         landLights.update(deltaTime,scenarioTime,lightLevel);
 
+        }{ IPROF("Update own ship");
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
 
-
+        }{ IPROF("Update MOB");
         //update man overboard
         manOverboard.update(deltaTime, tideHeight);
 
+        }{ IPROF("Check for collisions");
         //Check for collisions
-        bool collided = checkOwnShipCollision();
+        collided = checkOwnShipCollision();
 
-
+        }{ IPROF("Update water pos");
         //update water position
         water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
+        }{ IPROF("Normalise ");
         //Normalise positions if required (More than 1000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
         if(ownShip.getPosition().getLength() > 1000) {
@@ -1110,30 +1135,33 @@ SimulationModel::~SimulationModel()
             //std::cout << normalisedLogMessage << std::endl;
 
         }
-
+        }{ IPROF("Update camera pos");
 
         //update the camera position
         camera.update();
-
+        
+        }{ IPROF("Update radar cursor position");
         //set radar screen position, and update it with a radar image from the radar calculation
-        irr::core::vector2di cursorPositionRadar = guiMain->getCursorPositionRadar();
+        cursorPositionRadar = guiMain->getCursorPositionRadar();
+        }{ IPROF("Update radar calculation");
         radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+        }{ IPROF("Update radar screen");
         radarScreen.update(radarImageOverlaid);
+        }{ IPROF("Update radar camera");
         radarCamera.update();
-
+        
+        }{ IPROF("Check if paused ");
         //check if paused
-        bool paused = device->getTimer()->getSpeed()==0.0;
+        paused = device->getTimer()->getSpeed()==0.0;
 
+        }{ IPROF("Calc elevation etc ");
         //calculate current angular elevation due to pitch and roll in the view direction
         irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
-        irr::f32 elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
+        elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
+        }{ IPROF("Get radar ARPA data");
         //get radar ARPA data to show
         irr::u32 numberOfARPAContacts = radarCalculation.getARPAContacts();
-        std::vector<irr::f32> CPAs;
-        std::vector<irr::f32> TCPAs;
-		std::vector<irr::f32> headings;
-		std::vector<irr::f32> speeds;
         for(unsigned int i = 0; i<numberOfARPAContacts; i++) {
             CPAs.push_back(radarCalculation.getARPACPA(i+1)); //i+1 as the user numbering starts at 1, not 0
             TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
@@ -1142,7 +1170,7 @@ SimulationModel::~SimulationModel()
         }
 
 
-
+        }{ IPROF("Collate GUI data ");
 
         //Collate data to show in gui
         guiData->lat = getLat();
@@ -1177,9 +1205,10 @@ SimulationModel::~SimulationModel()
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();
 // DEE ^^^^
-
+        }{ IPROF("Update gui data");
         //send data to gui
         guiMain->updateGuiData(guiData); //Set GUI heading in degrees and speed (in m/s)
+        }
     }
 
     bool SimulationModel::checkOwnShipCollision()
