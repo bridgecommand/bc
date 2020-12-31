@@ -86,6 +86,7 @@ void RadarScreen::update(irr::video::IImage* radarImage)
     irr::f32 radarTextureScaling=1;
     if (radarImage->getDimension().Width>0) {
         radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
+        if (radarTextureScaling > 1) {radarTextureScaling = 1;} //Don't scale if not needed
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.
     }{ IPROF("Remove old texture");

@@ -897,8 +897,13 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
     //Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
     irr::u32 bitmapWidth = radarRadiusPx*2; //Set width to use - to map GUI radar display diameter in screen pixels
-    if (radarImage->getDimension().Width < bitmapWidth) //Check the image we're rendering into is big enough
-        {return;}
+    
+    //If the image is smaller than ideal, render anyway
+    if (radarImage->getDimension().Width < bitmapWidth) {
+        bitmapWidth = radarImage->getDimension().Width;
+    }
+    //if (radarImage->getDimension().Width < bitmapWidth) //Check the image we're rendering into is big enough
+    //    {return;}
 
     //draw from array to image
     irr::f32 centrePixel = (bitmapWidth-1.0)/2.0; //The centre of the bitmap. Normally this will be a fractional number (##.5)
