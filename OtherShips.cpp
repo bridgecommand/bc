@@ -105,6 +105,11 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
         irr::f32 factor = deltaTime/(timeConstant+deltaTime);
         waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
 
+        //Special case, if paused, just use the actual wave height. A bit of a bodge, but avoids having to store the previous filter value
+        if (deltaTime == 0) {
+            waveHeightFiltered = model->getWaveHeight(prevPosition.X,prevPosition.Z);
+        }
+
         (*it)->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);
     }
 
