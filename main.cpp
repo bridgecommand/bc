@@ -239,7 +239,7 @@ int main()
         udpPort = 18304;
     }
 
-    int fontSize = 13;
+    int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
     if (fontScale > 0) {
         fontSize = (int)(fontSize * fontScale + 0.5);
