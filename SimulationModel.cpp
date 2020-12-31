@@ -181,14 +181,21 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
         irr::u32 radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
+        irr::u32 largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
         //Find next power of 2 size
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
+        largeRadarTextureSize = std::pow(2,std::ceil(std::log2(largeRadarTextureSize)));
 
         //In simulationModel, keep track of the used size, and pass this to gui etc.
         radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
         radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        //fill with bg colour
         radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
         radarImageOverlaid->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImageLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImageOverlaidLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
 
         //make radar camera
         std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
@@ -217,6 +224,9 @@ SimulationModel::~SimulationModel()
 {
     radarImage->drop(); //We created this with 'create', so drop it when we're finished
     radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
+    radarImageLarge->drop(); //We created this with 'create', so drop it when we're finished
+    radarImageOverlaidLarge->drop(); //We created this with 'create', so drop it when we're finished
+    
     delete guiData;
 }
 
@@ -1144,9 +1154,17 @@ SimulationModel::~SimulationModel()
         //set radar screen position, and update it with a radar image from the radar calculation
         cursorPositionRadar = guiMain->getCursorPositionRadar();
         }{ IPROF("Update radar calculation");
-        radarCalculation.update(radarImage,radarImageOverlaid,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+        //Choose which radar images to use, depending on the size of the display being used
+        if (2*guiMain->getRadarPixelRadius() > radarImage->getDimension().Width) {
+            radarImageChosen = radarImageLarge;
+            radarImageOverlaidChosen = radarImageOverlaidLarge;
+        } else {
+            radarImageChosen = radarImage;
+            radarImageOverlaidChosen = radarImageOverlaid;
+        }
+        radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
         }{ IPROF("Update radar screen");
-        radarScreen.update(radarImageOverlaid);
+        radarScreen.update(radarImageOverlaidChosen);
         }{ IPROF("Update radar camera");
         radarCamera.update();
         

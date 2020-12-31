@@ -211,6 +211,10 @@ private:
     irr::f32 viewAngle;
     irr::video::IImage* radarImage; //Basic radar image
     irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
+    irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
+    irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
+    irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
+    irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
     //irr::f32 accelerator;
     irr::f32 tideHeight;
     irr::f32 weather; //0-12.0
