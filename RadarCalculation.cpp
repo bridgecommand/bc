@@ -728,7 +728,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;
 
             //take log (natural) of signal
-            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0,log(filteredSignal*radarLocalGain));
+            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0f,log(filteredSignal*radarLocalGain));
 
             //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
             irr::s32 filterAngle = (irr::s32)currentScanAngle - 3*scanAngleStep;
