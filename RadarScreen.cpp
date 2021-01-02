@@ -17,7 +17,11 @@
 #include "RadarScreen.hpp"
 #include <iostream>
 
+#ifdef WITH_PROFILING
 #include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
 
 //using namespace irr;
 
@@ -53,10 +57,14 @@ void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
 
 void RadarScreen::update(irr::video::IImage* radarImage)
 {
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
     irr::core::matrix4 m;
     irr::core::vector3df offsetTransformed;
     irr::video::ITexture* oldTexture = 0;
-    
+
     { IPROF("link camera rotation");
     //link camera rotation to shipNode
     // get transformation matrix of node
@@ -64,7 +72,7 @@ void RadarScreen::update(irr::video::IImage* radarImage)
 
     // transform offset('offset' is relative to the local ship coordinates, and stays the same.)
     //'offsetTransformed' is transformed into the global coordinates
-    
+
     m.transformVect(offsetTransformed,offset);
 
     //move screen
@@ -74,7 +82,7 @@ void RadarScreen::update(irr::video::IImage* radarImage)
     }{ IPROF("Get old texture");
 
     //Get old texture if it exists
-	
+
     if (radarScreen->getMaterialCount()>0) {
         oldTexture = radarScreen->getMaterial(0).getTexture(0);
     }

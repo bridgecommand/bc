@@ -16,9 +16,11 @@
 
 // main.cpp
 
-//#define DISABLE_IPROF
-
+#ifdef WITH_PROFILING
 #include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
 
 // Include the Irrlicht header
 #include "irrlicht.h"
@@ -119,7 +121,10 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 int main()
 {
 
+    #ifdef WITH_PROFILING
     IPROF_FUNC;
+    #endif
+
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB
@@ -165,7 +170,7 @@ int main()
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
-	#ifdef __APPLE__	
+	#ifdef __APPLE__
 	if (fakeFullScreen) {
 		fullScreen = true; //Fall back for mac
 	}
@@ -620,7 +625,7 @@ int main()
 
         //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
 //        nmeaProfile.tic();
-        }{ IPROF("NMEA"); 
+        }{ IPROF("NMEA");
         if (device->getTimer()->getTime() >= nextNMEATime) {
 
             if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
@@ -658,7 +663,7 @@ int main()
         }
         bool fullScreenRadar = guiMain.getLargeRadar();
         { IPROF("Render radar");
-        
+
 
         //radar view portion
         if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
@@ -709,9 +714,9 @@ int main()
 
     }
 
-    #ifndef DISABLE_IPROF
+    #ifdef WITH_PROFILING
     InternalProfiler::aggregateEntries();
-    
+
     std::cout << "\nThe profiler stats so far:\n"
            "WHAT: AVG_TIME (TOTAL_TIME / TIMES_EXECUTED)"
            "\nAll times in micro seconds\n"

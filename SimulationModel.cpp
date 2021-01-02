@@ -30,7 +30,11 @@
 #include <cmath>
 #include <fstream>
 
+#ifdef WITH_PROFILING
 #include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
 
 //#include <ctime>
 
@@ -226,7 +230,7 @@ SimulationModel::~SimulationModel()
     radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
     radarImageLarge->drop(); //We created this with 'create', so drop it when we're finished
     radarImageOverlaidLarge->drop(); //We created this with 'create', so drop it when we're finished
-    
+
     delete guiData;
 }
 
@@ -843,7 +847,7 @@ SimulationModel::~SimulationModel()
     {
         return radarCalculation.getARPAContacts();
     }
-    
+
     irr::f32 SimulationModel::getARPACPA(irr::u32 contactID) const
     {
         return radarCalculation.getARPACPA(contactID);
@@ -1026,7 +1030,9 @@ SimulationModel::~SimulationModel()
     void SimulationModel::update()
     {
 
-
+        #ifdef WITH_PROFILING
+        IPROF_FUNC;
+        #endif
 // DEE vvvv debug I think that this is effectively the CLOCK
 
         //Declare here, so scope added as part of profiling isn't a problem
@@ -1149,7 +1155,7 @@ SimulationModel::~SimulationModel()
 
         //update the camera position
         camera.update();
-        
+
         }{ IPROF("Update radar cursor position");
         //set radar screen position, and update it with a radar image from the radar calculation
         cursorPositionRadar = guiMain->getCursorPositionRadar();
@@ -1167,7 +1173,7 @@ SimulationModel::~SimulationModel()
         radarScreen.update(radarImageOverlaidChosen);
         }{ IPROF("Update radar camera");
         radarCamera.update();
-        
+
         }{ IPROF("Check if paused ");
         //check if paused
         paused = device->getTimer()->getSpeed()==0.0;

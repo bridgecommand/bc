@@ -16,8 +16,6 @@
 
 #include "RadarCalculation.hpp"
 
-//#include "iprof.hpp"
-
 #include "Terrain.hpp"
 #include "OwnShip.hpp"
 #include "Buoys.hpp"
