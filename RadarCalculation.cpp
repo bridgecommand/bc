@@ -62,7 +62,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     //rangeResolution = 64; now set initialiser list
     scanArray.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
     scanArrayAmplified.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplifiedPrevious.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayAmplifiedBlurred.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayAmplifiedBlurredPrevious.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
 
     //initialise arrays
     for(irr::u32 i = 0; i<360; i++) {
@@ -469,7 +470,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         //Reset 'previous' array so it will all get re-drawn
         for(irr::u32 i = 0; i<360; i++) {
             for(irr::u32 j = 0; j<rangeResolution; j++) {
-                scanArrayAmplifiedPrevious[i][j] = -1.0;
+                scanArrayAmplifiedBlurredPrevious[i][j] = -1.0;
             }
         }
         radarScreenStale = false;
@@ -729,7 +730,60 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;
 
             //take log (natural) of signal
-            scanArrayAmplified[currentScanAngle][currentStep] = log(filteredSignal*radarLocalGain);
+            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0,log(filteredSignal*radarLocalGain));
+
+            //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
+            irr::s32 filterAngle = (irr::s32)currentScanAngle - 3*scanAngleStep;
+                while(filterAngle < 0) {filterAngle+=360;}
+                while(filterAngle >= 360) {filterAngle-=360;}
+            irr::s32 filterAngle_1 = filterAngle - 3*scanAngleStep;
+                while(filterAngle_1 < 0) {filterAngle_1+=360;}
+                while(filterAngle_1 >= 360) {filterAngle_1-=360;}
+            irr::s32 filterAngle_2 = filterAngle - 2*scanAngleStep;
+                while(filterAngle_2 < 0) {filterAngle_2+=360;}
+                while(filterAngle_2 >= 360) {filterAngle_2-=360;}
+            irr::s32 filterAngle_3 = filterAngle - 1*scanAngleStep;
+                while(filterAngle_3 < 0) {filterAngle_3+=360;}
+                while(filterAngle_3 >= 360) {filterAngle_3-=360;}
+            irr::s32 filterAngle_4 = filterAngle;
+                while(filterAngle_4 < 0) {filterAngle_4+=360;}
+                while(filterAngle_4 >= 360) {filterAngle_4-=360;}
+            irr::s32 filterAngle_5 = filterAngle + 1*scanAngleStep;
+                while(filterAngle_5 < 0) {filterAngle_5+=360;}
+                while(filterAngle_5 >= 360) {filterAngle_5-=360;}
+            irr::s32 filterAngle_6 = filterAngle + 2*scanAngleStep;
+                while(filterAngle_6 < 0) {filterAngle_6+=360;}
+                while(filterAngle_6 >= 360) {filterAngle_6-=360;}
+            irr::s32 filterAngle_7 = filterAngle + 3*scanAngleStep;
+                while(filterAngle_7 < 0) {filterAngle_7+=360;}
+                while(filterAngle_7 >= 360) {filterAngle_7-=360;}
+            if (currentStep < rangeResolution * 0.1) {
+                //TODO: These should be MAXs, and probably more at very close range
+                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 1.0;
+            } else if (currentStep < rangeResolution * 0.2) {
+                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 0;
+
+            } else {
+                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
+                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 0 +
+                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 0;
+            }
 
         } //End of for loop scanning out
 
@@ -739,6 +793,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             currentScanAngle=0;
         }
     } //End of repeatable scan section
+
+
 
 }
 
@@ -804,7 +860,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                     if (referenceScanIndex < 0) {
                         referenceScanIndex = 0;
                     }
-                    
+
                     ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
                     ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
 
@@ -889,7 +945,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
 void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed)
 {
-    
+
     //IPROF_FUNC;
     //*************************
     //generate image from array
@@ -897,7 +953,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
     //Render background radar picture into radarImage, then copy to radarImageOverlaid and do any 2d drawing on top (so we don't have to redraw all pixels each time
     irr::u32 bitmapWidth = radarRadiusPx*2; //Set width to use - to map GUI radar display diameter in screen pixels
-    
+
     //If the image is smaller than ideal, render anyway
     if (radarImage->getDimension().Width < bitmapWidth) {
         bitmapWidth = radarImage->getDimension().Width;
@@ -928,10 +984,10 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             //If the sector has changed, draw it. If we're stabilising the picture, need to re-draw all in case the ship's head has changed
-            if(scanArrayAmplified[scanAngle][currentStep]!=scanArrayAmplifiedPrevious[scanAngle][currentStep] || stabilised)
+            if(scanArrayAmplifiedBlurred[scanAngle][currentStep]!=scanArrayAmplifiedBlurredPrevious[scanAngle][currentStep] || stabilised)
             {
 
-                irr::f32 pixelColour=scanArrayAmplified[scanAngle][currentStep];
+                irr::f32 pixelColour=scanArrayAmplifiedBlurred[scanAngle][currentStep];
 
                 if (pixelColour>1.0) {pixelColour = 1.0;}
                 if (pixelColour<0)   {pixelColour =   0;}
@@ -942,7 +998,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                 drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading);
 
                 //Store what we've just plotted, so we don't need to re-plot if unchanged
-                scanArrayAmplifiedPrevious[scanAngle][currentStep]=scanArrayAmplified[scanAngle][currentStep];
+                scanArrayAmplifiedBlurredPrevious[scanAngle][currentStep]=scanArrayAmplifiedBlurred[scanAngle][currentStep];
             }
         }
     }
@@ -1134,7 +1190,7 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
             }
         }
     }
-    
+
 }
 
 void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end

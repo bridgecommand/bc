@@ -123,7 +123,8 @@ class RadarCalculation
         irr::IrrlichtDevice* device;
         std::vector<std::vector<irr::f32> > scanArray;
         std::vector<std::vector<irr::f32> > scanArrayAmplified;
-        std::vector<std::vector<irr::f32> > scanArrayAmplifiedPrevious;
+        std::vector<std::vector<irr::f32> > scanArrayAmplifiedBlurred;
+        std::vector<std::vector<irr::f32> > scanArrayAmplifiedBlurredPrevious;
         std::vector<ARPAContact> arpaContacts;
         bool radarOn;
         bool arpaOn;
