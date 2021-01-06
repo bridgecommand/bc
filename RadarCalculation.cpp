@@ -61,7 +61,7 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     scanArray.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
     scanArrayAmplified.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
     scanArrayAmplifiedBlurred.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplifiedBlurredPrevious.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
+    toReplot.resize(360);
 
     //initialise arrays
     for(irr::u32 i = 0; i<360; i++) {
@@ -467,9 +467,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
         //Reset 'previous' array so it will all get re-drawn
         for(irr::u32 i = 0; i<360; i++) {
-            for(irr::u32 j = 0; j<rangeResolution; j++) {
-                scanArrayAmplifiedBlurredPrevious[i][j] = -1.0;
-            }
+                toReplot[i] = true;
         }
         radarScreenStale = false;
     }
@@ -782,8 +780,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                                                       scanArrayAmplified[filterAngle_6][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_7][currentStep] * 0;
             }
+            toReplot[filterAngle] = true;
 
         } //End of for loop scanning out
+
+        
 
         //Increment scan angle for next time
         currentScanAngle += scanAngleStep;
@@ -982,7 +983,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             //If the sector has changed, draw it. If we're stabilising the picture, need to re-draw all in case the ship's head has changed
-            if(scanArrayAmplifiedBlurred[scanAngle][currentStep]!=scanArrayAmplifiedBlurredPrevious[scanAngle][currentStep] || stabilised)
+            if(toReplot[scanAngle] || stabilised)
             {
 
                 irr::f32 pixelColour=scanArrayAmplifiedBlurred[scanAngle][currentStep];
@@ -993,12 +994,11 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                 //Interpolate colour between foreground and background
                 irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
 
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading);
-
-                //Store what we've just plotted, so we don't need to re-plot if unchanged
-                scanArrayAmplifiedBlurredPrevious[scanAngle][currentStep]=scanArrayAmplifiedBlurred[scanAngle][currentStep];
+                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading); 
             }
         }
+        //We don't need to replot this angle
+        toReplot[scanAngle]=false;
     }
 
     //Copy image into overlaid

@@ -124,7 +124,7 @@ class RadarCalculation
         std::vector<std::vector<irr::f32> > scanArray;
         std::vector<std::vector<irr::f32> > scanArrayAmplified;
         std::vector<std::vector<irr::f32> > scanArrayAmplifiedBlurred;
-        std::vector<std::vector<irr::f32> > scanArrayAmplifiedBlurredPrevious;
+        std::vector<bool> toReplot;
         std::vector<ARPAContact> arpaContacts;
         bool radarOn;
         bool arpaOn;
