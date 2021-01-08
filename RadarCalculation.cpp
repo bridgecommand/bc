@@ -68,6 +68,7 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
         for(irr::u32 j = 0; j<rangeResolution; j++) {
             scanArray[i][j] = 0.0;
             scanArrayAmplified[i][j] = 0.0;
+            scanArrayAmplifiedBlurred[i][j] = 0.0;
         }
     }
 
@@ -346,9 +347,10 @@ void RadarCalculation::toggleRadarOn()
 		//Reset array to empty
 		for (irr::u32 i = 0; i < 360; i++) {
 			for (irr::u32 j = 0; j < rangeResolution; j++) {
-				scanArrayAmplified[i][j] = -1.0;
+				scanArrayAmplifiedBlurred[i][j] = -1.0;
 			}
 		}
+        radarScreenStale = true;
 	}
 }
 
