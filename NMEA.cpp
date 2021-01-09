@@ -152,19 +152,20 @@ void NMEA::updateNMEA()
             }
             break;
         case TTM: // 8.3.85 Tracked target message
-            if (model->getARPAContacts() > 0) {
+            if (model->getARPATracks() > 0) {
                 //To think about/add: Lost contacts? Manually aquired contacts?
-                for (int i=0; i<model->getARPAContacts(); i++) {
-                    int arpaID = i+1;
+                for (int i=0; i<model->getARPATracks(); i++) {
+                    ARPAContact contact = model->getARPATrack(i);
+                    ARPAEstimatedState state = contact.estimate;
                     snprintf(messageBuffer,maxSentenceChars,"$RATTM,%02d,%.1f,%.1f,T,%.1f,%.1f,T,%.1f,%.1f,N,TGT%02d,T,,%s.00,A",
-                        arpaID,
-                        model->getARPARange(arpaID),
-                        model->getARPABearing(arpaID),
-                        model->getARPASpeed(arpaID),
-                        model->getARPAHeading(arpaID), // is this the (relative) course since heading is related to orientation in world reference?
-                        model->getARPACPA(arpaID),
-                        model->getARPATCPA(arpaID),
-                        arpaID,
+                        state.displayID,
+                        state.range,
+                        state.bearing,
+                        state.speed,
+                        state.absHeading,
+                        state.cpa,
+                        state.tcpa,
+                        state.displayID,
                         timeString.c_str()
                     );
                     messageToSend.append(addChecksum(std::string(messageBuffer)));
@@ -208,6 +209,18 @@ void NMEA::updateNMEA()
         /*
         case VTG: // 8.3.98 Course over ground and ground speed
             snprintf(messageBuffer,maxSentenceChars,"$VDVTG,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        /*
+        case HRM: // _, Heel angle, roll period, and roll amplitude
+            snprintf(messageBuffer,maxSentenceChars,"$IIHRM,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        /*
+        case HBT: // 8.3.42 Heartbeat supervision sentence (for engine room)
+            snprintf(messageBuffer,maxSentenceChars,"$ERHBT,");
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         */

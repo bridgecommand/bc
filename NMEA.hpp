@@ -34,7 +34,7 @@ public:
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
-    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, RSD, ZDA, OSD, POS, DTM, HDT, ROT, VTG };
+    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, RSD, ZDA, OSD, POS, DTM, HDT, ROT, VTG, HRM, HBT };
 
 private:
     irr::IrrlichtDevice* device;
@@ -42,8 +42,8 @@ private:
     serial::Serial mySerialPort;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    const int maxMessages = (VTG - RMC) + 1; // how many messages are defined
-    const int maxSentenceChars = 79; // iaw EN 61162-1:2011
+    const int maxMessages = (HBT - RMC) + 1; // how many messages are defined
+    const int maxSentenceChars = 79+1+1; // iaw EN 61162-1:2011 + start char + null termination
     const char northing[2] = {'N', 'S'};
     const char easting[2] = {'E', 'W'};
     int currentMessageType; // sequentially send different sentences
