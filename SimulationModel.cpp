@@ -757,6 +757,11 @@ SimulationModel::~SimulationModel()
 		radarCalculation.toggleRadarOn();
 	}
 
+    bool SimulationModel::isRadarOn() const
+    {
+        return radarCalculation.isRadarOn();
+    }
+
     void SimulationModel::increaseRadarRange()
     {
         radarCalculation.increaseRange();
@@ -1156,25 +1161,30 @@ SimulationModel::~SimulationModel()
         //update the camera position
         camera.update();
 
-        }{ IPROF("Update radar cursor position");
-        //set radar screen position, and update it with a radar image from the radar calculation
-        cursorPositionRadar = guiMain->getCursorPositionRadar();
-        }{ IPROF("Update radar calculation");
-        //Choose which radar images to use, depending on the size of the display being used
-        if (2*guiMain->getRadarPixelRadius() > radarImage->getDimension().Width) {
-            radarImageChosen = radarImageLarge;
-            radarImageOverlaidChosen = radarImageOverlaidLarge;
-        } else {
-            radarImageChosen = radarImage;
-            radarImageOverlaidChosen = radarImageOverlaid;
         }
-        radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
-        }{ IPROF("Update radar screen");
-        radarScreen.update(radarImageOverlaidChosen);
-        }{ IPROF("Update radar camera");
-        radarCamera.update();
-
-        }{ IPROF("Check if paused ");
+        if (radarCalculation.isRadarOn()) {
+            { IPROF("Update radar cursor position");
+            //set radar screen position, and update it with a radar image from the radar calculation
+            cursorPositionRadar = guiMain->getCursorPositionRadar();
+            }{ IPROF("Update radar calculation");
+            //Choose which radar images to use, depending on the size of the display being used
+            if (2*guiMain->getRadarPixelRadius() > radarImage->getDimension().Width) {
+                radarImageChosen = radarImageLarge;
+                radarImageOverlaidChosen = radarImageOverlaidLarge;
+            } else {
+                radarImageChosen = radarImage;
+                radarImageOverlaidChosen = radarImageOverlaid;
+            }
+            radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+            }{ IPROF("Update radar screen");
+            radarScreen.update(radarImageOverlaidChosen);
+            }{ IPROF("Update radar camera");
+            radarCamera.update();
+            }
+        } else {
+            radarScreen.getSceneNode()->setVisible(false);
+        }
+        { IPROF("Check if paused ");
         //check if paused
         paused = device->getTimer()->getSpeed()==0.0;
 
@@ -1225,6 +1235,7 @@ SimulationModel::~SimulationModel()
         guiData->paused = paused;
         guiData->collided = collided;
         guiData->headUp = radarCalculation.getHeadUp();
+        guiData->radarOn = radarCalculation.isRadarOn();
 
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();

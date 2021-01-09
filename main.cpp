@@ -663,19 +663,19 @@ int main()
         }
         bool fullScreenRadar = guiMain.getLargeRadar();
         { IPROF("Render radar");
-
-
-        //radar view portion
-        if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
-            model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
-            if (fullScreenRadar) {
-                driver->setViewPort(guiMain.getLargeRadarRect());
-            } else {
-                driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+        if (model.isRadarOn()) {
+            //radar view portion
+            if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
+                model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+                if (fullScreenRadar) {
+                    driver->setViewPort(guiMain.getLargeRadarRect());
+                } else {
+                    driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+                }
+                model.setRadarCameraActive();
+                smgr->drawAll();
+                model.setWaterVisible(true); //Re-show the water
             }
-            model.setRadarCameraActive();
-            smgr->drawAll();
-            model.setWaterVisible(true); //Re-show the water
         }
 
  //       renderRadarProfile.toc();

@@ -643,6 +643,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         while (viewHdg<0) {viewHdg+=360;}
         guiSpeed = guiData->spd*MPS_TO_KTS; //Speed in knots
         guiDepth = guiData->depth;
+        guiRadarOn = guiData->radarOn;
         guiRadarRangeNm = guiData->radarRangeNm;
         guiTime = guiData->currentTime;
         guiPaused = guiData->paused;
@@ -913,7 +914,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //draw the heading line on the radar
         if (showInterface || radarLarge) {
-            draw2dRadar();
+            if (guiRadarOn) {
+                draw2dRadar();
+            }
         }
 
         //draw view bearing if needed

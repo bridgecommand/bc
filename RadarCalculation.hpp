@@ -105,6 +105,7 @@ class RadarCalculation
         void setHeadUp();
         bool getHeadUp() const; //Head or course up
 		void toggleRadarOn();
+        bool isRadarOn() const;
 		void setArpaOn(bool on);
         void setRadarARPARel();
         void setRadarARPATrue();

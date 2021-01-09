@@ -354,6 +354,11 @@ void RadarCalculation::toggleRadarOn()
 	}
 }
 
+bool RadarCalculation::isRadarOn() const 
+{
+    return radarOn;
+}
+
 void RadarCalculation::setArpaOn(bool on)
 {
     arpaOn = on;
@@ -484,10 +489,8 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     }
     */
 
-    if (radarOn) {
-		scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
-		updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
-    }
+    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
 	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 
 }

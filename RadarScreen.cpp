@@ -65,6 +65,8 @@ void RadarScreen::update(irr::video::IImage* radarImage)
     irr::core::vector3df offsetTransformed;
     irr::video::ITexture* oldTexture = 0;
 
+    radarScreen->setVisible(true);
+
     { IPROF("link camera rotation");
     //link camera rotation to shipNode
     // get transformation matrix of node

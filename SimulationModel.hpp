@@ -147,6 +147,7 @@ public:
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
 	void toggleRadarOn();
+    bool isRadarOn() const;
 	void increaseRadarRange();
     void decreaseRadarRange();
     void setRadarGain(irr::f32 value);

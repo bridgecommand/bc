@@ -45,6 +45,7 @@ struct GUIData {
     irr::f32 weather;
     irr::f32 rain;
     irr::f32 visibility;
+    bool radarOn;
     irr::f32 radarRangeNm;
     irr::f32 radarGain;
     irr::f32 radarClutter;
@@ -217,6 +218,7 @@ private:
     irr::f32 viewElev;
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
+    bool guiRadarOn;
     irr::f32 guiRadarRangeNm;
     irr::f32 guiRadarGain;
     irr::f32 guiRadarClutter;
