@@ -54,7 +54,6 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     trueVectors = true;
     vectorLengthMinutes = 6;
     arpaOn = false;
-    largestARPADisplayId = 0;
 
     //initialise scanArray size (360 x rangeResolution points per scan)
     //rangeResolution = 64; now set initialiser list
@@ -360,7 +359,7 @@ void RadarCalculation::setArpaOn(bool on)
     if (!arpaOn) {
         //Clear arpa scans
         arpaContacts.clear();
-        largestARPADisplayId = 0;
+        arpaTracks.clear();
     }
 }
 
@@ -387,76 +386,14 @@ void RadarCalculation::setRadarDisplayRadius(irr::u32 radiusPx)
     }
 }
 
-irr::u32 RadarCalculation::getARPAContacts() const
+irr::u32 RadarCalculation::getARPATracks() const
 {
-    //Get number of ARPA contacts with a user display ID
-    return largestARPADisplayId;
+    return arpaTracks.size();
 }
 
-irr::f32 RadarCalculation::getARPACPA(irr::u32 contactID) const
+ARPAContact RadarCalculation::getARPATrack(irr::u32 index) const
 {
-    //Get information for a contact by its user display ID (if it exists), in Nm
-    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-        if (arpaContacts.at(i).estimate.displayID == contactID) {
-            return arpaContacts.at(i).estimate.cpa;
-        }
-    }
-    return NAN; //If nothing found
-}
-
-irr::f32 RadarCalculation::getARPATCPA(irr::u32 contactID) const
-{
-    //Get information for a contact by its user display ID (if it exists), in minutes
-    for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-        if (arpaContacts.at(i).estimate.displayID == contactID) {
-            return arpaContacts.at(i).estimate.tcpa;
-        }
-    }
-    return NAN; //If nothing found
-}
-
-irr::f32 RadarCalculation::getARPASpeed(irr::u32 contactID) const
-{
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.speed;
-		}
-	}
-	return NAN; //If nothing found
-}
-
-irr::f32 RadarCalculation::getARPAHeading(irr::u32 contactID) const
-{
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.absHeading;
-		}
-	}
-	return NAN; //If nothing found
-}
-
-irr::f32 RadarCalculation::getARPARange(irr::u32 contactID) const
-{
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.range;
-		}
-	}
-	return NAN; //If nothing found
-}
-
-irr::f32 RadarCalculation::getARPABearing(irr::u32 contactID) const
-{
-	//Get information for a contact by its user display ID (if it exists), in minutes
-	for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-		if (arpaContacts.at(i).estimate.displayID == contactID) {
-			return arpaContacts.at(i).estimate.bearing;
-		}
-	}
-	return NAN; //If nothing found
+    return arpaContacts.at(arpaTracks.at(index));
 }
 
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
@@ -850,7 +787,9 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                 } else if (!arpaContacts.at(i).estimate.stationary) {
                     //If ID is 0 (unassigned), set id and increment
                     if (arpaContacts.at(i).estimate.displayID==0) {
-                        arpaContacts.at(i).estimate.displayID = ++largestARPADisplayId;
+                        arpaTracks.push_back(i);
+                        arpaContacts.at(i).estimate.displayID = arpaTracks.size();
+
                     }
 
                     irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)

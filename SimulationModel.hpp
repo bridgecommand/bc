@@ -167,13 +167,8 @@ public:
     void setRadarARPATrue();
     void setRadarARPAVectors(irr::f32 vectorMinutes);
     void setRadarDisplayRadius(irr::u32 radiusPx);
-    irr::u32 getARPAContacts() const;
-    irr::f32 getARPACPA(irr::u32 contactID) const;
-    irr::f32 getARPATCPA(irr::u32 contactID) const;
-	irr::f32 getARPASpeed(irr::u32 contactID) const;
-	irr::f32 getARPAHeading(irr::u32 contactID) const;
-    irr::f32 getARPARange(irr::u32 contactID) const; //In Nm
-    irr::f32 getARPABearing(irr::u32 contactID) const;
+    irr::u32 getARPATracks() const;
+    ARPAContact getARPATrack(irr::u32 index) const;
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

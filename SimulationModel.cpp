@@ -843,39 +843,14 @@ SimulationModel::~SimulationModel()
         radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
-    irr::u32 SimulationModel::getARPAContacts() const
+    irr::u32 SimulationModel::getARPATracks() const
     {
-        return radarCalculation.getARPAContacts();
+        return radarCalculation.getARPATracks();
     }
 
-    irr::f32 SimulationModel::getARPACPA(irr::u32 contactID) const
+    ARPAContact SimulationModel::getARPATrack(irr::u32 index) const
     {
-        return radarCalculation.getARPACPA(contactID);
-    }
-
-    irr::f32 SimulationModel::getARPATCPA(irr::u32 contactID) const
-    {
-        return radarCalculation.getARPATCPA(contactID);
-    }
-
-	irr::f32 SimulationModel::getARPASpeed(irr::u32 contactID) const
-    {
-        return radarCalculation.getARPASpeed(contactID);
-    }
-
-	irr::f32 SimulationModel::getARPAHeading(irr::u32 contactID) const
-    {
-        return radarCalculation.getARPAHeading(contactID);
-    }
-
-    irr::f32 SimulationModel::getARPARange(irr::u32 contactID) const
-    {
-        return radarCalculation.getARPARange(contactID);
-    }
-
-	irr::f32 SimulationModel::getARPABearing(irr::u32 contactID) const
-    {
-        return radarCalculation.getARPABearing(contactID);
+        return radarCalculation.getARPATrack(index);
     }
 
     void SimulationModel::setMainCameraActive()
@@ -1185,12 +1160,13 @@ SimulationModel::~SimulationModel()
 
         }{ IPROF("Get radar ARPA data");
         //get radar ARPA data to show
-        irr::u32 numberOfARPAContacts = radarCalculation.getARPAContacts();
-        for(unsigned int i = 0; i<numberOfARPAContacts; i++) {
-            CPAs.push_back(radarCalculation.getARPACPA(i+1)); //i+1 as the user numbering starts at 1, not 0
-            TCPAs.push_back(radarCalculation.getARPATCPA(i+1));
-			headings.push_back(radarCalculation.getARPAHeading(i + 1));
-			speeds.push_back(radarCalculation.getARPASpeed(i + 1));
+        irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
+        for(unsigned int i = 0; i<numberOfARPATracks; i++) {
+            ARPAEstimatedState state = radarCalculation.getARPATrack(i).estimate;
+            CPAs.push_back(state.cpa);
+            TCPAs.push_back(state.tcpa);
+			headings.push_back(state.absHeading);
+			speeds.push_back(state.speed);
         }
 
 

@@ -110,13 +110,8 @@ class RadarCalculation
         void setRadarARPATrue();
         void setRadarARPAVectors(irr::f32 vectorMinutes);
         void setRadarDisplayRadius(irr::u32 radiusPx);
-        irr::u32 getARPAContacts() const;
-        irr::f32 getARPACPA(irr::u32 contactID) const;
-        irr::f32 getARPATCPA(irr::u32 contactID) const;
-		irr::f32 getARPASpeed(irr::u32 contactID) const;
-		irr::f32 getARPAHeading(irr::u32 contactID) const;
-        irr::f32 getARPARange(irr::u32 contactID) const; //Get range in Nm
-        irr::f32 getARPABearing(irr::u32 contactID) const; //Get bearing (from own ship, True) in degrees
+        irr::u32 getARPATracks() const;
+        ARPAContact getARPATrack(irr::u32 index) const;
         void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:
@@ -126,9 +121,9 @@ class RadarCalculation
         std::vector<std::vector<irr::f32> > scanArrayAmplifiedBlurred;
         std::vector<bool> toReplot;
         std::vector<ARPAContact> arpaContacts;
+        std::vector<irr::u32> arpaTracks;
         bool radarOn;
         bool arpaOn;
-        irr::u32 largestARPADisplayId;
         irr::f32 radarGain;
         irr::f32 radarRainClutterReduction;
         irr::f32 radarSeaClutterReduction;
