@@ -246,10 +246,10 @@ int main()
 
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale > 0) {
+    if (fontScale > 1) {
         fontSize = (int)(fontSize * fontScale + 0.5);
     } else {
-	fontScale = 1.0;
+	    fontScale = 1.0;
     }
 
     //Sensible defaults if not set

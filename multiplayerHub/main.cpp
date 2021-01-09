@@ -124,9 +124,13 @@ int main()
     }
     Lang language(languageFile);
 
-    int fontSize = 13;
+    int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    fontSize = (int)(fontSize * fontScale + 0.5);
+    if (fontScale > 1) {
+        fontSize = (int)(fontSize * fontScale + 0.5);
+    } else {
+	    fontScale = 1.0;
+    }
     
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
