@@ -59,7 +59,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     //rangeResolution = 64; now set initialiser list
     scanArray.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
     scanArrayAmplified.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplifiedBlurred.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlot.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlotPrevious.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
     toReplot.resize(360);
 
     //initialise arrays
@@ -67,7 +68,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
         for(irr::u32 j = 0; j<rangeResolution; j++) {
             scanArray[i][j] = 0.0;
             scanArrayAmplified[i][j] = 0.0;
-            scanArrayAmplifiedBlurred[i][j] = 0.0;
+            scanArrayToPlot[i][j] = 0.0;
+            scanArrayToPlotPrevious[i][j] = -1.0;
         }
     }
 
@@ -317,6 +319,7 @@ void RadarCalculation::setNorthUp()
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = false;
     stabilised = false;
+    radarScreenStale = true;
 }
 
 void RadarCalculation::setCourseUp()
@@ -324,6 +327,7 @@ void RadarCalculation::setCourseUp()
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = true;
     stabilised = true;
+    radarScreenStale = true;
 }
 
 void RadarCalculation::setHeadUp()
@@ -331,6 +335,7 @@ void RadarCalculation::setHeadUp()
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = true;
     stabilised = false;
+    radarScreenStale = true;
 }
 
 bool RadarCalculation::getHeadUp() const//Head or course up
@@ -346,7 +351,7 @@ void RadarCalculation::toggleRadarOn()
 		//Reset array to empty
 		for (irr::u32 i = 0; i < 360; i++) {
 			for (irr::u32 j = 0; j < rangeResolution; j++) {
-				scanArrayAmplifiedBlurred[i][j] = -1.0;
+				scanArrayToPlot[i][j] = 0.0;
 			}
 		}
         radarScreenStale = true;
@@ -411,7 +416,10 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
         //Reset 'previous' array so it will all get re-drawn
         for(irr::u32 i = 0; i<360; i++) {
-                toReplot[i] = true;
+            toReplot[i] = true;
+            for(irr::u32 j = 0; j<rangeResolution; j++) {
+                scanArrayToPlotPrevious[i][j] = -1.0;
+            }
         }
         radarScreenStale = false;
     }
@@ -697,7 +705,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 while(filterAngle_7 >= 360) {filterAngle_7-=360;}
             if (currentStep < rangeResolution * 0.1) {
                 //TODO: These should be MAXs, and probably more at very close range
-                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 1.0 +
+                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 1.0 +
                                                                       scanArrayAmplified[filterAngle_2][currentStep] * 1.0 +
                                                                       scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
                                                                       scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
@@ -705,7 +713,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                                                       scanArrayAmplified[filterAngle_6][currentStep] * 1.0 +
                                                                       scanArrayAmplified[filterAngle_7][currentStep] * 1.0;
             } else if (currentStep < rangeResolution * 0.2) {
-                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
+                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_2][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
                                                                       scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
@@ -714,7 +722,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                                                       scanArrayAmplified[filterAngle_7][currentStep] * 0;
 
             } else {
-                scanArrayAmplifiedBlurred[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
+                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_2][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_3][currentStep] * 0 +
                                                                       scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
@@ -723,6 +731,14 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                                                       scanArrayAmplified[filterAngle_7][currentStep] * 0;
             }
             toReplot[filterAngle] = true;
+            
+            //Clamp between 0 and 1
+            if (scanArrayToPlot[filterAngle][currentStep] < 0) {
+                scanArrayToPlot[filterAngle][currentStep] = 0;
+            }
+            if (scanArrayToPlot[filterAngle][currentStep] > 1) {
+                scanArrayToPlot[filterAngle][currentStep] = 1;
+            }
 
         } //End of for loop scanning out
 
@@ -930,15 +946,19 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             if(toReplot[scanAngle] || stabilised)
             {
 
-                irr::f32 pixelColour=scanArrayAmplifiedBlurred[scanAngle][currentStep];
+                if (headUp || scanArrayToPlotPrevious[scanAngle][currentStep] != scanArrayToPlot[scanAngle][currentStep]) { //If north up, we only need to replot if the previous plot to this sector was different
+                    irr::f32 pixelColour=scanArrayToPlot[scanAngle][currentStep];
 
-                if (pixelColour>1.0) {pixelColour = 1.0;}
-                if (pixelColour<0)   {pixelColour =   0;}
+                    if (pixelColour>1.0) {pixelColour = 1.0;}
+                    if (pixelColour<0)   {pixelColour =   0;}
 
-                //Interpolate colour between foreground and background
-                irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
+                    //Interpolate colour between foreground and background
+                    irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
 
-                drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading); 
+                    drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading); 
+
+                    scanArrayToPlotPrevious[scanAngle][currentStep] = scanArrayToPlot[scanAngle][currentStep]; //Record what we have plotted
+                }
             }
         }
         //We don't need to replot this angle
