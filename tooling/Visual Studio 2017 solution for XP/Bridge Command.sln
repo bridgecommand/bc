@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-bc", "bridgecommand-bc.vcxproj", "{854CAC65-3D69-418F-8212-74F17BA2D224}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand", "bridgecommand.vcxproj", "{5B432895-1EE0-428E-9EC1-05530B3BD6C3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-ed", "bridgecommand-ed.vcxproj", "{C92A29FC-4E4E-4184-82FF-C2D2FF3839E4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-ini", "bridgecommand-ini.vcxproj", "{52064039-8E75-4FBE-9860-6ED905990E6E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-mc", "bridgecommand-mc.vcxproj", "{6A8FD0B5-B788-4332-8534-C599512EA0F4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-mh", "bridgecommand-mh.vcxproj", "{3948B29A-DFE2-496B-9A45-9A8491D5D3E4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-rp", "bridgecommand-rp.vcxproj", "{67A41369-9628-4B94-8AEA-9E12EA211EDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{854CAC65-3D69-418F-8212-74F17BA2D224}.Debug|x86.ActiveCfg = Debug|Win32
+		{854CAC65-3D69-418F-8212-74F17BA2D224}.Debug|x86.Build.0 = Debug|Win32
+		{854CAC65-3D69-418F-8212-74F17BA2D224}.Release|x86.ActiveCfg = Release|Win32
+		{854CAC65-3D69-418F-8212-74F17BA2D224}.Release|x86.Build.0 = Release|Win32
+		{5B432895-1EE0-428E-9EC1-05530B3BD6C3}.Debug|x86.ActiveCfg = Debug|Win32
+		{5B432895-1EE0-428E-9EC1-05530B3BD6C3}.Debug|x86.Build.0 = Debug|Win32
+		{5B432895-1EE0-428E-9EC1-05530B3BD6C3}.Release|x86.ActiveCfg = Release|Win32
+		{5B432895-1EE0-428E-9EC1-05530B3BD6C3}.Release|x86.Build.0 = Release|Win32
+		{C92A29FC-4E4E-4184-82FF-C2D2FF3839E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{C92A29FC-4E4E-4184-82FF-C2D2FF3839E4}.Debug|x86.Build.0 = Debug|Win32
+		{C92A29FC-4E4E-4184-82FF-C2D2FF3839E4}.Release|x86.ActiveCfg = Release|Win32
+		{C92A29FC-4E4E-4184-82FF-C2D2FF3839E4}.Release|x86.Build.0 = Release|Win32
+		{52064039-8E75-4FBE-9860-6ED905990E6E}.Debug|x86.ActiveCfg = Debug|Win32
+		{52064039-8E75-4FBE-9860-6ED905990E6E}.Debug|x86.Build.0 = Debug|Win32
+		{52064039-8E75-4FBE-9860-6ED905990E6E}.Release|x86.ActiveCfg = Release|Win32
+		{52064039-8E75-4FBE-9860-6ED905990E6E}.Release|x86.Build.0 = Release|Win32
+		{6A8FD0B5-B788-4332-8534-C599512EA0F4}.Debug|x86.ActiveCfg = Debug|Win32
+		{6A8FD0B5-B788-4332-8534-C599512EA0F4}.Debug|x86.Build.0 = Debug|Win32
+		{6A8FD0B5-B788-4332-8534-C599512EA0F4}.Release|x86.ActiveCfg = Release|Win32
+		{6A8FD0B5-B788-4332-8534-C599512EA0F4}.Release|x86.Build.0 = Release|Win32
+		{3948B29A-DFE2-496B-9A45-9A8491D5D3E4}.Debug|x86.ActiveCfg = Debug|Win32
+		{3948B29A-DFE2-496B-9A45-9A8491D5D3E4}.Debug|x86.Build.0 = Debug|Win32
+		{3948B29A-DFE2-496B-9A45-9A8491D5D3E4}.Release|x86.ActiveCfg = Release|Win32
+		{3948B29A-DFE2-496B-9A45-9A8491D5D3E4}.Release|x86.Build.0 = Release|Win32
+		{67A41369-9628-4B94-8AEA-9E12EA211EDE}.Debug|x86.ActiveCfg = Debug|Win32
+		{67A41369-9628-4B94-8AEA-9E12EA211EDE}.Debug|x86.Build.0 = Debug|Win32
+		{67A41369-9628-4B94-8AEA-9E12EA211EDE}.Release|x86.ActiveCfg = Release|Win32
+		{67A41369-9628-4B94-8AEA-9E12EA211EDE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EEF58E50-DE78-462E-9237-2F77237A0C25}
+	EndGlobalSection
+EndGlobal

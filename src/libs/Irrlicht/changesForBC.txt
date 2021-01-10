@@ -1,0 +1,16 @@
+The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1/1.8.4 release:
+
+Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
+(CTerrainSceneNode.cpp)
+
+OSX specific code (CIrrDeviceMacOSX.mm) modified to use Command key (NSCommandKeyMask) instead of Control.
+
+CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
+
+CIrrDeviceWin32.cpp changed to recognize up to 8 joystick axes
+
+CIrrDeviceLinux.cpp
+SIrrCreationParameters.h modified for borderless windows on X11
+
+All changes marked in source with //JAMES
+

@@ -1,0 +1,15 @@
+Multiplayer Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+
+scnChoose="Please choose a scenario:"
+hostname="Hostname (PC name) for each player.\nEntries should be comma separated."
+ok="Ok"
+time="Time:"
+ship="Ship"
+speed="Speed:"
+knots="Kts"
+heading="Heading"
+startupInstructions="Please ensure each player has started Bridge Command first, then start the scenario by clicking OK below."
+

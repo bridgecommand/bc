@@ -1,0 +1,7 @@
+2100 IHP -> 2100 * 0.7457 = 1565.97 Indicated kW power
+
+So ~1000 Power in water (after friction and paddle inefficiencies)
+
+Max speed = 18.37 knots = 9.45m/s
+
+Power = Force * Speed, so max Force = 1000kW/9.45 = 106kN thrust

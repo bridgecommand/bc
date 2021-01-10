@@ -1,0 +1,64 @@
+Map Controller Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+
+waiting = "Waiting..."
+startBC = "Please start the Bridge Command session. This computer's hostname and port is:"
+loadingMap = "Scaling and loading map image"
+
+pos="Position: "
+minSymbol="'"
+own = "Own Ship"
+other = "Other Ship"
+
+selectShip = "Select ship"
+shipType="Ship type"
+selectLeg = "Select leg"
+setCourse = "Course"
+setSpeed = "Speed (Kts)"
+weather = "Weather"
+rain = "Rain"
+visibility="Visibility"
+setDistance = "Distance (Nm)"
+
+setMMSI = "Set MMSI"
+
+releaseMOB = "Release\nMOB"
+retrieveMOB = "Retrieve\nMOB"
+
+past = " (Past)"
+current = " (Current)"
+future = " (Future)"
+
+changeLeg = "Change leg"	
+changeLegCourseSpeed = "Change leg course & speed"
+addLeg = "Add leg (after selected)"
+addShip = "Add ship"
+deleteLeg = "Delete leg"
+deleteShip = "X"
+move = "Move ship"
+
+editScenario="Edit scenario"
+newScenario="New scenario"
+selectScenario="Select an existing scenario to edit"
+selectWorld="Or select a world model for a new scenario"
+
+startTime = "Start time"
+startDate="Date (YYYY-MM-DD)"
+sunRise="Sun rise"
+sunSet="Sun set"
+scenario="Scenario name"
+apply="Apply"
+save="Save"
+
+saved="Saved"
+failed="Failed"
+scenarioSaved="Scenario saved"
+failedScenarioSave="Failed to save scenario"
+overwrite="This scenario will be overwritten"
+multiplayer="Multiplayer mode?"
+multiplayerinfo="Editing a multiplayer scenario:\n\nThe 'own ship' entry will be ignored.\n\nEach 'other ship' is used in order by the multiplayer clients as their ship. Add one leg for each ship to set the initial speed and direction."
+multiplayerNeedsMP="Multiplayer scenario name must end in _mp"
+nonMultiplayerNoMP="Non-multiplayer scenario name must not end in _mp"
+

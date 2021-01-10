@@ -1,0 +1,36 @@
+If you have slow frame rates with the Cargo Ship 
+
+i suggest you to do the following things;
+
+go to > options > game
+
+Turn off underwater coastics (you don't need it isn't a submarine)
+	 spray on waves       
+	 stars at night (if you sail at day time)
+	 moon at night (if you sail at day time)
+
+set your water detail level to minimum 
+decrease your water active area to 2 points from the left 
+
+set the water transparency to zero same with wake transparency, you dont need them aswell cause youre not under water level
+
+with all these settings off you should get an average frame rate of 25/30 frames/s 
+
+
+----------------------------------------------------------
+
+If you have problems during the startup (you got a message that was saying "boat cannot be loaded")
+
+
+i suggest you to do the following things;
+
+load a default scenery from thw options menu on startup, and change back your screen resolutions
+
+now you can load the Cargo Ship again.
+
+----------------------------------------------------------
+
+If you have any other problems with this ship please let me know at : ragnar@zeelandnet.nl
+
+
+

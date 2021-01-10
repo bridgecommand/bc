@@ -1,0 +1,340 @@
+xof 0302txt 0032
+Header {
+ 1;
+ 0;
+ 1;
+}
+template Header {
+ <3D82AB43-62DA-11cf-AB39-0020AF71E433>
+ WORD major;
+ WORD minor;
+ DWORD flags;
+}
+
+template Vector {
+ <3D82AB5E-62DA-11cf-AB39-0020AF71E433>
+ FLOAT x;
+ FLOAT y;
+ FLOAT z;
+}
+
+template Coords2d {
+ <F6F23F44-7686-11cf-8F52-0040333594A3>
+ FLOAT u;
+ FLOAT v;
+}
+
+template Matrix4x4 {
+ <F6F23F45-7686-11cf-8F52-0040333594A3>
+ array FLOAT matrix[16];
+}
+
+template ColorRGBA {
+ <35FF44E0-6C7C-11cf-8F52-0040333594A3>
+ FLOAT red;
+ FLOAT green;
+ FLOAT blue;
+ FLOAT alpha;
+}
+
+template ColorRGB {
+ <D3E16E81-7835-11cf-8F52-0040333594A3>
+ FLOAT red;
+ FLOAT green;
+ FLOAT blue;
+}
+
+template TextureFilename {
+ <A42790E1-7810-11cf-8F52-0040333594A3>
+ STRING filename;
+}
+
+template Material {
+ <3D82AB4D-62DA-11cf-AB39-0020AF71E433>
+ ColorRGBA faceColor;
+ FLOAT power;
+ ColorRGB specularColor;
+ ColorRGB emissiveColor;
+ [...]
+}
+
+template MeshFace {
+ <3D82AB5F-62DA-11cf-AB39-0020AF71E433>
+ DWORD nFaceVertexIndices;
+ array DWORD faceVertexIndices[nFaceVertexIndices];
+}
+
+template MeshTextureCoords {
+ <F6F23F40-7686-11cf-8F52-0040333594A3>
+ DWORD nTextureCoords;
+ array Coords2d textureCoords[nTextureCoords];
+}
+
+template MeshMaterialList {
+ <F6F23F42-7686-11cf-8F52-0040333594A3>
+ DWORD nMaterials;
+ DWORD nFaceIndexes;
+ array DWORD faceIndexes[nFaceIndexes];
+ [Material]
+}
+
+template MeshNormals {
+ <F6F23F43-7686-11cf-8F52-0040333594A3>
+ DWORD nNormals;
+ array Vector normals[nNormals];
+ DWORD nFaceNormals;
+ array MeshFace faceNormals[nFaceNormals];
+}
+
+template Mesh {
+ <3D82AB44-62DA-11cf-AB39-0020AF71E433>
+ DWORD nVertices;
+ array Vector vertices[nVertices];
+ DWORD nFaces;
+ array MeshFace faces[nFaces];
+ [...]
+}
+
+template FrameTransformMatrix {
+ <F6F23F41-7686-11cf-8F52-0040333594A3>
+ Matrix4x4 frameMatrix;
+}
+
+template Frame {
+ <3D82AB46-62DA-11cf-AB39-0020AF71E433>
+ [...]
+}
+template FloatKeys {
+ <10DD46A9-775B-11cf-8F52-0040333594A3>
+ DWORD nValues;
+ array FLOAT values[nValues];
+}
+
+template TimedFloatKeys {
+ <F406B180-7B3B-11cf-8F52-0040333594A3>
+ DWORD time;
+ FloatKeys tfkeys;
+}
+
+template AnimationKey {
+ <10DD46A8-775B-11cf-8F52-0040333594A3>
+ DWORD keyType;
+ DWORD nKeys;
+ array TimedFloatKeys keys[nKeys];
+}
+
+template AnimationOptions {
+ <E2BF56C0-840F-11cf-8F52-0040333594A3>
+ DWORD openclosed;
+ DWORD positionquality;
+}
+
+template Animation {
+ <3D82AB4F-62DA-11cf-AB39-0020AF71E433>
+ [...]
+}
+
+template AnimationSet {
+ <3D82AB50-62DA-11cf-AB39-0020AF71E433>
+ [Animation]
+}
+
+template XSkinMeshHeader {
+ <3cf169ce-ff7c-44ab-93c0-f78f62d172e2>
+ WORD nMaxSkinWeightsPerVertex;
+ WORD nMaxSkinWeightsPerFace;
+ WORD nBones;
+}
+
+template VertexDuplicationIndices {
+ <b8d65549-d7c9-4995-89cf-53a9a8b031e3>
+ DWORD nIndices;
+ DWORD nOriginalVertices;
+ array DWORD indices[nIndices];
+}
+
+template SkinWeights {
+ <6f0d123b-bad2-4167-a0d0-80224f25fabb>
+ STRING transformNodeName;
+ DWORD nWeights;
+ array DWORD vertexIndices[nWeights];
+ array FLOAT weights[nWeights];
+ Matrix4x4 matrixOffset;
+}
+Frame Frm0 {
+   FrameTransformMatrix {
+1.000000,0.000000,0.000000,0.000000,
+0.000000,1.000000,0.000000,0.000000,
+0.000000,0.000000,1.000000,0.000000,
+0.000000,0.000000,0.000000,1.000000;;
+ }
+Mesh object1 {
+ 32;
+0.150000;86.699997;77.609810;,
+0.300000;86.699997;77.349998;,
+0.150000;86.169998;77.609810;,
+0.300000;86.169998;77.349998;,
+-0.150000;86.699997;77.609810;,
+-0.150000;86.169998;77.609810;,
+-0.300000;86.699997;77.349998;,
+-0.300000;86.169998;77.349998;,
+17.650002;55.609997;16.304813;,
+17.800001;55.609997;16.045002;,
+17.650002;55.079998;16.304813;,
+17.800001;55.079998;16.045002;,
+17.350000;55.609997;16.304813;,
+17.350000;55.079998;16.304813;,
+17.200001;55.609997;16.045002;,
+17.200001;55.079998;16.045002;,
+-17.799999;55.609997;16.045002;,
+-17.650000;55.609997;16.304813;,
+-17.650000;55.079998;16.304813;,
+-17.799999;55.079998;16.045002;,
+-17.349998;55.609997;16.304813;,
+-17.349998;55.079998;16.304813;,
+-17.199999;55.609997;16.045002;,
+-17.199999;55.079998;16.045002;,
+-0.300000;100.019997;8.370002;,
+-0.150000;100.019997;8.629809;,
+-0.150000;99.489998;8.629809;,
+-0.300000;99.489998;8.370002;,
+0.150000;100.019997;8.629809;,
+0.150000;99.489998;8.629809;,
+0.300000;100.019997;8.370002;,
+0.300000;99.489998;8.370002;;
+
+ 24;
+3;2,1,0;,
+3;3,1,2;,
+3;5,0,4;,
+3;5,2,0;,
+3;7,4,6;,
+3;7,5,4;,
+3;10,9,8;,
+3;11,9,10;,
+3;13,8,12;,
+3;13,10,8;,
+3;15,12,14;,
+3;15,13,12;,
+3;18,17,16;,
+3;19,18,16;,
+3;21,20,17;,
+3;21,17,18;,
+3;23,22,20;,
+3;23,20,21;,
+3;26,25,24;,
+3;26,24,27;,
+3;29,28,25;,
+3;29,25,26;,
+3;31,30,28;,
+3;29,31,28;;
+MeshMaterialList {
+ 3;
+ 24;
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  2,
+  2,
+  2,
+  2,
+  2,
+  2,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0;;
+Material {
+ 1.000000;1.000000;1.000000;1.000000;;
+8.000000;
+ 0.000000;0.000000;0.000000;;
+ 0.000000;0.000000;0.000000;;
+ }
+Material {
+ 0.000000;0.909804;0.000000;1.000000;;
+8.000000;
+ 0.000000;0.000000;0.000000;;
+ 0.000000;0.000000;0.000000;;
+ }
+Material {
+ 1.000000;0.000000;0.000000;1.000000;;
+8.000000;
+ 0.000000;0.000000;0.000000;;
+ 0.000000;0.000000;0.000000;;
+ }
+}
+
+ MeshNormals {
+ 32;
+0.327329;0.000000;0.944911;,
+0.866029;0.000000;0.499995;,
+0.654657;0.000000;0.755926;,
+0.866029;0.000000;0.499995;,
+-0.654657;0.000000;0.755926;,
+-0.327329;0.000000;0.944911;,
+-0.866029;0.000000;0.499995;,
+-0.866029;0.000000;0.499995;,
+0.327329;0.000000;0.944910;,
+0.866029;0.000000;0.499994;,
+0.654658;0.000000;0.755925;,
+0.866029;0.000000;0.499994;,
+-0.654658;0.000000;0.755925;,
+-0.327329;0.000000;0.944910;,
+-0.866029;0.000000;0.499994;,
+-0.866029;0.000000;0.499994;,
+-0.866029;0.000000;0.499994;,
+-0.327329;0.000000;0.944910;,
+-0.654658;0.000000;0.755925;,
+-0.866029;0.000000;0.499994;,
+0.654658;0.000000;0.755925;,
+0.327329;0.000000;0.944910;,
+0.866029;0.000000;0.499994;,
+0.866029;0.000000;0.499994;,
+-0.866025;0.000000;0.500000;,
+-0.327327;0.000000;0.944911;,
+-0.654654;0.000000;0.755929;,
+-0.866025;0.000000;0.500000;,
+0.654654;0.000000;0.755929;,
+0.327327;0.000000;0.944911;,
+0.866025;0.000000;0.500000;,
+0.866025;0.000000;0.500000;;
+
+ 24;
+3;2,1,0;,
+3;3,1,2;,
+3;5,0,4;,
+3;5,2,0;,
+3;7,4,6;,
+3;7,5,4;,
+3;10,9,8;,
+3;11,9,10;,
+3;13,8,12;,
+3;13,10,8;,
+3;15,12,14;,
+3;15,13,12;,
+3;18,17,16;,
+3;19,18,16;,
+3;21,20,17;,
+3;21,17,18;,
+3;23,22,20;,
+3;23,20,21;,
+3;26,25,24;,
+3;26,24,27;,
+3;29,28,25;,
+3;29,25,26;,
+3;31,30,28;,
+3;29,31,28;;
+ }
+}
+ }

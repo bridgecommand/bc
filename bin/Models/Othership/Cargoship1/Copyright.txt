@@ -1,0 +1,34 @@
+THE CARGO SHIP BETA VERSION 1.2*
+
+Disclaimer & Copyright Notes:
+
+If this Ship is to be used in Virtual Sailor, there is NO fee , although
+some rules apply:
+
+The Share/Payware designer can use our ship or parts, after paying a small fee.
+
+The work used here is copyrighted material. The files may not be altered
+in any way. If you want to do so, for any work you give away, either as
+freeware or payware, you need our written compliance.
+         
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+This Readme file has to be included in every zip file where the Ship is
+being used. Alternatively the Ship Designer may include ONE Readme that 
+covers all used parts. 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+These files will not harm your computer in any way. Nevertheless we cannot
+guarantee for functionality in all case of it's use. It was tested on
+various computers in full 3D mode, without problems.
+
+If you have any comments or suggestions , feel free to e-mail us:
+
+Ragnar den Besten 			general modelling of the ship (cranes,bridge,hatches and more)
+email: ragnar@zeelandnet.nl
+
+Alain Dechorgnat			modelling of the hull and did the optimizing of this ship
+email: alain.dechorgnat@wanadoo.fr  
+
+--In the Future--
+we keep working on the ship to make it better with new more details, better behaviors and a few other fixes.
+if you like to help us mail one of us we can always use detailed pics of ships to make improvements.  
