@@ -704,31 +704,32 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 while(filterAngle_7 < 0) {filterAngle_7+=360;}
                 while(filterAngle_7 >= 360) {filterAngle_7-=360;}
             if (currentStep < rangeResolution * 0.1) {
-                //TODO: These should be MAXs, and probably more at very close range
-                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 1.0;
-            } else if (currentStep < rangeResolution * 0.2) {
-                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 0;
+                scanArrayToPlot[filterAngle][currentStep] = std::max({
+                    scanArrayAmplified[filterAngle_1][currentStep],
+                    scanArrayAmplified[filterAngle_2][currentStep],
+                    scanArrayAmplified[filterAngle_3][currentStep],
+                    scanArrayAmplified[filterAngle_4][currentStep],
+                    scanArrayAmplified[filterAngle_5][currentStep],
+                    scanArrayAmplified[filterAngle_6][currentStep],
+                    scanArrayAmplified[filterAngle_7][currentStep]
+                });
 
+            } else if (currentStep < rangeResolution * 0.2) {
+                scanArrayToPlot[filterAngle][currentStep] = std::max({
+                    scanArrayAmplified[filterAngle_2][currentStep],
+                    scanArrayAmplified[filterAngle_3][currentStep],
+                    scanArrayAmplified[filterAngle_4][currentStep],
+                    scanArrayAmplified[filterAngle_5][currentStep],
+                    scanArrayAmplified[filterAngle_6][currentStep]
+                });
+            } else if (currentStep < rangeResolution * 0.3) {
+                scanArrayToPlot[filterAngle][currentStep] = std::max({
+                    scanArrayAmplified[filterAngle_3][currentStep],
+                    scanArrayAmplified[filterAngle_4][currentStep],
+                    scanArrayAmplified[filterAngle_5][currentStep],
+                });
             } else {
-                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_1][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_2][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_3][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_4][currentStep] * 1.0 +
-                                                                      scanArrayAmplified[filterAngle_5][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_6][currentStep] * 0 +
-                                                                      scanArrayAmplified[filterAngle_7][currentStep] * 0;
+                scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_4][currentStep];
             }
             toReplot[filterAngle] = true;
             
