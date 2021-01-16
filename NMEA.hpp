@@ -34,7 +34,7 @@ public:
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
-    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, RSD, ZDA, OSD, POS, DTM, HDT, ROT, VTG, HRM, HBT };
+    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, RSD, ZDA, OSD, POS, DTM, HDT, ROT, VTG, HRM, VDM, VDO, HBT };
 
 private:
     irr::IrrlichtDevice* device;
