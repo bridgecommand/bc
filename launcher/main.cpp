@@ -64,12 +64,15 @@ public:
                     exit(EXIT_SUCCESS);
                 }
                 
-                int pid = fork();
+                #ifndef _WIN32
+                int pid = fork();  // posix only (GNU/Linux, MacOS)
                 if (pid > 0) return false;
+                #endif
 
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -82,7 +85,8 @@ public:
                 }
                 if (id == MC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-mc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -95,7 +99,8 @@ public:
                 }
                 if (id == RP_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-rp.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -108,7 +113,8 @@ public:
                 }
                 if (id == ED_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ed.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -121,7 +127,8 @@ public:
                 }
                 if (id == MH_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-mh.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -134,7 +141,8 @@ public:
                 }
                 if (id == INI_BC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -160,7 +168,8 @@ public:
                 }
                 if (id == INI_RP_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -173,7 +182,8 @@ public:
                 }
                 if (id == INI_MH_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
