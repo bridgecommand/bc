@@ -224,6 +224,18 @@ void NMEA::updateNMEA()
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         */
+        /*
+        case VDM: // 8.3.90 AIS VHF data-link message (6-bit, iaw ITU-R M.1371)
+            snprintf(messageBuffer,maxSentenceChars,"!AIVDM,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
+        /*
+        case VDO: // 8.3.91 AIS VHF data-link own-vessel report (6-bit, iaw ITU-R M.1371)
+            snprintf(messageBuffer,maxSentenceChars,"!AIVDO,");
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        */
         default:
             break;
     }
