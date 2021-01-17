@@ -29,6 +29,8 @@
 // Irrlicht Namespaces
 //using namespace irr;
 
+const int FONT_SIZE_DEFAULT = 12;
+
 //Global definition for ini logger
 namespace IniFile {
     irr::ILogger* irrlichtLogger = 0;
@@ -44,6 +46,7 @@ const irr::s32 INI_MC_BUTTON = 7;
 const irr::s32 INI_RP_BUTTON = 8;
 const irr::s32 INI_MH_BUTTON = 9;
 const irr::s32 DOC_BUTTON = 10;
+const irr::s32 EXIT_BUTTON = 11;
 
 //Event receiver: This does the actual launching
 class Receiver : public irr::IEventReceiver
@@ -56,9 +59,20 @@ public:
         if (event.EventType == irr::EET_GUI_EVENT) {
             if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
                 irr::s32 id = event.GUIEvent.Caller->getID();
+
+                if (id == EXIT_BUTTON) {
+                    exit(EXIT_SUCCESS);
+                }
+                
+                #ifndef _WIN32
+                int pid = fork();  // posix only (GNU/Linux, MacOS)
+                if (pid > 0) return false;
+                #endif
+
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -71,7 +85,8 @@ public:
                 }
                 if (id == MC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-mc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -84,7 +99,8 @@ public:
                 }
                 if (id == RP_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-rp.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -97,7 +113,8 @@ public:
                 }
                 if (id == ED_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ed.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -110,7 +127,8 @@ public:
                 }
                 if (id == MH_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-mh.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -121,10 +139,10 @@ public:
                     #endif
                     #endif
                 }
-
                 if (id == INI_BC_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -150,7 +168,8 @@ public:
                 }
                 if (id == INI_RP_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -163,7 +182,8 @@ public:
                 }
                 if (id == INI_MH_BUTTON) {
                     #ifdef _WIN32
-                        _execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
+                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -178,8 +198,8 @@ public:
                     #ifdef _WIN32
                         //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
                         ShellExecute(NULL, TEXT("open"), TEXT("doc\\index.html"), NULL, NULL, SW_SHOWNORMAL);
-                        Sleep(5000);
-                        exit(EXIT_SUCCESS);
+                        //Sleep(5000);
+                        //exit(EXIT_SUCCESS);
                     #else
                     #ifdef __APPLE__
                         //APPLE
@@ -193,12 +213,9 @@ public:
                             execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
                             //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
                         #endif // FOR_DEB
-
-
                     #endif
                     #endif
                 }
-
             }
         }
         return false;
@@ -242,7 +259,6 @@ int main (int argc, char ** argv)
         iniFilename = userFolder + iniFilename;
     }
 
-
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
         modifier = "en"; //Default
@@ -256,7 +272,7 @@ int main (int argc, char ** argv)
 
     Lang language(languageFile);
 
-    int fontSize = 12;
+    int fontSize = FONT_SIZE_DEFAULT;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
     if (fontScale > 1) {
         fontSize = (int)(fontSize * fontScale + 0.5);
@@ -264,8 +280,8 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    irr::u32 graphicsWidth = 200 + (fontSize - 13) * 16;
-    irr::u32 graphicsHeight = 465 + (fontSize - 13) * 35;
+    irr::u32 graphicsWidth = 200 + (fontSize - FONT_SIZE_DEFAULT) * 16;
+    irr::u32 graphicsHeight = 500 + (fontSize - FONT_SIZE_DEFAULT) * 40;
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
@@ -298,7 +314,7 @@ int main (int argc, char ** argv)
     short bR = bC / 3 * 2 + 1;
 
     short bW = graphicsWidth - (2 * bC); // size ...
-    short bH = 30 * (fontSize / 13.) + 1;
+    short bH = 30 * (fontSize / (FONT_SIZE_DEFAULT * 1.0)) + 1;
 
     short x1 = bC;                       // location ...
     short x2 = x1 + bW;
@@ -317,6 +333,7 @@ int main (int argc, char ** argv)
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);
@@ -330,5 +347,6 @@ int main (int argc, char ** argv)
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
-    return(0);
+
+    return EXIT_FAILURE;
 }
