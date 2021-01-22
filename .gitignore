@@ -14,7 +14,7 @@
 *.ipdb
 Thumbs.db
 build/
-libs/Irrlicht/irrlicht-svn/lib/Linux/
-libs/Irrlicht/irrlicht-svn/source/Irrlicht/src/
-libs/Irrlicht/irrlicht-svn/source/Irrlicht/tmp/
+src/libs/Irrlicht/irrlicht-svn/lib/Linux/
+src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/src/
+src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/tmp/
 *.kdev4

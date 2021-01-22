@@ -15,7 +15,7 @@ OutFile "${OUTPUTFILE}"
 
 InstallDir "$PROGRAMFILES\${INSTALLLOCATION}"
 
-LicenseData "LICENSE.txt"
+LicenseData "LICENSE"
 
 Icon "Icon.ico"
 
@@ -72,7 +72,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\Sounds"
   
   Delete "$INSTDIR\bc5.ini"
-  Delete "$INSTDIR\LICENSE.txt"
+  Delete "$INSTDIR\LICENSE"
   Delete "$INSTDIR\bridgecommand.exe"
   Delete "$INSTDIR\bridgecommand-bc.exe"
   Delete "$INSTDIR\bridgecommand-mc.exe"
