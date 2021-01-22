@@ -70,12 +70,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(WindowsSdk_71A_IncludePath);..\libs\Irrlicht\irrlicht-svn\include;..\libs\asio\include;..\libs\enet-1.3.14\include</IncludePath>
-    <OutDir>..\</OutDir>
+    <OutDir>..\..\bin</OutDir>
     <IntDir>$(Configuration)\mh\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(WindowsSdk_71A_IncludePath);..\libs\Irrlicht\irrlicht-svn\include;..\libs\asio\include;..\libs\enet-1.3.14\include</IncludePath>
-    <OutDir>..\</OutDir>
+    <OutDir>..\..\bin</OutDir>
     <IntDir>$(Configuration)\mh\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -93,7 +93,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>call useVSdll.bat</Command>
+      <Command>call ..\..\bin\useVSdll.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,7 +122,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>call useVSdll.bat</Command>
+      <Command>call ..\..\bin\useVSdll.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,15 +141,6 @@
   <ItemGroup>
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\Lang.cpp" />
-    <ClCompile Include="..\libs\enet\callbacks.c" />
-    <ClCompile Include="..\libs\enet\compress.c" />
-    <ClCompile Include="..\libs\enet\host.c" />
-    <ClCompile Include="..\libs\enet\list.c" />
-    <ClCompile Include="..\libs\enet\packet.c" />
-    <ClCompile Include="..\libs\enet\peer.c" />
-    <ClCompile Include="..\libs\enet\protocol.c" />
-    <ClCompile Include="..\libs\enet\unix.c" />
-    <ClCompile Include="..\libs\enet\win32.c" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
@@ -168,15 +159,6 @@
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\Lang.hpp" />
-    <ClInclude Include="..\libs\enet\callbacks.h" />
-    <ClInclude Include="..\libs\enet\enet.h" />
-    <ClInclude Include="..\libs\enet\list.h" />
-    <ClInclude Include="..\libs\enet\protocol.h" />
-    <ClInclude Include="..\libs\enet\time.h" />
-    <ClInclude Include="..\libs\enet\types.h" />
-    <ClInclude Include="..\libs\enet\unix.h" />
-    <ClInclude Include="..\libs\enet\utility.h" />
-    <ClInclude Include="..\libs\enet\win32.h" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\multiplayerHub\Network.hpp" />
     <ClInclude Include="..\multiplayerHub\ScenarioChoice.hpp" />
