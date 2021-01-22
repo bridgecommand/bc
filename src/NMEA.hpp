@@ -43,7 +43,7 @@ private:
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
     const int maxMessages = (HBT - RMC) + 1; // how many messages are defined
-    const int maxSentenceChars = 79+1+1; // iaw EN 61162-1:2011 + start char + null termination
+	static const int maxSentenceChars = 79+1+1; // iaw EN 61162-1:2011 + start char + null termination
     const char northing[2] = {'N', 'S'};
     const char easting[2] = {'E', 'W'};
     int currentMessageType; // sequentially send different sentences
