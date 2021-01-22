@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Windows">
-				<Option output="../bridgecommand-ed" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-ed" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -17,12 +17,12 @@
 					<Add library="Winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cmd /c cd .. &amp; useMinGWdll.bat" />
+					<Add after="cmd /c cd ../../bin &amp; useMinGWdll.bat" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Linux">
-				<Option output="../bridgecommand-ed" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-ed" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -37,7 +37,7 @@
 				</Linker>
 			</Target>
 			<Target title="LinuxForDeb">
-				<Option output="../bridgecommand-ed" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-ed" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />

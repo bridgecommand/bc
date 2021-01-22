@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Windows">
-				<Option output="../bridgecommand-rp" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-rp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -20,12 +20,12 @@
 					<Add directory="../libs/enet-1.3.14/bin/Release" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="cmd /c cd .. &amp; useMinGWdll.bat" />
+					<Add after="cmd /c cd ../../bin &amp; useMinGWdll.bat" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Linux">
-				<Option output="../bridgecommand-rp" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-rp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -41,7 +41,7 @@
 				</Linker>
 			</Target>
 			<Target title="LinuxForDeb">
-				<Option output="../bridgecommand-rp" prefix_auto="1" extension_auto="1" />
+				<Option output="../../bin/bridgecommand-rp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option type="1" />
 				<Option compiler="gcc" />
