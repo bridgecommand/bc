@@ -5,8 +5,17 @@ This is the source code for Bridge Command, developed in C++ using the Irrlicht 
 
 For more information, see https://www.bridgecommand.co.uk
 
+To compile
+----------
+
+For Windows, Visual Studio 2017 (or greater) and Code::Blocks are used 
+and tested. Project files for both are in the src folder.
+
+For Linux and macOS, CMake is used. Please see the instructions in 
+src/CompilingLinuxAndMac.txt 
+
 Licence
---------------
+-------
 
 Bridge Command is Copyright (C) 2018 by James Packer. The model files distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, Simon D Richardson, Jason Simpson, Thierry Videlaine, and NETC (Naval Education and Training Command).
