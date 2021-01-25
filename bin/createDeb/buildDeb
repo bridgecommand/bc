@@ -34,21 +34,21 @@ cp -a ../../../../shaders ./bridgecommand/shaders
 cp -a ../../../../Sounds ./bridgecommand/Sounds
 cp -a ../../../../World ./bridgecommand/World
 cp -a ../../../../bc5.ini ./bridgecommand/
-cp -a ../../../../Icon.ico ./bridgecommand/
+cp -a ../../../../../src/Icon.ico ./bridgecommand/
 cp -a ../../../../languageController-en.txt ./bridgecommand/
 cp -a ../../../../language-en.txt ./bridgecommand/
 cp -a ../../../../languageIniEditor-en.txt ./bridgecommand/
 cp -a ../../../../languageLauncher-en.txt ./bridgecommand/
 cp -a ../../../../languageMultiplayer-en.txt ./bridgecommand/
 cp -a ../../../../languageRepeater-en.txt ./bridgecommand/
-cp -a ../../../../LICENSE.txt ./bridgecommand/
+cp -a ../../../../LICENSE ./bridgecommand/
 cp -a ../../../../map.ini ./bridgecommand/
 cp -a ../../../../mph.ini ./bridgecommand/
 cp -a ../../../../README ./bridgecommand/
 cp -a ../../../../repeater.ini ./bridgecommand/
 cp -a ../../../../tidalData.m ./bridgecommand/
 
-cp -a ../../../../doc/* ./doc/bridgecommand/
+cp -a ../../../../../doc/* ./doc/bridgecommand/
 
 cp -a ../../../bridgecommand.desktop ./applications/
 
