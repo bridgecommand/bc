@@ -48,7 +48,8 @@ private:
     ENetHost* client; //One client
     ENetEvent event;
 
-    std::string generateSendString(); //Prepare then normal data message to send
+    std::string generateSendString(); //Prepare the normal data message to send
+    std::string generateSendStringShort(); //Prepare the own ship only data message to send
     std::string generateSendStringScn(); //Prepare the 'Scn' message, with scenario information
     void sendNetwork();
     void receiveNetwork();

@@ -297,5 +297,22 @@ void NetworkSecondary::receiveMessage()
 
             } //Check for right number of elements in received data
         } //Check received message starts with BC
+        else if (receivedString.substr(0,2).compare("OS") == 0 ) { //Check if it starts with OS (Update about ownship only)
+            //Strip 'OS'
+            receivedString = receivedString.substr(2,receivedString.length()-2);
+            //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
+            if (mode==OperatingMode::Secondary) {
+                std::vector<std::string> positionData = Utilities::split(receivedString,',');
+                if (positionData.size() == 5) { //5 elements in position data sent
+                    //std::cout << "positionData.size() == 5" << std::endl;
+                    model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
+                                  Utilities::lexical_cast<irr::f32>(positionData.at(1)));
+                    model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
+                    model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
+                    model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(4))/MPS_TO_KTS);
+                }
+            }
+            
+        }
     } //Check message at least 3 characters
 }

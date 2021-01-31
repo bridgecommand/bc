@@ -322,8 +322,10 @@ void NetworkPrimary::sendNetwork()
     std::string stringToSend;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
         stringToSend = generateSendStringScn();
-    } else if ( model->getLoopNumber() % 3 == 0 ) { //every 3rd loop, send the main BC message
+    } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
         stringToSend = generateSendString();
+    } else {
+        stringToSend = generateSendStringShort();
     }
 
     if (stringToSend.length() > 0) {
@@ -338,6 +340,26 @@ void NetworkPrimary::sendNetwork()
         /* One could just use enet_host_service() instead. */
         enet_host_flush (client);
     }
+}
+
+std::string NetworkPrimary::generateSendStringShort()
+{
+    // Get data from model
+    
+    std::string stringToSend = "OS"; //Own ship only
+    
+    //1 Position, speed etc
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosX()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getHeading()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getRateOfTurn()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getSOG()*MPS_TO_KTS));
+
+    return stringToSend;
 }
 
 std::string NetworkPrimary::generateSendString()
