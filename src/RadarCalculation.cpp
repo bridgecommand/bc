@@ -358,7 +358,7 @@ void RadarCalculation::toggleRadarOn()
 	}
 }
 
-bool RadarCalculation::isRadarOn() const 
+bool RadarCalculation::isRadarOn() const
 {
     return radarOn;
 }
@@ -676,7 +676,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;
 
             //take log (natural) of signal
-            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0f,log(filteredSignal*radarLocalGain));
+            irr::f32 logSignal = log(filteredSignal*radarLocalGain);
+            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0f,logSignal);
 
             //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
             irr::s32 filterAngle = (irr::s32)currentScanAngle - 3*scanAngleStep;
@@ -732,7 +733,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 scanArrayToPlot[filterAngle][currentStep] = scanArrayAmplified[filterAngle_4][currentStep];
             }
             toReplot[filterAngle] = true;
-            
+
             //Clamp between 0 and 1
             if (scanArrayToPlot[filterAngle][currentStep] < 0) {
                 scanArrayToPlot[filterAngle][currentStep] = 0;
@@ -743,7 +744,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
         } //End of for loop scanning out
 
-        
+
 
         //Increment scan angle for next time
         currentScanAngle += scanAngleStep;
@@ -956,7 +957,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     //Interpolate colour between foreground and background
                     irr::video::SColor thisColour = radarForegroundColour.getInterpolated(radarBackgroundColour, pixelColour);
 
-                    drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading); 
+                    drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading);
 
                     scanArrayToPlotPrevious[scanAngle][currentStep] = scanArrayToPlot[scanAngle][currentStep]; //Record what we have plotted
                 }
