@@ -62,6 +62,10 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 		return;
 	}
 
+	data.fileEngine = 0;
+	data.fileWave = 0;
+	data.fileHorn = 0;
+
 	data.infoEngine.format = 0;
 	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
 	if (sf_error(data.fileEngine) != SF_ERR_NO_ERROR) {
@@ -71,6 +75,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 
 	/* Open the soundfiles */
 	data.infoWave.format = 0;
+
 	data.fileWave = sf_open(waveSoundFile.c_str(), SFM_READ, &data.infoWave);
 	if (sf_error(data.fileWave) != SF_ERR_NO_ERROR) {
         std::cerr << "sf_error on waveSoundFile " << waveSoundFile.c_str() << std::endl;
@@ -166,9 +171,9 @@ Sound::~Sound() {
 	portAudioError = Pa_Terminate();
 
 	/* Close the soundfile */
-	sf_close(data.fileWave);
-	sf_close(data.fileEngine);
-	sf_close(data.fileHorn);
+	if (data.fileWave) {sf_close(data.fileWave);}
+	if (data.fileEngine) {sf_close(data.fileEngine);}
+	if (data.fileHorn) {sf_close(data.fileHorn);}
 }
 
 #endif // WITH_SOUND

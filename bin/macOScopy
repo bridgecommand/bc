@@ -18,12 +18,14 @@ rm -f BridgeCommand.app/Contents/MacOS/.gitignore
 rm -rf BridgeCommand.app/Contents/Resources/media
 rm -rf BridgeCommand.app/Contents/Resources/Models
 rm -rf BridgeCommand.app/Contents/Resources/Scenarios
+rm -rf BridgeCommand.app/Contents/Resources/Sounds
 rm -rf BridgeCommand.app/Contents/Resources/shaders
 rm -rf BridgeCommand.app/Contents/Resources/World
 cp -a ../doc BridgeCommand.app/Contents/Resources/doc
 cp -a media BridgeCommand.app/Contents/Resources/media
 cp -a Models BridgeCommand.app/Contents/Resources/Models
 cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
+cp -a Sounds BridgeCommand.app/Contents/Resources/Sounds
 mkdir BridgeCommand.app/Contents/Resources/shaders
 cat shaders/Water_ps.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps.glsl
 cat shaders/Water_vs.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs.glsl
