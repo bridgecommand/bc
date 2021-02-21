@@ -539,7 +539,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //apply buffeting to rate of turn - TODO: Check the integrals from this to work out if the end magnitude is right
-        rateOfTurn += irr::core::DEGTORAD*buffet*weather*sin(scenarioTime*2*PI/buffetPeriod)*((irr::f32)std::rand()/RAND_MAX)*deltaTime; //Rad/s
+        rateOfTurn += irr::core::DEGTORAD*buffet*weather*cos(scenarioTime*2*PI/buffetPeriod)*((irr::f32)std::rand()/RAND_MAX)*deltaTime; //Rad/s
 
         //Apply turn
         hdg += rateOfTurn*deltaTime*irr::core::RADTODEG; //Deg
