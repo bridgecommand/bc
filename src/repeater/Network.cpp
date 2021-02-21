@@ -134,50 +134,47 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
             //Populate the data structures from the stripped string
-            findDataFromString(receivedString, time, ownShipData);
+            std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
-        } //Check received message starts with BC
+            //Check number of elements
+            if (receivedData.size() == 11) { //11 basic records in data sent
+
+                //Time info is record 0
+                std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
+                //Time since start of scenario day 1 is record 2
+                if (timeData.size() > 0) {
+                    time = Utilities::lexical_cast<irr::f32>(timeData.at(2)); //
+                }
+
+                //Position info is record 1
+                std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
+                if (positionData.size() == 9) { //8 elements in position data sent
+                    ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
+                    ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
+                    ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
+
+                    //In format rudder:wheel angle, so split to get wheel component, and just use cast to get rudder, discarding wheel part
+                    ownShipData.rudder = Utilities::lexical_cast<irr::f32>(positionData.at(8));
+                    std::vector<std::string> rudderWheelData = Utilities::split(positionData.at(8),':');
+                    if (rudderWheelData.size() == 4) {
+                        ownShipData.wheel =  Utilities::lexical_cast<irr::f32>(rudderWheelData.at(1));
+                        ownShipData.portEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
+                        ownShipData.stbdEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
+                    }
+                }
+            } //Check correct number of records received
+        } else if (receivedString.substr(0,2).compare("OS") == 0  ) { //Check if it starts with OS (Update about ownship only)
+            //Strip 'OS'
+            receivedString = receivedString.substr(2,receivedString.length()-2);
+            //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
+            
+            std::vector<std::string> positionData = Utilities::split(receivedString,',');
+            if (positionData.size() == 5) { //5 elements in position data sent
+                //std::cout << "positionData.size() == 5" << std::endl;
+                ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
+                ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
+                ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
+            }
+        }
     } //Check message at least 3 characters
-
-}
-
-void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData) {
-//Split into main parts
-    std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
-
-    //Check number of elements
-    if (receivedData.size() == 11) { //11 basic records in data sent
-
-        //Time info is record 0
-        std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
-        //Time since start of scenario day 1 is record 2
-        if (timeData.size() > 0) {
-            time = Utilities::lexical_cast<irr::f32>(timeData.at(2)); //
-        }
-
-        //Position info is record 1
-        std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-        findOwnShipPositionData(positionData, ownShipData); //Populate ownShipData from the positionData
-
-
-    } //Check correct number of records received
-}
-
-void Network::findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData)
-{
-    if (positionData.size() == 9) { //8 elements in position data sent
-        ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
-        ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
-        ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));
-
-        //In format rudder:wheel angle, so split to get wheel component, and just use cast to get rudder, discarding wheel part
-        ownShipData.rudder = Utilities::lexical_cast<irr::f32>(positionData.at(8));
-        std::vector<std::string> rudderWheelData = Utilities::split(positionData.at(8),':');
-        if (rudderWheelData.size() == 4) {
-            ownShipData.wheel =  Utilities::lexical_cast<irr::f32>(rudderWheelData.at(1));
-            ownShipData.portEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
-            ownShipData.stbdEngine = Utilities::lexical_cast<irr::f32>(rudderWheelData.at(2));
-        }
-
-    }
 }

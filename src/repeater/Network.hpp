@@ -47,9 +47,6 @@ private:
     ENetPacket * packet;
 
     void receiveMessage(irr::f32& time, ShipData& ownShipData); //Acts on 'event'
-    //Subroutines to break down process of extracting data from the received string:
-    void findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData);
-    void findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData);
 
 };
 #endif // __NETWORK_HPP_INCLUDED__
