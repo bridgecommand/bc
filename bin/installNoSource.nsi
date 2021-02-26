@@ -1,9 +1,9 @@
 ;setup names
 !define PROGRAMNAME "Bridge Command 5.5"
-!define OUTPUTFILE "bc55a1_setup.exe"
-!define INSTALLLOCATION "Bridge Command 5.5a1"
-!define SMFOLDER "Bridge Command 5.5 Alpha 1"
-!define REGKEY "BridgeCommand5.5a1"
+!define OUTPUTFILE "..\bc553_setup.exe"
+!define INSTALLLOCATION "Bridge Command 5.5"
+!define SMFOLDER "Bridge Command 5.5"
+!define REGKEY "BridgeCommand5.5"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -17,7 +17,7 @@ InstallDir "$PROGRAMFILES\${INSTALLLOCATION}"
 
 LicenseData "LICENSE"
 
-Icon "Icon.ico"
+Icon "..\src\Icon.ico"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
