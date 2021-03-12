@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+if (APPLE)
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
+endif (APPLE)
+
 add_subdirectory(libs/asio)
 add_subdirectory(libs/enet-1.3.14)
 add_subdirectory(libs/Irrlicht)
@@ -16,10 +21,6 @@ add_definitions(-DWITH_SOUND)
 if (NOT APPLE)
     add_definitions(-DFOR_DEB)
 endif (NOT APPLE)
-
-if (APPLE)
-    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7")
-endif (APPLE)
 
 # optional tools
 add_subdirectory(controller)
