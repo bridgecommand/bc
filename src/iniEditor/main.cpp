@@ -425,8 +425,20 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
     
-    irr::u32 graphicsWidth = 800 * fontScale;
-    irr::u32 graphicsHeight = 600 * fontScale;
+    irr::u32 graphicsWidth;
+    irr::u32 graphicsHeight;
+    irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+	nulldevice->drop();
+    graphicsWidth = 1200 * fontScale;
+    if (graphicsWidth > deskres.Width*0.9) {
+        graphicsWidth = deskres.Width*0.9;
+    }
+    graphicsHeight = 900 * fontScale;
+    if (graphicsHeight > deskres.Height*0.9) {
+        graphicsHeight = deskres.Height*0.9;
+    }
+    
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 

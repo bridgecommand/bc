@@ -262,6 +262,9 @@ int main()
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
+                if (graphicsWidth > deskres.Width*0.9) {
+                    graphicsWidth = deskres.Width*0.9;
+                }
 			}
 		}
 		if (graphicsHeight == 0) {
@@ -270,6 +273,9 @@ int main()
 			}
 			else {
 				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
+                if (graphicsHeight > deskres.Height*0.9) {
+                    graphicsHeight = deskres.Height*0.9;
+                }
 			}
 		}
 	}
