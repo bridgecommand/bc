@@ -108,11 +108,13 @@ int main (int argc, char ** argv)
 		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 		nulldevice->drop();
 		if (graphicsWidth == 0) {
-			if (fullScreen) {
+			if (fullScreen || fakeFullScreen) {
 				graphicsWidth = deskres.Width;
-			}
-			else {
-				graphicsWidth = 1200 * fontScale; // deskres.Width*0.9;
+			} else {
+				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
+                if (graphicsWidth > deskres.Width*0.9) {
+                    graphicsWidth = deskres.Width*0.9;
+                }
 			}
 		}
 		if (graphicsHeight == 0) {
@@ -120,7 +122,10 @@ int main (int argc, char ** argv)
 				graphicsHeight = deskres.Height;
 			}
 			else {
-				graphicsHeight = 900 * fontScale; // deskres.Height*0.9;
+				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
+                if (graphicsHeight > deskres.Height*0.9) {
+                    graphicsHeight = deskres.Height*0.9;
+                }
 			}
 		}
 	}

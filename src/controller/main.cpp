@@ -91,8 +91,21 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 
-        if (graphicsWidth==0) {graphicsWidth=1200*fontScale;}
-    if (graphicsHeight==0) {graphicsHeight=900*fontScale;}
+    irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+	nulldevice->drop();
+    if (graphicsWidth==0) {
+        graphicsWidth = 1200 * fontScale;
+        if (graphicsWidth > deskres.Width*0.9) {
+            graphicsWidth = deskres.Width*0.9;
+        }
+    }
+    if (graphicsHeight==0) {
+        graphicsHeight = 900 * fontScale;
+        if (graphicsHeight > deskres.Height*0.9) {
+            graphicsHeight = deskres.Height*0.9;
+        }
+    }
 
 	irr::u32 zoomLevels = IniFile::iniFileTou32(iniFilename, "zoom_levels");
 	if (zoomLevels == 0) {

@@ -20,6 +20,8 @@ Download and uncompress libsndfile-1.0.28.tar.gz from http://www.mega-nerd.com/l
 Create a folder for the output, referred to as <Somewhere> (Absolute path)
 Change directory to where you've uncompressed libsndfile, then run the following in the terminal window:
 
+(If building to be compatible with older macOS versions, run export MACOSX_DEPLOYMENT_TARGET=10.7 before building libsndfile and portaudio, and then open a new terminal before running the main Bridge Command build)
+
 ./configure --disable-shared --prefix=<Somewhere>
 make
 make install
@@ -29,6 +31,8 @@ cp -a lib <BridgeCommandSourceLocation>/libs/libsndfile/
 Portaudio:
 ----------
 Download and uncompress pa_stable_v190600_20161030.tgz from http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
+(For macOS Big Sur (11.0) and onwards, a more recent version is needed. 
+I have successfully compiled with http://files.portaudio.com/archives/pa_snapshot.tgz created Sunday, 07-Mar-2021 01:23:04 UTC)
 Change directory to where you've uncompressed Portaudio, then run the following in the terminal window:
 
 ./configure --disable-mac-universal --disable-shared --enable-static

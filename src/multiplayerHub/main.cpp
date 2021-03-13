@@ -138,8 +138,21 @@ int main()
     int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
 
     //Sensible defaults if not set
-    if (graphicsWidth==0) {graphicsWidth=1200*fontScale;}
-    if (graphicsHeight==0) {graphicsHeight=900*fontScale*1.1;}
+    irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+	nulldevice->drop();
+    if (graphicsWidth==0) {
+        graphicsWidth = 1200 * fontScale;
+        if (graphicsWidth > deskres.Width*0.9) {
+            graphicsWidth = deskres.Width*0.9;
+        }
+    }
+    if (graphicsHeight==0) {
+        graphicsHeight = 900 * fontScale;
+        if (graphicsHeight > deskres.Height*0.9) {
+            graphicsHeight = deskres.Height*0.9;
+        }
+    }
     if (graphicsDepth==0) {graphicsDepth=32;}
     if (port == 0) {port = 18304;}
 
