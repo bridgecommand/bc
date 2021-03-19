@@ -786,7 +786,7 @@
                 if (newJoystickRudder<INFINITY) {
 
 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
-                    model->setWheel(newJoystickRudder);
+                    model->setWheel(newJoystickRudder*joystickSetup.rudderDirection);
 //                    model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
                 }

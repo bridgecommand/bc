@@ -40,6 +40,7 @@ public:
     irr::u32 sternThrusterJoystickNo;
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
+    irr::s32 rudderDirection;
 };
 
 class MyEventReceiver : public irr::IEventReceiver

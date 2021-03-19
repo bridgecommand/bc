@@ -232,6 +232,10 @@ int main()
         joystickSetup.outputPoints.push_back(-1.0);
         joystickSetup.outputPoints.push_back(1.0);
     }
+    joystickSetup.rudderDirection = 1;
+    if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
+        joystickSetup.rudderDirection = -1;
+    }
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
