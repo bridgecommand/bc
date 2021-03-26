@@ -608,6 +608,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));
         //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
         wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));
+        if (bowThrusterScrollbar) {
+            bowThrusterScrollbar->setPos(Utilities::round(guiData->bowThruster * 100));
+        }
+        if (sternThrusterScrollbar) {
+            sternThrusterScrollbar->setPos(Utilities::round(guiData->sternThruster * 100));
+        }
 
 // DEE vvvvv
 // this sets the scrollbar wheel position to match the guiData's idea of where it should be

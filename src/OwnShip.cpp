@@ -375,6 +375,16 @@ irr::f32 OwnShip::getStbdEngine() const
     return stbdEngine;
 }
 
+irr::f32 OwnShip::getBowThruster() const
+{
+    return bowThruster;
+}
+
+irr::f32 OwnShip::getSternThruster() const
+{
+    return sternThruster;
+}
+
 irr::f32 OwnShip::getPortEngineRPM() const
 {
     return portEngine*maxEngineRevs;

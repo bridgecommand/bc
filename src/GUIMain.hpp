@@ -37,6 +37,8 @@ struct GUIData {
     irr::f32 portEng;
     irr::f32 stbdEng;
     irr::f32 rudder;
+    irr::f32 bowThruster;
+    irr::f32 sternThruster;
 // DEE vvvv
     irr::f32 wheel;
     irr::f32 RateOfTurn;
