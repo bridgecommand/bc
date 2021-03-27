@@ -804,6 +804,57 @@
             }
 
 
+            //For testing
+            irr::u32 joystickNoHorn = 0;
+            irr::u32 joystickButtonHorn = 4-1; //Numbering from 0
+            irr::u32 joystickNoChangeView = 0;
+            irr::u32 joystickButtonChangeView = 2-1;
+            irr::u32 joystickNoLookLeft = 0;
+            irr::u32 joystickButtonLookLeft = 1-1;
+            irr::u32 joystickNoLookRight = 0;
+            irr::u32 joystickButtonLookRight = 3-1;
+
+            //Check joystick buttons here
+            //Make sure the joystickPreviousButtonStates has an entry for this joystick
+            while (joystickPreviousButtonStates.size() <= thisJoystick) {
+                joystickPreviousButtonStates.push_back(0); //All zeros equivalent to no buttons pressed
+            } 
+            
+            //Respond here
+            irr::u32 thisButtonState = event.JoystickEvent.ButtonStates;
+            irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
+
+            //Horn
+            if (thisJoystick == joystickNoHorn) { 
+                if (IsButtonPressed(joystickButtonHorn,thisButtonState) && !IsButtonPressed(joystickButtonHorn,previousButtonState)) {
+                    model->startHorn();
+                }
+                if (!IsButtonPressed(joystickButtonHorn,thisButtonState) && IsButtonPressed(joystickButtonHorn,previousButtonState)) {
+                    model->endHorn();
+                }
+            }
+            //Change view
+            if (thisJoystick == joystickNoChangeView) { 
+                if (IsButtonPressed(joystickButtonChangeView,thisButtonState) && !IsButtonPressed(joystickButtonChangeView,previousButtonState)) {
+                    model->changeView();
+                }
+            }
+            //Look step left
+            if (thisJoystick == joystickNoLookLeft) { 
+                if (IsButtonPressed(joystickButtonLookLeft,thisButtonState) && !IsButtonPressed(joystickButtonLookLeft,previousButtonState)) {
+                    model->lookStepLeft();
+                }
+            }
+            //Look step right
+            if (thisJoystick == joystickNoLookRight) { 
+                if (IsButtonPressed(joystickButtonLookRight,thisButtonState) && !IsButtonPressed(joystickButtonLookRight,previousButtonState)) {
+                    model->lookStepRight();
+                }
+            }
+
+
+            //Store previous settings
+            joystickPreviousButtonStates.at(thisJoystick) = event.JoystickEvent.ButtonStates;
         }
 
         return false;
@@ -871,6 +922,14 @@
             }
         }
         return outputWstring;
+    }
+
+    bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const
+    {
+        if(button >= 32)
+            return false;
+
+        return (buttonBitmap & (1 << button)) ? true : false;
     }
 
 /*
