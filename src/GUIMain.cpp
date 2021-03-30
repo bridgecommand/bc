@@ -483,6 +483,21 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         updateVisibility();
     }
 
+    void GUIMain::showBearings()
+    {
+        bearingButton->setPressed(true);
+    }
+
+    void GUIMain::hideBearings()
+    {
+        bearingButton->setPressed(false);
+    }
+
+    void GUIMain::toggleBearings()
+    {
+        bearingButton->setPressed(!bearingButton->isPressed());
+    }
+
     void GUIMain::setLargeRadar(bool radarState)
     {
         radarLarge = radarState;

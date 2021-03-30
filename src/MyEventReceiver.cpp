@@ -813,6 +813,20 @@
             irr::u32 joystickButtonLookLeft = 1-1;
             irr::u32 joystickNoLookRight = 0;
             irr::u32 joystickButtonLookRight = 3-1;
+            irr::u32 joystickNoIncreaseBowThrust = 0;
+            irr::u32 joystickButtonIncreaseBowThrust = 6-1;
+            irr::u32 joystickNoDecreaseBowThrust = 0;
+            irr::u32 joystickButtonDecreaseBowThrust = 5-1;
+            irr::u32 joystickNoIncreaseSternThrust = 0;
+            irr::u32 joystickButtonIncreaseSternThrust = 8-1;
+            irr::u32 joystickNoDecreaseSternThrust = 0;
+            irr::u32 joystickButtonDecreaseSternThrust = 7-1;
+            irr::u32 joystickNoToggleBearing = 0;
+            irr::u32 joystickButtonToggleBearing = 9-1;
+            irr::u32 joystickNoZoomOn = 0;
+            irr::u32 joystickButtonZoomOn = 9-1;
+            irr::u32 joystickNoZoomOff = 0;
+            irr::u32 joystickButtonZoomOff = 10-1;
 
             //Check joystick buttons here
             //Make sure the joystickPreviousButtonStates has an entry for this joystick
@@ -820,7 +834,6 @@
                 joystickPreviousButtonStates.push_back(0); //All zeros equivalent to no buttons pressed
             } 
             
-            //Respond here
             irr::u32 thisButtonState = event.JoystickEvent.ButtonStates;
             irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
 
@@ -849,6 +862,48 @@
             if (thisJoystick == joystickNoLookRight) { 
                 if (IsButtonPressed(joystickButtonLookRight,thisButtonState) && !IsButtonPressed(joystickButtonLookRight,previousButtonState)) {
                     model->lookStepRight();
+                }
+            }
+            //Decrease bow thrust
+            if (thisJoystick == joystickNoDecreaseBowThrust) { 
+                if (IsButtonPressed(joystickButtonDecreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickButtonDecreaseBowThrust,previousButtonState)) {
+                    model->setBowThruster(model->getBowThruster() - 0.1);
+                }
+            }
+            //Increase bow thrust
+            if (thisJoystick == joystickNoIncreaseBowThrust) { 
+                if (IsButtonPressed(joystickButtonIncreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickButtonIncreaseBowThrust,previousButtonState)) {
+                    model->setBowThruster(model->getBowThruster() + 0.1);
+                }
+            }
+            //Decrease stern thrust
+            if (thisJoystick == joystickNoDecreaseSternThrust) { 
+                if (IsButtonPressed(joystickButtonDecreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickButtonDecreaseSternThrust,previousButtonState)) {
+                    model->setSternThruster(model->getSternThruster() - 0.1);
+                }
+            }
+            //Increase stern thrust
+            if (thisJoystick == joystickNoIncreaseSternThrust) { 
+                if (IsButtonPressed(joystickButtonIncreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickButtonIncreaseSternThrust,previousButtonState)) {
+                    model->setSternThruster(model->getSternThruster() + 0.1);
+                }
+            }
+            //Toggle bearings
+            if (thisJoystick == joystickNoToggleBearing) {
+                if (IsButtonPressed(joystickButtonToggleBearing,thisButtonState) && !IsButtonPressed(joystickButtonToggleBearing,previousButtonState)) {
+                    gui->toggleBearings();
+                }
+            }
+            //Zoom on
+            if (thisJoystick == joystickNoZoomOn) {
+                if (IsButtonPressed(joystickButtonZoomOn,thisButtonState) && !IsButtonPressed(joystickButtonZoomOn,previousButtonState)) {
+                    model->setZoom(true);
+                }
+            }
+            //Zoom off
+            if (thisJoystick == joystickNoZoomOff) {
+                if (IsButtonPressed(joystickButtonZoomOff,thisButtonState) && !IsButtonPressed(joystickButtonZoomOff,previousButtonState)) {
+                    model->setZoom(false);
                 }
             }
 

@@ -128,6 +128,9 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    void toggleBearings();
+    void showBearings();
+    void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
     irr::u32 getRadarPixelRadius() const;

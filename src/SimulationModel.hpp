@@ -77,6 +77,8 @@ public:
     irr::f32 getStbdEngineRPM() const;
     void setBowThruster(irr::f32 proportion);
     void setSternThruster(irr::f32 proportion);
+    irr::f32 getBowThruster() const;
+    irr::f32 getSternThruster() const;
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;
     irr::f32 getSpeed() const; //Gets the own ship's speed

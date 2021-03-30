@@ -635,6 +635,16 @@ SimulationModel::~SimulationModel()
         ownShip.setSternThruster(proportion);
     }
 
+    irr::f32 SimulationModel::getBowThruster() const
+    {
+        return ownShip.getBowThruster();
+    }
+
+    irr::f32 SimulationModel::getSternThruster() const
+    {
+        return ownShip.getSternThruster();
+    }
+
     void SimulationModel::setAccelerator(irr::f32 accelerator)
     {
         device->getTimer()->setSpeed(accelerator);
