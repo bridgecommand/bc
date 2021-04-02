@@ -44,6 +44,9 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
     this->lookAngle = lookAngle;
     lookUpAngle = 0;
     this->angleCorrection = angleCorrection;
+
+    verticalPanSpeed = 0;
+    horizontalPanSpeed = 0;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -73,6 +76,14 @@ void Camera::lookDown()
     {
         lookUpAngle=-40;
     }
+}
+
+void Camera::setPanSpeed(irr::f32 horizontalPanSpeed){
+    this->horizontalPanSpeed = horizontalPanSpeed;
+}
+
+void Camera::setVerticalPanSpeed(irr::f32 verticalPanSpeed){
+    this->verticalPanSpeed = verticalPanSpeed;
 }
 
 void Camera::setLookUp(irr::f32 angle)
@@ -222,9 +233,26 @@ void Camera::setFarValue(irr::f32 zf)
     camera->setFarValue(zf);
 }
 
-void Camera::update()
+void Camera::update(irr::f32 deltaTime)
 {
      //link camera rotation to shipNode
+        //Adjust camera angle if panning
+        lookAngle += horizontalPanSpeed * deltaTime;
+        if (lookAngle>360) {
+            lookAngle -= 360;
+        }
+        if (lookAngle<0) {
+            lookAngle += 360;
+        }
+        
+        lookUpAngle += verticalPanSpeed * deltaTime;
+        if (lookUpAngle > 40) {
+            lookUpAngle = 40;
+        }
+        if (lookUpAngle < -40) {
+            lookUpAngle = -40;
+        }
+
         // get transformation matrix of node
         irr::core::matrix4 m;
         m.setRotationDegrees(parent->getRotation());

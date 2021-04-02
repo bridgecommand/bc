@@ -35,6 +35,8 @@ class Camera
         void setActive();
         void lookUp();
         void lookDown();
+        void setPanSpeed(irr::f32 horizontalPanSpeed);
+        void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
 		void setLookUp(irr::f32 angle);
         void lookLeft();
         void lookRight();
@@ -52,7 +54,7 @@ class Camera
         irr::u32 getView() const;
         void setNearValue(irr::f32 zn);
         void setFarValue(irr::f32 zf);
-        void update();
+        void update(irr::f32 deltaTime=0);
 
     private:
         irr::scene::ICameraSceneNode* camera;
@@ -62,6 +64,8 @@ class Camera
         irr::f32 angleCorrection;
         irr::f32 lookAngle; //In degrees
         irr::f32 lookUpAngle;
+        irr::s32 horizontalPanSpeed; //Degrees per second
+        irr::s32 verticalPanSpeed; //Degrees per second
         irr::f32 hFOV;//horizontal field of view (radians)
 };
 

@@ -275,6 +275,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     cog = 0;
     sog = 0;
+
+    sternThrusterRate = 0;
+    bowThrusterRate = 0;
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
@@ -363,6 +366,16 @@ void OwnShip::setSternThruster(irr::f32 proportion) {
     if (sternThruster<-1) {
         sternThruster = -1;
     }
+}
+
+void OwnShip::setBowThrusterRate(irr::f32 bowThrusterRate) {
+     //Sets the rate of increase of bow thruster, used for joystick button control
+    this->bowThrusterRate = bowThrusterRate;
+}
+
+void OwnShip::setSternThrusterRate(irr::f32 sternThrusterRate) {
+     //Sets the rate of increase of stern thruster, used for joystick button control
+    this->sternThrusterRate = sternThrusterRate;
 }
 
 irr::f32 OwnShip::getPortEngine() const
@@ -460,6 +473,23 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 {
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
+        
+        //Update bow and stern thrusters, if being controlled by joystick buttons
+        bowThruster += deltaTime * bowThrusterRate;
+        if (bowThruster>1) {
+            bowThruster = 1;
+        }
+        if (bowThruster<-1) {
+            bowThruster = -1;
+        }
+        sternThruster += deltaTime * sternThrusterRate;
+        if (sternThruster>1) {
+            sternThruster = 1;
+        }
+        if (sternThruster<-1) {
+            sternThruster = -1;
+        }
+
         //Update spd and hdg with rudder and engine controls - assume two engines, should also work with single engine
         irr::f32 portThrust = portEngine * maxForce;
         irr::f32 stbdThrust = stbdEngine * maxForce;

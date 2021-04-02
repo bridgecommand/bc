@@ -635,6 +635,16 @@ SimulationModel::~SimulationModel()
         ownShip.setSternThruster(proportion);
     }
 
+    void SimulationModel::setBowThrusterRate(irr::f32 bowThrusterRate){
+        //Sets the rate of increase of bow thruster, used for joystick button control
+        ownShip.setBowThrusterRate(bowThrusterRate);
+    }
+
+    void SimulationModel::setSternThrusterRate(irr::f32 sternThrusterRate){
+        //Sets the rate of increase of bow thruster, used for joystick button control
+        ownShip.setSternThrusterRate(sternThrusterRate);
+    }
+
     irr::f32 SimulationModel::getBowThruster() const
     {
         return ownShip.getBowThruster();
@@ -708,6 +718,16 @@ SimulationModel::~SimulationModel()
     void SimulationModel::lookRight()
     {
         camera.lookRight();
+    }
+
+    void SimulationModel::setPanSpeed(irr::f32 horizontalPanSpeed)
+    {
+        camera.setPanSpeed(horizontalPanSpeed);
+    }
+
+    void SimulationModel::setVerticalPanSpeed(irr::f32 verticalPanSpeed)
+    {
+        camera.setVerticalPanSpeed(verticalPanSpeed);
     }
 
     void SimulationModel::changeLookPx(irr::s32 deltaX, irr::s32 deltaY)
@@ -1144,7 +1164,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Update camera pos");
 
         //update the camera position
-        camera.update();
+        camera.update(deltaTime);
 
         }
         if (radarCalculation.isRadarOn()) {

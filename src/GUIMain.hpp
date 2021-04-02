@@ -128,6 +128,8 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    void zoomOn();
+    void zoomOff();
     void toggleBearings();
     void showBearings();
     void hideBearings();

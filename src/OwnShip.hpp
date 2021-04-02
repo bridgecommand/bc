@@ -53,6 +53,8 @@ class OwnShip : public Ship
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
         void setSternThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
         void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
+        void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets the rate of increase of bow thruster, used for joystick button control
+        void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets the rate of increase of stern thruster, used for joystick button control
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1
         irr::f32 getStbdEngine() const; //-1 to 1
@@ -100,6 +102,8 @@ class OwnShip : public Ship
         bool turnIndicatorPresent;
         irr::f32 bowThruster; //-1 to +1
         irr::f32 sternThruster; //-1 to +1
+        irr::f32 bowThrusterRate; //Rate of change, for joystick button control
+        irr::f32 sternThrusterRate;
 
 // DEE vvvvvvv
         irr::f32 wheel; //-30 to + 30

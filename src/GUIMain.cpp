@@ -498,6 +498,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         bearingButton->setPressed(!bearingButton->isPressed());
     }
 
+    void GUIMain::zoomOn()
+    {
+        binosButton->setPressed(true);
+    }
+
+    void GUIMain::zoomOff()
+    {
+        binosButton->setPressed(false);
+    }
+
     void GUIMain::setLargeRadar(bool radarState)
     {
         radarLarge = radarState;

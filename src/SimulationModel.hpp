@@ -77,6 +77,8 @@ public:
     irr::f32 getStbdEngineRPM() const;
     void setBowThruster(irr::f32 proportion);
     void setSternThruster(irr::f32 proportion);
+    void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets rate of change, for joystick button control
+    void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
     irr::f32 getBowThruster() const;
     irr::f32 getSternThruster() const;
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
@@ -138,6 +140,8 @@ public:
     void lookDown();
     void lookLeft();
     void lookRight();
+    void setPanSpeed(irr::f32 horizontalPanSpeed);
+    void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
     void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
     void lookStepLeft();
     void lookStepRight();
