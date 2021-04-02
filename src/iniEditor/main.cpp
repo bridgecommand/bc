@@ -498,7 +498,7 @@ int main (int argc, char ** argv)
         thisTable->addColumn(language.translate("name").c_str());
         thisTable->addColumn(language.translate("value").c_str());
         thisTable->addColumn(language.translate("description").c_str());
-        thisTable->setColumnWidth(0,150*fontScale);
+        thisTable->setColumnWidth(0,300*fontScale);
         thisTable->setColumnWidth(2,2*width);
         thisTable->setToolTipText(language.translate("doubleClick").c_str());
 
