@@ -41,6 +41,39 @@ public:
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
+    //Buttons:
+    irr::u32 joystickNoHorn;
+    irr::u32 joystickButtonHorn;
+    irr::u32 joystickNoChangeView;
+    irr::u32 joystickButtonChangeView;
+    irr::u32 joystickNoLookStepLeft;
+    irr::u32 joystickButtonLookStepLeft;
+    irr::u32 joystickNoLookStepRight;
+    irr::u32 joystickButtonLookStepRight;
+    irr::u32 joystickNoIncreaseBowThrust;
+    irr::u32 joystickButtonIncreaseBowThrust;
+    irr::u32 joystickNoDecreaseBowThrust;
+    irr::u32 joystickButtonDecreaseBowThrust;
+    irr::u32 joystickNoIncreaseSternThrust;
+    irr::u32 joystickButtonIncreaseSternThrust;
+    irr::u32 joystickNoDecreaseSternThrust;
+    irr::u32 joystickButtonDecreaseSternThrust;
+    irr::u32 joystickNoBearingOn;
+    irr::u32 joystickButtonBearingOn;
+    irr::u32 joystickNoBearingOff;
+    irr::u32 joystickButtonBearingOff;
+    irr::u32 joystickNoZoomOn;
+    irr::u32 joystickButtonZoomOn;
+    irr::u32 joystickNoZoomOff;
+    irr::u32 joystickButtonZoomOff;
+    irr::u32 joystickNoLookLeft;
+    irr::u32 joystickButtonLookLeft;
+    irr::u32 joystickNoLookRight;
+    irr::u32 joystickButtonLookRight;
+    irr::u32 joystickNoLookUp;
+    irr::u32 joystickButtonLookUp;
+    irr::u32 joystickNoLookDown;
+    irr::u32 joystickButtonLookDown;
 };
 
 class MyEventReceiver : public irr::IEventReceiver

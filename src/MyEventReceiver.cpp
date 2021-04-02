@@ -803,42 +803,6 @@
 
             }
 
-
-            //For testing
-            irr::u32 joystickNoHorn = 0;
-            irr::u32 joystickButtonHorn = -1;//4-1; //Numbering from 0
-            irr::u32 joystickNoChangeView = 0;
-            irr::u32 joystickButtonChangeView = -1;//2-1;
-            irr::u32 joystickNoLookStepLeft = 0;
-            irr::u32 joystickButtonLookStepLeft = -1;//1-1;
-            irr::u32 joystickNoLookStepRight = 0;
-            irr::u32 joystickButtonLookStepRight = -1;//3-1;
-            irr::u32 joystickNoIncreaseBowThrust = 0;
-            irr::u32 joystickButtonIncreaseBowThrust = 6-1;
-            irr::u32 joystickNoDecreaseBowThrust = 0;
-            irr::u32 joystickButtonDecreaseBowThrust = 5-1;
-            irr::u32 joystickNoIncreaseSternThrust = 0;
-            irr::u32 joystickButtonIncreaseSternThrust = 8-1;
-            irr::u32 joystickNoDecreaseSternThrust = 0;
-            irr::u32 joystickButtonDecreaseSternThrust = 7-1;
-            irr::u32 joystickNoBearingOn = 0;
-            irr::u32 joystickButtonBearingOn = 9-1;
-            irr::u32 joystickNoBearingOff = 0;
-            irr::u32 joystickButtonBearingOff = 10-1;
-            irr::u32 joystickNoZoomOn = 0;
-            irr::u32 joystickButtonZoomOn = 9-1;
-            irr::u32 joystickNoZoomOff = 0;
-            irr::u32 joystickButtonZoomOff = 10-1;
-
-            irr::u32 joystickNoLookLeft = 0;
-            irr::u32 joystickButtonLookLeft = 1-1;
-            irr::u32 joystickNoLookRight = 0;
-            irr::u32 joystickButtonLookRight = 3-1;
-            irr::u32 joystickNoLookUp = 0;
-            irr::u32 joystickButtonLookUp = 4-1;
-            irr::u32 joystickNoLookDown = 0;
-            irr::u32 joystickButtonLookDown = 2-1;
-
             //Check joystick buttons here
             //Make sure the joystickPreviousButtonStates has an entry for this joystick
             while (joystickPreviousButtonStates.size() <= thisJoystick) {
@@ -849,131 +813,131 @@
             irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
 
             //Horn
-            if (thisJoystick == joystickNoHorn) { 
-                if (IsButtonPressed(joystickButtonHorn,thisButtonState) && !IsButtonPressed(joystickButtonHorn,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoHorn) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonHorn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonHorn,previousButtonState)) {
                     model->startHorn();
                 }
-                if (!IsButtonPressed(joystickButtonHorn,thisButtonState) && IsButtonPressed(joystickButtonHorn,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonHorn,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonHorn,previousButtonState)) {
                     model->endHorn();
                 }
             }
             //Change view
-            if (thisJoystick == joystickNoChangeView) { 
-                if (IsButtonPressed(joystickButtonChangeView,thisButtonState) && !IsButtonPressed(joystickButtonChangeView,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoChangeView) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonChangeView,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeView,previousButtonState)) {
                     model->changeView();
                 }
             }
             //Look step left
-            if (thisJoystick == joystickNoLookStepLeft) { 
-                if (IsButtonPressed(joystickButtonLookStepLeft,thisButtonState) && !IsButtonPressed(joystickButtonLookStepLeft,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookStepLeft) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonLookStepLeft,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepLeft,previousButtonState)) {
                     model->lookStepLeft();
                 }
             }
             //Look step right
-            if (thisJoystick == joystickNoLookStepRight) { 
-                if (IsButtonPressed(joystickButtonLookStepRight,thisButtonState) && !IsButtonPressed(joystickButtonLookStepRight,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookStepRight) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonLookStepRight,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepRight,previousButtonState)) {
                     model->lookStepRight();
                 }
             }
             //Decrease bow thrust
-            if (thisJoystick == joystickNoDecreaseBowThrust) { 
-                if (IsButtonPressed(joystickButtonDecreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickButtonDecreaseBowThrust,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoDecreaseBowThrust) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(-0.5);
                 }
-                if (!IsButtonPressed(joystickButtonDecreaseBowThrust,thisButtonState) && IsButtonPressed(joystickButtonDecreaseBowThrust,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(0);
                 }
             }
             //Increase bow thrust
-            if (thisJoystick == joystickNoIncreaseBowThrust) { 
-                if (IsButtonPressed(joystickButtonIncreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickButtonIncreaseBowThrust,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoIncreaseBowThrust) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(0.5);
                 }
-                if (!IsButtonPressed(joystickButtonIncreaseBowThrust,thisButtonState) && IsButtonPressed(joystickButtonIncreaseBowThrust,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(0);
                 }
             }
             //Decrease stern thrust
-            if (thisJoystick == joystickNoDecreaseSternThrust) { 
-                if (IsButtonPressed(joystickButtonDecreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickButtonDecreaseSternThrust,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoDecreaseSternThrust) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(-0.5);
                 }
-                if (!IsButtonPressed(joystickButtonDecreaseSternThrust,thisButtonState) && IsButtonPressed(joystickButtonDecreaseSternThrust,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(0);
                 }
             }
             //Increase stern thrust
-            if (thisJoystick == joystickNoIncreaseSternThrust) { 
-                if (IsButtonPressed(joystickButtonIncreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickButtonIncreaseSternThrust,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoIncreaseSternThrust) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(0.5);
                 }
-                if (!IsButtonPressed(joystickButtonIncreaseSternThrust,thisButtonState) && IsButtonPressed(joystickButtonIncreaseSternThrust,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(0);
                 }
             }
             //Bearings on
-            if (thisJoystick == joystickNoBearingOn) {
-                if (IsButtonPressed(joystickButtonBearingOn,thisButtonState) && !IsButtonPressed(joystickButtonBearingOn,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoBearingOn) {
+                if (IsButtonPressed(joystickSetup.joystickButtonBearingOn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonBearingOn,previousButtonState)) {
                     gui->showBearings();
                 }
             }
             //Bearings off
-            if (thisJoystick == joystickNoBearingOff) {
-                if (IsButtonPressed(joystickButtonBearingOff,thisButtonState) && !IsButtonPressed(joystickButtonBearingOff,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoBearingOff) {
+                if (IsButtonPressed(joystickSetup.joystickButtonBearingOff,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonBearingOff,previousButtonState)) {
                     gui->hideBearings();
                 }
             }
             //Zoom on
-            if (thisJoystick == joystickNoZoomOn) {
-                if (IsButtonPressed(joystickButtonZoomOn,thisButtonState) && !IsButtonPressed(joystickButtonZoomOn,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoZoomOn) {
+                if (IsButtonPressed(joystickSetup.joystickButtonZoomOn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonZoomOn,previousButtonState)) {
                     gui->zoomOn();
                     model->setZoom(true);
                 }
             }
             //Zoom off
-            if (thisJoystick == joystickNoZoomOff) {
-                if (IsButtonPressed(joystickButtonZoomOff,thisButtonState) && !IsButtonPressed(joystickButtonZoomOff,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoZoomOff) {
+                if (IsButtonPressed(joystickSetup.joystickButtonZoomOff,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonZoomOff,previousButtonState)) {
                     gui->zoomOff();
                     model->setZoom(false);
                 }
             }
             //Look around
             //Left
-            if (thisJoystick == joystickNoLookLeft) {
-                if (IsButtonPressed(joystickButtonLookLeft,thisButtonState) && !IsButtonPressed(joystickButtonLookLeft,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookLeft) {
+                if (IsButtonPressed(joystickSetup.joystickButtonLookLeft,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookLeft,previousButtonState)) {
                     model->setPanSpeed(-5);
                 }
-                if (!IsButtonPressed(joystickButtonLookLeft,thisButtonState) && IsButtonPressed(joystickButtonLookLeft,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonLookLeft,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookLeft,previousButtonState)) {
                     model->setPanSpeed(0);
                 }
             }
 
             //Right
-            if (thisJoystick == joystickNoLookRight) {
-                if (IsButtonPressed(joystickButtonLookRight,thisButtonState) && !IsButtonPressed(joystickButtonLookRight,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookRight) {
+                if (IsButtonPressed(joystickSetup.joystickButtonLookRight,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookRight,previousButtonState)) {
                     model->setPanSpeed(5);
                 }
-                if (!IsButtonPressed(joystickButtonLookRight,thisButtonState) && IsButtonPressed(joystickButtonLookRight,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonLookRight,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookRight,previousButtonState)) {
                     model->setPanSpeed(0);
                 }
             }
 
             //Up
-            if (thisJoystick == joystickNoLookUp) {
-                if (IsButtonPressed(joystickButtonLookUp,thisButtonState) && !IsButtonPressed(joystickButtonLookUp,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookUp) {
+                if (IsButtonPressed(joystickSetup.joystickButtonLookUp,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookUp,previousButtonState)) {
                     model->setVerticalPanSpeed(5);
                 }
-                if (!IsButtonPressed(joystickButtonLookUp,thisButtonState) && IsButtonPressed(joystickButtonLookUp,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonLookUp,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookUp,previousButtonState)) {
                     model->setVerticalPanSpeed(0);
                 }
             }
 
             //Down
-            if (thisJoystick == joystickNoLookDown) {
-                if (IsButtonPressed(joystickButtonLookDown,thisButtonState) && !IsButtonPressed(joystickButtonLookDown,previousButtonState)) {
+            if (thisJoystick == joystickSetup.joystickNoLookDown) {
+                if (IsButtonPressed(joystickSetup.joystickButtonLookDown,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookDown,previousButtonState)) {
                     model->setVerticalPanSpeed(-5);
                 }
-                if (!IsButtonPressed(joystickButtonLookDown,thisButtonState) && IsButtonPressed(joystickButtonLookDown,previousButtonState)) {
+                if (!IsButtonPressed(joystickSetup.joystickButtonLookDown,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookDown,previousButtonState)) {
                     model->setVerticalPanSpeed(0);
                 }
             }
