@@ -46,7 +46,10 @@ const irr::s32 INI_MC_BUTTON = 7;
 const irr::s32 INI_RP_BUTTON = 8;
 const irr::s32 INI_MH_BUTTON = 9;
 const irr::s32 DOC_BUTTON = 10;
-const irr::s32 EXIT_BUTTON = 11;
+const irr::s32 USER_BUTTON = 11;
+const irr::s32 EXIT_BUTTON = 12;
+
+std::string userFolder;
 
 //Event receiver: This does the actual launching
 class Receiver : public irr::IEventReceiver
@@ -217,6 +220,23 @@ public:
                     #endif
                     #endif
                 }
+                if (id == USER_BUTTON) {
+                    #ifdef _WIN32
+                        //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+                        ShellExecute(NULL, TEXT("open"), TEXT(userFolder), NULL, NULL, SW_SHOWNORMAL);
+                        //Sleep(5000);
+                        //exit(EXIT_SUCCESS);
+                    #else
+                    #ifdef __APPLE__
+                        //APPLE
+                        std::cout << userFolder << std::endl;
+                        execl("/usr/bin/open", "open", userFolder.c_str(), NULL);
+                    #else
+                        //Other (assumed posix)
+                        execl("/usr/bin/xdg-open", "xdg-open", userFolder.c_str(), NULL);
+                    #endif
+                    #endif
+                }
             }
         }
         return false;
@@ -251,7 +271,7 @@ int main (int argc, char ** argv)
 	#endif
 
     //User read/write location - look in here first and the exe folder second for files
-    std::string userFolder = Utilities::getUserDir();
+    userFolder = Utilities::getUserDir();
 
     //Read basic ini settings
     std::string iniFilename = "bc5.ini";
@@ -281,8 +301,8 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    irr::u32 graphicsWidth = 200 + (fontSize - FONT_SIZE_DEFAULT) * 16;
-    irr::u32 graphicsHeight = 500 + (fontSize - FONT_SIZE_DEFAULT) * 40;
+    irr::u32 graphicsWidth = fontSize * 16;
+    irr::u32 graphicsHeight = fontSize * 34;
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
@@ -315,7 +335,7 @@ int main (int argc, char ** argv)
     short bR = bC / 3 * 2 + 1;
 
     short bW = graphicsWidth - (2 * bC); // size ...
-    short bH = 30 * (fontSize / (FONT_SIZE_DEFAULT * 1.0)) + 1;
+    short bH = 20 * (fontSize / (FONT_SIZE_DEFAULT * 1.0)) + 1;
 
     short x1 = bC;                       // location ...
     short x2 = x1 + bW;
@@ -334,6 +354,7 @@ int main (int argc, char ** argv)
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
 
     Receiver receiver;
