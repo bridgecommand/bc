@@ -66,7 +66,7 @@ public:
                 if (id == EXIT_BUTTON) {
                     exit(EXIT_SUCCESS);
                 }
-                
+
                 #ifndef _WIN32
                 int pid = fork();  // posix only (GNU/Linux, MacOS)
                 if (pid > 0) return false;
@@ -223,7 +223,7 @@ public:
                 if (id == USER_BUTTON) {
                     #ifdef _WIN32
                         //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-                        ShellExecute(NULL, TEXT("open"), TEXT(userFolder), NULL, NULL, SW_SHOWNORMAL);
+                        ShellExecute(NULL, TEXT("open"), TEXT(userFolder.c_str()), NULL, NULL, SW_SHOWNORMAL);
                         //Sleep(5000);
                         //exit(EXIT_SUCCESS);
                     #else
@@ -342,7 +342,7 @@ int main (int argc, char ** argv)
     short y1, y2;
 
     y1 =        bR; y2 = y1 + 2*bH; irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    
+
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
