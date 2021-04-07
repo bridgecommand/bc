@@ -49,6 +49,7 @@ namespace Utilities
     std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Bridge Command/VERSIONUMBER/ on windows)
     bool pathExists(std::string filePath);
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName); //Read a scenario from ini files
+    bool hasEnding(std::string const &fullString, std::string const &ending);
 
     template <typename T>
     T lexical_cast(std::string in) //Special case for string so we can check for inf

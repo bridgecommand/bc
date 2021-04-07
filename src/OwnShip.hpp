@@ -86,6 +86,7 @@ class OwnShip : public Ship
 		std::string basePath; //The location the model is loaded from
         Terrain* terrain;
         SimulationModel* model;
+        bool is360textureShip;
         irr::f32 rollPeriod; //Roll period (s)  DEE this should be dynamically loaded
         irr::f32 rollAngle; //Roll Angle (deg)
         irr::f32 pitchPeriod; //Roll period (s)

@@ -221,8 +221,22 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	screenDisplaySize *= scaleFactor;
 
     //Load the model
-	irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+	
+    irr::scene::IAnimatedMesh* shipMesh;
 
+    //Check if the 'model' is actualy a .png. If so, treat it as a 360 equirectangular panoramic image with transparency.
+    is360textureShip = false;
+    if (Utilities::hasEnding(ownShipFullPath,".png")) {
+        is360textureShip = true;
+    }
+
+    if (is360textureShip) {
+        shipMesh = smgr->addSphereMesh("Sphere",5.0,32,32);
+        smgr->getMeshManipulator()->flipSurfaces(shipMesh);
+    } else {
+        shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+    }
+    
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
 
@@ -244,8 +258,14 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         }
     }
 
-
     ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+    
+    if (is360textureShip) {
+        irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(ownShipFullPath.c_str());
+        ship->setMaterialTexture(0,texture360);
+        ship->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
+    }
+    
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 
@@ -255,7 +275,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            if (is360textureShip) {
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+            } else {
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            }
             //ship->getMaterial(mat).setFlag(video::EMF_ZWRITE_ENABLE,true);
             ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
