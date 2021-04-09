@@ -154,7 +154,9 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
 
 void Network::setStringToSend(std::string stringToSend)
 {
-    this->stringToSend = stringToSend;
+    //this->stringToSend = stringToSend;
+    this->stringToSend.append(stringToSend);
+    this->stringToSend.append("|");
 }
 
 void Network::sendMessage(ENetPeer* peer)
