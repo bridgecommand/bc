@@ -123,8 +123,8 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
                     event.channelID);*/
 
     //Convert into a string, max length 2048
-    char tempString[2048]; //Fixme: Think if this is long enough
-    snprintf(tempString,2048,"%s",event.packet -> data);
+    char tempString[8192]; //Fixme: Think if this is long enough
+    snprintf(tempString,8192,"%s",event.packet -> data);
     std::string receivedString(tempString);
 
     //Basic checks

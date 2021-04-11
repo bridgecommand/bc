@@ -91,8 +91,8 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
         if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
 
             //receive it
-            char tempString[2048]; //Fixme: Think if this is long enough
-            snprintf(tempString,2048,"%s",event.packet -> data);
+            char tempString[8192]; //Fixme: Think if this is long enough
+            snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
             //Basic checks
@@ -161,8 +161,8 @@ void NetworkSecondary::update()
 void NetworkSecondary::receiveMessage()
 {
     //receive it
-    char tempString[2048]; //Fixme: Think if this is long enough
-    snprintf(tempString,2048,"%s",event.packet -> data);
+    char tempString[8192]; //Fixme: Think if this is long enough
+    snprintf(tempString,8192,"%s",event.packet -> data);
     std::string receivedStrings(tempString);
 
     std::vector<std::string> receivedData  = Utilities::split(receivedStrings,'|');

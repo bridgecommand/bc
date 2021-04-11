@@ -92,8 +92,8 @@ std::string Network::findWorldName()
     if (enet_host_service (server, & event, 10) > 0) {
         if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             //receive it
-            char tempString[2048]; //Fixme: Think if this is long enough
-            snprintf(tempString,2048,"%s",event.packet -> data);
+            char tempString[8192]; //Fixme: Think if this is long enough
+            snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
             //Basic checks
@@ -188,9 +188,9 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
                     event.peer -> data,
                     event.channelID);*/
 
-    //Convert into a string, max length 2048
-    char tempString[2048]; //Fixme: Think if this is long enough
-    snprintf(tempString,2048,"%s",event.packet -> data);
+    //Convert into a string, max length 8192
+    char tempString[8192]; //Fixme: Think if this is long enough
+    snprintf(tempString,8192,"%s",event.packet -> data);
     std::string receivedString(tempString);
 
     //Basic checks

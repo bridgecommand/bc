@@ -176,9 +176,9 @@ void NetworkPrimary::receiveNetwork()
     if (enet_host_service (client, & event, 10) > 0) {
         if (event.type==ENET_EVENT_TYPE_RECEIVE) {
 
-            //Convert into a string, max length 2048
-            char tempString[2048]; //Fixme: Think if this is long enough
-            snprintf(tempString,2048,"%s",event.packet -> data);
+            //Convert into a string, max length 8192
+            char tempString[8192]; //Fixme: Think if this is long enough
+            snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
             //Basic checks
