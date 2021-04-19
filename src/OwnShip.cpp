@@ -224,7 +224,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	
     irr::scene::IAnimatedMesh* shipMesh;
 
-    //Check if the 'model' is actualy a .png. If so, treat it as a 360 equirectangular panoramic image with transparency.
+    //Check if the 'model' is actualy the string "360". If so, treat it as a 360 equirectangular panoramic image with transparency.
     is360textureShip = false;
     if (Utilities::hasEnding(ownShipFullPath,"360")) {
         is360textureShip = true;
@@ -249,9 +249,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
             
             std::string panoPath = basePath + IniFile::iniFileToString(shipIniFilename,IniFile::enumerate1("Pano",i+1));
             irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(panoPath.c_str());
-            //TODO: Check if texture has actually loaded
-            viewNode->setMaterialTexture(0,texture360);
-            viewNode->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
+            
+            if (texture360!=0) {
+                viewNode->setMaterialTexture(0,texture360);
+                viewNode->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
+            }
 
             viewNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
             viewNode->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
