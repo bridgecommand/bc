@@ -199,7 +199,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         irr::f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
         irr::f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
         irr::f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
-        views.push_back(irr::core::vector3df(scaleFactor*camOffsetX,scaleFactor*(camOffsetY+0*yCorrection),scaleFactor*camOffsetZ));
+        views.push_back(irr::core::vector3df(scaleFactor*camOffsetX,scaleFactor*camOffsetY,scaleFactor*camOffsetZ));
     }
 
 	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
@@ -226,64 +226,77 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     //Check if the 'model' is actualy a .png. If so, treat it as a 360 equirectangular panoramic image with transparency.
     is360textureShip = false;
-    if (Utilities::hasEnding(ownShipFullPath,".png")) {
+    if (Utilities::hasEnding(ownShipFullPath,"360")) {
         is360textureShip = true;
     }
 
-    if (is360textureShip) {
-        shipMesh = smgr->addSphereMesh("Sphere",5.0,32,32);
-        smgr->getMeshManipulator()->flipSurfaces(shipMesh);
-    } else {
-        shipMesh = smgr->getMesh(ownShipFullPath.c_str());
-    }
-    
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
 
-    //Make mesh scene node
-    if (shipMesh==0) {
-        //Failed to load mesh - load with dummy and continue
-        device->getLogger()->log("Failed to load own ship model:");
-        device->getLogger()->log(ownShipFullPath.c_str());
-        shipMesh = smgr->addSphereMesh("Dummy name");
-    }
 
-    //If any part is partially transparent, make it fully transparent (for bridge windows etc!)
-    if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
-        for(irr::u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
-            if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
-				//Hide this mesh buffer by scaling to zero size
-				smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),irr::core::vector3df(0,0,0));
+    if (is360textureShip) {
+        
+        //make a dummy node, to which the views will be added as children
+        shipMesh = smgr->addSphereMesh("Sphere",1);
+        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+
+        //Add child meshes for each
+        for(int i = 0; i<views.size(); i++) {
+            irr::scene::IAnimatedMesh* viewMesh = smgr->addSphereMesh(irr::io::path("Sphere")+irr::io::path(i),5.0,32,32);
+            smgr->getMeshManipulator()->flipSurfaces(viewMesh);
+            
+            irr::scene::IAnimatedMeshSceneNode* viewNode = smgr->addAnimatedMeshSceneNode(viewMesh,ship,-1,views.at(i)/scaleFactor);
+            
+            std::string panoPath = basePath + IniFile::iniFileToString(shipIniFilename,IniFile::enumerate1("Pano",i+1));
+            irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(panoPath.c_str());
+            //TODO: Check if texture has actually loaded
+            viewNode->setMaterialTexture(0,texture360);
+            viewNode->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
+
+            viewNode->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+            viewNode->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+            //Set lighting to use diffuse and ambient, so lighting of untextured models works
+            if(viewNode->getMaterialCount()>0) {
+                for(irr::u32 mat=0;mat<viewNode->getMaterialCount();mat++) {
+                    viewNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+                    viewNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+                }
             }
         }
-    }
+    } else {
+        shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+        //Make mesh scene node
+        if (shipMesh==0) {
+            //Failed to load mesh - load with dummy and continue
+            device->getLogger()->log("Failed to load own ship model:");
+            device->getLogger()->log(ownShipFullPath.c_str());
+            shipMesh = smgr->addSphereMesh("Dummy name");
+        }
 
-    ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
-    
-    if (is360textureShip) {
-        irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(ownShipFullPath.c_str());
-        ship->setMaterialTexture(0,texture360);
-        ship->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
+        //If any part is partially transparent, make it fully transparent (for bridge windows etc!)
+        if (IniFile::iniFileTou32(shipIniFilename,"MakeTransparent")==1) {
+            for(irr::u32 mb = 0; mb<shipMesh->getMeshBufferCount(); mb++) {
+                if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255) {
+                    //Hide this mesh buffer by scaling to zero size
+                    smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb),irr::core::vector3df(0,0,0));
+                }
+            }
+        }
+        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+
+        ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+        ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+        //Set lighting to use diffuse and ambient, so lighting of untextured models works
+        if(ship->getMaterialCount()>0) {
+            for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+            }
+        }
     }
     
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
-
-    ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-    ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
-
-    //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(ship->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            if (is360textureShip) {
-                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-            } else {
-                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
-            }
-            //ship->getMaterial(mat).setFlag(video::EMF_ZWRITE_ENABLE,true);
-            ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
-        }
-    }
 
     length = ship->getBoundingBox().getExtent().Z*scaleFactor; //Store length for basic collision calculation
     width = ship->getBoundingBox().getExtent().X*scaleFactor; //Store length for basic collision calculation
