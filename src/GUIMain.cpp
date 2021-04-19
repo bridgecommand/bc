@@ -1104,7 +1104,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     void GUIMain::drawCollisionWarning()
     {
         irr::s32 screenCentreX = 0.5*su;
-        irr::s32 screenCentreY = 0.3*su;
+        irr::s32 screenCentreY = 0.05*sh;
 
         device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255,255,255,255),irr::core::rect<irr::s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh));
         guienv->getSkin()->getFont()->draw(language->translate("collided"),
