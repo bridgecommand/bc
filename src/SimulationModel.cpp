@@ -770,11 +770,13 @@ SimulationModel::~SimulationModel()
     void SimulationModel::changeView()
     {
         camera.changeView();
+        ownShip.setViewVisibility(camera.getView());
     }
 
     void SimulationModel::setView(irr::u32 view)
     {
         camera.setView(view);
+        ownShip.setViewVisibility(camera.getView());
     }
 
     irr::u32 SimulationModel::getCameraView() const

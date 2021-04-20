@@ -242,14 +242,21 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
         //Add child meshes for each
         for(int i = 0; i<views.size(); i++) {
+            
             irr::scene::IAnimatedMesh* viewMesh = smgr->addSphereMesh(irr::io::path("Sphere")+irr::io::path(i),5.0,32,32);
             smgr->getMeshManipulator()->flipSurfaces(viewMesh);
             
-            irr::scene::IAnimatedMeshSceneNode* viewNode = smgr->addAnimatedMeshSceneNode(viewMesh,ship,-1,views.at(i)/scaleFactor);
+            //Angle correction
+            irr::f32 panoRotationYaw = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationYaw",i+1));
+            irr::f32 panoRotationPitch = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationPitch",i+1));
+            irr::f32 panoRotationRoll = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationRoll",i+1));
+
+            irr::scene::IAnimatedMeshSceneNode* viewNode = smgr->addAnimatedMeshSceneNode(viewMesh,ship,-1,views.at(i)/scaleFactor,irr::core::vector3df(panoRotationPitch,panoRotationYaw,panoRotationRoll));
             
             std::string panoPath = basePath + IniFile::iniFileToString(shipIniFilename,IniFile::enumerate1("Pano",i+1));
             irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(panoPath.c_str());
             
+
             if (texture360!=0) {
                 viewNode->setMaterialTexture(0,texture360);
                 viewNode->getMaterial(0).getTextureMatrix(0).setTextureScale(-1.0, 1.0);
@@ -263,6 +270,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
                     viewNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL;
                     viewNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
                 }
+            }
+            if (i>0) {
+                viewNode->setVisible(false); //Hide all except the first one
             }
         }
     } else {
@@ -776,6 +786,26 @@ irr::f32 OwnShip::getMaxSounderDepth() const
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {
     return views;
+}
+
+void OwnShip::setViewVisibility(irr::u32 view) 
+{
+    if(is360textureShip) {
+        irr::scene::ISceneNodeList childList = ship->getChildren();
+        irr::scene::ISceneNodeList::ConstIterator it = childList.begin();
+        int i = 0;
+        while (it != childList.end()) {
+            
+            if(i==view) {
+                (*it)->setVisible(true);
+            } else {
+                (*it)->setVisible(false);
+            }
+
+            i++;
+            it++;
+        }
+    }
 }
 
 std::string OwnShip::getRadarConfigFile() const

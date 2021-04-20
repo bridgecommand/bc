@@ -35,6 +35,7 @@ class OwnShip : public Ship
         void load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
+        void setViewVisibility(irr::u32 view);
         std::string getRadarConfigFile() const;
         irr::f32 getDepth();
         irr::f32 getAngleCorrection() const;
@@ -77,6 +78,7 @@ class OwnShip : public Ship
 		irr::f32 getScreenDisplaySize() const;
 		irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
+        
 
     protected:
     private:
