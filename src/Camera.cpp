@@ -33,7 +33,7 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, irr::core::vector3df(0,0,0), irr::core::vector3df(0,0,1));
@@ -44,6 +44,8 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* paren
     this->lookAngle = lookAngle;
     lookUpAngle = 0;
     this->angleCorrection = angleCorrection;
+
+    this->logger = logger;
 
     verticalPanSpeed = 0;
     horizontalPanSpeed = 0;
@@ -181,6 +183,38 @@ irr::f32 Camera::getLook() const
 irr::f32 Camera::getLookUp() const
 {
     return lookUpAngle;
+}
+
+void Camera::moveForwards() 
+{
+    irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
+    views[currentView] += 0.05 * frv;
+    
+    //For displaying position
+    std::string cameraPositionText = "Camera: (";
+    cameraPositionText.append(irr::core::stringc(views[currentView].X).c_str());
+    cameraPositionText.append(",");
+    cameraPositionText.append(irr::core::stringc(views[currentView].Y).c_str());
+    cameraPositionText.append(",");
+    cameraPositionText.append(irr::core::stringc(views[currentView].Z).c_str());
+    cameraPositionText.append(")");
+    logger->log(cameraPositionText.c_str());
+}
+
+void Camera::moveBackwards() 
+{
+    irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
+    views[currentView] -= 0.05 * frv;
+
+    //For displaying position
+    std::string cameraPositionText = "Camera: (";
+    cameraPositionText.append(irr::core::stringc(views[currentView].X).c_str());
+    cameraPositionText.append(",");
+    cameraPositionText.append(irr::core::stringc(views[currentView].Y).c_str());
+    cameraPositionText.append(",");
+    cameraPositionText.append(irr::core::stringc(views[currentView].Z).c_str());
+    cameraPositionText.append(")");
+    logger->log(cameraPositionText.c_str());
 }
 
 void Camera::changeView()

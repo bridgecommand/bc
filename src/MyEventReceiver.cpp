@@ -482,7 +482,25 @@
             irr::gui::IGUIElement* focussedElement = device->getGUIEnvironment()->getFocus();
             if ( !(focussedElement && focussedElement->getType()==irr::gui::EGUIET_EDIT_BOX)) {
 
-                if (event.KeyInput.Shift) {
+                if (event.KeyInput.Shift && event.KeyInput.Control) {
+
+                    switch(event.KeyInput.Key)
+                    {
+                        //Move camera
+                        case irr::KEY_UP:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->moveCameraForwards();
+                            break;
+                        case irr::KEY_DOWN:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->moveCameraBackwards();
+                            break;
+                        default:
+                            //don't do anything
+                            break;
+                    }
+
+                } else if (event.KeyInput.Shift) {
                     //Shift down
 
                     switch(event.KeyInput.Key)

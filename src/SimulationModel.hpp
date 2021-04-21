@@ -145,6 +145,8 @@ public:
     void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
     void lookStepLeft();
     void lookStepRight();
+    void moveCameraForwards();
+    void moveCameraBackwards();
     void lookAhead();
     void lookAstern();
     void lookPort();

@@ -153,7 +153,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         irr::f32 angleCorrection = ownShip.getAngleCorrection();
-        camera.load(smgr,ownShip.getSceneNode(),views,irr::core::degToRad(viewAngle),lookAngle,angleCorrection);
+        camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views,irr::core::degToRad(viewAngle),lookAngle,angleCorrection);
         camera.setNearValue(cameraMinDistance);
         camera.setFarValue(cameraMaxDistance);
 
@@ -205,7 +205,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
 		irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
         radarViews.push_back(ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
-        radarCamera.load(smgr,ownShip.getSceneNode(),radarViews,irr::core::PI/2.0,0,0);
+        radarCamera.load(smgr, device->getLogger(),ownShip.getSceneNode(),radarViews,irr::core::PI/2.0,0,0);
 		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
 		radarCamera.updateViewport(1.0);
         radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
@@ -745,6 +745,16 @@ SimulationModel::~SimulationModel()
     void SimulationModel::lookStepRight()
     {
         camera.lookStepRight();
+    }
+
+    void SimulationModel::moveCameraForwards()
+    {
+        camera.moveForwards();
+    }
+
+    void SimulationModel::moveCameraBackwards()
+    {
+        camera.moveBackwards();
     }
 
     void SimulationModel::lookAhead()
