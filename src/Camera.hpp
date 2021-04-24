@@ -67,6 +67,8 @@ class Camera
         irr::f32 angleCorrection;
         irr::f32 lookAngle; //In degrees
         irr::f32 lookUpAngle;
+        irr::f32 minLookUpAngle;
+        irr::f32 maxLookUpAngle;
         irr::s32 horizontalPanSpeed; //Degrees per second
         irr::s32 verticalPanSpeed; //Degrees per second
         irr::f32 hFOV;//horizontal field of view (radians)

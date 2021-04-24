@@ -42,6 +42,8 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
     this->views = views;
     currentView = 0;
     this->lookAngle = lookAngle;
+    minLookUpAngle = -85;
+    maxLookUpAngle = 85;
     lookUpAngle = 0;
     this->angleCorrection = angleCorrection;
 
@@ -65,18 +67,18 @@ irr::core::vector3df Camera::getPosition() const
 void Camera::lookUp()
 {
     lookUpAngle++;
-    if (lookUpAngle>40)
+    if (lookUpAngle>maxLookUpAngle)
     {
-        lookUpAngle=40;
+        lookUpAngle=maxLookUpAngle;
     }
 }
 
 void Camera::lookDown()
 {
     lookUpAngle--;
-    if (lookUpAngle<-40)
+    if (lookUpAngle<minLookUpAngle)
     {
-        lookUpAngle=-40;
+        lookUpAngle=minLookUpAngle;
     }
 }
 
@@ -123,13 +125,13 @@ void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proporti
     {
         lookAngle-=360;
     }
-    if (lookUpAngle>40)
+    if (lookUpAngle>maxLookUpAngle)
     {
-        lookUpAngle=40;
+        lookUpAngle=maxLookUpAngle;
     }
-    if (lookUpAngle<-40)
+    if (lookUpAngle<minLookUpAngle)
     {
-        lookUpAngle=-40;
+        lookUpAngle=minLookUpAngle;
     }
 }
 
@@ -280,11 +282,11 @@ void Camera::update(irr::f32 deltaTime)
         }
         
         lookUpAngle += verticalPanSpeed * deltaTime;
-        if (lookUpAngle > 40) {
-            lookUpAngle = 40;
+        if (lookUpAngle > maxLookUpAngle) {
+            lookUpAngle = maxLookUpAngle;
         }
-        if (lookUpAngle < -40) {
-            lookUpAngle = -40;
+        if (lookUpAngle < minLookUpAngle) {
+            lookUpAngle = minLookUpAngle;
         }
 
         // get transformation matrix of node
