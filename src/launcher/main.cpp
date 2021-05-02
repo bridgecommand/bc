@@ -9,6 +9,7 @@
 
 #include "irrlicht.h"
 #include <iostream>
+#include <thread>
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 #include "../Utilities.hpp"
@@ -368,6 +369,7 @@ int main (int argc, char ** argv)
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
+        device->sleep(100);
     }
 
     return EXIT_FAILURE;
