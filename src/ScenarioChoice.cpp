@@ -21,6 +21,7 @@
 #include "ExitMessage.hpp"
 
 #include <iostream>
+#include <fstream>
 
 //using namespace irr;
 
@@ -37,7 +38,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
-    getScenarioList(scenarioList,scenarioPath); //Populate list
+    std::vector<std::vector<std::string>>scenarioDescription;
+    getScenarioList(scenarioList, scenarioDescription, scenarioPath); //Populate list
 
     //Get screen width
     irr::u32 su = driver->getScreenSize().Width;
@@ -56,6 +58,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<irr::s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
     irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<irr::s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    irr::gui::IGUIStaticText* description = gui->addStaticText(L"",irr::core::rect<irr::s32>(0.02*su,0.59*sh,0.30*su,0.80*sh));
     irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
     irr::gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),irr::core::rect<irr::s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
@@ -98,11 +101,33 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
+    irr::s32 descriptionScenario = -1; //Which scenario we are showing the description text for
+
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
         if (device->isWindowActive())
         {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
             driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+            
+            //Set the 'description' text here
+            irr::s32 currentSelection = scenarioListBox->getSelected();
+            if (currentSelection!=descriptionScenario) {
+                //Update the description text
+                description->setText(L"");
+                if (scenarioDescription.size() > currentSelection && currentSelection>=0) {
+                    
+                    irr::core::stringw textBoxContents = L"";
+
+                    for (std::vector<std::string>::iterator it = scenarioDescription.at(currentSelection).begin(); it != scenarioDescription.at(currentSelection).end(); ++it) {
+                        textBoxContents.append(irr::core::stringw(it->c_str()).c_str());
+                        textBoxContents.append(L"\n");
+                    }
+                    description->setText(textBoxContents.c_str());
+
+                }
+                currentSelection = descriptionScenario;
+            }
+            
             gui->drawAll();
             driver->endScene();
         }
@@ -152,13 +177,14 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     hostnameText->remove();hostnameText=0;
     portBox->remove();portBox=0;
     portText->remove();portText=0;
+    description->remove();description=0;
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using
 
     return;
 }
 
-void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::string scenarioPath) {
+void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::vector<std::string>>&scenarioDescription, std::string scenarioPath) {
 
 	irr::io::IFileSystem* fileSystem = device->getFileSystem();
 	if (fileSystem==0) {
@@ -193,8 +219,41 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                     }
                 }
 
+                //Add scenario to the list
                 if (!multiplayerScenario) {
                     scenarioList.push_back(fileName.c_str());
+
+                    //Try reading description.ini if it exists
+                    irr::io::path descriptionFilePath = fileName;
+                    irr::io::path descriptionFilename = descriptionFilePath.append("/description.ini");
+                    std::ifstream descriptionStream (descriptionFilename.c_str());
+                    //Set UTF-8 on Linux/OSX etc
+                    #ifndef _WIN32
+                        try {
+                    #  ifdef __APPLE__
+                            char* thisLocale = setlocale(LC_ALL, "");
+                            if (thisLocale) {
+                                descriptionStream.imbue(std::locale(thisLocale));
+                            }
+                    #  else
+                            descriptionStream.imbue(std::locale("en_US.UTF8"));
+                    #  endif
+                        } catch (const std::runtime_error& runtimeError) {
+                            descriptionStream.imbue(std::locale(""));
+                        }
+                    #endif
+
+                    std::vector<std::string> descriptionLines;
+                    if (descriptionStream.is_open()) {
+                        std::string descriptionLine;
+                        while ( std::getline (descriptionStream,descriptionLine) )
+                        {
+                            descriptionLines.push_back(descriptionLine.c_str());
+                        }
+                        descriptionStream.close();
+                    }
+                    scenarioDescription.push_back(descriptionLines); //Add even if empty
+
                 }
 
             }
