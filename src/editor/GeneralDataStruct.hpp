@@ -27,8 +27,9 @@ struct GeneralData //To hold information about a position, including defaults fo
     irr::f32 startTime, sunRiseTime, sunSetTime, weather, rain, visibility;
     irr::u32 startDay, startMonth, startYear;
     std::string scenarioName;
+    std::string description;
     bool willOverwrite, multiplayerName;
-    GeneralData():startTime(10*SECONDS_IN_HOUR), sunRiseTime(6), sunSetTime(18), weather(1.0), visibility(8.0), rain(0), startDay(1), startMonth(1), startYear(2015), scenarioName("New Scenario"), willOverwrite(false), multiplayerName(false) {}
+    GeneralData():startTime(10*SECONDS_IN_HOUR), sunRiseTime(6), sunSetTime(18), weather(1.0), visibility(8.0), rain(0), startDay(1), startMonth(1), startYear(2015), scenarioName("New Scenario"), willOverwrite(false), multiplayerName(false), description("Scenario description") {}
 };
 
 #endif // __POSITIONDATASTRUCT_HPP_INCLUDED__

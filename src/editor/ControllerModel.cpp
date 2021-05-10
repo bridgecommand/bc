@@ -578,6 +578,15 @@ void ControllerModel::save()
     ownFile.close();
     if (!ownFile.good()) {successOfFar=false;}
 
+    //description.ini
+    std::string descriptionPath = fullScenarioPath + "/description.ini";
+    std::ofstream descriptionFile;
+
+    descriptionFile.open(descriptionPath.c_str());
+    descriptionFile << generalData->description;
+    descriptionFile.close();
+    if (!descriptionFile.good()) {successOfFar=false;}
+
     if (successOfFar) {
         device->getGUIEnvironment()->addMessageBox(lang->translate("saved").c_str(), lang->translate("scenarioSaved").c_str());
     } else {

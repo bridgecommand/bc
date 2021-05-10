@@ -38,7 +38,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Get list of scenarios, stored in scenarioList
     std::vector<std::string> scenarioList;
-    std::vector<std::vector<std::string>>scenarioDescription;
+    std::vector<std::string> scenarioDescription;
     getScenarioList(scenarioList, scenarioDescription, scenarioPath); //Populate list
 
     //Get screen width
@@ -58,7 +58,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<irr::s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
     irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<irr::s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    irr::gui::IGUIStaticText* description = gui->addStaticText(L"",irr::core::rect<irr::s32>(0.02*su,0.59*sh,0.30*su,0.80*sh));
+    irr::gui::IGUIStaticText* description = gui->addStaticText(L"",irr::core::rect<irr::s32>(0.02*su,0.59*sh,0.30*su,0.99*sh));
     irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
     irr::gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),irr::core::rect<irr::s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
@@ -97,7 +97,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     device->clearSystemMessages();
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,portText,portBox,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,portText,portBox,description,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
@@ -115,15 +115,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
                 //Update the description text
                 description->setText(L"");
                 if (scenarioDescription.size() > currentSelection && currentSelection>=0) {
-                    
-                    irr::core::stringw textBoxContents = L"";
-
-                    for (std::vector<std::string>::iterator it = scenarioDescription.at(currentSelection).begin(); it != scenarioDescription.at(currentSelection).end(); ++it) {
-                        textBoxContents.append(irr::core::stringw(it->c_str()).c_str());
-                        textBoxContents.append(L"\n");
-                    }
-                    description->setText(textBoxContents.c_str());
-
+                    description->setText(irr::core::stringw(scenarioDescription.at(currentSelection).c_str()).c_str());
                 }
                 currentSelection = descriptionScenario;
             }
@@ -184,7 +176,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     return;
 }
 
-void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::vector<std::string>>&scenarioDescription, std::string scenarioPath) {
+void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::string>&scenarioDescription, std::string scenarioPath) {
 
 	irr::io::IFileSystem* fileSystem = device->getFileSystem();
 	if (fileSystem==0) {
@@ -243,12 +235,14 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
                         }
                     #endif
 
-                    std::vector<std::string> descriptionLines;
+                    std::string descriptionLines="";
                     if (descriptionStream.is_open()) {
                         std::string descriptionLine;
                         while ( std::getline (descriptionStream,descriptionLine) )
                         {
-                            descriptionLines.push_back(descriptionLine.c_str());
+                            descriptionLines.append(descriptionLine);
+                            descriptionLines.append("\n");
+
                         }
                         descriptionStream.close();
                     }

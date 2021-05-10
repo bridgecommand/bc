@@ -31,7 +31,7 @@ public:
     void chooseScenario(std::string& scenarioName, std::string& hostname, irr::u32& udpPort, OperatingMode::Mode& mode, std::string scenarioPath);
 
 private:
-    void getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::vector<std::string>>&scenarioDescription, std::string scenarioPath);
+    void getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::string>&scenarioDescription, std::string scenarioPath);
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* gui;
     Lang* language;

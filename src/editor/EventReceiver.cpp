@@ -161,6 +161,7 @@
                 tempData.rain = gui->getRain();
                 tempData.visibility = gui->getVisibility();
                 tempData.scenarioName = gui->getScenarioName();
+                tempData.description = gui->getDescription();
 
                 model->setScenarioData(tempData);
             }

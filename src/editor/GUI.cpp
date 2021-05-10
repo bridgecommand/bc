@@ -123,6 +123,12 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
     overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
 
+    descriptionEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.33*sh,0.450*su,0.46*sh),false,generalDataWindow,GUI_ID_DESCRIPTION_EDITBOX );
+    descriptionEdit->setMultiLine(true);
+    descriptionEdit->setWordWrap(true);
+    descriptionEdit->setAutoScroll(true);
+    descriptionEdit->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
+
     multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
     notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
 
@@ -165,6 +171,8 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     startMins->setText(minsString.c_str());
 
     startYear->setText((irr::core::stringw(oldScenarioInfo.startYear)).c_str());
+
+    descriptionEdit->setText(irr::core::stringw(oldScenarioInfo.description.c_str()).c_str());
 
     irr::core::stringw monthString(oldScenarioInfo.startMonth);
     if (monthString.size() == 1) monthString = irr::core::stringw(L"0") + monthString;
@@ -329,6 +337,10 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
     if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
         scenarioName->setText(irr::core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
+    }
+
+    if (oldScenarioInfo.description != scenarioInfo.description) {
+        descriptionEdit->setText(irr::core::stringw(scenarioInfo.description.c_str()).c_str());
     }
 
     //Initially set name colour as default, unless a warning is shown
@@ -807,6 +819,13 @@ std::string GUIMain::getScenarioName() const {
     scenarioNameString = Utilities::trim(scenarioNameString);
 
     return scenarioNameString;
+}
+
+std::string GUIMain::getDescription() const {
+    //Convert from wide to narrow string: Todo: Think about having this all wide.
+    std::wstring wideDescription(descriptionEdit->getText());
+    std::string descriptionString(wideDescription.begin(),wideDescription.end());
+    return descriptionString;
 }
 
 std::wstring GUIMain::f32To3dp(irr::f32 value) const

@@ -1,5 +1,6 @@
 #include "irrlicht.h"
 #include <iostream>
+#include <fstream>
 #include <cstdio>
 #include <vector>
 #include <algorithm>
@@ -568,6 +569,9 @@ int main (int argc, char ** argv)
         std::string otherShipIniFilename = scenarioPath;
         otherShipIniFilename.append("/othership.ini");
 
+        std::string descriptionFilename = scenarioPath;
+        descriptionFilename.append("/description.ini");
+
         //Load general information
         generalData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
         generalData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
@@ -636,6 +640,36 @@ int main (int argc, char ** argv)
 
 
         }
+
+        //Load description information
+        std::ifstream descriptionStream (descriptionFilename.c_str());
+        //Set UTF-8 on Linux/OSX etc
+        #ifndef _WIN32
+            try {
+        #  ifdef __APPLE__
+                char* thisLocale = setlocale(LC_ALL, "");
+                if (thisLocale) {
+                    descriptionStream.imbue(std::locale(thisLocale));
+                }
+        #  else
+                descriptionStream.imbue(std::locale("en_US.UTF8"));
+        #  endif
+            } catch (const std::runtime_error& runtimeError) {
+                descriptionStream.imbue(std::locale(""));
+            }
+        #endif
+
+        std::string descriptionLines = "";
+        if (descriptionStream.is_open()) {
+            std::string descriptionLine;
+            while ( std::getline (descriptionStream,descriptionLine) )
+            {
+                descriptionLines.append(descriptionLine);
+                descriptionLines.append("\n");
+            }
+            descriptionStream.close();
+        }
+        generalData.description = descriptionLines;
 
     }
 

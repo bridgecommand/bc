@@ -20,7 +20,7 @@
 
 //using namespace irr;
 
-StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
+StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::gui::IGUIStaticText* description, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
 	{
 		device = dev;
 		this->scenarioListBox = scenarioListBox;
@@ -29,6 +29,7 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
 		this->hostnameBox = hostnameBox;
 		this->portText = portText;
 		this->portBox = portBox;
+        this->description = description;
 		this->secondaryBox = secondaryBox;
 		this->multiplayerBox = multiplayerBox;
         this->listBoxID = listBoxID;
@@ -59,6 +60,7 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                         scenarioText->setVisible(false);
                         hostnameBox->setVisible(false);
                         hostnameText->setVisible(false);
+                        description->setVisible(false);
                         portText->setVisible(true);
                         portBox->setVisible(true);
                     } else {
@@ -66,6 +68,7 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                         scenarioText->setVisible(true);
                         hostnameBox->setVisible(true);
                         hostnameText->setVisible(true);
+                        description->setVisible(true);
                         portText->setVisible(false);
                         portBox->setVisible(false);
                     }

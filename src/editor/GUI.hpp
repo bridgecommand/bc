@@ -62,6 +62,7 @@ public:
         GUI_ID_VISIBILITY_COMBOBOX,
         GUI_ID_RAIN_COMBOBOX,
         GUI_ID_SCENARIONAME_EDITBOX,
+        GUI_ID_DESCRIPTION_EDITBOX,
         GUI_ID_APPLY_BUTTON,
         GUI_ID_SAVE_BUTTON,
         GUI_ID_OWNSHIPSELECT_COMBOBOX,
@@ -88,6 +89,7 @@ public:
     irr::f32 getVisibility() const;
     irr::u32 getEditBoxMMSI() const;
     std::string getScenarioName() const;
+    std::string getDescription() const;
     irr::core::vector2df getScreenCentrePosition() const;
 
 
@@ -105,6 +107,7 @@ private:
     irr::gui::IGUIWindow* generalDataWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
+    irr::gui::IGUIEditBox* descriptionEdit;
     irr::gui::IGUIComboBox* shipSelector;
     irr::gui::IGUIListBox* legSelector;
     irr::gui::IGUIEditBox* legCourseEdit;
