@@ -263,7 +263,11 @@ private:
 
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;
-    irr::core::rect<irr::s32> altHdgIndicatorPos;
+    irr::core::rect<irr::s32> radHdgIndicatorPos;
+    irr::core::rect<irr::s32> maxHdgIndicatorPos;
+
+    irr::core::rect<irr::s32> stdDataDisplayPos;
+    irr::core::rect<irr::s32> altDataDisplayPos;
 
 
     //DEE defines the position of the rate of turn indicator

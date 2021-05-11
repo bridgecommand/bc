@@ -224,13 +224,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //add data display:
-        dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.09*su,0.71*sh,0.45*su,0.95*sh), true, false, 0, -1, true); //Actual text set later
+        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su,0.71*sh,0.45*su,0.95*sh); //In normal view
+        altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
+        dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
         guiSpeed = 0;
 
         //Add heading indicator
-        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.630*sh,0.45*su,0.680*sh);
-        altHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.900*sh,0.45*su,0.950*sh);
+        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.630*sh,0.45*su,0.680*sh); //In normal view
+        radHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised radar view
+        maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
         //Add weather scroll bar
@@ -558,8 +561,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
 
-        headingIndicator->setVisible(showInterface);
-        dataDisplay->setVisible(showInterface);
         weatherScrollbar->setVisible(showInterface);
         rainScrollbar->setVisible(showInterface);
         visibilityScrollbar->setVisible(showInterface);
@@ -569,6 +570,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         stbdText->setVisible(showInterface && !singleEngine);
 
         //Items not to show if we're on full screen radar
+        dataDisplay->setVisible(!radarLarge);
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
 		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
@@ -582,10 +584,21 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         largeRadarPIControls->setVisible(radarLarge);
 
         //Move gui elements if on largescreen radar
-        if (!radarLarge) {
-            headingIndicator->setRelativePosition(stdHdgIndicatorPos);
+        //Heading
+        if (radarLarge) {
+            headingIndicator->setRelativePosition(radHdgIndicatorPos);
+        } else if (!showInterface) {
+            headingIndicator->setRelativePosition(maxHdgIndicatorPos);
         } else {
-            headingIndicator->setRelativePosition(altHdgIndicatorPos);
+            headingIndicator->setRelativePosition(stdHdgIndicatorPos);
+        }
+        //Set position of data display
+        if (showInterface) {
+            dataDisplay->setRelativePosition(stdDataDisplayPos);
+            dataDisplay->setDrawBackground(true);
+        } else {
+            dataDisplay->setRelativePosition(altDataDisplayPos);
+            dataDisplay->setDrawBackground(false);
         }
 
     }
@@ -749,43 +762,48 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //update heading display element
         irr::core::stringw displayText;
 
-        if (hasGPS) {
-            displayText.append(language->translate("pos"));
-            displayText.append(irr::core::stringw(latDegrees));
-            displayText.append(language->translate("deg"));
-            displayText.append(f32To3dp(latMinutes).c_str());
-            displayText.append(language->translate("minSymbol"));
-            displayText.append(northSouth);
-            displayText.append(L" ");
-
-            displayText.append(irr::core::stringw(lonDegrees));
-            displayText.append(language->translate("deg"));
-            displayText.append(f32To3dp(lonMinutes).c_str());
-            displayText.append(language->translate("minSymbol"));
-            displayText.append(eastWest);
-            displayText.append(L"\n");
-        }
-
         displayText.append(language->translate("spd"));
         displayText.append(f32To1dp(guiSpeed).c_str());
-        displayText.append(L"\n");
+        displayText.append(L" ");
+        displayText.append(language->translate("kts"));
+        displayText.append(L" ");
 
-        if (hasDepthSounder) {
-            displayText.append(language->translate("depth"));
-            if (guiDepth <= maxSounderDepth) {
-                displayText.append(f32To1dp(guiDepth).c_str());
-            } else {
-                displayText.append(L"-");
-            }
+        if (showInterface) { //Only show speed in minimal 2d interface
             displayText.append(L"\n");
+            if (hasDepthSounder) {
+                displayText.append(language->translate("depth"));
+                if (guiDepth <= maxSounderDepth) {
+                    displayText.append(f32To1dp(guiDepth).c_str());
+                } else {
+                    displayText.append(L"-");
+                }
+                displayText.append(L" m \n");
+            }
+
+            displayText.append(irr::core::stringw(guiTime.c_str()));
+            displayText.append(L"\n");
+
+            if (hasGPS) {
+                displayText.append(language->translate("pos"));
+                displayText.append(irr::core::stringw(latDegrees));
+                displayText.append(language->translate("deg"));
+                displayText.append(f32To3dp(latMinutes).c_str());
+                displayText.append(language->translate("minSymbol"));
+                displayText.append(northSouth);
+                displayText.append(L" ");
+
+                displayText.append(irr::core::stringw(lonDegrees));
+                displayText.append(language->translate("deg"));
+                displayText.append(f32To3dp(lonMinutes).c_str());
+                displayText.append(language->translate("minSymbol"));
+                displayText.append(eastWest);
+                displayText.append(L"\n");
+            }
+
+            displayText.append(language->translate("fps"));
+            displayText.append(irr::core::stringw(device->getVideoDriver()->getFPS()).c_str());
+            displayText.append(L"\n");  
         }
-
-        displayText.append(irr::core::stringw(guiTime.c_str()));
-        displayText.append(L"\n");
-
-        displayText.append(language->translate("fps"));
-        displayText.append(irr::core::stringw(device->getVideoDriver()->getFPS()).c_str());
-        displayText.append(L"\n");
         if (guiPaused) {
             displayText.append(language->translate("paused"));
             displayText.append(L"\n");

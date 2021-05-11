@@ -20,6 +20,7 @@ pausedbutton="PAUSED: CLICK HERE TO START\n\nMouse:\nThe rudder, engine and cont
 pos = "Position: "
 hdg="Heading: "
 spd="Speed: "
+kts="knots"
 depth="Depth: "
 zoom="Zoom"
 range="Range: "
