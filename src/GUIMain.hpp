@@ -154,24 +154,15 @@ private:
     irr::gui::IGUIScrollBar* spdScrollbar;
     irr::gui::IGUIScrollBar* portScrollbar;
     irr::gui::IGUIScrollBar* stbdScrollbar;
-//    irr::gui::IGUIScrollBar* rudderScrollbar;
-
-// DEE vvvvv
     irr::gui::OutlineScrollBar* wheelScrollbar;
-// DEE ^^^^^
-
     irr::gui::IGUIScrollBar* bowThrusterScrollbar;
     irr::gui::IGUIScrollBar* sternThrusterScrollbar;
     irr::gui::IGUIStaticText* portText;
     irr::gui::IGUIStaticText* stbdText;
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* radarText;
-// DEE vvvvv
-    //irr::gui::IGUIStaticText* rudderText;
-    //irr::gui::IGUIStaticText* wheelText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
-// DEE ^^^^^
     irr::gui::IGUIListBox* arpaText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
@@ -186,7 +177,6 @@ private:
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
     irr::gui::IGUIScrollBar* radarRainScrollbar;
 
-    //irr::gui::IGUIElement* largeRadarGUIParent; //Parent to make it easier to show/hide large radar gui
     irr::gui::IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
     irr::gui::IGUIRectangle* largeRadarPIControls; //Parent for PI controls on large radar
     irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
@@ -203,11 +193,6 @@ private:
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
     irr::gui::HeadingIndicator* headingIndicator;
-
-// DEE vvv this is the larger rot indicator
-//    irr::gui::RateOfTurnIndicator* rateofturnIndicator;
-
-// DEE ^^^
 
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
@@ -253,6 +238,7 @@ private:
     bool guiPaused;
     bool guiCollided;
     bool showInterface;
+    bool controlsHidden; //If controls should always be hidden (if a secondary screen etc)
 
     bool hasDepthSounder;
     irr::f32 maxSounderDepth;
@@ -269,12 +255,10 @@ private:
     irr::core::rect<irr::s32> stdDataDisplayPos;
     irr::core::rect<irr::s32> altDataDisplayPos;
 
-
-    //DEE defines the position of the rate of turn indicator
     irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
 
-
     void updateVisibility();
+    void hideInSecondary();
     void draw2dRadar();
     void draw2dBearing();
     void drawCollisionWarning();

@@ -44,6 +44,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         this->hasGPS = hasGPS;
         this->hasBowThruster = hasBowThruster;
         this->hasRateOfTurnIndicator = hasRateOfTurnIndicator;
+        this->controlsHidden = controlsHidden;
 
         this->hasSternThruster = hasSternThruster;
         guienv = device->getGUIEnvironment();
@@ -205,22 +206,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             portText->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
         }
 
+        //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
         if (controlsHidden) {
-            //TODO: Need to make sure that updateVisibility does not undo this
-            //Also weather controls etc
-            stbdScrollbar->setVisible(false);
-            portScrollbar->setVisible(false);
-            stbdText->setVisible(false);
-            portText->setVisible(false);
-            //rudderScrollbar->setVisible(false);
-
-// DEE vvvvv
-	    wheelScrollbar->setVisible(false); // not sure this should be hidden
-//            wheelText->setVisible(false); // hide the wheel text
-            rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
-// DEE ^^^^^
-            if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
-            if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
+            hideInSecondary();
         }
 
         //add data display:
@@ -601,6 +589,23 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             dataDisplay->setDrawBackground(false);
         }
 
+        //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
+        if (controlsHidden) {
+            hideInSecondary();
+        }
+
+    }
+
+    void GUIMain::hideInSecondary() {
+        //Hide user inputs if in secondary mode
+        stbdScrollbar->setVisible(false);
+        portScrollbar->setVisible(false);
+        stbdText->setVisible(false);
+        portText->setVisible(false);
+        wheelScrollbar->setVisible(false);
+        //rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
+        if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
+        if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
     }
 
     std::wstring GUIMain::f32To1dp(irr::f32 value)
@@ -802,7 +807,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
             displayText.append(language->translate("fps"));
             displayText.append(irr::core::stringw(device->getVideoDriver()->getFPS()).c_str());
-            displayText.append(L"\n");  
+            displayText.append(L"\n");
         }
         if (guiPaused) {
             displayText.append(language->translate("paused"));
