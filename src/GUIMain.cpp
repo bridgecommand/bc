@@ -213,6 +213,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //add data display:
         stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su,0.71*sh,0.45*su,0.95*sh); //In normal view
+        radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
         guiHeading = 0;
@@ -391,7 +392,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),largeRadarControls);
 
         //Add paused button
-        pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.3*su,0.27*sh,0.7*su,0.73*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
+        pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
@@ -558,7 +559,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         stbdText->setVisible(showInterface && !singleEngine);
 
         //Items not to show if we're on full screen radar
-        dataDisplay->setVisible(!radarLarge);
+        //dataDisplay->setVisible(!radarLarge);
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
 		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
@@ -581,12 +582,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             headingIndicator->setRelativePosition(stdHdgIndicatorPos);
         }
         //Set position of data display
-        if (showInterface) {
-            dataDisplay->setRelativePosition(stdDataDisplayPos);
-            dataDisplay->setDrawBackground(true);
-        } else {
+        if (radarLarge) {
+            dataDisplay->setRelativePosition(radDataDisplayPos);
+            dataDisplay->setDrawBackground(false);
+        } else if (!showInterface) {
             dataDisplay->setRelativePosition(altDataDisplayPos);
             dataDisplay->setDrawBackground(false);
+        } else {
+            dataDisplay->setRelativePosition(stdDataDisplayPos);
+            dataDisplay->setDrawBackground(true);
         }
 
         //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen

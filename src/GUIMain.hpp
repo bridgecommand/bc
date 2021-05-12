@@ -253,6 +253,7 @@ private:
     irr::core::rect<irr::s32> maxHdgIndicatorPos;
 
     irr::core::rect<irr::s32> stdDataDisplayPos;
+    irr::core::rect<irr::s32> radDataDisplayPos;
     irr::core::rect<irr::s32> altDataDisplayPos;
 
     irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
