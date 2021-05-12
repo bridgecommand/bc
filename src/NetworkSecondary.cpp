@@ -69,7 +69,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
         std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
 		enet_deinitialize();
 		exit (EXIT_FAILURE);
-    } 
+    }
 
 
 }
@@ -163,162 +163,159 @@ void NetworkSecondary::receiveMessage()
     //receive it
     char tempString[8192]; //Fixme: Think if this is long enough
     snprintf(tempString,8192,"%s",event.packet -> data);
-    std::string receivedStrings(tempString);
+    std::string receivedString(tempString);
 
-    std::vector<std::string> receivedData  = Utilities::split(receivedStrings,'|');
+    //std::cout << "Received data:" << receivedStrings << std::endl;
 
-    for(int subMessage = 0; subMessage > receivedData.size(); subMessage++) {
-        std::string receivedString = receivedData.at(subMessage);
+    //Basic checks
+    if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+        if (receivedString.substr(0,2).compare("BC") == 0 ) { //Check if it starts with BC
+            //Strip 'BC'
+            receivedString = receivedString.substr(2,receivedString.length()-2);
 
-        //Basic checks
-        if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
-            if (receivedString.substr(0,2).compare("BC") == 0 ) { //Check if it starts with BC
-                //Strip 'BC'
-                receivedString = receivedString.substr(2,receivedString.length()-2);
+            //Split into main parts
+            std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
-                //Split into main parts
-                std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
+            //Check number of elements
+            if (receivedData.size() == 11) { //11 basic records in data sent
 
-                //Check number of elements
-                if (receivedData.size() == 11) { //11 basic records in data sent
+                irr::f32 timeError;
 
-                    irr::f32 timeError;
-
-                    //Get time info from record 0
-                    std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
-                    //Time since start of scenario day 1 is record 2
-                    if (timeData.size() > 2) {
-                        timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta(); //How far we are behind the master
-                        irr::f32 baseAccelerator = Utilities::lexical_cast<irr::f32>(timeData.at(3)); //The master accelerator setting
-                        if (fabs(timeError) > 1) {
-                            //Big time difference, so reset
-                            model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                //Get time info from record 0
+                std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
+                //Time since start of scenario day 1 is record 2
+                if (timeData.size() > 2) {
+                    timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta(); //How far we are behind the master
+                    irr::f32 baseAccelerator = Utilities::lexical_cast<irr::f32>(timeData.at(3)); //The master accelerator setting
+                    if (fabs(timeError) > 1) {
+                        //Big time difference, so reset
+                        model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                        accelAdjustment = 0;
+                        device->getLogger()->log("Resetting time alignment");
+                    } else { //Adjust accelerator to maintain time alignment
+                        accelAdjustment += timeError*0.01; //Integral only at the moment
+                        //Check for zero crossing, and reset
+                        if (previousTimeError * timeError < 0) {
                             accelAdjustment = 0;
-                            device->getLogger()->log("Resetting time alignment");
-                        } else { //Adjust accelerator to maintain time alignment
-                            accelAdjustment += timeError*0.01; //Integral only at the moment
-                            //Check for zero crossing, and reset
-                            if (previousTimeError * timeError < 0) {
-                                accelAdjustment = 0;
-                            }
-                            if (baseAccelerator + accelAdjustment < 0) {accelAdjustment= -1*baseAccelerator;}//Saturate at zero
                         }
-                        model->setAccelerator(baseAccelerator + accelAdjustment);
-                        previousTimeError = timeError; //Store for next time
+                        if (baseAccelerator + accelAdjustment < 0) {accelAdjustment= -1*baseAccelerator;}//Saturate at zero
                     }
+                    model->setAccelerator(baseAccelerator + accelAdjustment);
+                    previousTimeError = timeError; //Store for next time
+                }
 
-                    //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
-                    if (mode==OperatingMode::Secondary) {
-                        std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-                        if (positionData.size() == 9) { //9 elements in position data sent
-                            model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
-                                        Utilities::lexical_cast<irr::f32>(positionData.at(1)));
-                            model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
-                            model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
-                            model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(6))/MPS_TO_KTS);
-                        }
-                    }
-
-                    //Start
-                    //Get other ship info from records 2 and 3
-                    //Numbers of objects in record 2 (Others, buoys, MOBs)
-                    std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
-                    if (numberData.size() == 3) {
-                        irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
-
-                        //Update other ship data
-                        std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
-                        if (numberOthers == otherShipsDataString.size()) {
-                            for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
-                                std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-                                if (thisShipData.size() == 8) { //8 elements for each ship
-                                    //Update data
-                                    model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
-                                    model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
-                                    irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
-                                    irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
-                                    model->setOtherShipPos(i,receivedPosX,receivedPosZ);
-                                    //Todo: Think about using timeError to extrapolate position to get more accurately.
-                                    //Todo: use SART etc
-                                }
-                            }
-                        }
-
-                        //Update MOB data
-                        irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
-                        if (numberMOB==1) {
-                            //MOB should be visible, find if we have an MOB position record with two items (record 5)
-                            //TODO: TEST!
-                            std::vector<std::string> mobData = Utilities::split(receivedData.at(5),',');
-                            if (mobData.size()==2) {
-                                model->setManOverboardVisible(true);
-                                model->setManOverboardPos(  Utilities::lexical_cast<irr::f32>(mobData.at(0)),
-                                                            Utilities::lexical_cast<irr::f32>(mobData.at(1)));
-                            }
-                        } else if (numberMOB==0) {
-                            model->setManOverboardVisible(false);
-                        }
-
-                    } //Check if 3 number elements for Other ships, buoys and MOBs
-
-                    //Get weather info from record 7
-                    //0 is weather, 1 is visibility, 3 is rain
-                    std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
-                    if (weatherData.size() == 5) {
-                        model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
-                        model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
-                        model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
-                    }
-
-                    //Get view information from record 9
-                    std::vector<std::string> viewData = Utilities::split(receivedData.at(9),',');
-                    if (viewData.size() == 1) {
-                        model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
-                    }
-
-                    //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)
-
-                    //If in multiplayer mode, send back a message with our position and heading
-                    if (mode==OperatingMode::Multiplayer) {
-
-                        std::string multiplayerFeedback = "MPF";
-                        multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosX()));
-                        multiplayerFeedback.append("#");
-                        multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
-                        multiplayerFeedback.append("#");
-                        multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getHeading()));
-                        multiplayerFeedback.append("#");
-                        multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
-                        multiplayerFeedback.append("#");
-                        multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
-
-                        //Send back to event.peer
-                        ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
-                        if (packet!=0) {
-                            enet_peer_send (event.peer, 0, packet);
-                            enet_host_flush (server);
-                        }
-                    }
-
-                } //Check for right number of elements in received data
-            } //Check received message starts with BC
-            else if (receivedString.substr(0,2).compare("OS") == 0 ) { //Check if it starts with OS (Update about ownship only)
-                //Strip 'OS'
-                receivedString = receivedString.substr(2,receivedString.length()-2);
                 //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
                 if (mode==OperatingMode::Secondary) {
-                    std::vector<std::string> positionData = Utilities::split(receivedString,',');
-                    if (positionData.size() == 5) { //5 elements in position data sent
-                        //std::cout << "positionData.size() == 5" << std::endl;
+                    std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
+                    if (positionData.size() == 9) { //9 elements in position data sent
                         model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
                                     Utilities::lexical_cast<irr::f32>(positionData.at(1)));
                         model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
                         model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
-                        model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(4))/MPS_TO_KTS);
+                        model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(6))/MPS_TO_KTS);
                     }
                 }
-                
+
+                //Start
+                //Get other ship info from records 2 and 3
+                //Numbers of objects in record 2 (Others, buoys, MOBs)
+                std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
+                if (numberData.size() == 3) {
+                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+
+                    //Update other ship data
+                    std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
+                    if (numberOthers == otherShipsDataString.size()) {
+                        for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+                            std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
+                            if (thisShipData.size() == 8) { //8 elements for each ship
+                                //Update data
+                                model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
+                                model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
+                                irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
+                                irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
+                                model->setOtherShipPos(i,receivedPosX,receivedPosZ);
+                                //Todo: Think about using timeError to extrapolate position to get more accurately.
+                                //Todo: use SART etc
+                            }
+                        }
+                    }
+
+                    //Update MOB data
+                    irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+                    if (numberMOB==1) {
+                        //MOB should be visible, find if we have an MOB position record with two items (record 5)
+                        //TODO: TEST!
+                        std::vector<std::string> mobData = Utilities::split(receivedData.at(5),',');
+                        if (mobData.size()==2) {
+                            model->setManOverboardVisible(true);
+                            model->setManOverboardPos(  Utilities::lexical_cast<irr::f32>(mobData.at(0)),
+                                                        Utilities::lexical_cast<irr::f32>(mobData.at(1)));
+                        }
+                    } else if (numberMOB==0) {
+                        model->setManOverboardVisible(false);
+                    }
+
+                } //Check if 3 number elements for Other ships, buoys and MOBs
+
+                //Get weather info from record 7
+                //0 is weather, 1 is visibility, 3 is rain
+                std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
+                if (weatherData.size() == 5) {
+                    model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
+                    model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
+                    model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
+                }
+
+                //Get view information from record 9
+                std::vector<std::string> viewData = Utilities::split(receivedData.at(9),',');
+                if (viewData.size() == 1) {
+                    model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                }
+
+                //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)
+
+                //If in multiplayer mode, send back a message with our position and heading
+                if (mode==OperatingMode::Multiplayer) {
+
+                    std::string multiplayerFeedback = "MPF";
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosX()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getHeading()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
+
+                    //Send back to event.peer
+                    ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
+                    if (packet!=0) {
+                        enet_peer_send (event.peer, 0, packet);
+                        enet_host_flush (server);
+                    }
+                }
+
+            } //Check for right number of elements in received data
+        } //Check received message starts with BC
+        else if (receivedString.substr(0,2).compare("OS") == 0 ) { //Check if it starts with OS (Update about ownship only)
+            //Strip 'OS'
+            receivedString = receivedString.substr(2,receivedString.length()-2);
+            //Get own ship position info from record 1, if in secondary mode (not used in multiplayer)
+            if (mode==OperatingMode::Secondary) {
+                std::vector<std::string> positionData = Utilities::split(receivedString,',');
+                if (positionData.size() == 5) { //5 elements in position data sent
+                    //std::cout << "positionData.size() == 5" << std::endl;
+                    model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
+                                Utilities::lexical_cast<irr::f32>(positionData.at(1)));
+                    model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
+                    model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
+                    model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(4))/MPS_TO_KTS);
+                }
             }
+
         }
     }
+
 }

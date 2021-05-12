@@ -179,134 +179,140 @@ void NetworkPrimary::receiveNetwork()
             //Convert into a string, max length 8192
             char tempString[8192]; //Fixme: Think if this is long enough
             snprintf(tempString,8192,"%s",event.packet -> data);
-            std::string receivedString(tempString);
+            std::string receivedStrings(tempString);
 
-            //Basic checks
-            if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
-                if (receivedString.substr(0,2).compare("MC") == 0 ) { //Check if it starts with MC
-                    //Strip 'MC'
-                    receivedString = receivedString.substr(2,receivedString.length()-2);
+            std::vector<std::string> receivedData  = Utilities::split(receivedStrings,'|');
 
-                    //Populate the data structures from the stripped string
-                    //findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData);
-                    std::vector<std::string> commands = Utilities::split(receivedString,'#'); //Split into basic commands
-                    if (commands.size() > 0) {
+            for(int subMessage = 0; subMessage < receivedData.size(); subMessage++) {
+                std::string receivedString = receivedData.at(subMessage);
 
-                        //Iterate through commands
-                        for(std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); ++it) {
+                //Basic checks
+                if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+                    if (receivedString.substr(0,2).compare("MC") == 0 ) { //Check if it starts with MC
+                        //Strip 'MC'
+                        receivedString = receivedString.substr(2,receivedString.length()-2);
 
-                            std::string thisCommand = *it;
+                        //Populate the data structures from the stripped string
+                        //findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData);
+                        std::vector<std::string> commands = Utilities::split(receivedString,'#'); //Split into basic commands
+                        if (commands.size() > 0) {
 
-                            //Check what sort of command
-                            if (thisCommand.length() > 2) {
-                                if (thisCommand.substr(0,2).compare("CL") == 0) {
-                                    //'CL', change leg
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 6) {
-                                        //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                        irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                        irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
-                                        model->changeOtherShipLeg(shipNo,legNo,bearing,speed,distance);
-                                    } //If six data parts received
-                                } else if (thisCommand.substr(0,2).compare("AL") == 0) {
-                                    //'AL' add leg
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 6) {
-                                        //6 elements in 'Add leg' command: CL,shipNo,afterLegNo,bearing,speed,distance
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                        irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                        irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
-                                        model->addOtherShipLeg(shipNo,legNo,bearing,speed,distance);
-                                    } //If six data parts received
-                                } else if (thisCommand.substr(0,2).compare("DL") == 0) {
-                                    //'DL' delete leg
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 3) {
-                                        //3 elements in 'Delete Leg' command: DL,shipNo,legNo
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        model->deleteOtherShipLeg(shipNo,legNo);
-                                    }
-                                } else if (thisCommand.substr(0,2).compare("RS") == 0) {
-                                    //'RS' reposition ship
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 4) {
-                                        //4 elements in 'Reposition ship' command: RS,shipNo,posX,posZ
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                        if (shipNo<0){
-                                            model->setPos(positionX,positionZ);
-                                        } else {
-                                            model->setOtherShipPos(shipNo,positionX,positionZ);
+                            //Iterate through commands
+                            for(std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); ++it) {
+
+                                std::string thisCommand = *it;
+
+                                //Check what sort of command
+                                if (thisCommand.length() > 2) {
+                                    if (thisCommand.substr(0,2).compare("CL") == 0) {
+                                        //'CL', change leg
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 6) {
+                                            //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
+                                            int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                            irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            model->changeOtherShipLeg(shipNo,legNo,bearing,speed,distance);
+                                        } //If six data parts received
+                                    } else if (thisCommand.substr(0,2).compare("AL") == 0) {
+                                        //'AL' add leg
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 6) {
+                                            //6 elements in 'Add leg' command: CL,shipNo,afterLegNo,bearing,speed,distance
+                                            int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                            irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            model->addOtherShipLeg(shipNo,legNo,bearing,speed,distance);
+                                        } //If six data parts received
+                                    } else if (thisCommand.substr(0,2).compare("DL") == 0) {
+                                        //'DL' delete leg
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 3) {
+                                            //3 elements in 'Delete Leg' command: DL,shipNo,legNo
+                                            int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            model->deleteOtherShipLeg(shipNo,legNo);
+                                        }
+                                    } else if (thisCommand.substr(0,2).compare("RS") == 0) {
+                                        //'RS' reposition ship
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 4) {
+                                            //4 elements in 'Reposition ship' command: RS,shipNo,posX,posZ
+                                            int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                            irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            if (shipNo<0){
+                                                model->setPos(positionX,positionZ);
+                                            } else {
+                                                model->setOtherShipPos(shipNo,positionX,positionZ);
+                                            }
+                                        }
+                                    } else if (thisCommand.substr(0,2).compare("RL") == 0) {
+                                        //'RL' reset legs and position, used for AIS contacts
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 6) {
+                                            //6 elements in 'Reset legs' command: RS,shipNo,posX,posZ
+                                            int shipNo =         Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                            irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            irr::f32 cog =       Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                            irr::f32 sog =       Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            if (shipNo>=0){
+                                                model->setOtherShipPos(shipNo,positionX,positionZ);
+                                                model->resetOtherShipLegs(shipNo,cog,sog,1); //Hard coded 1Nm distance
+                                            }
+                                        }
+
+                                    } else if (thisCommand.substr(0,2).compare("SW") == 0) {
+                                        //'SW' Set weather
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size() == 4) {
+                                            //4 elements in 'Set weather' command: SW,weather,rain,vis
+                                            irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
+                                            irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
+                                            irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            if (weather >= 0) {model->setWeather(weather);}
+                                            if (rain >=0) {model->setRain(rain);}
+                                            if (visibility>0) {model->setVisibility(visibility);}
+                                        }
+
+
+                                    } else if (thisCommand.substr(0,2).compare("MO") == 0) {
+                                        //'MO', Man overboard
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==2) {
+                                            irr::s32 mobMode = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            if (mobMode==1) {
+                                                model->releaseManOverboard();
+                                            } else if (mobMode==-1) {
+                                                model->retrieveManOverboard();
+                                            }
+                                        }
+                                    } else if (thisCommand.substr(0,2).compare("MM") == 0) {
+                                        //'MM', Set MMSI
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==3) {
+                                            int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
+                                            irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
+                                            model->setOtherShipMMSI(shipNo,mmsi);
                                         }
                                     }
-                                } else if (thisCommand.substr(0,2).compare("RL") == 0) {
-                                    //'RL' reset legs and position, used for AIS contacts
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 6) {
-                                        //6 elements in 'Reset legs' command: RS,shipNo,posX,posZ
-                                        int shipNo =         Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                        irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                        irr::f32 cog =       Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                        irr::f32 sog =       Utilities::lexical_cast<irr::f32>(parts.at(5));
-                                        if (shipNo>=0){
-                                            model->setOtherShipPos(shipNo,positionX,positionZ);
-                                            model->resetOtherShipLegs(shipNo,cog,sog,1); //Hard coded 1Nm distance
-                                        }
-                                    }
 
-                                } else if (thisCommand.substr(0,2).compare("SW") == 0) {
-                                    //'SW' Set weather
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size() == 4) {
-                                        //4 elements in 'Set weather' command: SW,weather,rain,vis
-                                        irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
-                                        irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                        irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                        if (weather >= 0) {model->setWeather(weather);}
-                                        if (rain >=0) {model->setRain(rain);}
-                                        if (visibility>0) {model->setVisibility(visibility);}
-                                    }
+                                } //This command has at least three characters
 
+                            }
 
-                                } else if (thisCommand.substr(0,2).compare("MO") == 0) {
-                                    //'MO', Man overboard
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size()==2) {
-                                        irr::s32 mobMode = Utilities::lexical_cast<irr::s32>(parts.at(1));
-                                        if (mobMode==1) {
-                                            model->releaseManOverboard();
-                                        } else if (mobMode==-1) {
-                                            model->retrieveManOverboard();
-                                        }
-                                    }
-                                } else if (thisCommand.substr(0,2).compare("MM") == 0) {
-                                    //'MM', Set MMSI
-                                    std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                    if (parts.size()==3) {
-                                        int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                        irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
-                                        model->setOtherShipMMSI(shipNo,mmsi);
-                                    }
-                                }
+                            //model->setSpeed(speed);
+                            //model->setHeading(angle);
+                        } //At least one command
+                    } //Check received message starts with MC
 
-                            } //This command has at least three characters
-
-                        }
-
-                        //model->setSpeed(speed);
-                        //model->setHeading(angle);
-                    } //At least one command
-                } //Check received message starts with MC
-
-            } //Check message at least 3 characters
+                } //Check message at least 3 characters
+            }
 
             enet_packet_destroy (event.packet);
         }
@@ -318,7 +324,7 @@ void NetworkPrimary::sendNetwork()
     if (!networkRequested) {
         return;
     }
-    
+
     std::string stringToSend;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
         stringToSend = generateSendStringScn();
@@ -345,9 +351,9 @@ void NetworkPrimary::sendNetwork()
 std::string NetworkPrimary::generateSendStringShort()
 {
     // Get data from model
-    
+
     std::string stringToSend = "OS"; //Own ship only
-    
+
     //1 Position, speed etc
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getPosX()));
     stringToSend.append(",");
