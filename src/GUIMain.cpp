@@ -396,20 +396,23 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.14*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.13*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.13*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.14*su,0.92*sh,0.19*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su,0.92*sh,0.17*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.19*su,0.92*sh,0.24*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su,0.92*sh,0.21*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
+        //Exit button
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su,0.92*sh,0.25*su,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.24*su,0.92*sh,0.26*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.27*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -554,6 +557,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         rainScrollbar->setVisible(showInterface);
         visibilityScrollbar->setVisible(showInterface);
         pcLogButton->setVisible(showInterface);
+
+        exitButton->setVisible(showInterface);
 
         portText->setVisible(showInterface);
         stbdText->setVisible(showInterface && !singleEngine);

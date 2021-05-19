@@ -235,6 +235,12 @@
 
 
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
+                
+                if (id == GUIMain::GUI_ID_EXIT_BUTTON) 
+                {
+                    startShutdown();
+                }
+                
                 if (id == GUIMain::GUI_ID_START_BUTTON)
                 {
                     model->setAccelerator(1.0);
@@ -620,13 +626,7 @@
                         //Quit with esc or F4 (for alt-F4)
                         case irr::KEY_ESCAPE:
                         case irr::KEY_F4:
-                            model->setAccelerator(0.0);
-                            device->sleep(500);
-                            //device->clearSystemMessages();
-                            if (!shutdownDialogActive) {
-                                device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,irr::gui::EMBF_OK|irr::gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
-                                shutdownDialogActive = true;
-                            }
+                            startShutdown();
                             return true; //Return true here, so second 'esc' button pushes don't close the message box
                             break;
 
@@ -1037,6 +1037,15 @@
             return false;
 
         return (buttonBitmap & (1 << button)) ? true : false;
+    }
+
+    void MyEventReceiver::startShutdown() {
+        model->setAccelerator(0.0);
+        device->sleep(500);
+        if (!shutdownDialogActive) {
+            device->getGUIEnvironment()->addMessageBox(L"Quit?",L"Quit?",true,irr::gui::EMBF_OK|irr::gui::EMBF_CANCEL,0,GUIMain::GUI_ID_CLOSE_BOX);//I18n
+            shutdownDialogActive = true;
+        }
     }
 
 /*

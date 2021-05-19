@@ -85,6 +85,8 @@ collided="YOU ARE IN COLLISION!"
 showinterface="Show"
 hideinterface="Hide"
 
+exit="Exit"
+
 log="!"
 
 fps="FPS: "

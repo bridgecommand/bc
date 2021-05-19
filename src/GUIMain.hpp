@@ -121,6 +121,7 @@ public:
         GUI_ID_BINOS_INTERFACE_BUTTON,
         GUI_ID_BEARING_INTERFACE_BUTTON,
         GUI_ID_SHOW_LOG_BUTTON,
+        GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
 
@@ -198,6 +199,7 @@ private:
     irr::gui::IGUIButton* hideInterfaceButton;
     irr::gui::IGUIButton* binosButton;
     irr::gui::IGUIButton* bearingButton;
+    irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
 
     irr::u32 su;
