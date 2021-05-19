@@ -293,7 +293,7 @@ void RadarCalculation::increaseEBLBrg()
         EBLLastUpdated = clockNow;
 
         EBLBrg++;
-        if (EBLBrg >= 360) {
+        while (EBLBrg >= 360) {
             EBLBrg -= 360;
         }
     }
@@ -308,7 +308,7 @@ void RadarCalculation::decreaseEBLBrg()
         EBLLastUpdated = clockNow;
 
         EBLBrg--;
-        if (EBLBrg < 0) {
+        while (EBLBrg < 0) {
             EBLBrg += 360;
         }
     }
@@ -864,14 +864,14 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                         arpaContacts.at(i).estimate.absVectorX = deltaX/deltaTime; //m/s
                         arpaContacts.at(i).estimate.absVectorZ = deltaZ/deltaTime; //m/s
                         arpaContacts.at(i).estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
-                        if (arpaContacts.at(i).estimate.absHeading < 0 ) {
+                        while (arpaContacts.at(i).estimate.absHeading < 0 ) {
                             arpaContacts.at(i).estimate.absHeading += 360;
                         }
                         //Relative vector:
                         arpaContacts.at(i).estimate.relVectorX = arpaContacts.at(i).estimate.absVectorX - ownShip.getSpeed() * sin((ownShip.getHeading())*irr::core::DEGTORAD);
                         arpaContacts.at(i).estimate.relVectorZ = arpaContacts.at(i).estimate.absVectorZ - ownShip.getSpeed() * cos((ownShip.getHeading())*irr::core::DEGTORAD); //ownShipSpeed in m/s
                         arpaContacts.at(i).estimate.relHeading = std::atan2(arpaContacts.at(i).estimate.relVectorX,arpaContacts.at(i).estimate.relVectorZ)/RAD_IN_DEG;
-                        if (arpaContacts.at(i).estimate.relHeading < 0 ) {
+                        while (arpaContacts.at(i).estimate.relHeading < 0 ) {
                             arpaContacts.at(i).estimate.relHeading += 360;
                         }
 
@@ -879,7 +879,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
                         irr::f32 relX = currentScanData.x - absolutePosition.X + arpaContacts.at(i).estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
                         irr::f32 relZ = currentScanData.z - absolutePosition.Z + arpaContacts.at(i).estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
                         arpaContacts.at(i).estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
-                        if (arpaContacts.at(i).estimate.bearing < 0 ) {
+                        while (arpaContacts.at(i).estimate.bearing < 0 ) {
                             arpaContacts.at(i).estimate.bearing += 360;
                         }
                         arpaContacts.at(i).estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm

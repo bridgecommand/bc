@@ -258,7 +258,7 @@ s32 ScrollDial::getPosFromMousePos(const core::position2di &pos) const
     s32 relY = pos.Y - centre.Y - offsetY;
 
     f32 angle = atan2(relX,-1.0*relY)*core::RADTODEG;
-    if (angle<0) {angle+=360;} //As atan2 gives -pi to +pi
+    while (angle<0) {angle+=360;} //As atan2 gives -pi to +pi
     if (angle > 337.5) {angle=0;} //Closer to 0 than to max
     if (angle > 315) {angle=315;} //Above max
     f32 proportion = angle/315.0;

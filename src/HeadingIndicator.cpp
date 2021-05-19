@@ -73,8 +73,8 @@ if (!IsVisible)
 
             //Draw position
             irr::s32 displayAng = ticAng;
-            if (displayAng < 0) {displayAng+=360;}
-            if (displayAng > 359) {displayAng-=360;}
+            while (displayAng < 0) {displayAng+=360;}
+            while (displayAng >= 360) {displayAng-=360;}
             font->draw(irr::core::stringw(displayAng),irr::core::rect<irr::s32>(startPoint.X - 100, AbsoluteRect.UpperLeftCorner.Y, startPoint.X + 100, AbsoluteRect.LowerRightCorner.Y),video::SColor(skinAlpha,0,0,0),true,false,&AbsoluteRect);
 
         } else if (ticAng % 5 == 0) {

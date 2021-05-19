@@ -554,7 +554,19 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
 		}
 		irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
+        //Check acceleration plausibility (not more than 1g = 9.81ms/2)
+        if (acceleration > 9.81) {
+            acceleration = 9.81;
+        } else if (acceleration < -9.81) {
+            acceleration = -9.81;
+        }
         spd += acceleration*deltaTime;
+        //Also check speed for plausibility, limit to 50m/s
+        if (spd > 50) {
+            spd = 50;
+        } else if (spd < -50) {
+            spd = -50;
+        }
 
         //Lateral dynamics
         irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
@@ -567,7 +579,19 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 		}
 		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag)/shipMass;
 		//std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
-		lateralSpd += lateralAcceleration*deltaTime;
+		//Check acceleration plausibility (not more than 1g = 9.81ms/2)
+        if (lateralAcceleration > 9.81) {
+            lateralAcceleration = 9.81;
+        } else if (lateralAcceleration < -9.81) {
+            lateralAcceleration = -9.81;
+        }
+        lateralSpd += lateralAcceleration*deltaTime;
+        //Also check speed for plausibility, limit to 50m/s
+        if (lateralSpd > 50) {
+            lateralSpd = 50;
+        } else if (lateralSpd < -50) {
+            lateralSpd = -50;
+        }
 
         //Turn dynamics
         //Rudder
@@ -601,7 +625,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             dragTorque=   dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
         }
         //Turn dynamics
-        rateOfTurn += (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque)*deltaTime/inertia; //Rad/s
+        irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque)/inertia;
+        rateOfTurn += angularAcceleration*deltaTime; //Rad/s
+        //check plausibility for rate of turn, limit to ~4Pi rad/s
+        if (rateOfTurn > 12) {
+            rateOfTurn = 2;
+        } else if (rateOfTurn < -12) {
+            rateOfTurn = -12;
+        }
 
         //slow down if aground
         if (getDepth()<0) { //Todo: Have a separate groundingDepth(), that checks min depth at centre, and 3/4 ahead and astern of centre
@@ -672,8 +703,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     }
 
     //Normalise heading
-    if(hdg>=360) {hdg-=360;}
-    if(hdg<0) {hdg+=360;}
+    while(hdg>=360) {hdg-=360;}
+    while(hdg<0) {hdg+=360;}
 
     irr::f32 xChange = 0;
     irr::f32 zChange = 0;
@@ -705,8 +736,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //Course over ground
         if (xChange!=0 || zChange!=0 ) {
             cog = atan2(xChange,zChange)*irr::core::RADTODEG;
-            if (cog >= 360) {cog -=360;}
-            if (cog < 0) {cog +=360;}
+            while (cog >= 360) {cog -=360;}
+            while (cog < 0) {cog +=360;}
         } else {
             cog = 0;
         }

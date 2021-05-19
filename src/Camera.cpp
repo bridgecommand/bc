@@ -98,7 +98,7 @@ void Camera::setLookUp(irr::f32 angle)
 void Camera::lookLeft()
 {
     lookAngle--;
-    if (lookAngle<0)
+    while (lookAngle<0)
     {
         lookAngle+=360;
     }
@@ -107,7 +107,7 @@ void Camera::lookLeft()
 void Camera::lookRight()
 {
     lookAngle++;
-    if (lookAngle>=360)
+    while (lookAngle>=360)
     {
         lookAngle-=360;
     }
@@ -117,11 +117,11 @@ void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proporti
 {
     lookAngle -= deltaX*hFOV*irr::core::RADTODEG;
     lookUpAngle += deltaY*hFOV*irr::core::RADTODEG; //hFOV for this, as both are scaled by screen width
-    if (lookAngle<0)
+    while (lookAngle<0)
     {
         lookAngle+=360;
     }
-    if (lookAngle>=360)
+    while (lookAngle>=360)
     {
         lookAngle-=360;
     }
@@ -138,7 +138,7 @@ void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proporti
 void Camera::lookStepLeft()
 {
     lookAngle -= hFOV*irr::core::RADTODEG;
-    if (lookAngle<0)
+    while (lookAngle<0)
     {
         lookAngle+=360;
     }
@@ -147,7 +147,7 @@ void Camera::lookStepLeft()
 void Camera::lookStepRight()
 {
     lookAngle += hFOV*irr::core::RADTODEG;
-    if (lookAngle>=360)
+    while (lookAngle>=360)
     {
         lookAngle-=360;
     }
@@ -274,10 +274,10 @@ void Camera::update(irr::f32 deltaTime)
      //link camera rotation to shipNode
         //Adjust camera angle if panning
         lookAngle += horizontalPanSpeed * deltaTime;
-        if (lookAngle>360) {
+        while (lookAngle>=360) {
             lookAngle -= 360;
         }
-        if (lookAngle<0) {
+        while (lookAngle<0) {
             lookAngle += 360;
         }
         
