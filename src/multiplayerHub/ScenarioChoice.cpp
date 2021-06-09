@@ -43,7 +43,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2015 James Packer");
+    titleText.append(L"\nCopyright 2021 James Packer");
     irr::core::dimension2d<irr::u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<irr::s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
 
