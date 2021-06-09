@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5.0 - External controls</title>
+  <title>Bridge Command 5 - External controls</title>
 
 </head>
 
@@ -45,10 +45,10 @@ joysticks to control different engines and the rudder.
 </p>
 
 <p>
-You can also open the configuration file <i>bc5.ini</i> directly, in the Bridge Command root directory (Usually "C:\Program files\Bridge Command 5.0\"). 
+You can also open the configuration file <i>bc5.ini</i> directly, in the Bridge Command installation directory. 
 Note that Bridge Command will look first in the user directory for a settings file, and will use this in preference to the global bc5.ini file.
-The user directory is %appdata%/Bridge Command/5.0 on Windows, ~/.Bridge Command/5.0 on Linux and ~/Library/Application Support/Bridge Command/5.0 on 
-OSX.
+The user directory is %appdata%/Bridge Command/x.x on Windows, ~/.Bridge Command/x.x on Linux and ~/Library/Application Support/Bridge Command/x.x on 
+OSX. For all of these, x.x is the Bridge Command version number, e.g. 5.6.
 </p> 
 
 
@@ -90,6 +90,9 @@ joystick_no_bow_thruster: This sets which joystick on your system Bridge Command
 joystick_no_stern_thruster: This sets which joystick on your system Bridge Command uses for the stern thruster. If you only have one joystick connected, this will be 0.
 </li>
 <li>
+invert_rudder: This should be 0 or 1. If set to 1, it swaps the direction the rudder changes in response to the joystick input.
+</li>
+<li>
 The following section sets the mapping between the joystick input value and the proportion of engine revs. It allows for fixed steps, such as slow ahead and half ahead, as well as different sensitivities for continuous control. This is set with fixed points that define the mapping of throttle to engine revs (see the image below)
 <ul>
 <li>
@@ -108,6 +111,48 @@ If the joystick input is outside the defined range, the first or last output val
 </li>
 </ul>
 </li>
+
+<li>The following settings are used to map the joystick buttons. Any set to 0 will not be used.
+  <ul>
+    <li>joystick_button_horn: Which joystick button to sound the horn</li>
+    <li>joystick_button_change_view: Which joystick button to change the current view</li>
+    <li>joystick_button_look_step_left: Which joystick button to look to the left, in a step equal to the view angle</li>
+    <li>joystick_button_look_step_right: Which joystick button to look to the right, in a step equal to the view angle</li>
+    <li>joystick_button_increase_bow_thrust: Which joystick button to make the bow thruster increase thrust in a stbd direction (If present in ship model)</li>
+    <li>joystick_button_decrease_bow_thrust: Which joystick button to make the bow thruster increase thrust in a port direction (If present in ship model)</li>
+    <li>joystick_button_increase_stern_thrust: Which joystick button to make the stern thruster increase thrust in a stbd direction (If present in ship model)</li>
+    <li>joystick_button_decrease_stern_thrust: Which joystick button to make the stern thruster increase thrust in a port direction (If present in ship model)</li>
+    <li>joystick_button_bearing_on: Which joystick button to show the bearing cross hairs</li>
+    <li>joystick_button_bearing_off: Which joystick button to hide the bearing cross hairs</li>
+    <li>joystick_button_zoom_on: Which joystick button to zoom the view (binoculars mode)</li>
+    <li>joystick_button_zoom_off: Which joystick button to unzoom the view (binoculars mode off)</li>
+    <li>joystick_button_look_left: Which joystick button to look around to the left (slowly)</li>
+    <li>joystick_button_look_right: Which joystick button to look around to the right (slowly)</li>
+    <li>joystick_button_look_up: Which joystick button to look up</li>
+    <li>joystick_button_look_down: Which joystick button to look down</li>
+</ul>
+</li>
+<li>If you are using a secondary joystick, the following settings allow you to configure which jostick is used for each button. If you only have one joystick, these will all be 0
+  <ul>
+    <li>joystick_no_horn</li>
+    <li>joystick_no_change_view</li>
+    <li>joystick_no_look_step_left</li>
+    <li>joystick_no_look_step_right</li>
+    <li>joystick_no_increase_bow_thrust</li>
+    <li>joystick_no_decrease_bow_thrust</li>
+    <li>joystick_no_increase_stern_thrust</li>
+    <li>joystick_no_decrease_stern_thrust</li>
+    <li>joystick_no_bearing_on</li>
+    <li>joystick_no_bearing_off</li>
+    <li>joystick_no_zoom_on</li>
+    <li>joystick_no_zoom_off</li>
+    <li>joystick_no_look_left</li>
+    <li>joystick_no_look_right</li>
+    <li>joystick_no_look_up</li>
+    <li>joystick_no_look_down</li>
+  </ul>
+</li>
+
 </ul>
 </p>
 

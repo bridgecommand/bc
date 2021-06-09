@@ -11,7 +11,7 @@
 
 <div style="text-align: center;">
    
-<h1>Bridge Command 5.0 related files specification</h1>
+<h1>Bridge Command 5 related files specification</h1>
    
 <h2>World file</h2>
 </div>
@@ -22,7 +22,7 @@
 <p>
 There is an important change in world models between version 5.0 (and later) and previous versions (4.x). The required size of the height map has increased 
 by one pixel. Previously, the size was 2^n (512, 1024, 2048, ...) pixels. It is now 2^n + 1 (513, 1025, 2049, ...) pixels. Therefore previous 
-world models need to be modified to use with version 5.0.
+world models need to be modified to use with version 5.0 and later.
 </p>
 <p>
 The easiest way to do this is to add a single line of black pixels to the top and right side of the heightmap, increase the value of the 
@@ -50,11 +50,10 @@ numbered terrain when taking depth soundings, and to decide if the ship is agrou
 
 <p>
 The world model is made up of files in a common folder. The folder name is used when loading the world model, and is found under <i>World</i>
-in the <i>Bridge Command</i> root folder. For example, if <i>Bridge Command</i> is installed in <i>C:\Program files\Bridge Command 5.0</i>, the 
-files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files\Bridge Command 5.0\World\Atlantis</i>. To allow users to 
+in the <i>Bridge Command</i> root folder. For example, if <i>Bridge Command</i> is installed in <i>C:\Program files (x86)\Bridge Command 5.x</i>, the 
+files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files (x86)\Bridge Command 5.x\World\Atlantis</i>. To allow users to 
 edit or add world models without changing the overall installation, Bridge Command will look first in the user directory for a world model, and 
-will use this in preference to the global model. The user directory is %appdata%/Bridge Command/5.0 on Windows, ~/.Bridge Command/5.0 on Linux 
-and ~/Library/Application Support/Bridge Command/5.0 on OSX.
+will use this in preference to the global model. The user directory can be found using the button on the Bridge Command launcher.
 </p>
    
 <p>
@@ -159,8 +158,7 @@ TerrainHeightMapSize(2)=257
 <p>Contains 1 general variable, and a set of 3 or 4 variables for each buoy defined. The global variable is Number, which is the number of 
 buoys to be defined in the file. This can be zero, in which case no buoys are defined, and nothing further is required in this file. The three 
 required variables for each buoy are Type(#), Long(#) and Lat(#). Type(#) takes the buoy type, as a text string. This must correspond to an 
-available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory (By default 
-<i>C:\Program files\Bridge Command 5.0</i>. 
+available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory.
 Long(#) and Lat(#) take respectively the buoy's Longitude and Latitude in standard decimal degrees. Note that only the buoy model and its 
 location is specified here - if the buoy has a light attached, it must be specified in <i>light.ini</i>, as specified below. 
 The optional variable is RCS, which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.</p>
