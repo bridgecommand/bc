@@ -24,17 +24,17 @@ specification</a> and the <a href="writer.html">Scenario writer</a>.
 
 <p>
 The most fundamental part of any ship model to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format 
-(.3ds). With this, the text file boat.ini is used to define the other characteristics of the model. The specification of this file is detailed 
+(.3ds). Additionally, for own ship models, equirectangular panoramic photos can be used. For more details on this, please see below.
+Alongside the model, the text file boat.ini is used to define the other characteristics. The specification of this file is detailed 
 below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file 
 format</a>. 
 </p> 
 
 <p>
 Each vessel is contained in a folder, with the vessel's name, under Models\Othership  or Models\Ownship as appropriate. So if Bridge Command 
-is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files\Bridge Command 5.0\models\Ownship\Protis'.
-Bridge Command also looks in the user directory (%appdata%/Bridge Command/5.0 on Windows, ~/.Bridge Command/5.0 on Linux and 
-~/Library/Application Support/Bridge Command/5.0 on OSX), so users can add new ship models without needing to be able to make changes in the
-installation directory.
+is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files (x86)\Bridge Command X.X\models\Ownship\Protis'.
+Bridge Command also looks in the user directory, which can be found using the button on the Bridge Command launcher, so users can add new ship models 
+without needing to be able to make changes in the installation directory.
 </p>
 
 <h3>Sections</h3>
@@ -49,6 +49,29 @@ installation directory.
 The 3D model to load, and all of the characteristics of the own ship model are defined in the file Boat.ini in the model's folder. In addition,
  a file Radar.ini sets up the parameters for the radar. A complete example of both files is given below, and the effect of each line is 
 explained below this: 
+</p>
+
+<p>
+If you are using panoramic photos for the own ship, each photo must be an equirectangular panorama, with transparency set for all areas of the photo 
+that are not part of the ship. So for example, all bridge windows must be transparent, so Bridge Command can render the surrounding scene. To use this 
+mode, instead of specifying a model file with the FileName parameter, FileName="360" should be used. The view positions are defined as for a normal ship 
+model, and are set as follows:
+</p>
+<p>
+  <ul>
+    <li>Views: The number of viewpoints on board the vessel (Minimum 1)</li>
+    <li>For each viewpoint, where # is the viewpoint number:
+    <ul>
+      <li>ViewX(#): The viewpoint's X coordinate (in the model's unit system)</li>
+      <li>ViewY(#): The viewpoint's Y coordinate (in the model's unit system)</li>
+      <li>ViewZ(#): The viewpoint's Z coordinate (in the model's unit system)</li>
+      <li>Pano(#): The filename of the equirectangular panorama image (must support transparency)</li>
+      <li>PanoRotationYaw(#): Optional: The angle correction in the yaw direction (around vertical), in degrees</li>
+      <li>PanoRotationPitch(#): Optional: The angle correction in the pitch direction, in degrees</li>
+      <li>PanoRotationRoll(#): Optional: The angle correction in the roll direction, in degrees</li>
+      </ul>
+  </li>
+  </ul>
 </p>
 
 <h3>Boat.ini</h3>

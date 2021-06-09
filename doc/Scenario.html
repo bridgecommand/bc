@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5.0 - Scenario Specification</title>
+  <title>Bridge Command 5 - Scenario Specification</title>
 
 
 </head>
@@ -12,7 +12,7 @@
 <body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
 
 <div style="text-align: center;">
-<h1>Bridge Command 5.0</h1>
+<h1>Bridge Command 5</h1>
 
 <h2>Scenarios</h2>
 
@@ -61,12 +61,9 @@ full technical specification of the scenario format.<br>
 <h3>Specification</h3>
 
 The files that make up a scenario are text files. Each scenario is stored in its own folder under the Scenarios folder.
-This folder is itself in the main Bridge Command folder, so if you have a typical installation and Bridge Command is 
-installed in <span style="font-style: italic;">C:\Program files\Bridge Command 5.0</span>, then a scenario named 
-'Test Scenario' will be stored in <span style="font-style: italic;">C:\Program files\Bridge Command 5.0\Scenarios\Test 
-Scenario</span>. To allow users to edit and add scenarios, they are then copied into the user's directory, %appdata%/Bridge Command/5.0 
-on Windows, ~/.Bridge Command/5.0 on Linux and ~/Library/Application Support/Bridge Command/5.0 on OSX. 
-The scenario files can be edited with a text editor (as distinct from a word processor), such as the Windows programme 
+This folder is itself in the main Bridge Command installation folder. To allow users to edit and add scenarios, they are 
+then copied into the user's directory (which can be found using the button on the Bridge Command launcher). The scenario 
+files can be edited with a text editor (as distinct from a word processor), such as the Windows program 
 <span style="font-style: italic;">Notepad</span>. This comes on all computers running Windows.
 </p>
 
@@ -121,8 +118,7 @@ by line analysis</h4>
 <ul>
 
   <li>Setting: This selects which world area to load. This is the
-name of the folder containing the world model, typically in <span style="font-style: italic;">C:\Program files\Bridge Command
-5.0\World</span>. The world area you load must exist!</li>
+name of the folder containing the world model.</li>
 
   <li>StartTime: This is the time at which the scenario starts,
 in decimal hours (24 hour clock). Therefore, the setting <span style="font-style: italic;">7.25</span> above means
@@ -189,8 +185,8 @@ followed by the vessel number in brackets, with no additional spaces.<br>
 <ul>
 
   <li>Type: The vessel to load. This must be an available 'other
-ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files\Bridge Command
-5.0\Models\Othership</span>.</li>
+ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files (x86)\Bridge Command
+5.x\Models\Othership</span>, or in the user folder.</li>
 
   <li>InitialLong: The longitude where the vessel starts. This
 is in decimal degrees, with east being positive. Therefore <span style="font-style: italic;">-118.486</span>
@@ -256,8 +252,8 @@ characteristics.<br>
 <ul>
 
   <li>ShipName: The vessel to load. This must be an available
-'own ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files\Bridge Command
-5.0\Models\Ownship.</span></li>
+'own ship' model, which are typically stored in&nbsp; <span style="font-style: italic;">C:\Program files (x86)\Bridge Command
+5.x\Models\Ownship</span>, or in the user folder.</li>
 
  <li>MMSI: (Optional) If set, this is used when Bridge Command is used with AIS data.</li>
 
