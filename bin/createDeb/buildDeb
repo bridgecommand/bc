@@ -29,10 +29,12 @@ mkdir icons/hicolor/48x48
 mkdir icons/hicolor/48x48/apps
 cp -a ../../../../media ./bridgecommand/media
 cp -a ../../../../Models ./bridgecommand/Models
-cp -a ../../../../Scenarios ./bridgecommand/Scenarios
+#cp -a ../../../../Scenarios ./bridgecommand/Scenarios
+rsync -a --exclude "h) Haro Strait" --exclude "01 BigEsbjerg" ../../../../Scenarios/ ./bridgecommand/Scenarios
 cp -a ../../../../shaders ./bridgecommand/shaders
 cp -a ../../../../Sounds ./bridgecommand/Sounds
-cp -a ../../../../World ./bridgecommand/World
+#cp -a ../../../../World ./bridgecommand/World
+rsync -a --exclude "BigEsbjerg" --exclude "Portsmouth" --exclude "StraitOfJuanDeFuca" ../../../../World/ ./bridgecommand/World
 cp -a ../../../../bc5.ini ./bridgecommand/
 cp -a ../../../../../src/Icon.ico ./bridgecommand/
 cp -a ../../../../languageController-en.txt ./bridgecommand/

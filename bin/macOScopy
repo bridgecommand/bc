@@ -24,12 +24,14 @@ rm -rf BridgeCommand.app/Contents/Resources/World
 cp -a ../doc BridgeCommand.app/Contents/Resources/doc
 cp -a media BridgeCommand.app/Contents/Resources/media
 cp -a Models BridgeCommand.app/Contents/Resources/Models
-cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
+#cp -a Scenarios BridgeCommand.app/Contents/Resources/Scenarios
+rsync -a --exclude "h) Haro Strait" --exclude "01 BigEsbjerg" Scenarios/ BridgeCommand.app/Contents/Resources/Scenarios
 cp -a Sounds BridgeCommand.app/Contents/Resources/Sounds
 mkdir BridgeCommand.app/Contents/Resources/shaders
 cat shaders/Water_ps.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps.glsl
 cat shaders/Water_vs.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs.glsl
-cp -a World BridgeCommand.app/Contents/Resources/World
+#cp -a World BridgeCommand.app/Contents/Resources/World
+rsync -a --exclude "BigEsbjerg" --exclude "Portsmouth" --exclude "StraitOfJuanDeFuca" World/ BridgeCommand.app/Contents/Resources/World
 cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini
 cp -a mph.ini BridgeCommand.app/Contents/Resources/mph.ini
