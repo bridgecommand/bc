@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
     /*Shader for Open GL*/
 
