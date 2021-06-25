@@ -62,7 +62,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         irr::f32 terrainMaxHeight=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainMaxHeight",i));
         irr::f32 seaMaxDepth=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("SeaMaxDepth",i));
-        irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
+        //irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
 
         std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
         std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
@@ -72,9 +72,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
         //calculations just needed for terrain loading
-        irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
+        //irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
         irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
-        irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
+        //irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
         irr::f32 terrainY = -1*seaMaxDepth;
 
         //Full paths
@@ -87,7 +87,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
-        irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(scaleX,scaleY,scaleZ),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_17,0,true);
+        irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
         //Load the map
         irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
         //Check the height map file has loaded and the terrain exists
@@ -109,11 +109,17 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         if (extension.compare(".f32") == 0 ) {
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
+            irr::f32 scaleX = terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+            irr::f32 scaleZ = terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
             //Set scales etc to be 1.0, so heights are used directly
             terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
             terrain->setPosition(irr::core::vector3df(0.f, 0.f, 0.f));
         } else {
             loaded = terrain->loadHeightMap(heightMapFile);
+            irr::f32 scaleX = terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+            irr::f32 scaleZ = terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
+            //Set scales etc to be 1.0, so heights are used directly
+            terrain->setScale(irr::core::vector3df(scaleX,scaleY,scaleZ));
         }
 
         if (!loaded) {

@@ -98,6 +98,36 @@ namespace scene
 		HeightmapFile = file->getFileName();
 		SmoothFactor = smoothFactor;
 
+		//JAMES: New, scale image if needed
+		os::Printer::log("Checking height map scale");
+		//Check if heightmap is 2^n+1 in size both ways. If not, create an IImage big enough to hold it
+		u32 originalWidth = heightMap->getDimension().Width;
+		u32 originalHeight = heightMap->getDimension().Height;
+		//Subtract 1 and find next power of 2, and add one (we need a size that is (2^n)+1)
+		if (originalWidth==0 || originalWidth==0) {
+			os::Printer::log("Zero size heightmap.");
+			return false;
+		}
+		u32 regularWidth=originalWidth-1;
+		u32 regularHeight=originalHeight-1;
+		regularWidth = pow(2.0,ceil(log2(regularWidth))) + 1;
+		regularHeight = pow(2.0,ceil(log2(regularHeight))) + 1;
+		//Make square
+		if (regularWidth > regularHeight) {
+			regularHeight = regularWidth;
+		} else if (regularHeight > regularWidth) {
+			regularWidth = regularHeight;
+		}
+		if (originalWidth != regularWidth || originalHeight != regularHeight) {
+			//Scale it
+			os::Printer::log("Scaling heightmap");
+			video::IImage* tempMap = SceneManager->getVideoDriver()->createImage(heightMap->getColorFormat(),core::dimension2du(regularWidth,regularHeight));
+			heightMap->copyToScaling(tempMap);
+			heightMap->drop();
+			heightMap = tempMap;
+		}
+
+
 		// Get the dimension of the heightmap data
 		TerrainData.Size = heightMap->getDimension().Width;
 
