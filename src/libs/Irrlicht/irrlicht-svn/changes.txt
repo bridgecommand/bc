@@ -4,7 +4,10 @@ Irrlicht changes from stock by James Packer for Bridge Command:
 CFileSystem.cpp (843):
 r = new CFileList(Path, false, false); //JAMES Changed ignoreCase parameter from true to false - Don't make the returned file names lower case
 
-CTerrainSceneNode.cpp (169 onwards)
+CTerrainSceneNode.cpp 
+(101 onwards) 
+New code to automatically scale height map image to the next closest 2^n + 1 square
+(204 onwards)
 vertex.Pos.Y = (f32) heightMap->getPixel(x,TerrainData.Size-z-1).getLightness(); //JAMES: Flipped both x and z, to rotate loading by 180 degrees
 vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X
 vertex.TCoords.Y = vertex.TCoords2.Y = 1.f-fz2; //JAMES: Flipped Y
