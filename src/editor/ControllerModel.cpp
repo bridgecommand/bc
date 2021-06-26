@@ -120,6 +120,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     }
     irr::core::dimension2d<irr::u32> loadedSize = unscaledMap->getDimension();
 
+    std::cout << "Loaded map image (" << loadedSize.Width << "x" << loadedSize.Height << ")" << std::endl;
+
     //Calculate scaling needed
     for (unsigned int i = 0; i<zoomLevels; i++) {
          irr::f32 scaling = 0.00625 * pow(2, i);
@@ -127,17 +129,23 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
          irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
          irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
+        //Avoid zero sized map
+        if (requiredWidth < 1) {
+            requiredWidth = 1;
+        }
+        if (requiredHeight < 1) {
+            requiredHeight = 1;
+        }
+
 		 if (requiredHeight * requiredWidth < MAX_PX_IN_MAP) {
 
 			 //Create scaled map with the same image format of the size required
-			 std::cout << "About to create empty scaled map " << i << std::endl;
+			 std::cout << "About to create empty scaled map " << i << " (" << requiredWidth << "x" << requiredHeight << ")" << std::endl;
 			 scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<irr::u32>(requiredWidth, requiredHeight));
 			 //Copy and scale image
 			 std::cout << "About to copy in for " << i << std::endl;
 			 //TODO: Check if empty scaled map has been created
 			 unscaledMap->copyToScaling(scaledMap.at(i));
-
-
 
 			 //Save scale
 			 metresPerPx.at(i) = terrainXWidth / requiredWidth;

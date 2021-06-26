@@ -116,6 +116,14 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
         irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
         irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
+        //Avoid zero sized map
+        if (requiredWidth < 1) {
+            requiredWidth = 1;
+        }
+        if (requiredHeight < 1) {
+            requiredHeight = 1;
+        }
+
 		if (requiredHeight * requiredWidth < MAX_PX_IN_MAP) {
 
 			//Create scaled map with the same image format of the size required
