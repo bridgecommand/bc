@@ -80,7 +80,7 @@ namespace scene
 
 	//! Initializes the terrain data. Loads the vertices from the heightMapFile
 	bool CTerrainSceneNode::loadHeightMap(io::IReadFile* file, video::SColor vertexColor,
-			s32 smoothFactor)
+			s32 smoothFactor, bool rgbEncoded)
 	{
 		if (!file)
 			return false;
@@ -129,7 +129,6 @@ namespace scene
 				originalWidth, originalHeight, regularWidth, regularHeight );
 			os::Printer::log(tmp);
 		}
-
 
 		// Get the dimension of the heightmap data
 		TerrainData.Size = heightMap->getDimension().Width;
@@ -204,7 +203,14 @@ namespace scene
 				vertex.Normal.set(0.0f, 1.0f, 0.0f);
 				vertex.Color = vertexColor;
 				vertex.Pos.X = fx;
-				vertex.Pos.Y = (f32) heightMap->getPixel(x,TerrainData.Size-z-1).getLightness(); //JAMES: Flipped both x and z, to rotate loading by 180 degrees
+				//JAMES: Either use greyscale lightness, or use full RGB encoding
+				if (rgbEncoded) {
+					//Absolute height is (red * 256 + green + blue / 256) - 32768
+					video::SColor pixelColor = heightMap->getPixel(x,TerrainData.Size-z-1);
+					vertex.Pos.Y = ((f32)pixelColor.getRed()*256 + (f32)pixelColor.getGreen() + (f32)pixelColor.getBlue()/256.0)-32768.0; //JAMES: Flipped both x and z, to rotate loading by 180 degrees
+				} else {
+					vertex.Pos.Y = (f32) heightMap->getPixel(x,TerrainData.Size-z-1).getLightness(); //JAMES: Flipped both x and z, to rotate loading by 180 degrees
+				}
 				vertex.Pos.Z = fz;
 
 				vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X

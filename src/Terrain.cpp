@@ -67,6 +67,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
         std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
 
+        bool usesRGBEncoding = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("UsesRGB",i)) > 0;
+
         //Terrain dimensions in metres
         irr::f32 terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
         irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
@@ -109,23 +111,26 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         if (extension.compare(".f32") == 0 ) {
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
-            irr::f32 scaleX = terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
-            irr::f32 scaleZ = terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
-            //Set scales etc to be 1.0, so heights are used directly
-            terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
-            terrain->setPosition(irr::core::vector3df(0.f, 0.f, 0.f));
         } else {
-            loaded = terrain->loadHeightMap(heightMapFile);
-            irr::f32 scaleX = terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
-            irr::f32 scaleZ = terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
-            //Set scales etc to be 1.0, so heights are used directly
-            terrain->setScale(irr::core::vector3df(scaleX,scaleY,scaleZ));
+            loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
         }
 
         if (!loaded) {
             //Could not load terrain
             std::cerr << "Could not load terrain at loadHeightMap stage." << std::endl;
             exit(EXIT_FAILURE);
+        }
+
+        irr::f32 scaleX = terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+        irr::f32 scaleZ = terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
+            
+        if (extension.compare(".f32") == 0 || usesRGBEncoding) {
+            //Set scales etc to be 1.0, so heights are used directly
+            terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
+            terrain->setPosition(irr::core::vector3df(0.f, 0.f, 0.f));
+        } else {
+            //Normal heightmap, so use scale from terrainMaxHeight etc
+            terrain->setScale(irr::core::vector3df(scaleX,scaleY,scaleZ));
         }
 
         heightMapFile->drop();

@@ -4,10 +4,16 @@ Irrlicht changes from stock by James Packer for Bridge Command:
 CFileSystem.cpp (843):
 r = new CFileList(Path, false, false); //JAMES Changed ignoreCase parameter from true to false - Don't make the returned file names lower case
 
+CTerrainSceneNode.h (56): New option 'bool rgbEncoded=false' for loadHeightMap
+
+ITerrainSceneNode.h (160): New option 'bool rgbEncoded=false' for loadHeightMap
+
 CTerrainSceneNode.cpp 
+(83, 206-213)
+New option to use RGB encoded height map, using the encoding (red * 256 + green + blue / 256) - 32768 for absolute height in metres.
 (101 onwards) 
 New code to automatically scale height map image to the next closest 2^n + 1 square
-(204 onwards)
+(212 onwards, note that this is now within the wider section modified for RGB heightmap loading option)
 vertex.Pos.Y = (f32) heightMap->getPixel(x,TerrainData.Size-z-1).getLightness(); //JAMES: Flipped both x and z, to rotate loading by 180 degrees
 vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X
 vertex.TCoords.Y = vertex.TCoords2.Y = 1.f-fz2; //JAMES: Flipped Y

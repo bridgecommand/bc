@@ -156,7 +156,8 @@ namespace scene
 		\param smoothFactor Number of smoothing passes. */
 		virtual bool loadHeightMap(io::IReadFile* file,
 			video::SColor vertexColor=video::SColor(255,255,255,255),
-			s32 smoothFactor=0) =0;
+			s32 smoothFactor=0,
+			bool rgbEncoded=false) =0; //JAMES: Added an option, to use encoding where RGB are all used to give absolute height
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		/** The data is interpreted as (signed) integers of the given bit size or
