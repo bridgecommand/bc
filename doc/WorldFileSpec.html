@@ -22,16 +22,12 @@
 <p>
 There is an important change in world models between version 5.0 (and later) and previous versions (4.x). The required size of the height map has increased 
 by one pixel. Previously, the size was 2^n (512, 1024, 2048, ...) pixels. It is now 2^n + 1 (513, 1025, 2049, ...) pixels. Therefore previous 
-world models need to be modified to use with version 5.0 and later.
-</p>
-<p>
-The easiest way to do this is to add a single line of black pixels to the top and right side of the heightmap, increase the value of the 
-parameter TerrainHeightMapSize by one, and multiply the value of the parameters TerrainLongExtent and TerrainLatExtent by 
-(new TerrainHeightMapSize/old TerrainHeightMapSize). See below for details of these parameters.
+world models need to be modified to use with version 5.0 and later. From Bridge Command 5.7 onwards, heightmap images will be rescaled internally, but 
+for the best speed and accuracy, it is best to use the correct size.
 </p>
 <p>
 It is recommended to use .png format for the heightmap, as .bmp files may give inaccurate heights in some cases (depending on the exact 
-type of .bmp images used).
+type of .bmp images used). There are different encodings available, greyscale, RGB, and raw binary data. Further details are below.
 </p>
 
 <h3>Introduction:</h3>
@@ -59,14 +55,19 @@ will use this in preference to the global model. The user directory can be found
 <p>
 The terrain is loaded from two image files, a height map and a texture. The shape of the terrain is generated from a height map, in which the
 colour of each pixel in the image is translated into a height value for that terrain location. The height map should be a greyscale PNG image, 
-and black is low and white is high. Alternatively, a raw binary format is allowed, and height maps with the extension .f32 will be interpreted 
-as a list of heights in metres as 32 bit floating point numbers. This allows a higher resolution of height map, which may be helpful if your 
-area includes deep sea and high mountains.
+and black is low and white is high, or for better height resolution, you can use the RGB format where the height in metres is encoded as 
+(red value * 256 + green value + blue value/ 256) - 32768.
 </p>
-   
+
 <p>
-It is recommended to use .png format for the heightmap, as .bmp files may give inaccurate heights in some cases (depending on the exact 
+It is recommended to use .png format for the heightmap images, as .bmp files may give inaccurate heights in some cases (depending on the exact 
 type of .bmp images used).
+</p>
+
+<p>
+Alternatively, a raw binary format is allowed, and height maps with the extension .f32 will be interpreted 
+as a list of heights in metres as 32 bit floating point numbers. The benefit of both the RGB encoding and the binary format is a higher vertical resolution 
+of height map, which may be helpful if your area includes deep sea and high mountains. 
 </p>
 
 <p>
@@ -99,7 +100,12 @@ configured in the .ini files.</p>
 <p>
 The filenames for the height map and texture files are as specified in <i>terrain.ini</i>. The heightmap should be in .png or raw binary 
 format (32 bit floating point, with extension .f32), and the texture and map image should be square and power of two (2^n) sizes (512, 1024, 
-...). The size of the heightmap should be square, and 2^n + 1 in size (513, 1025, 2049, ...).
+...). The size of the heightmap should be square, and 2^n + 1 in size (513, 1025, 2049, ...). From Bridge Command 5.7 onwards, heightmap images 
+will be rescaled internally, but for the best speed and accuracy, it is best to use the correct size. Note that this automatic resizing does not
+apply to raw binary heightmaps.
+</p>
+
+<p>
 </p>
 
 <h4>File details:</h4>
@@ -121,7 +127,6 @@ TerrainLongExtent(1)=0.05010
 TerrainLatExtent(1)=0.04008
 TerrainMaxHeight(1)=100
 SeaMaxDepth(1)=44.07
-TerrainHeightMapSize(1)=513
 
 HeightMap(2)="detail.png"
 Texture(2)="detailTexture.png"
@@ -131,7 +136,6 @@ TerrainLongExtent(2)=0.006250292
 TerrainLatExtent(2)=0.005000234
 TerrainMaxHeight(2)=100
 SeaMaxDepth(2)=44.07
-TerrainHeightMapSize(2)=257
 </pre>
 
 <p>
@@ -146,9 +150,10 @@ TerrainHeightMapSize(2)=257
 <li>TerrainLat(#): Latitude of the south west corner of the terrain area (Decimal degrees, North positive)</li>
 <li>TerrainLongExtent(#): Extent of the terrain in decimal degrees (East-West)</li>
 <li>TerrainLatExtent(#): Extent of the terrain in decimal degrees (North-South)</li>
-<li>TerrainMaxHeight(#): The height in metres represented by a pure white pixel on the heightmap image (ignored for binary heightmap)</li>
-<li>SeaMaxDepth(#): The depth in metres represented by a pure black pixel on the heightmap image (ignored for binary heightmap)</li>
-<li>TerrainHeightMapSize(#): The size of the heightmap (513, 1025, 2049, ...)</li>
+<li>TerrainMaxHeight(#): The height in metres represented by a pure white pixel on the heightmap image (ignored for RGB encoded or binary heightmap)</li>
+<li>SeaMaxDepth(#): The depth in metres represented by a pure black pixel on the heightmap image (ignored for RGB encoded or binary heightmap)</li>
+<li>TerrainHeightMapSize(#): The size of the heightmap (513, 1025, 2049, ...). From Bridge Command 5.7, this is only needed for raw binary heightmaps (extension .f32)</li>
+<li>(Optional) UsesRGB(#): This should be set to 1 if the heightmap is encoded in the RGB format where the height in metres is set by (red * 256 + green + blue / 256) - 32768. Set to 0 otherwise</li>
 </ul>
 </li>
 </ul>
