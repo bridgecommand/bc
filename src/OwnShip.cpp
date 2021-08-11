@@ -327,6 +327,39 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
     sternThrusterRate = 0;
     bowThrusterRate = 0;
+
+    //Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
+    //Add a triangle selector
+    irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(ship);
+    if(selector) {
+        device->getLogger()->log("Created triangle selector");
+        ship->setTriangleSelector(selector);
+    }
+
+    irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
+    ship->updateAbsolutePosition();
+    ray.end = ship->getAbsolutePosition();
+    ray.start = ray.end;
+    ray.start.Y -= 100;
+
+    //For result
+    irr::core::vector3df intersection;
+    irr::core::triangle3df hitTriangle;
+    
+    irr::scene::ISceneNode * selectedSceneNode =
+        smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+        ray,
+        intersection, // This will be the position of the collision
+        hitTriangle, // This will be the triangle hit in the collision
+        0, // All nodes (bitmask)
+        ship); // Only intersect with own ship
+
+    if(selectedSceneNode) {
+        device->getLogger()->log("Intersection found");
+    } else {
+        device->getLogger()->log("No intersection found");
+    }
+
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
