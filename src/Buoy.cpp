@@ -25,7 +25,7 @@
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -80,6 +80,8 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
         rcs = 0.005*std::pow(length,3); //Default RCS if not set, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     }
 
+    this->floating = floating; //Does the buoy respond to the water
+
 }
 
 Buoy::~Buoy()
@@ -116,6 +118,11 @@ irr::f32 Buoy::getHeight() const
 irr::f32 Buoy::getRCS() const
 {
     return rcs;
+}
+
+bool Buoy::getFloating() const
+{
+    return floating;
 }
 
 irr::scene::ISceneNode* Buoy::getSceneNode() const

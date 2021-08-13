@@ -64,8 +64,13 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //get buoy RCS if set
         irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
 
+        bool floating = true;
+        if (IniFile::iniFileTou32(scenarioBuoyFilename,IniFile::enumerate1("Grounded",currentBuoy))==1 ) {
+            floating = false;
+        }
+
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,smgr,dev));
+        buoys.push_back(Buoy (buoyName.c_str(),irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
@@ -107,16 +112,23 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         irr::f32 xPos, yPos, zPos;
         irr::core::vector3df pos = it->getPosition();
         xPos = pos.X;
-        yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+        if (it->getFloating()) {
+            yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+        } else {
+            yPos = 0;
+        }
         zPos = pos.Z;
         it->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 
-        irr::f32 angleX, angleZ;
-        irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
-        angleX = normals.X * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
-        angleZ = normals.Y * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
-
-        it->setRotation(irr::core::vector3df(angleX,0,angleZ));
+        if (it->getFloating()) {
+            irr::f32 angleX, angleZ;
+            irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
+            angleX = normals.X * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
+            angleZ = normals.Y * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
+            it->setRotation(irr::core::vector3df(angleX,0,angleZ));
+        } else {
+            it->setRotation(irr::core::vector3df(0,0,0));
+        }
 
     }
 
