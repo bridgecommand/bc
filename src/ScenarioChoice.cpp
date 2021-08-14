@@ -67,6 +67,9 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),irr::core::rect<irr::s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
     irr::gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
 
+    multiplayerText->setVisible(false);
+    multiplayerCheckbox->setVisible(false);
+
     irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.52*su,0.33*sh,1.00*su, 0.41*sh));
     irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.52*su,0.42*sh,0.80*su,0.45*sh));
     hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
@@ -108,7 +111,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
         {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
             driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
-            
+
             //Set the 'description' text here
             irr::s32 currentSelection = scenarioListBox->getSelected();
             if (currentSelection!=descriptionScenario) {
@@ -119,7 +122,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
                 }
                 currentSelection = descriptionScenario;
             }
-            
+
             gui->drawAll();
             driver->endScene();
         }
