@@ -303,7 +303,7 @@ int main (int argc, char ** argv)
     }
 
     irr::u32 graphicsWidth = fontSize * 16;
-    irr::u32 graphicsHeight = fontSize * 34;
+    irr::u32 graphicsHeight = fontSize * 18;
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
@@ -345,18 +345,18 @@ int main (int argc, char ** argv)
     y1 =        bR; y2 = y1 + 2*bH; irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
 
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
+    //y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+    //y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
+    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
 
     Receiver receiver;
     device->setEventReceiver(&receiver);
