@@ -1,9 +1,9 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.6"
-!define OUTPUTFILE "..\BridgeCommand5.6.1.exe"
-!define INSTALLLOCATION "Bridge Command 5.6"
-!define SMFOLDER "Bridge Command 5.6"
-!define REGKEY "BridgeCommand5.6"
+!define PROGRAMNAME "Virtual VIC 56 1.0"
+!define OUTPUTFILE "..\Virtual VIC 56-1.0.exe"
+!define INSTALLLOCATION "Virtual VIC 56 1.0"
+!define SMFOLDER "VIC 56 1.0"
+!define REGKEY "VIC56-1.0"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -39,7 +39,7 @@ SectionIn RO
 SetOutPath $INSTDIR
 
 ;include all files, excluding the .svn directories
-File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.bat /x *.aps /x *.depend /x *.layout /x *.cbp /x *.iobj /x *.ipdb /x *.pdb /x *.tmp /x *.gcc /x macOScopy /x makeAndBuildApp /x CMakeLists.txt /x createDeb /x "Visual Studio 2017 solution" /x "Visual Studio 2017 solution for XP" /x Irrlicht_mingw.dll /x Irrlicht_VS.dll /x CompilingLinuxAndMac.txt /x Makefile /x MakefileWithSound /x MakefileForDeb /x controller /x repeater /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out /x Cubemaps_HLSL_Test /x Portsmouth /x StraitOfJuanDeFuca /x "h) Haro Strait" *.*
+File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.bat /x *.aps /x *.depend /x *.layout /x *.cbp /x *.iobj /x *.ipdb /x *.pdb /x *.tmp /x *.gcc /x bridgecommand-mc.exe /x bridgecommand-mh.exe /x bridgecommand-rp.exe /x macOScopy /x makeAndBuildApp /x CMakeLists.txt /x createDeb /x "Visual Studio 2017 solution" /x "Visual Studio 2017 solution for XP" /x Irrlicht_mingw.dll /x Irrlicht_VS.dll /x CompilingLinuxAndMac.txt /x Makefile /x MakefileWithSound /x MakefileForDeb /x controller /x repeater /x editor /x launcher /x iniEditor /x multiplayerHub /x libs /x .svn /x .objs /x .git /x .gitignore /x EnetServer /x BridgeCommand.app /x *.db /x *.m /x *.nsi /x *.cscope_file_list /x RadarCache /x misc /x shiplights.ods /x gmon.out /x cscope.out /x Cubemaps_HLSL_Test /x Portsmouth /x StraitOfJuanDeFuca /x "h) Haro Strait" *.*
 File /r ..\doc
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
@@ -77,11 +77,11 @@ SetShellVarContext all
   Delete "$INSTDIR\bridgecommand.exe"
   Delete "$INSTDIR\bridgecommand-bc.exe"
   Delete "$INSTDIR\bridgecommand-mc.exe"
-  Delete "$INSTDIR\bridgecommand-rp.exe"
-  Delete "$INSTDIR\bridgecommand-mh.exe"
+;  Delete "$INSTDIR\bridgecommand-rp.exe"
+;  Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\bridgecommand-ed.exe"
   Delete "$INSTDIR\bridgecommand-ini.exe"
-  Delete "$INSTDIR\bridgecommand-mh.exe"
+;  Delete "$INSTDIR\bridgecommand-mh.exe"
   Delete "$INSTDIR\Irrlicht.dll"
   Delete "$INSTDIR\libsndfile-1.dll"
   Delete "$INSTDIR\portaudio_x86.dll"
