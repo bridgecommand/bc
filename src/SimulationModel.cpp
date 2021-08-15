@@ -91,9 +91,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         //set internal scenario time to start
         scenarioTime = startTime * SECONDS_IN_HOUR;
 
-        //Start paused initially
-        device->getTimer()->setSpeed(0.0);
-
         //Set initial tide height to zero
         tideHeight = 0;
 

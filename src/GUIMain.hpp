@@ -202,6 +202,10 @@ private:
     irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
 
+    irr::gui::IGUIStaticText* clickForRudderText;
+    irr::gui::IGUIStaticText* clickForEngineText;
+
+
     irr::u32 su;
     irr::u32 sh;
 
