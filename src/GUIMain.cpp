@@ -205,10 +205,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //Add 'hint' text to click on the rudder and wheel controls
-        clickForRudderText = guienv->addStaticText(L"Click here to control the rudder",wheelScrollbar->getAbsolutePosition());
+        clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
         clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
-        clickForEngineText = guienv->addStaticText(L"Click here to control the engine",portScrollbar->getAbsolutePosition());
+        clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),portScrollbar->getAbsolutePosition());
         clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
 
