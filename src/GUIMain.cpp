@@ -186,8 +186,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 // DEE ^^^^^
 
 
-
-
         //Adapt if single engine:
         if (singleEngine) {
             stbdScrollbar->setVisible(false);
@@ -205,6 +203,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             upperLeft = portText->getRelativePosition().UpperLeftCorner;
             portText->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
         }
+
+        //Add 'hint' text to click on the rudder and wheel controls
+        clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
+        clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
+        clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),portScrollbar->getAbsolutePosition());
+        clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
 
         //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
         if (controlsHidden) {
@@ -653,6 +659,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
     void GUIMain::updateGuiData(GUIData* guiData)
     {
+
+        //Hide the 'hint' bars
+        if (device->getTimer()->getTime()>3000) {
+            clickForEngineText->setVisible(false);
+            clickForRudderText->setVisible(false);
+        }
+
         //Update scroll bars
         hdgScrollbar->setPos(Utilities::round(guiData->hdg));
         spdScrollbar->setPos(Utilities::round(guiData->spd));

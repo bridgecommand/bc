@@ -223,43 +223,43 @@ int main()
 
     joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
     joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
-    
+
     joystickSetup.joystickNoLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_right");
     joystickSetup.joystickButtonLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_right")-1;
-    
+
     joystickSetup.joystickNoIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_bow_thrust");
     joystickSetup.joystickButtonIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_bow_thrust")-1;
-    
+
     joystickSetup.joystickNoDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_bow_thrust");
     joystickSetup.joystickButtonDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_bow_thrust")-1;
-    
+
     joystickSetup.joystickNoIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_stern_thrust");
     joystickSetup.joystickButtonIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_stern_thrust")-1;
-    
+
     joystickSetup.joystickNoDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_stern_thrust");
     joystickSetup.joystickButtonDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_stern_thrust")-1;
-    
+
     joystickSetup.joystickNoBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_on");
     joystickSetup.joystickButtonBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_on")-1;
-    
+
     joystickSetup.joystickNoBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_off");
     joystickSetup.joystickButtonBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_off")-1;
-    
+
     joystickSetup.joystickNoZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_on");
     joystickSetup.joystickButtonZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_on")-1;
-    
+
     joystickSetup.joystickNoZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_off");
     joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
-    
+
     joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
     joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
-    
+
     joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
     joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
-    
+
     joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
     joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
-    
+
     joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
     joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
 
@@ -443,6 +443,8 @@ int main()
     deviceParameters.AntiAlias = antiAlias;
 
     irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
+    //Start paused initially
+    device->getTimer()->setSpeed(0.0);
 
 	//On Windows, redirect console stderr to log file
 	std::string userLog = userFolder + "log.txt";

@@ -160,13 +160,15 @@ SeaMaxDepth(2)=44.07
 
 <h5>buoy.ini</h5>
    
-<p>Contains 1 general variable, and a set of 3 or 4 variables for each buoy defined. The global variable is Number, which is the number of 
+<p>Contains 1 general variable, and a set of 3 to 5 variables for each buoy defined. The global variable is Number, which is the number of 
 buoys to be defined in the file. This can be zero, in which case no buoys are defined, and nothing further is required in this file. The three 
 required variables for each buoy are Type(#), Long(#) and Lat(#). Type(#) takes the buoy type, as a text string. This must correspond to an 
 available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory.
 Long(#) and Lat(#) take respectively the buoy's Longitude and Latitude in standard decimal degrees. Note that only the buoy model and its 
 location is specified here - if the buoy has a light attached, it must be specified in <i>light.ini</i>, as specified below. 
-The optional variable is RCS, which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.</p>
+The first optional variable is RCS(#), which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.
+The second optional variable is Grounded(#). If set to 1, this means that the 'buoy' will not respond to wave or tide, for example
+for a post.</p>
 
 <h5>Example buoy.ini, setting up three buoys:</h5>
 
