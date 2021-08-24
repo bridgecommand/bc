@@ -238,7 +238,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         
         //make a dummy node, to which the views will be added as children
         shipMesh = smgr->addSphereMesh("Sphere",1);
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,IDFlag_IsPickable,irr::core::vector3df(0,0,0));
 
         //Add child meshes for each
         for(int i = 0; i<views.size(); i++) {
@@ -294,7 +294,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
                 }
             }
         }
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,-1,irr::core::vector3df(0,0,0));
+        ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,IDFlag_IsPickable,irr::core::vector3df(0,0,0));
 
         ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
         ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
@@ -336,9 +336,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         ship->setTriangleSelector(selector);
     }
 
+    //Testing: Ray intersection
     irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
     ship->updateAbsolutePosition();
     ray.end = ship->getAbsolutePosition();
+    ray.end.Y += 50;
     ray.start = ray.end;
     ray.start.Y -= 100;
 
@@ -347,15 +349,17 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     irr::core::triangle3df hitTriangle;
     
     irr::scene::ISceneNode * selectedSceneNode =
-        smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+        device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
         ray,
         intersection, // This will be the position of the collision
         hitTriangle, // This will be the triangle hit in the collision
-        0, // All nodes (bitmask)
-        ship); // Only intersect with own ship
+        IDFlag_IsPickable, // Own ship (bitmask)
+        0); // Check all nodes
 
     if(selectedSceneNode) {
         device->getLogger()->log("Intersection found");
+        device->getLogger()->log(irr::core::stringw((uintptr_t)selectedSceneNode).c_str());
+        device->getLogger()->log(irr::core::stringw((uintptr_t)ship).c_str());
     } else {
         device->getLogger()->log("No intersection found");
     }

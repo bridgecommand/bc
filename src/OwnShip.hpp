@@ -82,6 +82,7 @@ class OwnShip : public Ship
 
     protected:
     private:
+        const int IDFlag_IsPickable=1;
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
