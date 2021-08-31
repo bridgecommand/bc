@@ -28,6 +28,11 @@ class SimulationModel;
 class OwnShipData;
 class Terrain;
 
+struct ContactPoint {
+    irr::core::vector3df position;
+    irr::core::vector3df normal;
+};
+
 class OwnShip : public Ship
 {
     public:
@@ -165,6 +170,8 @@ class OwnShip : public Ship
 		irr::core::vector3df screenDisplayPosition;
 		irr::f32 screenDisplaySize;
 		irr::f32 screenDisplayTilt;
+
+        std::vector<ContactPoint> contactPoints;
 
 };
 

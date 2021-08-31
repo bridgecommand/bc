@@ -335,35 +335,54 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         device->getLogger()->log("Created triangle selector");
         ship->setTriangleSelector(selector);
     }
-
-    //Testing: Ray intersection
     irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
-    ship->updateAbsolutePosition();
-    ray.end = ship->getAbsolutePosition();
-    ray.end.Y += 50;
-    ray.start = ray.end;
-    ray.start.Y -= 100;
-
-    //For result
     irr::core::vector3df intersection;
     irr::core::triangle3df hitTriangle;
-    
-    irr::scene::ISceneNode * selectedSceneNode =
-        device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-        ray,
-        intersection, // This will be the position of the collision
-        hitTriangle, // This will be the triangle hit in the collision
-        IDFlag_IsPickable, // Own ship (bitmask)
-        0); // Check all nodes
+    ship->updateAbsolutePosition();
 
-    if(selectedSceneNode) {
-        device->getLogger()->log("Intersection found");
-        device->getLogger()->log(irr::core::stringw((uintptr_t)selectedSceneNode).c_str());
-        device->getLogger()->log(irr::core::stringw((uintptr_t)ship).c_str());
-    } else {
-        device->getLogger()->log("No intersection found");
+    irr::core::aabbox3df boundingBox = ship->getTransformedBoundingBox();
+    irr::f32 minX = boundingBox.MinEdge.X;
+    irr::f32 maxX = boundingBox.MaxEdge.X;
+    irr::f32 minY = boundingBox.MinEdge.Y;
+    irr::f32 maxY = boundingBox.MaxEdge.Y;
+    irr::f32 minZ = boundingBox.MinEdge.Z;
+    irr::f32 maxZ = boundingBox.MaxEdge.Z;
+
+    //Grid from below looking up (TODO: Add grids looking from other sides as well)
+    int xPoints = 10;
+    int zPoints = 10;
+    for (int i = 0; i<xPoints; i++) {
+        for (int j = 0; j<zPoints; j++) {
+            
+            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
+            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(zPoints-1);
+            ray.start.X = xTestPos;
+            ray.start.Y = minY;
+            ray.start.Z = zTestPos;
+            ray.end = ray.start;
+            ray.end.Y = maxY;
+
+            irr::scene::ISceneNode * selectedSceneNode =
+                device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+                ray,
+                intersection, // This will be the position of the collision
+                hitTriangle, // This will be the triangle hit in the collision
+                IDFlag_IsPickable, // Own ship (bitmask)
+                0); // Check all nodes
+
+            if(selectedSceneNode) {
+                ContactPoint contactPoint;
+                contactPoint.position = intersection;
+                contactPoint.normal = hitTriangle.getNormal().normalize();
+                contactPoints.push_back(contactPoint);
+            }
+        }
     }
 
+    //We don't want to do further triangle selection with the ship, so set the selector to null
+    ship->setTriangleSelector(0);
+    device->getLogger()->log("Own ship points found: ");
+    device->getLogger()->log(irr::core::stringw(contactPoints.size()).c_str());
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
