@@ -42,7 +42,8 @@ class OwnShip : public Ship
         std::vector<irr::core::vector3df> getCameraViews() const;
         void setViewVisibility(irr::u32 view);
         std::string getRadarConfigFile() const;
-        irr::f32 getDepth();
+        irr::f32 getDepth() const;
+        irr::f32 getGroundingDepth() const;
         irr::f32 getAngleCorrection() const;
         bool hasGPS() const;
         bool hasDepthSounder() const;

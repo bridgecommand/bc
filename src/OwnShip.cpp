@@ -691,7 +691,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //slow down if aground
-        if (getDepth()<0) { //Todo: Have a separate groundingDepth(), that checks min depth at centre, and 3/4 ahead and astern of centre
+        if (getGroundingDepth()<0) { 
             if (spd>0) {
                 spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
             }
@@ -771,8 +771,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         zChange = cos(hdg*irr::core::DEGTORAD)*spd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
-        if (getDepth() > 0) {
-            irr::f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
+        if (getGroundingDepth() > 0) {
+            irr::f32 streamScaling = fmin(1,getGroundingDepth()); //Reduce effect as water gets shallower
             xChange += stream.X*deltaTime*streamScaling;
             zChange += stream.Y*deltaTime*streamScaling;
         }
@@ -829,9 +829,26 @@ irr::f32 OwnShip::getSOG() const
     return sog; //m/s
 }
 
-irr::f32 OwnShip::getDepth()
+irr::f32 OwnShip::getDepth() const
 {
     return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
+}
+
+irr::f32 OwnShip::getGroundingDepth() const
+{
+    irr::f32 minDepth = 1e9; //Very large number
+    for (int i = 0; i<contactPoints.size(); i++) {
+        irr::core::vector3df pointPosition = contactPoints.at(i).position;
+        //Rotate
+        pointPosition.rotateXZBy(ship->getRotation().Y,irr::core::vector3df(0,0,0));
+        pointPosition += ship->getAbsolutePosition();
+        irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
+        if (localDepth<minDepth) {
+            minDepth = localDepth;
+        }
+    }
+    
+    return minDepth;
 }
 
 irr::f32 OwnShip::getAngleCorrection() const
