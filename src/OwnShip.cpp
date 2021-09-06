@@ -692,25 +692,27 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //slow down if aground
         if (getGroundingDepth()<0) { 
-            if (spd>0) {
-                spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
-            }
-            if (spd<0) {
-                spd = fmax(-0.1,spd);
-            }
+            if (deltaTime>0) {
+                if (spd>0) {
+                    spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
+                }
+                if (spd<0) {
+                    spd = fmax(-0.1,spd);
+                }
 
-            if (rateOfTurn>0) {
-                rateOfTurn = fmin(0.01,rateOfTurn);//Rate of turn in rad/s, currently hardcoded for 0.01 rad/s
-            }
-            if (rateOfTurn<0) {
-                rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
-            }
+                if (rateOfTurn>0) {
+                    rateOfTurn = fmin(0.01,rateOfTurn);//Rate of turn in rad/s, currently hardcoded for 0.01 rad/s
+                }
+                if (rateOfTurn<0) {
+                    rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
+                }
 
-            if (lateralSpd>0) {
-                lateralSpd = fmin(0.1,lateralSpd);
-            }
-            if (lateralSpd<0) {
-                lateralSpd = fmax(-0.1,lateralSpd);
+                if (lateralSpd>0) {
+                    lateralSpd = fmin(0.1,lateralSpd);
+                }
+                if (lateralSpd<0) {
+                    lateralSpd = fmax(-0.1,lateralSpd);
+                }
             }
         }
 
@@ -836,19 +838,25 @@ irr::f32 OwnShip::getDepth() const
 
 irr::f32 OwnShip::getGroundingDepth() const
 {
-    irr::f32 minDepth = 1e9; //Very large number
-    for (int i = 0; i<contactPoints.size(); i++) {
-        irr::core::vector3df pointPosition = contactPoints.at(i).position;
-        //Rotate
-        pointPosition.rotateXZBy(ship->getRotation().Y,irr::core::vector3df(0,0,0));
-        pointPosition += ship->getAbsolutePosition();
-        irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
-        if (localDepth<minDepth) {
-            minDepth = localDepth;
+    if (is360textureShip) {
+        //Simple method
+        return getDepth();
+    } else {
+        ship->updateAbsolutePosition();
+        irr::f32 minDepth = 1e9; //Very large number
+        for (int i = 0; i<contactPoints.size(); i++) {
+            irr::core::vector3df pointPosition = contactPoints.at(i).position;
+            //Rotate
+            pointPosition.rotateXZBy(ship->getRotation().Y,irr::core::vector3df(0,0,0));
+            pointPosition += ship->getAbsolutePosition();
+            irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
+            if (localDepth<minDepth) {
+                minDepth = localDepth;
+            }
         }
+
+        return minDepth;
     }
-    
-    return minDepth;
 }
 
 irr::f32 OwnShip::getAngleCorrection() const
