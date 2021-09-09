@@ -374,7 +374,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
                 ContactPoint contactPoint;
                 contactPoint.position = intersection;
                 contactPoint.normal = hitTriangle.getNormal().normalize();
-                contactPoints.push_back(contactPoint);
+                contactPoint.position.Y -= heightCorrection; //Adjust for height correction
+                
+                contactPoints.push_back(contactPoint); //Store
+
+                //Debugging
+                //contactDebugPoints.push_back(device->getSceneManager()->addSphereSceneNode(0.1));
             }
         }
     }
@@ -846,13 +851,21 @@ irr::f32 OwnShip::getGroundingDepth() const
         irr::f32 minDepth = 1e9; //Very large number
         for (int i = 0; i<contactPoints.size(); i++) {
             irr::core::vector3df pointPosition = contactPoints.at(i).position;
-            //Rotate
-            pointPosition.rotateXZBy(ship->getRotation().Y,irr::core::vector3df(0,0,0));
+            
+            //Rotate with own ship
+            irr::core::matrix4 rot;
+            rot.setRotationDegrees(ship->getRotation());
+            rot.transformVect(pointPosition);
+
             pointPosition += ship->getAbsolutePosition();
             irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
             if (localDepth<minDepth) {
                 minDepth = localDepth;
             }
+
+            //Debugging, show points:
+            //contactDebugPoints.at(i)->setPosition(pointPosition);
+
         }
 
         return minDepth;

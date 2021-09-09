@@ -173,6 +173,7 @@ class OwnShip : public Ship
 		irr::f32 screenDisplayTilt;
 
         std::vector<ContactPoint> contactPoints;
+        //std::vector<irr::scene::IMeshSceneNode*> contactDebugPoints;
 
 };
 
