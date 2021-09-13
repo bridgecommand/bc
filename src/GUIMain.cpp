@@ -208,7 +208,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
         clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
-        clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),portScrollbar->getAbsolutePosition());
+        
+        irr::core::rect<irr::s32> engineHintPos = irr::core::rect<irr::s32>(
+            portScrollbar->getRelativePosition().UpperLeftCorner,
+            stbdScrollbar->getRelativePosition().LowerRightCorner);
+
+        clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),engineHintPos);
         clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
 
