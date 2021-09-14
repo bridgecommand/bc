@@ -64,13 +64,16 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //get buoy RCS if set
         irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
 
+        irr::f32 heightCorrection = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("HeightCorrection",currentBuoy));
+
+
         bool floating = true;
         if (IniFile::iniFileTou32(scenarioBuoyFilename,IniFile::enumerate1("Grounded",currentBuoy))==1 ) {
             floating = false;
         }
 
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,smgr,dev));
+        buoys.push_back(Buoy (buoyName.c_str(),irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
@@ -113,9 +116,9 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         irr::core::vector3df pos = it->getPosition();
         xPos = pos.X;
         if (it->getFloating()) {
-            yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+            yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z) + it->getHeightCorrection();
         } else {
-            yPos = 0;
+            yPos = 0 + it->getHeightCorrection();
         }
         zPos = pos.Z;
         it->setPosition(irr::core::vector3df(xPos,yPos,zPos));

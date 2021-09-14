@@ -27,7 +27,7 @@ struct RadarData;
 class Buoy
 {
     public:
-        Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
@@ -35,6 +35,7 @@ class Buoy
         irr::f32 getLength() const;
         irr::f32 getHeight() const;
         irr::f32 getRCS() const;
+        irr::f32 getHeightCorrection() const;
         bool getFloating() const;
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
@@ -44,6 +45,7 @@ class Buoy
         irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
         irr::f32 length; //For radar calculation
         irr::f32 height; //For radar calculation
+        irr::f32 heightCorrection;
         irr::f32 rcs;
         bool floating; //Does the buoy move with water (normally true, false for a post etc)
 };

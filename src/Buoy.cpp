@@ -25,7 +25,7 @@
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -34,6 +34,10 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     if (Utilities::pathExists(userFolder + basePath)) {
         basePath = userFolder + basePath;
     }
+
+    this->heightCorrection = heightCorrection;
+    irr::core::vector3df buoyLocation = location;
+    buoyLocation.Y += heightCorrection;
 
     //Load from individual buoy.ini file if it exists
     std::string buoyIniFilename = basePath + "buoy.ini";
@@ -73,7 +77,7 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
 
     //store length and RCS information for radar etc
     length = buoy->getBoundingBox().getExtent().Z;
-    height = buoy->getBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    height = buoy->getBoundingBox().getExtent().Y * 0.75 + heightCorrection; //Assume 3/4 of the mesh is above water
 
     rcs = radarCrossSection; //Value given to constructor by Buoys.
     if (rcs == 0.0) {
@@ -118,6 +122,11 @@ irr::f32 Buoy::getHeight() const
 irr::f32 Buoy::getRCS() const
 {
     return rcs;
+}
+
+irr::f32 Buoy::getHeightCorrection() const
+{
+    return heightCorrection;
 }
 
 bool Buoy::getFloating() const
