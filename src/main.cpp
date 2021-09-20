@@ -118,7 +118,7 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 }
 #endif
 
-int main()
+int main(int argc, char ** argv)
 {
 
     #ifdef WITH_PROFILING
@@ -157,6 +157,11 @@ int main()
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
+    }
+
+    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
+        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
+        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
     }
 
     #ifdef __arm__
