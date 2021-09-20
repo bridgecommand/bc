@@ -15,6 +15,7 @@ rm -f BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Contents/MacOS/.gitignore
+rm -rf BridgeCommand.app/Contents/Resources/doc
 rm -rf BridgeCommand.app/Contents/Resources/media
 rm -rf BridgeCommand.app/Contents/Resources/Models
 rm -rf BridgeCommand.app/Contents/Resources/Scenarios
