@@ -650,6 +650,12 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterface();
     }
 
+    if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
+        guiMain.setLargeRadar(true);
+        model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
+        guiMain.hide2dInterface();
+    }
+
     //Give the network class a pointer to the model
     network->setModel(&model);
 
