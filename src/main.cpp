@@ -542,8 +542,14 @@ int main(int argc, char ** argv)
 	Sound sound;
 
     OperatingMode::Mode mode = OperatingMode::Normal;
-    ScenarioChoice scenarioChoice(device,&language);
-    scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
+    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
+        mode = OperatingMode::Secondary;
+    }
+
+    if (mode == OperatingMode::Normal) {
+        ScenarioChoice scenarioChoice(device,&language);
+        scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
+    }
 
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {

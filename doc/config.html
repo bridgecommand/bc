@@ -136,6 +136,9 @@ joystick_map(12,2)=1
 udp_send_port=18304
 [NMEA over serial]
 NMEA_ComPort=""
+
+[Startup]
+secondary_mode=0
 </pre>
 
 <h4>Parameters and descriptions</h4>
@@ -156,6 +159,7 @@ NMEA_ComPort=""
 <li>Joystick settings: <a href="joystick.html">Please see the Joystick documentation</a></li>
 <li>udp_send_port: The port used by Bridge Command to send UDP data when being used with the Map Controller or multiple displays.</li>
 <li>NMEA_ComPort: Sets the serial port number that Bridge Command should use to send emulated GPS data for use with a chart plotter, or 0 to disable.</li>
+<li>secondary_mode: If set to 1, Bridge Command will start directly in secondary mode, waiting for input from the main Bridge Command session. Default is 0.</li>
 </ul>
 </p>
 
