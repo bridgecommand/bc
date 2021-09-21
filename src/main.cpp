@@ -646,6 +646,10 @@ int main(int argc, char ** argv)
     }
     guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator());
 
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
+        guiMain.hide2dInterface();
+    }
+
     //Give the network class a pointer to the model
     network->setModel(&model);
 
