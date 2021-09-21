@@ -328,6 +328,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     sternThrusterRate = 0;
     bowThrusterRate = 0;
 
+    rudder = 0;
+    wheel = 0;
+
     //Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     //Add a triangle selector
     irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(ship);
