@@ -680,7 +680,7 @@ int main(int argc, char ** argv)
     //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
-    const irr::u32 NMEA_UPDATE_MS = 250;
+    const irr::u32 NMEA_UPDATE_MS = 75;
     irr::u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
 //    Profiling
