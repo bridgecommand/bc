@@ -5,3 +5,4 @@
 "c:\Program Files (x86)\CodeBlocks\codeblocks.exe" /na /nd --no-splash-screen --rebuild launcher\launcher.cbp
 "c:\Program Files (x86)\CodeBlocks\codeblocks.exe" /na /nd --no-splash-screen --rebuild multiplayerHub\MultiplayerHub.cbp
 "c:\Program Files (x86)\CodeBlocks\codeblocks.exe" /na /nd --no-splash-screen --rebuild repeater\repeater.cbp
+pause
