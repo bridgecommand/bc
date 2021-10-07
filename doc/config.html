@@ -146,9 +146,10 @@ hide_instruments=0
 
 <p>The parameters set in the file are:
 <ul>
-<li>graphics_mode: 1 is full screen, 2 is windowed. 
+<li>graphics_mode: 1 is full screen, 2 is windowed, and 3 is 'borderless full screen', which is especially useful on a multi-monitor set up
+<li>monitor: For 'borderless full screen' on a multi-monitor set up, leave this as zero if you want to choose the monitor to run at start up, or set to 1 or more to specify which monitor to use.</li>
 <li>graphics_width: This sets the screen width. If running full screen, this should be a width your graphics card supports.</li>
-<li>graphics_height: This sets the screen height. It should be 0.75x the graphics_width value, and should also be supported by your graphics card.</li>
+<li>graphics_height: This sets the screen height.</li>
 <li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
 <li>use_directX: This is set to 1 to use DirectX 9 if available, or 0 to use OpenGL. Depending on your graphics card, DirectX may be better supported on Windows, although at present, detailed water rendering is not available on DirectX.</li>
 <li>disable_shaders: This is set to 1 to disable the shaders used for more realistic rendering of the water. You may want this on an older computer. The default is 0.</li>
