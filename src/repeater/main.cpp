@@ -117,6 +117,11 @@ int main (int argc, char ** argv)
         iniFilename = userFolder + iniFilename;
     }
 
+    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
+        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
+        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
+    }
+
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -335,6 +340,14 @@ int main (int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     irr::u32 timer = device->getTimer()->getRealTime();
+
+    //See if user has specified a mode to start with
+    if (IniFile::iniFileTou32(iniFilename, "rudder")==1) {
+        guiMain.setMode(true);
+    } else if (IniFile::iniFileTou32(iniFilename, "heading")==1) {
+        guiMain.setMode(false);
+    }
+
 
     while(device->run()) {
 
