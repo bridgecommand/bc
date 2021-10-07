@@ -394,40 +394,39 @@ int main(int argc, char ** argv)
 	WNDCLASSEX wcex;
 
 	if (fakeFullScreen) {
-        if (requestedMonitor>-1) {
+
+        DWORD style = WS_VISIBLE | WS_POPUP;
+        wcex.cbSize = sizeof(WNDCLASSEX);
+        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
+        wcex.cbClsExtra = 0;
+        wcex.cbWndExtra = DLGWINDOWEXTRA;
+        wcex.hInstance = hInstance;
+        wcex.hIcon = NULL;
+        wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+        wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+        wcex.lpszMenuName = 0;
+        wcex.lpszClassName = Win32ClassName;
+        wcex.hIconSm = 0;
+        RegisterClassEx(&wcex);
+
+        cMonitorsVec Monitors; //The constructor for this initialises it with a list of the monitors
+
+        if (requestedMonitor>-1 && Monitors.iMonitors.size() > requestedMonitor) {
             //The user has requested a specific monitor
-            cMonitorsVec Monitors;
-            if (Monitors.iMonitors.size() > requestedMonitor) {
 
-                //Set to fill current monitor
-                int x = Monitors.rcMonitors[requestedMonitor].left;
-                int y = Monitors.rcMonitors[requestedMonitor].top;
-                graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
-                graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
+            //Set to fill requested monitor
+            int x = Monitors.rcMonitors[requestedMonitor].left;
+            int y = Monitors.rcMonitors[requestedMonitor].top;
+            graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
+            graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
 
-                DWORD style = WS_VISIBLE | WS_POPUP;
+            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+                style, x, y, graphicsWidth, graphicsHeight,
+                NULL, NULL, hInstance, NULL);
 
-                wcex.cbSize = sizeof(WNDCLASSEX);
-                wcex.style = CS_HREDRAW | CS_VREDRAW;
-                wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
-                wcex.cbClsExtra = 0;
-                wcex.cbWndExtra = DLGWINDOWEXTRA;
-                wcex.hInstance = hInstance;
-                wcex.hIcon = NULL;
-                wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-                wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-                wcex.lpszMenuName = 0;
-                wcex.lpszClassName = Win32ClassName;
-                wcex.hIconSm = 0;
+            deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
 
-                RegisterClassEx(&wcex);
-
-                hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
-                    style, x, y, graphicsWidth, graphicsHeight,
-                    NULL, NULL, hInstance, NULL);
-
-                deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
-            }
 
         } else {
             //Get user to move a dialog, so their mouse is positioned on the monitor they want
@@ -439,21 +438,6 @@ int main(int argc, char ** argv)
 
                 MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
             }
-
-            wcex.cbSize = sizeof(WNDCLASSEX);
-            wcex.style = CS_HREDRAW | CS_VREDRAW;
-            wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
-            wcex.cbClsExtra = 0;
-            wcex.cbWndExtra = DLGWINDOWEXTRA;
-            wcex.hInstance = hInstance;
-            wcex.hIcon = NULL;
-            wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-            wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-            wcex.lpszMenuName = 0;
-            wcex.lpszClassName = Win32ClassName;
-            wcex.hIconSm = 0;
-
-            RegisterClassEx(&wcex);
 
             //Find location of mouse cursor
             POINT p;
@@ -475,11 +459,7 @@ int main(int argc, char ** argv)
                 y = rc.top;
                 graphicsWidth = rc.right - rc.left;
                 graphicsHeight = rc.bottom - rc.top;
-
             }
-
-
-            DWORD style = WS_VISIBLE | WS_POPUP;
 
             hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
                 style, x, y, graphicsWidth, graphicsHeight,
