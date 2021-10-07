@@ -384,8 +384,6 @@ int main(int argc, char ** argv)
 
 #ifdef _WIN32
 
-    int requestedMonitor = IniFile::iniFileTou32(iniFilename, "monitor")-1; //0 indexed, -1 will indicate default
-
 	HWND hWnd;
 	HINSTANCE hInstance = 0;
 	// create dialog
@@ -394,6 +392,8 @@ int main(int argc, char ** argv)
 	WNDCLASSEX wcex;
 
 	if (fakeFullScreen) {
+
+		int requestedMonitor = IniFile::iniFileTou32(iniFilename, "monitor")-1; //0 indexed, -1 will indicate default
 
         DWORD style = WS_VISIBLE | WS_POPUP;
         wcex.cbSize = sizeof(WNDCLASSEX);

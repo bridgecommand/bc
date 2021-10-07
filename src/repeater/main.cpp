@@ -53,6 +53,34 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 }
 #endif
 
+#ifdef _WIN32
+//From https://superkogito.github.io/blog/LoopMonitorsDetailsInCplusplus.html
+// Structure that includes all screen hanldes and rectangles
+struct cMonitorsVec
+{
+      std::vector<int>       iMonitors;
+      std::vector<HMONITOR>  hMonitors;
+      std::vector<HDC>       hdcMonitors;
+      std::vector<RECT>      rcMonitors;
+
+      static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
+      {
+              cMonitorsVec* pThis = reinterpret_cast<cMonitorsVec*>(pData);
+
+              pThis->hMonitors.push_back(hMon);
+              pThis->hdcMonitors.push_back(hdc);
+              pThis->rcMonitors.push_back(*lprcMonitor);
+              pThis->iMonitors.push_back(pThis->hdcMonitors.size());
+              return TRUE;
+      }
+
+      cMonitorsVec()
+      {
+              EnumDisplayMonitors(0, 0, MonitorEnum, (LPARAM)this);
+      }
+};
+#endif // _WIN32
+
 int main (int argc, char ** argv)
 {
 
@@ -163,61 +191,80 @@ int main (int argc, char ** argv)
 
 	if (fakeFullScreen) {
 
-		if (GetSystemMetrics(SM_CMONITORS) > 1) {
-			irr::core::stringw locationMessageW = language.translate("moveMessage");
+        int requestedMonitor = IniFile::iniFileTou32(iniFilename, "monitor")-1; //0 indexed, -1 will indicate default
 
-			std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
-			std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
+        DWORD style = WS_VISIBLE | WS_POPUP;
+        wcex.cbSize = sizeof(WNDCLASSEX);
+        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
+        wcex.cbClsExtra = 0;
+        wcex.cbWndExtra = DLGWINDOWEXTRA;
+        wcex.hInstance = hInstance;
+        wcex.hIcon = NULL;
+        wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+        wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+        wcex.lpszMenuName = 0;
+        wcex.lpszClassName = Win32ClassName;
+        wcex.hIconSm = 0;
+        RegisterClassEx(&wcex);
 
-			MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
-		}
+        cMonitorsVec Monitors; //The constructor for this initialises it with a list of the monitors
 
-		wcex.cbSize = sizeof(WNDCLASSEX);
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = DLGWINDOWEXTRA;
-		wcex.hInstance = hInstance;
-		wcex.hIcon = NULL;
-		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-		wcex.lpszMenuName = 0;
-		wcex.lpszClassName = Win32ClassName;
-		wcex.hIconSm = 0;
+        if (requestedMonitor>-1 && Monitors.iMonitors.size() > requestedMonitor) {
+            //The user has requested a specific monitor
 
-		RegisterClassEx(&wcex);
+            //Set to fill requested monitor
+            int x = Monitors.rcMonitors[requestedMonitor].left;
+            int y = Monitors.rcMonitors[requestedMonitor].top;
+            graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
+            graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
 
-		//Find location of mouse cursor
-		POINT p;
-		int x = 0;
-		int y = 0;
-		if (GetCursorPos(&p))
-		{
-			//Find monitor this is on
-			HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
-			MONITORINFO mi;
-			RECT        rc;
+            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+                style, x, y, graphicsWidth, graphicsHeight,
+                NULL, NULL, hInstance, NULL);
 
-			mi.cbSize = sizeof(mi);
-			GetMonitorInfo(monitor, &mi);
-			rc = mi.rcMonitor;
-
-			//Set to fill current monitor
-			x = rc.left;
-			y = rc.top;
-			graphicsWidth = rc.right - rc.left;
-			graphicsHeight = rc.bottom - rc.top;
-
-		}
+            deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
 
 
-		DWORD style = WS_VISIBLE | WS_POPUP;
+        } else {
+            //Get user to move a dialog, so their mouse is positioned on the monitor they want
+            if (GetSystemMetrics(SM_CMONITORS) > 1) {
+                irr::core::stringw locationMessageW = language.translate("moveMessage");
 
-		hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
-			style, x, y, graphicsWidth, graphicsHeight,
-			NULL, NULL, hInstance, NULL);
+                std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
+                std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
 
-		deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
+                MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
+            }
+
+            //Find location of mouse cursor
+            POINT p;
+            int x = 0;
+            int y = 0;
+            if (GetCursorPos(&p))
+            {
+                //Find monitor this is on
+                HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
+                MONITORINFO mi;
+                RECT        rc;
+
+                mi.cbSize = sizeof(mi);
+                GetMonitorInfo(monitor, &mi);
+                rc = mi.rcMonitor;
+
+                //Set to fill current monitor
+                x = rc.left;
+                y = rc.top;
+                graphicsWidth = rc.right - rc.left;
+                graphicsHeight = rc.bottom - rc.top;
+            }
+
+            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+                style, x, y, graphicsWidth, graphicsHeight,
+                NULL, NULL, hInstance, NULL);
+
+            deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
+        }
 
 	}
 #endif
@@ -234,7 +281,7 @@ int main (int argc, char ** argv)
 		std::cerr << "Could not start - please check your graphics options." << std::endl;
 		exit(EXIT_FAILURE); //Could not get file system
 	}
-	
+
 	irr::video::IVideoDriver* driver = device->getVideoDriver();
     //scene::ISceneManager* smgr = device->getSceneManager();
 
