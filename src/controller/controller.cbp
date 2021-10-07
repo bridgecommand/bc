@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option output="../../bin/bridgecommand-mc" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="../../bin" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
@@ -82,6 +82,8 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="AISOverUDP.cpp" />
+		<Unit filename="AISOverUDP.hpp" />
 		<Unit filename="ControllerModel.cpp" />
 		<Unit filename="ControllerModel.hpp" />
 		<Unit filename="EventReceiver.cpp" />
@@ -90,29 +92,35 @@
 		<Unit filename="GUI.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
-		<Unit filename="AISOverUDP.cpp" />
-		<Unit filename="AISOverUDP.hpp" />
 		<Unit filename="OtherShipDataStruct.hpp" />
 		<Unit filename="PositionDataStruct.hpp" />
 		<Unit filename="ShipDataStruct.hpp" />
-		<Unit filename="libs/aisparser/c/src/access.c" />
+		<Unit filename="libs/aisparser/c/src/access.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/access.h" />
-		<Unit filename="libs/aisparser/c/src/imo.c" />
+		<Unit filename="libs/aisparser/c/src/imo.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/imo.h" />
-		<Unit filename="libs/aisparser/c/src/nmea.c" />
+		<Unit filename="libs/aisparser/c/src/nmea.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/nmea.h" />
 		<Unit filename="libs/aisparser/c/src/portable.h" />
-		<Unit filename="libs/aisparser/c/src/seaway.c" />
+		<Unit filename="libs/aisparser/c/src/seaway.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/seaway.h" />
-		<Unit filename="libs/aisparser/c/src/sixbit.c" />
+		<Unit filename="libs/aisparser/c/src/sixbit.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/sixbit.h" />
-		<Unit filename="libs/aisparser/c/src/vdm_parse.c" />
+		<Unit filename="libs/aisparser/c/src/vdm_parse.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="libs/aisparser/c/src/vdm_parse.h" />
 		<Unit filename="main.cpp" />
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

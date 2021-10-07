@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option output="../../bin/bridgecommand-ini" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="../../bin" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
@@ -71,10 +71,6 @@
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="main.cpp" />
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

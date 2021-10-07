@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option output="../../bin/bridgecommand-mh" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="../../bin" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
@@ -90,9 +90,6 @@
 		<Unit filename="StartupEventReceiver.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
