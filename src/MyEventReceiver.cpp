@@ -27,7 +27,7 @@
     MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages) //Constructor
 	{
 		this->model = model; //Link to the model
-		this->gui = gui; //Link to GUI (Not currently used, all comms through model)
+		this->gui = gui; //Link to GUI
 		scrollBarPosSpeed = 0;
 		scrollBarPosHeading = 0;
 
@@ -361,15 +361,8 @@
                 bool boxState = ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
                 model->setArpaOn(boxState);
 
-                //Set both linked inputs - brute force
-                irr::gui::IGUIElement* other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
-                if(other!=0) {
-                    ((irr::gui::IGUICheckBox*)other)->setChecked(boxState);
-                }
-                other = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
-                if(other!=0) {
-                    ((irr::gui::IGUICheckBox*)other)->setChecked(boxState);
-                }
+                //Set the linked checkbox (big/small radar window)
+                gui->setARPACheckboxes(boxState);
 
             }
 

@@ -140,6 +140,9 @@ NMEA_ComPort=""
 [Startup]
 secondary_mode=0
 hide_instruments=0
+full_radar=0
+arpa_on=0
+radar_mode=0
 </pre>
 
 <h4>Parameters and descriptions</h4>
@@ -164,6 +167,8 @@ hide_instruments=0
 <li>secondary_mode: If set to 1, Bridge Command will start directly in secondary mode, waiting for input from the main Bridge Command session. Default is 0.</li>
 <li>hide_instruments: If set to 1, Bridge Command will start with the 2d instruments panel hidden, and a full 3d view. Default is 0.</li>
 <li>full_radar: If set to 1, Bridge Command will start with the radar maximised. Default is 0.</li>
+<li>arpa_on: If set to 1, Bridge Command will start the radar with ARPA active. Default is 0.</li>
+<li>radar_mode: Mode to start radar in, 0 for North Up, 1 for Course Up (stabilised), 2 for Head Up (Unstabilised).</li>
 </ul>
 </p>
 

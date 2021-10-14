@@ -136,6 +136,7 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
+    void setARPACheckboxes(bool arpaState);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;

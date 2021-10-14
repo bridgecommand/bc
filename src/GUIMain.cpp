@@ -525,6 +525,19 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return radarLarge;
     }
 
+    void GUIMain::setARPACheckboxes(bool arpaState)
+    {
+        //Set both linked inputs - brute force
+        irr::gui::IGUIElement* arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
+        if(arpaCheckbox!=0) {
+            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+        }
+        arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
+        if(arpaCheckbox!=0) {
+            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+        }
+    }
+
     irr::u32 GUIMain::getRadarPixelRadius() const
     {
         if (radarLarge) {

@@ -693,16 +693,6 @@ int main(int argc, char ** argv)
     }
     guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator());
 
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
-        guiMain.hide2dInterface();
-    }
-
-    if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
-        guiMain.setLargeRadar(true);
-        model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
-        guiMain.hide2dInterface();
-    }
-
     //Give the network class a pointer to the model
     network->setModel(&model);
 
@@ -718,6 +708,27 @@ int main(int argc, char ** argv)
 
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound());
+
+    //Set up initial options
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
+        guiMain.hide2dInterface();
+    }
+    if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
+        guiMain.setLargeRadar(true);
+        model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
+        guiMain.hide2dInterface();
+    }
+    if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
+        guiMain.setARPACheckboxes(true);
+        model.setArpaOn(true);
+    }
+    irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
+    if (radarStartupMode==1) {
+        model.setRadarCourseUp();
+    }
+    if (radarStartupMode==2) {
+        model.setRadarHeadUp();
+    }
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
