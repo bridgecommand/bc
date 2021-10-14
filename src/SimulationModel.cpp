@@ -275,6 +275,10 @@ SimulationModel::~SimulationModel()
         return ownShip.getSOG();
     }
 
+    irr::f32 SimulationModel::getDepth() const{
+        return ownShip.getDepth();
+    }
+
     irr::f32 SimulationModel::getWaveHeight(irr::f32 posX, irr::f32 posZ) const {
         return water.getWaveHeight(posX,posZ);
     }

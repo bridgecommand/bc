@@ -113,6 +113,8 @@ void NMEA::updateNMEA()
     irr::f32 hdg = model->getHeading();
     irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
+    irr::f32 depth = model->getDepth();
+
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
 
@@ -200,6 +202,10 @@ void NMEA::updateNMEA()
             break;
         case HDT: // 8.3.44 Heading true
             snprintf(messageBuffer,maxSentenceChars,"$HEHDT,%.1f,T",hdg); // T = true north
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+        case DPT: //Depth
+            snprintf(messageBuffer,maxSentenceChars,"$SDDPT,%.1f,-0.01",depth); //Depth, Offset from transducer: Positive - distance from transducer to water line, or Negative - distance from transducer to keel
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         case ROT: // 8.3.71 Rate of turn
