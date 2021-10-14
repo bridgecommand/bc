@@ -205,7 +205,7 @@ void NMEA::updateNMEA()
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         case DPT: //Depth
-            snprintf(messageBuffer,maxSentenceChars,"$SDDPT,%.1f,-0.01",depth); //Depth, Offset from transducer: Positive - distance from transducer to water line, or Negative - distance from transducer to keel
+            snprintf(messageBuffer,maxSentenceChars,"$SDDPT,%.1f,,",depth); //Depth, Offset from transducer: Positive - distance from transducer to water line, or Negative - distance from transducer to keel, max depth measurable
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         case ROT: // 8.3.71 Rate of turn
