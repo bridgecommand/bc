@@ -429,7 +429,7 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
         ray,
         intersection, // This will be the position of the collision
         hitTriangle, // This will be the triangle hit in the collision
-        IDFlag_IsPickable, // Own ship (bitmask)
+        IDFlag_IsPickable, // (bitmask)
         0); // Check all nodes
 
     if(selectedSceneNode) {
@@ -447,7 +447,7 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
             ray,
             intersection, // This will be the position of the collision
             hitTriangle, // This will be the triangle hit in the collision
-            IDFlag_IsPickable, // Own ship (bitmask)
+            IDFlag_IsPickable, // (bitmask)
             0); // Check all nodes
 
         if (selectedSceneNode) {
@@ -939,6 +939,23 @@ irr::f32 OwnShip::getGroundingDepth() const
             }
 
             //TODO: Also check contact with pickable scenery elements here (or other ships?)
+            irr::core::line3d<irr::f32> ray(internalPointPosition,pointPosition);
+            irr::core::vector3df intersection;
+            irr::core::triangle3df hitTriangle;
+            irr::scene::ISceneNode * selectedSceneNode =
+                device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+                ray,
+                intersection, // This will be the position of the collision
+                hitTriangle, // This will be the triangle hit in the collision
+                IDFlag_IsPickable, // (bitmask)
+                0); // Check all nodes
+
+            //If this returns something, we must be in contact, so set negative 'depth'
+            if(selectedSceneNode) {
+                if (minDepth > -0.1) {
+                    minDepth = -0.1;
+                }
+            }
 
             //Debugging, show points:
             //contactDebugPoints.at(i*2)->setPosition(pointPosition);

@@ -17,6 +17,7 @@
 #include "LandObject.hpp"
 #include "IniFile.hpp"
 #include "Utilities.hpp"
+#include "Constants.hpp"
 
 #include <iostream>
 
@@ -41,6 +42,9 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     //get scale factor from ini file (or zero if not set - assume 1)
     irr::f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
 
+    //Check if we should be able to interact with this by collision
+    bool collisionObject = IniFile::iniFileTou32(objectIniFilename,"Collision")==1;
+
     std::string objectFullPath = basePath + objectFileName;
 
     //Load the mesh
@@ -53,6 +57,18 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
         landObject = smgr->addCubeSceneNode(0.1);
     } else {
         landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location );
+    }
+
+    //Set ID as a flag if we should model collisions with this
+    if (collisionObject) {
+        landObject->setID(IDFlag_IsPickable);
+
+        //Add a triangle selector
+        irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(objectMesh,landObject);
+        if(selector) {
+            landObject->setTriangleSelector(selector);
+            dev->getLogger()->log("Added triangle selector for land object.");
+        }
     }
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works

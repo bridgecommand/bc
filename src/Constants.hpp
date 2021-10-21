@@ -21,6 +21,7 @@
 #include <string>
 
 //global constants
+const int IDFlag_IsPickable=1;
 
 //units conversions
 const irr::f32 SECONDS_IN_HOUR = 3600.0;

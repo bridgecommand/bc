@@ -87,7 +87,6 @@ class OwnShip : public Ship
         irr::f32 requiredEngineProportion(irr::f32 speed);
         void addContactPointFromRay(irr::core::line3d<irr::f32> ray);
 
-        const int IDFlag_IsPickable=1;
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
         std::string radarConfigFile;
