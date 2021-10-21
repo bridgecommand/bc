@@ -438,10 +438,27 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
         contactPoint.normal = hitTriangle.getNormal().normalize();
         contactPoint.position.Y -= heightCorrection; //Adjust for height correction
         
-        contactPoints.push_back(contactPoint); //Store
+        //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
+        ray.start = contactPoint.position;
+        ray.end = ray.start - 100*contactPoint.normal;
+        //Check for the internal node
+        selectedSceneNode =
+            device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+            ray,
+            intersection, // This will be the position of the collision
+            hitTriangle, // This will be the triangle hit in the collision
+            IDFlag_IsPickable, // Own ship (bitmask)
+            0); // Check all nodes
 
-        //Debugging
-        //contactDebugPoints.push_back(device->getSceneManager()->addSphereSceneNode(0.1));
+        if (selectedSceneNode) {
+            contactPoint.internalPosition = intersection;
+            contactPoint.internalPosition.Y -= heightCorrection; //Adjust for height correction
+            contactPoints.push_back(contactPoint); //Store
+
+            //Debugging
+            //contactDebugPoints.push_back(device->getSceneManager()->addSphereSceneNode(0.1));
+            //contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
+        }
     }
 }
 
@@ -906,20 +923,26 @@ irr::f32 OwnShip::getGroundingDepth() const
         irr::f32 minDepth = 1e9; //Very large number
         for (int i = 0; i<contactPoints.size(); i++) {
             irr::core::vector3df pointPosition = contactPoints.at(i).position;
+            irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
             
             //Rotate with own ship
             irr::core::matrix4 rot;
             rot.setRotationDegrees(ship->getRotation());
             rot.transformVect(pointPosition);
+            rot.transformVect(internalPointPosition);
 
             pointPosition += ship->getAbsolutePosition();
+            internalPointPosition += ship->getAbsolutePosition();
             irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
             if (localDepth<minDepth) {
                 minDepth = localDepth;
             }
 
+            //TODO: Also check contact with pickable scenery elements here (or other ships?)
+
             //Debugging, show points:
-            //contactDebugPoints.at(i)->setPosition(pointPosition);
+            //contactDebugPoints.at(i*2)->setPosition(pointPosition);
+            //contactDebugPoints.at(i*2 + 1)->setPosition(internalPointPosition);
 
         }
 
