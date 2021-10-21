@@ -179,9 +179,21 @@ value moving the 'buoy' higher. Again this is useful for adjusting the height of
 
 <p>The analog of <i>buoy.ini</i>, but for fixed objects, either on land or ground based object at sea
 (breakwaters etc). Contains 1 general variable, and a set of 5 to 6
-variables for each land object defined. <i>Number</i> sets the number of objects to be defined.This can be zero, in which
-case no land objects are defined, and nothing further is required in
-this file. The first three variables for each object, <i>Type(#)</i>, <i>Long(#)</i> and <i>Lat(#)</i> are defined as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command root folder. The additional two variables, <i>Rotation(#)</i> and <i>HeightCorrection(#)</i> allow for the model to be rotated about its vertical axis, and moved up or down. If the optional setting <i>Absolute(#)</i> is set as 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level. <i>Rotation(#)</i> is specified in degrees. An anticlockwise rotation, as viewed from the top, is positive. <i>HeightCorrection(#)</i> allows for a model to be moved up or down, so it sits properly on the land. A positive <i>HeightCorrection(#)</i> moves the object upwards, and is in metres.</p>
+variables for each land object defined. </p>
+<p><i>Number</i> sets the number of objects to be defined.This can be zero, in which
+    case no land objects are defined, and nothing further is required in
+    this file.</p>
+
+<ul>
+<li><i>Type(#)</i> is defined in the same way as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command root folder.</li>    
+<li><i>Long(#)</i> is defined in the same way as for buoys.</li>
+<li><i>Lat(#)</i> is defined in the same way as for buoys.</li>
+<li><i>Rotation(#)</i> allows for the model to be rotated about its vertical axis. Specified in degrees. An anticlockwise rotation, as viewed from the top, is positive.</li>
+<li><i>HeightCorrection(#)</i> allows for the model to be moved up or down. so it sits properly on the land. A positive value moves the object upwards, and is in metres.</li>
+<li>Optional setting <i>Absolute(#)</i>. If this set to 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level.</li>
+<li>Optional setting <i>Collision(#)</i>. If this is set to 1, then collision modelling with the own ship will be enabled for this object.</li>
+</ul>
+
 
 <h5>Example landobject.ini</h5>
 <pre>
