@@ -349,23 +349,67 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     irr::f32 minZ = boundingBox.MinEdge.Z;
     irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
-    //Grid from below looking up (TODO: Add grids looking from other sides as well)
+    
     int xPoints = 10;
+    int yPoints = 10;
     int zPoints = 10;
+
+    //Grid from below looking up
     for (int i = 0; i<xPoints; i++) {
         for (int j = 0; j<zPoints; j++) {
             
             irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(zPoints-1);
             
-            irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
+            irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = minY; ray.start.Z = zTestPos;
             ray.end = ray.start;
             ray.end.Y = maxY;
 
             //Check the ray and add the contact point if it exists
             addContactPointFromRay(ray);
+        }
+    }
 
+    //Grid from ahead/astern
+    for (int i = 0; i<xPoints; i++) {
+        for (int j = 0; j<yPoints; j++) {
+            
+            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
+            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
+            
+            irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
+            ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ;
+            ray.end = ray.start;
+            ray.end.Z = minZ;
+
+            //Check the ray and add the contact point if it exists
+            addContactPointFromRay(ray);
+            //swap ray direction and check again
+            ray.start.Z = minZ;
+            ray.end.Z = maxZ;
+            addContactPointFromRay(ray);
+        }
+    }
+
+    //Grid from side to side
+    for (int i = 0; i<xPoints; i++) {
+        for (int j = 0; j<yPoints; j++) {
+            
+            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(zPoints-1);
+            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
+            
+            irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
+            ray.start.X = maxX; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
+            ray.end = ray.start;
+            ray.end.X = minX;
+
+            //Check the ray and add the contact point if it exists
+            addContactPointFromRay(ray);
+            //swap ray direction and check again
+            ray.start.X = minX;
+            ray.end.X = maxX;
+            addContactPointFromRay(ray);
         }
     }
 
