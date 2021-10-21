@@ -61,8 +61,12 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Get rotation
         irr::f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
 
+        //Check if we should be able to interact with this by collision
+        bool collisionObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Collision",currentObject))==1;
+
+
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),irr::core::vector3df(objectX,objectY,objectZ),rotation,smgr,dev));
+        landObjects.push_back(LandObject (objectName.c_str(),irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,smgr,dev));
 
     }
 }

@@ -23,7 +23,7 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/LandObject/" + name + "/";
@@ -41,9 +41,6 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
 
     //get scale factor from ini file (or zero if not set - assume 1)
     irr::f32 objectScale = IniFile::iniFileTof32(objectIniFilename,"Scalefactor", 1.f);
-
-    //Check if we should be able to interact with this by collision
-    bool collisionObject = IniFile::iniFileTou32(objectIniFilename,"Collision")==1;
 
     std::string objectFullPath = basePath + objectFileName;
 
