@@ -52,9 +52,7 @@ class OwnShip : public Ship
         bool hasTurnIndicator() const;
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
-
         void setWheel(irr::f32); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE
-
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
@@ -70,11 +68,7 @@ class OwnShip : public Ship
         irr::f32 getPortEngineRPM() const;
         irr::f32 getStbdEngineRPM() const;
         irr::f32 getRudder() const; //-30 to 30
-
-
-	irr::f32 getWheel() const; // DEE -30 to +30
-
-
+        irr::f32 getWheel() const; // DEE -30 to +30
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
         irr::f32 getCOG() const;
@@ -88,6 +82,10 @@ class OwnShip : public Ship
 
     protected:
     private:
+
+        irr::f32 requiredEngineProportion(irr::f32 speed);
+        void addContactPointFromRay(irr::core::line3d<irr::f32> ray);
+
         const int IDFlag_IsPickable=1;
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
@@ -114,12 +112,8 @@ class OwnShip : public Ship
         irr::f32 sternThruster; //-1 to +1
         irr::f32 bowThrusterRate; //Rate of change, for joystick button control
         irr::f32 sternThrusterRate;
-
-// DEE vvvvvvv
         irr::f32 wheel; //-30 to + 30
-	irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
-// DEE ^^^^^^^
-
+	    irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
         irr::f32 rudder; //-30 to + 30
 
         //Dynamics parameters
@@ -151,7 +145,6 @@ class OwnShip : public Ship
         //irr::f32 acceleration;
         irr::f32 maxSpeedAhead;
         irr::f32 maxSpeedAstern;
-        irr::f32 requiredEngineProportion(irr::f32 speed);
         irr::f32 rateOfTurn;
         irr::f32 dragTorque;
         irr::f32 rudderTorque;

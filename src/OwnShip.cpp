@@ -338,9 +338,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         device->getLogger()->log("Created triangle selector");
         ship->setTriangleSelector(selector);
     }
-    irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
-    irr::core::vector3df intersection;
-    irr::core::triangle3df hitTriangle;
+    
     ship->updateAbsolutePosition();
 
     irr::core::aabbox3df boundingBox = ship->getTransformedBoundingBox();
@@ -359,31 +357,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
             
             irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(zPoints-1);
-            ray.start.X = xTestPos;
-            ray.start.Y = minY;
-            ray.start.Z = zTestPos;
+            
+            irr::core::line3d<irr::f32> ray; //Make a ray. This will start outside the mesh, looking in
+            ray.start.X = xTestPos; ray.start.Y = minY; ray.start.Z = zTestPos;
             ray.end = ray.start;
             ray.end.Y = maxY;
 
-            irr::scene::ISceneNode * selectedSceneNode =
-                device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-                ray,
-                intersection, // This will be the position of the collision
-                hitTriangle, // This will be the triangle hit in the collision
-                IDFlag_IsPickable, // Own ship (bitmask)
-                0); // Check all nodes
+            //Check the ray and add the contact point if it exists
+            addContactPointFromRay(ray);
 
-            if(selectedSceneNode) {
-                ContactPoint contactPoint;
-                contactPoint.position = intersection;
-                contactPoint.normal = hitTriangle.getNormal().normalize();
-                contactPoint.position.Y -= heightCorrection; //Adjust for height correction
-                
-                contactPoints.push_back(contactPoint); //Store
-
-                //Debugging
-                //contactDebugPoints.push_back(device->getSceneManager()->addSphereSceneNode(0.1));
-            }
         }
     }
 
@@ -391,6 +373,32 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     ship->setTriangleSelector(0);
     device->getLogger()->log("Own ship points found: ");
     device->getLogger()->log(irr::core::stringw(contactPoints.size()).c_str());
+}
+
+void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
+{
+    irr::core::vector3df intersection;
+    irr::core::triangle3df hitTriangle;
+
+    irr::scene::ISceneNode * selectedSceneNode =
+        device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+        ray,
+        intersection, // This will be the position of the collision
+        hitTriangle, // This will be the triangle hit in the collision
+        IDFlag_IsPickable, // Own ship (bitmask)
+        0); // Check all nodes
+
+    if(selectedSceneNode) {
+        ContactPoint contactPoint;
+        contactPoint.position = intersection;
+        contactPoint.normal = hitTriangle.getNormal().normalize();
+        contactPoint.position.Y -= heightCorrection; //Adjust for height correction
+        
+        contactPoints.push_back(contactPoint); //Store
+
+        //Debugging
+        //contactDebugPoints.push_back(device->getSceneManager()->addSphereSceneNode(0.1));
+    }
 }
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (used when controlled as secondary)
