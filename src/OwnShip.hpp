@@ -83,7 +83,7 @@ class OwnShip : public Ship
     protected:
     private:
 
-        irr::f32 getGroundingDepth(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const;
+        void collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const;
         irr::f32 requiredEngineProportion(irr::f32 speed);
         irr::f32 sign(irr::f32 inValue) const;
         irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;

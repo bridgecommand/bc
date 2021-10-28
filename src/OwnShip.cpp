@@ -657,11 +657,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
 
-        //Check depth
+        //Check depth and update collision response forces and torque
         irr::f32 groundingDrag = 0;
         irr::f32 groundingLateralDrag = 0;
         irr::f32 groundingTurnDrag = 0;
-        irr::f32 groundingDepth = getGroundingDepth(groundingDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
+        collisionDetectAndRespond(groundingDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
 
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
@@ -894,7 +894,7 @@ irr::f32 OwnShip::getDepth() const
     return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
 }
 
-irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const
+void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const
 {
     
     reaction = 0;
@@ -902,11 +902,31 @@ irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReactio
     turnReaction = 0;
     
     if (is360textureShip) {
-        //Simple method
-        return getDepth();
+        //Simple method, check contact at the depth point only, to be updated to match updates in the main section
+
+        irr::f32 localIntersection = 0; //Ready to use
+        irr::f32 localDepth = getDepth(); //Simple one point method
+        //Contact model (proof of principle!)
+        if (localDepth < 0) {
+            localIntersection = -1*localDepth; //TODO: We should actually project based on the gradient?
+        }
+        //Contact model (proof of principle!)
+        if (localIntersection > 1) {
+            localIntersection = 1; //Limit
+        }
+
+        if (localIntersection > 0) {
+            //Simple 'proof of principle' values initially
+            reaction += localIntersection*100*maxForce * sign(spd,0.1);
+            lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
+            turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
+        }
+        return;
+
     } else {
+        //Normal ship model
         ship->updateAbsolutePosition();
-        irr::f32 minDepth = 1e9; //Very large number
+        
         for (int i = 0; i<contactPoints.size(); i++) {
             irr::core::vector3df pointPosition = contactPoints.at(i).position;
             irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
@@ -919,12 +939,11 @@ irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReactio
 
             pointPosition += ship->getAbsolutePosition();
             internalPointPosition += ship->getAbsolutePosition();
+            
+            irr::f32 localIntersection = 0; //Ready to use
+            
+            //Find depth below the contact point
             irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
-            if (localDepth<minDepth) {
-                minDepth = localDepth;
-            }
-
-            irr::f32 localIntersection = 0;
 
             //Contact model (proof of principle!)
             if (localDepth < 0) {
@@ -948,11 +967,6 @@ irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReactio
                 
                 irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
                 
-                //Set depth to be negative
-                if (minDepth > -1*collisionDistance) {
-                    minDepth = -1*collisionDistance;
-                }
-
                 //If we're more collided with an object than the terrain, use this
                 if (collisionDistance > localIntersection) {
                     localIntersection = collisionDistance;
@@ -977,8 +991,6 @@ irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReactio
             //contactDebugPoints.at(i*2 + 1)->setPosition(internalPointPosition);
 
         }
-
-        return minDepth;
     }
 }
 
