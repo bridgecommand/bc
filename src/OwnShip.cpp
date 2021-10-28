@@ -950,10 +950,13 @@ irr::f32 OwnShip::getGroundingDepth() const
                 IDFlag_IsPickable, // (bitmask)
                 0); // Check all nodes
 
-            //If this returns something, we must be in contact, so set negative 'depth'
+            //If this returns something, we must be in contact, so find distance between intersection and pointPosition
             if(selectedSceneNode) {
-                if (minDepth > -0.1) {
-                    minDepth = -0.1;
+                
+                irr::f32 collisionDistance = -1.0 * pointPosition.getDistanceFrom(intersection);
+                
+                if (minDepth > collisionDistance) {
+                    minDepth = collisionDistance;
                 }
             }
 
