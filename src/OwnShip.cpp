@@ -654,29 +654,14 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
 {
     
-    //Check depth
-    irr::f32 groundingDepth = getGroundingDepth();
-    
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
-        
+
+        //Check depth
         irr::f32 groundingDrag = 0;
         irr::f32 groundingLateralDrag = 0;
         irr::f32 groundingTurnDrag = 0;
-
-        //slow down if aground
-        if (groundingDepth<0) { 
-            
-            irr::f32 contactMagnitude = -1*groundingDepth;
-            if (contactMagnitude>1) {
-                contactMagnitude = 1;
-            }
-            
-            //Simple 'proof of principle' values initially
-            groundingDrag = contactMagnitude*100*maxForce * sign(spd,0.1);
-            groundingLateralDrag = contactMagnitude*100*maxForce * sign(lateralSpd,0.1);
-            groundingTurnDrag = contactMagnitude*100*maxForce * sign(rateOfTurn,0.1);
-        }
+        irr::f32 groundingDepth = getGroundingDepth(groundingDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
 
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
@@ -846,8 +831,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         zChange = cos(hdg*irr::core::DEGTORAD)*spd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
-        if (groundingDepth > 0) {
-            irr::f32 streamScaling = fmin(1,groundingDepth); //Reduce effect as water gets shallower
+        if (getDepth() > 0) {
+            irr::f32 streamScaling = fmin(1,getDepth()); //Reduce effect as water gets shallower
             xChange += stream.X*deltaTime*streamScaling;
             zChange += stream.Y*deltaTime*streamScaling;
         }
@@ -909,8 +894,13 @@ irr::f32 OwnShip::getDepth() const
     return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
 }
 
-irr::f32 OwnShip::getGroundingDepth() const
+irr::f32 OwnShip::getGroundingDepth(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const
 {
+    
+    reaction = 0;
+    lateralReaction = 0;
+    turnReaction = 0;
+    
     if (is360textureShip) {
         //Simple method
         return getDepth();
@@ -934,7 +924,14 @@ irr::f32 OwnShip::getGroundingDepth() const
                 minDepth = localDepth;
             }
 
-            //TODO: Also check contact with pickable scenery elements here (or other ships?)
+            irr::f32 localIntersection = 0;
+
+            //Contact model (proof of principle!)
+            if (localDepth < 0) {
+                localIntersection = -1*localDepth; //TODO: We should actually project based on the gradient?
+            }
+
+            //Also check contact with pickable scenery elements here (or other ships?)
             irr::core::line3d<irr::f32> ray(internalPointPosition,pointPosition);
             irr::core::vector3df intersection;
             irr::core::triangle3df hitTriangle;
@@ -949,11 +946,30 @@ irr::f32 OwnShip::getGroundingDepth() const
             //If this returns something, we must be in contact, so find distance between intersection and pointPosition
             if(selectedSceneNode) {
                 
-                irr::f32 collisionDistance = -1.0 * pointPosition.getDistanceFrom(intersection);
+                irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
                 
-                if (minDepth > collisionDistance) {
-                    minDepth = collisionDistance;
+                //Set depth to be negative
+                if (minDepth > -1*collisionDistance) {
+                    minDepth = -1*collisionDistance;
                 }
+
+                //If we're more collided with an object than the terrain, use this
+                if (collisionDistance > localIntersection) {
+                    localIntersection = collisionDistance;
+                }
+
+            }
+
+            //Contact model (proof of principle!)
+            if (localIntersection > 1) {
+                localIntersection = 1; //Limit
+            }
+
+            if (localIntersection > 0) {
+                //Simple 'proof of principle' values initially
+                reaction += localIntersection*100*maxForce * sign(spd,0.1);
+                lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
+                turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
             }
 
             //Debugging, show points:
