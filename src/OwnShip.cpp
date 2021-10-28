@@ -653,9 +653,31 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
 {
+    
+    //Check depth
+    irr::f32 groundingDepth = getGroundingDepth();
+    
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
         
+        irr::f32 groundingDrag = 0;
+        irr::f32 groundingLateralDrag = 0;
+        irr::f32 groundingTurnDrag = 0;
+
+        //slow down if aground
+        if (groundingDepth<0) { 
+            
+            irr::f32 contactMagnitude = -1*groundingDepth;
+            if (contactMagnitude>1) {
+                contactMagnitude = 1;
+            }
+            
+            //Simple 'proof of principle' values initially
+            groundingDrag = contactMagnitude*100*maxForce * sign(spd,0.1);
+            groundingLateralDrag = contactMagnitude*100*maxForce * sign(lateralSpd,0.1);
+            groundingTurnDrag = contactMagnitude*100*maxForce * sign(rateOfTurn,0.1);
+        }
+
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
         if (bowThruster>1) {
@@ -686,7 +708,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 		} else {
 			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
 		}
-		irr::f32 acceleration = (portThrust+stbdThrust-drag)/shipMass;
+		irr::f32 acceleration = (portThrust+stbdThrust-drag-groundingDrag)/shipMass;
         //Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (acceleration > 9.81) {
             acceleration = 9.81;
@@ -710,7 +732,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 		} else {
 			lateralDrag =    dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
 		}
-		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag)/shipMass;
+		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag-groundingLateralDrag)/shipMass;
 		//std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
 		//Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (lateralAcceleration > 9.81) {
@@ -758,39 +780,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             dragTorque=   dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
         }
         //Turn dynamics
-        irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque)/inertia;
+        irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque - groundingTurnDrag)/inertia;
         rateOfTurn += angularAcceleration*deltaTime; //Rad/s
         //check plausibility for rate of turn, limit to ~4Pi rad/s
         if (rateOfTurn > 12) {
             rateOfTurn = 2;
         } else if (rateOfTurn < -12) {
             rateOfTurn = -12;
-        }
-
-        //slow down if aground
-        if (getGroundingDepth()<0) { 
-            if (deltaTime>0) {
-                if (spd>0) {
-                    spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
-                }
-                if (spd<0) {
-                    spd = fmax(-0.1,spd);
-                }
-
-                if (rateOfTurn>0) {
-                    rateOfTurn = fmin(0.01,rateOfTurn);//Rate of turn in rad/s, currently hardcoded for 0.01 rad/s
-                }
-                if (rateOfTurn<0) {
-                    rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
-                }
-
-                if (lateralSpd>0) {
-                    lateralSpd = fmin(0.1,lateralSpd);
-                }
-                if (lateralSpd<0) {
-                    lateralSpd = fmax(-0.1,lateralSpd);
-                }
-            }
         }
 
         //apply buffeting to rate of turn - TODO: Check the integrals from this to work out if the end magnitude is right
@@ -850,8 +846,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         zChange = cos(hdg*irr::core::DEGTORAD)*spd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
-        if (getGroundingDepth() > 0) {
-            irr::f32 streamScaling = fmin(1,getGroundingDepth()); //Reduce effect as water gets shallower
+        if (groundingDepth > 0) {
+            irr::f32 streamScaling = fmin(1,groundingDepth); //Reduce effect as water gets shallower
             xChange += stream.X*deltaTime*streamScaling;
             zChange += stream.Y*deltaTime*streamScaling;
         }
@@ -1034,4 +1030,30 @@ void OwnShip::setViewVisibility(irr::u32 view)
 std::string OwnShip::getRadarConfigFile() const
 {
     return radarConfigFile;
+}
+
+irr::f32 OwnShip::sign(irr::f32 inValue) const
+{
+    if (inValue > 0) {
+        return 1.0;
+    } 
+    if (inValue < 0) {
+        return -1.0;
+    }
+    return 0.0;
+}
+
+irr::f32 OwnShip::sign(irr::f32 inValue, irr::f32 threshold) const
+{
+    if (threshold<=0) {
+        return sign(inValue);
+    }
+
+    if (inValue > threshold) {
+        return 1.0;
+    } 
+    if (inValue < -1*threshold) {
+        return -1.0;
+    }
+    return inValue/threshold;
 }

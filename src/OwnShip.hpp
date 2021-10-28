@@ -44,7 +44,6 @@ class OwnShip : public Ship
         void setViewVisibility(irr::u32 view);
         std::string getRadarConfigFile() const;
         irr::f32 getDepth() const;
-        irr::f32 getGroundingDepth() const;
         irr::f32 getAngleCorrection() const;
         bool hasGPS() const;
         bool hasDepthSounder() const;
@@ -84,7 +83,10 @@ class OwnShip : public Ship
     protected:
     private:
 
+        irr::f32 getGroundingDepth() const;
         irr::f32 requiredEngineProportion(irr::f32 speed);
+        irr::f32 sign(irr::f32 inValue) const;
+        irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;
         void addContactPointFromRay(irr::core::line3d<irr::f32> ray);
 
         irr::IrrlichtDevice* device;
