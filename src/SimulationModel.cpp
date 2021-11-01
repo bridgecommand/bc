@@ -1270,6 +1270,10 @@ SimulationModel::~SimulationModel()
     bool SimulationModel::checkOwnShipCollision()
     {
 
+        return (ownShip.isBuoyCollision() || ownShip.isOtherShipCollision());
+
+        /*
+
         irr::u32 numberOfOtherShips = otherShips.getNumber();
         irr::u32 numberOfBuoys = buoys.getNumber();
 
@@ -1321,5 +1325,6 @@ SimulationModel::~SimulationModel()
         }
 
         return false; //If no collision has been found
+        */
     }
 

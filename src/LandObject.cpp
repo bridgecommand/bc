@@ -64,7 +64,6 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
         irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(objectMesh,landObject);
         if(selector) {
             landObject->setTriangleSelector(selector);
-            dev->getLogger()->log("Added triangle selector for land object.");
         }
     }
 
@@ -79,6 +78,8 @@ LandObject::LandObject(const std::string& name, const irr::core::vector3df& loca
     landObject->setRotation(irr::core::vector3df(0,rotation,0));
     landObject->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     landObject->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+
+    landObject->setName("LandObject");
 
 }
 

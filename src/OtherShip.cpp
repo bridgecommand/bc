@@ -98,6 +98,14 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
     logMessage.append(std::to_string(length));
     dev->getLogger()->log(logMessage.c_str());
 
+    //Add triangle selector and make pickable
+    ship->setID(IDFlag_IsPickable);
+    irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(shipMesh,ship);
+    if(selector) {
+        ship->setTriangleSelector(selector);
+    }
+    ship->setName("OtherShip");
+
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
     //FIXME: Note in documentation that this is height above waterline in model units
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight", .5f * height);

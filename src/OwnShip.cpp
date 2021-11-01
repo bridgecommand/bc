@@ -221,7 +221,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 	screenDisplaySize *= scaleFactor;
 
     //Load the model
-	
+
     irr::scene::IAnimatedMesh* shipMesh;
 
     //Check if the 'model' is actualy the string "360". If so, treat it as a 360 equirectangular panoramic image with transparency.
@@ -235,27 +235,27 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
 
     if (is360textureShip) {
-        
+
         //make a dummy node, to which the views will be added as children
         shipMesh = smgr->addSphereMesh("Sphere",1);
         ship = smgr->addAnimatedMeshSceneNode(shipMesh,0,IDFlag_IsPickable,irr::core::vector3df(0,0,0));
 
         //Add child meshes for each
         for(int i = 0; i<views.size(); i++) {
-            
+
             irr::scene::IAnimatedMesh* viewMesh = smgr->addSphereMesh(irr::io::path("Sphere")+irr::io::path(i),5.0,32,32);
             smgr->getMeshManipulator()->flipSurfaces(viewMesh);
-            
+
             //Angle correction
             irr::f32 panoRotationYaw = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationYaw",i+1));
             irr::f32 panoRotationPitch = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationPitch",i+1));
             irr::f32 panoRotationRoll = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("PanoRotationRoll",i+1));
 
             irr::scene::IAnimatedMeshSceneNode* viewNode = smgr->addAnimatedMeshSceneNode(viewMesh,ship,-1,views.at(i)/scaleFactor,irr::core::vector3df(panoRotationPitch,panoRotationYaw,panoRotationRoll));
-            
+
             std::string panoPath = basePath + IniFile::iniFileToString(shipIniFilename,IniFile::enumerate1("Pano",i+1));
             irr::video::ITexture* texture360 = device->getVideoDriver()->getTexture(panoPath.c_str());
-            
+
 
             if (texture360!=0) {
                 viewNode->setMaterialTexture(0,texture360);
@@ -306,7 +306,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
             }
         }
     }
-    
+
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 
@@ -331,6 +331,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     rudder = 0;
     wheel = 0;
 
+    buoyCollision = false;
+    otherShipCollision = false;
+
     //Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     //Add a triangle selector
     irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(ship);
@@ -338,7 +341,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
         device->getLogger()->log("Created triangle selector");
         ship->setTriangleSelector(selector);
     }
-    
+
     ship->updateAbsolutePosition();
 
     irr::core::aabbox3df boundingBox = ship->getTransformedBoundingBox();
@@ -349,7 +352,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     irr::f32 minZ = boundingBox.MinEdge.Z;
     irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
-    
+
     int xPoints = 10;
     int yPoints = 10;
     int zPoints = 10;
@@ -357,10 +360,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Grid from below looking up
     for (int i = 0; i<xPoints; i++) {
         for (int j = 0; j<zPoints; j++) {
-            
+
             irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(zPoints-1);
-            
+
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = minY; ray.start.Z = zTestPos;
             ray.end = ray.start;
@@ -374,10 +377,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Grid from ahead/astern
     for (int i = 0; i<xPoints; i++) {
         for (int j = 0; j<yPoints; j++) {
-            
+
             irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
             irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
-            
+
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ;
             ray.end = ray.start;
@@ -395,10 +398,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     //Grid from side to side
     for (int i = 0; i<xPoints; i++) {
         for (int j = 0; j<yPoints; j++) {
-            
+
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(zPoints-1);
             irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
-            
+
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = maxX; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
             ray.end = ray.start;
@@ -437,7 +440,7 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
         contactPoint.position = intersection;
         contactPoint.normal = hitTriangle.getNormal().normalize();
         contactPoint.position.Y -= heightCorrection; //Adjust for height correction
-        
+
         //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
         ray.start = contactPoint.position;
         ray.end = ray.start - 100*contactPoint.normal;
@@ -453,11 +456,11 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
         if (selectedSceneNode) {
             contactPoint.internalPosition = intersection;
             contactPoint.internalPosition.Y -= heightCorrection; //Adjust for height correction
-            
+
             //Find cross product, for torque component
             irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
             contactPoint.torqueEffect = crossProduct.Y;
-            
+
             //Store the contact point that we have found
             contactPoints.push_back(contactPoint); //Store
 
@@ -646,6 +649,16 @@ bool OwnShip::isSingleEngine() const
     return singleEngine;
 }
 
+bool OwnShip::isBuoyCollision() const
+{
+    return buoyCollision;
+}
+
+bool OwnShip::isOtherShipCollision() const
+{
+    return otherShipCollision;
+}
+
 irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 {
     irr::f32 proportion = 0;
@@ -659,7 +672,7 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
 {
-    
+
     //dynamics: hdg in degrees, spd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
 
@@ -900,13 +913,16 @@ irr::f32 OwnShip::getDepth() const
     return -1*terrain->getHeight(xPos,zPos)+getPosition().Y;
 }
 
-void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const
+void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction)
 {
-    
+
     reaction = 0;
     lateralReaction = 0;
     turnReaction = 0;
-    
+
+    buoyCollision = false;
+    otherShipCollision = false;
+
     if (is360textureShip) {
         //Simple method, check contact at the depth point only, to be updated to match updates in the main section
 
@@ -932,11 +948,11 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
     } else {
         //Normal ship model
         ship->updateAbsolutePosition();
-        
+
         for (int i = 0; i<contactPoints.size(); i++) {
             irr::core::vector3df pointPosition = contactPoints.at(i).position;
             irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
-            
+
             //Rotate with own ship
             irr::core::matrix4 rot;
             rot.setRotationDegrees(ship->getRotation());
@@ -945,9 +961,9 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
             pointPosition += ship->getAbsolutePosition();
             internalPointPosition += ship->getAbsolutePosition();
-            
+
             irr::f32 localIntersection = 0; //Ready to use
-            
+
             //Find depth below the contact point
             irr::f32 localDepth = -1*terrain->getHeight(pointPosition.X,pointPosition.Z)+pointPosition.Y;
 
@@ -969,16 +985,27 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 0); // Check all nodes
 
             //If this returns something, we must be in contact, so find distance between intersection and pointPosition
-            if(selectedSceneNode) {
-                
+            if(selectedSceneNode && strcmp(selectedSceneNode->getName(),"LandObject")==0) {
+
                 irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
-                
+
                 //If we're more collided with an object than the terrain, use this
                 if (collisionDistance > localIntersection) {
                     localIntersection = collisionDistance;
                 }
 
             }
+
+            //Also check for buoy collision
+            if (selectedSceneNode && strcmp(selectedSceneNode->getName(),"Buoy")==0) {
+                buoyCollision = true;
+            }
+
+            //And for other ship collision
+            if (selectedSceneNode && strcmp(selectedSceneNode->getName(),"OtherShip")==0) {
+                otherShipCollision = true;
+            }
+
 
             //Contact model (proof of principle!)
             if (localIntersection > 1) {
@@ -990,7 +1017,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 //reaction += localIntersection*100*maxForce * sign(spd,0.1);
                 //lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
                 //turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
-                
+
                 //Sumple 'stiffness' based response
                 turnReaction += contactPoints.at(i).torqueEffect * localIntersection*100*maxForce;
                 reaction += contactPoints.at(i).normal.Z*localIntersection*100*maxForce;
@@ -1052,14 +1079,14 @@ std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
     return views;
 }
 
-void OwnShip::setViewVisibility(irr::u32 view) 
+void OwnShip::setViewVisibility(irr::u32 view)
 {
     if(is360textureShip) {
         irr::scene::ISceneNodeList childList = ship->getChildren();
         irr::scene::ISceneNodeList::ConstIterator it = childList.begin();
         int i = 0;
         while (it != childList.end()) {
-            
+
             if(i==view) {
                 (*it)->setVisible(true);
             } else {
@@ -1081,7 +1108,7 @@ irr::f32 OwnShip::sign(irr::f32 inValue) const
 {
     if (inValue > 0) {
         return 1.0;
-    } 
+    }
     if (inValue < 0) {
         return -1.0;
     }
@@ -1096,7 +1123,7 @@ irr::f32 OwnShip::sign(irr::f32 inValue, irr::f32 threshold) const
 
     if (inValue > threshold) {
         return 1.0;
-    } 
+    }
     if (inValue < -1*threshold) {
         return -1.0;
     }

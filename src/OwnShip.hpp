@@ -79,12 +79,14 @@ class OwnShip : public Ship
 		irr::f32 getScreenDisplaySize() const;
 		irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
-        
+        bool isBuoyCollision() const;
+        bool isOtherShipCollision() const;
+
 
     protected:
     private:
 
-        void collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction) const;
+        void collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralReaction, irr::f32& turnReaction);
         irr::f32 requiredEngineProportion(irr::f32 speed);
         irr::f32 sign(irr::f32 inValue) const;
         irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;
@@ -167,6 +169,9 @@ class OwnShip : public Ship
 		irr::core::vector3df screenDisplayPosition;
 		irr::f32 screenDisplaySize;
 		irr::f32 screenDisplayTilt;
+
+		bool buoyCollision;
+		bool otherShipCollision;
 
         std::vector<ContactPoint> contactPoints;
         //Debugging
