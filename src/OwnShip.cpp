@@ -995,6 +995,12 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 turnReaction += contactPoints.at(i).torqueEffect * localIntersection*100*maxForce;
                 reaction += contactPoints.at(i).normal.Z*localIntersection*100*maxForce;
                 lateralReaction += contactPoints.at(i).normal.X*localIntersection*100*maxForce;
+
+                //Drag response:
+                //turnReaction += 0.01*rateOfTurn*100*maxForce;
+                //reaction += 0.01*spd*100*maxForce;
+                //lateralReaction += 0.01*lateralSpd*100*maxForce;
+
             }
 
             //Debugging, show points:
