@@ -453,6 +453,12 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
         if (selectedSceneNode) {
             contactPoint.internalPosition = intersection;
             contactPoint.internalPosition.Y -= heightCorrection; //Adjust for height correction
+            
+            //Find cross product, for torque component
+            irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
+            contactPoint.torqueEffect = crossProduct.Y;
+            
+            //Store the contact point that we have found
             contactPoints.push_back(contactPoint); //Store
 
             //Debugging
@@ -981,9 +987,14 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
             if (localIntersection > 0) {
                 //Simple 'proof of principle' values initially
-                reaction += localIntersection*100*maxForce * sign(spd,0.1);
-                lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
-                turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
+                //reaction += localIntersection*100*maxForce * sign(spd,0.1);
+                //lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
+                //turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
+                
+                //Sumple 'stiffness' based response
+                turnReaction += contactPoints.at(i).torqueEffect * localIntersection*100*maxForce;
+                reaction += contactPoints.at(i).normal.Z*localIntersection*100*maxForce;
+                lateralReaction += contactPoints.at(i).normal.X*localIntersection*100*maxForce;
             }
 
             //Debugging, show points:

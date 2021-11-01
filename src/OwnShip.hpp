@@ -32,6 +32,7 @@ struct ContactPoint {
     irr::core::vector3df position; //position of the point on the ship's hull/outer surface
     irr::core::vector3df normal;
     irr::core::vector3df internalPosition; //Position within the ship, for use as a starting point for ray intersection checks
+    irr::f32 torqueEffect; //From cross product, how much a unit force along the contact vector gives a torque around the vertical axis
 };
 
 class OwnShip : public Ship
