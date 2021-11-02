@@ -99,6 +99,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         irr::core::array<irr::s32> rudderTics; rudderTics.push_back(-25);rudderTics.push_back(-20);rudderTics.push_back(-15);rudderTics.push_back(-10);rudderTics.push_back(-5);
         rudderTics.push_back(5);rudderTics.push_back(10);rudderTics.push_back(15);rudderTics.push_back(20);rudderTics.push_back(25);
 
+        //Values to show on wheel control (should be same size as rudderTics, but we probably want to show an unsigned version in the GUI
+        irr::core::array<irr::s32> rudderIndicatorTics; rudderIndicatorTics.push_back(25);rudderIndicatorTics.push_back(20);rudderIndicatorTics.push_back(15);rudderIndicatorTics.push_back(10);rudderIndicatorTics.push_back(5);
+        rudderIndicatorTics.push_back(5);rudderIndicatorTics.push_back(10);rudderIndicatorTics.push_back(15);rudderIndicatorTics.push_back(20);rudderIndicatorTics.push_back(25);
+
+
         irr::core::array<irr::s32> engineTics; engineTics.push_back(-80);engineTics.push_back(-60);engineTics.push_back(-40);engineTics.push_back(-20);
         engineTics.push_back(20);engineTics.push_back(40);engineTics.push_back(60);engineTics.push_back(80);
 
@@ -160,7 +165,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //rudderScrollbar->setPos(0);
 
 // DEE vvvvv wheel position bar
-        wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true);
+        wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true,rudderIndicatorTics);
         //wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),irr::core::rect<irr::s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
         wheelScrollbar->setMax(30);
         wheelScrollbar->setMin(-30);
@@ -208,7 +213,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
         clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
-        
+
         irr::core::rect<irr::s32> engineHintPos = irr::core::rect<irr::s32>(
             portScrollbar->getRelativePosition().UpperLeftCorner,
             stbdScrollbar->getRelativePosition().LowerRightCorner);

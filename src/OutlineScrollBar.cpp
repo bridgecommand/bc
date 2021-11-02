@@ -19,11 +19,11 @@ namespace gui
 //! constructor
 OutlineScrollBar::OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
-				core::rect<s32> rectangle, core::array<s32> shortTicMarks, core::array<s32> longTicMarks, bool secondaryIndicator)
+				core::rect<s32> rectangle, core::array<s32> shortTicMarks, core::array<s32> longTicMarks, bool secondaryIndicator, core::array<s32> ticIndicators)
 	: IGUIScrollBar(environment, parent, id, rectangle), Dragging(false), Horizontal(horizontal),
 	Pos(0), DrawPos(0),
 	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0),
-	shortTicMarks(shortTicMarks), longTicMarks(longTicMarks), Secondary(secondaryIndicator)
+	shortTicMarks(shortTicMarks), longTicMarks(longTicMarks), Secondary(secondaryIndicator), ticIndicators(ticIndicators)
 {
 	#ifdef _DEBUG
 	setDebugName("OutlineScrollBar");
@@ -211,10 +211,12 @@ void OutlineScrollBar::draw()
 	if (!IsVisible)
 		return;
 
+    irr::gui::IGUIFont* font = 0;
     IGUISkin* skin = Environment->getSkin();
     u32 skinAlpha = 255;
     if (skin) {
         skinAlpha = skin->getColor(gui::EGDC_3D_FACE).getAlpha();
+        font = skin->getFont();
     }
 
 	SliderRect = AbsoluteRect;
@@ -287,6 +289,10 @@ void OutlineScrollBar::draw()
 
                 startPoint.Y = 0.6*AbsoluteRect.UpperLeftCorner.Y + 0.4*AbsoluteRect.LowerRightCorner.Y;
                 endPoint.Y   = 0.4*AbsoluteRect.UpperLeftCorner.Y + 0.6*AbsoluteRect.LowerRightCorner.Y;
+
+                if (ticIndicators.size() == shortTicMarks.size() && font ) {
+                    font->draw(irr::core::stringw(ticIndicators[i]),irr::core::rect<irr::s32>(startPoint.X - 100, AbsoluteRect.UpperLeftCorner.Y + 0.5*AbsoluteRect.getHeight(), startPoint.X + 100, AbsoluteRect.LowerRightCorner.Y),video::SColor(skinAlpha,0,0,0),true,false,&AbsoluteRect);
+                }
             }
             else
             {
@@ -300,6 +306,7 @@ void OutlineScrollBar::draw()
                 endPoint.X   = 0.4*AbsoluteRect.UpperLeftCorner.X + 0.6*AbsoluteRect.LowerRightCorner.X;
             }
             Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
+
         }
         for (unsigned int i = 0; i<longTicMarks.size();i++) {
             if (Horizontal)

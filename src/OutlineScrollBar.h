@@ -19,7 +19,7 @@ namespace gui
 		//! constructor
 		OutlineScrollBar(bool horizontal, IGUIEnvironment* environment,
 			IGUIElement* parent, s32 id, core::rect<s32> rectangle,
-			core::array<s32> shortTicMarks=core::array<s32>(), core::array<s32> longTicMarks=core::array<s32>(), bool secondaryIndicator=false);
+			core::array<s32> shortTicMarks=core::array<s32>(), core::array<s32> longTicMarks=core::array<s32>(), bool secondaryIndicator=false, core::array<s32> ticIndicators=core::array<s32>());
 
 		//! destructor
 		virtual ~OutlineScrollBar();
@@ -106,6 +106,7 @@ namespace gui
 
 		core::array<s32> shortTicMarks;
 		core::array<s32> longTicMarks;
+		core::array<s32> ticIndicators;
 
 		f32 range () const { return (f32) ( Max - Min ); }
 	};
