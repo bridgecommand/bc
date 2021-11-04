@@ -396,7 +396,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     }
 
     //Grid from side to side
-    for (int i = 0; i<xPoints; i++) {
+    for (int i = 0; i<zPoints; i++) {
         for (int j = 0; j<yPoints; j++) {
 
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(zPoints-1);
