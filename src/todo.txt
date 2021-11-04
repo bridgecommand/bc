@@ -1,4 +1,2 @@
 Notes:
 Will need to apply tidal stream by modifying drag in ahead/lateral directions, instead of as a simple offset when the own ship is moved!
-
-Apply same filtering for triangle selectors for own ships (as for buoys)
