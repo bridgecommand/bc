@@ -29,7 +29,7 @@
 
 //using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
+void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //Store reference to terrain
     this->terrain = terrain;
@@ -352,17 +352,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     irr::f32 minZ = boundingBox.MinEdge.Z;
     irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
-
-    int xPoints = 10;
-    int yPoints = 50;
-    int zPoints = 50;
-
     //Grid from below looking up
-    for (int i = 0; i<xPoints; i++) {
-        for (int j = 0; j<zPoints; j++) {
+    for (int i = 0; i<numberOfContactPoints.X; i++) {
+        for (int j = 0; j<numberOfContactPoints.Z; j++) {
 
-            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
-            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(zPoints-1);
+            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(numberOfContactPoints.X-1);
+            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Z-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = minY; ray.start.Z = zTestPos;
@@ -375,11 +370,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     }
 
     //Grid from ahead/astern
-    for (int i = 0; i<xPoints; i++) {
-        for (int j = 0; j<yPoints; j++) {
+    for (int i = 0; i<numberOfContactPoints.X; i++) {
+        for (int j = 0; j<numberOfContactPoints.Y; j++) {
 
-            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(xPoints-1);
-            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
+            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(numberOfContactPoints.X-1);
+            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ;
@@ -396,11 +391,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
     }
 
     //Grid from side to side
-    for (int i = 0; i<zPoints; i++) {
-        for (int j = 0; j<yPoints; j++) {
+    for (int i = 0; i<numberOfContactPoints.Z; i++) {
+        for (int j = 0; j<numberOfContactPoints.Y; j++) {
 
-            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(zPoints-1);
-            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(yPoints-1);
+            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(numberOfContactPoints.Z-1);
+            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = maxX; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
