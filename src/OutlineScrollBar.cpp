@@ -304,6 +304,10 @@ void OutlineScrollBar::draw()
 
                 startPoint.X = 0.6*AbsoluteRect.UpperLeftCorner.X + 0.4*AbsoluteRect.LowerRightCorner.X;
                 endPoint.X   = 0.4*AbsoluteRect.UpperLeftCorner.X + 0.6*AbsoluteRect.LowerRightCorner.X;
+
+				if (ticIndicators.size() == shortTicMarks.size() && font ) {
+                    font->draw(irr::core::stringw(ticIndicators[i]),irr::core::rect<irr::s32>(AbsoluteRect.UpperLeftCorner.X + 0.5*AbsoluteRect.getWidth(), startPoint.Y-100, AbsoluteRect.LowerRightCorner.X, startPoint.Y+100),video::SColor(skinAlpha,0,0,0),false,true,&AbsoluteRect);
+                }
             }
             Environment->getVideoDriver()->draw2DLine(startPoint,endPoint,video::SColor(skinAlpha,0,0,0));
 
