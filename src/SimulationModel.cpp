@@ -1114,7 +1114,7 @@ SimulationModel::~SimulationModel()
 
         }{ IPROF("Update other ships");
         //update other ship positions etc
-        otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel); //Update other ship motion (based on leg information), and light visibility.
+        otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength()); //Update other ship motion (based on leg information), and light visibility.
 
         }{ IPROF("Update buoys");
         //update buoys (for lights, floating, and if collision detection is turned on)

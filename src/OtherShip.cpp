@@ -100,10 +100,10 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
 
     //Add triangle selector and make pickable
     ship->setID(IDFlag_IsPickable);
-    irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(shipMesh,ship);
-    if(selector) {
-        ship->setTriangleSelector(selector);
-    }
+    selector=smgr->createTriangleSelector(shipMesh,ship);
+    //This is applied depending on distance to own ship, for speed
+    triangleSelectorEnabled=false;
+    
     ship->setName("OtherShip");
 
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
@@ -418,4 +418,21 @@ std::vector<Leg>::size_type OtherShip::findCurrentLeg(irr::f32 scenarioTime)
     //currentLeg is now the correct leg, or the last leg, which is a 'stopped' leg. (true as we run currentLeg++ once after the check (currentLeg<legs.size()-1) if the 'break' isn't reached
 
     return currentLeg;
+}
+
+void OtherShip::enableTriangleSelector(bool selectorEnabled)
+{
+    
+    //Only re-set if we need to change the state
+    
+    if (selectorEnabled && !triangleSelectorEnabled) {
+        ship->setTriangleSelector(selector);
+        triangleSelectorEnabled = true;
+    } 
+    
+    if (!selectorEnabled && triangleSelectorEnabled) {
+        ship->setTriangleSelector(0);
+        triangleSelectorEnabled = false;
+    }
+
 }

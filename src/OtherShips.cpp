@@ -92,7 +92,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
 
 }
 
-void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
+void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
     for(std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
 
@@ -111,6 +111,13 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
         }
 
         (*it)->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);
+
+        //Set or clear triangle selector depending on distance from own ship
+        if ((*it)->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < (ownShipLength + (*it)->getLength())) {
+            (*it)->enableTriangleSelector(true);
+        } else {
+            (*it)->enableTriangleSelector(false);
+        }
     }
 
 }
