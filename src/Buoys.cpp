@@ -109,7 +109,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
+void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::f32 xPos, yPos, zPos;
@@ -131,6 +131,13 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
             it->setRotation(irr::core::vector3df(angleX,0,angleZ));
         } else {
             it->setRotation(irr::core::vector3df(0,0,0));
+        }
+
+        //Set or clear triangle selector depending on distance from own ship
+        if (it->getSceneNode()->getAbsolutePosition().getDistanceFrom(ownShipPosition) < 2*ownShipLength) {
+            it->enableTriangleSelector(true);
+        } else {
+            it->enableTriangleSelector(false);
         }
 
     }

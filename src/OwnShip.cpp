@@ -354,8 +354,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::scene::ISceneManager* smgr, Sim
 
 
     int xPoints = 10;
-    int yPoints = 10;
-    int zPoints = 10;
+    int yPoints = 50;
+    int zPoints = 50;
 
     //Grid from below looking up
     for (int i = 0; i<xPoints; i++) {

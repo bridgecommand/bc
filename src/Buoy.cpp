@@ -61,16 +61,20 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
         dev->getLogger()->log("Failed to load buoy model:");
         dev->getLogger()->log(buoyFullPath.c_str());
         buoy = smgr->addCubeSceneNode(0.1);
+        selector = 0;
     } else {
         buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );
         //Add triangle selector and make pickable
         buoy->setID(IDFlag_IsPickable);
-        irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(buoyMesh,buoy);
-        if(selector) {
-            buoy->setTriangleSelector(selector);
-        }
+        selector=smgr->createTriangleSelector(buoyMesh,buoy);
+        
+        //This selector is now set or not depending on the distance from the own ship
+        //if(selector) {
+        //    buoy->setTriangleSelector(selector);
+        //}
     }
 
+    triangleSelectorEnabled = false;
     buoy->setName("Buoy");
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
@@ -201,4 +205,21 @@ void Buoy::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
     buoy->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
+}
+
+void Buoy::enableTriangleSelector(bool selectorEnabled)
+{
+    
+    //Only re-set if we need to change the state
+    
+    if (selectorEnabled && !triangleSelectorEnabled) {
+        buoy->setTriangleSelector(selector);
+        triangleSelectorEnabled = true;
+    } 
+    
+    if (!selectorEnabled && triangleSelectorEnabled) {
+        buoy->setTriangleSelector(0);
+        triangleSelectorEnabled = false;
+    }
+
 }
