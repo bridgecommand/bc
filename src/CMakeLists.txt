@@ -19,7 +19,7 @@ add_subdirectory(libs/serial)
 include_directories("libs/enet-1.3.14/include")
 add_definitions(-DWITH_SOUND)
 if (NOT APPLE)
-    #add_definitions(-DFOR_DEB)
+    add_definitions(-DFOR_DEB)
 endif (NOT APPLE)
 
 # optional tools
