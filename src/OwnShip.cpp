@@ -1013,10 +1013,27 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 //lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
                 //turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
 
-                //Sumple 'stiffness' based response
-                turnReaction += contactPoints.at(i).torqueEffect * localIntersection*100*maxForce;
-                reaction += contactPoints.at(i).normal.Z*localIntersection*100*maxForce;
-                lateralReaction += contactPoints.at(i).normal.X*localIntersection*100*maxForce;
+                //Local speed at this point (TODO, include y component from pitch and roll?)
+                irr::core::vector3df localSpeedVector;
+                localSpeedVector.X = lateralSpd + rateOfTurn*contactPoints.at(i).position.Z;
+                localSpeedVector.Y = 0;
+                localSpeedVector.Z = spd - rateOfTurn*contactPoints.at(i).position.X;
+                irr::core::vector3df normalLocalSpeedVector = localSpeedVector;
+                normalLocalSpeedVector.normalize();
+                irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
+
+                //Simple 'stiffness' based response
+                irr::f32 reactionForce = localIntersection*100*maxForce;
+
+                turnReaction    += reactionForce * contactPoints.at(i).torqueEffect;
+                reaction        += reactionForce * contactPoints.at(i).normal.Z;
+                lateralReaction += reactionForce * contactPoints.at(i).normal.X;
+
+                //Friction response
+                irr::f32 frictionCoeff = 0.5;
+                turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
+                reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
+                lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
 
                 //Damping
                 //turnReaction += contactPoints.at(i).torqueEffect * rateOfTurn*10*maxForce;
