@@ -1038,7 +1038,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 //Damping
                 //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
                 irr::f32 normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
-                irr::f32 dampingForce = normalSpeed*1000; //TODO - tune or make this configurable
+                irr::f32 dampingForce = normalSpeed*0.1*maxForce; //TODO - tune or make this configurable?
                 turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
                 reaction        += dampingForce * contactPoints.at(i).normal.Z;
                 lateralReaction += dampingForce * contactPoints.at(i).normal.X;
