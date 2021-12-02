@@ -964,7 +964,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
             //Contact model (proof of principle!)
             if (localDepth < 0) {
-                localIntersection = -1*localDepth; //TODO: We should actually project based on the gradient?
+                localIntersection = -1*localDepth*abs(contactPoints.at(i).normal.Y); //Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
             }
 
             //Also check contact with pickable scenery elements here (or other ships?)
@@ -1017,6 +1017,11 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 turnReaction += contactPoints.at(i).torqueEffect * localIntersection*100*maxForce;
                 reaction += contactPoints.at(i).normal.Z*localIntersection*100*maxForce;
                 lateralReaction += contactPoints.at(i).normal.X*localIntersection*100*maxForce;
+
+                //Damping
+                //turnReaction += contactPoints.at(i).torqueEffect * rateOfTurn*10*maxForce;
+                //reaction += contactPoints.at(i).normal.Z*spd*10*maxForce;
+                //lateralReaction += contactPoints.at(i).normal.X*lateralSpd*10*maxForce;
 
                 //Drag response:
                 //turnReaction += 0.01*rateOfTurn*100*maxForce;
