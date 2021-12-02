@@ -1023,7 +1023,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
 
                 //Simple 'stiffness' based response
-                irr::f32 reactionForce = localIntersection*100*maxForce;
+                irr::f32 reactionForce = localIntersection*50*maxForce;
 
                 turnReaction    += reactionForce * contactPoints.at(i).torqueEffect;
                 reaction        += reactionForce * contactPoints.at(i).normal.Z;
@@ -1036,14 +1036,12 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
 
                 //Damping
-                //turnReaction += contactPoints.at(i).torqueEffect * rateOfTurn*10*maxForce;
-                //reaction += contactPoints.at(i).normal.Z*spd*10*maxForce;
-                //lateralReaction += contactPoints.at(i).normal.X*lateralSpd*10*maxForce;
-
-                //Drag response:
-                //turnReaction += 0.01*rateOfTurn*100*maxForce;
-                //reaction += 0.01*spd*100*maxForce;
-                //lateralReaction += 0.01*lateralSpd*100*maxForce;
+                //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
+                irr::f32 normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
+                irr::f32 dampingForce = normalSpeed*1000; //TODO - tune or make this configurable
+                turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
+                reaction        += dampingForce * contactPoints.at(i).normal.Z;
+                lateralReaction += dampingForce * contactPoints.at(i).normal.X;
 
             }
 
