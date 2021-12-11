@@ -126,6 +126,15 @@
                 mouseClickX = event.MouseInput.X;
                 mouseClickY = event.MouseInput.Y;
             }
+
+            if (event.MouseInput.Event == irr::EMIE_MOUSE_WHEEL) {
+                if (event.MouseInput.Wheel < 0) {
+                    model->setWheel(model->getWheel()+1.0);
+                } if (event.MouseInput.Wheel > 0) {
+                    model->setWheel(model->getWheel()-1.0);
+                }
+                return true;
+            }
         }
 
         if (event.EventType == irr::EET_GUI_EVENT)
