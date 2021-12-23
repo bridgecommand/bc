@@ -66,6 +66,9 @@ namespace gui
 		//! sets the position of the secondary indicator
 		virtual void setSecondary(s32 pos);
 
+		//! gets the position of the secondary indicator
+		virtual s32 getSecondary() const;
+
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 

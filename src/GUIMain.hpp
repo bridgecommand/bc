@@ -101,6 +101,8 @@ public:
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
+        GUI_ID_NFU_PORT_BUTTON,
+        GUI_ID_NFU_STBD_BUTTON,
         GUI_ID_PI_SELECT_BOX,
         GUI_ID_PI_RANGE_BOX,
         GUI_ID_PI_BEARING_BOX,
@@ -174,6 +176,9 @@ private:
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
+    irr::gui::IGUIButton* nonFollowUpPortButton;
+    irr::gui::IGUIButton* nonFollowUpStbdButton;
+
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIScrollBar* radarGainScrollbar;
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
@@ -265,6 +270,9 @@ private:
 
     irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
 
+    bool nfuPortDown;
+    bool nfuStbdDown;
+
     void updateVisibility();
     void hideInSecondary();
     void draw2dRadar();
@@ -274,6 +282,7 @@ private:
     std::wstring f32To2dp(irr::f32 value);
     std::wstring f32To3dp(irr::f32 value);
     bool manuallyTriggerClick(irr::gui::IGUIButton* button);
+    bool manuallyTriggerScroll(irr::gui::IGUIScrollBar* bar);
 
 };
 

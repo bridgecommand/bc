@@ -59,6 +59,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //default to double engine in gui
         this->singleEngine = singleEngine;
 
+        //Initial settings for NFU buttons
+        nfuPortDown = false;
+        nfuStbdDown = false;
+
         //Default to small radar display
         radarLarge = false;
         //Find available 4:3 rectangle to fit in area for large radar display
@@ -165,13 +169,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //rudderScrollbar->setPos(0);
 
 // DEE vvvvv wheel position bar
-        wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true,rudderIndicatorTics);
+        wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.13*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true,rudderIndicatorTics);
         //wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),irr::core::rect<irr::s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
         wheelScrollbar->setMax(30);
         wheelScrollbar->setMin(-30);
         wheelScrollbar->setPos(0);
 // DEE ^^^^^
 
+        nonFollowUpPortButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.11*su, 0.99*sh),0,GUI_ID_NFU_PORT_BUTTON,language->translate("NFUPort").c_str());
+        nonFollowUpStbdButton = guienv->addButton(irr::core::rect<irr::s32>(0.11*su, 0.96*sh, 0.13*su, 0.99*sh),0,GUI_ID_NFU_STBD_BUTTON,language->translate("NFUStbd").c_str());
+        //nonFollowUpPortButton->setIsPushButton(true);
+        //nonFollowUpStbdButton->setIsPushButton(true);
 
 
 // DEE vvvvv add very basic rate of turn indicator
@@ -680,6 +688,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return device->postEventFromUser(triggerUpdateEvent);
     }
 
+    bool GUIMain::manuallyTriggerScroll(irr::gui::IGUIScrollBar* bar)
+    {
+        irr::SEvent triggerUpdateEvent;
+        triggerUpdateEvent.EventType = irr::EET_GUI_EVENT;
+        triggerUpdateEvent.GUIEvent.Caller = bar;
+        triggerUpdateEvent.GUIEvent.Element = 0;
+        triggerUpdateEvent.GUIEvent.EventType = irr::gui::EGET_SCROLL_BAR_CHANGED ;
+        return device->postEventFromUser(triggerUpdateEvent);
+    }
+
     void GUIMain::updateGuiData(GUIData* guiData)
     {
 
@@ -1008,6 +1026,30 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (eblDownButton2->isPressed()) {manuallyTriggerClick(eblDownButton2);}
         if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
         if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
+
+        //Handle port NFU rudder button
+        if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
+            wheelScrollbar->setPos(-30);
+            manuallyTriggerScroll(wheelScrollbar);
+            nfuPortDown = true;
+        }
+        if (!nonFollowUpPortButton->isPressed() && nfuPortDown) {
+            wheelScrollbar->setPos(wheelScrollbar->getSecondary());
+            manuallyTriggerScroll(wheelScrollbar);
+            nfuPortDown = false;
+        }
+
+        //Handle stbd NFU rudder button
+        if (nonFollowUpStbdButton->isPressed() && !nfuStbdDown) {
+            wheelScrollbar->setPos(30);
+            manuallyTriggerScroll(wheelScrollbar);
+            nfuStbdDown = true;
+        }
+        if (!nonFollowUpStbdButton->isPressed() && nfuStbdDown) {
+            wheelScrollbar->setPos(wheelScrollbar->getSecondary());
+            manuallyTriggerScroll(wheelScrollbar);
+            nfuStbdDown = false;
+        }
 
         guienv->drawAll();
 

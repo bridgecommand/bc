@@ -487,6 +487,11 @@ s32 OutlineScrollBar::getPos() const
 	return Pos;
 }
 
+s32 OutlineScrollBar::getSecondary() const
+{
+	return PosSecondary;
+}
+
 /*
 //! refreshes the position and text on child buttons
 void OutlineScrollBar::refreshControls()
