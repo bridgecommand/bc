@@ -13,6 +13,7 @@
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 #include "../Utilities.hpp"
+#include "../Constants.hpp"
 
 //headers for execl
 #ifdef _WIN32
@@ -247,6 +248,11 @@ public:
 int main (int argc, char ** argv)
 {
 
+    if ((argc>1)&&(strcmp(argv[1],"--version")==0)) 
+        std::cout << LONGVERSION << std::endl;
+        return 0;
+    }
+    
     #ifdef FOR_DEB
     chdir("/usr/share/bridgecommand");
     #endif // FOR_DEB
