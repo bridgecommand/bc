@@ -28,3 +28,8 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cd bin && make && ./bridgecommand --version
+      
+    - uses: actions/upload-artifact@v2
+    with:
+      name: linux-amd64
+      path: bin
