@@ -27,4 +27,4 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cd bin && make
+      run: cd bin && make && ./bridgecommand --version
