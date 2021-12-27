@@ -248,9 +248,9 @@ public:
 int main (int argc, char ** argv)
 {
 
-    if ((argc>1)&&(strcmp(argv[1],"--version")==0)) 
+    if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
         std::cout << LONGVERSION << std::endl;
-        return 0;
+        exit(EXIT_SUCCESS);
     }
     
     #ifdef FOR_DEB
