@@ -37,9 +37,11 @@ jobs:
         cd bin
         make
         ./bridgecommand --version
+        cd createDeb
+        ./buildDeb
       
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: linux-amd64
-        path: bin
+        path: bin/createDeb/bridgecommand.deb
