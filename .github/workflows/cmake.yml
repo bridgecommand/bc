@@ -2,9 +2,8 @@ name: CMake
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    paths: 
+      - '**/Constants.hpp'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
