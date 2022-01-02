@@ -29,6 +29,8 @@ range="Range: "
 ebl="VRM/EBL: "
 minSymbol="'"
 bearing="Brg"
+NFUPort="<"
+NFUStbd=">"
 
 portEngine="Port\nEng"
 stbdEngine="Stbd\nEng"
