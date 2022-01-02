@@ -933,13 +933,29 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
         }
 
         if (localIntersection > 0) {
-            //Simple 'proof of principle' values initially
-            reaction += localIntersection*100*maxForce * sign(spd,0.1);
-            lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
-            turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
-        }
-        return;
+            
+            //slow down if aground 
+            if (spd>0) {
+                spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
+            }
+            if (spd<0) {
+                spd = fmax(-0.1,spd);
+            }
 
+            if (rateOfTurn>0) {
+                rateOfTurn = fmin(0.01,rateOfTurn);//Rate of turn in rad/s, currently hardcoded for 0.01 rad/s
+            }
+            if (rateOfTurn<0) {
+                rateOfTurn = fmax(-0.01,rateOfTurn);//Rate of turn in rad/s
+            }
+
+            if (lateralSpd>0) {
+                lateralSpd = fmin(0.1,lateralSpd);
+            }
+            if (lateralSpd<0) {
+                lateralSpd = fmax(-0.1,lateralSpd);
+            }
+        }
     } else {
         //Normal ship model
         ship->updateAbsolutePosition();
