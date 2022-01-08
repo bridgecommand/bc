@@ -78,6 +78,10 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIWindow* guiWindow;
+    irr::gui::IGUITabControl* guiTabs;
+    irr::gui::IGUITab* mainTab;
+    irr::gui::IGUITab* failureTab;
+
     //irr::gui::IGUIWindow* guiWeatherWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;

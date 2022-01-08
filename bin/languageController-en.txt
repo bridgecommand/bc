@@ -27,12 +27,15 @@ setMMSI = "Set MMSI"
 releaseMOB = "Release\nMOB"
 retrieveMOB = "Retrieve\nMOB"
 
+main="Main"
+failures="Failures"
+
 past = " (Past)"
 current = " (Current)"
 future = " (Future)"
 
 changeLeg = "Change leg"	
-changeLegCourseSpeed = "Change leg course & speed"
+changeLegCourseSpeed = "Change leg course + speed"
 addLeg = "Add leg (after selected)"
 addShip = "Add ship"
 deleteLeg = "Delete leg"

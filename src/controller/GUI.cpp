@@ -37,55 +37,65 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
 
     //gui
 
+    //Size dependent on font size, so stuff fits in. Choose an example letter to measure
+    irr::s32 fh = guienv->getSkin()->getFont()->getDimension(L"H").Height;
+    irr::s32 fw = guienv->getSkin()->getFont()->getDimension(L"H").Width;
+
     //Add zoom buttons
     zoomIn = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.01*sh,0.99*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
     zoomOut = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.06*sh,0.99*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
 
 
     //Add a moveable window to put things in
-    guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.51*sh,0.49*su,0.99*sh),false,0,0,GUI_ID_WINDOW);
+    guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.01*su+36.5*fw,0.01*sh+20*fh),false,0,0,GUI_ID_WINDOW);
     guiWindow->getCloseButton()->setVisible(false);
 
+    guiTabs = guienv->addTabControl(irr::core::rect<irr::s32>(0.5*fw,0.5*fh,36*fw,19.5*fh),guiWindow);
+    mainTab = guiTabs->addTab(language->translate("main").c_str());
+    failureTab = guiTabs->addTab(language->translate("failures").c_str());
+
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.01*su,0.05*sh,0.31*su,0.15*sh), true, true, guiWindow, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(1*fw,1*fh,24*fw,4*fh), true, true, mainTab, -1, true); //Actual text set later
 
     //Add ship selector drop down
-    shipSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
+    shipSelector = guienv->addComboBox(irr::core::rect<irr::s32>(1*fw,6*fh,12*fw,7*fh),mainTab,GUI_ID_SHIP_COMBOBOX);
     shipSelector->addItem(language->translate("own").c_str()); //Make sure there's always at least one element
-    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
+    shipSelectorTitle = guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(1*fw,4.5*fh,12*fw,5.5*fh),false,false,mainTab);
 
     //Add MMSI editing
-    mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,guiWindow,GUI_ID_MMSI_EDITBOX);
-    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
+    mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(1*fw,7.5*fh,12*fw,8.5*fh),false,mainTab,GUI_ID_MMSI_EDITBOX);
+    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(1*fw,8.5*fh,12*fw,9.5*fh),mainTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
     //Add leg selector drop down
-    legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
-    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
+    legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(12.5*fw,6*fh,24*fw,9.5*fh),mainTab,GUI_ID_LEG_LISTBOX);
+    legSelectorTitle = guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(12.5*fw,4.5*fh,24*fw,5.5*fh),false,false,mainTab);
 
     //Add edit boxes for this leg element
-    legCourseEdit   = guienv->addEditBox(L"C",irr::core::rect<irr::s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
-    legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
-    legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
+    legCourseEdit   = guienv->addEditBox(L"C",irr::core::rect<irr::s32>(1*fw,11.5*fh,12*fw,12.5*fh),false,mainTab,GUI_ID_COURSE_EDITBOX);
+    legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(12.5*fw,11.5*fh,23.5*fw,12.5*fh),false,mainTab,GUI_ID_SPEED_EDITBOX);
+    legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(24*fw,11.5*fh,35*fw,12.5*fh),false,mainTab,GUI_ID_DISTANCE_EDITBOX);
 
-    courseTitle = guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
-    speedTitle = guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
-    distanceTitle = guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
+    courseTitle = guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(1*fw,10*fh,12*fw,11*fh),false,false,mainTab);
+    speedTitle = guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(12.5*fw,10*fh,23.5*fw,11*fh),false,false,mainTab);
+    distanceTitle = guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(24*fw,10*fh,35*fw,11*fh),false,false,mainTab);
 
     //Add buttons
-    changeLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-    changeLegCourseSpeed = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
-    addLeg          = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
-    deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
-    moveShip        = guienv->addButton(irr::core::rect<irr::s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
+    changeLeg       = guienv->addButton(irr::core::rect<irr::s32>     (1.000*fw, 13*fh,17.75*fw, 14*fh),mainTab,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+    changeLegCourseSpeed = guienv->addButton(irr::core::rect<irr::s32>(18.25*fw, 13*fh,35.00*fw, 14*fh),mainTab, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
+    
+    addLeg          = guienv->addButton(irr::core::rect<irr::s32>     (1.000*fw, 14.25*fh,17.75*fw, 15.25*fh),mainTab,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>     (18.25*fw, 14.25*fh,35.00*fw, 15.25*fh),mainTab, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    
+    moveShip        = guienv->addButton(irr::core::rect<irr::s32>     (1.000*fw, 15.5*fh,35.00*fw, 16.5*fh),mainTab, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
 
     //Add buttons to release and retrieve man overboard dummy
-    releaseMOB = guienv->addButton(irr::core::rect<irr::s32>(0.40*su,0.05*sh,0.47*su,0.11*sh),guiWindow,GUI_ID_RELEASEMOB_BUTTON,language->translate("releaseMOB").c_str());
-    retrieveMOB = guienv->addButton(irr::core::rect<irr::s32>(0.40*su,0.12*sh,0.47*su,0.19*sh),guiWindow,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
+    releaseMOB = guienv->addButton(irr::core::rect<irr::s32>(29.0*fw,1*fh,35*fw,3.25*fh),mainTab,GUI_ID_RELEASEMOB_BUTTON,language->translate("releaseMOB").c_str());
+    retrieveMOB = guienv->addButton(irr::core::rect<irr::s32>(29.0*fw,3.25*fh,35*fw,5.5*fh),mainTab,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
 
     //Scroll bars for weather setting
-    visibilityBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.32*su, 0.05*sh,0.34*su, 0.19*sh),guiWindow,GUI_ID_VISIBILITY_SCROLLBAR);
-    rainBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.345*su, 0.05*sh,0.365*su, 0.19*sh),guiWindow,GUI_ID_RAIN_SCROLLBAR);
-    weatherBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.37*su, 0.05*sh,0.39*su, 0.19*sh),guiWindow,GUI_ID_WEATHER_SCROLLBAR);
+    visibilityBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(24.5*fw,1*fh,25.5*fw,5.5*fh),mainTab,GUI_ID_VISIBILITY_SCROLLBAR);
+    rainBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(26.0*fw,1*fh,27.0*fw,5.5*fh),mainTab,GUI_ID_RAIN_SCROLLBAR);
+    weatherBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(27.5*fw,1*fh,28.5*fw,5.5*fh),mainTab,GUI_ID_WEATHER_SCROLLBAR);
 
     visibilityBar->setToolTipText(language->translate("visibility").c_str());
     rainBar->setToolTipText(language->translate("rain").c_str());
