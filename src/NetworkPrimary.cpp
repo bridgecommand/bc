@@ -300,7 +300,38 @@ void NetworkPrimary::receiveNetwork()
                                             irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
                                             model->setOtherShipMMSI(shipNo,mmsi);
                                         }
+                                    } else if (thisCommand.substr(0,2).compare("RW") == 0) {
+                                        //'RW', How rudder actuation is working (2, 1 or 0 pumps working)
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==2) {
+                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            if (rudderFunction==2) {
+                                                //Rudder fully working
+                                                model->setRudderPumpState(1.0);
+                                            } else if (rudderFunction==1) {
+                                                //Rudder part working
+                                                model->setRudderPumpState(0.5);
+                                            } else if (rudderFunction==0) {
+                                                //Rudder not working
+                                                model->setRudderPumpState(0.0);
+                                            }
+                                        }
+                                    } else if (thisCommand.substr(0,2).compare("RF") == 0) {
+                                        //'RF', How rudder follow up is working (0, or 1)
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==2) {
+                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            if (rudderFunction==1) {
+                                                //Follow up rudder working
+                                                model->setFollowUpRudderWorking(true);
+                                            } else if (rudderFunction==0) {
+                                                //Follow up rudder not working
+                                                model->setFollowUpRudderWorking(false);
+                                            }
+                                        }
                                     }
+
+
 
                                 } //This command has at least three characters
 

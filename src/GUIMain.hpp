@@ -142,6 +142,7 @@ public:
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;
+    bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
     void hideEngineAndRudder(); //Used for secondary mode
 //    void setInstruments(bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS);

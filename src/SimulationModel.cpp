@@ -568,10 +568,10 @@ SimulationModel::~SimulationModel()
 
 
 // DEE vvvvvvvvvvv
-    void SimulationModel::setWheel(irr::f32 wheel)
+    void SimulationModel::setWheel(irr::f32 wheel, bool force)
     {
         //Set the wheel (-ve is port, +ve is stbd)
-        ownShip.setWheel(wheel);
+        ownShip.setWheel(wheel, force);
     }
 
     irr::f32 SimulationModel::getWheel() const
@@ -654,6 +654,14 @@ SimulationModel::~SimulationModel()
     irr::f32 SimulationModel::getSternThruster() const
     {
         return ownShip.getSternThruster();
+    }
+
+    void SimulationModel::setRudderPumpState(irr::f32 rudderPumpState) {
+        ownShip.setRudderPumpState(rudderPumpState);
+    }
+    
+    void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {
+        ownShip.setFollowUpRudderWorking(followUpRudderWorking);
     }
 
     void SimulationModel::setAccelerator(irr::f32 accelerator)

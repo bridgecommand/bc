@@ -95,10 +95,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
 
 // DEE vvvvv
-    RudderAngularVelocity = IniFile::iniFileTof32(shipIniFilename,"RudderAngularVelocity"); // Softcoded angular speed of the steering gear
+    rudderMaxSpeed = IniFile::iniFileTof32(shipIniFilename,"RudderAngularVelocity"); // Softcoded angular speed of the steering gear
 
-    if (RudderAngularVelocity == 0) {
-       RudderAngularVelocity=30; // default to an almost instentaeous rudder
+    if (rudderMaxSpeed == 0) {
+       rudderMaxSpeed=30; // default to an almost instentaeous rudder
     }
 
 // DEE ^^^^^
@@ -183,6 +183,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 	model->setStbdEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
     rudder=0;
     rateOfTurn=0;
+
+    followUpRudderWorking = true;
+    rudderPumpState = 1.0; //Fully working rudder actuation
 
     //Scale
     irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
@@ -492,16 +495,18 @@ void OwnShip::setRudder(irr::f32 rudder)
 
 
 // DEE vvvvvvv
-void OwnShip::setWheel(irr::f32 wheel)
+void OwnShip::setWheel(irr::f32 wheel, bool force)
 {
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
-    //Set the wheel (-ve is port, +ve is stbd)
-    this->wheel = wheel;
-    if (this->wheel<-30) {
-        this->wheel = -30;
-    }
-    if (this->wheel>30) {
-        this->wheel = 30;
+    //Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
+    if (followUpRudderWorking || force) {
+        this->wheel = wheel;
+        if (this->wheel<-30) {
+            this->wheel = -30;
+        }
+        if (this->wheel>30) {
+            this->wheel = 30;
+        }
     }
 }
 // DEE ^^^^^^^
@@ -563,6 +568,16 @@ void OwnShip::setSternThrusterRate(irr::f32 sternThrusterRate) {
      //Sets the rate of increase of stern thruster, used for joystick button control
     this->sternThrusterRate = sternThrusterRate;
 }
+
+void OwnShip::setRudderPumpState(irr::f32 rudderPumpState) {
+    //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
+    this->rudderPumpState = rudderPumpState;
+}
+
+void OwnShip::setFollowUpRudderWorking(bool followUpRudderWorking) { 
+    //Sets if the normal (follow up) rudder is working
+    this->followUpRudderWorking = followUpRudderWorking;
+}    
 
 irr::f32 OwnShip::getPortEngine() const
 {
@@ -803,9 +818,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         */
 
         // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
-	irr::f32 RudderPerSec=RudderAngularVelocity;
-        irr::f32 MaxRudderInDtime=rudder+RudderPerSec*deltaTime;
-        irr::f32 MinRudderInDtime=rudder-RudderPerSec*deltaTime;
+        irr::f32 MaxRudderInDtime=rudder+rudderMaxSpeed*rudderPumpState*deltaTime;
+        irr::f32 MinRudderInDtime=rudder-rudderMaxSpeed*rudderPumpState*deltaTime;
 
         if (wheel>MaxRudderInDtime) {
 		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow

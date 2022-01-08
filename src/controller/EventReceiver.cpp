@@ -165,6 +165,31 @@
                     network->setStringToSend(messageToSend);
                 }
 
+                if (id == GUIMain::GUI_ID_RUDDER_WORKING_BUTTON) {
+                    std::string messageToSend = "MCRW,2#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDER_PART_FAILED_BUTTON) {
+                    std::string messageToSend = "MCRW,1#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDER_FAILED_BUTTON) {
+                    std::string messageToSend = "MCRW,0#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON) {
+                    std::string messageToSend = "MCRF,1#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON) {
+                    std::string messageToSend = "MCRF,0#";
+                    network->setStringToSend(messageToSend);
+                }
+
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {

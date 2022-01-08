@@ -584,6 +584,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return irr::core::rect<irr::s32>(largeRadarScreenCentreX - largeRadarScreenRadius, largeRadarScreenCentreY - largeRadarScreenRadius, largeRadarScreenCentreX + largeRadarScreenRadius, largeRadarScreenCentreY + largeRadarScreenRadius);
     }
 
+    bool GUIMain::isNFUActive() const
+    {
+        return (nfuPortDown || nfuStbdDown);
+    }
+
     void GUIMain::updateVisibility()
     {
         //Items to show if we're showing interface
@@ -1029,26 +1034,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Handle port NFU rudder button
         if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
+            nfuPortDown = true; //Set this before we trigger the event, as this will be checked for override
             wheelScrollbar->setPos(-30);
             manuallyTriggerScroll(wheelScrollbar);
-            nfuPortDown = true;
         }
         if (!nonFollowUpPortButton->isPressed() && nfuPortDown) {
             wheelScrollbar->setPos(wheelScrollbar->getSecondary());
             manuallyTriggerScroll(wheelScrollbar);
-            nfuPortDown = false;
+            nfuPortDown = false; //Set this after we trigger the event, as this will be checked for override
         }
 
         //Handle stbd NFU rudder button
         if (nonFollowUpStbdButton->isPressed() && !nfuStbdDown) {
+            nfuStbdDown = true; //Set this before we trigger the event, as this will be checked for override
             wheelScrollbar->setPos(30);
             manuallyTriggerScroll(wheelScrollbar);
-            nfuStbdDown = true;
         }
         if (!nonFollowUpStbdButton->isPressed() && nfuStbdDown) {
             wheelScrollbar->setPos(wheelScrollbar->getSecondary());
             manuallyTriggerScroll(wheelScrollbar);
-            nfuStbdDown = false;
+            nfuStbdDown = false; //Set this after we trigger the event, as this will be checked for override
         }
 
         guienv->drawAll();

@@ -66,7 +66,7 @@ public:
     void setRateOfTurn(irr::f32 rateOfTurn);
     void setPos(irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
-    void setWheel(irr::f32 wheel); //Set the wheel (-ve is port, +ve is stbd) DEE
+    void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
     irr::f32 getRudder() const;
     irr::f32 getWheel() const; // DEE
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
@@ -81,6 +81,8 @@ public:
     void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
     irr::f32 getBowThruster() const;
     irr::f32 getSternThruster() const;
+    void setRudderPumpState(irr::f32 rudderPumpState); //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
+    void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;
     irr::f32 getSpeed() const; //Gets the own ship's speed

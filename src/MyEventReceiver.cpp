@@ -188,9 +188,9 @@
 // DEE capture the wheel
               if (id == GUIMain::GUI_ID_WHEEL_SCROLL_BAR)
                   {
-                        //This sometimes gets called when we right click elsewhere! Why?!
-                        model->setWheel(((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos());
-                        //std::cout << "Caller: " << event.GUIEvent.Caller <<  " getPos() is " << ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos() << std::endl;
+                        //Check if either NFU button is down, in which case force the change (even if the follow up rudder isn't working)
+                        bool nfuActive = gui->isNFUActive();
+                        model->setWheel(((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos(),nfuActive);
                   }
 // DEE capture the wheel
 

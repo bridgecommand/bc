@@ -53,7 +53,7 @@ class OwnShip : public Ship
         bool hasTurnIndicator() const;
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
-        void setWheel(irr::f32); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE
+        void setWheel(irr::f32, bool force); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
@@ -61,6 +61,8 @@ class OwnShip : public Ship
         void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
         void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets the rate of increase of bow thruster, used for joystick button control
         void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets the rate of increase of stern thruster, used for joystick button control
+        void setRudderPumpState(irr::f32 rudderPumpState); //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
+        void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1
         irr::f32 getStbdEngine() const; //-1 to 1
@@ -118,7 +120,9 @@ class OwnShip : public Ship
         irr::f32 bowThrusterRate; //Rate of change, for joystick button control
         irr::f32 sternThrusterRate;
         irr::f32 wheel; //-30 to + 30
-	    irr::f32 RudderAngularVelocity; // the angular velocity in degrees per minute that the steering gear and turn the rudder
+	    irr::f32 rudderMaxSpeed; // the angular velocity in degrees per minute that the steering gear can achieve to turn the rudder
+        irr::f32 rudderPumpState; //1 for fully working, 0.5 for half normal speed, 0.0 for no rudder response
+        bool followUpRudderWorking; //Does the normal rudder (follow up mode) work
         irr::f32 rudder; //-30 to + 30
 
         //Dynamics parameters

@@ -42,6 +42,12 @@ deleteLeg = "Delete leg"
 deleteShip = "X"
 move = "Move ship"
 
+bothRudderPumpsWorking = "Normal rudder pumps"
+oneRudderPumpWorking = "One rudder pump failed"
+noRudderPumpWorking = "Both rudder pumps failed"
+followUpWorking = "Follow up rudder normal"
+followUpFailed = "Follow up rudder failed"
+
 editScenario="Edit scenario"
 newScenario="New scenario"
 selectScenario="Select an existing scenario to edit"
