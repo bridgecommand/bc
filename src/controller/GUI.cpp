@@ -114,12 +114,13 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     visibilityBar->setSmallStep(1);
 
     //Failure parts of GUI
-    guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDER_WORKING_BUTTON,language->translate("bothRudderPumpsWorking").c_str());
-    guienv->addButton(irr::core::rect<irr::s32>(1*fw,2*fh,35*fw,3*fh),failureTab,GUI_ID_RUDDER_PART_FAILED_BUTTON,language->translate("oneRudderPumpWorking").c_str());
-    guienv->addButton(irr::core::rect<irr::s32>(1*fw,3*fh,35*fw,4*fh),failureTab,GUI_ID_RUDDER_FAILED_BUTTON,language->translate("noRudderPumpWorking").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,2*fh,35*fw,3*fh),failureTab,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,3*fh,35*fw,4*fh),failureTab,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,4*fh,35*fw,5*fh),failureTab,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
 
-    guienv->addButton(irr::core::rect<irr::s32>(1*fw,4.5*fh,35*fw,5.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
-    guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
+    guienv->addButton(irr::core::rect<irr::s32>(1*fw,6.5*fh,35*fw,7.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
     
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed

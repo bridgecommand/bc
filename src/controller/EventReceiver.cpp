@@ -165,18 +165,23 @@
                     network->setStringToSend(messageToSend);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_WORKING_BUTTON) {
-                    std::string messageToSend = "MCRW,2#";
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON) {
+                    std::string messageToSend = "MCRW,1,1#";
                     network->setStringToSend(messageToSend);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_PART_FAILED_BUTTON) {
-                    std::string messageToSend = "MCRW,1#";
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON) {
+                    std::string messageToSend = "MCRW,1,0#";
                     network->setStringToSend(messageToSend);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_FAILED_BUTTON) {
-                    std::string messageToSend = "MCRW,0#";
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON) {
+                    std::string messageToSend = "MCRW,2,1#";
+                    network->setStringToSend(messageToSend);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON) {
+                    std::string messageToSend = "MCRW,2,0#";
                     network->setStringToSend(messageToSend);
                 }
 

@@ -295,9 +295,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add buttons to control rudder failures etc.
         //Failure parts of GUI
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.03*sh,0.32*su,0.06*sh),extraControlsWindow,GUI_ID_RUDDER_WORKING_BUTTON,language->translate("bothRudderPumpsWorking").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDER_PART_FAILED_BUTTON,language->translate("oneRudderPumpWorking").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDER_FAILED_BUTTON,language->translate("noRudderPumpWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.03*sh,0.32*su,0.06*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.12*sh,0.32*su,0.15*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
         
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());

@@ -656,8 +656,8 @@ SimulationModel::~SimulationModel()
         return ownShip.getSternThruster();
     }
 
-    void SimulationModel::setRudderPumpState(irr::f32 rudderPumpState) {
-        ownShip.setRudderPumpState(rudderPumpState);
+    void SimulationModel::setRudderPumpState(int whichPump, bool rudderPumpState) {
+        ownShip.setRudderPumpState(whichPump, rudderPumpState);
     }
     
     void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {

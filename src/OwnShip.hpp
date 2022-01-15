@@ -61,7 +61,7 @@ class OwnShip : public Ship
         void setRateOfTurn(irr::f32 rateOfTurn); //Sets the rate of turn (used when controlled as secondary)
         void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets the rate of increase of bow thruster, used for joystick button control
         void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets the rate of increase of stern thruster, used for joystick button control
-        void setRudderPumpState(irr::f32 rudderPumpState); //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
+        void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumes that whichPump can be 1 or 2
         void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1
@@ -121,7 +121,8 @@ class OwnShip : public Ship
         irr::f32 sternThrusterRate;
         irr::f32 wheel; //-30 to + 30
 	    irr::f32 rudderMaxSpeed; // the angular velocity in degrees per minute that the steering gear can achieve to turn the rudder
-        irr::f32 rudderPumpState; //1 for fully working, 0.5 for half normal speed, 0.0 for no rudder response
+        bool rudderPump1Working; //Does rudder pump 1 (of 2) work
+        bool rudderPump2Working; //Does rudder pump 2 (of 2) work
         bool followUpRudderWorking; //Does the normal rudder (follow up mode) work
         irr::f32 rudder; //-30 to + 30
 

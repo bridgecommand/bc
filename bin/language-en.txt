@@ -94,9 +94,10 @@ exit="Exit"
 log="!"
 extraControls="Extra controls"
 
-bothRudderPumpsWorking = "Normal rudder pumps"
-oneRudderPumpWorking = "One rudder pump failed"
-noRudderPumpWorking = "Both rudder pumps failed"
+pump1Working = "Rudder pump 1 OK"
+pump1Failed = "Rudder pump 1 failed"
+pump2Working = "Rudder pump 2 OK"
+pump2Failed = "Rudder pump 2 failed"
 followUpWorking = "Follow up rudder normal"
 followUpFailed = "Follow up rudder failed"
 

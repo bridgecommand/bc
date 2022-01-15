@@ -185,7 +185,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     rateOfTurn=0;
 
     followUpRudderWorking = true;
-    rudderPumpState = 1.0; //Fully working rudder actuation
+    rudderPump1Working = true; //Fully working rudder actuation
+    rudderPump2Working = true; //Fully working rudder actuation
 
     //Scale
     irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
@@ -569,9 +570,13 @@ void OwnShip::setSternThrusterRate(irr::f32 sternThrusterRate) {
     this->sternThrusterRate = sternThrusterRate;
 }
 
-void OwnShip::setRudderPumpState(irr::f32 rudderPumpState) {
-    //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
-    this->rudderPumpState = rudderPumpState;
+void OwnShip::setRudderPumpState(int whichPump, bool rudderPumpState) {
+    if (whichPump==1) {
+        rudderPump1Working=rudderPumpState;
+    }
+    if (whichPump==2) {
+        rudderPump2Working=rudderPumpState;
+    }
 }
 
 void OwnShip::setFollowUpRudderWorking(bool followUpRudderWorking) { 
@@ -818,8 +823,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         */
 
         // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
-        irr::f32 MaxRudderInDtime=rudder+rudderMaxSpeed*rudderPumpState*deltaTime;
-        irr::f32 MinRudderInDtime=rudder-rudderMaxSpeed*rudderPumpState*deltaTime;
+        irr::f32 MaxRudderInDtime=rudder+rudderMaxSpeed*deltaTime*(rudderPump1Working*0.5 + rudderPump2Working*0.5);
+        irr::f32 MinRudderInDtime=rudder-rudderMaxSpeed*deltaTime*(rudderPump1Working*0.5 + rudderPump2Working*0.5);
 
         if (wheel>MaxRudderInDtime) {
 		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow

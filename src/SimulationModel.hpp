@@ -81,7 +81,7 @@ public:
     void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
     irr::f32 getBowThruster() const;
     irr::f32 getSternThruster() const;
-    void setRudderPumpState(irr::f32 rudderPumpState); //Sets how the rudder is responding. 1.0 is normal, 0.5 is half speed etc
+    void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
     void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;

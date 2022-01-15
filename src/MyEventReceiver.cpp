@@ -350,19 +350,24 @@
                     gui->setExtraControlsWindowVisible(true);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_WORKING_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON) 
                 {
-                    model->setRudderPumpState(1.0);
+                    model->setRudderPumpState(1,true);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_PART_FAILED_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON) 
                 {
-                    model->setRudderPumpState(0.5);
+                    model->setRudderPumpState(1,false);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDER_FAILED_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON) 
                 {
-                    model->setRudderPumpState(0.0);
+                    model->setRudderPumpState(2,true);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON) 
+                {
+                    model->setRudderPumpState(2,false);
                 }
 
                 if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON) 
