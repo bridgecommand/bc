@@ -57,13 +57,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         this->logMessages = logMessages;
 
         //Set gui skin less transparent
-        //irr::video::SColor col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_SHADOW);
-        //col.setAlpha(200);
-        //guienv->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, col);
+        irr::video::SColor col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_SHADOW);
+        col.setAlpha(200);
+        guienv->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, col);
 
-        //col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_FACE);
-        //col.setAlpha(200);
-        //guienv->getSkin()->setColor(irr::gui::EGDC_3D_FACE, col);
+        col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_FACE);
+        col.setAlpha(200);
+        guienv->getSkin()->setColor(irr::gui::EGDC_3D_FACE, col);
 
         //default to double engine in gui
         this->singleEngine = singleEngine;
@@ -190,24 +190,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //nonFollowUpPortButton->setIsPushButton(true);
         //nonFollowUpStbdButton->setIsPushButton(true);
 
-
-// DEE vvvvv add very basic rate of turn indicator
-// rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
-
-        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
-
-        rateofturnScrollbar->setMax(50);
-        rateofturnScrollbar->setMin(-50);
-        rateofturnScrollbar->setSmallStep(1);
-        rateofturnScrollbar->setPos(0);
-        rateofturnScrollbar->setToolTipText(language->translate("rotText").c_str());
-        if (!hasRateOfTurnIndicator) {
-            rateofturnScrollbar->setVisible(false);
-        }
-
-// DEE ^^^^^
-
-
         //Adapt if single engine:
         if (singleEngine) {
             stbdScrollbar->setVisible(false);
@@ -258,6 +240,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
+        // DEE vvvvv add very basic rate of turn indicator
+// rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
+
+        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
+
+        rateofturnScrollbar->setMax(50);
+        rateofturnScrollbar->setMin(-50);
+        rateofturnScrollbar->setSmallStep(1);
+        rateofturnScrollbar->setPos(0);
+        rateofturnScrollbar->setToolTipText(language->translate("rotText").c_str());
+        if (!hasRateOfTurnIndicator) {
+            rateofturnScrollbar->setVisible(false);
+        }
+
+// DEE ^^^^^
+
         //Add an additional window for controls (will normally be hidden)
         extraControlsWindow=guienv->addWindow(stdDataDisplayPos);
         extraControlsWindow->getCloseButton()->setVisible(false);
@@ -267,7 +265,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
+        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.03*sh,0.055*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
@@ -276,7 +275,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.08*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_RAIN_SCROLL_BAR);
+        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.055*su,0.03*sh,0.105*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.08*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -285,12 +285,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.13*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_VISIBILITY_SCROLL_BAR);
+        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.105*su,0.03*sh,0.155*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.13*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
         visibilityScrollbar->setSmallStep(1);
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
+
+        //Add buttons to control rudder failures etc.
+        //Failure parts of GUI
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.03*sh,0.32*su,0.06*sh),extraControlsWindow,GUI_ID_RUDDER_WORKING_BUTTON,language->translate("bothRudderPumpsWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDER_PART_FAILED_BUTTON,language->translate("oneRudderPumpWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDER_FAILED_BUTTON,language->translate("noRudderPumpWorking").c_str());
+        
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
         //add radar buttons
         //add tab control for radar
@@ -452,10 +462,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su,0.92*sh,0.25*su,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.32*su,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.33*su,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.32*su,0.92*sh,0.34*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su,0.92*sh,0.35*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();

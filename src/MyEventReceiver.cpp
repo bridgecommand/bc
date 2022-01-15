@@ -350,6 +350,31 @@
                     gui->setExtraControlsWindowVisible(true);
                 }
 
+                if (id == GUIMain::GUI_ID_RUDDER_WORKING_BUTTON) 
+                {
+                    model->setRudderPumpState(1.0);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDER_PART_FAILED_BUTTON) 
+                {
+                    model->setRudderPumpState(0.5);
+                }
+
+                if (id == GUIMain::GUI_ID_RUDDER_FAILED_BUTTON) 
+                {
+                    model->setRudderPumpState(0.0);
+                }
+
+                if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON) 
+                {
+                    model->setFollowUpRudderWorking(true);
+                }
+
+                if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON) 
+                {
+                    model->setFollowUpRudderWorking(false);
+                }
+
             } //Button clicked
 
             if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {

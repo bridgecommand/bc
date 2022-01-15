@@ -94,5 +94,11 @@ exit="Exit"
 log="!"
 extraControls="Extra controls"
 
+bothRudderPumpsWorking = "Normal rudder pumps"
+oneRudderPumpWorking = "One rudder pump failed"
+noRudderPumpWorking = "Both rudder pumps failed"
+followUpWorking = "Follow up rudder normal"
+followUpFailed = "Follow up rudder failed"
+
 fps="FPS: "
 
