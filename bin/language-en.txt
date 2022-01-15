@@ -92,6 +92,7 @@ hideinterface="Hide"
 exit="Exit"
 
 log="!"
+extraControls="Extra controls"
 
 fps="FPS: "
 

@@ -123,6 +123,8 @@ public:
         GUI_ID_BINOS_INTERFACE_BUTTON,
         GUI_ID_BEARING_INTERFACE_BUTTON,
         GUI_ID_SHOW_LOG_BUTTON,
+        GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,
+        GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -149,6 +151,7 @@ public:
     void updateGuiData(GUIData* guiData);
     void showLogWindow();
     void drawGUI();
+    void setExtraControlsWindowVisible(bool windowVisible);
 
 private:
 
@@ -208,9 +211,12 @@ private:
     irr::gui::IGUIButton* bearingButton;
     irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
+    irr::gui::IGUIButton* showExtraControlsButton;
 
     irr::gui::IGUIStaticText* clickForRudderText;
     irr::gui::IGUIStaticText* clickForEngineText;
+
+    irr::gui::IGUIWindow* extraControlsWindow;
 
 
     irr::u32 su;

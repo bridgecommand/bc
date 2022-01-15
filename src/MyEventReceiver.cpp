@@ -340,6 +340,16 @@
                     gui->showLogWindow();
                 }
 
+                if (id == GUIMain::GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON)
+                {
+                    gui->setExtraControlsWindowVisible(false);
+                }
+
+                if (id == GUIMain::GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON)
+                {
+                    gui->setExtraControlsWindowVisible(true);
+                }
+
             } //Button clicked
 
             if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {

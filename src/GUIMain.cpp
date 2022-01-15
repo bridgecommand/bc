@@ -56,6 +56,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         this->language = language;
         this->logMessages = logMessages;
 
+        //Set gui skin less transparent
+        //irr::video::SColor col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_SHADOW);
+        //col.setAlpha(200);
+        //guienv->getSkin()->setColor(irr::gui::EGDC_3D_SHADOW, col);
+
+        //col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_FACE);
+        //col.setAlpha(200);
+        //guienv->getSkin()->setColor(irr::gui::EGDC_3D_FACE, col);
+
         //default to double engine in gui
         this->singleEngine = singleEngine;
 
@@ -249,9 +258,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
 
+        //Add an additional window for controls (will normally be hidden)
+        extraControlsWindow=guienv->addWindow(stdDataDisplayPos);
+        extraControlsWindow->getCloseButton()->setVisible(false);
+        extraControlsWindow->setText(language->translate("extraControls").c_str());
+        guienv->addButton(extraControlsWindow->getCloseButton()->getRelativePosition(),extraControlsWindow,GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,L"X");
+        extraControlsWindow->setVisible(false);
+
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.290*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_WEATHER_SCROLL_BAR);
+        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
@@ -260,7 +276,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.340*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_RAIN_SCROLL_BAR);
+        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.08*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -269,7 +285,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.390*su,0.90*sh),0.02*su,guienv,guienv->getRootGUIElement(),GUI_ID_VISIBILITY_SCROLL_BAR);
+        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.13*su,0.06*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -435,8 +451,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Exit button
         exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su,0.92*sh,0.25*su,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
+        //Show button to display extra controls window
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.32*su,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.27*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.32*su,0.92*sh,0.34*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -595,10 +614,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
 
-        weatherScrollbar->setVisible(showInterface);
-        rainScrollbar->setVisible(showInterface);
-        visibilityScrollbar->setVisible(showInterface);
+        //weatherScrollbar->setVisible(showInterface);
+        //rainScrollbar->setVisible(showInterface);
+        //visibilityScrollbar->setVisible(showInterface);
         pcLogButton->setVisible(showInterface);
+        showExtraControlsButton->setVisible(showInterface);
 
         exitButton->setVisible(showInterface);
 
@@ -1225,4 +1245,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->getSkin()->getFont()->draw(language->translate("collided"),
             irr::core::rect<irr::s32>(screenCentreX-0.25*su,screenCentreY-0.025*sh,screenCentreX+0.25*su, screenCentreY+0.025*sh),
 			irr::video::SColor(255,255,0,0),true,true);
+    }
+
+    void GUIMain::setExtraControlsWindowVisible(bool windowVisible)
+    {
+        extraControlsWindow->setVisible(windowVisible);
+        if (windowVisible) {
+            guienv->setFocus(extraControlsWindow);
+        }
     }
