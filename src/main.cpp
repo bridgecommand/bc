@@ -309,6 +309,24 @@ int main(int argc, char ** argv)
     joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
     joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
 
+    joystickSetup.joystickNoPump1On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_on");
+    joystickSetup.joystickButtonPump1On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_on")-1;
+
+    joystickSetup.joystickNoPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_off");
+    joystickSetup.joystickButtonPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_off")-1;
+
+    joystickSetup.joystickNoPump2On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_on");
+    joystickSetup.joystickButtonPump2On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_on")-1;
+
+    joystickSetup.joystickNoPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_off");
+    joystickSetup.joystickButtonPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_off")-1;
+
+    joystickSetup.joystickNoFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_on");
+    joystickSetup.joystickButtonFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_on")-1;
+
+    joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
+    joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
+
     //Joystick mapping
     irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {

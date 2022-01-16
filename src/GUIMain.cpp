@@ -256,6 +256,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 // DEE ^^^^^
 
+        // add indicators for whether the rudder pumps are working
+        pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su,0.72*sh,0.44*su,0.745*sh),true,false,0,-1,true);
+        pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su,0.75*sh,0.44*su,0.775*sh),true,false,0,-1,true);
+        pump1On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+
         //Add an additional window for controls (will normally be hidden)
         extraControlsWindow=guienv->addWindow(stdDataDisplayPos);
         extraControlsWindow->getCloseButton()->setVisible(false);
@@ -636,6 +642,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         portText->setVisible(showInterface);
         stbdText->setVisible(showInterface && !singleEngine);
 
+        pump1On->setVisible(showInterface);
+        pump2On->setVisible(showInterface);
+
         //Items not to show if we're on full screen radar
         //dataDisplay->setVisible(!radarLarge);
         binosButton->setVisible(!radarLarge);
@@ -811,6 +820,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiTCPAs = guiData->TCPAs;
 		guiARPAheadings = guiData->headings;
 		guiARPAspeeds = guiData->speeds;
+
+        //Update rudder pump indicators
+        if (guiData->pump1On == true) {
+            pump1On->setBackgroundColor(irr::video::SColor(255,0,128,0));
+        } else {
+            pump1On->setBackgroundColor(irr::video::SColor(255,128,0,0));
+        }
+        if (guiData->pump2On == true) {
+            pump2On->setBackgroundColor(irr::video::SColor(255,0,128,0));
+        } else {
+            pump2On->setBackgroundColor(irr::video::SColor(255,128,0,0));
+        }
     }
 
     void GUIMain::showLogWindow()

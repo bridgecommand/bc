@@ -1265,6 +1265,8 @@ SimulationModel::~SimulationModel()
         guiData->collided = collided;
         guiData->headUp = radarCalculation.getHeadUp();
         guiData->radarOn = radarCalculation.isRadarOn();
+        guiData->pump1On = ownShip.getRudderPumpState(1);
+        guiData->pump2On = ownShip.getRudderPumpState(2);
 
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();

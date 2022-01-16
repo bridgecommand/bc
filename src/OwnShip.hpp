@@ -62,6 +62,7 @@ class OwnShip : public Ship
         void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets the rate of increase of bow thruster, used for joystick button control
         void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets the rate of increase of stern thruster, used for joystick button control
         void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumes that whichPump can be 1 or 2
+        bool getRudderPumpState(int whichPump) const;
         void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
         irr::f32 getRateOfTurn() const;
         irr::f32 getPortEngine() const; //-1 to 1

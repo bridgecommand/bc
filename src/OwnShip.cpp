@@ -579,6 +579,16 @@ void OwnShip::setRudderPumpState(int whichPump, bool rudderPumpState) {
     }
 }
 
+bool OwnShip::getRudderPumpState(int whichPump) const {
+    if (whichPump==1) {
+        return rudderPump1Working;
+    }
+    if (whichPump==2) {
+        return rudderPump2Working;
+    }
+    return false;
+}
+
 void OwnShip::setFollowUpRudderWorking(bool followUpRudderWorking) { 
     //Sets if the normal (follow up) rudder is working
     this->followUpRudderWorking = followUpRudderWorking;

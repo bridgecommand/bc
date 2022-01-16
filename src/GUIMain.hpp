@@ -62,6 +62,8 @@ struct GUIData {
     bool paused;
     bool collided;
     bool headUp;
+    bool pump1On;
+    bool pump2On;
 };
 
 class GUIMain //Create, build and update GUI
@@ -218,6 +220,9 @@ private:
     irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
     irr::gui::IGUIButton* showExtraControlsButton;
+
+    irr::gui::IGUIStaticText* pump1On;
+    irr::gui::IGUIStaticText* pump2On;
 
     irr::gui::IGUIStaticText* clickForRudderText;
     irr::gui::IGUIStaticText* clickForEngineText;

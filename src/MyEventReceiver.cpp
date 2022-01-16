@@ -1004,6 +1004,48 @@
                 }
             }
 
+            //Rudder pump 1 on
+            if (thisJoystick == joystickSetup.joystickNoPump1On) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonPump1On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On,previousButtonState)) {
+                    model->setRudderPumpState(1,true);
+                }
+            }
+
+            //Rudder pump 1 off
+            if (thisJoystick == joystickSetup.joystickNoPump1Off) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonPump1Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1Off,previousButtonState)) {
+                    model->setRudderPumpState(1,false);
+                }
+            }
+
+            //Rudder pump 2 on
+            if (thisJoystick == joystickSetup.joystickNoPump2On) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonPump2On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2On,previousButtonState)) {
+                    model->setRudderPumpState(2,true);
+                }
+            }
+
+            //Rudder pump 2 off
+            if (thisJoystick == joystickSetup.joystickNoPump2Off) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonPump2Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2Off,previousButtonState)) {
+                    model->setRudderPumpState(2,false);
+                }
+            }
+
+            //Follow up rudder on
+            if (thisJoystick == joystickSetup.joystickNoFollowUpOn) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOn,previousButtonState)) {
+                    model->setFollowUpRudderWorking(true);
+                }
+            }
+
+            //Follow up rudder off
+            if (thisJoystick == joystickSetup.joystickNoFollowUpOff) { 
+                if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOff,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOff,previousButtonState)) {
+                    model->setFollowUpRudderWorking(false);
+                }
+            }
+
             //Store previous settings
             joystickPreviousButtonStates.at(thisJoystick) = event.JoystickEvent.ButtonStates;
         }

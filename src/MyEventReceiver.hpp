@@ -74,6 +74,18 @@ public:
     irr::u32 joystickButtonLookUp;
     irr::u32 joystickNoLookDown;
     irr::u32 joystickButtonLookDown;
+    irr::u32 joystickNoPump1On;
+    irr::u32 joystickButtonPump1On;
+    irr::u32 joystickNoPump1Off;
+    irr::u32 joystickButtonPump1Off;
+    irr::u32 joystickNoPump2On;
+    irr::u32 joystickButtonPump2On;
+    irr::u32 joystickNoPump2Off;
+    irr::u32 joystickButtonPump2Off;
+    irr::u32 joystickNoFollowUpOn;
+    irr::u32 joystickButtonFollowUpOn;
+    irr::u32 joystickNoFollowUpOff;
+    irr::u32 joystickButtonFollowUpOff;
 };
 
 class MyEventReceiver : public irr::IEventReceiver
