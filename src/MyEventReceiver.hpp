@@ -33,6 +33,8 @@ public:
     irr::u32 rudderJoystickAxis;
     irr::u32 bowThrusterJoystickAxis;
     irr::u32 sternThrusterJoystickAxis;
+    //LookJoystick
+    irr::u32 LookJoystickAxis;
     irr::u32 portJoystickNo;
     irr::u32 stbdJoystickNo;
     irr::u32 rudderJoystickNo;
@@ -41,6 +43,8 @@ public:
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
+    //LookJoystick
+    irr::u32 LookJoystickNo;
     //Buttons:
     irr::u32 joystickNoHorn;
     irr::u32 joystickButtonHorn;
@@ -68,12 +72,16 @@ public:
     irr::u32 joystickButtonZoomOff;
     irr::u32 joystickNoLookLeft;
     irr::u32 joystickButtonLookLeft;
+    irr::u32 joystickValueLookLeft;
     irr::u32 joystickNoLookRight;
     irr::u32 joystickButtonLookRight;
+    irr::u32 joystickValueLookRight;
     irr::u32 joystickNoLookUp;
     irr::u32 joystickButtonLookUp;
+    irr::u32 joystickValueLookUp;
     irr::u32 joystickNoLookDown;
     irr::u32 joystickButtonLookDown;
+    irr::u32 joystickValueLookDown;
 };
 
 class MyEventReceiver : public irr::IEventReceiver
@@ -102,6 +110,8 @@ private:
     irr::f32 previousJoystickRudder;
     irr::f32 previousJoystickBowThruster;
     irr::f32 previousJoystickSternThruster;
+    //joystickLook   
+    irr::f32 previousJoystickLook;
 
     irr::s32 mouseClickX;
     irr::s32 mouseClickY;

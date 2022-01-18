@@ -254,12 +254,15 @@ int main(int argc, char ** argv)
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
+    joystickSetup.LookJoystickAxis = IniFile::iniFileTou32(iniFilename, "look_channel")-1;
     //Which joystick number
     joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
     joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
     joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
     joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
+    joystickSetup.LookJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_look");
+
     //Joystick button mapping
     joystickSetup.joystickNoHorn=IniFile::iniFileTou32(iniFilename, "joystick_no_horn");
     joystickSetup.joystickButtonHorn=IniFile::iniFileTou32(iniFilename, "joystick_button_horn")-1;
@@ -298,17 +301,41 @@ int main(int argc, char ** argv)
     joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
 
     joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
-    joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
-
+    if (joystickSetup.LookJoystickAxis == 0)
+    {
+        joystickSetup.joystickButtonLookLeft = IniFile::iniFileTou32(iniFilename, "joystick_button_look_left") - 1;
+    }
+    else
+    {
+        joystickSetup.joystickValueLookLeft = IniFile::iniFileTou32(iniFilename, "joystick_value_look_left");
+    }
     joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
-    joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
-
+    if (joystickSetup.LookJoystickAxis == 0)
+    {
+        joystickSetup.joystickButtonLookRight = IniFile::iniFileTou32(iniFilename, "joystick_button_look_right") - 1;
+    }
+    else
+    {
+        joystickSetup.joystickValueLookRight = IniFile::iniFileTou32(iniFilename, "joystick_value_look_right");
+    }
     joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
-    joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
-
+    if (joystickSetup.LookJoystickAxis == 0)
+    {
+        joystickSetup.joystickButtonLookUp = IniFile::iniFileTou32(iniFilename, "joystick_button_look_up") - 1;
+    }
+    else
+    {
+        joystickSetup.joystickValueLookUp = IniFile::iniFileTou32(iniFilename, "joystick_value_look_up");
+    };
     joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
-    joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
-
+    if (joystickSetup.LookJoystickAxis == 0)
+    {
+        joystickSetup.joystickButtonLookDown = IniFile::iniFileTou32(iniFilename, "joystick_button_look_down") - 1;
+    }
+    else
+    {
+        joystickSetup.joystickValueLookDown = IniFile::iniFileTou32(iniFilename, "joystick_value_look_down");
+    }
     //Joystick mapping
     irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {
