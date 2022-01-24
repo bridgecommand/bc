@@ -35,14 +35,16 @@ public:
 
 	Sound();
 	~Sound();
-	void load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile);
+	void load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile, std::string alarmSoundFile);
 	void StartSound();
 	void setVolumeWave(float vol);
 	void setVolumeEngine(float vol);
 	void setVolumeHorn(float vol);
+	void setVolumeAlarm(float vol);
 	float getVolumeWave() const;
 	float getVolumeEngine() const;
 	float getVolumeHorn() const;
+	float getVolumeAlarm() const;
 
 #ifdef WITH_SOUND
 private:
@@ -52,18 +54,22 @@ private:
 		SNDFILE     *fileWave;
 		SNDFILE     *fileEngine;
 		SNDFILE     *fileHorn;
+		SNDFILE     *fileAlarm;
 		SF_INFO      infoWave;
 		SF_INFO      infoEngine;
 		SF_INFO      infoHorn;
+		SF_INFO      infoAlarm;
 	} callback_data_s;
 
 	static float hornVolume;
 	static float waveVolume;
 	static float engineVolume;
+	static float alarmVolume;
 
 	bool soundLoaded;
 	static bool waveSoundLoaded;
 	static bool hornSoundLoaded;
+	static bool alarmSoundLoaded;
 	PaError portAudioError;
 	PaStream *stream;
 	//SNDFILE *file;
@@ -90,10 +96,11 @@ private:
 		/* clear output buffer */
 		memset(out, 0, sizeof(float) * frameCount * p_data->infoEngine.channels);
 
-		//Create three buffers, for wave, engine and horn
+		//Create four buffers, for wave, engine, horn and alarm
 		std::vector<float> engineBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
 		std::vector<float> waveBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
 		std::vector<float> hornBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
+		std::vector<float> alarmBuffer(sizeof(float) * frameCount * p_data->infoEngine.channels);
 
 		/* read into buffers */
 		num_read = sf_read_float(p_data->fileEngine, engineBuffer.data(), frameCount * p_data->infoEngine.channels);
@@ -163,6 +170,29 @@ private:
 			}
 		}
 
+		if (alarmSoundLoaded) {
+			num_read = sf_read_float(p_data->fileAlarm, alarmBuffer.data(), frameCount * p_data->infoEngine.channels);
+			/*  If we couldn't read a full frameCount of samples we've reached EOF */
+			//Try to restart
+			if (num_read < frameCount)
+			{
+
+				sf_count_t seekLocation = sf_seek(p_data->fileAlarm, 0, SEEK_SET);
+				if (seekLocation == -1) {
+					return paComplete;
+				}
+
+				//Read again
+				/* read directly into output buffer */
+				num_read = sf_read_float(p_data->fileAlarm, alarmBuffer.data(), frameCount * p_data->infoEngine.channels);
+
+				/*  If we couldn't read a full frameCount of samples we've reached EOF */
+				if (num_read < frameCount) {
+					return paComplete;
+				}
+			}
+		}
+
 		//Copy into output buffer, with mixing
 		for (int i = 0; i < frameCount * p_data->infoWave.channels; i++) {
 			out[i] = engineVolume*engineBuffer[i] * 0.33;
@@ -171,6 +201,9 @@ private:
 			}
 			if (hornSoundLoaded) {
 				out[i] += hornVolume*hornBuffer[i] * 0.33;
+			}
+			if (alarmSoundLoaded) {
+				out[i] += alarmVolume*alarmBuffer[i] * 0.33;
 			}
 		}
 

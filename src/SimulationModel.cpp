@@ -529,6 +529,52 @@ SimulationModel::~SimulationModel()
 
 	}
 
+    std::string SimulationModel::getOwnShipAlarmSound() const {
+
+		//Check existence of sound file in base path, and if not fall back to default.
+		std::string soundPath = ownShip.getBasePath();
+
+		{ //Create local scope for file
+            soundPath.append("/Alarm.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//Check for lower case version
+		{
+            soundPath = ownShip.getBasePath();
+            soundPath.append("/alarm.wav");
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//Fall back to default, again checking both upper and lower case
+
+		{
+            soundPath = "Sounds/Alarm.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		{
+            soundPath = "Sounds/alarm.wav";
+            std::ifstream file(soundPath.c_str());
+            if (file.good()) {
+                return soundPath;
+            }
+		}
+
+		//In case nothing found
+		return "";
+
+	}
+
     void SimulationModel::setHeading(irr::f32 hdg)
     {
          ownShip.setHeading(hdg);
@@ -658,6 +704,11 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setRudderPumpState(int whichPump, bool rudderPumpState) {
         ownShip.setRudderPumpState(whichPump, rudderPumpState);
+    }
+
+    bool SimulationModel::getRudderPumpState(int whichPump) const
+    {
+        return ownShip.getRudderPumpState(whichPump);
     }
     
     void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {
@@ -801,6 +852,15 @@ SimulationModel::~SimulationModel()
     irr::u32 SimulationModel::getCameraView() const
     {
         return camera.getView();
+    }
+
+    void SimulationModel::setAlarm(bool alarmState)
+    {
+        if (alarmState) {
+            sound->setVolumeAlarm(1.0);
+        } else {
+            sound->setVolumeAlarm(0.0);
+        }
     }
 
 	void SimulationModel::toggleRadarOn()

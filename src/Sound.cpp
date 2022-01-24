@@ -40,15 +40,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 float Sound::hornVolume = 0.0;
 float Sound::waveVolume = 1.0;
 float Sound::engineVolume=0.0;
+float Sound::alarmVolume=0.0;
 
 bool Sound::waveSoundLoaded = false;
 bool Sound::hornSoundLoaded = false;
+bool Sound::alarmSoundLoaded = false;
 
 Sound::Sound() {
 
 }
 
-void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {
+void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile, std::string alarmSoundFile) {
 
 	soundLoaded = false;
 
@@ -65,6 +67,7 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 	data.fileEngine = 0;
 	data.fileWave = 0;
 	data.fileHorn = 0;
+	data.fileAlarm = 0;
 
 	data.infoEngine.format = 0;
 	data.fileEngine = sf_open(engineSoundFile.c_str(), SFM_READ, &data.infoEngine);
@@ -89,6 +92,13 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 		return;
 	}
 
+	data.infoAlarm.format = 0;
+	data.fileAlarm = sf_open(alarmSoundFile.c_str(), SFM_READ, &data.infoAlarm);
+	if (sf_error(data.fileAlarm) != SF_ERR_NO_ERROR) {
+        std::cerr << "sf_error on alarmSoundFile " << alarmSoundFile.c_str() << " Error: " << sf_strerror(data.fileAlarm) << std::endl;
+		return;
+	}
+
 	//Check key parameters are the same
 	if (data.infoWave.channels != data.infoEngine.channels || data.infoWave.samplerate != data.infoEngine.samplerate) {
 		//Check wave vs engine
@@ -102,6 +112,13 @@ void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::st
 		std::cerr << "Inconsistent formats of horn and engine sounds, horn sound not loaded." << std::endl;
 	} else {
 		hornSoundLoaded = true;
+	}
+
+	if (data.infoAlarm.channels != data.infoEngine.channels || data.infoAlarm.samplerate != data.infoEngine.samplerate ) {
+		//Check alarm vs engine
+		std::cerr << "Inconsistent formats of alarm and engine sounds, alarm sound not loaded." << std::endl;
+	} else {
+		alarmSoundLoaded = true;
 	}
 
 	/* Open PaStream with values read from the file - all should be same, so any can be used*/
@@ -139,15 +156,27 @@ void Sound::StartSound() {
 }
 
 void Sound::setVolumeWave(float vol) {
-	Sound::waveVolume = vol;
+	if (vol >= 0 && vol <= 1.0) {
+		Sound::waveVolume = vol;
+	}
 }
 
 void Sound::setVolumeEngine(float vol) {
-	Sound::engineVolume = vol;
+	if (vol >= 0 && vol <= 1.0) {
+		Sound::engineVolume = vol;
+	}
 }
 
 void Sound::setVolumeHorn(float vol) {
-	Sound::hornVolume = vol;
+	if (vol >= 0 && vol <= 1.0) {
+		Sound::hornVolume = vol;
+	}
+}
+
+void Sound::setVolumeAlarm(float vol) {
+	if (vol >= 0 && vol <= 1.0) {
+		Sound::alarmVolume = vol;
+	}
 }
 
 float Sound::getVolumeWave() const {
@@ -162,6 +191,10 @@ float Sound::getVolumeHorn() const {
 	return Sound::hornVolume;
 }
 
+float Sound::getVolumeAlarm() const {
+	return Sound::alarmVolume;
+}
+
 Sound::~Sound() {
 
 	if (soundLoaded && stream) {
@@ -174,6 +207,7 @@ Sound::~Sound() {
 	if (data.fileWave) {sf_close(data.fileWave);}
 	if (data.fileEngine) {sf_close(data.fileEngine);}
 	if (data.fileHorn) {sf_close(data.fileHorn);}
+	if (data.fileAlarm) {sf_close(data.fileAlarm);}
 }
 
 #endif // WITH_SOUND

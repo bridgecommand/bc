@@ -738,7 +738,9 @@ int main(int argc, char ** argv)
     NMEA nmea(&model, nmeaSerialPortName, nmeaUDPAddressName, nmeaUDPPortName, device);
 
 	//Load sound files
-	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound());
+	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
+
+    sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {

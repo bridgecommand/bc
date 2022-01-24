@@ -309,14 +309,22 @@ void NetworkPrimary::receiveNetwork()
                                             if (whichPump==1) {
                                                 if (rudderFunction==0) {
                                                     model->setRudderPumpState(1,false);
+                                                    model->setAlarm(true);
                                                 } else {
                                                     model->setRudderPumpState(1,true);
+                                                    if (model->getRudderPumpState(2)) {
+                                                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                                                    }
                                                 }
                                             } else if (whichPump==2) {
                                                 if (rudderFunction==0) {
                                                     model->setRudderPumpState(2,false);
+                                                    model->setAlarm(true);
                                                 } else {
                                                     model->setRudderPumpState(2,true);
+                                                    if (model->getRudderPumpState(1)) {
+                                                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                                                    }
                                                 }
                                             } 
                                         }

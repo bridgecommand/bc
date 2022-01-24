@@ -133,6 +133,7 @@ public:
         GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,
         GUI_ID_FOLLOWUP_WORKING_BUTTON,
         GUI_ID_FOLLOWUP_FAILED_BUTTON,
+        GUI_ID_ACK_ALARMS_BUTTON,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -223,6 +224,7 @@ private:
 
     irr::gui::IGUIStaticText* pump1On;
     irr::gui::IGUIStaticText* pump2On;
+    irr::gui::IGUIButton* ackAlarms;
 
     irr::gui::IGUIStaticText* clickForRudderText;
     irr::gui::IGUIStaticText* clickForEngineText;

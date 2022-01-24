@@ -259,6 +259,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         // add indicators for whether the rudder pumps are working
         pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su,0.72*sh,0.44*su,0.745*sh),true,false,0,-1,true);
         pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su,0.75*sh,0.44*su,0.775*sh),true,false,0,-1,true);
+        ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su, 0.78*sh, 0.44*su, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
         pump1On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
@@ -644,6 +645,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         pump1On->setVisible(showInterface);
         pump2On->setVisible(showInterface);
+        ackAlarms->setVisible(showInterface);
 
         //Items not to show if we're on full screen radar
         //dataDisplay->setVisible(!radarLarge);

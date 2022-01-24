@@ -82,6 +82,7 @@ public:
     irr::f32 getBowThruster() const;
     irr::f32 getSternThruster() const;
     void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
+    bool getRudderPumpState(int whichPump) const;
     void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;
@@ -130,6 +131,7 @@ public:
 	std::string getOwnShipEngineSound() const;
 	std::string getOwnShipWaveSound() const;
 	std::string getOwnShipHornSound() const;
+    std::string getOwnShipAlarmSound() const;
 
 
     void setWeather(irr::f32 weather); //Range 0-12.
@@ -157,7 +159,8 @@ public:
     void changeView();
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
-	void toggleRadarOn();
+	void setAlarm(bool alarmState);
+    void toggleRadarOn();
     bool isRadarOn() const;
 	void increaseRadarRange();
     void decreaseRadarRange();

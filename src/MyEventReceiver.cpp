@@ -353,21 +353,29 @@
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON) 
                 {
                     model->setRudderPumpState(1,true);
+                    if (model->getRudderPumpState(2)) {
+                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                    }
                 }
 
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON) 
                 {
                     model->setRudderPumpState(1,false);
+                    model->setAlarm(true);
                 }
 
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON) 
                 {
                     model->setRudderPumpState(2,true);
+                    if (model->getRudderPumpState(1)) {
+                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                    }
                 }
 
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON) 
                 {
                     model->setRudderPumpState(2,false);
+                    model->setAlarm(true);
                 }
 
                 if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON) 
@@ -378,6 +386,11 @@
                 if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON) 
                 {
                     model->setFollowUpRudderWorking(false);
+                }
+
+                if (id ==GUIMain::GUI_ID_ACK_ALARMS_BUTTON) 
+                {
+                    model->setAlarm(false);
                 }
 
             } //Button clicked
@@ -1008,6 +1021,9 @@
             if (thisJoystick == joystickSetup.joystickNoPump1On) { 
                 if (IsButtonPressed(joystickSetup.joystickButtonPump1On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On,previousButtonState)) {
                     model->setRudderPumpState(1,true);
+                    if (model->getRudderPumpState(2)) {
+                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                    }
                 }
             }
 
@@ -1015,6 +1031,7 @@
             if (thisJoystick == joystickSetup.joystickNoPump1Off) { 
                 if (IsButtonPressed(joystickSetup.joystickButtonPump1Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1Off,previousButtonState)) {
                     model->setRudderPumpState(1,false);
+                    model->setAlarm(true);
                 }
             }
 
@@ -1022,6 +1039,9 @@
             if (thisJoystick == joystickSetup.joystickNoPump2On) { 
                 if (IsButtonPressed(joystickSetup.joystickButtonPump2On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2On,previousButtonState)) {
                     model->setRudderPumpState(2,true);
+                    if (model->getRudderPumpState(1)) {
+                        model->setAlarm(false); //Only turn off alarm if other pump is working
+                    }
                 }
             }
 
@@ -1029,6 +1049,7 @@
             if (thisJoystick == joystickSetup.joystickNoPump2Off) { 
                 if (IsButtonPressed(joystickSetup.joystickButtonPump2Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2Off,previousButtonState)) {
                     model->setRudderPumpState(2,false);
+                    model->setAlarm(true);
                 }
             }
 

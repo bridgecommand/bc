@@ -102,6 +102,7 @@ pump2Working = "Rudder pump 2 On"
 pump2Failed = "Rudder pump 2 Off"
 followUpWorking = "Rudder: Follow up"
 followUpFailed = "Rudder: Non follow up"
+ackAlarms = "Acknowledge"
 
 fps="FPS: "
 
