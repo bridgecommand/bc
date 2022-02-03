@@ -1079,6 +1079,30 @@
                 }
             }
 
+            if (thisJoystick == joystickSetup.joystickNoNFUPort) {
+                if (IsButtonPressed(joystickSetup.joystickButtonNFUPort,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUPort,previousButtonState)) {
+                    model->setWheel(-30,true);
+                }
+                if (!IsButtonPressed(joystickSetup.joystickButtonNFUPort,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUPort,previousButtonState)) {
+                    model->setWheel(model->getRudder(),true);
+                }
+            }
+
+            if (thisJoystick == joystickSetup.joystickNoNFUStbd) {
+                if (IsButtonPressed(joystickSetup.joystickButtonNFUStbd,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUStbd,previousButtonState)) {
+                    model->setWheel(30,true);
+                }
+                if (!IsButtonPressed(joystickSetup.joystickButtonNFUStbd,thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUStbd,previousButtonState)) {
+                    model->setWheel(model->getRudder(),true);
+                }
+            }
+
+            if (thisJoystick == joystickSetup.joystickNoAckAlarm) {
+                if (IsButtonPressed(joystickSetup.joystickButtonAckAlarm,thisButtonState)) {
+                    model->setAlarm(false);
+                }
+            }
+
             //Store previous settings
             joystickPreviousButtonStates.at(thisJoystick) = event.JoystickEvent.ButtonStates;
 

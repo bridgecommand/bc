@@ -327,6 +327,15 @@ int main(int argc, char ** argv)
     joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
     joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
 
+    joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
+    joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
+    
+    joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
+    joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
+
+    joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
+    joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
+
     joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
     joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
     joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
