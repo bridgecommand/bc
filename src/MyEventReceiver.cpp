@@ -63,6 +63,8 @@
 		previousJoystickBowThruster = INFINITY;
 		previousJoystickSternThruster = INFINITY;
 
+        previousJoystickPOVInitialised = false;
+
 		this->logMessages = logMessages;
 
         //assume mouse buttons not pressed initially
@@ -752,6 +754,14 @@
 
         	irr::u8 thisJoystick = event.JoystickEvent.Joystick;
 
+            //Initialise the joystick POV
+            if (!previousJoystickPOVInitialised) {
+                if (thisJoystick == joystickSetup.joystickNoPOV) {
+                    previousJoystickPOVInitialised = true;
+                    previousJoystickPOV = event.JoystickEvent.POV;
+                }
+            }
+
         	//Show joystick raw status in log window
         	if (device->getTimer()->getRealTime() - lastShownJoystickStatus > 5000) {
 
@@ -766,6 +776,8 @@
         			thisJoystickStatus.append(irr::core::stringc(axisSetting).c_str());
         			thisJoystickStatus.append(" ");
         		}
+                thisJoystickStatus.append("POV: ");
+                thisJoystickStatus.append(irr::core::stringc(event.JoystickEvent.POV).c_str());
         		device->getLogger()->log(thisJoystickStatus.c_str());
         		device->getLogger()->log("");
 
@@ -1069,6 +1081,38 @@
 
             //Store previous settings
             joystickPreviousButtonStates.at(thisJoystick) = event.JoystickEvent.ButtonStates;
+
+            //POV hat
+            if (previousJoystickPOVInitialised && thisJoystick == joystickSetup.joystickNoPOV) {
+                if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookLeft && previousJoystickPOV != joystickSetup.joystickPOVLookLeft) {
+                    model->setPanSpeed(-5);
+                }
+                if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookLeft && previousJoystickPOV == joystickSetup.joystickPOVLookLeft) {
+                    model->setPanSpeed(0);
+                }
+
+                if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookRight && previousJoystickPOV != joystickSetup.joystickPOVLookRight) {
+                    model->setPanSpeed(5);
+                }
+                if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookRight && previousJoystickPOV == joystickSetup.joystickPOVLookRight) {
+                    model->setPanSpeed(0);
+                }
+
+                if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookUp && previousJoystickPOV != joystickSetup.joystickPOVLookUp) {
+                    model->setVerticalPanSpeed(5);
+                }
+                if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookUp && previousJoystickPOV == joystickSetup.joystickPOVLookUp) {
+                    model->setVerticalPanSpeed(0);
+                }
+
+                if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookDown && previousJoystickPOV != joystickSetup.joystickPOVLookDown) {
+                    model->setVerticalPanSpeed(-5);
+                }
+                if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookDown && previousJoystickPOV == joystickSetup.joystickPOVLookDown) {
+                    model->setVerticalPanSpeed(0);
+                }
+                previousJoystickPOV = event.JoystickEvent.POV; //Store for next time
+            }
         }
 
         return false;

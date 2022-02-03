@@ -86,6 +86,11 @@ public:
     irr::u32 joystickButtonFollowUpOn;
     irr::u32 joystickNoFollowUpOff;
     irr::u32 joystickButtonFollowUpOff;
+    irr::u32 joystickNoPOV;
+    irr::u16 joystickPOVLookLeft;
+    irr::u16 joystickPOVLookRight;
+    irr::u16 joystickPOVLookUp;
+    irr::u16 joystickPOVLookDown;
 };
 
 class MyEventReceiver : public irr::IEventReceiver
@@ -123,6 +128,9 @@ private:
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;
     irr::u32 lastShownJoystickStatus;
+
+    irr::u16 previousJoystickPOV;
+    bool previousJoystickPOVInitialised;
 
     void startShutdown();
     irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);

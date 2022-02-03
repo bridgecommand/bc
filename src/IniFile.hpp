@@ -31,6 +31,7 @@ namespace IniFile
     std::wstring iniFileToWString(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
 
     irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
+    irr::s32 iniFileTos32(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
     irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
 }
 

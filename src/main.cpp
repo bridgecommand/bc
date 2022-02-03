@@ -327,6 +327,12 @@ int main(int argc, char ** argv)
     joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
     joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
 
+    joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
+    joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
+    joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
+    joystickSetup.joystickPOVLookUp=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_up");
+    joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
+
     //Joystick mapping
     irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {
