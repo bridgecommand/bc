@@ -366,6 +366,7 @@ int main(int argc, char ** argv)
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
+    std::string nmeaSerialPortBaudrate = IniFile::iniFileToString(iniFilename, "NMEA_Baudrate");
     std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
     std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
 
@@ -750,7 +751,7 @@ int main(int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmea(&model, nmeaSerialPortName, nmeaUDPAddressName, nmeaUDPPortName, device);
+    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, device);
 
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
