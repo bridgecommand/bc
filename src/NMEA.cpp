@@ -42,7 +42,7 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string seria
     }
 
     //Set up serial
-    uint32_t baudrate = sstd::stoi(serialBaudrate);
+    uint32_t baudrate = std::stoi(serialBaudrate);
     if (!serialPortName.empty() || (baudrate > 0))
     {
         try
