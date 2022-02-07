@@ -696,6 +696,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         stbdText->setVisible(false);
         portText->setVisible(false);
         wheelScrollbar->setVisible(false);
+        nonFollowUpPortButton->setVisible(false);
+        nonFollowUpStbdButton->setVisible(false);
         //rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
         if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
         if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
