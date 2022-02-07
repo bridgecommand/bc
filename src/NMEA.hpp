@@ -29,7 +29,7 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, std::string serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();

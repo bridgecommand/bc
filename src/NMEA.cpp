@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
@@ -42,15 +42,14 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, std::string seria
     }
 
     //Set up serial
-    uint32_t baudrate = std::stoi(serialBaudrate);
-    if (!serialPortName.empty() || (baudrate > 0))
+    if (!serialPortName.empty() && (serialBaudrate > 0))
     {
         try
         {
             serial::Timeout timeout = serial::Timeout::simpleTimeout(50);
 
             mySerialPort.setPort(serialPortName);
-            mySerialPort.setBaudrate(baudrate);//FIXME: Hardcoded
+            mySerialPort.setBaudrate(serialBaudrate);
             mySerialPort.setTimeout(timeout);
 
             mySerialPort.open();
