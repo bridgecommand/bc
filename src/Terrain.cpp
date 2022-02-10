@@ -39,7 +39,7 @@ Terrain::~Terrain()
     //dtor
 }
 
-void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr)
+void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device)
 {
 
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -94,6 +94,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
 
         irr::scene::ITerrainSceneNode* terrain = new irr::scene::BCTerrainSceneNode(
+            device,
             smgr->getRootSceneNode(), 
             smgr,
 			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_9,

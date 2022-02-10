@@ -27,7 +27,7 @@ class Terrain
     public:
         Terrain();
         virtual ~Terrain();
-        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr);
+        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device);
         irr::f32 longToX(irr::f32 longitude) const;
         irr::f32 latToZ(irr::f32 latitude) const;
         irr::f32 xToLong(irr::f32 x) const;

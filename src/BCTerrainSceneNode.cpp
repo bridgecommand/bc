@@ -31,7 +31,9 @@ namespace scene
 {
 
 	//! constructor
-	BCTerrainSceneNode::BCTerrainSceneNode(ISceneNode* parent, ISceneManager* mgr,
+	BCTerrainSceneNode::BCTerrainSceneNode(
+			IrrlichtDevice* device,
+			ISceneNode* parent, ISceneManager* mgr,
 			io::IFileSystem* fs, s32 id, s32 maxLOD, E_TERRAIN_PATCH_SIZE patchSize,
 			const core::vector3df& position,
 			const core::vector3df& rotation,
@@ -42,7 +44,7 @@ namespace scene
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(true),
 	FixedBorderLOD(-1),
 	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
-	TCoordScale1(1.0f), TCoordScale2(1.0f), SmoothFactor(0), FileSystem(fs)
+	TCoordScale1(1.0f), TCoordScale2(1.0f), SmoothFactor(0), FileSystem(fs), dev(device)
 	{
 		#ifdef _DEBUG
 		setDebugName("BCTerrainSceneNode");
@@ -84,12 +86,12 @@ namespace scene
 			return false;
 
 		Mesh->MeshBuffers.clear();
-		//const u32 startTime = os::Timer::getRealTime();
+		const u32 startTime = dev->getTimer()->getRealTime();
 		video::IImage* heightMap = SceneManager->getVideoDriver()->createImageFromFile(file);
 
 		if (!heightMap)
 		{
-			//os::Printer::log("Unable to load heightmap.");
+			dev->getLogger()->log("Unable to load heightmap.");
             return false;
 		}
 
@@ -102,7 +104,7 @@ namespace scene
 		u32 originalHeight = heightMap->getDimension().Height;
 		//Subtract 1 and find next power of 2, and add one (we need a size that is (2^n)+1)
 		if (originalWidth==0 || originalWidth==0) {
-			//os::Printer::log("Zero size heightmap.");
+			dev->getLogger()->log("Zero size heightmap.");
 			return false;
 		}
 		u32 regularWidth=originalWidth-1;
@@ -125,7 +127,7 @@ namespace scene
 			c8 tmp[255];
 			snprintf_irr(tmp, 255, "Scaled heightmap image from (%dx%d) to (%dx%d)",
 				originalWidth, originalHeight, regularWidth, regularHeight );
-			//os::Printer::log(tmp);
+			dev->getLogger()->log(tmp);
 		}
 
 		// Get the dimension of the heightmap data
@@ -266,12 +268,12 @@ namespace scene
 
 		RenderBuffer->setDirty();
 
-		//const u32 endTime = os::Timer::getRealTime();
-
-		//c8 tmp[255];
-		//snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
-		//	TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f );
-		//os::Printer::log(tmp);
+		const u32 endTime = dev->getTimer()->getRealTime();
+		
+		c8 tmp[255];
+		snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
+			TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f );
+		dev->getLogger()->log(tmp);
 
 		return true;
 	}
@@ -288,7 +290,7 @@ namespace scene
 			return false;
 
 		// start reading
-		//const u32 startTime = os::Timer::getTime();
+		const u32 startTime = dev->getTimer()->getTime();
 
 		Mesh->MeshBuffers.clear();
 
@@ -302,7 +304,7 @@ namespace scene
 		{
 			if ((filesize-file->getPos())/bytesPerPixel>(size_t)(width*width))
 			{
-				//os::Printer::log("Error reading heightmap RAW file", "File is too small.");
+				dev->getLogger()->log("Error reading heightmap RAW file", "File is too small.");
 				return false;
 			}
 			TerrainData.Size = width;
@@ -445,7 +447,7 @@ namespace scene
 				}
 				if (failure)
 				{
-					//os::Printer::log("Error reading heightmap RAW file.");
+					dev->getLogger()->log("Error reading heightmap RAW file.");
 					mb->drop();
 					return false;
 				}
@@ -502,12 +504,12 @@ namespace scene
 				TerrainData.PatchCount*TerrainData.PatchCount*
 				TerrainData.CalcPatchSize*TerrainData.CalcPatchSize*6);
 
-		//const u32 endTime = os::Timer::getTime();
+		const u32 endTime = dev->getTimer()->getTime();
 
-		//c8 tmp[255];
-		//snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
-		//	TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f);
-		//os::Printer::log(tmp);
+		c8 tmp[255];
+		snprintf_irr(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
+			TerrainData.Size, TerrainData.Size, (endTime - startTime) / 1000.0f);
+		dev->getLogger()->log(tmp);
 
 		return true;
 	}
@@ -825,15 +827,15 @@ namespace scene
 
 			static u32 lastTime = 0;
 
-			//const u32 now = os::Timer::getRealTime();
-			//if (now - lastTime > 1000)
-			//{
-				//char buf[64];
-				//snprintf_irr(buf, 64, "Count: %d, Visible: %d", count, visible);
-				//os::Printer::log(buf);
+			const u32 now = dev->getTimer()->getRealTime();
+			if (now - lastTime > 1000)
+			{
+				char buf[64];
+				snprintf_irr(buf, 64, "Count: %d, Visible: %d", count, visible);
+				dev->getLogger()->log(buf);
 
-			//	lastTime = now;
-			//}
+				lastTime = now;
+			}
 		}
 	}
 
@@ -1505,7 +1507,7 @@ namespace scene
 		if (!newManager)
 			newManager = SceneManager;
 
-		BCTerrainSceneNode* nb = new BCTerrainSceneNode(
+		BCTerrainSceneNode* nb = new BCTerrainSceneNode(dev,
 			newParent, newManager, FileSystem, ID,
 			4, ETPS_17, getPosition(), getRotation(), getScale());
 
