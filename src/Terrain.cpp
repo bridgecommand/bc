@@ -23,6 +23,8 @@
 #include "Constants.hpp"
 #include "Utilities.hpp"
 
+#include "BCTerrainSceneNode.h"
+
 #include <iostream>
 
 //using namespace irr;
@@ -89,7 +91,18 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
-        irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
+        //irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
+
+        irr::scene::ITerrainSceneNode* terrain = new irr::scene::BCTerrainSceneNode(
+            0, 
+            smgr,
+			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_9,
+			irr::core::vector3df(0.f, terrainY, 0.f),
+            irr::core::vector3df(0.f, 0.f, 0.f),
+            irr::core::vector3df(1,1,1)
+        );
+        //TODO: Make sure we drop this when needed
+
         //Load the map
         irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
         //Check the height map file has loaded and the terrain exists

@@ -80,6 +80,8 @@ set(BC_SOURCES
     Utilities.cpp
 	ExitMessage.cpp
     Water.cpp
+    BCTerrainSceneNode.cpp
+    BCTerrainTriangleSelector.cpp
 )
 
 add_executable(bridgecommand-bc
