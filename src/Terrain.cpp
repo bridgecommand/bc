@@ -37,6 +37,9 @@ Terrain::Terrain()
 Terrain::~Terrain()
 {
     //dtor
+    for (unsigned int i=0; i<terrains.size(); i++) {
+        terrains.at(i)->drop();
+    }
 }
 
 void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device)
