@@ -27,7 +27,7 @@ class Camera
         Camera();
         virtual ~Camera();
 
-        void load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection);
+        void load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection);
         irr::scene::ISceneNode* getSceneNode() const;
         irr::core::vector3df getPosition() const;
         void setHFOV(irr::f32 hFOV);
@@ -51,6 +51,7 @@ class Camera
         void lookStbd();
         irr::f32 getLook() const;
         irr::f32 getLookUp() const;
+        void highView(bool highViewRequired);
         void changeView();
         void setView(irr::u32 view);
         irr::u32 getView() const;
@@ -64,6 +65,7 @@ class Camera
         irr::ILogger* logger;
         irr::u32 currentView;
         std::vector<irr::core::vector3df> views;
+        std::vector<bool> isHighView; //Should be the same size as views (todo: Make this into a struct with views)
         irr::f32 angleCorrection;
         irr::f32 lookAngle; //In degrees
         irr::f32 lookUpAngle;
@@ -72,6 +74,10 @@ class Camera
         irr::s32 horizontalPanSpeed; //Degrees per second
         irr::s32 verticalPanSpeed; //Degrees per second
         irr::f32 hFOV;//horizontal field of view (radians)
+
+        bool isHighViewActive;
+        irr::f32 previousLookAngle;
+        irr::f32 previousLookUpAngle;
 };
 
 #endif

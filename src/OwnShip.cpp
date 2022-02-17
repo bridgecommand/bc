@@ -203,7 +203,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         irr::f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewX",i));
         irr::f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewY",i));
         irr::f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename,IniFile::enumerate1("ViewZ",i));
+        bool highView = IniFile::iniFileTou32(shipIniFilename,IniFile::enumerate1("ViewHigh",i)) == 1;
         views.push_back(irr::core::vector3df(scaleFactor*camOffsetX,scaleFactor*camOffsetY,scaleFactor*camOffsetZ));
+        isHighView.push_back(highView);
     }
 
 	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
@@ -1137,6 +1139,11 @@ irr::f32 OwnShip::getMaxSounderDepth() const
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {
     return views;
+}
+
+std::vector<bool> OwnShip::getCameraIsHighView() const
+{
+    return isHighView;
 }
 
 void OwnShip::setViewVisibility(irr::u32 view)

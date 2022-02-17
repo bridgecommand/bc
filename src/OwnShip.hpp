@@ -42,6 +42,7 @@ class OwnShip : public Ship
         void load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
+        std::vector<bool> getCameraIsHighView() const;
         void setViewVisibility(irr::u32 view);
         std::string getRadarConfigFile() const;
         irr::f32 getDepth() const;
@@ -97,6 +98,7 @@ class OwnShip : public Ship
 
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
+        std::vector<bool> isHighView; //Should be the same size as views (todo: Make this into a struct with views)
         std::string radarConfigFile;
 		std::string basePath; //The location the model is loaded from
         Terrain* terrain;

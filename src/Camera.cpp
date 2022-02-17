@@ -33,13 +33,14 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, irr::core::vector3df(0,0,0), irr::core::vector3df(0,0,1));
 
     this->parent = parent;
     this->views = views;
+    this->isHighView = isHighView;
     currentView = 0;
     this->lookAngle = lookAngle;
     minLookUpAngle = -85;
@@ -51,6 +52,10 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
 
     verticalPanSpeed = 0;
     horizontalPanSpeed = 0;
+
+    isHighViewActive = false;
+    previousLookAngle = lookAngle;
+    previousLookUpAngle = lookUpAngle;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -219,18 +224,53 @@ void Camera::moveBackwards()
     logger->log(cameraPositionText.c_str());
 }
 
+void Camera::highView(bool highViewRequired)
+{
+    if (isHighViewActive != highViewRequired) {
+        if (!highViewRequired) {
+            lookAngle = previousLookAngle;
+            lookUpAngle = previousLookUpAngle;
+            isHighViewActive = false;
+        } else {
+            previousLookAngle = lookAngle;
+            previousLookUpAngle = lookUpAngle;
+            lookAngle = 0;
+            lookUpAngle = -89.99; //Almost straight down. Avoid -90 as this gives an odd rotation effect (gymbal lock?)
+            isHighViewActive = true;
+        }
+    }
+}
+
 void Camera::changeView()
 {
     currentView++;
     if (currentView==views.size()) {
         currentView = 0;
     }
+    
+    if (currentView<isHighView.size()) {
+        if (isHighView[currentView]) {
+            highView(true);
+        } else {
+            highView(false);
+        }
+    }
+
 }
 
 void Camera::setView(irr::u32 view) {
     if (view<views.size()) {
         currentView = view;
     }
+
+    if (currentView<isHighView.size()) {
+        if (isHighView[currentView]) {
+            highView(true);
+        } else {
+            highView(false);
+        }
+    }
+
 }
 
 irr::u32 Camera::getView() const
