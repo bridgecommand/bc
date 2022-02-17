@@ -90,6 +90,12 @@
 		</Compiler>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
+		<Unit filename="BCDynamicMeshBuffer.h" />
+		<Unit filename="BCIndexBuffer.h" />
+		<Unit filename="BCTerrainSceneNode.cpp" />
+		<Unit filename="BCTerrainSceneNode.h" />
+		<Unit filename="BCTerrainTriangleSelector.cpp" />
+		<Unit filename="BCTerrainTriangleSelector.h" />
 		<Unit filename="Buoy.cpp" />
 		<Unit filename="Buoy.hpp" />
 		<Unit filename="Buoys.cpp" />

@@ -141,6 +141,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Angles.cpp" />
+	<ClCompile Include="..\BCTerrainSceneNode.cpp" />
+	<ClCompile Include="..\BCTerrainTriangleSelector.cpp" />
     <ClCompile Include="..\Buoy.cpp" />
     <ClCompile Include="..\Buoys.cpp" />
     <ClCompile Include="..\Camera.cpp" />
@@ -195,6 +197,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Angles.hpp" />
+	<ClInclude Include="..\BCDynamicMeshBuffer.h" />
+	<ClInclude Include="..\BCIndexBuffer.h" />
+	<ClInclude Include="..\BCTerrainSceneNode.h" />
+	<ClInclude Include="..\BCTerrainTriangleSelector.h" />
+	<ClInclude Include="..\BCVertexBuffer.h" />
     <ClInclude Include="..\Buoy.hpp" />
     <ClInclude Include="..\Buoys.hpp" />
     <ClInclude Include="..\Camera.hpp" />
