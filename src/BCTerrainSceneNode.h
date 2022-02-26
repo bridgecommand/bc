@@ -14,6 +14,8 @@
 #include "IrrlichtDevice.h"
 #include "path.h"
 
+#include <vector>
+
 namespace irr
 {
 namespace io
@@ -61,6 +63,10 @@ namespace scene
 		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
 			bool signedData=true, bool floatVals=false, s32 width=0,
 			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) _IRR_OVERRIDE_;
+
+		//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>. This should be square
+		virtual bool loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
+			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 );
 
 		//! Returns the material based on the zero based index i. This scene node only uses
 		//! 1 material.
