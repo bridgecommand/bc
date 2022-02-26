@@ -129,7 +129,21 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
         } else {
+            
             loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
+            
+            //Test for loading and scaling internally
+            //irr::video::IImage* heightMap = smgr->getVideoDriver()->createImageFromFile(heightMapFile);
+            //std::vector<std::vector<irr::f32>> heightMapVector;
+            //for (unsigned int j=0; j<heightMap->getDimension().Width; j++) {
+            //    std::vector<irr::f32> heightMapLine;
+            //    for (unsigned int k=0; k<heightMap->getDimension().Height; k++) {
+            //        heightMapLine.push_back(heightMap->getPixel(j,heightMap->getDimension().Height-k-1).getLightness());
+            //    }
+            //    heightMapVector.push_back(heightMapLine);
+            //}
+            //loaded = terrain->loadHeightMapVector(heightMapVector,irr::video::SColor(255, 255, 255, 255), 0);
+
         }
 
         if (!loaded) {
