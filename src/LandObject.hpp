@@ -24,7 +24,7 @@
 class LandObject
 {
     public:
-        LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        LandObject(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~LandObject();
         irr::core::vector3df getPosition() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);

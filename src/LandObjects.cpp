@@ -66,7 +66,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
 
 
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,smgr,dev));
+        landObjects.push_back(LandObject (objectName.c_str(),worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,smgr,dev));
 
     }
 }

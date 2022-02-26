@@ -171,6 +171,8 @@ The second optional variable is Grounded(#). If set to 1, this means that the 'b
 for a post. The third optional variable is HeightCorrection, which adjusts the vertical position of the buoy, and is set in metres, with a positive
 value moving the 'buoy' higher. Again this is useful for adjusting the height of a post.</p>
 
+<p>Note that a folder <i>Models/Buoy</i> can be created in the world model folder to hold buoys required for this world model. </p> 
+
 <h5>Example buoy.ini, setting up three buoys:</h5>
 
 <pre>Number=3<br><br>Type(1)="Port"<br>Long(1)=-4.135<br>Lat(1)=52.407<br><br>Type(2)="RY"<br>Long(2)=-4.299<br>Lat(2)=55.004<br>RCS(2)=3.5<br><br>Type(3)="Mooring"<br>Long(3)=-4.505<br>Lat(3)=52.702</pre>
@@ -194,6 +196,7 @@ variables for each land object defined. </p>
 <li>Optional setting <i>Collision(#)</i>. If this is set to 1, then collision modelling with the own ship will be enabled for this object.</li>
 </ul>
 
+<p>Note that a folder <i>Models/LandObject</i> can be created in the world model folder to hold land objects required for this world model. </p> 
 
 <h5>Example landobject.ini</h5>
 <pre>

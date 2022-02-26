@@ -23,14 +23,18 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/LandObject/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
-    //Read model from user dir if it exists there.
+    
     if (Utilities::pathExists(userFolder + basePath)) {
+        //Read model from user dir if it exists there.
         basePath = userFolder + basePath;
+    } else if (Utilities::pathExists(worldName + "/" + basePath)) {
+        //Otherwise, if it exists in the world model folder, use this
+        basePath = worldName + "/" + basePath;
     }
 
     //Load from individual object.ini file if it exists

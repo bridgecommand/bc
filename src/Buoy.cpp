@@ -26,7 +26,7 @@
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -34,6 +34,9 @@ Buoy::Buoy(const std::string& name, const irr::core::vector3df& location, irr::f
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {
         basePath = userFolder + basePath;
+    } else if (Utilities::pathExists(worldName + "/" + basePath)) {
+        //Otherwise, if it exists in the world model folder, use this
+        basePath = worldName + "/" + basePath;
     }
 
     this->heightCorrection = heightCorrection;

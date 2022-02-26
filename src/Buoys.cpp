@@ -73,7 +73,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         }
 
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
+        buoys.push_back(Buoy (buoyName.c_str(),worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
