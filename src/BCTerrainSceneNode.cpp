@@ -523,13 +523,13 @@ namespace scene
 
 		Mesh->MeshBuffers.clear();
 
-		if (heightMapData.size() == 0 || heightMapData.at(0).size() == 0) {
+		if (heightMapData.size() == 0) {
 			//Zero length
 			return false;
 		}
 
-		// Get the dimension of the heightmap data. We later check that all elements are this size
-		TerrainData.Size = heightMapData.at(0).size(); 
+		// Get the dimension of the heightmap data. We later check that all elements are this size (i.e. square)
+		TerrainData.Size = heightMapData.size(); 
 
 		switch (TerrainData.PatchSize)
 		{
@@ -602,7 +602,7 @@ namespace scene
 				bool failure=false;
 				vertex.Pos.X = fx;
 				
-				if (heightMapData.at(x).size() < TerrainData.Size) {
+				if (heightMapData.at(x).size() != TerrainData.Size) {
 					failure = true;
 				} else {
 					vertex.Pos.Y = heightMapData.at(x).at(z);
@@ -616,8 +616,11 @@ namespace scene
 				}
 				vertex.Pos.Z = fz;
 
-				vertex.TCoords.X = vertex.TCoords2.X = 1.f-fx2;
-				vertex.TCoords.Y = vertex.TCoords2.Y = fz2;
+				//vertex.TCoords.X = vertex.TCoords2.X = 1.f-fx2;
+				//vertex.TCoords.Y = vertex.TCoords2.Y = fz2;
+
+				vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X
+                vertex.TCoords.Y = vertex.TCoords2.Y = 1.f-fz2; //JAMES: Flipped Y
 
 				mb->getVertexBuffer().push_back(vertex);
 				++fz;
