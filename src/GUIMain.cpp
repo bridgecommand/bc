@@ -1050,7 +1050,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 				displayText = L">";
 				displayText.append(headingText);
-				displayText.append(L" ");
+				displayText.append(L"° ");
 				displayText.append(irr::core::stringw(arpaspd));
 				displayText.append(L" kts");
 				arpaText->addItem(displayText.c_str());
