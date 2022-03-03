@@ -1,2 +1,14 @@
 Notes:
+------
 Will need to apply tidal stream by modifying drag in ahead/lateral directions, instead of as a simple offset when the own ship is moved!
+
+Terrain related:
+----------------
+Load from heightmap image into a 2d vector, of size (2^n + 1) square
+Pass this to the terrain loader.
+
+Apply same to load from a non-square binary file. Extend this to non-floating point binary.
+
+Change checking of heights, so it returns the maximum height, not the height from the maximum number terrain.
+
+Use ray intersection to get 'heightmap' for 3d models that have been loaded and scaled. Use these for radar.
