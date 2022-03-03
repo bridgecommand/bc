@@ -211,6 +211,8 @@ void OutlineScrollBar::draw()
 	if (!IsVisible)
 		return;
 
+
+
     irr::gui::IGUIFont* font = 0;
     IGUISkin* skin = Environment->getSkin();
     u32 skinAlpha = 255;
@@ -224,6 +226,9 @@ void OutlineScrollBar::draw()
 	// draws the background
 	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
+	
+	Environment->getVideoDriver()->draw2DRectangle(video::SColor(skinAlpha/4,255,255,255),SliderRect); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+	
 	Environment->getVideoDriver()->draw2DRectangleOutline(SliderRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
 	if ( core::isnotzero ( range() ) )

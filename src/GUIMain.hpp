@@ -287,6 +287,9 @@ private:
     irr::core::rect<irr::s32> stdDataDisplayPos;
     irr::core::rect<irr::s32> radDataDisplayPos;
     irr::core::rect<irr::s32> altDataDisplayPos;
+    irr::video::SColor stdDataDisplayBG;
+    irr::video::SColor altDataDisplayBG;
+    irr::video::SColor radDataDisplayBG;
 
     irr::core::rect<irr::s32> stdRateOfTurnIndicatorPos;
 

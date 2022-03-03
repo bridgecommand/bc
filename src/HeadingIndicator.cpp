@@ -44,7 +44,9 @@ if (!IsVisible)
 	// draws the background
 	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 	//Environment->getVideoDriver()->draw2DRectangle(video::SColor(255,128,128,128),SliderRect,&AbsoluteClippingRect);
-	Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+	Environment->getVideoDriver()->draw2DRectangle(video::SColor(skinAlpha/4,255,255,255),AbsoluteRect); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
+    
+    Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
 	//Find the centre point
 	irr::core::vector2d<irr::s32> centrePoint = AbsoluteRect.getCenter();

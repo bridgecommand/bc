@@ -231,6 +231,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
+        stdDataDisplayBG = dataDisplay->getBackgroundColor();
+        altDataDisplayBG = irr::video::SColor(200/4,255,255,255);
+        radDataDisplayBG = irr::video::SColor(200/4,255,255,255);
+
         guiHeading = 0;
         guiSpeed = 0;
 
@@ -673,13 +677,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Set position of data display
         if (radarLarge) {
             dataDisplay->setRelativePosition(radDataDisplayPos);
-            dataDisplay->setDrawBackground(false);
+            dataDisplay->setBackgroundColor(radDataDisplayBG);
         } else if (!showInterface) {
             dataDisplay->setRelativePosition(altDataDisplayPos);
-            dataDisplay->setDrawBackground(false);
+            dataDisplay->setBackgroundColor(altDataDisplayBG);
         } else {
             dataDisplay->setRelativePosition(stdDataDisplayPos);
-            dataDisplay->setDrawBackground(true);
+            dataDisplay->setBackgroundColor(stdDataDisplayBG);
         }
 
         //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
