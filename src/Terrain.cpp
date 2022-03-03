@@ -100,12 +100,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             device,
             smgr->getRootSceneNode(), 
             smgr,
-			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_9,
-			irr::core::vector3df(0.f, terrainY, 0.f),
-            irr::core::vector3df(0.f, 0.f, 0.f),
-            irr::core::vector3df(1,1,1)
+			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_9
         );
-        //TODO: Make sure we drop this when needed
 
         //Load the map
         irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
@@ -129,21 +125,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
         } else {
-            
-            loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
-            
-            //Test for loading and scaling internally
-            //irr::video::IImage* heightMap = smgr->getVideoDriver()->createImageFromFile(heightMapFile);
-            //std::vector<std::vector<irr::f32>> heightMapVector;
-            //for (unsigned int j=0; j<heightMap->getDimension().Width; j++) {
-            //    std::vector<irr::f32> heightMapLine;
-            //    for (unsigned int k=0; k<heightMap->getDimension().Height; k++) {
-            //        heightMapLine.push_back(heightMap->getPixel(j,heightMap->getDimension().Height-k-1).getLightness());
-            //    }
-            //    heightMapVector.push_back(heightMapLine);
-            //}
-            //loaded = terrain->loadHeightMapVector(heightMapVector,irr::video::SColor(255, 255, 255, 255), 0);
-
+            //Normal image file
+            //loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
+            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,smgr),irr::video::SColor(255, 255, 255, 255), 0);
         }
 
         if (!loaded) {
@@ -162,6 +146,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         } else {
             //Normal heightmap, so use scale from terrainMaxHeight etc
             terrain->setScale(irr::core::vector3df(scaleX,scaleY,scaleZ));
+            terrain->setPosition(irr::core::vector3df(0.f, terrainY, 0.f));
         }
 
         heightMapFile->drop();
@@ -198,6 +183,54 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     }
 
+
+}
+
+std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, irr::scene::ISceneManager* smgr)
+{
+    irr::video::IImage* heightMap = smgr->getVideoDriver()->createImageFromFile(heightMapFile);
+    std::vector<std::vector<irr::f32>> heightMapVector;
+
+    irr::u32 imageWidth = heightMap->getDimension().Width;
+    irr::u32 imageHeight = heightMap->getDimension().Height;
+
+    //Find nearest 2^n+1 square size, upscaling if needed. 
+    //Subtract 1 and find next power of 2, and add one (we need a size that is (2^n)+1)
+    irr::s32 scaledWidth = (irr::s32)imageWidth-1;
+    irr::s32 scaledHeight = (irr::s32)imageHeight-1;
+
+    scaledWidth = pow(2.0,ceil(log2(scaledWidth))) + 1;
+    scaledHeight = pow(2.0,ceil(log2(scaledHeight))) + 1;
+    //find largest, returned vector will be square
+    irr::u32 scaledSize = std::max(scaledWidth,scaledHeight);
+
+    irr::f32 heightValue;
+
+    for (unsigned int j=0; j<scaledSize; j++) {
+        std::vector<irr::f32> heightMapLine;
+        for (unsigned int k=0; k<scaledSize; k++) {
+            
+            //Pick the pixel to use (very simple scaling, to be replaced with bilinear interpolation)
+            irr::f32 pixelX_float = (irr::f32)j * (irr::f32)imageWidth/(irr::f32)scaledSize;
+            irr::f32 pixelY_float = (irr::f32)(scaledSize - k - 1) * (irr::f32)imageHeight/(irr::f32)scaledSize;
+            irr::u32 pixelX_int = round(pixelX_float);
+            irr::u32 pixelY_int = round(pixelY_float);
+
+            irr::video::SColor pixelColor = heightMap->getPixel(pixelX_int,pixelY_int);
+            
+            if (usesRGBEncoding) {
+                //Absolute height is (red * 256 + green + blue / 256) - 32768
+                heightValue = ((irr::f32)pixelColor.getRed()*256 + (irr::f32)pixelColor.getGreen() + (irr::f32)pixelColor.getBlue()/256.0)-32768.0;
+            } else {
+                heightValue = pixelColor.getLightness();
+            }
+
+            heightMapLine.push_back(heightValue);
+        }
+        heightMapVector.push_back(heightMapLine);
+    }
+
+    return heightMapVector;
 
 }
 

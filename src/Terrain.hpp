@@ -36,6 +36,10 @@ class Terrain
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
 
     private:
+        
+        //Return a 2^n + 1 square vector from a height map image
+        std::vector<std::vector<irr::f32>> heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, irr::scene::ISceneManager* smgr);
+        
         std::vector<irr::scene::ITerrainSceneNode*> terrains;
         irr::f32 primeTerrainLong;
         irr::f32 primeTerrainXWidth;
