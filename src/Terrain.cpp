@@ -100,7 +100,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             device,
             smgr->getRootSceneNode(), 
             smgr,
-			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_9
+			smgr->getFileSystem(), -1, 5, irr::scene::ETPS_33
         );
 
         //Load the map
