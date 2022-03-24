@@ -9,6 +9,4 @@ Pass this to the terrain loader.
 
 Apply same to load from a non-square binary file. Extend this to non-floating point binary.
 
-Change checking of heights, so it returns the maximum height, not the height from the maximum number terrain.
-
-Use ray intersection to get 'heightmap' for 3d models that have been loaded and scaled. Use these for radar.
+When terrain is stable, move back into CTerrainSceneNode (in Irrlicht) for speed boost
