@@ -261,7 +261,8 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
     terrain->setPosition(irr::core::vector3df(positionX, 0.f, positionZ));
     
-    terrain->getMesh()->getMeshBuffer(0)->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
+    //terrain->getMesh()->getMeshBuffer(0)->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
+    terrain->setVisible(false);
 
     terrains.push_back(terrain);
 }
