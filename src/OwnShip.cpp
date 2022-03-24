@@ -366,9 +366,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Z-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
-            ray.start.X = xTestPos; ray.start.Y = minY; ray.start.Z = zTestPos;
+            ray.start.X = xTestPos; ray.start.Y = minY-0.1; ray.start.Z = zTestPos;
             ray.end = ray.start;
-            ray.end.Y = maxY;
+            ray.end.Y = maxY+0.1;
 
             //Check the ray and add the contact point if it exists
             addContactPointFromRay(ray);
@@ -383,15 +383,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
-            ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ;
+            ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ+0.1;
             ray.end = ray.start;
-            ray.end.Z = minZ;
+            ray.end.Z = minZ-0.1;
 
             //Check the ray and add the contact point if it exists
             addContactPointFromRay(ray);
             //swap ray direction and check again
-            ray.start.Z = minZ;
-            ray.end.Z = maxZ;
+            ray.start.Z = minZ-0.1;
+            ray.end.Z = maxZ+0.1;
             addContactPointFromRay(ray);
         }
     }
@@ -404,15 +404,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
-            ray.start.X = maxX; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
+            ray.start.X = maxX+0.1; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
             ray.end = ray.start;
-            ray.end.X = minX;
+            ray.end.X = minX-0.1;
 
             //Check the ray and add the contact point if it exists
             addContactPointFromRay(ray);
             //swap ray direction and check again
-            ray.start.X = minX;
-            ray.end.X = maxX;
+            ray.start.X = minX-0.1;
+            ray.end.X = maxX+0.1;
             addContactPointFromRay(ray);
         }
     }
