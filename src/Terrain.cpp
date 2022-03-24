@@ -45,6 +45,8 @@ Terrain::~Terrain()
 void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device)
 {
 
+    dev = device;
+    
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
 
     //Get full path to the main Terrain.ini file
@@ -234,18 +236,50 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
 
 }
 
+void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heightVector, irr::f32 positionX, irr::f32 positionZ, irr::f32 widthX, irr::f32 widthZ)
+{
+    //Add a terrain to be used to give the impression of a radar reflection from a land object.
+    
+    irr::scene::BCTerrainSceneNode* terrain = new irr::scene::BCTerrainSceneNode(
+            dev,
+            dev->getSceneManager()->getRootSceneNode(), 
+            dev->getSceneManager(),
+			dev->getSceneManager()->getFileSystem(), -1, 5, irr::scene::ETPS_33
+        );
+
+    bool loaded = terrain->loadHeightMapVector(heightVector,irr::video::SColor(255, 255, 255, 255), 0);
+
+    if (!loaded) {
+        //Could not load terrain
+        std::cerr << "Could not load radar reflecting terrain." << std::endl;
+        return;
+    }
+
+    irr::f32 scaleX = widthX/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
+    irr::f32 scaleZ = widthZ/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
+
+    terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
+    terrain->setPosition(irr::core::vector3df(positionX, 0.f, positionZ));
+    
+    terrain->getMesh()->getMeshBuffer(0)->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
+
+    terrains.push_back(terrain);
+}
+
 irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
 {
-    //Check down list, find highest number that does not return -FLT_MAX (or return -FLT_MAX if none)
+    //Fallback minimum value
+    irr::f32 terrainHeight = -FLT_MAX;
+    
+    //Check down list, find highest return value
     for (int i=(int)terrains.size()-1; i>=0; i--) {
         irr::f32 thisHeight = terrains.at(i)->getHeight(x,z);
-        if (thisHeight > -FLT_MAX) {
-            return thisHeight;
+        if (thisHeight > terrainHeight) {
+            terrainHeight = thisHeight;
         }
     }
 
-    //Fallback
-    return -FLT_MAX;
+    return terrainHeight;
 }
 
 irr::f32 Terrain::longToX(irr::f32 longitude) const

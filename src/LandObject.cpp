@@ -18,14 +18,17 @@
 #include "IniFile.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"
+#include "Terrain.hpp"
 
 #include <iostream>
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
+    device = dev;
+    
     std::string basePath = "Models/LandObject/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
     
@@ -55,13 +58,13 @@ LandObject::LandObject(const std::string& name, const std::string& worldName, co
         //Failed to load mesh - load with dummy and continue
         dev->getLogger()->log("Failed to load land object model:");
         dev->getLogger()->log(objectFullPath.c_str());
-        landObject = smgr->addCubeSceneNode(0.1);
+        landObject = smgr->addCubeSceneNode(0.1, 0, -1, location);
     } else {
-        landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location );
+        landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location);
     }
 
-    //Set ID as a flag if we should model collisions with this
-    if (collisionObject) {
+    //Set ID as a flag if we should model collisions with this, also used to get radar points
+    if (collisionObject || radarObject) {
         landObject->setID(IDFlag_IsPickable);
 
         //Add a triangle selector
@@ -85,11 +88,75 @@ LandObject::LandObject(const std::string& name, const std::string& worldName, co
 
     landObject->setName("LandObject");
 
+    //===========================================
+    //Get contact points for radar detection here
+    landObject->updateAbsolutePosition();
+
+    irr::core::aabbox3df boundingBox = landObject->getTransformedBoundingBox();
+    irr::f32 minX = boundingBox.MinEdge.X;
+    irr::f32 maxX = boundingBox.MaxEdge.X;
+    irr::f32 minY = boundingBox.MinEdge.Y;
+    irr::f32 maxY = boundingBox.MaxEdge.Y;
+    irr::f32 minZ = boundingBox.MinEdge.Z;
+    irr::f32 maxZ = boundingBox.MaxEdge.Z;
+
+    //Grid from above looking down (hard coded 129x129 points)
+    std::vector<std::vector<irr::f32>> generatedMap;
+    for (int i = 0; i<129; i++) {
+        std::vector<irr::f32> generatedMapLine;
+        for (int j = 0; j<129; j++) {
+
+            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(129-1);
+            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(129-1);
+
+            irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking down
+            ray.start.X = xTestPos; ray.start.Y = maxY+0.1; ray.start.Z = zTestPos;
+            ray.end = ray.start;
+            ray.end.Y = minY-0.1;
+
+            //Check the ray and add the contact point if it exists
+            irr::f32 pointY = findContactYFromRay(ray);
+            generatedMapLine.push_back(pointY);
+        }
+        generatedMap.push_back(generatedMapLine);
+    }
+
+    //use the 'generatedMap' to add an invisible dummy terrain here
+    terrain->addRadarReflectingTerrain(generatedMap, minX, minZ, maxX-minX, maxZ-minZ);
+
+    //We don't want to do further triangle selection, unless it's a collision object
+    if (!collisionObject) {
+        landObject->setID(-1);
+        landObject->setTriangleSelector(0);
+    }
+    //End contact points for radar detection
+    //======================================
+
 }
 
 LandObject::~LandObject()
 {
     //dtor
+}
+
+irr::f32 LandObject::findContactYFromRay(irr::core::line3d<irr::f32> ray)
+{
+    irr::core::vector3df intersection;
+    irr::core::triangle3df hitTriangle;
+
+    irr::scene::ISceneNode * selectedSceneNode =
+        device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+        ray,
+        intersection, // This will be the position of the collision
+        hitTriangle, // This will be the triangle hit in the collision
+        IDFlag_IsPickable, // (bitmask)
+        0); // Check all nodes
+
+    if(selectedSceneNode) {
+        return intersection.Y;
+    } else {
+        return -1e3; //A big negative value
+    }
 }
 
 irr::core::vector3df LandObject::getPosition() const

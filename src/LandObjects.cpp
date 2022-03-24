@@ -36,7 +36,7 @@ LandObjects::~LandObjects()
     //dtor
 }
 
-void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain, irr::IrrlichtDevice* dev)
+void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //get landObject.ini filename
     std::string scenarioLandObjectFilename = worldName;
@@ -55,7 +55,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
         //Check if land object is given in absolute height, or relative to terrain.
         if (IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Absolute",currentObject))!=1) {
-            objectY += terrain.getHeight(objectX,objectZ);
+            objectY += terrain->getHeight(objectX,objectZ);
         }
 
         //Get rotation
@@ -64,9 +64,11 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Check if we should be able to interact with this by collision
         bool collisionObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Collision",currentObject))==1;
 
+        //Check if we should be able to see on the radar
+        bool radarObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Radar",currentObject))==1;
 
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,smgr,dev));
+        landObjects.push_back(LandObject (objectName.c_str(),worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,terrain,smgr,dev));
 
     }
 }

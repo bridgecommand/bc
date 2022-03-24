@@ -34,12 +34,15 @@ class Terrain
         irr::f32 zToLat(irr::f32 z) const;
         irr::f32 getHeight(irr::f32 x, irr::f32 z) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heightVector, irr::f32 positionX, irr::f32 positionZ, irr::f32 widthX, irr::f32 widthZ);
 
     private:
         
         //Return a 2^n + 1 square vector from a height map image
         std::vector<std::vector<irr::f32>> heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, irr::scene::ISceneManager* smgr);
         
+        irr::IrrlichtDevice* dev;
+
         std::vector<irr::scene::ITerrainSceneNode*> terrains;
         irr::f32 primeTerrainLong;
         irr::f32 primeTerrainXWidth;

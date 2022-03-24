@@ -166,7 +166,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         buoys.load(worldPath, smgr, this,device);
 
         //Load land objects
-        landObjects.load(worldPath, smgr, this, terrain, device);
+        landObjects.load(worldPath, smgr, this, &terrain, device);
 
         //Load land lights
         landLights.load(worldPath, smgr, this, terrain);
