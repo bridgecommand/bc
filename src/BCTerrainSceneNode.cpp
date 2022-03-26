@@ -1574,10 +1574,13 @@ namespace scene
 		if (!Mesh->getMeshBufferCount())
 			return 0;
 
-		core::matrix4 rotMatrix;
-		rotMatrix.setRotationDegrees(TerrainData.Rotation);
+
+        //JAMES: Special case - we don't use terrain rotation, so disable this check for speed.
+
+		//core::matrix4 rotMatrix;
+		//rotMatrix.setRotationDegrees(TerrainData.Rotation);
 		core::vector3df pos(x, 0.0f, z);
-		rotMatrix.rotateVect(pos);
+		//rotMatrix.rotateVect(pos);
 		pos -= TerrainData.Position;
 		pos /= TerrainData.Scale;
 
