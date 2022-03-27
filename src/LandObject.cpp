@@ -90,40 +90,41 @@ LandObject::LandObject(const std::string& name, const std::string& worldName, co
 
     //===========================================
     //Get contact points for radar detection here
-    landObject->updateAbsolutePosition();
+    if (radarObject) {
+        landObject->updateAbsolutePosition();
 
-    irr::core::aabbox3df boundingBox = landObject->getTransformedBoundingBox();
-    irr::f32 minX = boundingBox.MinEdge.X;
-    irr::f32 maxX = boundingBox.MaxEdge.X;
-    irr::f32 minY = boundingBox.MinEdge.Y;
-    irr::f32 maxY = boundingBox.MaxEdge.Y;
-    irr::f32 minZ = boundingBox.MinEdge.Z;
-    irr::f32 maxZ = boundingBox.MaxEdge.Z;
+        irr::core::aabbox3df boundingBox = landObject->getTransformedBoundingBox();
+        irr::f32 minX = boundingBox.MinEdge.X;
+        irr::f32 maxX = boundingBox.MaxEdge.X;
+        irr::f32 minY = boundingBox.MinEdge.Y;
+        irr::f32 maxY = boundingBox.MaxEdge.Y;
+        irr::f32 minZ = boundingBox.MinEdge.Z;
+        irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
-    //Grid from above looking down (hard coded 129x129 points)
-    std::vector<std::vector<irr::f32>> generatedMap;
-    for (int i = 0; i<129; i++) {
-        std::vector<irr::f32> generatedMapLine;
-        for (int j = 0; j<129; j++) {
+        //Grid from above looking down (hard coded 129x129 points)
+        std::vector<std::vector<irr::f32>> generatedMap;
+        for (int i = 0; i<129; i++) {
+            std::vector<irr::f32> generatedMapLine;
+            for (int j = 0; j<129; j++) {
 
-            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(129-1);
-            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(129-1);
+                irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(129-1);
+                irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(129-1);
 
-            irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking down
-            ray.start.X = xTestPos; ray.start.Y = maxY+0.1; ray.start.Z = zTestPos;
-            ray.end = ray.start;
-            ray.end.Y = minY-0.1;
+                irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking down
+                ray.start.X = xTestPos; ray.start.Y = maxY+0.1; ray.start.Z = zTestPos;
+                ray.end = ray.start;
+                ray.end.Y = minY-0.1;
 
-            //Check the ray and add the contact point if it exists
-            irr::f32 pointY = findContactYFromRay(ray);
-            generatedMapLine.push_back(pointY);
+                //Check the ray and add the contact point if it exists
+                irr::f32 pointY = findContactYFromRay(ray);
+                generatedMapLine.push_back(pointY);
+            }
+            generatedMap.push_back(generatedMapLine);
         }
-        generatedMap.push_back(generatedMapLine);
+
+        //use the 'generatedMap' to add an invisible dummy terrain here
+        terrain->addRadarReflectingTerrain(generatedMap, minX, minZ, maxX-minX, maxZ-minZ);
     }
-
-    //use the 'generatedMap' to add an invisible dummy terrain here
-    terrain->addRadarReflectingTerrain(generatedMap, minX, minZ, maxX-minX, maxZ-minZ);
-
     //We don't want to do further triangle selection, unless it's a collision object
     if (!collisionObject) {
         landObject->setID(-1);
