@@ -40,4 +40,5 @@ const std::string LONGNAME = "Bridge Command 5.7.9";
 const std::string VERSION = "5.7";
 const std::string LONGVERSION = "5.7.9";
 
+
 #endif
