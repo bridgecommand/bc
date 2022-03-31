@@ -515,7 +515,7 @@ namespace scene
 	}
 
 	//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>. 
-	// This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
+	//! This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
 	bool BCTerrainSceneNode::loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
 		 f32& terrainXLoadScaling, f32& terrainZLoadScaling,
 		 video::SColor vertexColor,
