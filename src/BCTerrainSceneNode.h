@@ -60,7 +60,6 @@ namespace scene
 			bool rgbEncoded=false ) _IRR_OVERRIDE_;
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
-		//! This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
 		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
 			bool signedData=true, bool floatVals=false, s32 width=0,
 			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) _IRR_OVERRIDE_;
