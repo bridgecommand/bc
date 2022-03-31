@@ -66,7 +66,7 @@ namespace scene
 
 		//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>. This should be square
 		virtual bool loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
-			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 );
+			f32& terrainXLoadScaling, f32& terrainZLoadScaling, video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0);
 
 		//! Returns the material based on the zero based index i. This scene node only uses
 		//! 1 material.
