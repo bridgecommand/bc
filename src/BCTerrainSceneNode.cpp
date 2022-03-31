@@ -518,9 +518,11 @@ namespace scene
 	//! This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
 	bool BCTerrainSceneNode::loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
 		 f32& terrainXLoadScaling, f32& terrainZLoadScaling,
+		 bool flipXZ,
 		 video::SColor vertexColor,
 		 s32 smoothFactor)
 	{
+		
 		// start reading
 		const u32 startTime = dev->getTimer()->getTime();
 
@@ -542,8 +544,13 @@ namespace scene
         TerrainData.Size = std::max(scaledWidth,scaledHeight);
 
 		//Update the scaling values
-		terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
-		terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
+		if (flipXZ) {
+			terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
+			terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
+		} else {
+			terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
+			terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
+		}
 
 		switch (TerrainData.PatchSize)
 		{
@@ -617,11 +624,20 @@ namespace scene
 				bool failure=false;
 				vertex.Pos.X = fx;
 				
-				//If outside the range of the input vector, set a low value
-				if (x < heightMapData.size() && z < heightMapData.at(x).size()) {
-					vertex.Pos.Y = heightMapData.at(x).at(z);
+				if (flipXZ) {
+					if (z < heightMapData.size() && x < heightMapData.at(z).size()) {
+						vertex.Pos.Y = heightMapData.at(z).at(x);
+					} else {
+						//If outside the range of the input vector, set a low value
+						vertex.Pos.Y = -1e3; //A big negative value
+					}
 				} else {
-					vertex.Pos.Y = -1e3; //A big negative value
+					if (x < heightMapData.size() && z < heightMapData.at(x).size()) {
+						vertex.Pos.Y = heightMapData.at(x).at(z);
+					} else {
+						//If outside the range of the input vector, set a low value
+						vertex.Pos.Y = -1e3; //A big negative value
+					}
 				}
 				
 				if (failure)

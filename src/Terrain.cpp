@@ -128,10 +128,31 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         if (extension.compare(".f32") == 0 ) {
             //Binary file
             loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
+        }  else if (extension.compare(".hdr") == 0 ) {
+            //3Dem header for binary file
+            irr::u32 binaryRows = IniFile::iniFileTou32(heightMapPath, "number_of_rows");
+            irr::u32 binaryCols = IniFile::iniFileTou32(heightMapPath, "number_of_columns");
+
+            //Assume (TODO, could check and allow different?)
+            //data_format            = int16
+            //map_projection         = Lat/Lon
+            //elev_m_unit            = meters
+
+            //Load from binary file into map, so close the .hdr, and open the .bin version
+            heightMapFile->drop();
+            heightMapPath.erase(heightMapPath.end()-3,heightMapPath.end());
+            heightMapPath.append("bin");
+            irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
+            if (heightMapFile) {
+                
+                //Load from binary file into a vector, and then use this vector to load terrain
+                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, true, irr::video::SColor(255, 255, 255, 255), 0);
+            }
+
         } else {
             //Normal image file
             //loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
-            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr), terrainXLoadScaling, terrainZLoadScaling, false, irr::video::SColor(255, 255, 255, 255), 0);
         }
 
         if (!loaded) {
@@ -143,7 +164,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         irr::f32 scaleX = terrainXLoadScaling*terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
         irr::f32 scaleZ = terrainZLoadScaling*terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
             
-        if (extension.compare(".f32") == 0 || usesRGBEncoding) {
+        if (extension.compare(".f32") == 0 || extension.compare(".hdr") == 0 || usesRGBEncoding) {
             //Set scales etc to be 1.0, so heights are used directly
             terrain->setScale(irr::core::vector3df(scaleX,1.0f,scaleZ));
             terrain->setPosition(irr::core::vector3df(0.f, 0.f, 0.f));
@@ -194,6 +215,11 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
 {
     irr::video::IImage* heightMap = smgr->getVideoDriver()->createImageFromFile(heightMapFile);
     std::vector<std::vector<irr::f32>> heightMapVector;
+
+    if (heightMap==0) {
+        //Return empty vector if we can't load the image
+        return heightMapVector;
+    }
 
     irr::u32 imageWidth = heightMap->getDimension().Width;
     irr::u32 imageHeight = heightMap->getDimension().Height;
@@ -247,6 +273,40 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
 
 }
 
+std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight)
+{
+    std::vector<std::vector<irr::f32>> heightMapVector;
+
+    if (heightMapFile==0) {
+        //Return empty vector if we can't load the image
+        return heightMapVector;
+    }
+    
+    irr::f32 heightValue;
+
+    for (unsigned int j=0; j<binaryWidth; j++) {
+        std::vector<irr::f32> heightMapLine;
+        for (unsigned int k=0; k<binaryHeight; k++) {
+            
+            //read heightValue from binary file
+            const size_t bytesPerPixel = 2; //Hard coded for 16 bit (2 byte)
+            irr::s16 val;
+			if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
+				
+                heightMapLine.push_back(val); //Do we use this raw?
+                //std::cout << "Height: " << val << std::endl;
+            } else {
+                heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
+            }
+
+        }
+        heightMapVector.push_back(heightMapLine);
+    }
+
+    return heightMapVector;
+
+}
+
 void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heightVector, irr::f32 positionX, irr::f32 positionZ, irr::f32 widthX, irr::f32 widthZ)
 {
     //Add a terrain to be used to give the impression of a radar reflection from a land object.
@@ -261,7 +321,7 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     irr::f32 terrainXLoadScaling = 1;
     irr::f32 terrainZLoadScaling = 1;
 
-    bool loaded = terrain->loadHeightMapVector(heightVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+    bool loaded = terrain->loadHeightMapVector(heightVector, terrainXLoadScaling, terrainZLoadScaling, false, irr::video::SColor(255, 255, 255, 255), 0);
 
     if (!loaded) {
         //Could not load terrain

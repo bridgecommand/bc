@@ -40,6 +40,7 @@ class Terrain
         
         //Return a 2^n + 1 square vector from a height map image
         std::vector<std::vector<irr::f32>> heightMapImageToVector(irr::io::IReadFile* heightMapFile, bool usesRGBEncoding, bool normaliseSize, irr::scene::ISceneManager* smgr);
+        std::vector<std::vector<irr::f32>> heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight);
         
         irr::IrrlichtDevice* dev;
 
