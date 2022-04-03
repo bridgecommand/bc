@@ -518,7 +518,6 @@ namespace scene
 	//! This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
 	bool BCTerrainSceneNode::loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
 		 f32& terrainXLoadScaling, f32& terrainZLoadScaling,
-		 bool flipXZ,
 		 video::SColor vertexColor,
 		 s32 smoothFactor)
 	{
@@ -534,8 +533,8 @@ namespace scene
 		}
 
 		//Find if the input vector is square and 2^n+1 in size, if not, find the next biggest size to fit
-		u32 inputWidth = heightMapData.size();
-		u32 inputHeight = heightMapData.at(0).size();
+		u32 inputWidth = heightMapData.at(0).size();
+		u32 inputHeight = heightMapData.size();
 		s32 scaledWidth = (irr::s32)inputWidth-1;
         s32 scaledHeight = (irr::s32)inputHeight-1;
         scaledWidth = pow(2.0,ceil(log2(scaledWidth))) + 1;
@@ -544,13 +543,8 @@ namespace scene
         TerrainData.Size = std::max(scaledWidth,scaledHeight);
 
 		//Update the scaling values
-		if (flipXZ) {
-			terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
-			terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
-		} else {
-			terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
-			terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
-		}
+		terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
+		terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
 
 		switch (TerrainData.PatchSize)
 		{
@@ -624,20 +618,11 @@ namespace scene
 				bool failure=false;
 				vertex.Pos.X = fx;
 				
-				if (flipXZ) {
-					if (z < heightMapData.size() && x < heightMapData.at(z).size()) {
-						vertex.Pos.Y = heightMapData.at(z).at(x);
-					} else {
-						//If outside the range of the input vector, set a low value
-						vertex.Pos.Y = -1e3; //A big negative value
-					}
+				if (z < heightMapData.size() && x < heightMapData.at(z).size()) {
+					vertex.Pos.Y = heightMapData.at(z).at(x);
 				} else {
-					if (x < heightMapData.size() && z < heightMapData.at(x).size()) {
-						vertex.Pos.Y = heightMapData.at(x).at(z);
-					} else {
-						//If outside the range of the input vector, set a low value
-						vertex.Pos.Y = -1e3; //A big negative value
-					}
+					//If outside the range of the input vector, set a low value
+					vertex.Pos.Y = -1e3; //A big negative value
 				}
 				
 				if (failure)

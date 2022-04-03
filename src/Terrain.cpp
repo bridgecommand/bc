@@ -146,13 +146,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             if (heightMapFile) {
                 
                 //Load from binary file into a vector, and then use this vector to load terrain
-                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, true, irr::video::SColor(255, 255, 255, 255), 0);
+                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
             }
 
         } else {
             //Normal image file
             //loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
-            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr), terrainXLoadScaling, terrainZLoadScaling, false, irr::video::SColor(255, 255, 255, 255), 0);
+            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
         }
 
         if (!loaded) {
@@ -245,9 +245,9 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
     
     irr::f32 heightValue;
 
-    for (unsigned int j=0; j<scaledWidth; j++) {
+    for (unsigned int k=0; k<scaledHeight; k++) {
         std::vector<irr::f32> heightMapLine;
-        for (unsigned int k=0; k<scaledHeight; k++) {
+        for (unsigned int j=0; j<scaledWidth; j++) {
             
             //Pick the pixel to use (very simple scaling, to be replaced with bilinear interpolation)
             irr::f32 pixelX_float = (irr::f32)j * (irr::f32)imageWidth/(irr::f32)scaledWidth;
@@ -321,7 +321,7 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     irr::f32 terrainXLoadScaling = 1;
     irr::f32 terrainZLoadScaling = 1;
 
-    bool loaded = terrain->loadHeightMapVector(heightVector, terrainXLoadScaling, terrainZLoadScaling, false, irr::video::SColor(255, 255, 255, 255), 0);
+    bool loaded = terrain->loadHeightMapVector(heightVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
 
     if (!loaded) {
         //Could not load terrain

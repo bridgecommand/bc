@@ -68,7 +68,6 @@ namespace scene
 		//! returns a 2^n+1 square terrain, padded if required.
 		virtual bool loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
 			f32& terrainXLoadScaling, f32& terrainZLoadScaling,
-			bool flipXZ = false,
 			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), 
 			s32 smoothFactor = 0);
 

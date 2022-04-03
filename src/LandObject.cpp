@@ -107,8 +107,8 @@ LandObject::LandObject(const std::string& name, const std::string& worldName, co
             std::vector<irr::f32> generatedMapLine;
             for (int j = 0; j<129; j++) {
 
-                irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(129-1);
-                irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(129-1);
+                irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)j/(irr::f32)(129-1);
+                irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(129-1);
 
                 irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking down
                 ray.start.X = xTestPos; ray.start.Y = maxY+0.1; ray.start.Z = zTestPos;
