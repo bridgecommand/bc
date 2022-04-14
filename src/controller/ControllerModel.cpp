@@ -62,20 +62,68 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     std::string worldTerrainFile = worldPath;
     worldTerrainFile.append("/terrain.ini");
 
-    //Fixme: Note we're only loading the primary terrain here
-    terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",1));
-    terrainLat = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLat",1));
-    terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLongExtent",1));
-    terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLatExtent",1));
+    //If terrain.ini doesn't exist, look for *.bin and *.hdr
+    bool usingHdrFile = false;
+    if (!Utilities::pathExists(worldTerrainFile)) {
+        irr::io::IFileSystem* fileSystem = device->getFileSystem();
+        
+        //store current dir
+        irr::io::path cwd = fileSystem->getWorkingDirectory();
 
-    std::string displayMapName = IniFile::iniFileToString(worldTerrainFile, "MapImage");
-    if (displayMapName.empty())
-        {displayMapName = IniFile::iniFileToString(worldTerrainFile, "RadarImage");} //Fall back to 'RadarImage' if 'MapImage' parameter isn't set
+        //change to scenario dir
+        if (fileSystem->changeWorkingDirectoryTo(worldPath.c_str())) {
+            irr::io::IFileList* fileList = fileSystem->createFileList();
+            if (fileList!=0) {
+                //List here
+                for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+                    if (fileList->isDirectory(i)==false) {
+                        const irr::io::path& fileName = fileList->getFileName(i);
+                        if (irr::core::hasFileExtension(fileName,"hdr")) {
+                            //Found a .hdr file for us to use
+                            
+                            worldTerrainFile = worldPath;
+                            worldTerrainFile.append("/");
+                            worldTerrainFile.append(fileName.c_str());
+                            usingHdrFile = true;
+                        }
+                    }
+                }
+            }
+        }
 
-    //If still empty, we don't have an image to load, so fail here
-    if (displayMapName.empty()) {
-        std::cout << "Could not load name of map image from ini file: " <<  worldTerrainFile << " (please check this file exists and has not been corrupted)." << std::endl;
-        exit(EXIT_FAILURE);
+        //Change dir back
+        fileSystem->changeWorkingDirectoryTo(cwd);
+    }
+
+    std::string displayMapName;
+    if (usingHdrFile) {
+        //load from 3dem header format
+        terrainLong = IniFile::iniFileTof32(worldTerrainFile, "left_map_x");
+        terrainLat = IniFile::iniFileTof32(worldTerrainFile, "lower_map_y");
+        terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, "right_map_x")-terrainLong;
+        terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, "upper_map_y")-terrainLat;
+
+        //assume map is the same path, with .hdr replaced with .bmp
+        displayMapName = std::string(device->getFileSystem()->getFileBasename(worldTerrainFile.c_str(),false).append(".bmp").c_str());
+
+
+    } else {
+        //Normal terrain.ini loading
+        //Fixme: Note we're only loading the primary terrain here
+        terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",1));
+        terrainLat = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLat",1));
+        terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLongExtent",1));
+        terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLatExtent",1));
+
+        displayMapName = IniFile::iniFileToString(worldTerrainFile, "MapImage");
+        if (displayMapName.empty())
+            {displayMapName = IniFile::iniFileToString(worldTerrainFile, "RadarImage");} //Fall back to 'RadarImage' if 'MapImage' parameter isn't set
+
+        //If still empty, we don't have an image to load, so fail here
+        if (displayMapName.empty()) {
+            std::cout << "Could not load name of map image from ini file: " <<  worldTerrainFile << " (please check this file exists and has not been corrupted)." << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
     //Load map image if possible (if not, end with error)

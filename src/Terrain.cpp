@@ -53,7 +53,47 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     std::string worldTerrainFile = worldPath;
     worldTerrainFile.append("/terrain.ini");
 
-    irr::u32 numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
+    irr::u32 numberOfTerrains=0;
+    bool usingHdrFile = false;
+
+    //If terrain.ini doesn't exist, look for *.bin and *.hdr
+    if (!Utilities::pathExists(worldTerrainFile)) {
+        irr::io::IFileSystem* fileSystem = device->getFileSystem();
+        
+        //store current dir
+        irr::io::path cwd = fileSystem->getWorkingDirectory();
+
+        //change to scenario dir
+        if (fileSystem->changeWorkingDirectoryTo(worldPath.c_str())) {
+            irr::io::IFileList* fileList = fileSystem->createFileList();
+            if (fileList!=0) {
+                //List here
+                for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+                    if (fileList->isDirectory(i)==false) {
+                        const irr::io::path& fileName = fileList->getFileName(i);
+                        if (irr::core::hasFileExtension(fileName,"hdr")) {
+                            //Found a .hdr file for us to use
+                            
+                            //TODO: Check if equivalent .bin exists here
+                            
+                            worldTerrainFile = worldPath;
+                            worldTerrainFile.append("/");
+                            worldTerrainFile.append(fileName.c_str());
+                            numberOfTerrains=1;
+                            usingHdrFile = true;
+                            std::cout << "Found hdr file " << worldTerrainFile << std::endl; 
+                        }
+                    }
+                }
+            }
+        }
+
+        //Change dir back
+        fileSystem->changeWorkingDirectoryTo(cwd);
+    } else {
+        numberOfTerrains = IniFile::iniFileTou32(worldTerrainFile, "Number");
+    }
+
     if (numberOfTerrains <= 0) {
         std::cerr << "Could not load terrain. No terrain defined in settings file." << std::endl;
         exit(EXIT_FAILURE);
@@ -61,21 +101,63 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
     for (unsigned int i = 1; i<=numberOfTerrains; i++) {
 
+        irr::f32 terrainLong;
+        irr::f32 terrainLat;
+        irr::f32 terrainLongExtent;
+        irr::f32 terrainLatExtent;
+        irr::f32 terrainMaxHeight;
+        irr::f32 seaMaxDepth;
+        bool usesRGBEncoding;
+        //Full paths
+        std::string heightMapPath;
+        std::string textureMapPath;
+        
+        if (usingHdrFile) {
+            //load from 3dem header format
+            terrainLong = IniFile::iniFileTof32(worldTerrainFile, "left_map_x");
+            terrainLat = IniFile::iniFileTof32(worldTerrainFile, "lower_map_y");
+            terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, "right_map_x")-terrainLong;
+            terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, "upper_map_y")-terrainLat;
 
-        irr::f32 terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",i));
-        irr::f32 terrainLat = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLat",i));
-        irr::f32 terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLongExtent",i));
-        irr::f32 terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLatExtent",i));
+            heightMapPath = worldTerrainFile; //The name of the .hdr file
+            
+            //TODO: SORT!
+            //textureMapPath = worldPath;
+            //textureMapPath.append("/");
+            //textureMapPath.append("map.bmp");
 
-        irr::f32 terrainMaxHeight=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainMaxHeight",i));
-        irr::f32 seaMaxDepth=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("SeaMaxDepth",i));
-        //irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
+            textureMapPath = "";
+            
+            //Dummy contents, won't be used in this case
+            terrainMaxHeight=0;
+            seaMaxDepth=0;
+            usesRGBEncoding=false;
 
-        std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
-        std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
+        } else {
+            //Load from normal terrain.ini format
+            terrainLong = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLong",i));
+            terrainLat = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLat",i));
+            terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLongExtent",i));
+            terrainLatExtent = IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainLatExtent",i));
 
-        bool usesRGBEncoding = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("UsesRGB",i)) > 0;
+            terrainMaxHeight=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainMaxHeight",i));
+            seaMaxDepth=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("SeaMaxDepth",i));
+            //irr::f32 terrainHeightMapSize=IniFile::iniFileTof32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));
 
+            std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
+            std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
+
+            usesRGBEncoding = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("UsesRGB",i)) > 0;
+
+            //Full paths
+            heightMapPath = worldPath;
+            heightMapPath.append("/");
+            heightMapPath.append(heightMapName);
+            
+            textureMapPath = worldPath;
+            textureMapPath.append("/");
+            textureMapPath.append(textureMapName);
+        }
         //Terrain dimensions in metres
         irr::f32 terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
         irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
@@ -85,14 +167,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         irr::f32 scaleY = (terrainMaxHeight + seaMaxDepth)/ (255.0);
         //irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
         irr::f32 terrainY = -1*seaMaxDepth;
-
-        //Full paths
-        std::string heightMapPath = worldPath;
-        heightMapPath.append("/");
-        heightMapPath.append(heightMapName);
-        std::string textureMapPath = worldPath;
-        textureMapPath.append("/");
-        textureMapPath.append(textureMapName);
 
         //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
@@ -121,8 +195,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         irr::f32 terrainZLoadScaling = 1;
         //Check if extension is .irr::f32 for binary floating point file
         std::string extension = "";
-        if (heightMapName.length() > 3) {
-            extension = heightMapName.substr(heightMapName.length() - 4,4);
+        if (heightMapPath.length() > 3) {
+            extension = heightMapPath.substr(heightMapPath.length() - 4,4);
             Utilities::to_lower(extension);
         }
         if (extension.compare(".f32") == 0 ) {
@@ -146,7 +220,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             if (heightMapFile) {
                 
                 //Load from binary file into a vector, and then use this vector to load terrain
-                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 0, 0, 0), 0);
             }
 
         } else {
