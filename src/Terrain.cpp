@@ -121,13 +121,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
             heightMapPath = worldTerrainFile; //The name of the .hdr file
             
-            //TODO: SORT!
-            //textureMapPath = worldPath;
-            //textureMapPath.append("/");
-            //textureMapPath.append("map.bmp");
+            //assume map is the same path, with .hdr replaced with .bmp
+            //Use this as a texture (is this sensible?!)
+            std::string textureMapName = std::string(device->getFileSystem()->getFileBasename(worldTerrainFile.c_str(),false).append(".bmp").c_str());
+            textureMapPath = worldPath;
+            textureMapPath.append("/");
+            textureMapPath.append(textureMapName);
 
-            textureMapPath = "";
-            
             //Dummy contents, won't be used in this case
             terrainMaxHeight=0;
             seaMaxDepth=0;
