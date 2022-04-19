@@ -193,22 +193,52 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         bool loaded = false;
         irr::f32 terrainXLoadScaling = 1;
         irr::f32 terrainZLoadScaling = 1;
-        //Check if extension is .irr::f32 for binary floating point file
+        
+        //Check extension
         std::string extension = "";
         if (heightMapPath.length() > 3) {
             extension = heightMapPath.substr(heightMapPath.length() - 4,4);
             Utilities::to_lower(extension);
         }
+        
         if (extension.compare(".f32") == 0 ) {
+            
             //Binary file
-            loaded = terrain->loadHeightMapRAW(heightMapFile,32,true,true);
+
+            
+            irr::u32 binaryRows = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapRows",i));
+            irr::u32 binaryCols = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapColumns",i));
+            bool flipRowCol = false;
+
+            //Fall back to TerrainHeightMapSize if not set - legacy file loading, also indicating swapped rows and columns
+            if (binaryRows == 0 || binaryCols == 0) {
+                binaryRows = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));    
+                binaryCols = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("TerrainHeightMapSize",i));    
+                flipRowCol = true;
+            }
+
+            //Load from binary file into a vector, 
+            std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,true);
+            //Need to flip row and columns for legacy files
+            if (flipRowCol) {
+                std::cout << "Before flip: " << heightMapVector.size() << ", " << heightMapVector.at(0).size() << std::endl;
+                heightMapVector = transposeHeightMapVector(heightMapVector);
+                std::cout << "After flip: " << heightMapVector.size() << ", " << heightMapVector.at(0).size() << std::endl;
+            }
+            //Then use this vector to load terrain
+            loaded = terrain->loadHeightMapVector(heightMapVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+
         }  else if (extension.compare(".hdr") == 0 ) {
             //3Dem header for binary file
             irr::u32 binaryRows = IniFile::iniFileTou32(heightMapPath, "number_of_rows");
             irr::u32 binaryCols = IniFile::iniFileTou32(heightMapPath, "number_of_columns");
 
+            bool floatingPoint = IniFile::iniFileToString(heightMapPath, "number_of_rows").compare("float32")==0;
+
+            //TODO: Check a floating point example
+
             //Assume (TODO, could check and allow different?)
-            //data_format            = int16
+            //data_format            = int16 or float32
             //map_projection         = Lat/Lon
             //elev_m_unit            = meters
 
@@ -220,7 +250,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             if (heightMapFile) {
                 
                 //Load from binary file into a vector, and then use this vector to load terrain
-                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 0, 0, 0), 0);
+                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
             }
 
         } else {
@@ -347,7 +377,7 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapImageToVector(irr::io::IRea
 
 }
 
-std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight)
+std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight, bool floatingPoint)
 {
     std::vector<std::vector<irr::f32>> heightMapVector;
 
@@ -362,16 +392,30 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
         std::vector<irr::f32> heightMapLine;
         for (unsigned int k=0; k<binaryHeight; k++) {
             
-            //read heightValue from binary file
-            const size_t bytesPerPixel = 2; //Hard coded for 16 bit (2 byte)
-            irr::s16 val;
-			if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
-				
-                heightMapLine.push_back(val); //Do we use this raw?
-                //std::cout << "Height: " << val << std::endl;
+            if (floatingPoint) {
+                //read heightValue from binary file: floating point 32 bit
+                const size_t bytesPerPixel = 4; //Hard coded for 32 bit (4 byte)
+                irr::f32 val;
+                if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
+                    
+                    heightMapLine.push_back(val); //Do we use this raw?
+                    //std::cout << "Height: " << val << std::endl;
+                } else {
+                    heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
+                }
             } else {
-                heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
+                //read heightValue from binary file: signed 16 bit
+                const size_t bytesPerPixel = 2; //Hard coded for 16 bit (2 byte)
+                irr::s16 val;
+                if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
+                    
+                    heightMapLine.push_back(val); //Do we use this raw?
+                    //std::cout << "Height: " << val << std::endl;
+                } else {
+                    heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
+                }
             }
+
 
         }
         heightMapVector.push_back(heightMapLine);
@@ -413,6 +457,34 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     terrain->setVisible(false);
 
     terrains.push_back(terrain);
+}
+
+std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector<std::vector<irr::f32>> inVector){
+    std::vector<std::vector<irr::f32>> outVector;
+
+    if (inVector.size() == 0 || inVector.at(0).size() == 0) {
+		//Zero length
+		return outVector;
+	}
+
+    irr::u32 inputHeight = inVector.size();
+    irr::u32 inputWidth = inVector.at(0).size();
+
+    for (int i = 0; i < inputWidth; i++) {
+        std::vector<irr::f32> lineVector;
+        for (int j = 0; j < inputHeight; j++) {
+            
+            if (j < inVector.size() && i < inVector.at(j).size()) {
+                lineVector.push_back(inVector.at(j).at(i));
+            } else {
+                //If outside the range of the input vector, set a low value
+                lineVector.push_back(-1e3);//A big negative value
+            }
+
+        }
+        outVector.push_back(lineVector);    
+    }
+    return outVector;
 }
 
 irr::f32 Terrain::getHeight(irr::f32 x, irr::f32 z) const //Get height from global coordinates
