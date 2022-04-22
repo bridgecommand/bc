@@ -168,7 +168,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //irr::f32 scaleZ = terrainZWidth / (terrainHeightMapSize);
         irr::f32 terrainY = -1*seaMaxDepth;
 
-        //Fixme: Could also check that the terrain is now 2^n + 1 square (was 2^n in B3d version)
         //Add an empty terrain
         //irr::scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode("",0,-1,irr::core::vector3df(0.f, terrainY, 0.f),irr::core::vector3df(0.f, 0.f, 0.f),irr::core::vector3df(1,1,1),irr::video::SColor(255,255,255,255),5,irr::scene::ETPS_9,0,true);
 
@@ -221,9 +220,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,true);
             //Need to flip row and columns for legacy files
             if (flipRowCol) {
-                std::cout << "Before flip: " << heightMapVector.size() << ", " << heightMapVector.at(0).size() << std::endl;
                 heightMapVector = transposeHeightMapVector(heightMapVector);
-                std::cout << "After flip: " << heightMapVector.size() << ", " << heightMapVector.at(0).size() << std::endl;
             }
             //Then use this vector to load terrain
             loaded = terrain->loadHeightMapVector(heightMapVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
@@ -279,7 +276,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         }
 
         heightMapFile->drop();
-        //TODO: Do we need to drop terrain?
+        //terrains are dropped in destructor.
 
         terrain->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
         terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
@@ -397,9 +394,7 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
                 const size_t bytesPerPixel = 4; //Hard coded for 32 bit (4 byte)
                 irr::f32 val;
                 if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
-                    
-                    heightMapLine.push_back(val); //Do we use this raw?
-                    //std::cout << "Height: " << val << std::endl;
+                    heightMapLine.push_back(val); //We use this as an unscaled height in metres
                 } else {
                     heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
                 }
@@ -408,9 +403,7 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
                 const size_t bytesPerPixel = 2; //Hard coded for 16 bit (2 byte)
                 irr::s16 val;
                 if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
-                    
-                    heightMapLine.push_back(val); //Do we use this raw?
-                    //std::cout << "Height: " << val << std::endl;
+                    heightMapLine.push_back(val); //We use this as an unscaled height in metres
                 } else {
                     heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
                 }
@@ -463,7 +456,7 @@ std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector
     std::vector<std::vector<irr::f32>> outVector;
 
     if (inVector.size() == 0 || inVector.at(0).size() == 0) {
-		//Zero length
+		//Zero length, return empty output vector
 		return outVector;
 	}
 
