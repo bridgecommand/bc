@@ -40,7 +40,7 @@
 
 //using namespace irr;
 
-SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints):
+SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::u32 limitTerrainResolution):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -111,7 +111,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         }
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(worldPath, smgr, device);
+        terrain.load(worldPath, smgr, device, limitTerrainResolution);
 
         //sky box/dome
         Sky sky (smgr);

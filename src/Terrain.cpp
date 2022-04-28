@@ -43,7 +43,7 @@ Terrain::~Terrain()
     }
 }
 
-void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device)
+void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, irr::u32 terrainResolutionLimit)
 {
 
     dev = device;
@@ -219,6 +219,12 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
             //Load from binary file into a vector, 
             std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,true);
+            
+            //limit size if needed
+            if (terrainResolutionLimit>0) {
+                heightMapVector = limitSize(heightMapVector,terrainResolutionLimit);
+            }
+            
             //Need to flip row and columns for legacy files
             if (flipRowCol) {
                 heightMapVector = transposeHeightMapVector(heightMapVector);
@@ -231,7 +237,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             irr::u32 binaryRows = IniFile::iniFileTou32(heightMapPath, "number_of_rows");
             irr::u32 binaryCols = IniFile::iniFileTou32(heightMapPath, "number_of_columns");
 
-            bool floatingPoint = IniFile::iniFileToString(heightMapPath, "number_of_rows").compare("float32")==0;
+            bool floatingPoint = IniFile::iniFileToString(heightMapPath, "data_format").compare("float32")==0;
 
             //TODO: Check a floating point example
 
@@ -248,7 +254,12 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             if (heightMapFile) {
                 try {
                     //Load from binary file into a vector, and then use this vector to load terrain
-                    loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+                    std::vector<std::vector<irr::f32>> heightMapVector = heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint);
+                    //limit size if needed
+                    if (terrainResolutionLimit>0) {
+                        heightMapVector = limitSize(heightMapVector,terrainResolutionLimit);
+                    }
+                    loaded = terrain->loadHeightMapVector(heightMapVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
                 } catch (...) {
                     std::cerr << "Exception in loading terrain from binary with hdr." << std::endl;
                     loaded = false;    
@@ -257,8 +268,14 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
         } else {
             //Normal image file
-            //loaded = terrain->loadHeightMap(heightMapFile,irr::video::SColor(255, 255, 255, 255), 0, usesRGBEncoding);
-            loaded = terrain->loadHeightMapVector(heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+            std::vector<std::vector<irr::f32>> heightMapVector = heightMapImageToVector(heightMapFile,usesRGBEncoding,false,smgr);
+            
+            //limit size if needed
+            if (terrainResolutionLimit>0) {
+                heightMapVector = limitSize(heightMapVector,terrainResolutionLimit);
+            }
+
+            loaded = terrain->loadHeightMapVector(heightMapVector, terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
         }
 
         if (!loaded) {
@@ -479,6 +496,49 @@ std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector
                 lineVector.push_back(-1e3);//A big negative value
             }
 
+        }
+        outVector.push_back(lineVector);    
+    }
+    return outVector;
+}
+
+std::vector<std::vector<irr::f32>> Terrain::limitSize(std::vector<std::vector<irr::f32>> inVector, irr::u32 maxSize){
+    std::vector<std::vector<irr::f32>> outVector;
+
+    if (inVector.size() == 0 || inVector.at(0).size() == 0) {
+		//Zero length, return input vector
+		return inVector;
+	}
+
+    if ((maxSize >= inVector.size()) && (maxSize >= inVector.at(0).size())) {
+        //Already within limits, don't need to scale down
+		return inVector;    
+    }
+
+    irr::u32 inputHeight = inVector.size();
+    irr::u32 inputWidth = inVector.at(0).size();
+
+    irr::u32 outputHeight = std::min(inputHeight, maxSize);
+    irr::u32 outputWidth = std::min(inputWidth, maxSize);
+
+    for (int i = 0; i < outputHeight; i++) {
+        std::vector<irr::f32> lineVector;
+        for (int j = 0; j < outputWidth; j++) {
+            
+            //Pick the pixel to use (very simple scaling, to be replaced with bilinear interpolation)
+            irr::f32 pixelX_float = (irr::f32)j * (irr::f32)inputWidth/(irr::f32)outputWidth;
+            irr::f32 pixelY_float = (irr::f32)i * (irr::f32)inputHeight/(irr::f32)outputHeight;
+            irr::u32 pixelX_int = round(pixelX_float);
+            irr::u32 pixelY_int = round(pixelY_float);
+
+            irr::f32 pointValue;
+            if ((pixelY_int < inVector.size()) && (pixelX_int < inVector.at(pixelY_int).size())){
+                pointValue = inVector.at(pixelY_int).at(pixelX_int);
+            } else {
+                //Point doesn't exist
+                pointValue = -1e3; //A big negative value
+            }
+            lineVector.push_back(pointValue);
         }
         outVector.push_back(lineVector);    
     }

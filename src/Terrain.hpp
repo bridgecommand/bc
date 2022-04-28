@@ -27,7 +27,7 @@ class Terrain
     public:
         Terrain();
         virtual ~Terrain();
-        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device);
+        void load(const std::string& worldPath, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* device, irr::u32 terrainResolutionLimit);
         irr::f32 longToX(irr::f32 longitude) const;
         irr::f32 latToZ(irr::f32 latitude) const;
         irr::f32 xToLong(irr::f32 x) const;
@@ -42,6 +42,7 @@ class Terrain
         std::vector<std::vector<irr::f32>> heightMapBinaryToVector(irr::io::IReadFile* heightMapFile, irr::u32 binaryWidth, irr::u32 binaryHeight, bool floatingPoint);
         
         std::vector<std::vector<irr::f32>> transposeHeightMapVector(std::vector<std::vector<irr::f32>> inVector);
+        std::vector<std::vector<irr::f32>> limitSize(std::vector<std::vector<irr::f32>> inVector, irr::u32 maxSize);
 
         irr::IrrlichtDevice* dev;
 

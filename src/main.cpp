@@ -230,6 +230,9 @@ int main(int argc, char ** argv)
 	if (numberOfContactPointsZ == 0) {
 		numberOfContactPointsZ = 30;
 	}
+    
+    irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
+
     irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
     //Initial view configuration
     irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
@@ -731,7 +734,7 @@ int main(int argc, char ** argv)
 
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, limitTerrainResolution);
 
     //Load the gui
     bool hideEngineAndRudder=false;
