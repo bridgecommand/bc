@@ -55,7 +55,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
     worldTerrainFile.append("/terrain.ini");
 
     irr::u32 numberOfTerrains=0;
-    bool usingHdrFile = false;
+    bool usingHdrFileOnly = false;
 
     //If terrain.ini doesn't exist, look for *.bin and *.hdr
     if (!Utilities::pathExists(worldTerrainFile)) {
@@ -81,7 +81,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
                             worldTerrainFile.append("/");
                             worldTerrainFile.append(fileName.c_str());
                             numberOfTerrains=1;
-                            usingHdrFile = true;
+                            usingHdrFileOnly = true;
                             std::cout << "Found hdr file " << worldTerrainFile << std::endl; 
                         }
                     }
@@ -113,8 +113,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         std::string heightMapPath;
         std::string textureMapPath;
         
-        if (usingHdrFile) {
-            //load from 3dem header format
+        if (usingHdrFileOnly) {
+            //load from 3dem header format, worldTerrainFile is the .hdr file in this case
             terrainLong = IniFile::iniFileTof32(worldTerrainFile, "left_map_x");
             terrainLat = IniFile::iniFileTof32(worldTerrainFile, "lower_map_y");
             terrainLongExtent = IniFile::iniFileTof32(worldTerrainFile, "right_map_x")-terrainLong;
@@ -159,9 +159,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             textureMapPath.append("/");
             textureMapPath.append(textureMapName);
         }
-        //Terrain dimensions in metres
-        irr::f32 terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
-        irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
         //calculations just needed for terrain loading
         //irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
@@ -237,6 +234,11 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             irr::u32 binaryRows = IniFile::iniFileTou32(heightMapPath, "number_of_rows");
             irr::u32 binaryCols = IniFile::iniFileTou32(heightMapPath, "number_of_columns");
 
+            terrainLong = IniFile::iniFileTof32(heightMapPath, "left_map_x");
+            terrainLat = IniFile::iniFileTof32(heightMapPath, "lower_map_y");
+            terrainLongExtent = IniFile::iniFileTof32(heightMapPath, "right_map_x")-terrainLong;
+            terrainLatExtent = IniFile::iniFileTof32(heightMapPath, "upper_map_y")-terrainLat;
+
             bool floatingPoint = IniFile::iniFileToString(heightMapPath, "data_format").compare("float32")==0;
 
             //TODO: Check a floating point example
@@ -283,6 +285,10 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             std::cerr << "Could not load terrain at loadHeightMap stage." << std::endl;
             exit(EXIT_FAILURE);
         }
+
+        //Terrain dimensions in metres
+        irr::f32 terrainXWidth = terrainLongExtent * 2.0 * PI * EARTH_RAD_M * cos( irr::core::degToRad(terrainLat + terrainLatExtent/2.0)) / 360.0;
+        irr::f32 terrainZWidth = terrainLatExtent  * 2.0 * PI * EARTH_RAD_M / 360;
 
         irr::f32 scaleX = terrainXLoadScaling*terrainXWidth/(terrain->getBoundingBox().MaxEdge.X - terrain->getBoundingBox().MinEdge.X);
         irr::f32 scaleZ = terrainZLoadScaling*terrainZWidth/(terrain->getBoundingBox().MaxEdge.Z - terrain->getBoundingBox().MinEdge.Z);
