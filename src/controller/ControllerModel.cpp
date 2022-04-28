@@ -63,7 +63,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     worldTerrainFile.append("/terrain.ini");
 
     //If terrain.ini doesn't exist, look for *.bin and *.hdr
-    bool usingHdrFile = false;
+    bool usingHdrFileOnly = false;
     if (!Utilities::pathExists(worldTerrainFile)) {
         irr::io::IFileSystem* fileSystem = device->getFileSystem();
         
@@ -84,7 +84,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
                             worldTerrainFile = worldPath;
                             worldTerrainFile.append("/");
                             worldTerrainFile.append(fileName.c_str());
-                            usingHdrFile = true;
+                            usingHdrFileOnly = true;
                         }
                     }
                 }
@@ -96,7 +96,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     }
 
     std::string displayMapName;
-    if (usingHdrFile) {
+    if (usingHdrFileOnly) {
         //load from 3dem header format
         terrainLong = IniFile::iniFileTof32(worldTerrainFile, "left_map_x");
         terrainLat = IniFile::iniFileTof32(worldTerrainFile, "lower_map_y");
@@ -124,6 +124,25 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
             std::cout << "Could not load name of map image from ini file: " <<  worldTerrainFile << " (please check this file exists and has not been corrupted)." << std::endl;
             exit(EXIT_FAILURE);
         }
+    }
+
+    //If the first height map has a .hdr extension, use this to get terrainLong etc
+    std::string heightMapFile = IniFile::iniFileToString(worldTerrainFile, "HeightMap(1)");
+    std::string extension = "";
+    if (heightMapFile.length() > 3) {
+        extension = heightMapFile.substr(heightMapFile.length() - 4,4);
+        Utilities::to_lower(extension);
+    }
+    if (extension.compare(".hdr") == 0 ) {
+        //Find full path of .hdr file
+        std::string hdrPath = worldPath;
+        hdrPath.append("/");
+        hdrPath.append(heightMapFile);
+
+        terrainLong = IniFile::iniFileTof32(hdrPath, "left_map_x");
+        terrainLat = IniFile::iniFileTof32(hdrPath, "lower_map_y");
+        terrainLongExtent = IniFile::iniFileTof32(hdrPath, "right_map_x")-terrainLong;
+        terrainLatExtent = IniFile::iniFileTof32(hdrPath, "upper_map_y")-terrainLat;
     }
 
     //Load map image if possible (if not, end with error)
