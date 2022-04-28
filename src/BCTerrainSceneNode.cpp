@@ -24,6 +24,7 @@
 #include "IAnimatedMesh.h"
 #include "SMesh.h"
 #include "BCDynamicMeshBuffer.h"
+#include <algorithm>
 
 namespace irr
 {

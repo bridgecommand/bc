@@ -26,6 +26,7 @@
 #include "BCTerrainSceneNode.h"
 
 #include <iostream>
+#include <algorithm>
 
 //using namespace irr;
 
@@ -245,9 +246,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             heightMapPath.append("bin");
             irr::io::IReadFile* heightMapFile = smgr->getFileSystem()->createAndOpenFile(heightMapPath.c_str());
             if (heightMapFile) {
-                
-                //Load from binary file into a vector, and then use this vector to load terrain
-                loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+                try {
+                    //Load from binary file into a vector, and then use this vector to load terrain
+                    loaded = terrain->loadHeightMapVector(heightMapBinaryToVector(heightMapFile,binaryRows,binaryCols,floatingPoint), terrainXLoadScaling, terrainZLoadScaling, irr::video::SColor(255, 255, 255, 255), 0);
+                } catch (...) {
+                    std::cerr << "Exception in loading terrain from binary with hdr." << std::endl;
+                    loaded = false;    
+                }
             }
 
         } else {
