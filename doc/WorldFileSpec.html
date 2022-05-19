@@ -18,18 +18,6 @@
    
 <p>Please refer to the <a href="IniFileFormat.html">Initialisation file format (.ini) specification</a> in conjunction with this document.</p>
    
-<h3>Differences between 5.x and previous versions</h3>
-<p>
-There is an important change in world models between version 5.0 (and later) and previous versions (4.x). The required size of the height map has increased 
-by one pixel. Previously, the size was 2^n (512, 1024, 2048, ...) pixels. It is now 2^n + 1 (513, 1025, 2049, ...) pixels. Therefore previous 
-world models need to be modified to use with version 5.0 and later. From Bridge Command 5.7 onwards, heightmap images will be rescaled internally, but 
-for the best speed and accuracy, it is best to use the correct size.
-</p>
-<p>
-It is recommended to use .png format for the heightmap, as .bmp files may give inaccurate heights in some cases (depending on the exact 
-type of .bmp images used). There are different encodings available, greyscale, RGB, and raw binary data. Further details are below.
-</p>
-
 <h3>Introduction:</h3>
    
 <p>The world model defines the environment of a scenario, and uses a heightmap to set the terrain and bathymetry. In addition, a texture file 
@@ -40,8 +28,23 @@ and lights etc. A 'map' image is also used to display as a 2d view in the scenar
 <p>
 A primary terrain must be defined, and any number of additional areas may be defined. The intention is for the primary terrain to cover the 
 entire area defined, and for secondary terrains to be used to give higher resolution models of some areas if required. To allow the secondary 
-terrain to be seen, the primary terrain must be below the height of the secondary in this area. The programme will prioritise the highest 
-numbered terrain when taking depth soundings, and to decide if the ship is aground.
+terrain to be seen, the primary terrain must be below the height of the secondary in this area. The programme will prioritise the shallowest 
+terrain when taking depth soundings, and to decide if the ship is aground.
+</p>
+
+<p>
+For small details such as harbours and marinas, 3d models can be loaded into the world model. See the detail below in the landobject.ini 
+for how land objects can be set to appear in the radar, and act as physical models that the own ship can interact with.
+</p>
+
+<p>
+A variety of formats can be used for the height maps. The simplest is a greyscale png image, with black representing the deepest point, and
+white representing the highest point. A standard greyscale png can represent 255 shades from black to white, so if you need finer elevation
+steps (for example if you have high mountains within the world area), another format may be better. These are:
+    <ul>
+        <li>RGB encoded png, which uses the red, green and blue channels to encode the height directly.</li>
+        <li>A binary height matrix, either signed 16 bit integers, or 32 bit floating point, giving the height in metres.</li>
+    </ul>
 </p>
 
 <p>
@@ -53,7 +56,7 @@ will use this in preference to the global model. The user directory can be found
 </p>
    
 <p>
-The terrain is loaded from two image files, a height map and a texture. The shape of the terrain is generated from a height map, in which the
+The terrain is loaded from two files, a height map and a texture. The shape of the terrain is generated from a height map, in which the
 colour of each pixel in the image is translated into a height value for that terrain location. The height map should be a greyscale PNG image, 
 and black is low and white is high, or for better height resolution, you can use the RGB format where the height in metres is encoded as 
 (red value * 256 + green value + blue value/ 256) - 32768.
@@ -65,9 +68,9 @@ type of .bmp images used).
 </p>
 
 <p>
-Alternatively, a raw binary format is allowed, and height maps with the extension .f32 will be interpreted 
-as a list of heights in metres as 32 bit floating point numbers. The benefit of both the RGB encoding and the binary format is a higher vertical resolution 
-of height map, which may be helpful if your area includes deep sea and high mountains. 
+Alternatively, a raw binary format is allowed. Bridge Command will load files with the standard 3dem header and binary format (.hdr and .bin). Also, height 
+maps with the extension .f32 will be interpreted as a list of heights in metres as 32 bit floating point numbers. The benefit of both the RGB encoding and 
+the binary format is a higher vertical resolution of height map, which may be helpful if your area includes deep sea and high mountains. 
 </p>
 
 <p>
@@ -95,14 +98,15 @@ configured in the .ini files.</p>
 </ul>
 </p>   
    
-<h4>Images:</h4>
+<h4>Height maps:</h4>
 
 <p>
 The filenames for the height map and texture files are as specified in <i>terrain.ini</i>. The heightmap should be in .png or raw binary 
-format (32 bit floating point, with extension .f32), and the texture and map image should be square and power of two (2^n) sizes (512, 1024, 
-...). The size of the heightmap should be square, and 2^n + 1 in size (513, 1025, 2049, ...). From Bridge Command 5.7 onwards, heightmap images 
-will be rescaled internally, but for the best speed and accuracy, it is best to use the correct size. Note that this automatic resizing does not
-apply to raw binary heightmaps.
+format (3dem format with a .bin and .hdr file, or 32 bit floating point file with extension .f32), and the texture and map image should generally 
+be square and power of two (2^n) sizes (512, 1024, ...). 
+
+The heightmap does not have to be square, but internally Bridge Command uses square terrain models with 2^n + 1 in size (513, 1025, 2049, ...). 
+Therefore it is less efficient to define a heightmap slightly larger than one of than this size, as it will be padded to fit the next largest square.
 </p>
 
 <p>
@@ -144,7 +148,7 @@ SeaMaxDepth(2)=44.07
 <li>MapImage: File name of image used in 2d views (scenario editor, map controller)</li>
 <li>For each terrain area, at least 1 required, where # is the number of the terrain (1, 2, ...)
 <ul>
-<li>HeightMap(#): Height map file name (.png or .f32)</li>
+<li>HeightMap(#): Height map file name (.png, .hdr or .f32)</li>
 <li>Texture(#): Texture file name</li>
 <li>TerrainLong(#): Longitude of the south west corner of the terrain area (Decimal degrees, East positive)</li>
 <li>TerrainLat(#): Latitude of the south west corner of the terrain area (Decimal degrees, North positive)</li>
@@ -152,11 +156,17 @@ SeaMaxDepth(2)=44.07
 <li>TerrainLatExtent(#): Extent of the terrain in decimal degrees (North-South)</li>
 <li>TerrainMaxHeight(#): The height in metres represented by a pure white pixel on the heightmap image (ignored for RGB encoded or binary heightmap)</li>
 <li>SeaMaxDepth(#): The depth in metres represented by a pure black pixel on the heightmap image (ignored for RGB encoded or binary heightmap)</li>
-<li>TerrainHeightMapSize(#): The size of the heightmap (513, 1025, 2049, ...). From Bridge Command 5.7, this is only needed for raw binary heightmaps (extension .f32)</li>
 <li>(Optional) UsesRGB(#): This should be set to 1 if the heightmap is encoded in the RGB format where the height in metres is set by (red * 256 + green + blue / 256) - 32768. Set to 0 otherwise</li>
 </ul>
 </li>
 </ul>
+
+<p>If the .f32 format is used, two additional parameters, TerrainHeightMapRows and TerrainHeightMapColumns are needed to specify the shape of the binary matrix.</p>
+
+<p>Note that if you are using a 3dem .bin and .hdr file, set the HeightMap name as the .hdr file. In this case, the entries
+    TerrainLong, TerrainLat, TerrainLongExtent and TerrainLatExtent are not required, as they are included in the .hdr file 
+    from 3dem.
+</p>
 
 <h5>buoy.ini</h5>
    
@@ -194,6 +204,7 @@ variables for each land object defined. </p>
 <li><i>HeightCorrection(#)</i> allows for the model to be moved up or down. so it sits properly on the land. A positive value moves the object upwards, and is in metres.</li>
 <li>Optional setting <i>Absolute(#)</i>. If this set to 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level.</li>
 <li>Optional setting <i>Collision(#)</i>. If this is set to 1, then collision modelling with the own ship will be enabled for this object.</li>
+<li>Optional setting <i>Radar(#)</i>. If this is set to 1, then the object will be included in the radar scan.</li>
 </ul>
 
 <p>Note that a folder <i>Models/LandObject</i> can be created in the world model folder to hold land objects required for this world model. </p> 

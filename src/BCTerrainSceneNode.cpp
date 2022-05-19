@@ -24,6 +24,7 @@
 #include "IAnimatedMesh.h"
 #include "SMesh.h"
 #include "BCDynamicMeshBuffer.h"
+#include <algorithm>
 
 namespace irr
 {
@@ -514,22 +515,37 @@ namespace scene
 		return true;
 	}
 
-	//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>. This should be square
+	//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>. 
+	//! This creates a terrain 2^n+1 in size, but only uses the size of the terrain from the input vector.
 	bool BCTerrainSceneNode::loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
-		 video::SColor vertexColor, s32 smoothFactor)
+		 f32& terrainXLoadScaling, f32& terrainZLoadScaling,
+		 video::SColor vertexColor,
+		 s32 smoothFactor)
 	{
+		
 		// start reading
 		const u32 startTime = dev->getTimer()->getTime();
 
 		Mesh->MeshBuffers.clear();
 
-		if (heightMapData.size() == 0) {
+		if (heightMapData.size() == 0 || heightMapData.at(0).size() == 0) {
 			//Zero length
 			return false;
 		}
 
-		// Get the dimension of the heightmap data. We later check that all elements are this size (i.e. square)
-		TerrainData.Size = heightMapData.size(); 
+		//Find if the input vector is square and 2^n+1 in size, if not, find the next biggest size to fit
+		u32 inputWidth = heightMapData.at(0).size();
+		u32 inputHeight = heightMapData.size();
+		s32 scaledWidth = (irr::s32)inputWidth-1;
+        s32 scaledHeight = (irr::s32)inputHeight-1;
+        scaledWidth = pow(2.0,ceil(log2(scaledWidth))) + 1;
+        scaledHeight = pow(2.0,ceil(log2(scaledHeight))) + 1;
+        //find largest to make square
+        TerrainData.Size = std::max(scaledWidth,scaledHeight);
+
+		//Update the scaling values
+		terrainXLoadScaling = (f32)TerrainData.Size/(f32)inputWidth;
+		terrainZLoadScaling = (f32)TerrainData.Size/(f32)inputHeight;
 
 		switch (TerrainData.PatchSize)
 		{
@@ -590,7 +606,8 @@ namespace scene
 
 		// Read the heightmap to get the vertex data
 		// Apply positions changes, scaling changes
-		const f32 tdSize = 1.0f/(f32)(TerrainData.Size-1);
+		const f32 tdSizeX = 1.0f/(f32)(inputWidth-1);
+		const f32 tdSizeZ = 1.0f/(f32)(inputHeight-1);
 		float fx=0.f;
 		float fx2=0.f;
 		for (s32 x = 0; x < TerrainData.Size; ++x)
@@ -602,10 +619,11 @@ namespace scene
 				bool failure=false;
 				vertex.Pos.X = fx;
 				
-				if (heightMapData.at(x).size() != TerrainData.Size) {
-					failure = true;
+				if (z < heightMapData.size() && x < heightMapData.at(z).size()) {
+					vertex.Pos.Y = heightMapData.at(z).at(x);
 				} else {
-					vertex.Pos.Y = heightMapData.at(x).at(z);
+					//If outside the range of the input vector, set a low value
+					vertex.Pos.Y = -1e3; //A big negative value
 				}
 				
 				if (failure)
@@ -619,15 +637,15 @@ namespace scene
 				//vertex.TCoords.X = vertex.TCoords2.X = 1.f-fx2;
 				//vertex.TCoords.Y = vertex.TCoords2.Y = fz2;
 
-				vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X
-                vertex.TCoords.Y = vertex.TCoords2.Y = 1.f-fz2; //JAMES: Flipped Y
+				vertex.TCoords.X = vertex.TCoords2.X = core::clamp(fx2,0.f,1.f); //JAMES: Flipped X
+                vertex.TCoords.Y = vertex.TCoords2.Y = core::clamp(1.f-fz2,0.f,1.f); //JAMES: Flipped Y
 
 				mb->getVertexBuffer().push_back(vertex);
 				++fz;
-				fz2 += tdSize;
+				fz2 += tdSizeZ;
 			}
 			++fx;
-			fx2 += tdSize;
+			fx2 += tdSizeX;
 		}
 
 		smoothTerrain(mb, smoothFactor);
@@ -1574,10 +1592,13 @@ namespace scene
 		if (!Mesh->getMeshBufferCount())
 			return 0;
 
-		core::matrix4 rotMatrix;
-		rotMatrix.setRotationDegrees(TerrainData.Rotation);
+
+        //JAMES: Special case - we don't use terrain rotation, so disable this check for speed.
+
+		//core::matrix4 rotMatrix;
+		//rotMatrix.setRotationDegrees(TerrainData.Rotation);
 		core::vector3df pos(x, 0.0f, z);
-		rotMatrix.rotateVect(pos);
+		//rotMatrix.rotateVect(pos);
 		pos -= TerrainData.Position;
 		pos /= TerrainData.Scale;
 

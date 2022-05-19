@@ -103,6 +103,7 @@ public:
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
+        GUI_ID_RADAR_COLOUR_BUTTON,
         GUI_ID_NFU_PORT_BUTTON,
         GUI_ID_NFU_STBD_BUTTON,
         GUI_ID_PI_SELECT_BOX,
@@ -189,6 +190,8 @@ private:
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
+    irr::gui::IGUIButton* radarColourButton;
+    irr::gui::IGUIButton* radarColourButton2;
     irr::gui::IGUIButton* nonFollowUpPortButton;
     irr::gui::IGUIButton* nonFollowUpStbdButton;
 

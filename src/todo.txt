@@ -4,11 +4,10 @@ Will need to apply tidal stream by modifying drag in ahead/lateral directions, i
 
 Terrain related:
 ----------------
-Load from heightmap image into a 2d vector, of size (2^n + 1) square
-Pass this to the terrain loader.
+When terrain is stable, move back into CTerrainSceneNode (in Irrlicht) for speed boost (Probably not needed with better build options)
 
-Apply same to load from a non-square binary file. Extend this to non-floating point binary.
-
-Change checking of heights, so it returns the maximum height, not the height from the maximum number terrain.
-
-Use ray intersection to get 'heightmap' for 3d models that have been loaded and scaled. Use these for radar.
+Radar:
+------
+Alternative colours
+Off centre
+MARPA

@@ -323,6 +323,11 @@
                     model->decreaseRadarEBLRange();
                 }
 
+                if (id == GUIMain::GUI_ID_RADAR_COLOUR_BUTTON)
+                {
+                    model->changeRadarColourChoice();
+                }
+
                 //Radar mode buttons
                 if (id == GUIMain::GUI_ID_RADAR_NORTH_BUTTON)
                 {

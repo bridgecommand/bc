@@ -34,12 +34,17 @@ AISOverUDP::AISOverUDP(int port) {
 
 void AISOverUDP::AISThread()
 {
+    
     asio::io_context io_context;
     asio::ip::udp::socket socket(io_context);
-    socket.open(asio::ip::udp::v4());
-    socket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), _port));
-
-    std::cout << "AIS set up on port " << _port << std::endl;
+    try {
+      socket.open(asio::ip::udp::v4());
+      socket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), _port));
+      std::cout << "AIS set up on port " << _port << std::endl;
+    } catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
+      return;
+    }
 
     ais_state ais = {};
     aismsg_1 msg_1 = {};

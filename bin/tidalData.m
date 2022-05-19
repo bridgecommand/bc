@@ -1,12 +1,10 @@
 %Generate tidal data for a year - COnfigured for the SimpleEstuary area
-
-clear
+function tidalData(startYear)
 
 %save a list of high and low tides, in format Year, month, day, day of week, time, height
-filename = "TideList.txt";
+filename = ["TideList" num2str(startYear) ".txt"];
 fid = fopen (filename, "w");
 
-startYear = 2019;
 for startMonth= 1:12
 
 %find year start timestamp (or can we use unix timestamp internally??)
@@ -113,31 +111,31 @@ end
 %get month name
 switch startMonth
 	case 1
-		monthname = "January";
+		monthname =   "January\n\n\n\n";
 	case 2
-		monthname = "February";
+		monthname = "\nFebruary\n\n\n\n";
 	case 3
-		monthname = "March";
+		monthname = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMarch\n\n\n\n";
 	case 4
-		monthname = "April";
+		monthname = "\nApril\n\n\n\n";
 	case 5
-		monthname = "May";
+		monthname = "\n\n\n\n\n\n\nMay\n\n\n\n";
 	case 6
-		monthname = "June";
+		monthname = "\nJune\n\n\n\n";
 	case 7
-		monthname = "July";
+		monthname = "\n\n\n\n\n\n\nJuly\n\n\n\n";
 	case 8
-		monthname = "August";
+		monthname = "\nAugust\n\n\n\n";
 	case 9
-		monthname = "September";
+		monthname = "\nSeptember\n\n\n\n";
 	case 10
-		monthname = "October";
+		monthname = "\n\n\n\n\n\n\nOctober\n\n\n\n";
 	case 11
-		monthname = "November";
+		monthname = "\nNovember\n\n\n\n";
 	case 12
-		monthname = "December";
+		monthname = "\n\n\n\n\n\n\nDecember\n\n\n\n";
 endswitch
-fprintf(fid,"%s\n",monthname);
+fprintf(fid,"%s",monthname);
 
 tidesPlotted = 0;
 
@@ -182,3 +180,5 @@ end
 end
 
 fclose (fid);
+
+end

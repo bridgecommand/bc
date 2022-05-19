@@ -241,6 +241,11 @@ public:
                 }
             }
         }
+        if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
+            if (event.KeyInput.Key == irr::KEY_ESCAPE ) {
+                exit(EXIT_SUCCESS);
+            }
+        }
         return false;
     }
 };
