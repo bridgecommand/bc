@@ -177,6 +177,7 @@ public:
     void setRadarNorthUp();
     void setRadarCourseUp();
     void setRadarHeadUp();
+    void changeRadarColourChoice();
     void setArpaOn(bool on);
     void setRadarARPARel();
     void setRadarARPATrue();

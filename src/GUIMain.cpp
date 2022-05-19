@@ -364,6 +364,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         eblUpButton = guienv->addButton(irr::core::rect<irr::s32>(0.115*su,0.130*sh,0.170*su,0.160*sh),mainRadarTab,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
         eblDownButton = guienv->addButton(irr::core::rect<irr::s32>(0.115*su,0.190*sh,0.170*su,0.220*sh),mainRadarTab,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
+        radarColourButton = guienv->addButton(irr::core::rect<irr::s32>(0.115*su,0.160*sh,0.170*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
+
         //Controls for large radar window
         largeRadarControls = new irr::gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),irr::core::rect<irr::s32>(radarTL.X+0.770*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.980*radarSu,radarTL.Y+0.730*radarSu));
         largeRadarPIControls = new irr::gui::IGUIRectangle(guienv,guienv->getRootGUIElement(),irr::core::rect<irr::s32>(radarTL.X+0.550*radarSu,radarTL.Y+0.020*radarSu,radarTL.X+0.770*radarSu,radarTL.Y+0.200*radarSu),false);
@@ -390,6 +392,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         eblRightButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.245*radarSu,0.190*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
         eblUpButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.215*radarSu,0.135*radarSu,0.245*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
         eblDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
+
+        radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
 
         radarText2 = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.400*radarSu),true,true,largeRadarControls,-1,true);
 

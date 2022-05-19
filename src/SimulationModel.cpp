@@ -936,6 +936,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.setHeadUp();
     }
 
+    void SimulationModel::changeRadarColourChoice()
+    {
+        radarCalculation.changeRadarColourChoice();
+    }
+
     void SimulationModel::setArpaOn(bool on)
     {
         radarCalculation.setArpaOn(on);
