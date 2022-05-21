@@ -651,7 +651,12 @@ SimulationModel::~SimulationModel()
         ownShip.setStbdEngine(stbd); //This method limits the range applied
 
 		//Set engine sound level
-		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		if (ownShip.isSingleEngine()) {
+			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+		}
+		else {
+			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		}
     }
 
     irr::f32 SimulationModel::getPortEngine() const
@@ -713,7 +718,7 @@ SimulationModel::~SimulationModel()
     {
         return ownShip.getRudderPumpState(whichPump);
     }
-    
+
     void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {
         ownShip.setFollowUpRudderWorking(followUpRudderWorking);
     }
