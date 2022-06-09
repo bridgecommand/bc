@@ -958,10 +958,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         displayText.append(f32To1dp(guiRadarRangeNm).c_str());
         displayText.append(language->translate("nm"));
         displayText.append(L"\n");
-        displayText.append(language->translate("ebl"));
+        displayText.append(language->translate("vrm"));
         displayText.append(f32To2dp(guiRadarEBLRangeNm).c_str());
         displayText.append(language->translate("nm"));
-        displayText.append(L"/");
+        displayText.append(L"\n");
+        displayText.append(language->translate("ebl"));
         displayText.append(f32To1dp(displayEBLBearing).c_str());
         displayText.append(language->translate("deg"));
         radarText ->setText(displayText.c_str());
