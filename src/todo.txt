@@ -8,6 +8,19 @@ When terrain is stable, move back into CTerrainSceneNode (in Irrlicht) for speed
 
 Radar:
 ------
-Alternative colours
 Off centre
 MARPA
+
+Ship response:
+--------------
+Review mass, thrust, radius of gyration and turn parameters for sanity
+Extend calculator for turn dynamics
+'Bounce' response to land
+
+Sea:
+----
+Investigate alternative approaches to sea render:
+    Geometry shader
+    Sun reflections
+    White tips
+
