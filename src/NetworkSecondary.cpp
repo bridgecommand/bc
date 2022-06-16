@@ -270,7 +270,9 @@ void NetworkSecondary::receiveMessage()
                 //Get view information from record 9
                 std::vector<std::string> viewData = Utilities::split(receivedData.at(9),',');
                 if (viewData.size() == 1) {
-                    model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                    if (model->getMoveViewWithPrimary()) {
+                        model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                    }
                 }
 
                 //Todo: Think about how to get best synchronisation (and movement between updates, speed etc)

@@ -209,6 +209,9 @@ public:
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
 
+    bool getMoveViewWithPrimary() const;
+    void setMoveViewWithPrimary(bool moveView);
+
 	void startHorn();
 	void endHorn();
 
@@ -250,6 +253,7 @@ private:
     GUIMain* guiMain;
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
+    bool moveViewWithPrimary;
     ManOverboard manOverboard;
 
     //Simulation time handling

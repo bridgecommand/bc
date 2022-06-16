@@ -584,6 +584,11 @@
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookStepRight();
                             break;
+                        case irr::KEY_SPACE:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->changeView();
+                            model->setMoveViewWithPrimary(false); //Don't allow the view to change automatically after this
+                            break;
                         default:
                             //don't do anything
                             break;
@@ -680,6 +685,7 @@
                         case irr::KEY_SPACE:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->changeView();
+                            model->setMoveViewWithPrimary(true);
                             break;
 
                         //toggle full screen 3d

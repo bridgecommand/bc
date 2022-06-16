@@ -50,6 +50,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         guiMain = gui;
 		this->sound = sound;
         isMouseDown = false;
+        moveViewWithPrimary = true;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
         serialisedScenarioData = scenarioData.serialise();
@@ -1130,6 +1131,14 @@ SimulationModel::~SimulationModel()
 	void SimulationModel::endHorn() {
 		sound->setVolumeHorn(0.0);
 	}
+
+    bool SimulationModel::getMoveViewWithPrimary() const {
+        return moveViewWithPrimary;
+    }
+
+    void SimulationModel::setMoveViewWithPrimary(bool moveView) {
+        moveViewWithPrimary = moveView;
+    }
 
     void SimulationModel::update()
     {
