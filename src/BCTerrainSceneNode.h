@@ -56,8 +56,7 @@ namespace scene
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		virtual bool loadHeightMap(io::IReadFile* file,
-			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0,
-			bool rgbEncoded=false ) _IRR_OVERRIDE_;
+			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0) _IRR_OVERRIDE_;
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
