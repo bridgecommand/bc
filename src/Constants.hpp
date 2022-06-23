@@ -36,9 +36,9 @@ const irr::f32 RAD_IN_DEG = PI/180.0;
 const irr::f32 RAD_PER_S_IN_DEG_PER_MINUTE = 180.0/PI * 60 ;
 
 //general definitions
-const std::string LONGNAME = "Bridge Command 5.7.12";
+const std::string LONGNAME = "Bridge Command 5.7.13";
 const std::string VERSION = "5.7";
-const std::string LONGVERSION = "5.7.12";
+const std::string LONGVERSION = "5.7.13";
 
 
 #endif
