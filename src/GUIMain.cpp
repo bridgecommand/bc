@@ -956,22 +956,41 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //add radar text (reuse the displayText)
         irr::f32 displayEBLBearing = guiRadarEBLBrg;
+        irr::f32 displayCursorBearing = guiRadarCursorBrg;
         if (radarHeadUp) {
             displayEBLBearing += guiHeading;
+            displayCursorBearing += guiHeading;
         }
         while (displayEBLBearing>=360) {displayEBLBearing-=360;}
         while (displayEBLBearing<0) {displayEBLBearing+=360;}
+        while (displayCursorBearing>=360) {displayCursorBearing-=360;}
+        while (displayCursorBearing<0) {displayCursorBearing+=360;}
+
         displayText = language->translate("range");
         displayText.append(f32To1dp(guiRadarRangeNm).c_str());
         displayText.append(language->translate("nm"));
         displayText.append(L"\n");
+
         displayText.append(language->translate("vrm"));
         displayText.append(f32To2dp(guiRadarEBLRangeNm).c_str());
         displayText.append(language->translate("nm"));
+        if (guiRadarCursorRangeNm > 0){
+            displayText.append(" ");
+            displayText.append(language->translate("cursor"));
+            displayText.append(f32To2dp(guiRadarCursorRangeNm).c_str());
+            displayText.append(language->translate("nm"));
+        }
         displayText.append(L"\n");
+
         displayText.append(language->translate("ebl"));
         displayText.append(f32To1dp(displayEBLBearing).c_str());
         displayText.append(language->translate("deg"));
+        if (guiRadarCursorRangeNm > 0){
+            displayText.append(" ");
+            displayText.append(language->translate("cursor"));
+            displayText.append(f32To2dp(displayCursorBearing).c_str());
+            displayText.append(language->translate("deg"));
+        }
         radarText ->setText(displayText.c_str());
         radarText2->setText(displayText.c_str());
 
@@ -1208,7 +1227,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         irr::s32 deltaXCursor = cursorPixelRadius*sin(irr::core::DEGTORAD*guiRadarCursorBrg);
         irr::s32 deltaYCursor = -1*cursorPixelRadius*cos(irr::core::DEGTORAD*guiRadarCursorBrg);
         //Plot if within the display and not at zero range
-        if (cursorPixelRadius <= radius && cursorPixelRadius > 0) {
+        if (cursorPixelRadius <= radius && guiRadarCursorRangeNm > 0) {
             irr::core::position2d<irr::s32> cursorCentre (centreX + deltaXCursor,centreY + deltaYCursor);
             device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,irr::video::SColor(255, 255, 0, 0),4); //a 4 segment polygon, i.e. a square!
         }
