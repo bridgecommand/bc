@@ -41,7 +41,7 @@ struct ARPAScan {
     irr::f32 x; //Absolute metres
     irr::f32 z; //Absolute metres
     uint64_t timeStamp; //Timestamp in seconds
-    irr::f32 estimatedRCS; //Estimated radar cross section
+    //irr::f32 estimatedRCS; //Estimated radar cross section
     irr::f32 rangeNm; //Reference only
     irr::f32 bearingDeg; //For reference only
 };
@@ -93,6 +93,8 @@ class RadarCalculation
         irr::f32 getRainClutter() const;
         irr::f32 getEBLRangeNm() const;
         irr::f32 getEBLBrg() const;
+        irr::f32 getCursorRangeNm() const;
+        irr::f32 getCursorBrg() const;
         void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
         irr::f32 getPIbearing(irr::s32 PIid) const;
         irr::f32 getPIrange(irr::s32 PIid) const;
@@ -147,6 +149,9 @@ class RadarCalculation
         irr::f32 EBLRangeNm;
         irr::f32 EBLBrg;
         clock_t EBLLastUpdated;
+        //Parameters for radar cursor
+        irr::f32 CursorRangeNm;
+        irr::f32 CursorBrg;
         //Radar config
         bool headUp;
         bool stabilised;

@@ -827,6 +827,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
         this->guiRadarEBLRangeNm = guiData->guiRadarEBLRangeNm;
 
+        //update cursor data
+        this->guiRadarCursorBrg = guiData->guiRadarCursorBrg;
+        if (radarHeadUp) {
+            this->guiRadarCursorBrg -= guiHeading;
+        }
+        this->guiRadarCursorRangeNm = guiData->guiRadarCursorRangeNm;
+
         //Update ARPA data
         guiCPAs = guiData->CPAs;
         guiTCPAs = guiData->TCPAs;
@@ -1195,6 +1202,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             if (noSegments < 10) {noSegments=10;}
             device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,irr::video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
         }
+
+        //draw radar cursor
+        irr::s32 cursorPixelRadius = radius*guiRadarCursorRangeNm/guiRadarRangeNm;
+        irr::s32 deltaXCursor = cursorPixelRadius*sin(irr::core::DEGTORAD*guiRadarCursorBrg);
+        irr::s32 deltaYCursor = -1*cursorPixelRadius*cos(irr::core::DEGTORAD*guiRadarCursorBrg);
+        //Plot if within the display and not at zero range
+        if (cursorPixelRadius <= radius && cursorPixelRadius > 0) {
+            irr::core::position2d<irr::s32> cursorCentre (centreX + deltaXCursor,centreY + deltaYCursor);
+            device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,irr::video::SColor(255, 255, 0, 0),4); //a 4 segment polygon, i.e. a square!
+        }
+
         //Draw compass rose around radar (?Rotate with radar in head up and course up?)
         for (irr::u32 ticAngle = 0; ticAngle < 360; ticAngle += 5) {
 

@@ -1338,6 +1338,8 @@ SimulationModel::~SimulationModel()
         guiData->radarRain = radarCalculation.getRainClutter();
         guiData->guiRadarEBLBrg = radarCalculation.getEBLBrg();
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
+        guiData->guiRadarCursorBrg = radarCalculation.getCursorBrg();
+        guiData->guiRadarCursorRangeNm = radarCalculation.getCursorRangeNm();
         guiData->CPAs = CPAs;
         guiData->TCPAs = TCPAs;
 		guiData->headings = headings;

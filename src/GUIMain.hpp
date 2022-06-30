@@ -54,6 +54,8 @@ struct GUIData {
     irr::f32 radarRain;
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
+    irr::f32 guiRadarCursorBrg;
+    irr::f32 guiRadarCursorRangeNm;
     std::vector<irr::f32> CPAs;
     std::vector<irr::f32> TCPAs;
 	std::vector<irr::f32> headings;
@@ -252,6 +254,8 @@ private:
     irr::f32 guiRadarRain;
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
+    irr::f32 guiRadarCursorBrg;
+    irr::f32 guiRadarCursorRangeNm;
     bool radarHeadUp;
     bool radarLarge;
     irr::core::rect<irr::s32> radarLargeRect;

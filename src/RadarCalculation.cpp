@@ -46,6 +46,9 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     EBLRangeNm=0;
     EBLBrg=0;
 
+    CursorRangeNm = 0;
+    CursorBrg = 0;
+
     EBLLastUpdated = clock();
 
     radarOn = true;
@@ -262,6 +265,16 @@ irr::f32 RadarCalculation::getEBLRangeNm() const
     return EBLRangeNm;
 }
 
+irr::f32 RadarCalculation::getCursorBrg() const
+{
+    return CursorBrg;
+}
+
+irr::f32 RadarCalculation::getCursorRangeNm() const
+{
+    return CursorRangeNm;
+}
+
 irr::f32 RadarCalculation::getEBLBrg() const
 {
     return EBLBrg;
@@ -472,15 +485,26 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarScreenStale = false;
     }
 
-    /*
     //Find position of mouse cursor
-    irr::f32 cursorRangeXNm = (irr::f32)mouseRelPosition.X/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
-    irr::f32 cursorRangeYNm = -1.0*(irr::f32)mouseRelPosition.Y/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
-    //Check if clicked and in range
-    if (isMouseDown && pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5) <= radarRangeNm.at(radarRangeIndex) ) {
-        std::cout << "Cursor E/W: " << cursorRangeXNm << " N/S:" << cursorRangeYNm << std::endl;
+    if (isMouseDown) {
+        irr::f32 mouseCursorRangeXNm = (irr::f32)mouseRelPosition.X/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
+        irr::f32 mouseCursorRangeYNm = -1.0*(irr::f32)mouseRelPosition.Y/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
+        irr::f32 mouseCursorRange = pow(pow(mouseCursorRangeXNm,2)+pow(mouseCursorRangeYNm,2),0.5);
+        irr::f32 mouseCursorBearing = irr::core::RADTODEG*std::atan2(mouseCursorRangeXNm,mouseCursorRangeYNm);
+        //Check if in range
+        if (mouseCursorRange <= radarRangeNm.at(radarRangeIndex) ) {
+            
+            //Adjust angle if needed
+            if (headUp) {
+                mouseCursorBearing += ownShip.getHeading();
+            }
+            mouseCursorBearing = Angles::normaliseAngle(mouseCursorBearing);
+            
+            // Set the radar cursor
+            CursorRangeNm = mouseCursorRange;
+            CursorBrg = mouseCursorBearing;
+        }
     }
-    */
 
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
@@ -621,7 +645,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
                                         newScan.x = absolutePosition.X + newScan.rangeNm*M_IN_NM * sin(newScan.bearingDeg*RAD_IN_DEG);
                                         newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
-                                        newScan.estimatedRCS = 100;//Todo: Implement
+                                        //newScan.estimatedRCS = 100;//Todo: Implement
 
                                         //Keep track of estimated total movement
                                         if (scansSize > 0 && arpaOn) {
