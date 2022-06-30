@@ -46,6 +46,8 @@ public:
     irr::u32 joystickButtonHorn;
     irr::u32 joystickNoChangeView;
     irr::u32 joystickButtonChangeView;
+    irr::u32 joystickNoChangeAndLockView;
+    irr::u32 joystickButtonChangeAndLockView;
     irr::u32 joystickNoLookStepLeft;
     irr::u32 joystickButtonLookStepLeft;
     irr::u32 joystickNoLookStepRight;

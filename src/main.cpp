@@ -270,6 +270,9 @@ int main(int argc, char ** argv)
     joystickSetup.joystickNoChangeView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_view");
     joystickSetup.joystickButtonChangeView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_view")-1;
 
+    joystickSetup.joystickNoChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_and_lock_view");
+    joystickSetup.joystickButtonChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_and_lock_view")-1;
+    
     joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
     joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
 

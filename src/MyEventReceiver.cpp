@@ -586,7 +586,7 @@
                             break;
                         case irr::KEY_SPACE:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                            model->changeView();
+                            model->changeView(); 
                             model->setMoveViewWithPrimary(false); //Don't allow the view to change automatically after this
                             break;
                         default:
@@ -685,7 +685,7 @@
                         case irr::KEY_SPACE:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->changeView();
-                            model->setMoveViewWithPrimary(true);
+                            model->setMoveViewWithPrimary(true); //Allow the view to change automatically after this
                             break;
 
                         //toggle full screen 3d
@@ -923,6 +923,13 @@
             if (thisJoystick == joystickSetup.joystickNoChangeView) { 
                 if (IsButtonPressed(joystickSetup.joystickButtonChangeView,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeView,previousButtonState)) {
                     model->changeView();
+                    model->setMoveViewWithPrimary(true); //Allow the view to change automatically after this
+                }
+            }
+            if (thisJoystick == joystickSetup.joystickNoChangeAndLockView) {
+                if (IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView,previousButtonState)) {
+                    model->changeView();
+                    model->setMoveViewWithPrimary(false); //Don't allow the view to change automatically after this
                 }
             }
             //Look step left
