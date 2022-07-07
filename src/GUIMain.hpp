@@ -183,6 +183,7 @@ private:
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
+    irr::gui::IGUIListBox* arpaList;
     irr::gui::IGUIListBox* arpaText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
@@ -212,6 +213,7 @@ private:
     irr::gui::IGUIButton* eblUpButton2;
     irr::gui::IGUIButton* eblDownButton2;
     irr::gui::IGUIStaticText* radarText2;
+    irr::gui::IGUIListBox* arpaList2;
     irr::gui::IGUIListBox* arpaText2;
 
     irr::gui::IGUIScrollBar* visibilityScrollbar;
