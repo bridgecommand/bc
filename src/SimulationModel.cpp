@@ -1301,17 +1301,14 @@ SimulationModel::~SimulationModel()
         irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
         elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
-        }{ IPROF("Get radar ARPA data");
+        }{ IPROF("Get radar ARPA data for GUI");
+        
         //get radar ARPA data to show
         irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
+        guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
-            ARPAEstimatedState state = radarCalculation.getARPATrack(i).estimate;
-            CPAs.push_back(state.cpa);
-            TCPAs.push_back(state.tcpa);
-			headings.push_back(state.absHeading);
-			speeds.push_back(state.speed);
+			guiData->arpaContactStates.push_back(radarCalculation.getARPATrack(i).estimate);
         }
-
 
         }{ IPROF("Collate GUI data ");
 
@@ -1340,10 +1337,6 @@ SimulationModel::~SimulationModel()
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
         guiData->guiRadarCursorBrg = radarCalculation.getCursorBrg();
         guiData->guiRadarCursorRangeNm = radarCalculation.getCursorRangeNm();
-        guiData->CPAs = CPAs;
-        guiData->TCPAs = TCPAs;
-		guiData->headings = headings;
-		guiData->speeds = speeds;
         guiData->currentTime = Utilities::timestampToString(absoluteTime);
         guiData->paused = paused;
         guiData->collided = collided;

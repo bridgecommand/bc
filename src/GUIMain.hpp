@@ -24,6 +24,7 @@
 //#include "RateOfTurnIndicator.h" // DEE addition
 #include "OutlineScrollBar.h"
 #include "GUIRectangle.hpp"
+#include "RadarCalculation.hpp"
 #include <vector>
 #include <string>
 
@@ -56,10 +57,7 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     irr::f32 guiRadarCursorBrg;
     irr::f32 guiRadarCursorRangeNm;
-    std::vector<irr::f32> CPAs;
-    std::vector<irr::f32> TCPAs;
-	std::vector<irr::f32> headings;
-	std::vector<irr::f32> speeds;
+    std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
     bool collided;
@@ -267,10 +265,7 @@ private:
     irr::s32 smallRadarScreenCentreX;
     irr::s32 smallRadarScreenCentreY;
     irr::s32 smallRadarScreenRadius;
-    std::vector<irr::f32> guiCPAs;
-    std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
-	std::vector<irr::f32> guiARPAheadings;
-	std::vector<irr::f32> guiARPAspeeds; //in knots
+    std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
     bool hasBowThruster;
