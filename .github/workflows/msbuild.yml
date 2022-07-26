@@ -2,9 +2,8 @@ name: MSBuild
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    paths: 
+      - '**/Constants.hpp'
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -41,5 +40,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: windows
+        name: BC_windows
         path: bin
