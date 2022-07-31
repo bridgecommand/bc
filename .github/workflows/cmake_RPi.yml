@@ -23,6 +23,7 @@ jobs:
       id: build
       with:
         base_image: raspbian_lite:latest
+        image_additional_mb: 1024
         commands: |
           sudo apt-get update
           sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev
