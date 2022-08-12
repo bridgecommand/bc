@@ -123,6 +123,8 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         rangeSensitivity = 20;
 
+        marpaContacts = 10;
+
         irr::video::SColor radarBackgroundColour;
         irr::video::SColor radarForegroundColour;
 
@@ -170,6 +172,8 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         if (radarRainClutter< 0) {radarRainClutter= 0.00001;}
         if (rangeSensitivity< 0) {rangeSensitivity=20;}
         
+        marpaContacts = IniFile::iniFileTou32(radarConfigFile,"MARPAContacts");
+
         irr::u32 numberOfRadarColourSets = IniFile::iniFileTof32(radarConfigFile,"NumberOfRadarColourSets");
         if (numberOfRadarColourSets == 0) {
             //legacy loading
@@ -418,8 +422,8 @@ void RadarCalculation::setArpaOn(bool on)
     arpaOn = on;
     if (!arpaOn) {
         //Clear arpa scans
-        arpaContacts.clear();
-        arpaTracks.clear();
+        arpaContacts.clear(); //TODO: Clear ones that aren't MARPA?
+        arpaTracks.clear(); //TODO: Clear ones that aren't MARPA?
     }
 }
 
@@ -625,6 +629,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                                         newContact.estimate.bearing = 0;
                                         newContact.estimate.range = 0;
                                         newContact.estimate.speed = 0;
+                                        newContact.estimate.contactType = newContact.contactType; //Redundant here, but useful to pass to the GUI later
 
                                         arpaContacts.push_back(newContact);
                                         existingArpaContact = arpaContacts.size()-1;
@@ -843,137 +848,147 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
     //Based on scans data in arpaContacts, estimate current speed, heading and position
     for (unsigned int i = 0; i<arpaContacts.size(); i++) {
+        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc. TODO: Passing in the ID will need to change for MARPA
+    } //For loop through arpa contacts
+}
 
-        if (!arpaOn) {
-            //Set all contacts to zero (untracked)
-            arpaContacts.at(i).estimate.displayID = 0;
-            arpaContacts.at(i).estimate.stationary = true;
-            arpaContacts.at(i).estimate.lost = false;
-            arpaContacts.at(i).estimate.absVectorX = 0;
-            arpaContacts.at(i).estimate.absVectorZ = 0;
-            arpaContacts.at(i).estimate.absHeading = 0;
-            arpaContacts.at(i).estimate.bearing = 0;
-            arpaContacts.at(i).estimate.range = 0;
-            arpaContacts.at(i).estimate.speed = 0;
-        } else {
-            //Check there are at least two scans, so we can estimate behaviour
-            if (arpaContacts.at(i).scans.size() > 1) {
+void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime) 
+{
+    if (!arpaOn) {
+        //Set all contacts to zero (untracked) if normal type
+        if (thisArpaContact.contactType == CONTACT_NORMAL) {
+            thisArpaContact.estimate.displayID = 0;
+            thisArpaContact.estimate.stationary = true;
+            thisArpaContact.estimate.lost = false;
+            thisArpaContact.estimate.absVectorX = 0;
+            thisArpaContact.estimate.absVectorZ = 0;
+            thisArpaContact.estimate.absHeading = 0;
+            thisArpaContact.estimate.bearing = 0;
+            thisArpaContact.estimate.range = 0;
+            thisArpaContact.estimate.speed = 0;
+            thisArpaContact.estimate.contactType = CONTACT_NONE;
+        }
+    } else {
+        //Check there are at least two scans, so we can estimate behaviour
+        if (thisArpaContact.scans.size() > 1) {
 
-                //Check stationary contacts to see if they've got detectable motion: TODO: Make this better: Should weight based on current range?
-                //TODO: Test this weighting
-                if (arpaContacts.at(i).estimate.stationary) {
-                    irr::f32 latestRangeNm =  arpaContacts.at(i).scans.back().rangeNm;
-                    if (latestRangeNm < 1) {
-                        latestRangeNm = 1;
-                    }
-                    irr::f32 weightedMotionX = fabs(arpaContacts.at(i).totalXMovementEst/latestRangeNm);
-                    irr::f32 weightedMotionZ = fabs(arpaContacts.at(i).totalZMovementEst/latestRangeNm);
-                    if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
-                        arpaContacts.at(i).estimate.stationary = false;
+            //Record the contact type in the estimate
+            thisArpaContact.estimate.contactType = thisArpaContact.contactType;
+            
+            //Check stationary contacts to see if they've got detectable motion: TODO: Make this better: Should weight based on current range?
+            //TODO: Test this weighting
+            if (thisArpaContact.estimate.stationary) {
+                irr::f32 latestRangeNm =  thisArpaContact.scans.back().rangeNm;
+                if (latestRangeNm < 1) {
+                    latestRangeNm = 1;
+                }
+                irr::f32 weightedMotionX = fabs(thisArpaContact.totalXMovementEst/latestRangeNm);
+                irr::f32 weightedMotionZ = fabs(thisArpaContact.totalZMovementEst/latestRangeNm);
+                if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
+                    thisArpaContact.estimate.stationary = false;
+                }
+            }
+
+            //Check if contact lost, if last scanned more than 60 seconds ago
+            if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60) {
+                thisArpaContact.estimate.lost=true;
+                //std::cout << "Contact " << i << " lost" << std::endl;
+            } else if (!thisArpaContact.estimate.stationary) {
+                //If ID is 0 (unassigned), set id and increment
+                if (thisArpaContact.estimate.displayID==0) {
+                    arpaTracks.push_back(contactID);
+                    thisArpaContact.estimate.displayID = getARPATracks(); // The display ID is the current size of thr arpaTracks list. TODO: Will need update for MARPA
+
+                }
+
+                irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
+                irr::s32 recentStepsBack = 10; //Shorter time for tracking (if motion has changed significantly)
+
+                irr::s32 currentScanIndex = thisArpaContact.scans.size() - 1;
+                irr::s32 referenceScanIndex = currentScanIndex - stepsBack;
+                if (referenceScanIndex < 0) {
+                    referenceScanIndex = 0;
+                }
+
+                ARPAScan currentScanData = thisArpaContact.scans.at(currentScanIndex);
+                ARPAScan referenceScanData = thisArpaContact.scans.at(referenceScanIndex);
+
+                //Check if heading/speed has changed dramatically, by taking last 10 scans. If so, reduce steps back to 10
+                irr::s32 actualStepsBack = currentScanIndex - referenceScanIndex;
+                if (actualStepsBack > recentStepsBack) {
+                    ARPAScan recentScanData = thisArpaContact.scans.at(currentScanIndex-recentStepsBack);
+                    irr::f32 deltaTimeRecent = currentScanData.timeStamp - recentScanData.timeStamp;
+                    irr::f32 deltaTimeFull   = currentScanData.timeStamp - referenceScanData.timeStamp;
+                    if (deltaTimeRecent>0 && deltaTimeFull > 0) {
+                        irr::f32 deltaXRecent = currentScanData.x - recentScanData.x;
+                        irr::f32 deltaZRecent = currentScanData.z - recentScanData.z;
+                        irr::f32 deltaXFull   = currentScanData.x - referenceScanData.x;
+                        irr::f32 deltaZFull   = currentScanData.z - referenceScanData.z;
+
+                        //Absolute vector
+                        irr::f32 absVectorXRecent = deltaXRecent/deltaTimeRecent; //m/s
+                        irr::f32 absVectorZRecent = deltaZRecent/deltaTimeRecent; //m/s
+                        irr::f32 absVectorXFull = deltaXFull/deltaTimeFull; //m/s
+                        irr::f32 absVectorZFull = deltaZFull/deltaTimeFull; //m/s
+
+                        //Difference in estimation
+                        irr::f32 changeX = absVectorXRecent - absVectorXFull;
+                        irr::f32 changeZ = absVectorZRecent - absVectorZFull;
+
+                        //If speed estimates differ by more than 1m/s in either direction, prefer the more recent estimate. Otherwise, leave unchanged
+                        if (std::abs(changeX) > 1.0 || std::abs(changeZ) > 1.0) {
+                            referenceScanData = recentScanData; //It seems like the course or speed has changed significantly
+                        }
                     }
                 }
 
-                //Check if contact lost, if last scanned more than 60 seconds ago
-                if ( absoluteTime - arpaContacts.at(i).scans.back().timeStamp > 60) {
-                    arpaContacts.at(i).estimate.lost=true;
-                    //std::cout << "Contact " << i << " lost" << std::endl;
-                } else if (!arpaContacts.at(i).estimate.stationary) {
-                    //If ID is 0 (unassigned), set id and increment
-                    if (arpaContacts.at(i).estimate.displayID==0) {
-                        arpaTracks.push_back(i);
-                        arpaContacts.at(i).estimate.displayID = arpaTracks.size();
+                //Find difference in time, position x, position z
+                irr::f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
+                if (deltaTime>0) {
+                    irr::f32 deltaX = currentScanData.x - referenceScanData.x;
+                    irr::f32 deltaZ = currentScanData.z - referenceScanData.z;
 
+                    //Absolute vector
+                    thisArpaContact.estimate.absVectorX = deltaX/deltaTime; //m/s
+                    thisArpaContact.estimate.absVectorZ = deltaZ/deltaTime; //m/s
+                    thisArpaContact.estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
+                    while (thisArpaContact.estimate.absHeading < 0 ) {
+                        thisArpaContact.estimate.absHeading += 360;
+                    }
+                    //Relative vector:
+                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSpeed() * sin((ownShip.getHeading())*irr::core::DEGTORAD);
+                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSpeed() * cos((ownShip.getHeading())*irr::core::DEGTORAD); //ownShipSpeed in m/s
+                    thisArpaContact.estimate.relHeading = std::atan2(thisArpaContact.estimate.relVectorX,thisArpaContact.estimate.relVectorZ)/RAD_IN_DEG;
+                    while (thisArpaContact.estimate.relHeading < 0 ) {
+                        thisArpaContact.estimate.relHeading += 360;
                     }
 
-                    irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
-                    irr::s32 recentStepsBack = 10; //Shorter time for tracking (if motion has changed significantly)
-
-                    irr::s32 currentScanIndex = arpaContacts.at(i).scans.size() - 1;
-                    irr::s32 referenceScanIndex = currentScanIndex - stepsBack;
-                    if (referenceScanIndex < 0) {
-                        referenceScanIndex = 0;
+                    //Estimated current position:
+                    irr::f32 relX = currentScanData.x - absolutePosition.X + thisArpaContact.estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
+                    irr::f32 relZ = currentScanData.z - absolutePosition.Z + thisArpaContact.estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
+                    thisArpaContact.estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
+                    while (thisArpaContact.estimate.bearing < 0 ) {
+                        thisArpaContact.estimate.bearing += 360;
                     }
+                    thisArpaContact.estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
+                    thisArpaContact.estimate.speed = std::sqrt(pow(thisArpaContact.estimate.absVectorX,2) + pow(thisArpaContact.estimate.absVectorZ,2))*MPS_TO_KTS;
 
-                    ARPAScan currentScanData = arpaContacts.at(i).scans.at(currentScanIndex);
-                    ARPAScan referenceScanData = arpaContacts.at(i).scans.at(referenceScanIndex);
+                    //TODO: CPA AND TCPA here: Need checking/testing
+                    irr::f32 contactRelAngle = thisArpaContact.estimate.relHeading - (180+thisArpaContact.estimate.bearing);
+                    irr::f32 contactRange = thisArpaContact.estimate.range; //(Nm)
+                    irr::f32 relDistanceToCPA = contactRange * cos(contactRelAngle*RAD_IN_DEG); //Distance along the other ship's relative motion line
+                    irr::f32 relativeSpeed = std::sqrt(pow(thisArpaContact.estimate.relVectorX,2) + pow(thisArpaContact.estimate.relVectorZ,2))*MPS_TO_KTS;
+                    if (fabs(relativeSpeed) < 0.001) {relativeSpeed = 0.001;} //Avoid division by zero
 
-                    //Check if heading/speed has changed dramatically, by taking last 10 scans. If so, reduce steps back to 10
-                    irr::s32 actualStepsBack = currentScanIndex - referenceScanIndex;
-                    if (actualStepsBack > recentStepsBack) {
-                        ARPAScan recentScanData = arpaContacts.at(i).scans.at(currentScanIndex-recentStepsBack);
-                        irr::f32 deltaTimeRecent = currentScanData.timeStamp - recentScanData.timeStamp;
-                        irr::f32 deltaTimeFull   = currentScanData.timeStamp - referenceScanData.timeStamp;
-                        if (deltaTimeRecent>0 && deltaTimeFull > 0) {
-                            irr::f32 deltaXRecent = currentScanData.x - recentScanData.x;
-                            irr::f32 deltaZRecent = currentScanData.z - recentScanData.z;
-                            irr::f32 deltaXFull   = currentScanData.x - referenceScanData.x;
-                            irr::f32 deltaZFull   = currentScanData.z - referenceScanData.z;
-
-                            //Absolute vector
-                            irr::f32 absVectorXRecent = deltaXRecent/deltaTimeRecent; //m/s
-                            irr::f32 absVectorZRecent = deltaZRecent/deltaTimeRecent; //m/s
-                            irr::f32 absVectorXFull = deltaXFull/deltaTimeFull; //m/s
-                            irr::f32 absVectorZFull = deltaZFull/deltaTimeFull; //m/s
-
-                            //Difference in estimation
-                            irr::f32 changeX = absVectorXRecent - absVectorXFull;
-                            irr::f32 changeZ = absVectorZRecent - absVectorZFull;
-
-                            //If speed estimates differ by more than 1m/s in either direction, prefer the more recent estimate. Otherwise, leave unchanged
-                            if (std::abs(changeX) > 1.0 || std::abs(changeZ) > 1.0) {
-                                referenceScanData = recentScanData; //It seems like the course or speed has changed significantly
-                            }
-                        }
-                    }
-
-                    //Find difference in time, position x, position z
-                    irr::f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
-                    if (deltaTime>0) {
-                        irr::f32 deltaX = currentScanData.x - referenceScanData.x;
-                        irr::f32 deltaZ = currentScanData.z - referenceScanData.z;
-
-                        //Absolute vector
-                        arpaContacts.at(i).estimate.absVectorX = deltaX/deltaTime; //m/s
-                        arpaContacts.at(i).estimate.absVectorZ = deltaZ/deltaTime; //m/s
-                        arpaContacts.at(i).estimate.absHeading = std::atan2(deltaX,deltaZ)/RAD_IN_DEG;
-                        while (arpaContacts.at(i).estimate.absHeading < 0 ) {
-                            arpaContacts.at(i).estimate.absHeading += 360;
-                        }
-                        //Relative vector:
-                        arpaContacts.at(i).estimate.relVectorX = arpaContacts.at(i).estimate.absVectorX - ownShip.getSpeed() * sin((ownShip.getHeading())*irr::core::DEGTORAD);
-                        arpaContacts.at(i).estimate.relVectorZ = arpaContacts.at(i).estimate.absVectorZ - ownShip.getSpeed() * cos((ownShip.getHeading())*irr::core::DEGTORAD); //ownShipSpeed in m/s
-                        arpaContacts.at(i).estimate.relHeading = std::atan2(arpaContacts.at(i).estimate.relVectorX,arpaContacts.at(i).estimate.relVectorZ)/RAD_IN_DEG;
-                        while (arpaContacts.at(i).estimate.relHeading < 0 ) {
-                            arpaContacts.at(i).estimate.relHeading += 360;
-                        }
-
-                        //Estimated current position:
-                        irr::f32 relX = currentScanData.x - absolutePosition.X + arpaContacts.at(i).estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
-                        irr::f32 relZ = currentScanData.z - absolutePosition.Z + arpaContacts.at(i).estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
-                        arpaContacts.at(i).estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
-                        while (arpaContacts.at(i).estimate.bearing < 0 ) {
-                            arpaContacts.at(i).estimate.bearing += 360;
-                        }
-                        arpaContacts.at(i).estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
-                        arpaContacts.at(i).estimate.speed = std::sqrt(pow(arpaContacts.at(i).estimate.absVectorX,2) + pow(arpaContacts.at(i).estimate.absVectorZ,2))*MPS_TO_KTS;
-
-                        //TODO: CPA AND TCPA here: Need checking/testing
-                        irr::f32 contactRelAngle = arpaContacts.at(i).estimate.relHeading - (180+arpaContacts.at(i).estimate.bearing);
-                        irr::f32 contactRange = arpaContacts.at(i).estimate.range; //(Nm)
-                        irr::f32 relDistanceToCPA = contactRange * cos(contactRelAngle*RAD_IN_DEG); //Distance along the other ship's relative motion line
-                        irr::f32 relativeSpeed = std::sqrt(pow(arpaContacts.at(i).estimate.relVectorX,2) + pow(arpaContacts.at(i).estimate.relVectorZ,2))*MPS_TO_KTS;
-                        if (fabs(relativeSpeed) < 0.001) {relativeSpeed = 0.001;} //Avoid division by zero
-
-                        arpaContacts.at(i).estimate.cpa = contactRange * sin(contactRelAngle*RAD_IN_DEG);
-                        arpaContacts.at(i).estimate.tcpa = 60*relDistanceToCPA/relativeSpeed; // (nm / (nm/hr)), so time in hours, converted to minutes
-                        //std::cout << "Contact " << arpaContacts.at(i).estimate.displayID << " CPA: " <<  arpaContacts.at(i).estimate.cpa << " nm in " << arpaContacts.at(i).estimate.tcpa << " minutes" << std::endl;
+                    thisArpaContact.estimate.cpa = contactRange * sin(contactRelAngle*RAD_IN_DEG);
+                    thisArpaContact.estimate.tcpa = 60*relDistanceToCPA/relativeSpeed; // (nm / (nm/hr)), so time in hours, converted to minutes
+                    //std::cout << "Contact " << thisArpaContact.estimate.displayID << " CPA: " <<  thisArpaContact.estimate.cpa << " nm in " << thisArpaContact.estimate.tcpa << " minutes" << std::endl;
 
 
-                    } //If time between scans > 0
-                } //Contact not lost
-            } //If at least 2 scans
-        } //If ARPA is on
-    } //For loop through arpa contacts
+                } //If time between scans > 0
+            } //Contact not lost
+        } //If at least 2 scans
+    } //If ARPA is on
 }
 
 void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed)

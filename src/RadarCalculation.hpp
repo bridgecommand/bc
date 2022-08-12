@@ -32,6 +32,7 @@ class OtherShips;
 struct RadarData;
 
 enum ARPA_CONTACT_TYPE {
+    CONTACT_NONE,
     CONTACT_NORMAL,
     CONTACT_MANUAL
 };
@@ -61,9 +62,7 @@ struct ARPAEstimatedState {
     bool lost; //True if we last scanned more than a defined time ago.
     irr::f32 cpa; //Closest point of approach in Nm
     irr::f32 tcpa; //Time to closest point of approach (mins)
-    //Also to implement
-    //Distance of CPA
-    //Time to CPA
+    ARPA_CONTACT_TYPE contactType; //Duplicate of what's in the parent, but useful to pass to the GUI
 };
 
 struct ARPAContact {
@@ -138,6 +137,7 @@ class RadarCalculation
         irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres
         irr::u32 radarRangeIndex;
         irr::f32 radarScannerHeight;
+        irr::u32 marpaContacts;
         //parameters for noise behaviour
         irr::f32 radarNoiseLevel;
         irr::f32 radarSeaClutter;
@@ -168,6 +168,7 @@ class RadarCalculation
         std::vector<irr::f32> radarRangeNm;
         void scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
         void updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
+        void updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
         void render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed);
         irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);
