@@ -36,9 +36,13 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} "${{env.SOLUTION_FILE_PATH}}"
-      
+
+    - name: Build installer
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: "C:\Program Files (x86)\NSIS\Bin\makensis.exe" ./bin/installNoSource.nsi /DOUTPUTFILE=installer_autoBuild.exe
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: BC_windows
-        path: bin
+        path: installer_autoBuild.exe
