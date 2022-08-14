@@ -800,7 +800,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         } else {
 			propWalkTorqueStbd=-1*propWalkAstern*(stbdThrust/maxForce);
         }
-		propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
+		if (singleEngine) {
+            // Special case for single engine, as we are just controlling the port engine for the internal model
+            // 2* because the internal model is two engines with zero spacing and half power each.
+            propWalkTorque = 2*propWalkTorquePort;
+        } else {
+            propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
+        } 
 		//Thrusters
 		irr::f32 thrusterTorque;
 		thrusterTorque = bowThruster*bowThrusterMaxForce*bowThrusterDistance - sternThruster*sternThrusterMaxForce*sternThrusterDistance;

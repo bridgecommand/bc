@@ -10,6 +10,7 @@ Radar:
 ------
 Off centre
 MARPA
+Add joystick button mapping for radar cursor setting, and display cursor range and bearing
 
 Ship response:
 --------------
