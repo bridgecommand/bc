@@ -39,7 +39,7 @@ jobs:
 
     - name: Build Installer
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: "\"C:\\Program Files (x86)\\NSIS\\Bin\\makensis.exe\" \"bin\\installNoSource.nsi\" /DOUTPUTFILE=..\\installer_autoBuild.exe"
+      run: "makensis.exe /DOUTPUTFILE=../installer_autoBuild.exe bin/installNoSource.nsi"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
