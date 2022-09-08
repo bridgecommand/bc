@@ -114,6 +114,10 @@ class OwnShip : public Ship
         irr::f32 roll; //(deg)
         irr::f32 portEngine; //-1 to + 1
         irr::f32 stbdEngine; //-1 to + 1
+        bool azimuthDrive;
+        irr::f32 azimuthPositionAstern; // How far azimuth drives are astern
+        irr::f32 rudderMinAngle;
+        irr::f32 rudderMaxAngle;
         bool singleEngine;
         bool bowThrusterPresent;
         bool sternThrusterPresent;

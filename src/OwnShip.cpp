@@ -136,6 +136,20 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     dynamicsLateralDragA = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragA");
     dynamicsLateralDragB = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragB");
 
+    // set if Azimuth drive
+    if (IniFile::iniFileTou32(shipIniFilename,"AzimuthDrive") == 1) {
+        azimuthDrive = true;
+        azimuthPositionAstern = IniFile::iniFileTof32(shipIniFilename,"AzimuthPositionAstern");
+        rudderMinAngle = -180;
+        rudderMaxAngle = 180;
+    } else {
+        azimuthDrive = false;
+        azimuthPositionAstern = 0;
+        //TODO: Make rudder range configurable
+        rudderMinAngle = -30;
+        rudderMaxAngle = 30;
+    }
+
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
         {asternEfficiency = 1;}
@@ -488,11 +502,11 @@ void OwnShip::setRudder(irr::f32 rudder)
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     //Set the rudder (-ve is port, +ve is stbd)
     this->rudder = rudder;
-    if (this->rudder<-30) {
-        this->rudder = -30;
+    if (this->rudder<rudderMinAngle) {
+        this->rudder = rudderMinAngle;
     }
-    if (this->rudder>30) {
-        this->rudder = 30;
+    if (this->rudder>rudderMaxAngle) {
+        this->rudder = rudderMaxAngle;
     }
 }
 
@@ -504,11 +518,11 @@ void OwnShip::setWheel(irr::f32 wheel, bool force)
     //Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
     if (followUpRudderWorking || force) {
         this->wheel = wheel;
-        if (this->wheel<-30) {
-            this->wheel = -30;
+        if (this->wheel < rudderMinAngle) {
+            this->wheel = rudderMinAngle;
         }
-        if (this->wheel>30) {
-            this->wheel = 30;
+        if (this->wheel > rudderMaxAngle) {
+            this->wheel = rudderMaxAngle;
         }
     }
 }
@@ -726,13 +740,25 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //Update spd and hdg with rudder and engine controls - assume two engines, should also work with single engine
-        irr::f32 portThrust = portEngine * maxForce;
-        irr::f32 stbdThrust = stbdEngine * maxForce;
-        if (singleEngine) {
-            stbdThrust = portThrust; //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
+        irr::f32 portThrust;
+        irr::f32 stbdThrust;
+        if (azimuthDrive) {
+            //TODO: Separate 'rudder' for each azimuth control 
+            portThrust = portEngine * maxForce * cos(rudder*irr::core::DEGTORAD);
+            stbdThrust = stbdEngine * maxForce * cos(rudder*irr::core::DEGTORAD);
+        } else {
+            // Conventional controls
+            portThrust = portEngine * maxForce;
+            stbdThrust = stbdEngine * maxForce;
+            if (portThrust<0) {portThrust*=asternEfficiency;}
+            if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
         }
-        if (portThrust<0) {portThrust*=asternEfficiency;}
-        if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
+        
+        //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
+        if (singleEngine) {
+            stbdThrust = portThrust; 
+        }
+        
         irr::f32 drag;
         if (spd<0) { //Compensate for loss of sign when squaring
             drag = -1*dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
@@ -756,6 +782,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Lateral dynamics
         irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
+        if (azimuthDrive) {
+            //TODO: Separate 'rudder' for each azimuth control
+            lateralThrust += portEngine * maxForce * sin(rudder*irr::core::DEGTORAD);
+            if (singleEngine) {
+                // double effect of 'port' engine
+                lateralThrust += portEngine * maxForce * sin(rudder*irr::core::DEGTORAD);
+            } else {
+                lateralThrust += stbdEngine * maxForce * sin(rudder*irr::core::DEGTORAD);
+            }
+        }
 // comment perhaps dynamicsLateralDragA and B should be proportional to the lateral submerged area so roughly dynamicsDragA * (L / B)
         irr::f32 lateralDrag;
         if (lateralSpd<0) { //Compensate for loss of sign when squaring
@@ -781,13 +817,28 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         //Turn dynamics
         //Rudder
-        if ((portThrust+stbdThrust) > 0) {
-            rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB;
+        if (azimuthDrive) {
+            rudderTorque = 0;
+            //TODO: Separate 'rudder' for each azimuth control
+            engineTorque = 0; // Will build up from components 
+            engineTorque += portEngine * maxForce * cos(rudder*irr::core::DEGTORAD) * propellorSpacing/2.0;
+            engineTorque -= portEngine * maxForce * sin(rudder*irr::core::DEGTORAD) * azimuthPositionAstern;
+            if (singleEngine) {
+                // Double the 'port' engine effect, as we model as if we have two half power engines in the same place
+                engineTorque *= 2;
+            } else {
+                engineTorque -= stbdEngine * maxForce * cos(rudder*irr::core::DEGTORAD) * propellorSpacing/2.0;
+                engineTorque -= stbdEngine * maxForce * sin(rudder*irr::core::DEGTORAD) * azimuthPositionAstern;    
+            }
         } else {
-            rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderBAstern; //Reduced effect of rudder when engines engaged astern
+            if ((portThrust+stbdThrust) > 0) {
+                rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB;
+            } else {
+                rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderBAstern; //Reduced effect of rudder when engines engaged astern
+            }
+            //Engine
+            engineTorque = (portThrust*propellorSpacing - stbdThrust*propellorSpacing)/2.0; //propspace is spacing between propellors, so halve to get moment arm
         }
-        //Engine
-        engineTorque = (portThrust*propellorSpacing - stbdThrust*propellorSpacing)/2.0; //propspace is spacing between propellors, so halve to get moment arm
         //Prop walk
         irr::f32 propWalkTorquePort,propWalkTorqueStbd;
         if (portThrust > 0) {

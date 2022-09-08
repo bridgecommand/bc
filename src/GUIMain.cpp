@@ -182,6 +182,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),irr::core::rect<irr::s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
         wheelScrollbar->setMax(30);
         wheelScrollbar->setMin(-30);
+        //wheelScrollbar->setMax(180);
+        //wheelScrollbar->setMin(-180);
         wheelScrollbar->setPos(0);
 // DEE ^^^^^
 
