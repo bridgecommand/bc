@@ -38,6 +38,7 @@ set(BC_SOURCES
     iprof.cpp
     main.cpp
     Angles.cpp
+    AzimuthDial.cpp
     Buoy.cpp
     Buoys.cpp
     Camera.cpp

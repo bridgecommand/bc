@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Angles.cpp" />
+    <ClCompile Include="..\AzimuthDial.cpp" />
 	<ClCompile Include="..\BCTerrainSceneNode.cpp" />
 	<ClCompile Include="..\BCTerrainTriangleSelector.cpp" />
     <ClCompile Include="..\Buoy.cpp" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Angles.hpp" />
+    <ClInclude Include="..\AzimuthDial.h" />
 	<ClInclude Include="..\BCDynamicMeshBuffer.h" />
 	<ClInclude Include="..\BCIndexBuffer.h" />
 	<ClInclude Include="..\BCTerrainSceneNode.h" />

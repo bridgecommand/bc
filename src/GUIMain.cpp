@@ -25,6 +25,7 @@
 #include "Utilities.hpp"
 //#include "OutlineScrollBar.h"
 #include "ScrollDial.h"
+#include "AzimuthDial.h"
 
 #include <iostream> //for debugging
 #include <cmath> //For fmod

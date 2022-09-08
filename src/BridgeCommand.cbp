@@ -91,6 +91,8 @@
 		</Compiler>
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
+		<Unit filename="AzimuthDial.cpp" />
+		<Unit filename="AzimuthDial.h" />
 		<Unit filename="BCDynamicMeshBuffer.h" />
 		<Unit filename="BCIndexBuffer.h" />
 		<Unit filename="BCTerrainSceneNode.cpp" />
