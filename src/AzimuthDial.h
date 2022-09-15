@@ -62,6 +62,12 @@ namespace gui
 		//! sets the position of the scrollbar
 		virtual void setPos(s32 pos);
 
+		//! gets the current magnitude of the scrollbar
+		virtual s32 getMag() const;
+
+		//! sets the magnitude of the scrollbar
+		virtual void setMag(s32 mag);
+
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 
@@ -75,6 +81,7 @@ namespace gui
 
 		//void refreshControls();
 		s32 getPosFromMousePos(const core::position2di &p) const;
+		s32 getMagFromMousePos(const core::position2di &p) const;
 
 		//IGUIButton* UpButton;
 		//IGUIButton* DownButton;
@@ -89,8 +96,10 @@ namespace gui
 		//bool DraggedBySlider;
 		//bool TrayClick;
 		s32 Pos;
-		s32 DrawPos;
+		s32 Mag;
+		f32 DrawRad;
 		f32 DrawAngle;
+
 		s32 DrawHeight;
 		s32 Min;
 		s32 Max;

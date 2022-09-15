@@ -21,7 +21,7 @@ AzimuthDial::AzimuthDial(core::position2d< s32 > centre, u32 radius, IGUIEnviron
 				IGUIElement* parent, s32 id, bool noclip) :
 				IGUIScrollBar(environment, parent, id, core::rect<s32>(centre.X - radius, centre.Y - radius, centre.X + radius,centre.Y + radius)),
 				centre(centre), radius(radius),
-				Dragging(false), Pos(0), DrawPos(0), DrawAngle(0), DrawHeight(0),
+				Dragging(false), Pos(0), Mag(0), DrawRad(0), DrawAngle(0), DrawHeight(0),
 				Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0)
 {
 
@@ -38,6 +38,7 @@ AzimuthDial::AzimuthDial(core::position2d< s32 > centre, u32 radius, IGUIEnviron
 	setTabOrder(-1);
 
 	setPos(0);
+	setMag(0);
 }
 
 
@@ -142,6 +143,7 @@ bool AzimuthDial::OnEvent(const SEvent& event)
 					//TrayClick = !DraggedBySlider;
 					//DesiredPos = getPosFromMousePos(p);
 					setPos(getPosFromMousePos(p));
+					setMag(getMagFromMousePos(p));
 					SEvent newEvent;
 					newEvent.EventType = EET_GUI_EVENT;
 					newEvent.GUIEvent.Caller = this;
@@ -173,8 +175,11 @@ bool AzimuthDial::OnEvent(const SEvent& event)
 				const s32 newPos = getPosFromMousePos(p);
 				const s32 oldPos = Pos;
                 setPos(newPos);
+				const s32 newMag = getMagFromMousePos(p);
+				const s32 oldMag = Mag;
+                setMag(newMag);
 
-				if (Pos != oldPos && Parent)
+				if (( (Pos != oldPos) || (Mag != oldMag) ) && Parent)
 				{
 					SEvent newEvent;
 					newEvent.EventType = EET_GUI_EVENT;
@@ -230,8 +235,8 @@ void AzimuthDial::draw()
 	{
 		//Draw from centre
 		core::vector2d<s32> endPoint;
-		endPoint.X = absoluteCentre.X + radius*sin(DrawAngle);
-		endPoint.Y = absoluteCentre.Y - radius*cos(DrawAngle);
+		endPoint.X = absoluteCentre.X + DrawRad*sin(DrawAngle);
+		endPoint.Y = absoluteCentre.Y - DrawRad*cos(DrawAngle);
 
 		Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,0,0,0));
 	}
@@ -245,12 +250,13 @@ void AzimuthDial::updateAbsolutePosition()
 	// todo: properly resize
 //	refreshControls();
 	setPos ( Pos );
+	setMag ( Mag );
 }
 
 //!
 s32 AzimuthDial::getPosFromMousePos(const core::position2di &pos) const
 {
-	//Get the angle (range 0-315 degrees), and convert into output position
+	//Get the angle (range 0-360 degrees), and convert into output position
 	s32 offsetX = AbsoluteRect.LowerRightCorner.X - RelativeRect.LowerRightCorner.X;
     s32 offsetY = AbsoluteRect.LowerRightCorner.Y - RelativeRect.LowerRightCorner.Y;
 
@@ -259,11 +265,23 @@ s32 AzimuthDial::getPosFromMousePos(const core::position2di &pos) const
 
     f32 angle = atan2(relX,-1.0*relY)*core::RADTODEG;
     while (angle<0) {angle+=360;} //As atan2 gives -pi to +pi
-    if (angle > 337.5) {angle=0;} //Closer to 0 than to max
-    if (angle > 315) {angle=315;} //Above max
-    f32 proportion = angle/315.0;
+    f32 proportion = angle/360.0;
     return (s32) (proportion * range()) + Min;
+}
 
+//!
+s32 AzimuthDial::getMagFromMousePos(const core::position2di &pos) const
+{
+	//Get the magnitude
+	s32 offsetX = AbsoluteRect.LowerRightCorner.X - RelativeRect.LowerRightCorner.X;
+    s32 offsetY = AbsoluteRect.LowerRightCorner.Y - RelativeRect.LowerRightCorner.Y;
+
+    s32 relX = pos.X - centre.X - offsetX;
+    s32 relY = pos.Y - centre.Y - offsetY;
+
+    f32 pixelRad = pow(pow(relX, 2.0) + pow(relY, 2.0), 0.5);
+    f32 proportion = pixelRad/radius;
+    return (s32) (proportion * 100); // Hardcoded as 0-100
 }
 
 
@@ -274,11 +292,22 @@ void AzimuthDial::setPos(s32 pos)
 
 	f32 f = RelativeRect.getHeight()/ range();
 
-    DrawPos = (s32)(( Pos - Min ) * f);
-    DrawAngle = (Pos-Min) * 315 / range() * core::DEGTORAD; //0-315 degrees for display
+    DrawAngle = (Pos-Min) * 360 / range() * core::DEGTORAD; //0-360 degrees for display
     DrawHeight = RelativeRect.getWidth();
 
+}
 
+//! gets the current magnitude of the scrollbar (0-100)
+s32 AzimuthDial::getMag() const
+{
+	return Mag;
+}
+
+//! sets the magnitude of the scrollbar (0-100)
+void AzimuthDial::setMag(s32 mag)
+{
+	Mag = core::s32_clamp(mag, 0, 100);
+	DrawRad = radius * ((f32) Mag / 100.0);
 }
 
 
