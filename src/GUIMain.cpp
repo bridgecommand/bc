@@ -37,7 +37,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
@@ -68,6 +68,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //default to double engine in gui
         this->singleEngine = singleEngine;
+
+        //set if we have azimuth controls, instead of engine and rudder
+        this->azimuthDrive = azimuthDrive;
 
         //Initial settings for NFU buttons
         nfuPortDown = false;
@@ -152,77 +155,73 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             sternThrusterScrollbar = 0;
         }
 
-        portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
-        portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        portText->setOverrideColor(irr::video::SColor(255,128,0,0));
-        portScrollbar = new irr::gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,irr::core::rect<irr::s32>(0.01*su, 0.675*sh, 0.04*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
-        portScrollbar->setMax(100);
-        portScrollbar->setMin(-100);
-        portScrollbar->setPos(0);
-        stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),irr::core::rect<irr::s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));
-        stbdText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        stbdText->setOverrideColor(irr::video::SColor(255,0,128,0));
-        stbdScrollbar = new irr::gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,irr::core::rect<irr::s32>(0.05*su, 0.675*sh, 0.08*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
-        stbdScrollbar->setMax(100);
-        stbdScrollbar->setMin(-100);
-        stbdScrollbar->setPos(0);
+        if (azimuthDrive) {
+            // Azimuth drive
+            portText = 0;
+            portScrollbar = 0;
+            stbdText = 0;
+            stbdScrollbar = 0;
+            wheelScrollbar = 0;
+            nonFollowUpPortButton = 0;
+            clickForRudderText = 0;
+            clickForEngineText = 0;
+        } else {
+            // Not azimuth drive
+            portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
+            portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+            portText->setOverrideColor(irr::video::SColor(255,128,0,0));
+            portScrollbar = new irr::gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_PORT_SCROLL_BAR,irr::core::rect<irr::s32>(0.01*su, 0.675*sh, 0.04*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
+            portScrollbar->setMax(100);
+            portScrollbar->setMin(-100);
+            portScrollbar->setPos(0);
+            stbdText = guienv->addStaticText(language->translate("stbdEngine").c_str(),irr::core::rect<irr::s32>(0.045*su, 0.61*sh, 0.085*su, 0.67*sh));
+            stbdText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+            stbdText->setOverrideColor(irr::video::SColor(255,0,128,0));
+            stbdScrollbar = new irr::gui::OutlineScrollBar(false,guienv,guienv->getRootGUIElement(),GUI_ID_STBD_SCROLL_BAR,irr::core::rect<irr::s32>(0.05*su, 0.675*sh, 0.08*su, (0.99-0.04*hasBowThruster-0.04*hasSternThruster)*sh),engineTics,centreTic);
+            stbdScrollbar->setMax(100);
+            stbdScrollbar->setMin(-100);
+            stbdScrollbar->setPos(0);
 
-// DEE vvvvv put a wheel bar below the rudder bar
-        //rudderScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,irr::core::rect<irr::s32>(0.09*su, 0.90*sh, 0.45*su, 0.93*sh),rudderTics,centreTic,true);
-        //rudderText = guienv->addStaticText(language->translate("rudderText").c_str(),irr::core::rect<irr::s32>(0.09*su, 0.87*sh, 0.45*su, 0.90*sh));
+            wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.13*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true,rudderIndicatorTics);
+            wheelScrollbar->setMax(30);
+            wheelScrollbar->setMin(-30);
+            wheelScrollbar->setPos(0);
 
-//        rudderScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RUDDER_SCROLL_BAR,irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic);
-// DEE ^^^^^
 
-        //rudderScrollbar->setMax(30);
-        //rudderScrollbar->setMin(-30);
-        //rudderScrollbar->setPos(0);
+            nonFollowUpPortButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.11*su, 0.99*sh),0,GUI_ID_NFU_PORT_BUTTON,language->translate("NFUPort").c_str());
+            nonFollowUpStbdButton = guienv->addButton(irr::core::rect<irr::s32>(0.11*su, 0.96*sh, 0.13*su, 0.99*sh),0,GUI_ID_NFU_STBD_BUTTON,language->translate("NFUStbd").c_str());
 
-// DEE vvvvv wheel position bar
-        wheelScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_WHEEL_SCROLL_BAR,irr::core::rect<irr::s32>(0.13*su, 0.96*sh, 0.45*su, 0.99*sh),rudderTics,centreTic,true,rudderIndicatorTics);
-        //wheelText = guienv->addStaticText(language->translate("wheelText").c_str(),irr::core::rect<irr::s32>(0.09*su, 0.93*sh, 0.45*su, 0.96*sh));
-        wheelScrollbar->setMax(30);
-        wheelScrollbar->setMin(-30);
-        //wheelScrollbar->setMax(180);
-        //wheelScrollbar->setMin(-180);
-        wheelScrollbar->setPos(0);
-// DEE ^^^^^
+            //Adapt if single engine:
+            if (singleEngine) {
+                stbdScrollbar->setVisible(false);
+                stbdText->setVisible(false);
 
-        nonFollowUpPortButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su, 0.96*sh, 0.11*su, 0.99*sh),0,GUI_ID_NFU_PORT_BUTTON,language->translate("NFUPort").c_str());
-        nonFollowUpStbdButton = guienv->addButton(irr::core::rect<irr::s32>(0.11*su, 0.96*sh, 0.13*su, 0.99*sh),0,GUI_ID_NFU_STBD_BUTTON,language->translate("NFUStbd").c_str());
-        //nonFollowUpPortButton->setIsPushButton(true);
-        //nonFollowUpStbdButton->setIsPushButton(true);
+                //Get max extent of both engine scroll bars
+                irr::core::vector2d<irr::s32> lowerRight = stbdScrollbar->getRelativePosition().LowerRightCorner;
+                irr::core::vector2d<irr::s32> upperLeft = portScrollbar->getRelativePosition().UpperLeftCorner;
+                portScrollbar->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
 
-        //Adapt if single engine:
-        if (singleEngine) {
-            stbdScrollbar->setVisible(false);
-            stbdText->setVisible(false);
+                //Change text from 'portEngine' to 'engine', and use all space
+                portText->setText(language->translate("engine").c_str());
+                portText->enableOverrideColor(false);
+                lowerRight = stbdText->getRelativePosition().LowerRightCorner;
+                upperLeft = portText->getRelativePosition().UpperLeftCorner;
+                portText->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
+            }
 
-            //Get max extent of both engine scroll bars
-            irr::core::vector2d<irr::s32> lowerRight = stbdScrollbar->getRelativePosition().LowerRightCorner;
-            irr::core::vector2d<irr::s32> upperLeft = portScrollbar->getRelativePosition().UpperLeftCorner;
-            portScrollbar->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
+            //Add 'hint' text to click on the rudder and wheel controls
+            clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
+            clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+            clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
 
-            //Change text from 'portEngine' to 'engine', and use all space
-            portText->setText(language->translate("engine").c_str());
-            portText->enableOverrideColor(false);
-            lowerRight = stbdText->getRelativePosition().LowerRightCorner;
-            upperLeft = portText->getRelativePosition().UpperLeftCorner;
-            portText->setRelativePosition(irr::core::rect<irr::s32>(upperLeft,lowerRight));
+            irr::core::rect<irr::s32> engineHintPos = irr::core::rect<irr::s32>(
+                portScrollbar->getRelativePosition().UpperLeftCorner,
+                stbdScrollbar->getRelativePosition().LowerRightCorner);
+
+            clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),engineHintPos);
+            clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+            clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
         }
-
-        //Add 'hint' text to click on the rudder and wheel controls
-        clickForRudderText = guienv->addStaticText(language->translate("startupHelpRudder").c_str(),wheelScrollbar->getAbsolutePosition());
-        clickForRudderText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        clickForRudderText->setOverrideColor(irr::video::SColor(255,255,0,0));
-
-        irr::core::rect<irr::s32> engineHintPos = irr::core::rect<irr::s32>(
-            portScrollbar->getRelativePosition().UpperLeftCorner,
-            stbdScrollbar->getRelativePosition().LowerRightCorner);
-
-        clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),engineHintPos);
-        clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
 
         //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
         if (controlsHidden) {
@@ -281,6 +280,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
         guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.03*sh,0.055*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
+        //weatherScrollbar = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
@@ -496,18 +496,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     GUIMain::~GUIMain()
     {
         //Drop scroll bars created with 'new'
-        portScrollbar->drop();
-        stbdScrollbar->drop();
-        wheelScrollbar->drop();
-        //rudderScrollbar->drop();
-        rateofturnScrollbar->drop();
+        if (portScrollbar) {portScrollbar->drop();}
+        if (stbdScrollbar) {stbdScrollbar->drop();}
+        if (wheelScrollbar) {wheelScrollbar->drop();}
+        
+        if (rateofturnScrollbar) {rateofturnScrollbar->drop();}
 
-        if (bowThrusterScrollbar) {
-            bowThrusterScrollbar->drop();
-        }
-        if (sternThrusterScrollbar) {
-            sternThrusterScrollbar->drop();
-        }
+        if (bowThrusterScrollbar) {bowThrusterScrollbar->drop();}
+        if (sternThrusterScrollbar) {sternThrusterScrollbar->drop();}
 
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
@@ -653,8 +649,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         exitButton->setVisible(showInterface);
 
-        portText->setVisible(showInterface);
-        stbdText->setVisible(showInterface && !singleEngine);
+        if (portText) {portText->setVisible(showInterface);}
+        if (stbdText) {stbdText->setVisible(showInterface && !singleEngine);}
 
         pump1On->setVisible(showInterface);
         pump2On->setVisible(showInterface);
@@ -704,13 +700,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
     void GUIMain::hideInSecondary() {
         //Hide user inputs if in secondary mode
-        stbdScrollbar->setVisible(false);
-        portScrollbar->setVisible(false);
-        stbdText->setVisible(false);
-        portText->setVisible(false);
-        wheelScrollbar->setVisible(false);
-        nonFollowUpPortButton->setVisible(false);
-        nonFollowUpStbdButton->setVisible(false);
+        if (stbdScrollbar) {stbdScrollbar->setVisible(false);}
+        if (portScrollbar) {portScrollbar->setVisible(false);}
+        if (stbdText) {stbdText->setVisible(false);}
+        if (portText) {portText->setVisible(false);}
+        if (wheelScrollbar) {wheelScrollbar->setVisible(false);}
+        if (nonFollowUpPortButton) {nonFollowUpPortButton->setVisible(false);}
+        if (nonFollowUpStbdButton) {nonFollowUpStbdButton->setVisible(false);}
         //rateofturnScrollbar->setVisible(false); // hides rate of turn indicator in full screen
         if (bowThrusterScrollbar) {bowThrusterScrollbar->setVisible(false);}
         if (sternThrusterScrollbar) {sternThrusterScrollbar->setVisible(false);}
@@ -763,30 +759,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     void GUIMain::updateGuiData(GUIData* guiData)
     {
 
+        // TODO: Check the scroll bars exist!
+
         //Hide the 'hint' bars
         if (device->getTimer()->getTime()>3000) {
-            clickForEngineText->setVisible(false);
-            clickForRudderText->setVisible(false);
+            if (clickForEngineText) {clickForEngineText->setVisible(false);}
+            if (clickForRudderText) {clickForRudderText->setVisible(false);}
         }
 
         //Update scroll bars
         hdgScrollbar->setPos(Utilities::round(guiData->hdg));
         spdScrollbar->setPos(Utilities::round(guiData->spd));
-        portScrollbar->setPos(Utilities::round(guiData->portEng * -100));//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
-        stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));
+        if (portScrollbar) {portScrollbar->setPos(Utilities::round(guiData->portEng * -100));}//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
+        if (stbdScrollbar) {stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));}
         //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
-        wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));
-        if (bowThrusterScrollbar) {
-            bowThrusterScrollbar->setPos(Utilities::round(guiData->bowThruster * 100));
+        if (wheelScrollbar) {
+            wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));
+            wheelScrollbar->setPos(Utilities::round(guiData->wheel));
         }
-        if (sternThrusterScrollbar) {
-            sternThrusterScrollbar->setPos(Utilities::round(guiData->sternThruster * 100));
-        }
-
-// DEE vvvvv
-// this sets the scrollbar wheel position to match the guiData's idea of where it should be
-	wheelScrollbar->setPos(Utilities::round(guiData->wheel));
-// DEE ^^^^^
+        if (bowThrusterScrollbar) {bowThrusterScrollbar->setPos(Utilities::round(guiData->bowThruster * 100));}
+        if (sternThrusterScrollbar) {sternThrusterScrollbar->setPos(Utilities::round(guiData->sternThruster * 100));}
 
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
@@ -1146,28 +1138,32 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
         if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
 
-        //Handle port NFU rudder button
-        if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
-            nfuPortDown = true; //Set this before we trigger the event, as this will be checked for override
-            wheelScrollbar->setPos(-30);
-            manuallyTriggerScroll(wheelScrollbar);
-        }
-        if (!nonFollowUpPortButton->isPressed() && nfuPortDown) {
-            wheelScrollbar->setPos(wheelScrollbar->getSecondary());
-            manuallyTriggerScroll(wheelScrollbar);
-            nfuPortDown = false; //Set this after we trigger the event, as this will be checked for override
+        if (nonFollowUpPortButton && wheelScrollbar ) {
+            //Handle port NFU rudder button
+            if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
+                nfuPortDown = true; //Set this before we trigger the event, as this will be checked for override
+                wheelScrollbar->setPos(-30);
+                manuallyTriggerScroll(wheelScrollbar);
+            }
+            if (!nonFollowUpPortButton->isPressed() && nfuPortDown) {
+                wheelScrollbar->setPos(wheelScrollbar->getSecondary());
+                manuallyTriggerScroll(wheelScrollbar);
+                nfuPortDown = false; //Set this after we trigger the event, as this will be checked for override
+            }
         }
 
-        //Handle stbd NFU rudder button
-        if (nonFollowUpStbdButton->isPressed() && !nfuStbdDown) {
-            nfuStbdDown = true; //Set this before we trigger the event, as this will be checked for override
-            wheelScrollbar->setPos(30);
-            manuallyTriggerScroll(wheelScrollbar);
-        }
-        if (!nonFollowUpStbdButton->isPressed() && nfuStbdDown) {
-            wheelScrollbar->setPos(wheelScrollbar->getSecondary());
-            manuallyTriggerScroll(wheelScrollbar);
-            nfuStbdDown = false; //Set this after we trigger the event, as this will be checked for override
+        if (nonFollowUpStbdButton && wheelScrollbar) {
+            //Handle stbd NFU rudder button
+            if (nonFollowUpStbdButton->isPressed() && !nfuStbdDown) {
+                nfuStbdDown = true; //Set this before we trigger the event, as this will be checked for override
+                wheelScrollbar->setPos(30);
+                manuallyTriggerScroll(wheelScrollbar);
+            }
+            if (!nonFollowUpStbdButton->isPressed() && nfuStbdDown) {
+                wheelScrollbar->setPos(wheelScrollbar->getSecondary());
+                manuallyTriggerScroll(wheelScrollbar);
+                nfuStbdDown = false; //Set this after we trigger the event, as this will be checked for override
+            }
         }
 
         guienv->drawAll();

@@ -23,6 +23,7 @@
 #include "HeadingIndicator.h"
 //#include "RateOfTurnIndicator.h" // DEE addition
 #include "OutlineScrollBar.h"
+#include "AzimuthDial.h"
 #include "GUIRectangle.hpp"
 #include "RadarCalculation.hpp"
 #include <vector>
@@ -71,7 +72,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -181,6 +182,9 @@ private:
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
+    irr::gui::AzimuthDial* azimuth1Control;
+    irr::gui::AzimuthDial* azimuth2Control;
+
     irr::gui::IGUIListBox* arpaList;
     irr::gui::IGUIListBox* arpaText;
     irr::gui::IGUIButton* pausedButton;
@@ -268,6 +272,7 @@ private:
     std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
+    bool azimuthDrive;
     bool hasBowThruster;
     bool hasSternThruster;
     bool hasRateOfTurnIndicator;

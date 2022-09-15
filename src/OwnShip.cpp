@@ -690,6 +690,11 @@ bool OwnShip::isSingleEngine() const
     return singleEngine;
 }
 
+bool OwnShip::isAzimuthDrive() const
+{
+    return azimuthDrive;
+}
+
 bool OwnShip::isBuoyCollision() const
 {
     return buoyCollision;
@@ -753,7 +758,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             if (portThrust<0) {portThrust*=asternEfficiency;}
             if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
         }
-        
+
         //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
         if (singleEngine) {
             stbdThrust = portThrust; 

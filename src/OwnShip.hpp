@@ -83,6 +83,7 @@ class OwnShip : public Ship
 		irr::f32 getScreenDisplaySize() const;
 		irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
+        bool isAzimuthDrive() const;
         bool isBuoyCollision() const;
         bool isOtherShipCollision() const;
 

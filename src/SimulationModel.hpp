@@ -203,6 +203,7 @@ public:
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
     bool hasGPS() const;
     bool isSingleEngine() const;
+    bool isAzimuthDrive() const;
     bool hasDepthSounder() const;
     irr::f32 getMaxSounderDepth() const;
     bool hasBowThruster() const;

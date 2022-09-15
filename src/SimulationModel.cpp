@@ -1099,6 +1099,11 @@ SimulationModel::~SimulationModel()
         return ownShip.isSingleEngine();
     }
 
+    bool SimulationModel::isAzimuthDrive() const
+    {
+        return ownShip.isAzimuthDrive();
+    }
+
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
