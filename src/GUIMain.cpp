@@ -229,7 +229,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //add data display:
-        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su,0.71*sh,0.45*su,0.95*sh); //In normal view
+        irr::s32 azimuthGUIOffset = 0;
+        if (azimuthDrive) {
+            azimuthGUIOffset = 0.05*su;
+        }
+        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.71*sh,0.45*su,0.95*sh); //In normal view
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
@@ -241,7 +245,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiSpeed = 0;
 
         //Add heading indicator
-        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su,0.630*sh,0.45*su,0.680*sh); //In normal view
+        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.630*sh,0.45*su,0.680*sh); //In normal view
         radHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised radar view
         maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
@@ -467,26 +471,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.13*su,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su,0.92*sh,0.13*su,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su,0.92*sh,0.17*su,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffset,0.92*sh,0.17*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su,0.92*sh,0.21*su,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffset,0.92*sh,0.21*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
         //Exit button
-        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su,0.92*sh,0.25*su,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffset,0.92*sh,0.25*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su,0.92*sh,0.33*su,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffset,0.92*sh,0.33*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su,0.92*sh,0.35*su,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffset,0.92*sh,0.35*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
