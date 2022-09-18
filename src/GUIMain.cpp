@@ -163,10 +163,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             stbdScrollbar = 0;
             wheelScrollbar = 0;
             nonFollowUpPortButton = 0;
+            nonFollowUpStbdButton = 0;
             clickForRudderText = 0;
             clickForEngineText = 0;
+
+            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_1);
+            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2);
         } else {
             // Not azimuth drive
+            azimuth1Control = 0;
+            azimuth2Control = 0;
             portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
             portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
             portText->setOverrideColor(irr::video::SColor(255,128,0,0));
@@ -509,6 +515,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (bowThrusterScrollbar) {bowThrusterScrollbar->drop();}
         if (sternThrusterScrollbar) {sternThrusterScrollbar->drop();}
 
+        if (azimuth1Control) {azimuth1Control->drop();}
+        if (azimuth2Control) {azimuth2Control->drop();}
+
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
         rainScrollbar->drop();
@@ -706,6 +715,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Hide user inputs if in secondary mode
         if (stbdScrollbar) {stbdScrollbar->setVisible(false);}
         if (portScrollbar) {portScrollbar->setVisible(false);}
+        if (azimuth1Control) {azimuth1Control->setVisible(false);}
+        if (azimuth2Control) {azimuth2Control->setVisible(false);}
         if (stbdText) {stbdText->setVisible(false);}
         if (portText) {portText->setVisible(false);}
         if (wheelScrollbar) {wheelScrollbar->setVisible(false);}
