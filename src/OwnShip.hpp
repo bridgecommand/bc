@@ -57,6 +57,8 @@ class OwnShip : public Ship
         void setWheel(irr::f32, bool force); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
         void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
+        void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
@@ -88,6 +90,8 @@ class OwnShip : public Ship
 		irr::f32 getScreenDisplayTilt() const;
         bool isSingleEngine() const;
         bool isAzimuthDrive() const;
+        bool isAzimuth1Master() const;
+        bool isAzimuth2Master() const;
         bool isBuoyCollision() const;
         bool isOtherShipCollision() const;
 
@@ -122,6 +126,8 @@ class OwnShip : public Ship
         irr::f32 portAzimuthAngle; //in degrees
         irr::f32 stbdAzimuthAngle; //in degrees
         bool azimuthDrive;
+        bool azimuth1Master; // If azimuth control 1 should also control azimuth control 2
+        bool azimuth2Master; // If azimuth control 2 should also control azimuth control 1
         irr::f32 azimuthPositionAstern; // How far azimuth drives are astern
         irr::f32 rudderMinAngle;
         irr::f32 rudderMaxAngle;

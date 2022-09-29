@@ -148,6 +148,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         azimuthPositionAstern = 0;
     }
 
+    // Set azimuth drives independent
+    azimuth1Master = false;
+    azimuth2Master = false;
+
     //Set defaults for values that shouldn't be zero
     if (asternEfficiency == 0)
         {asternEfficiency = 1;}
@@ -528,16 +532,63 @@ void OwnShip::setWheel(irr::f32 wheel, bool force)
 
 void OwnShip::setPortAzimuthAngle(irr::f32 angle)
 {
+    
+    if (azimuth2Master) {
+        // Don't do anything if the other azimuth control is master
+        return;
+    }
+
     portAzimuthAngle = angle;
+         
+    if (azimuth1Master) {
+        // If linked, set the other engine
+        stbdAzimuthAngle = angle;
+    }
 }
 
 void OwnShip::setStbdAzimuthAngle(irr::f32 angle)
 {
+    
+    if (azimuth1Master) {
+        // Don't do anything if the other azimuth control is master
+        return;
+    }
+
     stbdAzimuthAngle = angle;
+
+    if (azimuth2Master) {
+        // If linked, set the other engine
+        portAzimuthAngle = angle;
+    }
 }
+
+void OwnShip::setAzimuth1Master(bool isMaster) {
+    // Set if azimuth 1 should also control azimuth 2
+    azimuth1Master = isMaster;
+    if (azimuth1Master) {
+        // Can't have both as master
+        azimuth2Master = false;
+    }
+} 
+
+void OwnShip::setAzimuth2Master(bool isMaster) {
+    // Set if azimuth 2 should also control azimuth 1
+    azimuth2Master = isMaster;
+    if (azimuth2Master) {
+        // Can't have both as master
+        azimuth1Master = false;
+    }
+}
+
 
 void OwnShip::setPortEngine(irr::f32 port)
 {
+    
+    if (azimuthDrive && azimuth2Master) {
+        // Don't do anything if the other azimuth control is master
+        return;
+    }
+    
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     portEngine = port; //+-1
     if (portEngine>1) {
@@ -546,10 +597,21 @@ void OwnShip::setPortEngine(irr::f32 port)
     if (portEngine<-1) {
         portEngine = -1;
     }
+
+    if (azimuthDrive && azimuth1Master) {
+        // If azimuth controls linked
+        stbdEngine = portEngine;
+    }
 }
 
 void OwnShip::setStbdEngine(irr::f32 stbd)
 {
+    
+    if (azimuthDrive && azimuth1Master) {
+        // Don't do anything if the other azimuth control is master
+        return;
+    }
+    
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
     stbdEngine = stbd; //+-1
     if (stbdEngine>1) {
@@ -557,6 +619,11 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
     }
     if (stbdEngine<-1) {
         stbdEngine = -1;
+    }
+
+    if (azimuthDrive && azimuth2Master) {
+        // If azimuth controls linked
+        portEngine = stbdEngine;
     }
 }
 
