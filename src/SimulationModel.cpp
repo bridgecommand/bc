@@ -630,6 +630,15 @@ SimulationModel::~SimulationModel()
     }
 // DEE ^^^^^^^^^^^
 
+    void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
+    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        ownShip.setPortAzimuthAngle(angle);
+    }
+
+    void SimulationModel::setStbdAzimuthAngle(irr::f32 angle)
+    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        ownShip.setStbdAzimuthAngle(angle);
+    }
 
     void SimulationModel::setPortEngine(irr::f32 port)
     {

@@ -55,6 +55,8 @@ class OwnShip : public Ship
         irr::f32 getMaxSounderDepth() const;
         void setRudder(irr::f32); //Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
         void setWheel(irr::f32, bool force); //Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
+        void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied
@@ -74,6 +76,8 @@ class OwnShip : public Ship
         irr::f32 getStbdEngineRPM() const;
         irr::f32 getRudder() const; //-30 to 30
         irr::f32 getWheel() const; // DEE -30 to +30
+        irr::f32 getPortAzimuthAngle() const; // degrees
+        irr::f32 getStbdAzimuthAngle() const; // degrees
         irr::f32 getPitch() const;
         irr::f32 getRoll() const;
         irr::f32 getCOG() const;
@@ -115,6 +119,8 @@ class OwnShip : public Ship
         irr::f32 roll; //(deg)
         irr::f32 portEngine; //-1 to + 1
         irr::f32 stbdEngine; //-1 to + 1
+        irr::f32 portAzimuthAngle; //in degrees
+        irr::f32 stbdAzimuthAngle; //in degrees
         bool azimuthDrive;
         irr::f32 azimuthPositionAstern; // How far azimuth drives are astern
         irr::f32 rudderMinAngle;

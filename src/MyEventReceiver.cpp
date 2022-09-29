@@ -21,6 +21,7 @@
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
+#include "AzimuthDial.h"
 
 //using namespace irr;
 
@@ -195,6 +196,30 @@
                         model->setWheel(((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos(),nfuActive);
                   }
 // DEE capture the wheel
+
+              if (id == GUIMain::GUI_ID_AZIMUTH_1) {
+                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
+                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
+                model->setPortAzimuthAngle(angle);
+                model->setPortEngine(power);
+                if (rightMouseDown) {
+                    // Set the other control as well (Linked)
+                    model->setStbdAzimuthAngle(angle);
+                    model->setStbdEngine(power);
+                }
+              }
+
+              if (id == GUIMain::GUI_ID_AZIMUTH_2) {
+                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
+                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
+                model->setStbdAzimuthAngle(angle);
+                model->setStbdEngine(power);
+                if (rightMouseDown) {
+                    // Set the other control as well (Linked)
+                    model->setPortAzimuthAngle(angle);
+                    model->setPortEngine(power);
+                }
+              }
 
 
             //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
