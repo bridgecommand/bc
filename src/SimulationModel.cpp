@@ -630,6 +630,26 @@ SimulationModel::~SimulationModel()
     }
 // DEE ^^^^^^^^^^^
 
+    void SimulationModel::setAzimuth1Master(bool isMaster)
+    { // Set if azimuth 1 should also control azimuth 2
+        ownShip.setAzimuth1Master(isMaster);
+    }
+    
+    void SimulationModel::setAzimuth2Master(bool isMaster)
+    { // Set if azimuth 2 should also control azimuth 1
+        ownShip.setAzimuth2Master(isMaster);
+    }
+
+    bool SimulationModel::getAzimuth1Master() const
+    {
+        return ownShip.getAzimuth1Master();
+    }
+
+    bool SimulationModel::getAzimuth2Master() const
+    {
+        return ownShip.getAzimuth2Master();
+    }
+
     void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
     {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         ownShip.setPortAzimuthAngle(angle);

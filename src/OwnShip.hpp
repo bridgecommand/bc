@@ -59,6 +59,8 @@ class OwnShip : public Ship
         void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
         void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
+        bool getAzimuth1Master() const;
+        bool getAzimuth2Master() const;
         void setPortEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setStbdEngine(irr::f32); //Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
         void setBowThruster(irr::f32 proportion); //Set the bow thruster, (-ve port, +ve stbd), range is +-1. This method limits the range applied

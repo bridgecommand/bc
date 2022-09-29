@@ -581,6 +581,16 @@ void OwnShip::setAzimuth2Master(bool isMaster) {
 }
 
 
+bool OwnShip::getAzimuth1Master() const
+{
+    return azimuth1Master;
+}
+
+bool OwnShip::getAzimuth2Master() const
+{
+    return azimuth2Master;
+}
+
 void OwnShip::setPortEngine(irr::f32 port)
 {
     

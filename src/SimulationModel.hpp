@@ -69,6 +69,10 @@ public:
     void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
     irr::f32 getRudder() const;
     irr::f32 getWheel() const; // DEE
+    void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
+    void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
+    bool getAzimuth1Master() const;
+    bool getAzimuth2Master() const;
     void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
     void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
