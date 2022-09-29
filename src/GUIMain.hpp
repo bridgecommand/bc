@@ -41,10 +41,10 @@ struct GUIData {
     irr::f32 rudder;
     irr::f32 bowThruster;
     irr::f32 sternThruster;
-// DEE vvvv
     irr::f32 wheel;
+    irr::f32 portAzimuthAngle;
+    irr::f32 stbdAzimuthAngle;
     irr::f32 RateOfTurn;
-// DEE ^^^
     irr::f32 depth;
     irr::f32 weather;
     irr::f32 rain;

@@ -1337,6 +1337,8 @@ SimulationModel::~SimulationModel()
         guiData->stbdEng = ownShip.getStbdEngine();
         guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
         guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
+        guiData->portAzimuthAngle = ownShip.getPortAzimuthAngle();
+        guiData->stbdAzimuthAngle = ownShip.getStbdAzimuthAngle();
         guiData->bowThruster = ownShip.getBowThruster();
         guiData->sternThruster = ownShip.getSternThruster();
         guiData->depth = ownShip.getDepth();

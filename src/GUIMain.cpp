@@ -789,6 +789,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         spdScrollbar->setPos(Utilities::round(guiData->spd));
         if (portScrollbar) {portScrollbar->setPos(Utilities::round(guiData->portEng * -100));}//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         if (stbdScrollbar) {stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));}
+        
+        if (azimuth1Control) {
+            azimuth1Control->setMag(Utilities::round(guiData->portEng * 100));
+            azimuth1Control->setPos(Utilities::round(guiData->portAzimuthAngle));
+        }
+        
+        if (azimuth2Control) {
+            azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
+            azimuth2Control->setPos(Utilities::round(guiData->stbdAzimuthAngle));
+        }
+
         //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
         if (wheelScrollbar) {
             wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));
