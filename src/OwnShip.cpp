@@ -568,6 +568,10 @@ void OwnShip::setAzimuth1Master(bool isMaster) {
     if (azimuth1Master) {
         // Can't have both as master
         azimuth2Master = false;
+
+        // Update controls to match current azimuth1 settings
+        stbdAzimuthAngle = portAzimuthAngle;
+        stbdEngine = portEngine;
     }
 } 
 
@@ -577,6 +581,10 @@ void OwnShip::setAzimuth2Master(bool isMaster) {
     if (azimuth2Master) {
         // Can't have both as master
         azimuth1Master = false;
+
+        // Update controls to match current azimuth2 settings
+        portAzimuthAngle = stbdAzimuthAngle;
+        portEngine = stbdEngine;
     }
 }
 

@@ -143,6 +143,27 @@
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
+            
+            if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED)
+            {
+                if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX) {
+                    model->setAzimuth1Master(((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
+                }
+
+                if (id == GUIMain::GUI_ID_AZIMUTH_2_MASTER_CHECKBOX) {
+                    model->setAzimuth2Master(((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
+                }
+
+                if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX)) {
+                    //ARPA on/off checkbox
+                    bool boxState = ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
+                    model->setArpaOn(boxState);
+
+                    //Set the linked checkbox (big/small radar window)
+                    gui->setARPACheckboxes(boxState);
+                }
+            }
+
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED)
             {
 
@@ -220,7 +241,6 @@
                     model->setPortEngine(power);
                 }
               }
-
 
             //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
 
@@ -451,16 +471,6 @@
                 }
 
             }//Combo box
-
-            if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX) && event.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
-                //ARPA on/off checkbox
-                bool boxState = ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
-                model->setArpaOn(boxState);
-
-                //Set the linked checkbox (big/small radar window)
-                gui->setARPACheckboxes(boxState);
-
-            }
 
             if ( (id==GUIMain::GUI_ID_ARPA_VECTOR_TIME_BOX || id==GUIMain::GUI_ID_BIG_ARPA_VECTOR_TIME_BOX) && (event.GUIEvent.EventType == irr::gui::EGET_EDITBOX_ENTER || event.GUIEvent.EventType == irr::gui::EGET_ELEMENT_FOCUS_LOST ) ) {
                 std::wstring boxWString = std::wstring(((irr::gui::IGUIEditBox*)event.GUIEvent.Caller)->getText());

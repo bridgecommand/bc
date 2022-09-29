@@ -44,6 +44,8 @@ struct GUIData {
     irr::f32 wheel;
     irr::f32 portAzimuthAngle;
     irr::f32 stbdAzimuthAngle;
+    bool azimuth1Master;
+    bool azimuth2Master;
     irr::f32 RateOfTurn;
     irr::f32 depth;
     irr::f32 weather;
@@ -82,6 +84,8 @@ public:
         GUI_ID_STBD_SCROLL_BAR,
         GUI_ID_AZIMUTH_1,
         GUI_ID_AZIMUTH_2,
+        GUI_ID_AZIMUTH_1_MASTER_CHECKBOX,
+        GUI_ID_AZIMUTH_2_MASTER_CHECKBOX,
         GUI_ID_RUDDER_SCROLL_BAR,
 // DEE vvvv
 	GUI_ID_WHEEL_SCROLL_BAR,
@@ -186,6 +190,9 @@ private:
 
     irr::gui::AzimuthDial* azimuth1Control;
     irr::gui::AzimuthDial* azimuth2Control;
+
+    irr::gui::IGUICheckBox* azimuth1Master;
+    irr::gui::IGUICheckBox* azimuth2Master;
 
     irr::gui::IGUIListBox* arpaList;
     irr::gui::IGUIListBox* arpaText;

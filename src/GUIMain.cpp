@@ -171,10 +171,19 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2);
             azimuth1Control->setMax(360);
             azimuth2Control->setMax(360);
+
+            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.88*sh,0.045*su,0.90*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
+            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.095*su,0.88*sh,0.115*su,0.90*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
+
+            azimuth1Master->setToolTipText(language->translate("azimuthMaster").c_str());
+            azimuth2Master->setToolTipText(language->translate("azimuthMaster").c_str());
+
         } else {
             // Not azimuth drive
             azimuth1Control = 0;
             azimuth2Control = 0;
+            azimuth1Master = 0;
+            azimuth2Master = 0;
             portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
             portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
             portText->setOverrideColor(irr::video::SColor(255,128,0,0));
@@ -798,6 +807,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (azimuth2Control) {
             azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
             azimuth2Control->setPos(Utilities::round(guiData->stbdAzimuthAngle));
+        }
+
+        if (azimuth1Master) {
+            azimuth1Master->setChecked(guiData->azimuth1Master);
+        }
+
+        if (azimuth2Master) {
+            azimuth2Master->setChecked(guiData->azimuth2Master);
         }
 
         //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
