@@ -255,12 +255,16 @@ int main(int argc, char ** argv)
     joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
     joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+    joystickSetup.azimuth1JoystickAxis = IniFile::iniFileTou32(iniFilename, "portAzimuth_channel")-1;
+    joystickSetup.azimuth2JoystickAxis = IniFile::iniFileTou32(iniFilename, "stbdAzimuth_channel")-1;
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
     //Which joystick number
     joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
     joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
+    joystickSetup.azimuth1JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_portAzimuth");
+    joystickSetup.azimuth2JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbdAzimuth");
     joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
     joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
     //Joystick button mapping

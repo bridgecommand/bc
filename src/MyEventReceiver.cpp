@@ -837,6 +837,8 @@
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
             irr::f32 newJoystickRudder = previousJoystickRudder;
+            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
+            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
             irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
             irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
@@ -846,36 +848,51 @@
                 //Check which type we correspond to
                 if (thisJoystick == joystickSetup.portJoystickNo && thisAxis == joystickSetup.portJoystickAxis) {
                     newJoystickPort = event.JoystickEvent.Axis[joystickSetup.portJoystickAxis]/32768.0;
-                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickPort==INFINITY) {
                         previousJoystickPort = newJoystickPort;
                     }
                 }
                 if (thisJoystick == joystickSetup.stbdJoystickNo && thisAxis == joystickSetup.stbdJoystickAxis) {
                     newJoystickStbd = event.JoystickEvent.Axis[joystickSetup.stbdJoystickAxis]/32768.0;
-                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickStbd==INFINITY) {
                         previousJoystickStbd = newJoystickStbd;
                     }
                 }
                 if (thisJoystick == joystickSetup.rudderJoystickNo && thisAxis == joystickSetup.rudderJoystickAxis) {
                     newJoystickRudder = 30*event.JoystickEvent.Axis[joystickSetup.rudderJoystickAxis]/32768.0;
-                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickRudder==INFINITY) {
                         previousJoystickRudder = newJoystickRudder;
                     }
                 }
 
+                if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
+                    newJoystickAzimuthAngPort = 360*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickAzimuthAngPort==INFINITY) {
+                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
+                    }
+                }
+                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
+                    newJoystickAzimuthAngStbd = 360*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickAzimuthAngStbd==INFINITY) {
+                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
+                    }
+                }
+
                 if (thisJoystick == joystickSetup.bowThrusterJoystickNo && thisAxis == joystickSetup.bowThrusterJoystickAxis) {
                     newJoystickBowThruster = event.JoystickEvent.Axis[joystickSetup.bowThrusterJoystickAxis]/32768.0;
-                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickBowThruster==INFINITY) {
                         previousJoystickBowThruster = newJoystickBowThruster;
                     }
                 }
                 if (thisJoystick == joystickSetup.sternThrusterJoystickNo && thisAxis == joystickSetup.sternThrusterJoystickAxis) {
                     newJoystickSternThruster = event.JoystickEvent.Axis[joystickSetup.sternThrusterJoystickAxis]/32768.0;
-                    //If previous value is NAN, store current value in previous and current, otherwise only in current
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickSternThruster==INFINITY) {
                         previousJoystickSternThruster = newJoystickSternThruster;
                     }
@@ -890,6 +907,8 @@
             irr::f32 portChange = fabs(newJoystickPort - previousJoystickPort);
             irr::f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
             irr::f32 wheelChange = fabs(newJoystickRudder - previousJoystickRudder);
+            irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
+            irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
 
 // DEE
 //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
@@ -897,7 +916,9 @@
             irr::f32 sternThrusterChange = fabs(newJoystickSternThruster - previousJoystickSternThruster);
 // DEE
 //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
-            if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
+            if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 || 
+                bowThrusterChange > 0.01 || sternThrusterChange > 0.01 ||
+                azimuth1AngChange > 0.01 || azimuth2AngChange > 0.01 ) 
             {
                 joystickChanged = true;
             }
@@ -922,6 +943,14 @@
                     model->setWheel(newJoystickRudder*joystickSetup.rudderDirection);
 //                    model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
+                }
+
+                if (newJoystickAzimuthAngPort<INFINITY) {
+                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort);
+                }
+
+                if (newJoystickAzimuthAngStbd<INFINITY) {
+                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd);
                 }
 
                 if (newJoystickBowThruster<INFINITY) {
