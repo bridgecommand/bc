@@ -42,6 +42,7 @@ sternThruster="Stern Thruster"
 
 wheelText="Wheel & Rudder position"
 rotText="Rate of turn"
+azimuthMaster="Set this control as master"
 
 radarMainTab="Main"
 onoff="On/Off"
