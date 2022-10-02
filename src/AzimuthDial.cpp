@@ -22,7 +22,7 @@ AzimuthDial::AzimuthDial(core::position2d< s32 > centre, u32 radius, IGUIEnviron
 				IGUIScrollBar(environment, parent, id, core::rect<s32>(centre.X - radius, centre.Y - radius, centre.X + radius,centre.Y + radius)),
 				centre(centre), radius(radius),
 				Dragging(false), Pos(0), Mag(0), DrawRad(0), DrawAngle(0), DrawHeight(0),
-				Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0)
+				Min(0), Max(360), SmallStep(10), LargeStep(50), DesiredPos(0)
 {
 
 	#ifdef _DEBUG
@@ -238,7 +238,13 @@ void AzimuthDial::draw()
 		endPoint.X = absoluteCentre.X + DrawRad*sin(DrawAngle);
 		endPoint.Y = absoluteCentre.Y - DrawRad*cos(DrawAngle);
 
-		Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,0,0,0));
+		if (DrawRad > 0) {
+            // Normal
+            Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,0,0,0));
+		} else {
+		    // Draw in red if negative engine
+		    Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,255,0,0));
+		}
 	}
 
 }
@@ -288,11 +294,16 @@ s32 AzimuthDial::getMagFromMousePos(const core::position2di &pos) const
 //! sets the position of the scrollbar
 void AzimuthDial::setPos(s32 pos)
 {
-	Pos = core::s32_clamp ( pos, Min, Max );
+	while (pos < Min) {
+        pos += 360;
+	}
+	while (pos > Max) {
+        pos -= 360;
+	}
 
-	f32 f = RelativeRect.getHeight()/ range();
+	Pos = pos;
 
-    DrawAngle = (Pos-Min) * 360 / range() * core::DEGTORAD; //0-360 degrees for display
+	DrawAngle = (Pos-Min) * 360 / range() * core::DEGTORAD; //0-360 degrees for display
     DrawHeight = RelativeRect.getWidth();
 
 }
@@ -303,10 +314,10 @@ s32 AzimuthDial::getMag() const
 	return Mag;
 }
 
-//! sets the magnitude of the scrollbar (0-100)
+//! sets the magnitude of the scrollbar (-100-100)
 void AzimuthDial::setMag(s32 mag)
 {
-	Mag = core::s32_clamp(mag, 0, 100);
+	Mag = core::s32_clamp(mag, -100, 100);
 	DrawRad = radius * ((f32) Mag / 100.0);
 }
 

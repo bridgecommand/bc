@@ -143,7 +143,7 @@
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
-            
+
             if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED)
             {
                 if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX) {
@@ -293,12 +293,12 @@
 
 
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
-                
-                if (id == GUIMain::GUI_ID_EXIT_BUTTON) 
+
+                if (id == GUIMain::GUI_ID_EXIT_BUTTON)
                 {
                     startShutdown();
                 }
-                
+
                 if (id == GUIMain::GUI_ID_START_BUTTON)
                 {
                     model->setAccelerator(1.0);
@@ -402,7 +402,7 @@
                     gui->setExtraControlsWindowVisible(true);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON)
                 {
                     model->setRudderPumpState(1,true);
                     if (model->getRudderPumpState(2)) {
@@ -410,13 +410,13 @@
                     }
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON)
                 {
                     model->setRudderPumpState(1,false);
                     model->setAlarm(true);
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON)
                 {
                     model->setRudderPumpState(2,true);
                     if (model->getRudderPumpState(1)) {
@@ -424,23 +424,23 @@
                     }
                 }
 
-                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON) 
+                if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON)
                 {
                     model->setRudderPumpState(2,false);
                     model->setAlarm(true);
                 }
 
-                if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON) 
+                if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON)
                 {
                     model->setFollowUpRudderWorking(true);
                 }
 
-                if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON) 
+                if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON)
                 {
                     model->setFollowUpRudderWorking(false);
                 }
 
-                if (id ==GUIMain::GUI_ID_ACK_ALARMS_BUTTON) 
+                if (id ==GUIMain::GUI_ID_ACK_ALARMS_BUTTON)
                 {
                     model->setAlarm(false);
                 }
@@ -621,7 +621,7 @@
                             break;
                         case irr::KEY_SPACE:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                            model->changeView(); 
+                            model->changeView();
                             model->setMoveViewWithPrimary(false); //Don't allow the view to change automatically after this
                             break;
                         default:
@@ -869,14 +869,14 @@
                 }
 
                 if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
-                    newJoystickAzimuthAngPort = 360*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
+                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickAzimuthAngPort==INFINITY) {
                         previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
                     }
                 }
                 if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
-                    newJoystickAzimuthAngStbd = 360*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
                     if (previousJoystickAzimuthAngStbd==INFINITY) {
                         previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
@@ -916,9 +916,9 @@
             irr::f32 sternThrusterChange = fabs(newJoystickSternThruster - previousJoystickSternThruster);
 // DEE
 //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
-            if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 || 
+            if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 ||
                 bowThrusterChange > 0.01 || sternThrusterChange > 0.01 ||
-                azimuth1AngChange > 0.01 || azimuth2AngChange > 0.01 ) 
+                azimuth1AngChange > 0.01 || azimuth2AngChange > 0.01 )
             {
                 joystickChanged = true;
             }
@@ -946,11 +946,11 @@
                 }
 
                 if (newJoystickAzimuthAngPort<INFINITY) {
-                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort);
+                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.rudderDirection);
                 }
 
                 if (newJoystickAzimuthAngStbd<INFINITY) {
-                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd);
+                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.rudderDirection);
                 }
 
                 if (newJoystickBowThruster<INFINITY) {
@@ -969,13 +969,13 @@
             //Make sure the joystickPreviousButtonStates has an entry for this joystick
             while (joystickPreviousButtonStates.size() <= thisJoystick) {
                 joystickPreviousButtonStates.push_back(0); //All zeros equivalent to no buttons pressed
-            } 
-            
+            }
+
             irr::u32 thisButtonState = event.JoystickEvent.ButtonStates;
             irr::u32 previousButtonState = joystickPreviousButtonStates.at(thisJoystick);
 
             //Horn
-            if (thisJoystick == joystickSetup.joystickNoHorn) { 
+            if (thisJoystick == joystickSetup.joystickNoHorn) {
                 if (IsButtonPressed(joystickSetup.joystickButtonHorn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonHorn,previousButtonState)) {
                     model->startHorn();
                 }
@@ -984,7 +984,7 @@
                 }
             }
             //Change view
-            if (thisJoystick == joystickSetup.joystickNoChangeView) { 
+            if (thisJoystick == joystickSetup.joystickNoChangeView) {
                 if (IsButtonPressed(joystickSetup.joystickButtonChangeView,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeView,previousButtonState)) {
                     model->changeView();
                     model->setMoveViewWithPrimary(true); //Allow the view to change automatically after this
@@ -997,19 +997,19 @@
                 }
             }
             //Look step left
-            if (thisJoystick == joystickSetup.joystickNoLookStepLeft) { 
+            if (thisJoystick == joystickSetup.joystickNoLookStepLeft) {
                 if (IsButtonPressed(joystickSetup.joystickButtonLookStepLeft,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepLeft,previousButtonState)) {
                     model->lookStepLeft();
                 }
             }
             //Look step right
-            if (thisJoystick == joystickSetup.joystickNoLookStepRight) { 
+            if (thisJoystick == joystickSetup.joystickNoLookStepRight) {
                 if (IsButtonPressed(joystickSetup.joystickButtonLookStepRight,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepRight,previousButtonState)) {
                     model->lookStepRight();
                 }
             }
             //Decrease bow thrust
-            if (thisJoystick == joystickSetup.joystickNoDecreaseBowThrust) { 
+            if (thisJoystick == joystickSetup.joystickNoDecreaseBowThrust) {
                 if (IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(-0.5);
                 }
@@ -1018,7 +1018,7 @@
                 }
             }
             //Increase bow thrust
-            if (thisJoystick == joystickSetup.joystickNoIncreaseBowThrust) { 
+            if (thisJoystick == joystickSetup.joystickNoIncreaseBowThrust) {
                 if (IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust,previousButtonState)) {
                     model->setBowThrusterRate(0.5);
                 }
@@ -1027,7 +1027,7 @@
                 }
             }
             //Decrease stern thrust
-            if (thisJoystick == joystickSetup.joystickNoDecreaseSternThrust) { 
+            if (thisJoystick == joystickSetup.joystickNoDecreaseSternThrust) {
                 if (IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(-0.5);
                 }
@@ -1036,7 +1036,7 @@
                 }
             }
             //Increase stern thrust
-            if (thisJoystick == joystickSetup.joystickNoIncreaseSternThrust) { 
+            if (thisJoystick == joystickSetup.joystickNoIncreaseSternThrust) {
                 if (IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust,previousButtonState)) {
                     model->setSternThrusterRate(0.5);
                 }
@@ -1112,7 +1112,7 @@
             }
 
             //Rudder pump 1 on
-            if (thisJoystick == joystickSetup.joystickNoPump1On) { 
+            if (thisJoystick == joystickSetup.joystickNoPump1On) {
                 if (IsButtonPressed(joystickSetup.joystickButtonPump1On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On,previousButtonState)) {
                     model->setRudderPumpState(1,true);
                     if (model->getRudderPumpState(2)) {
@@ -1122,7 +1122,7 @@
             }
 
             //Rudder pump 1 off
-            if (thisJoystick == joystickSetup.joystickNoPump1Off) { 
+            if (thisJoystick == joystickSetup.joystickNoPump1Off) {
                 if (IsButtonPressed(joystickSetup.joystickButtonPump1Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1Off,previousButtonState)) {
                     model->setRudderPumpState(1,false);
                     model->setAlarm(true);
@@ -1130,7 +1130,7 @@
             }
 
             //Rudder pump 2 on
-            if (thisJoystick == joystickSetup.joystickNoPump2On) { 
+            if (thisJoystick == joystickSetup.joystickNoPump2On) {
                 if (IsButtonPressed(joystickSetup.joystickButtonPump2On,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2On,previousButtonState)) {
                     model->setRudderPumpState(2,true);
                     if (model->getRudderPumpState(1)) {
@@ -1140,7 +1140,7 @@
             }
 
             //Rudder pump 2 off
-            if (thisJoystick == joystickSetup.joystickNoPump2Off) { 
+            if (thisJoystick == joystickSetup.joystickNoPump2Off) {
                 if (IsButtonPressed(joystickSetup.joystickButtonPump2Off,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2Off,previousButtonState)) {
                     model->setRudderPumpState(2,false);
                     model->setAlarm(true);
@@ -1148,14 +1148,14 @@
             }
 
             //Follow up rudder on
-            if (thisJoystick == joystickSetup.joystickNoFollowUpOn) { 
+            if (thisJoystick == joystickSetup.joystickNoFollowUpOn) {
                 if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOn,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOn,previousButtonState)) {
                     model->setFollowUpRudderWorking(true);
                 }
             }
 
             //Follow up rudder off
-            if (thisJoystick == joystickSetup.joystickNoFollowUpOff) { 
+            if (thisJoystick == joystickSetup.joystickNoFollowUpOff) {
                 if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOff,thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOff,previousButtonState)) {
                     model->setFollowUpRudderWorking(false);
                 }
