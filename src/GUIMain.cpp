@@ -334,7 +334,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.12*sh,0.32*su,0.15*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
-        
+
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
@@ -520,7 +520,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (portScrollbar) {portScrollbar->drop();}
         if (stbdScrollbar) {stbdScrollbar->drop();}
         if (wheelScrollbar) {wheelScrollbar->drop();}
-        
+
         if (rateofturnScrollbar) {rateofturnScrollbar->drop();}
 
         if (bowThrusterScrollbar) {bowThrusterScrollbar->drop();}
@@ -728,6 +728,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (portScrollbar) {portScrollbar->setVisible(false);}
         if (azimuth1Control) {azimuth1Control->setVisible(false);}
         if (azimuth2Control) {azimuth2Control->setVisible(false);}
+        if (azimuth1Master) {azimuth1Master->setVisible(false);}
+        if (azimuth2Master) {azimuth2Master->setVisible(false);}
         if (stbdText) {stbdText->setVisible(false);}
         if (portText) {portText->setVisible(false);}
         if (wheelScrollbar) {wheelScrollbar->setVisible(false);}
@@ -798,12 +800,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         spdScrollbar->setPos(Utilities::round(guiData->spd));
         if (portScrollbar) {portScrollbar->setPos(Utilities::round(guiData->portEng * -100));}//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         if (stbdScrollbar) {stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));}
-        
+
         if (azimuth1Control) {
             azimuth1Control->setMag(Utilities::round(guiData->portEng * 100));
             azimuth1Control->setPos(Utilities::round(guiData->portAzimuthAngle));
         }
-        
+
         if (azimuth2Control) {
             azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
             azimuth2Control->setPos(Utilities::round(guiData->stbdAzimuthAngle));
@@ -1098,7 +1100,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
                 //Add to the correct box
                 if (i==selectedItem) {
                     arpaText->addItem(displayText.c_str());
-                } 
+                }
                 if (i==selectedItem2) {
                     arpaText2->addItem(displayText.c_str());
                 }
@@ -1118,7 +1120,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
                 //Add to the correct box
                 if (i==selectedItem) {
                     arpaText->addItem(displayText.c_str());
-                } 
+                }
                 if (i==selectedItem2) {
                     arpaText2->addItem(displayText.c_str());
                 }
@@ -1144,7 +1146,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
                 //Add to the correct box
                 if (i==selectedItem) {
                     arpaText->addItem(displayText.c_str());
-                } 
+                }
                 if (i==selectedItem2) {
                     arpaText2->addItem(displayText.c_str());
                 }
