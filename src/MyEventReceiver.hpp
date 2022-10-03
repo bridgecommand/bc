@@ -45,6 +45,12 @@ public:
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
+    irr::s32 azimuth1Direction;
+    irr::s32 azimuth2Direction;
+    irr::f32 azimuth1Scaling;
+    irr::f32 azimuth2Scaling;
+    irr::f32 azimuth1Offset;
+    irr::f32 azimuth2Offset;
     //Buttons:
     irr::u32 joystickNoHorn;
     irr::u32 joystickButtonHorn;

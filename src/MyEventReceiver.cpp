@@ -946,11 +946,13 @@
                 }
 
                 if (newJoystickAzimuthAngPort<INFINITY) {
-                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.rudderDirection);
+                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.azimuth1Direction*joystickSetup.azimuth1Scaling +
+                                               joystickSetup.azimuth1Offset);
                 }
 
                 if (newJoystickAzimuthAngStbd<INFINITY) {
-                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.rudderDirection);
+                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.azimuth2Direction*joystickSetup.azimuth2Scaling +
+                                               joystickSetup.azimuth2Offset);
                 }
 
                 if (newJoystickBowThruster<INFINITY) {

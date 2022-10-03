@@ -230,7 +230,7 @@ int main(int argc, char ** argv)
 	if (numberOfContactPointsZ == 0) {
 		numberOfContactPointsZ = 30;
 	}
-    
+
     irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
 
     irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
@@ -276,7 +276,7 @@ int main(int argc, char ** argv)
 
     joystickSetup.joystickNoChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_and_lock_view");
     joystickSetup.joystickButtonChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_and_lock_view")-1;
-    
+
     joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
     joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
 
@@ -339,7 +339,7 @@ int main(int argc, char ** argv)
 
     joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
     joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
-    
+
     joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
     joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
 
@@ -373,6 +373,21 @@ int main(int argc, char ** argv)
     if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
         joystickSetup.rudderDirection = -1;
     }
+
+    joystickSetup.azimuth1Direction = 1;
+    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth1_angle")==1) {
+        joystickSetup.azimuth1Direction = -1;
+    }
+
+    joystickSetup.azimuth2Direction = 1;
+    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth2_angle")==1) {
+        joystickSetup.azimuth2Direction = -1;
+    }
+
+    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
+    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
+    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
+    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
