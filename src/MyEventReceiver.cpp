@@ -35,7 +35,9 @@
 		//store device
 		device = dev;
 
-		lastShownJoystickStatus = device->getTimer()->getRealTime()-5000;
+		lastShownJoystickStatus = device->getTimer()->getRealTime()-5000; // Show joystick raw data every 5s in log
+		lastTimeAzimuth1MasterChanged = device->getTimer()->getRealTime()-500; // Allow azimuth master to change every 500ms (debounce)
+		lastTimeAzimuth2MasterChanged = device->getTimer()->getRealTime()-500; // Allow azimuth master to change every 500ms (debounce)
 
 		//set up joystick if present, and inform user what's available
 		dev->activateJoysticks(joystickInfo);
@@ -1184,6 +1186,28 @@
             if (thisJoystick == joystickSetup.joystickNoAckAlarm) {
                 if (IsButtonPressed(joystickSetup.joystickButtonAckAlarm,thisButtonState)) {
                     model->setAlarm(false);
+                }
+            }
+
+            if (thisJoystick == joystickSetup.joystickNoAzimuth1Master) {
+                if (IsButtonPressed(joystickSetup.joystickButtonAzimuth1Master,thisButtonState)) {
+                    // debounce:
+                    if (device->getTimer()->getRealTime()-lastTimeAzimuth1MasterChanged > 500) {
+                        // Allow azimuth master to change every 500ms (debounce)
+                        model->setAzimuth1Master(!model->getAzimuth1Master());
+                        lastTimeAzimuth1MasterChanged=device->getTimer()->getRealTime();
+                    }
+                }
+            }
+
+            if (thisJoystick == joystickSetup.joystickNoAzimuth2Master) {
+                if (IsButtonPressed(joystickSetup.joystickButtonAzimuth2Master,thisButtonState)) {
+                    // debounce:
+                    if (device->getTimer()->getRealTime()-lastTimeAzimuth2MasterChanged > 500) {
+                        // Allow azimuth master to change every 500ms (debounce)
+                        model->setAzimuth2Master(!model->getAzimuth2Master());
+                        lastTimeAzimuth2MasterChanged=device->getTimer()->getRealTime();
+                    }
                 }
             }
 

@@ -104,6 +104,10 @@ public:
     irr::u32 joystickButtonNFUStbd;
     irr::u32 joystickNoAckAlarm;
     irr::u32 joystickButtonAckAlarm;
+    irr::u32 joystickButtonAzimuth1Master;
+    irr::u32 joystickButtonAzimuth2Master;
+    irr::u32 joystickNoAzimuth1Master;
+    irr::u32 joystickNoAzimuth2Master;
     irr::u32 joystickNoPOV;
     irr::u16 joystickPOVLookLeft;
     irr::u16 joystickPOVLookRight;
@@ -148,6 +152,8 @@ private:
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;
     irr::u32 lastShownJoystickStatus;
+    irr::u32 lastTimeAzimuth1MasterChanged;
+    irr::u32 lastTimeAzimuth2MasterChanged;
 
     irr::u16 previousJoystickPOV;
     bool previousJoystickPOVInitialised;

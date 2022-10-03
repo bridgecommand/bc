@@ -346,6 +346,11 @@ int main(int argc, char ** argv)
     joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
     joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
 
+    joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
+    joystickSetup.joystickNoAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth2_master");
+    joystickSetup.joystickButtonAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth1_master")-1;
+    joystickSetup.joystickButtonAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth2_master")-1;
+
     joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
     joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
     joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
