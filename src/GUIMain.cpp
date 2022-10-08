@@ -1247,7 +1247,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //std::cout << radius*2 << std::endl;
 
         //If full screen radar, draw a 4:3 box around the radar display area
-        if (radarLarge) {
+        if (radarLarge && !azimuthDrive) {
             device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,irr::video::SColor(255,0,0,0));
         }
 
