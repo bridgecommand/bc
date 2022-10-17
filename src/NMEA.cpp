@@ -18,6 +18,7 @@
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
+#include "AIS.hpp"
 #include <iostream>
 #include <string>
 
@@ -93,13 +94,47 @@ void NMEA::updateNMEA()
 
     irr::u32 now = device->getTimer()->getTime();
 
+    // AIS messages are scheduled based on amount of otherShips and their speed
+    // check each frame if a new report should be sent
+    if (model->getNumberOfOtherShips() >= 0) { // only consider AIS if there are other ships
+        std::string messageToSend = "";
+        // which ships are ready to send?
+        std::vector<irr::u32> readyShips = AIS::getReadyShips(model, now);
+        for (auto ship : readyShips) {
+            // 8.3.90 AIS VHF data-link message (6-bit, iaw ITU-R M.1371)
+            // Position Report Class A
+            int fragments = 1;
+            int fragmentNumber = 1;
+            char radioChannel = 'B';
+            std::string data;
+            int fillBits;
+            bool done;
+            std::tie(data, fillBits) = AIS::generateClassAReport(model, ship);
+
+            snprintf(messageBuffer,maxSentenceChars,"!AIVDM,%d,%d,,%c,%s,%d",
+                    fragments,
+                    fragmentNumber,
+                    radioChannel,
+                    data.c_str(),
+                    fillBits
+                    );
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            if (messageToSend.length() > 800) { // ensure we don't build too big of a UDP packet
+                messageQueue.push_back(messageToSend);
+                messageToSend = "";
+            }
+        }
+        readyShips.clear();
+        if (messageToSend != "") {
+            messageQueue.push_back(messageToSend);
+        }
+    }
+
     // if sufficient time elapsed since the last sensor report was sent,
     // construct and send sentence(s) for the next sensor
     if (now - lastSendEvent < sensorReportInterval) {
         return;
     }
-
-
 
     std::string dateTimeString = Utilities::ttos(model->getTimestamp());
 
@@ -266,12 +301,6 @@ void NMEA::updateNMEA()
         /*
         case HBT: // 8.3.42 Heartbeat supervision sentence (for engine room)
             snprintf(messageBuffer,maxSentenceChars,"$ERHBT,");
-            messageToSend.append(addChecksum(std::string(messageBuffer)));
-            break;
-        */
-        /*
-        case VDM: // 8.3.90 AIS VHF data-link message (6-bit, iaw ITU-R M.1371)
-            snprintf(messageBuffer,maxSentenceChars,"!AIVDM,");
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         */
