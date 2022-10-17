@@ -817,8 +817,6 @@ int main(int argc, char ** argv)
     //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
-    const irr::u32 NMEA_UPDATE_MS = 75;
-    irr::u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
 //    Profiling
 //    Profiler networkProfile("Network");
@@ -841,24 +839,22 @@ int main(int argc, char ** argv)
         network->update();
 //        networkProfile.toc();
 
-        //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
+        // Update NMEA, check if new sensor or AIS data is ready to be sent
 //        nmeaProfile.tic();
         }{ IPROF("NMEA");
-        if (device->getTimer()->getTime() >= nextNMEATime) {
 
-            if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
-                nmea.updateNMEA();
+        if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
+            nmea.updateNMEA();
 
-                if (!nmeaSerialPortName.empty()) {
-                    nmea.sendNMEASerial();
-                }
-
-                if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
-                    nmea.sendNMEAUDP();
-                }
-
-            nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
+            if (!nmeaSerialPortName.empty()) {
+                nmea.sendNMEASerial();
             }
+
+            if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
+                nmea.sendNMEAUDP();
+            }
+
+            nmea.clearQueue();
         }
 //        nmeaProfile.toc();
 
