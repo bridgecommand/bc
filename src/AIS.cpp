@@ -29,7 +29,8 @@ int AIS::currentShip = 0;
 bool AIS::initialized = false;
 std::vector<irr::u32> AIS::lastUpdates;
 std::vector<bool> AIS::classAReport(168, 0);
-constexpr const int AIS::mmsis[] = {211050800, 226050800, 227050800, 228050800};
+// arbitrary MMSIs from European countries to assign to otherShips
+constexpr const int AIS::mmsis[] = {211032189, 226155323, 232984311, 224513921, 245193002, 247829914};
 
 std::vector<irr::u32> AIS::getReadyShips(SimulationModel* model, irr::u32 now) {
     if (!initialized) {
