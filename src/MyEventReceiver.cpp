@@ -950,11 +950,13 @@
                 if (newJoystickAzimuthAngPort<INFINITY) {
                     model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.azimuth1Direction*joystickSetup.azimuth1Scaling +
                                                joystickSetup.azimuth1Offset);
+                    previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
                 }
 
                 if (newJoystickAzimuthAngStbd<INFINITY) {
                     model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.azimuth2Direction*joystickSetup.azimuth2Scaling +
                                                joystickSetup.azimuth2Offset);
+                    previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
                 }
 
                 if (newJoystickBowThruster<INFINITY) {
