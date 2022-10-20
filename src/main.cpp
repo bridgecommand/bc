@@ -124,144 +124,29 @@ irr::core::stringw getCredits(){
     return creditsString;
 }
 
-#ifdef _WIN32
-static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
-	WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_COMMAND:
-	{
-		HWND hwndCtl = (HWND)lParam;
-		int code = HIWORD(wParam);
-	}
-	break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-
-	}
-
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-#endif
-
-int main(int argc, char ** argv)
-{
-
-    #ifdef WITH_PROFILING
-    IPROF_FUNC;
-    #endif
-
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
-
-    //Mac OS:
-	#ifdef __APPLE__
-    //Find starting folder
-    char exePath[1024];
-    uint32_t pathSize = sizeof(exePath);
-    std::string exeFolderPath = "";
-    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
-        std::string exePathString(exePath);
-        size_t pos = exePathString.find_last_of("\\/");
-        if (std::string::npos != pos) {
-            exeFolderPath = exePathString.substr(0, pos);
-        }
-    }
-    //change up from BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
-    exeFolderPath.append("/../../../../Resources");
-    //change to this path now, so ini file is read
-    chdir(exeFolderPath.c_str());
-    //Note, we use this again after the createDevice call
-	#endif
-
-    //User read/write location - look in here first and the exe folder second for files
-    std::string userFolder = Utilities::getUserDir();
-
-    //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
-    //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
-    }
-
-    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
-        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
-        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
-    }
-
-    #ifdef __arm__
-    if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
-        setenv("PA_ALSA_PLUGHW", "1", true);
-    }
-    #endif
-
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
-    bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
-	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
-	#ifdef __APPLE__
-	if (fakeFullScreen) {
-		fullScreen = true; //Fall back for mac
-	}
-	#endif
-	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
-    irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
-	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
-	if (directX == 1) {
-		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
-	}
-	irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
-	if (waterSegments == 0) {
-		waterSegments = 32;
-	}
-    irr::u32 numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
-	if (numberOfContactPointsX == 0) {
-		numberOfContactPointsX = 10;
-	}
-    irr::u32 numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
-	if (numberOfContactPointsY == 0) {
-		numberOfContactPointsY = 30;
-	}
-    irr::u32 numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
-	if (numberOfContactPointsZ == 0) {
-		numberOfContactPointsZ = 30;
-	}
-
-    irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
-
-    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
-    //Initial view configuration
-    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
-    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
-    if (viewAngle <= 0) {
-        viewAngle = 90;
-    }
-
-    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
-    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
-    if (cameraMinDistance<=0) {
-        cameraMinDistance = 1;
-    }
-    if (cameraMaxDistance<=0) {
-        cameraMaxDistance = 6*M_IN_NM;
-    }
-
+JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    if (isAzimuthDrive) {
+        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttleAzimuth_channel")-1;
+        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttleAzimuth_channel")-1;
+    } else {
+        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
+        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    }
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
     joystickSetup.azimuth1JoystickAxis = IniFile::iniFileTou32(iniFilename, "portAzimuth_channel")-1;
     joystickSetup.azimuth2JoystickAxis = IniFile::iniFileTou32(iniFilename, "stbdAzimuth_channel")-1;
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
     //Which joystick number
-    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
+    if (isAzimuthDrive) {
+        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port_throttleAzimuth");
+        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd_throttleAzimuth");
+    } else {
+        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");     
+    }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
     joystickSetup.azimuth1JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_portAzimuth");
     joystickSetup.azimuth2JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbdAzimuth");
@@ -394,6 +279,136 @@ int main(int argc, char ** argv)
     joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
     joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
 
+    return joystickSetup;
+}
+
+#ifdef _WIN32
+static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_COMMAND:
+	{
+		HWND hwndCtl = (HWND)lParam;
+		int code = HIWORD(wParam);
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	}
+
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+#endif
+
+int main(int argc, char ** argv)
+{
+
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
+    #ifdef FOR_DEB
+    chdir("/usr/share/bridgecommand");
+    #endif // FOR_DEB
+
+    //Mac OS:
+	#ifdef __APPLE__
+    //Find starting folder
+    char exePath[1024];
+    uint32_t pathSize = sizeof(exePath);
+    std::string exeFolderPath = "";
+    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
+        std::string exePathString(exePath);
+        size_t pos = exePathString.find_last_of("\\/");
+        if (std::string::npos != pos) {
+            exeFolderPath = exePathString.substr(0, pos);
+        }
+    }
+    //change up from BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
+    exeFolderPath.append("/../../../../Resources");
+    //change to this path now, so ini file is read
+    chdir(exeFolderPath.c_str());
+    //Note, we use this again after the createDevice call
+	#endif
+
+    //User read/write location - look in here first and the exe folder second for files
+    std::string userFolder = Utilities::getUserDir();
+
+    //Read basic ini settings
+    std::string iniFilename = "bc5.ini";
+    //Use local ini file if it exists
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+
+    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
+        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
+        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
+    }
+
+    #ifdef __arm__
+    if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
+        setenv("PA_ALSA_PLUGHW", "1", true);
+    }
+    #endif
+
+    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
+	#ifdef __APPLE__
+	if (fakeFullScreen) {
+		fullScreen = true; //Fall back for mac
+	}
+	#endif
+	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+    irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
+	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
+	if (directX == 1) {
+		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
+	}
+	irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
+	if (waterSegments == 0) {
+		waterSegments = 32;
+	}
+    irr::u32 numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
+	if (numberOfContactPointsX == 0) {
+		numberOfContactPointsX = 10;
+	}
+    irr::u32 numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
+	if (numberOfContactPointsY == 0) {
+		numberOfContactPointsY = 30;
+	}
+    irr::u32 numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
+	if (numberOfContactPointsZ == 0) {
+		numberOfContactPointsZ = 30;
+	}
+
+    irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
+
+    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
+    //Initial view configuration
+    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+    if (viewAngle <= 0) {
+        viewAngle = 90;
+    }
+
+    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+    if (cameraMinDistance<=0) {
+        cameraMinDistance = 1;
+    }
+    if (cameraMaxDistance<=0) {
+        cameraMaxDistance = 6*M_IN_NM;
+    }
+
+    
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
@@ -775,6 +790,9 @@ int main(int argc, char ** argv)
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+
+    //load joystick setup
+    JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
