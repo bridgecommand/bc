@@ -34,12 +34,16 @@ public:
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
+    void clearQueue();
     enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, /*RSD,*/ ZDA, /*OSD, POS,*/ DTM, HDT, DPT, ROT/*, VTG, HRM, VDM, VDO, HBT*/ };
 
 private:
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
+    irr::u32 lastSendEvent; // when was the last time an NMEA message was sent
+    static const irr::u32 sensorReportInterval = 100; // milliseconds between sensor reports
+    std::vector<std::string> messageQueue;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
     const int maxMessages = (ROT - RMC) + 1; // how many messages are defined
@@ -49,7 +53,7 @@ private:
     int currentMessageType; // sequentially send different sentences
     asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
-    //asio::ip::udp::socket* socket;
+    asio::ip::udp::socket* socket;
 };
 
 #endif // __NMEA_HPP_INCLUDED__

@@ -37,6 +37,7 @@ find_package(Threads REQUIRED)
 set(BC_SOURCES
     iprof.cpp
     main.cpp
+    AIS.cpp
     Angles.cpp
     AzimuthDial.cpp
     Buoy.cpp

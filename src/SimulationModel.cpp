@@ -339,6 +339,14 @@ SimulationModel::~SimulationModel()
         return otherShips.getPosition(number).Z + offsetPosition.Z;
     }
 
+    irr::f32 SimulationModel::getOtherShipLong(int number) const{
+        return terrain.xToLong(getOtherShipPosX(number));
+    }
+
+    irr::f32 SimulationModel::getOtherShipLat(int number) const{
+        return terrain.zToLat(getOtherShipPosZ(number));
+    }
+
     irr::f32 SimulationModel::getOtherShipHeading(int number) const{
         return otherShips.getHeading(number);
     }

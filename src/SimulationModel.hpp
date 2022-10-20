@@ -120,6 +120,8 @@ public:
     std::string getOtherShipName(int number) const;
     irr::f32 getOtherShipPosX(int number) const;
     irr::f32 getOtherShipPosZ(int number) const;
+    irr::f32 getOtherShipLat(int number) const;
+    irr::f32 getOtherShipLong(int number) const;
     irr::f32 getOtherShipHeading(int number) const;
     irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
     irr::u32 getOtherShipMMSI(int number) const;
