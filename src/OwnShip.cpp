@@ -542,7 +542,7 @@ void OwnShip::setPortAzimuthAngle(irr::f32 angle)
          
     if (azimuth1Master) {
         // If linked, set the other engine
-        stbdAzimuthAngle = angle;
+        stbdAzimuthAngle = portAzimuthAngle;
     }
 }
 
@@ -558,7 +558,7 @@ void OwnShip::setStbdAzimuthAngle(irr::f32 angle)
 
     if (azimuth2Master) {
         // If linked, set the other engine
-        portAzimuthAngle = angle;
+        portAzimuthAngle = stbdAzimuthAngle;
     }
 }
 
@@ -982,32 +982,18 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //Apply turn
         hdg += rateOfTurn*deltaTime*irr::core::RADTODEG; //Deg
 
-        /*
-        //Apply buffeting from waves
-        irr::f32 buffetAngle= buffet*weather*sin(scenarioTime*2*PI/buffetPeriod)*deltaTime;//Deg
-        buffetAngle = buffetAngle * (irr::f32)std::rand()/RAND_MAX;
-
-        hdg += buffetAngle;
-        */
-
-        // DEE vvvvvvvvvvvvvvvvvv  Rudder Follow up code
+        // Limit rudder rate of turn
         irr::f32 MaxRudderInDtime=rudder+rudderMaxSpeed*deltaTime*(rudderPump1Working*0.5 + rudderPump2Working*0.5);
         irr::f32 MinRudderInDtime=rudder-rudderMaxSpeed*deltaTime*(rudderPump1Working*0.5 + rudderPump2Working*0.5);
-
         if (wheel>MaxRudderInDtime) {
-		rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
-        	} else { // wheel < MaxRudderInDtime
-                if (wheel>MinRudderInDtime) {
-		rudder = wheel; // rudder can turn to the wheel setting
+		    rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
+        } else { 
+            if (wheel>MinRudderInDtime) {
+		        rudder = wheel; // rudder can turn to the wheel setting
 			} else {
 				rudder = MinRudderInDtime; // rudder as far to port as time will allow
-				}
+			}
 		}
-
-
-        // DEE ^^^^^^^^^^^^^^^^^^
-
-
 
 
     } else //End of engine mode

@@ -65,6 +65,8 @@
 		previousJoystickRudder = INFINITY;
 		previousJoystickBowThruster = INFINITY;
 		previousJoystickSternThruster = INFINITY;
+        previousJoystickAzimuthAngPort = INFINITY;
+        previousJoystickAzimuthAngStbd = INFINITY;
 
         previousJoystickPOVInitialised = false;
 
@@ -79,9 +81,6 @@
 
     bool MyEventReceiver::OnEvent(const irr::SEvent& event)
 	{
-
-
-
 
         //std::cout << "Any event in receiver" << std::endl;
         //From log
@@ -836,6 +835,7 @@
 
         	}
 
+            // Keep joystick values the same unless they are being changed by user input
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
             irr::f32 newJoystickRudder = previousJoystickRudder;
