@@ -89,6 +89,8 @@
 			<Add directory="./libs/libsndfile/include" />
 			<Add directory="libs/enet-1.3.14/include" />
 		</Compiler>
+		<Unit filename="AIS.cpp" />
+		<Unit filename="AIS.hpp" />
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
 		<Unit filename="AzimuthDial.cpp" />
