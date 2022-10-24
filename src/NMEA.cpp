@@ -15,19 +15,24 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "NMEA.hpp"
+#include "Autopilot.hpp"
+#include "NMEASentences.hpp"
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
 #include "AIS.hpp"
 #include <iostream>
+#include <stdexcept>
 #include <string>
+#include <thread>
+#include <vector>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev) : autopilot(model) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
     device = dev; //Store pointer to irrlicht device
-
+   
     messageQueue = {};
     lastSendEvent = 0;
     currentMessageType = 0;
@@ -42,6 +47,13 @@ NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBa
     } catch (std::exception& e) {
         device->getLogger()->log(e.what());
     }
+
+    // set up listening thread
+    terminateNmeaReceive = 0;
+    receivedNmeaMessages = std::vector<std::string>();
+    std::thread* receiveThreadObject = 0;
+    receiveThreadObject = new std::thread(&NMEA::ReceiveThread, this, udpListenPortName);
+    
     // create send socket
     socket = new asio::ip::udp::socket(io_service);
 
@@ -83,7 +95,221 @@ NMEA::~NMEA()
         }
     }
 
+    // stop the NMEA receive thread
+    terminateNmeaReceiveMutex.lock();
+    terminateNmeaReceive = 1;
+    terminateNmeaReceiveMutex.unlock();
+
 }
+
+void NMEA::ReceiveThread(std::string udpListenPortName)
+{
+    
+    // setup socket
+    asio::io_context io_context;
+    asio::ip::udp::socket rcvSocket(io_context);
+
+    try 
+    {
+        irr::u16 port = std::stoi(udpListenPortName);
+        rcvSocket.open(asio::ip::udp::v4());
+        rcvSocket.bind(asio::ip::udp::endpoint(asio::ip::udp::v4(), port));
+        std::cout << "Listening for NMEA messages on " << rcvSocket.local_endpoint().address().to_string() << ":" << port << std::endl;
+    } catch (std::exception e) 
+    {
+        std::cerr << e.what() << ". In NMEA::ReceiveThread()" << std::endl;
+        return;
+    }
+
+    for (;;) 
+    {
+        // terminate thread?
+        terminateNmeaReceiveMutex.lock();
+        if (terminateNmeaReceive != 0)
+        {
+            terminateNmeaReceiveMutex.unlock();
+            break;
+        }
+        terminateNmeaReceiveMutex.unlock();
+
+        try
+        {
+            char * buf = new char[128]();
+            // set socket timeout as in AISOverUDP
+            struct timeval tv = {1, 0};
+            setsockopt(rcvSocket.native_handle(), SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+            // read from socket
+            ssize_t nread = ::read(rcvSocket.native_handle(), buf, 128);
+
+            if (nread > 0) 
+            {
+                // first char $ or !, otherwise ignore
+                if (!(buf[0] == '$' || buf[0] == '!')) continue;
+
+                // convert char buffer to string and add it to shared vector
+                // subsequent processing is handled by NMEA::receive
+                std::string message(buf);
+                receivedNmeaMessagesMutex.lock();
+                receivedNmeaMessages.push_back(message);
+                receivedNmeaMessagesMutex.unlock();
+            }
+
+        } catch (std::exception e) 
+        {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+}
+
+void NMEA::receive()
+{
+    // check the receivedNmeaMessages shared vector for new messages
+    // if it is non-empty, parse the messages
+    receivedNmeaMessagesMutex.lock();
+    if (!receivedNmeaMessages.empty())
+    {
+        for (int i=0; i < receivedNmeaMessages.size(); i++)
+        {
+            std::string message = receivedNmeaMessages[i];
+
+            // get all sentences and strip \r\n
+            std::vector<std::string> sentences;
+            int last_pos = 0; 
+            int pos = message.find("\r\n");
+            while (pos != std::string::npos)
+            {
+                int sentence_len = pos - last_pos;
+                sentences.push_back(message.substr(last_pos, sentence_len));
+                last_pos = pos;
+                pos = message.find("\r\n", pos+3);
+            }
+            
+            // iterate over sentences and handle them one by one
+            for (int i=0; i < sentences.size(); i++)
+            {
+                std::string sentence = sentences[i];
+
+                if (sentence.length() < 10) continue;
+               
+                // parse the provided checksum and verify it
+                irr::u32 providedChecksum;
+                irr::u32 checksum;
+                try 
+                {
+                    providedChecksum = std::stoi(sentence.substr(sentence.length()-2, 2), 0, 16);
+                    checksum = sentence.at(1);
+                    for (auto character : sentence.substr(2, sentence.length()-5)) checksum ^= character;
+                    if (checksum != providedChecksum) 
+                    {
+                        std::cerr << "invalid checksum: " << sentence << " expected " << std::hex << checksum << std::endl;
+                        continue;
+                    }
+                } catch (const std::invalid_argument& e) { continue;
+                } catch (const std::out_of_range& e) { continue; }
+
+
+                // construct vector of fields
+                std::vector<std::string> fields;
+                char last_char;
+                std::string field = "";
+                for (int i=7; i < sentence.length(); i++) 
+                {
+                    last_char = sentence[i];
+                    if (last_char == '*') break;
+                    if (last_char == ',') 
+                    {
+                        fields.push_back(field);
+                        field = "";
+                    } else 
+                    {
+                        field += last_char;
+                    }
+                }
+                fields.push_back(field);
+
+                std::string type = sentence.substr(0, 1);
+
+                if (!type.compare("!")) continue; // AIS sentence
+
+                if (!type.compare("$")) 
+                { // normal sentence
+                    if (!sentence.substr(1,1).compare("P"))
+                    {
+                        // proprietary sentence
+                        continue;
+                    } else
+                    {
+                        std::string id = sentence.substr(3, 3);
+
+                        if (!id.compare("APB"))
+                        { // autopilot sentence B 
+
+                            if (fields.size() != 14) continue; // we expect exactly 14 fields
+
+                            APB apb;
+                            try 
+                            {
+                                apb.status = fields[0][0];
+                                apb.warning = fields[1][0];
+                                apb.cross_track_error = std::stof(fields[2]);
+                                apb.direction = fields[3][0];
+                                apb.cross_track_units = fields[4][0];
+                                apb.arrival_circle_entered = fields[5][0];
+                                apb.perpendicular_passed = fields[6][0];
+                                apb.bearing_orig_to_dest = std::stof(fields[7]);
+                                apb.bearing_orig_to_dest_type = fields[8][0];
+                                apb.dest_waypoint_id = fields[9];
+                                apb.bearing_to_dest = std::stof(fields[10]);
+                                apb.bearing_orig_to_dest_type = fields[11][0];
+                                apb.heading_to_dest = std::stof(fields[12]);
+                                apb.heading_to_dest_type = fields[13][0];
+                            } catch (const std::invalid_argument& e)
+                            {
+                                std::cerr << "error while parsing a float value for APB" << std::endl;
+                                continue;
+                            }
+
+                            autopilot.receiveAPB(apb);
+
+                        } else if (!id.compare("RMB"))
+                        { // recommended minimum navigation information B
+
+                            if (fields.size() != 13 && fields.size() != 14) continue; // 13 or 14 fields based on NMEA version
+
+                            RMB rmb;
+                            try {
+                                rmb.status = fields[0][0];
+                                rmb.cross_track_error = std::stof(fields[1]);
+                                rmb.direction = fields[2][0];
+                                rmb.dest_waypoint_id = fields[3];
+                                rmb.orig_waypoint_id = fields[4];
+                                rmb.dest_waypoint_latitude = fields[5];
+                                rmb.dest_waypoint_latitude_dir = fields[6][0];
+                                rmb.dest_waypoint_longitude = fields[7];
+                                rmb.dest_waypoint_longitude_dir = fields[8][0];
+                                rmb.range_to_dest = std::stof(fields[9]);
+                                rmb.bearing_to_dest = std::stof(fields[10]);
+                                rmb.dest_closing_velocity = std::stof(fields[11]);
+                                rmb.arrival_status = fields[12][0];
+                                rmb.faa_mode = '\0';
+                                if (fields.size() == 14) rmb.faa_mode = fields[13][0];
+                            } catch (const std::invalid_argument& e)
+                            {
+                                std::cerr << "error while parsing a float value for RMB" << std::endl;
+                                continue;
+                            }
+
+                            autopilot.receiveRMB(rmb);
+                        }
+                    }
+                }
+            }
+        }
+        receivedNmeaMessages.clear();
+    }
+    receivedNmeaMessagesMutex.unlock();
+}
+
 
 void NMEA::updateNMEA()
 {
