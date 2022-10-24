@@ -17,6 +17,7 @@
 #ifndef __NMEA_HPP_INCLUDED__
 #define __NMEA_HPP_INCLUDED__
 
+#include "Autopilot.hpp"
 #include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
 #include <mutex>
@@ -41,6 +42,7 @@ public:
     enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, /*RSD,*/ ZDA, /*OSD, POS,*/ DTM, HDT, DPT, ROT/*, VTG, HRM, VDM, VDO, HBT*/ };
 
 private:
+    Autopilot autopilot;
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;

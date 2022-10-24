@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "NMEA.hpp"
+#include "Autopilot.hpp"
 #include "NMEASentences.hpp"
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
@@ -26,12 +27,12 @@
 #include <thread>
 #include <vector>
 
-NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev) //Constructor
+NMEA::NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev) : autopilot(model) //Constructor
 {
     //link to model so network can interact with model
     this->model = model; //Link to the model
     device = dev; //Store pointer to irrlicht device
-
+   
     messageQueue = {};
     lastSendEvent = 0;
     currentMessageType = 0;
@@ -262,6 +263,8 @@ void NMEA::receive()
                                 continue;
                             }
 
+                            autopilot.receiveAPB(apb);
+
                         } else if (!id.compare("RMB"))
                         { // recommended minimum navigation information B
 
@@ -289,6 +292,8 @@ void NMEA::receive()
                                 std::cerr << "error while parsing a float value for RMB" << std::endl;
                                 continue;
                             }
+
+                            autopilot.receiveRMB(rmb);
                         }
                     }
                 }
