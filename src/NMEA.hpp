@@ -17,8 +17,10 @@
 #ifndef __NMEA_HPP_INCLUDED__
 #define __NMEA_HPP_INCLUDED__
 
+#include "Autopilot.hpp"
 #include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
+#include <mutex>
 #include <string>
 #include <asio.hpp> //For UDP
 
@@ -29,16 +31,19 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
     void clearQueue();
+    void ReceiveThread(std::string udpListenPortName);
+    void receive();
     // not implemented: RSD, OSD, POS, VTG, HRM, VDO, HBT
     enum NMEAMessage { RMC=0, GPROT, GLL, RSA, RPM, GPHDT, HEROT, TTM, GGA, ZDA, DTM, HEHDT, TIROT, DPT};
 
 private:
+    Autopilot autopilot;
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
@@ -55,6 +60,11 @@ private:
     asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
     asio::ip::udp::socket* socket;
+
+    irr::u32 terminateNmeaReceive;
+    std::mutex terminateNmeaReceiveMutex;
+    std::vector<std::string> receivedNmeaMessages;
+    std::mutex receivedNmeaMessagesMutex;
 };
 
 #endif // __NMEA_HPP_INCLUDED__
