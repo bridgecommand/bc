@@ -414,6 +414,7 @@ int main(int argc, char ** argv)
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
     std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
     std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
+    std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
     irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
@@ -799,7 +800,7 @@ int main(int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, device);
+    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, nmeaUDPListenPortName, device);
 
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
@@ -860,6 +861,10 @@ int main(int argc, char ** argv)
         // Update NMEA, check if new sensor or AIS data is ready to be sent
 //        nmeaProfile.tic();
         }{ IPROF("NMEA");
+        
+        if (!nmeaUDPListenPortName.empty()) {
+            nmea.receive();
+        }
 
         if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
             nmea.updateNMEA();

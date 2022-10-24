@@ -19,6 +19,7 @@
 
 #include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
+#include <mutex>
 #include <string>
 #include <asio.hpp> //For UDP
 
@@ -29,12 +30,14 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
     void clearQueue();
+    void ReceiveThread(std::string udpListenPortName);
+    void receive();
     enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, /*RSD,*/ ZDA, /*OSD, POS,*/ DTM, HDT, DPT, ROT/*, VTG, HRM, VDM, VDO, HBT*/ };
 
 private:
@@ -54,6 +57,11 @@ private:
     asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
     asio::ip::udp::socket* socket;
+
+    irr::u32 terminateNmeaReceive;
+    std::mutex terminateNmeaReceiveMutex;
+    std::vector<std::string> receivedNmeaMessages;
+    std::mutex receivedNmeaMessagesMutex;
 };
 
 #endif // __NMEA_HPP_INCLUDED__
