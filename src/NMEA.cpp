@@ -222,14 +222,14 @@ void NMEA::updateNMEA()
                     ARPAContact contact = model->getARPATrack(i);
                     ARPAEstimatedState state = contact.estimate;
                     snprintf(messageBuffer,maxSentenceChars,"$RATTM,%02d,%.1f,%.1f,T,%.1f,%.1f,T,%.1f,%.1f,N,TGT%02d,T,,%s.00,A",
-                        state.displayID,
+                        state.displayID - 1,
                         state.range,
                         state.bearing,
                         state.speed,
                         state.absHeading,
                         state.cpa,
                         state.tcpa,
-                        state.displayID,
+                        state.displayID - 1,
                         timeString.c_str()
                     );
                     messageToSend.append(addChecksum(std::string(messageBuffer)));
