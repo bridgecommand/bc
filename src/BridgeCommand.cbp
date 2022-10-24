@@ -93,6 +93,8 @@
 		<Unit filename="AIS.hpp" />
 		<Unit filename="Angles.cpp" />
 		<Unit filename="Angles.hpp" />
+		<Unit filename="Autopilot.cpp" />
+		<Unit filename="Autopilot.hpp" />
 		<Unit filename="AzimuthDial.cpp" />
 		<Unit filename="AzimuthDial.h" />
 		<Unit filename="BCDynamicMeshBuffer.h" />
