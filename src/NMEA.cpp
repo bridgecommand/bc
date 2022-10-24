@@ -268,9 +268,15 @@ void NMEA::updateNMEA()
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
-        case HDT: // 8.3.44 Heading true
+        case HEHDT: // 8.3.44 Heading true
         {
             snprintf(messageBuffer,maxSentenceChars,"$HEHDT,%.1f,T",hdg); // T = true north
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+        }
+        case GPHDT: // 8.3.44 Heading true
+        {
+            snprintf(messageBuffer,maxSentenceChars,"$GPHDT,%.1f,T",hdg); // T = true north
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
@@ -280,9 +286,21 @@ void NMEA::updateNMEA()
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
-        case ROT: // 8.3.71 Rate of turn
+        case TIROT: // 8.3.71 Rate of turn
         {
             snprintf(messageBuffer,maxSentenceChars,"$TIROT,%.1f,A",rot);  // A = data valid
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+        }
+        case GPROT: // 8.3.71 Rate of turn
+        {
+            snprintf(messageBuffer,maxSentenceChars,"$GPROT,%.1f,A",rot);  // A = data valid
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+        }
+        case HEROT: // 8.3.71 Rate of turn
+        {
+            snprintf(messageBuffer,maxSentenceChars,"$HEROT,%.1f,A",rot);  // A = data valid
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }

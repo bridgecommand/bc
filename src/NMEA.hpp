@@ -35,7 +35,8 @@ public:
     void sendNMEASerial();
     void sendNMEAUDP();
     void clearQueue();
-    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, /*RSD,*/ ZDA, /*OSD, POS,*/ DTM, HDT, DPT, ROT/*, VTG, HRM, VDM, VDO, HBT*/ };
+    // not implemented: RSD, OSD, POS, VTG, HRM, VDO, HBT
+    enum NMEAMessage { RMC=0, GPROT, GLL, RSA, RPM, GPHDT, HEROT, TTM, GGA, ZDA, DTM, HEHDT, TIROT, DPT};
 
 private:
     irr::IrrlichtDevice* device;
@@ -46,7 +47,7 @@ private:
     std::vector<std::string> messageQueue;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    const int maxMessages = (ROT - RMC) + 1; // how many messages are defined
+    const int maxMessages = (DPT - RMC) + 1; // how many messages are defined
 	static const int maxSentenceChars = 79+1+1; // iaw EN 61162-1:2011 + start char + null termination
     const char northing[2] = {'N', 'S'};
     const char easting[2] = {'E', 'W'};
