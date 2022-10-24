@@ -146,7 +146,11 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
             #endif
             
             // read from socket
-            ssize_t nread = ::read(rcvSocket.native_handle(), buf, 128);
+            #ifdef WIN32
+            int nread = ::recv(rcvSocket.native_handle(), buf, sizeof(buf),0);
+            #else
+            ssize_t nread = ::read(rcvSocket.native_handle(), buf, sizeof(buf));
+            #endif
 
             if (nread > 0) 
             {
