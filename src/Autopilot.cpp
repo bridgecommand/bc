@@ -80,7 +80,23 @@ bool Autopilot::receiveAPB(APB sentence)
     // set wheel to val between -30.0 (>=60 deg L) and 30.0 (>=60 deg R) (setWheel clamps vals)
     irr::f32 wheel = (relativeBearing / 60.0) * 30.0;
 
-    model->setWheel(wheel * dampening);
+    if (model->isAzimuthDrive()) {
+        // Special case for azimuth drive, as the azimuth angle to steer is opposite, and 
+        // isn't clamped in setXXXAzimuthAngle()
+        
+        if (wheel > 30) {
+            wheel = 30;
+        }
+        if (wheel <-30) {
+            wheel = -30;
+        }
+        // Just set both azimuth angles to steer, no clever handling
+        model->setPortAzimuthAngle(-1*wheel);
+        model->setStbdAzimuthAngle(-1*wheel);
+    } else {
+        // Normal case, just set the wheel
+        model->setWheel(wheel * dampening);
+    }
 
     return false;
 }
