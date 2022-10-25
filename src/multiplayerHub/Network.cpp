@@ -76,9 +76,29 @@ void Network::connectToServer(std::string hostnames)
         std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
         //Todo: validate this?
 
-        /* Connect to some.server.net:18304. */
+        //Check if the string contains a ':', and if so, split into hostname and port part
+        if (thisHostname.find(':') != std::string::npos) {
+            std::vector<std::string> splitHostname = Utilities::split(thisHostname,':');
+            if (splitHostname.size()==2) {
+                thisHostname = splitHostname.at(0);
+                address.port = Utilities::lexical_cast<enet_uint16>(splitHostname.at(1));
+            } else {
+                address.port = port; //Fall back to default
+            }
+        } else {
+            address.port = port;
+
+            //Count number of instances of this earlier in list, and if so, increment port, so
+            //localhost,localhost,localhost would become like localhost:port,localhost:port+1,localhost:port+2
+            for (unsigned int j=0; j<i; j++) {
+                if (thisHostname.compare(multipleHostnames.at(j))==0) {
+                    address.port++;
+                }
+            }
+        }
+
         enet_address_set_host (& address, thisHostname.c_str());
-        address.port = port;
+
         /* Initiate the connection, allocating the two channels 0 and 1. */
         peer = enet_host_connect (client, & address, 2, 0);
 
