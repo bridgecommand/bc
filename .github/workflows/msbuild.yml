@@ -1,6 +1,7 @@
 name: MSBuild
 
 on:
+  pull_request:
   push:
     paths: 
       - '**/Constants.hpp'
