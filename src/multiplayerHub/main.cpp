@@ -335,7 +335,7 @@ int main()
                     otherShipsString.append(",");
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS));
                     otherShipsString.append(",");
-                    otherShipsString.append("0,0,0"); //SART enabled, number of legs,leg info
+                    otherShipsString.append("0,0,0,0"); //SART enabled, MMSI, number of legs,leg info. TODO: Can we get MMSI
                     otherShipsString.append("|"); //End of other ship record
                 }
             }
@@ -352,6 +352,8 @@ int main()
             //std::cout << stringToSend << std::endl;
 
             network.sendString(stringToSend,false,thisPeer);
+
+            //std::cout << "Sending to peer " << thisPeer << " Message:" << stringToSend << std::endl;
 
             /*
             For multiplayer, only actually uses info from records 0 (time), 2 (Number of entities) & 3 (Other ship info). BC Checks number of entries, so just need dummies
