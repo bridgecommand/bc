@@ -165,7 +165,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         //Radar angular resolution (integer degree)
         scanLineStep = IniFile::iniFileTou32(radarConfigFile,"radar_sensitivity");
-        if (scanLineStep < 1 || scanLineStep > 180) {scanLineStep = 1;}
+        if (scanLineStep < 1 || scanLineStep > angularResolution / 2) {scanLineStep = 1;}
 
         //Radar scanner height (Metres)
         radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
