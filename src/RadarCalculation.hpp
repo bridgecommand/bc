@@ -134,7 +134,6 @@ class RadarCalculation
         irr::f32 currentScanAngle;
         irr::f32 scanAngleStep;
         irr::u32 currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
-        irr::u32 scanLineStep; //Should also be an integer, as the scanline number being incremented is an integer
         irr::u32 rangeResolution;
         irr::u32 angularResolution;
         irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres

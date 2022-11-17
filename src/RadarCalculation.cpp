@@ -123,7 +123,6 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         //Initial radar range
         radarRangeIndex=3;
 
-        scanLineStep=1; //Radar angular resolution (integer degree)
         radarScannerHeight = 2.0;
         radarNoiseLevel = 0.000000000005;
         radarSeaClutter = 0.000000001;
@@ -163,10 +162,9 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         //Initial radar range
         radarRangeIndex=numberOfRadarRanges/2;
 
-        //Radar angular resolution (integer degree)
-        scanLineStep = IniFile::iniFileTou32(radarConfigFile,"radar_sensitivity");
-        if (scanLineStep < 1 || scanLineStep > angularResolution / 2) {scanLineStep = 1;}
-
+        //Radar angular resolution & range resolution:
+        // TODO: Currently loaded from bc5.ini, could be from own ship's radarConfigFile, with limit set in bc5.ini
+        
         //Radar scanner height (Metres)
         radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
 
@@ -222,7 +220,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
     }
 
-    scanAngleStep = ((irr::f32) scanLineStep / (irr::f32) angularResolution) * 360.0f;
+    scanAngleStep = 360.0f / (irr::f32) angularResolution;
 }
 
 void RadarCalculation::decreaseRange()
@@ -785,28 +783,28 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             scanArrayAmplified[currentScanLine][currentStep] = std::max(0.0f,logSignal);
 
             //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
-            irr::s32 filterAngle = (irr::s32)currentScanLine - 3*scanLineStep;
+            irr::s32 filterAngle = (irr::s32)currentScanLine - 3;
                 while(filterAngle < 0) {filterAngle+=angularResolution;}
                 while(filterAngle >= angularResolution) {filterAngle-=angularResolution;}
-            irr::s32 filterAngle_1 = filterAngle - 3*scanLineStep;
+            irr::s32 filterAngle_1 = filterAngle - 3;
                 while(filterAngle_1 < 0) {filterAngle_1+=angularResolution;}
                 while(filterAngle_1 >= angularResolution) {filterAngle_1-=angularResolution;}
-            irr::s32 filterAngle_2 = filterAngle - 2*scanLineStep;
+            irr::s32 filterAngle_2 = filterAngle - 2;
                 while(filterAngle_2 < 0) {filterAngle_2+=angularResolution;}
                 while(filterAngle_2 >= angularResolution) {filterAngle_2-=angularResolution;}
-            irr::s32 filterAngle_3 = filterAngle - 1*scanLineStep;
+            irr::s32 filterAngle_3 = filterAngle - 1;
                 while(filterAngle_3 < 0) {filterAngle_3+=angularResolution;}
                 while(filterAngle_3 >= angularResolution) {filterAngle_3-=angularResolution;}
             irr::s32 filterAngle_4 = filterAngle;
                 while(filterAngle_4 < 0) {filterAngle_4+=angularResolution;}
                 while(filterAngle_4 >= angularResolution) {filterAngle_4-=angularResolution;}
-            irr::s32 filterAngle_5 = filterAngle + 1*scanLineStep;
+            irr::s32 filterAngle_5 = filterAngle + 1;
                 while(filterAngle_5 < 0) {filterAngle_5+=angularResolution;}
                 while(filterAngle_5 >= angularResolution) {filterAngle_5-=angularResolution;}
-            irr::s32 filterAngle_6 = filterAngle + 2*scanLineStep;
+            irr::s32 filterAngle_6 = filterAngle + 2;
                 while(filterAngle_6 < 0) {filterAngle_6+=angularResolution;}
                 while(filterAngle_6 >= angularResolution) {filterAngle_6-=angularResolution;}
-            irr::s32 filterAngle_7 = filterAngle + 3*scanLineStep;
+            irr::s32 filterAngle_7 = filterAngle + 3;
                 while(filterAngle_7 < 0) {filterAngle_7+=angularResolution;}
                 while(filterAngle_7 >= angularResolution) {filterAngle_7-=angularResolution;}
             if (currentStep < rangeResolution * 0.1) {
@@ -852,7 +850,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 
         //Increment scan line for next time
-        currentScanLine += scanLineStep;
+        currentScanLine++;
         if (currentScanLine >= angularResolution) {
             currentScanLine = 0;
         }
@@ -1054,7 +1052,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
     irr::f32 scanAngle;
 
-    for (int scanLine = 0; scanLine < angularResolution; scanLine+=scanLineStep) {
+    for (int scanLine = 0; scanLine < angularResolution; scanLine++) {
 
         scanAngle = ((irr::f32) scanLine / (irr::f32) angularResolution) * 360.0f;
 
