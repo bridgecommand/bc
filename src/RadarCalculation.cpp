@@ -36,13 +36,7 @@
 
 RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360)
 {
-    std::string userFolder = Utilities::getUserDir();
-    std::string iniFilename = "bc5.ini";
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
-    }
-        rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
-        angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);
+    
     //Initial values for controls, all 0-100:
     radarGain = 50;
     radarRainClutterReduction=0;
@@ -67,24 +61,6 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
     vectorLengthMinutes = 6;
     arpaOn = false;
 
-    //initialise scanArray size (angularResolution x rangeResolution points per scan)
-    //rangeResolution = 64; now set initialiser list
-    scanArray.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplified.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlot.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlotPrevious.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    toReplot.resize(angularResolution);
-
-    //initialise arrays
-    for(irr::u32 i = 0; i<angularResolution; i++) {
-        for(irr::u32 j = 0; j<rangeResolution; j++) {
-            scanArray[i][j] = 0.0;
-            scanArrayAmplified[i][j] = 0.0;
-            scanArrayToPlot[i][j] = 0.0;
-            scanArrayToPlotPrevious[i][j] = -1.0;
-        }
-    }
-
     //Hard coded in GUI and here for 10 parallel index lines
     for(irr::u32 i=0; i<10; i++) {
         piBearings.push_back(0.0);
@@ -107,6 +83,32 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 {
     device = dev;
 
+    // Resolution settings
+    std::string userFolder = Utilities::getUserDir();
+    std::string iniFilename = "bc5.ini";
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+    rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
+    angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);
+
+    //initialise scanArray size (angularResolution x rangeResolution points per scan)
+    scanArray.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayAmplified.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlot.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlotPrevious.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    toReplot.resize(angularResolution);
+
+    //initialise arrays
+    for(irr::u32 i = 0; i<angularResolution; i++) {
+        for(irr::u32 j = 0; j<rangeResolution; j++) {
+            scanArray[i][j] = 0.0;
+            scanArrayAmplified[i][j] = 0.0;
+            scanArrayToPlot[i][j] = 0.0;
+            scanArrayToPlotPrevious[i][j] = -1.0;
+        }
+    }
+    
     //Load parameters from the radarConfig file (if it exists)
     irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
     if (numberOfRadarRanges==0) {
