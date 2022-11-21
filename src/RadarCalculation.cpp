@@ -83,7 +83,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 {
     device = dev;
 
-    // Resolution settings
+    // Radar resolution defaults from bc5.ini
     std::string userFolder = Utilities::getUserDir();
     std::string iniFilename = "bc5.ini";
     if (Utilities::pathExists(userFolder + iniFilename)) {
@@ -91,23 +91,8 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     }
     rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
     angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);
-
-    //initialise scanArray size (angularResolution x rangeResolution points per scan)
-    scanArray.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplified.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlot.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlotPrevious.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
-    toReplot.resize(angularResolution);
-
-    //initialise arrays
-    for(irr::u32 i = 0; i<angularResolution; i++) {
-        for(irr::u32 j = 0; j<rangeResolution; j++) {
-            scanArray[i][j] = 0.0;
-            scanArrayAmplified[i][j] = 0.0;
-            scanArrayToPlot[i][j] = 0.0;
-            scanArrayToPlotPrevious[i][j] = -1.0;
-        }
-    }
+    irr::u32 rangeResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes_Max");
+    irr::u32 angularResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes_Max");
     
     //Load parameters from the radarConfig file (if it exists)
     irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
@@ -150,6 +135,17 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         radarBackgroundColours.push_back(radarBackgroundColour);
         radarForegroundColours.push_back(radarForegroundColour);
 
+        // Check in case resolution is set to an invalid value
+        if (rangeResolution < 1) {rangeResolution = 128;}
+        if (angularResolution < 1) {angularResolution = 360;}
+        // Limit to maximum (if set)
+        if (rangeResolution_max > 0 && rangeResolution > rangeResolution_max) {
+            rangeResolution = rangeResolution_max;
+        }
+        if (angularResolution_max > 0 && angularResolution > angularResolution_max) {
+            angularResolution = angularResolution_max;
+        }
+    
     } else {
         //Load from file, but check plausibility where required
 
@@ -164,9 +160,6 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         //Initial radar range
         radarRangeIndex=numberOfRadarRanges/2;
 
-        //Radar angular resolution & range resolution:
-        // TODO: Currently loaded from bc5.ini, could be from own ship's radarConfigFile, with limit set in bc5.ini
-        
         //Radar scanner height (Metres)
         radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
 
@@ -220,6 +213,39 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
             }
         }
 
+        // Resolution settings:
+
+        // Override resolution if set in own ship's radar.ini file
+        rangeResolution = IniFile::iniFileTou32(radarConfigFile, "RADAR_RangeRes", rangeResolution);
+        angularResolution = IniFile::iniFileTou32(radarConfigFile, "RADAR_AngularRes", angularResolution);
+        // Check in case resolution is still not valid
+        if (rangeResolution < 1) {rangeResolution = 128;}
+        if (angularResolution < 1) {angularResolution = 360;}
+        // Limit to maximum (if set)
+        if (rangeResolution_max > 0 && rangeResolution > rangeResolution_max) {
+            rangeResolution = rangeResolution_max;
+        }
+        if (angularResolution_max > 0 && angularResolution > angularResolution_max) {
+            angularResolution = angularResolution_max;
+        }
+
+    }
+
+    //initialise scanArray size (angularResolution x rangeResolution points per scan)
+    scanArray.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayAmplified.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlot.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlotPrevious.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    toReplot.resize(angularResolution);
+
+    //initialise arrays
+    for(irr::u32 i = 0; i<angularResolution; i++) {
+        for(irr::u32 j = 0; j<rangeResolution; j++) {
+            scanArray[i][j] = 0.0;
+            scanArrayAmplified[i][j] = 0.0;
+            scanArrayToPlot[i][j] = 0.0;
+            scanArrayToPlotPrevious[i][j] = -1.0;
+        }
     }
 
     scanAngleStep = 360.0f / (irr::f32) angularResolution;
