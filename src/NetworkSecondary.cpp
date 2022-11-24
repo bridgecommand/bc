@@ -228,10 +228,14 @@ void NetworkSecondary::receiveMessage()
                     if (numberOthers == otherShipsDataString.size()) {
                         for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-                            if (thisShipData.size() == 8) { //8 elements for each ship
+                            if (thisShipData.size() == 9) { //9 elements for each ship
                                 //Update data
                                 model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
                                 model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
+                                
+                                // Set other ship rate of turn from thisShipData.at(4) in deg/s (only used in multiplayer)
+                                model->setOtherShipRateOfTurn(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(4)));
+                                
                                 irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
                                 irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
                                 model->setOtherShipPos(i,receivedPosX,receivedPosZ);
@@ -286,6 +290,8 @@ void NetworkSecondary::receiveMessage()
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getPosZ()));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getHeading()));
+                    multiplayerFeedback.append("#");
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getRateOfTurn()*irr::core::RADTODEG));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
                     multiplayerFeedback.append("#");
