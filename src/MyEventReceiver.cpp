@@ -219,29 +219,110 @@
                   }
 // DEE capture the wheel
 
+
+// DEE_NOV22 this deals with capturing input from the Azimuth gui
               if (id == GUIMain::GUI_ID_AZIMUTH_1) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
+                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1  DEE_NOV22 todo (0..1)
                 irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-                model->setPortAzimuthAngle(angle);
-                model->setPortEngine(power);
+		// DEE_NOV22 vvvv
+		// comment out and ....
+                //model->setPortAzimuthAngle(angle);
+                //model->setPortEngine(power);
+		// ... replace with
+		if (power < 0) {
+			power = 0;
+		}
+		model->setPortSchottel(angle);
+		model->setPortThrustLever(power);
+		// DEE_NOV22 ^^^^
                 if (rightMouseDown) {
                     // Set the other control as well (Linked)
-                    model->setStbdAzimuthAngle(angle);
-                    model->setStbdEngine(power);
+		    // DEE_NOV22 vvvv 
+		    // comment out
+
+		    // DEE_NOV22 perhaps this would be better applied to the schottel control and the engine revs indicator
+		    //		 but for the time being leave the azimuth indicator capable of receiveing input from mouse		    
+ 
+                    //model->setStbdAzimuthAngle(angle);
+                    //model->setStbdEngine(power);
+		    model->setStbdSchottel(angle);
+		    model->setStbdThrustLever(power);
+		    // DEE_NOV22 ^^^^
                 }
               }
 
               if (id == GUIMain::GUI_ID_AZIMUTH_2) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
+                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1  DEE_NOV22 todo (0..1)
                 irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-                model->setStbdAzimuthAngle(angle);
-                model->setStbdEngine(power);
+		// DEE_NOV22 vvvv
+		// comment out and .....
+                // model->setStbdAzimuthAngle(angle);
+                // model->setStbdEngine(power);
+		// replace with
+		if (power < 0)
+		{	
+		power = 0;
+		}
+		model->setStbdSchottel(angle);
+		model->setStbdThrustLever(power);
+		// DEE_NOV22 ^^^^
                 if (rightMouseDown) {
                     // Set the other control as well (Linked)
-                    model->setPortAzimuthAngle(angle);
-                    model->setPortEngine(power);
+		    // DEE_NOV22 vvvv comment out
+                    //model->setStbdAzimuthAngle(angle);
+                    //model->setStbdEngine(power);
+		    // replace by ...
+		    model->setStbdSchottel(angle);
+		    model->setStbdThrustLever(power);
+		    // DEE_NOV22 ^^^^
                 }
               }
+
+// DEE_NOV22 ^^^^ end of the inputs from the azimth GUI
+
+
+// DEE_NOV22 vvvv controls for mouse inputs to the engine rpm indicators and the schottels
+
+	    if ( id == GUIMain::GUI_ID_SCHOTTEL_PORT )
+	    {
+		// DEE_NOV22 only really want this to respond to left mouse click , no master mode
+		// as in practice if you want to steer with only one schottel, you just
+		// leave the other dead ahead, for small steering corrections then that
+		// is adequate
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// not intersted in magnitude
+		model->setPortSchottel(angle);
+	    } // end if schottel port
+
+
+
+	    if ( id == GUIMain::GUI_ID_SCHOTTEL_STBD )
+	    {
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// not intersted in magnitude
+		model->setStbdSchottel(angle);
+	    } // end if schottel stbd
+
+
+
+	    if ( id == GUIMain::GUI_ID_ENGINE_PORT )
+	    {
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// we arent interested in the getMag
+		model->setPortEngine((angle/360));
+            } // end if engine port
+
+
+
+	    if ( id == GUIMain::GUI_ID_ENGINE_STBD )
+	    {
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		model->setStbdEngine((angle/360));
+            } // end if engine port
+
+
+
+
 
             //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
 
@@ -647,7 +728,7 @@
                             break;
                         case irr::KEY_LEFT:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                            model->lookPort();
+                            model->lookPort(); // DEENOV22 TODO make all screens lookPort
                             break;
                         case irr::KEY_RIGHT:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
@@ -697,9 +778,76 @@
                             model->setAccelerator(3600.0);
                             break;
 
-						case irr::KEY_KEY_H:
-							model->startHorn();
-							break;
+			case irr::KEY_KEY_H:
+			    model->startHorn();
+			    break;
+
+// DEE_NOV22 vvvvv
+
+// only assign these key bindings if this is an Azimuth Drive
+
+// Purpose of this code is to allow keyboard control of the azipods
+// they should be ineffective if the ship does not have azipods however
+// I shall put this in the model object
+
+// ultimately there should be a choice of Non followup mode and Follow up mode
+// so they keys control the movement of the schottels in follow up mode
+// the pod's azimuth then chases the commanded azimuth
+// and the engine chases each thrust lever and clutches in and out automatically when thresholds are reached
+// there can be no direct engine in reverse
+
+// todo also need to model the shetland trader type case of when going forward they act as a steering wheel
+// rather than a tiller, which could be the normal case
+
+
+// key map for this currently is as follows
+// Port Azipod : A pod anticlockwise , D pod clockwise, W thrust lever forward, S thrust lever backwards
+// Starboard Azipod : J pod anticlockwise, L pod clockwise, I thrust lever forward, K thrust lever backwards
+
+
+// the if ASDs are left in the below controls so that the keys can be assigned to something else on a
+// non azipod ship in the future
+
+
+			case irr::KEY_KEY_W:
+			    if (model->isAzimuthDrive()) {
+				// Port Azipod Thrust lever increase
+			        model->btnIncrementPortThrustLever();
+			    } 
+			    break;
+
+// KEY_KEY_S ... decrement port thrust is further down the code as it has a duplicate use
+
+			case irr::KEY_KEY_J:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Schottel anticlockwise decrement
+			        model->btnDecrementStbdSchottel();
+			    }
+			    break;
+
+			case irr::KEY_KEY_L:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Schottel clockwise increment
+			        model->btnIncrementStbdSchottel();
+			    }
+			    break;
+
+			case irr::KEY_KEY_I:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Thurst lever increase
+				model->btnIncrementStbdThrustLever();
+			    }
+			    break;
+
+			case irr::KEY_KEY_K:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Thrust lever decrease
+			        model->btnDecrementStbdThrustLever();
+			    }
+			    break;
+
+
+// DEE_NOV22 ^^^^^
 
                         //Camera look
                         case irr::KEY_UP:
@@ -742,43 +890,103 @@
 
                         //Keyboard control of engines
                         case irr::KEY_KEY_A:
-                            //Increase port engine revs:
-                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    if(model->isAzimuthDrive()) {
+				// if vessel is Azimuth drive then turn Port Schottel anticlockwise decrement
+				model->btnDecrementPortSchottel();
+			    } else {
+			    // DEE_NOV_22 ^^^^
+                            // (if not Azimuth Drive) Increase port engine revs:
+                                model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_Z:
                             //Decrease port engine revs:
-                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv disable this function if azimuth drive
+			    if(!(model->isAzimuthDrive())) {
+                                model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_S:
-                            //Increase stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    if(model->isAzimuthDrive()) {
+				// as Azimuth drive then Port thrust lever decrease
+				model->btnDecrementPortThrustLever();
+			    } else {
+				// this is an non azimuth drive vessel to interpret S as Increase stpd engine revs
+			    // DEE_NOV22 ^^^^
+                                //Increase stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+				} // DEE_NOV22 end if isAzimuthDrive and indentations
                             break;
+
                         case irr::KEY_KEY_X:
-                            //Decrease stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+
+			    // DEE_NOV22 vvvv only enable this response if it is not an azimuth drive
+			    if(!(model->isAzimuthDrive())) 
+				{
+                                //Decrease stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+				}
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_D:
-                            //Increase stbd and port engine revs:
-                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
-                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv in the case of the ship being Azimuth Drive
+			    if(model->isAzimuthDrive()) {
+				// as Azimuth drive then Port Azipod Schottel clockwise
+				model->btnIncrementPortSchottel();
+			    } else {
+			    // DEE_NOV22 ^^^^
+			    // else the ship is normally propelled indents made to code below DEE_NOV22 ^^^^
+                                //Increase stbd and port engine revs:
+                                model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                                model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    } // end if DEE_NOV22
                             break;
                         case irr::KEY_KEY_C:
-                            //Decrease stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
-                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv only if not azimuth drive
+			    if (!(model->isAzimuthDrive()))
+			    {
+			    // DEE_NOV22 ^^^^ indentations added below
+                                //Decrease stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                                model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    } 
+			    // DEE_NOV22 ^^^^
                             break;
 
 // DEE vvvv key rudder to port changed to rudder wheel to port
                         case irr::KEY_KEY_V:
-//                            model->setRudder(model->getRudder()-5);
-			    model->setWheel(model->getWheel()-1);
+
+			// DEE_NOV22 vvvv the 'wheel' should be enabled only when not an azimuth drive
+			    if (!(model->isAzimuthDrive()))
+			    {
+//                               model->setRudder(model->getRudder()-5);
+			        model->setWheel(model->getWheel()-1);
+			    }
+			// DEE_NOV22 ^^^^ indentations added to original code
                             break;
 // DEE ^^^^
 
-// DEE vvvV key rudder to starboard changed to key wheel to starboard
+// DEE vvvv key rudder to starboard changed to key wheel to starboard
                         case irr::KEY_KEY_B:
-//                            model->setRudder(model->getRudder()+5);
-                            model->setWheel(model->getWheel()+1);
+			    // DEE_NOV22 vvvv
+			    if (!(model->isAzimuthDrive()))
+			    {
+			    // DEE_NOV22 ^^^^
+
+//                                model->setRudder(model->getRudder()+5);
+                                model->setWheel(model->getWheel()+1);
+			    // DEE_NOV22 vvvv
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
 // DEE ^^^^
 

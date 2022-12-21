@@ -24,7 +24,6 @@
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
-
 #include <cstdlib> //For rand()
 
 //using namespace irr;
@@ -43,12 +42,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     //Load from ownShip.ini file
     std::string ownShipName = ownShipData.ownShipName;
     //Get initial position and heading, and set these
-    spd = ownShipData.initialSpeed*KTS_TO_MPS;
+    axialSpd = ownShipData.initialSpeed*KTS_TO_MPS;
     lateralSpd = 0;
     xPos = model->longToX(ownShipData.initialLong);
     yPos = 0;
     zPos = model->latToZ(ownShipData.initialLat);
-    hdg = ownShipData.initialBearing;
+    hdg = ownShipData.initialBearing; // DEE_DEC22  this is initial heading
 
 
     basePath = "Models/Ownship/" + ownShipName + "/";
@@ -69,8 +68,16 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     std::string ownShipFullPath = basePath + ownShipFileName;
 
     //Load dynamics settings
-    shipMass = IniFile::iniFileTof32(shipIniFilename,"Mass");
-    inertia = IniFile::iniFileTof32(shipIniFilename,"Inertia");
+    // DEE_DEC22 ship parameters directly from ini file
+    
+    // DEE_DEC22 if block coefficient is defined then shipMass and Izz will be overridden and calculated
+
+    shipMass = IniFile::iniFileTof32(shipIniFilename,"Mass"); // DEE_DEC22 supersede this and replace it with displacement
+							      // calculate mass from Cb * L * B * draught
+							      // Cb block coefficient typically 0.87
+    Izz = IniFile::iniFileTof32(shipIniFilename,"Inertia");   // DEE_DEC22 supersede this with a calculated Izz
+								// if not defined or if zero in the ini file
+
     maxEngineRevs = IniFile::iniFileTof32(shipIniFilename,"MaxRevs");
     dynamicsSpeedA = IniFile::iniFileTof32(shipIniFilename,"DynamicsSpeedA");
     dynamicsSpeedB = IniFile::iniFileTof32(shipIniFilename,"DynamicsSpeedB");
@@ -84,48 +91,37 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     asternEfficiency = IniFile::iniFileTof32(shipIniFilename,"AsternEfficiency");// (Optional, default 1)
     propWalkAhead = IniFile::iniFileTof32(shipIniFilename,"PropWalkAhead");// (Optional, default 0)
     propWalkAstern = IniFile::iniFileTof32(shipIniFilename,"PropWalkAstern");// (Optional, default 0)
+
     //Pitch and roll parameters: FIXME for hardcoding, and in future should be linked to the water's movements
 
-    // DEE todo parametarise this to a function of the GM and hence GZ and second moment of Inertia about a longitudinal axis passing through the metacentre, or at least a good approximation of it.  Future modelling could also try to model parametric rolling.
+    // DEE todo parametarise this to a function of the GM and hence GZ and inertia about a longitudinal axis Iyy, or at least a good approximation of it.  Future modelling could also try to model parametric rolling.
     rollPeriod = IniFile::iniFileTof32(shipIniFilename,"RollPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
-    if (rollPeriod == 0) {
-      rollPeriod=8; // default to a roll periof of 8 seconds if unspecified
-    }
-// DEE ^^^^^
-
-
-// DEE vvvvv
+// DEE_DEC22 should add a pitch period also something like pitchPeriod = rollPeriod * (Ixx / Iyy);
     rudderMaxSpeed = IniFile::iniFileTof32(shipIniFilename,"RudderAngularVelocity"); // Softcoded angular speed of the steering gear
-
-    if (rudderMaxSpeed == 0) {
-       rudderMaxSpeed=30; // default to an almost instentaeous rudder
-    }
-
 // DEE ^^^^^
-
-
-
+// DEE_NOV22 vvvv
+    // read from boat.ini the pararmeters DEE has added with respect to modelling the azimuth drives
+    azimuthDriveEngineIdleRPM = IniFile::iniFileTof32(shipIniFilename,"azimuthDriveEngineIdleRPM"); 	// the engine revs at which each engine will idle at
+    azimuthDriveClutchEngageRPM = IniFile::iniFileTof32(shipIniFilename,"azimuthDriveClutchEngageRPM"); 	// the engine revs above which the clutch will automatically engage
+    azimuthDriveClutchDisengageRPM = IniFile::iniFileTof32(shipIniFilename,"azimuthDriveClutchDisengageRPM"); // the engine revs below which the clutch will automatically disengage
+    schottelMaxDegPerSecond = IniFile::iniFileTof32(shipIniFilename,"schottelMaxDegPerSecond");		// only really useful for the button control
+    azimuthDriveMaxDegPerSecond = IniFile::iniFileTof32(shipIniFilename,"azimuthDriveMaxDegPerSecond"); 	// the maxiumum rate the Azimuth Drive will turn
+    thrustLeverMaxChangePerSecond = IniFile::iniFileTof32(shipIniFilename,"thrustLeverMaxChangePerSecond"); // only really useful for the button control
+    engineMaxChangePerSecond = IniFile::iniFileTof32(shipIniFilename,"engineMaxDegPerSecond");		// max change in engine 
+    // conventionally the azimuth drive turns in the same direction as the shcottel control, however it is not always the case e.g. shetland trader
+    if (IniFile::iniFileTou32(shipIniFilename,"azimuthDriveSameDirectionAsSchottel") == 1) {
+        azimuthDriveSameDirectionAsSchottel = true;
+    } else {
+        azimuthDriveSameDirectionAsSchottel = false;
+    }
+    // DEE NOV22 ^^^^ azimuth drive code
     rollAngle = 2*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Roll Angle (deg @weather=1)
-
-// DEE vvvvv ammeneded to reflect larger ships, this should be parametarised in a similar manner to rollPeriod and taken into account in the future when calculating parametric rolling conditions
-//    pitchPeriod = 6; //Pitch period (s)
-//    pitchPeriod = 12; //Pitch period (s)
-// DEE ^^^^^
-
     pitchPeriod = IniFile::iniFileTof32(shipIniFilename,"PitchPeriod"); // Softcoded roll period Tr a function of the ships condition indpendant of Te, the wave encounter period
-    if (pitchPeriod == 0) {
-      pitchPeriod=12; // default to a roll periof of 12 seconds if unspecified
-    }
-
     pitchAngle = 0.5*IniFile::iniFileTof32(shipIniFilename,"Swell"); //Max pitch Angle (deg @weather=1)
-    buffetPeriod = 8; //Yaw period (s)
     buffet = IniFile::iniFileTof32(shipIniFilename,"Buffet");
-
     depthSounder = (IniFile::iniFileTou32(shipIniFilename,"HasDepthSounder")==1);
     maxSounderDepth = IniFile::iniFileTof32(shipIniFilename,"MaxDepth");
     gps = (IniFile::iniFileTou32(shipIniFilename,"HasGPS")==1);
-    if (maxSounderDepth < 1) {maxSounderDepth=100;} //Default
-
     bowThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"BowThrusterForce")>0);
     sternThrusterPresent = (IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce")>0);
     turnIndicatorPresent = (IniFile::iniFileTou32(shipIniFilename,"HasRateOfTurnIndicator")==1);
@@ -133,77 +129,17 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     sternThrusterMaxForce = IniFile::iniFileTof32(shipIniFilename,"SternThrusterForce");
     bowThrusterDistance = IniFile::iniFileTof32(shipIniFilename,"BowThrusterDistance");
     sternThrusterDistance = IniFile::iniFileTof32(shipIniFilename,"SternThrusterDistance");
+    // DEE_DEC22 vvvv  new ini variables, all optional
     dynamicsLateralDragA = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragA");
     dynamicsLateralDragB = IniFile::iniFileTof32(shipIniFilename,"DynamicsLateralDragB");
-
-    rudderMinAngle = -30;
-    rudderMaxAngle = 30;
-
-    // set if Azimuth drive
-    if (IniFile::iniFileTou32(shipIniFilename,"AzimuthDrive") == 1) {
-        azimuthDrive = true;
-        azimuthPositionAstern = IniFile::iniFileTof32(shipIniFilename,"AzimuthPositionAstern");
-    } else {
-        azimuthDrive = false;
-        azimuthPositionAstern = 0;
-    }
-
-    // Set azimuth drives independent
-    azimuth1Master = false;
-    azimuth2Master = false;
-
-    //Set defaults for values that shouldn't be zero
-    if (asternEfficiency == 0)
-        {asternEfficiency = 1;}
-    if (shipMass == 0)
-        {shipMass = 10000;}
-    if (inertia == 0)
-        {inertia = 2000;}
-
-    //If lateral drag isn't set, use 50x main drag values
-    if (dynamicsLateralDragA==0 && dynamicsLateralDragB==0) {
-        dynamicsLateralDragA = dynamicsSpeedA*10;
-        dynamicsLateralDragB = dynamicsSpeedB*10;
-    }
-
-
-    if (propellorSpacing==0) {
-        singleEngine=true;
-        maxForce *= 0.5; //Internally simulated with two equal engines, so halve the value
-        device->getLogger()->log("Single engine");
-    } else {
-        singleEngine=false;
-    }
-
-    //Todo: Missing:
-    //CentrifugalDriftEffect
-    //PropWalkDriftEffect
-    //Windage
-    //WindageTurnEffect
-    //Also:
-    //DeviationMaximum
-    //DeviationMaximumHeading
-    //?Depth
-    //?AngleCorrection
-
-    //Start in engine control mode
-    controlMode = MODE_ENGINE;
-
-    //calculate max speed from dynamics parameters
-    // DEE this looks like it is in knots and not metres per second
-    maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
-	maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
-
-    //Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
-	model->setPortEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
-	model->setStbdEngine(requiredEngineProportion(spd)); //Set via model to ensure sound volume is set too
-    rudder=0;
-    rateOfTurn=0;
-
-    followUpRudderWorking = true;
-    rudderPump1Working = true; //Fully working rudder actuation
-    rudderPump2Working = true; //Fully working rudder actuation
-
+    cB =  IniFile::iniFileTof32(shipIniFilename, "BlockCoefficient");
+    
+    aziToLengthRatio = IniFile::iniFileTof32(shipIniFilename,"AziToLengthRatio"); // DEE_DEC22 use 0..1, a proportion of ships length, 
+				  // so between 0 and 0.5 is a azimuth stern drive congiguration
+				  // and between 0.5 and 1 is a tractor configuration
+    maxSpeed = IniFile::iniFileTof32(shipIniFilename, "maxSpeedAhead"); // expressed in knots
+    maxSpeed_mps = maxSpeed * 0.514444; // expressed in metres per second 
+    // DEE_DEC22 ^^^^
     //Scale
     irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
     irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
@@ -224,11 +160,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         isHighView.push_back(highView);
     }
 
-	screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
-	screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
-	screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
-	screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
-	screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
+    // Radar Screen Resolutions
+    screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
+    screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
+    screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
+    screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
+    screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
 	//Default position out of view if not set
 	if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z == 0) {
 		screenDisplayPosition.Y = 500;
@@ -254,7 +191,6 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     //Set mesh vertical correction (world units)
     heightCorrection = yCorrection*scaleFactor;
-
 
     if (is360textureShip) {
 
@@ -335,6 +271,197 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     length = ship->getBoundingBox().getExtent().Z*scaleFactor; //Store length for basic collision calculation
     width = ship->getBoundingBox().getExtent().X*scaleFactor; //Store length for basic collision calculation
 
+// DEE_DEC22 ---------- End of reading in information from .ini files and ownShipData
+
+
+
+
+
+
+// DEE_DEC22 Start setting defaults and sanity checks on parameters 
+    irr::f32 breadth;
+	breadth = width; //  DEE_DEC22 just a more usual term that I am less likely to forget !
+    irr::f32 seawaterDensity = 1024;  // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
+    irr::f32 draught = -1 * yCorrection; // DEE_DEC22 i think thats right perhaps there needs to be a SF im not sure
+
+
+
+
+    if (rollPeriod == 0) {
+      rollPeriod=8; // default to a roll period of 8 seconds if unspecified
+    }
+
+    if (pitchPeriod == 0) {
+      pitchPeriod=12; // default to a roll periof of 12 seconds if unspecified DEE_DEC22 make a function of
+		      // weather strength direction and Ixx
+    }
+
+    // Default buffet Period DEE_DEC22 to do make this a function of Izz and weather strength perhaps direction too
+    buffetPeriod = 8; //Yaw period (s)
+
+    // Default for maxSounderDepth
+    if (maxSounderDepth < 1) {maxSounderDepth=100;} //Default
+
+    // Defaults to max rudder speed
+    if (rudderMaxSpeed == 0) {
+       rudderMaxSpeed=30; // default to an almost instentaeous rudder
+    }
+    rudderMinAngle = -30;
+    rudderMaxAngle = 30;
+
+    // set if Azimuth drive
+    if (IniFile::iniFileTou32(shipIniFilename,"AzimuthDrive") == 1) {
+        azimuthDrive = true;
+    } else {
+        azimuthDrive = false;
+        aziToLengthRatio = 0;
+    }
+
+    // Set azimuth drives independent
+    azimuth1Master = false;
+    azimuth2Master = false;
+
+    //Set defaults for values that shouldn't be zero
+    if (asternEfficiency == 0)
+        {asternEfficiency = 1;}
+
+
+    if (length <= 0) {device->getLogger()->log("Invalid length from boat.x");}
+    if (breadth <= 0) {device->getLogger()->log("Invalid breadth from boat.x");}
+    if (draught <= 0) {device->getLogger()->log("Invalid draught from boat.ini YCorrection");}
+
+    // DEE_DEC22 calculate moment arm from amidships , approximated to the centre of lateral water resistance
+    //				      to the azipods, hence the arm of the lateral thrust from them
+    aziDriveLateralLeverArm = length * (0.5 - aziToLengthRatio); // this takes care of the sense of the turn
+									  // as the sign changes if tractor configuration
+
+
+    // DEE_DEC22 set ships mass and inertia from displacement and length breadth draught and Cb (block coefficient)
+    if (cB >= 0) // ie. the block coefficient has been defined so it overrides any declaration of mass or inertia
+	{
+        device->getLogger()->log("cB defined in boat.ini mass and inertia shall be calculated from dimensions");
+	shipMass = seawaterDensity * length * breadth * draught * cB; // kg
+
+ 
+	Izz = shipMass * ((length * length) + (breadth * breadth))/12; // inertia about the vertical zz axis kg m^2
+	} else { // BlockCoefficient , cB has not been defined in the ini file 
+		 // so use the declared values for mass and inertia
+	if (shipMass <= 0) {
+	    // no or an invalid ship mass is declared in .ini
+	    shipMass = 10000000; // default value for ship mass
+            device->getLogger()->log("cB not defined in boat.ini mass declared in boat.ini invalid reverting to default");
+	    } else {
+            device->getLogger()->log("cB not defined in boat.ini mass declared in boat.ini used");
+ 	    }
+	if (Izz <= 0) {
+	    // no or an invalid inertia is declared in .ini
+	    Izz = 145960000000; // based on a 120m 10,000T 14m breadth cargo vessel units are kg m^2
+	    device->getLogger()->log("cB not defined in boat.ini and invalid interia in boat.ini Default Inertia Izz of 145960000000 kg m^2 used");
+	    } else {
+            device->getLogger()->log("cB not defined in boat.ini, Inertia declared in boat.ini used");
+	    }
+        }
+    // DEE_DEC22 by this point we have a value for Izz so we can calculate values for Iyy and Ixx.  
+    //		 I know that the Ixx is an under calculation because the actual geometry is not
+    //		 very symmetric however it is not orders of magnitude out
+    Ixx = Izz * ((length * length) + (draught * draught))/((length * length) + (breadth * breadth));
+    Iyy = Izz * ((breadth * breadth) + (draught * draught))/((breadth * breadth) + (length * length));
+    // DEE_DEC22 end of mass and inertia definitions
+
+  
+
+
+    // DEE_DEC22 if maxSpeed is defined in the .ini file then calculate drag coefficients from geometry and maxSpeed
+    //           otherwise use the values declared in ini file.   So maxSpeed, a new parameter overrides the 
+    //	         drag coefficient 
+    if (maxSpeed > 0) { //note maxSpeed_ms had already been calculated which is maxSpeed in metres per second
+        device->getLogger()->log("maxSpeed is defined in boat.ini so the defined drag parameters shall be calculated from ship dimensions");
+	dynamicsSpeedA = seawaterDensity * breadth * draught;
+	dynamicsSpeedB = 0; // not worth bothering with take drag as proportional to the square of speed only
+        // lateral drag calculated later
+        // angular drag coefficient again only calculate the coefficient thats multiplied by angularvelocity sqaured
+	dynamicsTurnDragA = 2*draught*(length * length * length)*seawaterDensity/3;
+	dynamicsTurnDragB = 0; // neglected 
+	// note this models the turning drag of the ship as if it was a vertical plane turning in the water about a vertical axis
+
+
+    } else {
+        // maxSpeed is either invalid or undefined so use the drag coefficients from the ini file
+        device->getLogger()->log("maxSpeed is undefined in boat.ini so the defined drag parameters from there shall be used");
+    }
+ 
+
+    // DEE_DEC22 rather than default to *10 it should default to *(length / breadth) as draught is the same for all
+    if (dynamicsLateralDragA == 0) {
+        dynamicsLateralDragA = dynamicsSpeedA*(length / breadth); // this is the constant for the sqaure of speed
+							// so is proportional to the area pusing into the water
+							// for a ship that is longer than wide then it should be
+							// greater than the axial constant 
+    }
+    if (dynamicsLateralDragB == 0) {  // DEE_DEC22 this plays such a small part is it even worth including ?
+        dynamicsLateralDragB = dynamicsSpeedB*(breadth / length);
+    }
+
+
+
+
+
+
+    if (propellorSpacing==0) {
+        singleEngine=true;
+        maxForce *= 0.5; //Internally simulated with two equal engines, so halve the value
+        device->getLogger()->log("Single engine");
+    } else {
+        singleEngine=false;
+    }
+
+    //Todo: Missing:
+    //CentrifugalDriftEffect	DEE_DEC22 possibly taken into account with new turn modelling
+    //PropWalkDriftEffect	DEE_DEC22 depends on direction of propellor
+    //Windage			DEE_DEC22 simple model would be above sea profile area * windspeed ^2
+    //WindageTurnEffect		DEE_DEC22 arm is diff between 
+    //					centre of lateral (water) pressure 
+    //					and center of lateral (wind) pressure
+    //Also:
+    //DeviationMaximum		DEE_DEC22 could use World Magnetic Model WMM for variation also
+    //DeviationMaximumHeading		  could use a phase and amplitude shifted SIN function for this
+    //?Depth
+    //?AngleCorrection
+
+    //Start in engine control mode
+    controlMode = MODE_ENGINE;
+
+
+
+
+
+    //calculate max speed from dynamics parameters
+    // DEE this looks like it is in knots and not metres per second
+    maxSpeedAhead  = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce))/(2*dynamicsSpeedA);
+    maxSpeedAstern = ((-1 * dynamicsSpeedB) + sqrt((dynamicsSpeedB*dynamicsSpeedB)-4*dynamicsSpeedA*-2*maxForce*asternEfficiency))/(2*dynamicsSpeedA);
+
+    //Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
+
+// DEE_NOV22 	todo need to ammend this for azimuth drive, perhaps if initial speed is 0 then clutched out both azis and rpm at idle and lever back
+//		otherwise some interpolation needed to get something reasonable
+
+	model->setPortEngine(requiredEngineProportion(axialSpd)); //Set via model to ensure sound volume is set too
+	model->setStbdEngine(requiredEngineProportion(axialSpd)); //Set via model to ensure sound volume is set too
+    // DEE_NOV22 suggest that change in volume of engine noise is appropriate for controllable pitch propellor vessels only
+    // DEE_NOV22 where the engine runs at a constant rpm ( so a shaft generator can be run directly off the shaft )
+    // DEE_NOV22 the thrust control being as a result of adjustment of the propellor blades.
+    // DEE_NOV22 Otherwise, where thrust is a direct function of engine rpm then the frequency of the sound should vary with
+    // DEE_NOV22 each engine's rpm 
+    rudder=0;
+    rateOfTurn=0;
+
+    followUpRudderWorking = true;
+    rudderPump1Working = true; //Fully working rudder actuation
+    rudderPump2Working = true; //Fully working rudder actuation
+
+
+
+
     //set initial pitch and roll
     pitch = 0;
     roll = 0;
@@ -355,6 +482,25 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     portAzimuthAngle = 0;
     stbdAzimuthAngle = 0;
+
+// DEE_NOV22 vvvv Azimuth Drive code
+// calculate some parameters here for computational efficiency
+// HERE
+   irr::f32 idleEngine = (azimuthDriveEngineIdleRPM)/(maxEngineRevs);  // DEE_NOV22 calculate idle engine expressed as (0..1) as opposed to RPM
+
+// DEE_NOV22 initialise some new variables here
+   portSchottel = 90; 		// port schottel dead ahead
+   stbdSchottel = 270; 		// stbd schottel dead ahead
+   portThrustLever = 0.1;		// port thrust lever  DEBUG set to 0.1 TODO calculate the setting that corresponds to the engine intital ship speed
+   stbdThrustLever = 0.1;		// stbd thrust lever  DEBUG set to 0.1
+   portClutch = false;		// Port clutch is disengaged DEGUG set to engaged
+   stbdClutch = false;		// Starboard clutch is disengaged
+
+// DEE_NOV22 DEBUG setting thrust lever to 0.1 and clutches disengaged
+
+
+// DEE_NOV22 ^^^^
+
 
     buoyCollision = false;
     otherShipCollision = false;
@@ -532,19 +678,183 @@ void OwnShip::setWheel(irr::f32 wheel, bool force)
 
 void OwnShip::setPortAzimuthAngle(irr::f32 angle)
 {
-    
     if (azimuth2Master) {
         // Don't do anything if the other azimuth control is master
         return;
     }
+    this->portAzimuthAngle = angle; 
+}
 
-    portAzimuthAngle = angle;
+
+
+
+
+
+// DEE_NOV22 vvvv follow up port azimuth drive in response to port schottel
+
+
+void OwnShip::followupPortAzimuthDrive() 
+{
+
+    // DEE_NOV22 vvvv temporary variables could probably be done a lot more neatly
+    irr::f32 newPortAzimuthAngle;
+    // DEE_NOV22 ^^^^
+
+//    azimuthDriveSameDirectionAsSchottel=true; //DEBUG
+    if (azimuthDriveSameDirectionAsSchottel)
+    { 
+        // conventional schottel control
+        commandedPortAngle = portSchottel;
+    } else { 
+	// mirrored schottel control like Shetland Trader and other Lass vessels.  Steers like a wheel rather than a tiller going ahead
+	commandedPortAngle = 360 - portSchottel; 	// DEE_NOV22 shouldnt have to error trap 0 > commanded  < 360 
+						 	// because portSchottel already checked for that
+    }
+
+
+    // keep commanded angles in the range 0..360 floating point 
+    if ( commandedPortAngle < 0 ) 
+    {
+        commandedPortAngle = commandedPortAngle + 360;
+    }
+    if ( commandedPortAngle > 360 ) 
+    {
+        commandedPortAngle = commandedPortAngle - 360;
+    }
+
+
+
+    irr::f32 maxChangeInAzimuthDriveAngleThisCycle = deltaTime * azimuthDriveMaxDegPerSecond; // DEE_NOV22 the maximum rotation possible in this cycle
+
+    // DEE_NOV22 now determine if it needs to move clockwise or anticlockwise
+
+
+    bool clockwise = false; // temporary
+
+    int shortestAngularDistance = int(commandedPortAngle - portAzimuthAngle) % 360; // approximated by integer
+    if (shortestAngularDistance > 180) { shortestAngularDistance = shortestAngularDistance - 360; }  // anticlockwise
+    if (shortestAngularDistance < -180) { shortestAngularDistance = shortestAngularDistance + 360; } // clockwise
+     
+
+
+    //
+
+    if (abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
+    { // the azimuth drive cannot reach the commanded angle on this cycle so move it as much as possible towards it
+        int tempInt = int(commandedPortAngle - portAzimuthAngle);
+	if (tempInt < 0) { tempInt = tempInt + 360; }
+        if (shortestAngularDistance > 0) // clockwise or anticlockwise
+        {
+            // DEE_NOV22 clockwise rotation
+	    newPortAzimuthAngle = portAzimuthAngle + maxChangeInAzimuthDriveAngleThisCycle;
+            if (newPortAzimuthAngle > 360)
+	    {
+		newPortAzimuthAngle = newPortAzimuthAngle - 360;	
+	    }
+
+        } else {
+	    // DEE_NOV22 anticlockwise rotation
+	    // DEE_NOV22 in hindsight this is probably not needed but it does make it more robust
+	    newPortAzimuthAngle = portAzimuthAngle - maxChangeInAzimuthDriveAngleThisCycle;
+	    if (newPortAzimuthAngle < 0);
+	    {
+		newPortAzimuthAngle = newPortAzimuthAngle + 360;
+	    }
+        } // end if clockwise or anticlockwise followup
+    } else { // the azimuth drive can reach the commanded angle on this cycle
+	newPortAzimuthAngle = commandedPortAngle;
+    }
+
+    if (azimuth2Master) {
+        // If the other azimuth drive is master then take the
+	// azimuth angle from the other the other engine
+        newPortAzimuthAngle = stbdAzimuthAngle;
+    } // end if azimuth2Master
+
+    setPortAzimuthAngle(newPortAzimuthAngle);
+
+
+
+} // end of followup code for the port azimuth
+
+
+
+void OwnShip::followupStbdAzimuthDrive() 
+{
+
+    // DEE_NOV22 vvvv temporary variables could probably be done a lot more neatly
+    irr::f32 newStbdAzimuthAngle;
+    // DEE_NOV22 ^^^^
+
+    if (azimuthDriveSameDirectionAsSchottel)
+    { 
+        // conventional schottel control
+        commandedStbdAngle = stbdSchottel;
+    } else { 
+	// mirrored schottel control like Shetland Trader and other Lass vessels.  Steers like a wheel rather than a tiller going ahead
+	commandedStbdAngle = 360 - stbdSchottel; 	// DEE_NOV22 shouldnt have to error trap 0 > commanded  < 360 
+						 	// because stbdSchottel already checked for that
+    }
+
+
+    // keep commanded angles in the range 0..360 floating point 
+    if ( commandedStbdAngle < 0 ) 
+    {
+        commandedStbdAngle = commandedStbdAngle + 360;
+    }
+    if ( commandedStbdAngle > 360 ) 
+    {
+        commandedStbdAngle = commandedStbdAngle - 360;
+    }
+
+
+
+    irr::f32 maxChangeInAzimuthDriveAngleThisCycle = deltaTime * azimuthDriveMaxDegPerSecond; // DEE_NOV22 the maximum rotation possible in this cycle
+
+    // DEE_NOV22 now determine if it needs to move clockwise or anticlockwise
+    int shortestAngularDistance = int(commandedStbdAngle - stbdAzimuthAngle) % 360; // approximated by integer
+    if (shortestAngularDistance > 180) { shortestAngularDistance = shortestAngularDistance - 360; }  // anticlockwise
+    if (shortestAngularDistance < -180) { shortestAngularDistance = shortestAngularDistance + 360; } // clockwise
+     
+    if (abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
+    { // the azimuth drive cannot reach the commanded angle on this cycle so move it as much as possible towards it
+        int tempInt = int(commandedStbdAngle - stbdAzimuthAngle);
+	if (tempInt < 0) { tempInt = tempInt + 360; }
+        if (shortestAngularDistance > 0) // clockwise or anticlockwise
+        {
+            // DEE_NOV22 clockwise rotation
+	    newStbdAzimuthAngle = stbdAzimuthAngle + maxChangeInAzimuthDriveAngleThisCycle;
+            if (newStbdAzimuthAngle > 360)
+	    {
+		newStbdAzimuthAngle = newStbdAzimuthAngle - 360;	
+	    }
+
+        } else {
+	    // DEE_NOV22 anticlockwise rotation
+	    // DEE_NOV22 in hindsight this is probably not needed but it does make it more robust
+	    newStbdAzimuthAngle = stbdAzimuthAngle - maxChangeInAzimuthDriveAngleThisCycle;
+	    if (newStbdAzimuthAngle < 0);
+	    {
+		newStbdAzimuthAngle = newStbdAzimuthAngle + 360;
+	    }
+        } // end if clockwise or anticlockwise followup
+    } else { // the azimuth drive can reach the commanded angle on this cycle
+	newStbdAzimuthAngle = commandedStbdAngle;
+    }
+
          
     if (azimuth1Master) {
-        // If linked, set the other engine
-        stbdAzimuthAngle = portAzimuthAngle;
-    }
-}
+        // If the other azimuth drive is master then take the
+	// azimuth angle from the other the other engine
+        // stbdAzimuthAngle = portAzimuthAngle;
+        newStbdAzimuthAngle = portAzimuthAngle;
+    } // end if azimuth1Master
+
+    setStbdAzimuthAngle(newStbdAzimuthAngle);
+
+
+}  // end of followup code for azimuth drive
+// DEE_NOV22 ^^^^
 
 void OwnShip::setStbdAzimuthAngle(irr::f32 angle)
 {
@@ -554,16 +864,19 @@ void OwnShip::setStbdAzimuthAngle(irr::f32 angle)
         return;
     }
 
-    stbdAzimuthAngle = angle;
-
     if (azimuth2Master) {
         // If linked, set the other engine
         portAzimuthAngle = stbdAzimuthAngle;
     }
+
+    this->stbdAzimuthAngle = angle;
 }
 
 void OwnShip::setAzimuth1Master(bool isMaster) {
     // Set if azimuth 1 should also control azimuth 2
+    // DEE_NOV22 azimuth drive 1 being the port azimuth drive
+    // DEE_NOV22 I've never seen this 'master' configuration in practice, the only thing 
+    //		 I've seen resembling it is the autopilot controlling either or both azimuth drives
     azimuth1Master = isMaster;
     if (azimuth1Master) {
         // Can't have both as master
@@ -577,6 +890,7 @@ void OwnShip::setAzimuth1Master(bool isMaster) {
 
 void OwnShip::setAzimuth2Master(bool isMaster) {
     // Set if azimuth 2 should also control azimuth 1
+    // DEE_NOV22 azimuth drive 2 being the starboard azimuth drive
     azimuth2Master = isMaster;
     if (azimuth2Master) {
         // Can't have both as master
@@ -599,6 +913,10 @@ bool OwnShip::getAzimuth2Master() const
     return azimuth2Master;
 }
 
+
+
+
+
 void OwnShip::setPortEngine(irr::f32 port)
 {
     
@@ -608,19 +926,37 @@ void OwnShip::setPortEngine(irr::f32 port)
     }
     
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
-    portEngine = port; //+-1
-    if (portEngine>1) {
-        portEngine = 1;
-    }
-    if (portEngine<-1) {
-        portEngine = -1;
-    }
 
-    if (azimuthDrive && azimuth1Master) {
-        // If azimuth controls linked
-        stbdEngine = portEngine;
-    }
-}
+// DEE_NOV22
+    if (azimuthDrive) {
+
+	portEngine = port; // 0..1
+	if (portEngine > 1) 
+	{
+	    portEngine = 1;
+	}
+	if (portEngine < 0)
+	{
+	    portEngine = 0;
+	}
+
+    } else {
+	// this is not an azimuth drive 
+
+	portEngine = port; //+-1
+	if (portEngine>1) {
+	    portEngine = 1;
+	}
+	if (portEngine<-1) {
+    	portEngine = -1;
+	}
+    } // end if this is not an azimuth drive
+
+    portEngine = port; 
+}  // end setPortEngine
+
+
+
 
 void OwnShip::setStbdEngine(irr::f32 stbd)
 {
@@ -631,19 +967,52 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
     }
     
     controlMode = MODE_ENGINE; //Switch to engine and rudder mode
-    stbdEngine = stbd; //+-1
-    if (stbdEngine>1) {
-        stbdEngine = 1;
-    }
-    if (stbdEngine<-1) {
-        stbdEngine = -1;
-    }
 
-    if (azimuthDrive && azimuth2Master) {
+// DEE_NOV22
+    if (azimuthDrive) {
+
+	stbdEngine = stbd; // 0..1
+	if (stbdEngine > 1) 
+	{
+	    stbdEngine = 1;
+	}
+	if (stbdEngine < 0)
+	{
+	    stbdEngine = 0;
+	}
+
+    } else {
+	// this is not an azimuth drive 
+
+	stbdEngine =stbd; //+-1
+	if (stbdEngine>1) {
+	    stbdEngine = 1;
+	}
+	if (stbdEngine<-1) {
+    	stbdEngine = -1;
+	}
+    } // end if this is not an azimuth drive
+
+    stbdEngine = stbd; 
+
+
+// DEE_NOV22 ^^^^
+
+    
+
+    if (azimuthDrive && azimuth2Master) {  // DEE_NOV22 comment azimuth2 being the stbd azimuth drive
         // If azimuth controls linked
         portEngine = stbdEngine;
     }
-}
+} // end setStbdEngine
+
+
+
+
+
+
+
+
 
 void OwnShip::setBowThruster(irr::f32 proportion) {
     //Proportion is -1 to +1
@@ -701,8 +1070,15 @@ void OwnShip::setFollowUpRudderWorking(bool followUpRudderWorking) {
     this->followUpRudderWorking = followUpRudderWorking;
 }    
 
-irr::f32 OwnShip::getPortEngine() const
+// DEE_NOV22 vvvv
+bool OwnShip::getFollowUpRudderWorking()
 {
+	return followUpRudderWorking;
+}
+// DEE_NOV22 ^^^^
+
+irr::f32 OwnShip::getPortEngine() const
+{ //DEE_NOV22 note range -1 .. 1 needs to be 0 .. 1 for azimuth drive
     return portEngine;
 }
 
@@ -791,6 +1167,239 @@ bool OwnShip::isAzimuthDrive() const
     return azimuthDrive;
 }
 
+
+// DEE_NOV22 vvvv
+// Azimuth Drive code added
+
+// Schottels
+
+bool OwnShip::isConventionalAzidriveSchottel() const
+{ // returns true if the azimuth drive turns in the same direction as the schottel , conventionally this is so, but not always e.g. Shetland Trader
+	return azimuthDriveSameDirectionAsSchottel;
+}
+
+
+
+void OwnShip::setPortSchottel(irr::f32 portAngle)
+{	// sets port schottel angle -ve anticlockwise
+	// DEE_NOV22    Im not sure this set is used anywhere but I will leave it in 
+	//		because in the future it may be needed for some sort of 
+	//		more realistic autopilot function
+	this->portSchottel = portAngle;
+}
+
+void OwnShip::setStbdSchottel(irr::f32 stbdAngle)
+{	// sets starboard azimuth drive angle -ve anticlockwise
+	this->stbdSchottel = stbdAngle;
+}
+
+irr::f32 OwnShip::getPortSchottel() const
+{	// gets port      azimuth drive angle -ve anticlockwise
+	return portSchottel;
+}
+
+irr::f32 OwnShip::getStbdSchottel() const
+{	// gets starboard azimuth drive angle -ve anticlockwise
+	return stbdSchottel;
+}
+
+// DEE_NOV22 Clutches .... not necessarily particular to Azimuth drive ships
+//			since when stopping and starting an engine then it
+//			must be clutched out.  Also if apparatus or divers
+//			are being deployed overboard then to stop the propellor
+//			turning without switching off the engine then it is
+//			necessary to clutch out.  
+
+void OwnShip::setPortClutch(bool myPortClutch) 
+{	// sets port clutch true is clutched in false is clutched out
+	portClutch = myPortClutch;
+}
+
+void OwnShip::setStbdClutch(bool myStbdClutch)
+{	// sets starboard clutch true is clutched in false is clutched out
+	stbdClutch = myStbdClutch;
+}
+
+bool OwnShip::getPortClutch()
+{	// gets port clutch perhaps have synonym isPortClutched() todo
+	return portClutch;
+}
+
+
+bool OwnShip::getStbdClutch()
+{       // gets stbd clutch perhaps have synonym isPortClutched() todo
+	return stbdClutch;
+}
+
+void OwnShip::engagePortClutch() 
+{	// engage port clutch  separate key method that calls this to facilitate Non follow up in the future
+	this->setPortClutch(true);
+	// DEE_NOV22 future development make a clunk sound on engaging 
+	//	     	"	"	if the engine is running too fast then snap the propshaft
+	//		"	"	if the engine is running too slow then stall the engine
+}
+
+void OwnShip::disengagePortClutch() 
+{	// disengage port clutch separate key method that calls this to facilitate Non follow up / follow up
+	// DEE_NOV22 futre development over rev the engine if disengaged at too high a speed ? a bit pedantic perhaps
+	setPortClutch(false);
+}
+
+void OwnShip::engageStbdClutch() 
+{	// engage stbd clutch as above re key bindings
+	this->setStbdClutch(true);
+	// DEE_NOV22 future development make a clunk sound on engaging
+	//	     	"	"	if the engine is running too fast then snap the propshaft
+	//		"	"	if the engine is running too slow then stall the engine
+}
+
+void OwnShip::disengageStbdClutch() 
+{	// disengage stbd clutch as above re key bindings
+	this->setStbdClutch(false);
+}
+
+void OwnShip::setPortThrustLever(irr::f32 thrustLever)
+{	// sets port thrust lever 0..1
+	if (thrustLever < 0)
+	{
+		thrustLever=0;
+	}
+	if (thrustLever > 1)
+	{
+		thrustLever=1;
+	}
+	this->portThrustLever = thrustLever;
+}
+
+void OwnShip::setStbdThrustLever(irr::f32 thrustLever)
+{	// sets stbd thrust lever 0..1
+	if (thrustLever < 0)
+	{
+		thrustLever = 0;
+	}
+	if (thrustLever > 1)
+	{
+		thrustLever = 1;
+	}
+	this->stbdThrustLever = thrustLever;
+}
+
+irr::f32 OwnShip::getPortThrustLever() 
+{	// gets position of port thrust lever 0..1
+	return this->portThrustLever;
+}
+
+
+irr::f32 OwnShip::getStbdThrustLever() 
+{	// gets position of stbd thrust lever 0..1
+	return this->stbdThrustLever;
+}
+
+// todo put this in to SimulationModel and into EventCapture, Add entries into ini file and read them in to the model
+// todo future have the optional capacity to declutch any propellor from the engine, especially controlable
+// pitch propellors  just like RV Prince Madog
+// todo add a schottel position indicator to azipod display
+// todo add a thrust lever indicator to azipod display
+
+// below are for button control
+
+void OwnShip::btnIncrementPortSchottel()
+{	// turns port schottel clockwise in response to a key press D
+	newPortSchottel = getPortSchottel() + getLastDeltaTime() * schottelMaxDegPerSecond;
+	if (newPortSchottel > 360)
+	{ // DEE_NOV22 for the case that it has gone all the way around
+		this->newPortSchottel = newPortSchottel - 360;
+	}
+	setPortSchottel(newPortSchottel);
+}
+
+void OwnShip::btnDecrementPortSchottel()
+{	// turns port schottel anticlockwise by one degree in response to a key press A
+	newPortSchottel = getPortSchottel() -  getLastDeltaTime() * schottelMaxDegPerSecond;
+	if (newPortSchottel < 0)
+	{ // DEE_NOV22 for the case that it has gone all the way around
+		this->newPortSchottel = newPortSchottel + 360;
+	}
+	setPortSchottel(newPortSchottel);
+}
+
+void OwnShip::btnIncrementStbdSchottel()
+{	// turns stbd schottel clockwise by one degree in response to a key press J
+	newStbdSchottel = getStbdSchottel() +  getLastDeltaTime() * schottelMaxDegPerSecond;
+	if (newStbdSchottel > 360)
+	{ // DEE_NOV22 for the case that it has gone all the way around
+		this->newStbdSchottel = newStbdSchottel - 360;
+	}
+	setStbdSchottel(newStbdSchottel);
+}
+
+void OwnShip::btnDecrementStbdSchottel()
+{	// turns port schottel anticlockwise by one degree in response to a key press L
+	newStbdSchottel = getStbdSchottel() - getLastDeltaTime() * schottelMaxDegPerSecond;
+	if (newStbdSchottel < 0)
+	{ // DEE_NOV22 for the case that it has gone all the way around
+		newStbdSchottel = newStbdSchottel + 360;
+	}
+	setStbdSchottel(newStbdSchottel);
+} // DEE End btnDecrementStbdSchottel() 
+
+// DEE_NOV22 note that the above controls the position of the schottels and not the azidrives that's later
+
+void OwnShip::btnEngagePortClutch() 
+{	// engage port clutch todo key binding for this
+	engagePortClutch();
+}
+
+void OwnShip::btnDisengagePortClutch() 
+{	// disengage port clutch todo key binding for this
+	disengagePortClutch();
+}
+
+void OwnShip::btnEngageStbdClutch() 
+{	// engage stbd clutch todo key binding for this
+	engageStbdClutch();
+}
+
+void OwnShip::btnDisengageStbdClutch() 
+{	// disengage stbd clutch todo key binding for this
+	disengageStbdClutch();
+}
+
+void OwnShip::btnIncrementPortThrustLever() 
+{	// increments the port thrust lever
+	setPortThrustLever(getPortThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+
+}
+
+void OwnShip::btnDecrementPortThrustLever() 
+{	// decrements the port thrust lever
+	irr::f32 tempvar;
+	tempvar = getPortThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond;
+	setPortThrustLever(tempvar);
+}
+
+void OwnShip::btnIncrementStbdThrustLever() 
+{	// increments the stbd thrust lever
+	setStbdThrustLever(getStbdThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+}
+
+void OwnShip::btnDecrementStbdThrustLever()
+{	// decrements the stbd thrust lever
+	setStbdThrustLever(getStbdThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+}
+
+
+
+// DEE_NOV22 ^^^^
+
+
+
+
+
+
+
+
+
 bool OwnShip::isBuoyCollision() const
 {
     return buoyCollision;
@@ -812,17 +1421,40 @@ irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
     return proportion;
 }
 
+// DEE_NOV22 vvvv
+// the delta time of the previous cycle, good enough for movement of shcottels and levers
+
+irr::f32 OwnShip::getLastDeltaTime() 
+{
+	return deltaTime;
+}
+
+void OwnShip::setLastDeltaTime(irr::f32 myDeltaTime)
+{
+	deltaTime = myDeltaTime;
+}
+
+
+// DEE_NOV22 ^^^^
+
+
+
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
 {
 
-    //dynamics: hdg in degrees, spd in m/s. Internal units all SI
+    // DEE_NOV22 vvvv
+    setLastDeltaTime(deltaTime);
+    // DEE_NOV22 ^^^^
+
+
+    //dynamics: hdg in degrees, axialSpd lateralSpd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE) {
 
         //Check depth and update collision response forces and torque
-        irr::f32 groundingDrag = 0;
+        irr::f32 groundingAxialDrag = 0;
         irr::f32 groundingLateralDrag = 0;
         irr::f32 groundingTurnDrag = 0;
-        collisionDetectAndRespond(groundingDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
+        collisionDetectAndRespond(groundingAxialDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
 
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
@@ -840,64 +1472,325 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             sternThruster = -1;
         }
 
-        //Update spd and hdg with rudder and engine controls - assume two engines, should also work with single engine
-        irr::f32 portThrust;
-        irr::f32 stbdThrust;
+
+        // DEE_DEC2022 
+	// portThrust stbdThrust  meaning changed to the magnitude of thrust
+	// portAxialThrust to mean component of thrust along the axis of the vessel
+	// portLateralThrust to mean component of thrust athwartships
+	//
+	// remodel parameters so that the lever arm of forces act about L/2 
+	// which is an approximation of the centre of lateral resistance
+	// and the axis of the vessel
+	//
+	// Calculate Mass and Inertia about the vertical axis (Izz) from ini parameters
+	// Cb block coefficient ususally 0.87 for a general cargo ship
+	// draught, bread, length and seawater density to obtain the displacement (mass)
+	// calculate Izz = mass * (length^2 * breadth^2) / 12
+	// for the future modelling of rolling and pitching then we can also calculate 
+	// Iyy = mass * (centreGravityTemporal^2 + breadth^2) / 12, for rolling with a guesstimate made of the height of centreGravity
+	// Ixx = mass * (centreGravityTemporal^2 + length^2) / 12, for pitching motion
+
+        //Update axialSpd and hdg with rudder and engine controls - assume two engines, should also work with single engine
+        irr::f32 portThrust; 	// DEE_DEC22 changed meaning to scalar not vector
+        irr::f32 stbdThrust;	// DEE_DEC22 changed meaning to scalar not vector
+
+	// DEE_DEC22 vvvv
+	irr::f32 portAxialThrust;
+	irr::f32 stbdAxialThrust;
+	irr::f32 portLateralThrust;
+	irr::f32 stbdLateralThrust;
+	irr::f32 portTemporalThrust; // probably temporal not needed at present but for future use as trim of outboard engine
+	irr::f32 stbdTemporalThrust; // and for some configuration of sails and kites
+
+	irr::f32 axialThrust; // sum of axial thrusts
+	irr::f32 lateralThrust; // sum of lateral thrusts
+	irr::f32 temporalThrust; // sum of temporal thrusts
+	// DEE_DEV22 ^^^^
+
+
         if (azimuthDrive) {
-            portThrust = portEngine * maxForce * cos(portAzimuthAngle*irr::core::DEGTORAD);
-            stbdThrust = stbdEngine * maxForce * cos(stbdAzimuthAngle*irr::core::DEGTORAD);
-        } else {
+	    // DEE_NOV22 todo have some efficiency function to reduce thrust when azi wash is obstructed by other azi and hull
+	    // DEE_NOV22 Follow up behaviour for azimuth drive direction led by schottels
+	    // DEE_NOV22 consider adding a conditional which would allow for modelling non follow up control buttons / keys only
+
+	    followupPortAzimuthDrive();
+	    followupStbdAzimuthDrive();
+
+	    // DEE_NOV22 Follow up behaviour for engine led by thrust lever
+	    // DEE_NOV22 consider adding a conditional which would allow for modelling non follow up control buttons / keys only
+	    maxChangeInEngineThisCycle = deltaTime * thrustLeverMaxChangePerSecond;
+
+	    // Port Engine
+	    if (portEngine < portThrustLever) 
+	    {
+		// Port engine setting needs to increase
+		if (portEngine < (portThrustLever - maxChangeInEngineThisCycle)) {
+		    // the port engine cannot attain the commanded setting on this cycle so increment by the most it can
+		    newPortEngine = portEngine + maxChangeInEngineThisCycle; 
+		} else {
+		    // the port engine can attain the commanded setting on this cycle so set it so
+		    newPortEngine = portThrustLever;
+		}
+		if (newPortEngine < idleEngine) 
+		{
+		    // prevent a change that would make the engine speed reduce below idling rpm
+		    newPortEngine = idleEngine;
+		} // end if command less than idle engine speed
+
+	    } else {
+		// Port engine setting needs to decrease
+		if (portEngine > (portThrustLever + maxChangeInEngineThisCycle)) 
+		{  // the port engine cannot attain the commanded setting on this cycle so decrement by the most it can
+		    newPortEngine = portEngine - maxChangeInEngineThisCycle;
+		} else {
+		    // the port engine can attain the commanded setting on this cycle so set it so
+		    newPortEngine = portThrustLever;
+		}
+	    if (newPortEngine < idleEngine)  
+	        {
+	        // prevent a change that would make the engine speed reduce below idling rpm
+	        newPortEngine = idleEngine;
+	        }
+	    } // end if increase port engine else decrease port engine
+	    // there is another possibility and that is portEngine == portThrustLever in which case nothing needs to happen so theres no code
+ 	    if (newPortEngine < idleEngine) 
+	    {
+	        // prevent a change that would make the engine speed reduce below idling rpm
+	        newPortEngine = idleEngine;
+	    } // end if commanded engine speed is less than engine speed
+	    setPortEngine(newPortEngine);
+
+	    // DEE_NOV22 end of port engine code
+
+
+	    // DEE_NOV22 Port propulsion system Clutch
+	    // todo DEE_NOV22 this needs to be within a conditional if follow up control (FuC), else clutch must be manual
+	    bool ifFuC=true; // todo DEE_NOV22 obviously this will need to be controlled ... bodging it for development purposes
+	    if (ifFuC) {
+		// Follow up Control with automatic clutch
+		if ((portEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM) {
+		    // the clutch should be in the engaged position
+	            engagePortClutch();
+		} 
+		if ((portEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM) {
+		    // the clutch should be in the disengaged position
+	            disengagePortClutch();
+		}
+	    } else {
+		// Non follow up , emergency steering so the clutch is controlled by buttons todo DEE_NOV22 as yet unassigned
+		;
+	    }
+	    // DEE_NOV22 end of port propulsion system clutch
+
+
+
+
+	    // Starboard Engine code
+	    if (stbdEngine < stbdThrustLever) {
+		// Starboard engine setting needs to increase
+		if (stbdEngine < (stbdThrustLever - maxChangeInEngineThisCycle)) {
+		    // the stbd engine cannot attain the commanded setting on this cycle so increment by the most it can
+                    newStbdEngine = stbdEngine + maxChangeInEngineThisCycle;
+		} else {
+		    // the stbd engine can maintain the commanded setting on this cycle so set it so
+		    newStbdEngine = stbdThrustLever;
+		}
+	    } else {
+		// Starboard engine setting needs to decrease
+		if (stbdEngine > (stbdThrustLever + maxChangeInEngineThisCycle)) {
+		    // the stbd engine cannot attain the commanded setting on this cycle so decrement by the most it can
+		    newStbdEngine = stbdEngine - maxChangeInEngineThisCycle;
+		} else {
+		    // the starboard engine can attain the commanded setting on this cycle so set it so
+		    newStbdEngine = stbdThrustLever;
+		}	
+	    }
+	    // there is another possibility and that is stbdEngine == stbdThrustLever in which case nothing needs to happen
+ 	    if (newStbdEngine < idleEngine) 
+	    {
+	        // prevent a change that would make the engine speed reduce below idling rpm
+	        newStbdEngine = idleEngine;
+	    } // end if commanded engine speed is less than engine speed
+	    setStbdEngine(newStbdEngine);
+	    // End of starboard engine code
+
+
+
+
+
+	    // Starboard propulsion system Clutch
+
+	    // todo DEE_NOV22 this needs to be within a conditional if follow up control (FuC), else clutch must be manual
+	    // there is probably already an variable available for follow up non follow up DEE_NOV22 todo
+	    bool isFuC=true; // todo DEE_NOV22 obviously this will need to be controlled ... bodging it for development purposes
+	    if (isFuC) {
+		// Follow up Control with automatic clutch
+		if ((stbdEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM) {
+		    // the clutch should be in the engaged position
+		    if (stbdClutch==false) {
+ 			// the starboard clutch is not engaged then engage it the reason it's as a separate
+			// method is so that in the future a 'clunk' sound can be added.  Also useful
+			// when key button control in non follow up mode
+			engageStbdClutch();
+		    } // end if the stbd clutch is disengaged then engage it
+		} // end if the stbd engine in running at greater than the clutch in speed
+		if ((stbdEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM) {
+		    // the clutch should be in the disengaged position
+		    if (stbdClutch==true) {
+			// the starboard clutch is engaged but it needs to be disengaged, the reason it's as 
+			// a separate method is to that in a future a 'little clunk' sound can be added.
+			// Also usefeul when key button control in non follow up mode
+			disengageStbdClutch();
+		    }  // end if the stbd engine is engaged then disengage it
+		} // end if the stbd engine is running below clutch out speed
+	    } else {
+		// Non follow up , emergency steering so the clutch is controlled by buttons todo DEE_NOV22 as yet unassigned
+		;
+	    }
+
+
+	    // DEE_NOV22 ^^^^
+
+
+
+
+
+
+
+	    // DEE_NOV22 vvvv thrust is only produced when the azimuth drive is clutched in, the below code does
+	    //		      not consider the automatic clutching in and out so should work in a future 
+	    //		      non follow up mode (for azis) or ships equipped with manual clutches (RV Prince Madog
+	    //		      and mosts CPP vessels) as the only arguments are whether an engine is clutched in or not
+	    //		      , engine setting, max force, direction.  The direction factor could be taken care of with
+	    //		      a conditional branch (i.e. if not an azi then axial thrust = maxforce * engine (no need for angle)
+	    // 		      or a an if clutch in put in the "Conventional Controls" branch
+
+
+	    // DEE_DEC22 vvvv not commenting out old code in this section as it gets too messy to be readable
+	    // DEE_DEC22 future todo add an engine trim component to model temporal thrust i.e. portTemporalThrust
+	    //		it is omitted at present due to thrusts being generally in the plane axial-lateral
+	    //		engine trim is the angular difference of the direction of engine thrust from the axial-lateral plane
+
+
+	    if (portClutch) {
+		portThrust = portEngine * maxForce; 
+		// refers to the magnitude of force produced by the engine irrespective of direction
+	    } else {
+		portThrust=0;
+	    } // end if port Azi is clutched in
+            portAxialThrust = portThrust * cos(portAzimuthAngle*irr::core::DEGTORAD);
+	    portLateralThrust = portThrust * sin(portAzimuthAngle*irr::core::DEGTORAD);
+
+	    
+	    if (stbdClutch) {
+		stbdThrust = stbdEngine * maxForce;
+	    } else {
+		stbdThrust = 0;
+	    } // end if stbd azi is clutched in
+           stbdAxialThrust = stbdThrust * cos(stbdAzimuthAngle*irr::core::DEGTORAD);
+           stbdLateralThrust = stbdThrust * sin(stbdAzimuthAngle*irr::core::DEGTORAD);
+
+	    // DEE_NOV22 ^^^^	
+	    // DEE_DEC22 ^^^^
+
+
+        } else {  // End if Azimuth Drive
+
+
+
             // Conventional controls
-            portThrust = portEngine * maxForce;
-            stbdThrust = stbdEngine * maxForce;
-            if (portThrust<0) {portThrust*=asternEfficiency;}
-            if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
-        }
+	    // DEE_DEC22 vvvv
+	    // portThrust = portEngine * maxForce;
+	    // stbdThrust = stbdEngine * maxForce;
+            portAxialThrust = portEngine * maxForce;
+            stbdAxialThrust = stbdEngine * maxForce;
+
+            // if (portThrust<0) {portThrust*=asternEfficiency;}
+            // if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
+            if (portAxialThrust<0) {portAxialThrust*=asternEfficiency;}
+            if (stbdAxialThrust<0) {stbdAxialThrust*=asternEfficiency;}
+
+	    // DEE_DEC22 ^^^^
+
+        } // DEE_NOV22 end if conventional controls then calculate thrust thus
 
         //Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
         if (singleEngine) {
             stbdThrust = portThrust; 
+	    // DEE_DEC22 vvvv
+	    stbdAxialThrust = portAxialThrust;
+	    stbdLateralThrust = portLateralThrust;
+	    // stbdTemporalThrust = portTemporalThrust; // DEE_DEC22 not yet implemented
+	    // DEE_DEC22 ^^^^
         }
         
-        irr::f32 drag;
-        if (spd<0) { //Compensate for loss of sign when squaring
-            drag = -1*dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
+	// DEE_DEC22 vvvv old code deleted not commented out for clarity
+	//		drag	replaced by	axialDrag
+	//		spd	replaced by	axialSpd but spd is updated for the ancestor object
+	//		acceleration	"	axialAcceleration
+	//		groundingDrag	"	groundingAxialDrag
+
+        irr::f32 axialDrag;
+        if (axialSpd<0) { //Compensate for loss of sign when squaring
+            axialDrag = -1*dynamicsSpeedA*axialSpd*axialSpd + dynamicsSpeedB*axialSpd;
 		} else {
-			drag =    dynamicsSpeedA*spd*spd + dynamicsSpeedB*spd;
+			axialDrag =    dynamicsSpeedA*axialSpd*axialSpd + dynamicsSpeedB*axialSpd;
 		}
-		irr::f32 acceleration = (portThrust+stbdThrust-drag-groundingDrag)/shipMass;
+		irr::f32 axialAcceleration = (portAxialThrust+stbdAxialThrust-axialDrag-groundingAxialDrag)/shipMass;
         //Check acceleration plausibility (not more than 1g = 9.81ms/2)
-        if (acceleration > 9.81) {
-            acceleration = 9.81;
-        } else if (acceleration < -9.81) {
-            acceleration = -9.81;
+        if (axialAcceleration > 9.81) {
+            axialAcceleration = 9.81;
+        } else if (axialAcceleration < -9.81) {
+            axialAcceleration = -9.81;
         }
-        spd += acceleration*deltaTime;
+        axialSpd += axialAcceleration*deltaTime;
+	spd = axialSpd; // for compatability with ancestor object
         //Also check speed for plausibility, limit to 50m/s
-        if (spd > 50) {
-            spd = 50;
-        } else if (spd < -50) {
-            spd = -50;
+        if (axialSpd > 50) {
+            axialSpd = 50;
+        } else if (axialSpd < -50) {
+            axialSpd = -50;
         }
 
+
+	// DEE_DEC22 not commenting out old code for clarity
         //Lateral dynamics
-        irr::f32 lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
+        lateralThrust = bowThruster*bowThrusterMaxForce + sternThruster*sternThrusterMaxForce;
         if (azimuthDrive) {
-            lateralThrust += portEngine * maxForce * sin(portAzimuthAngle*irr::core::DEGTORAD);
             if (singleEngine) {
                 // double effect of 'port' engine
-                lateralThrust += portEngine * maxForce * sin(portAzimuthAngle*irr::core::DEGTORAD);
-            } else {
-                lateralThrust += stbdEngine * maxForce * sin(stbdAzimuthAngle*irr::core::DEGTORAD);
-            }
-        }
-// comment perhaps dynamicsLateralDragA and B should be proportional to the lateral submerged area so roughly dynamicsDragA * (L / B)
-        irr::f32 lateralDrag;
-        if (lateralSpd<0) { //Compensate for loss of sign when squaring
-            lateralDrag = -1*dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
-		} else {
-			lateralDrag =    dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+		// DEE_DEC22 never seen a vessel with just one azi, however with a limit of rotation 
+                // then its similar to an outboard engine
+	        // DEE_NOV22 vvvv comment out original and replace with below
+                // lateralThrust += portEngine * maxForce * sin(portAzimuthAngle*irr::core::DEGTORAD);
+                if (portClutch) {
+		    // port engine is clutched in , as only a single engine let it act for both
+		    lateralThrust += 2*portLateralThrust; 
 		}
+            } else { // DEE else two independent azimuth drives
+		// DEE_NOV22 there are two azi each should be calculated independently
+		lateralThrust += portLateralThrust + stbdLateralThrust; // sin takes care of the +ve -ve
+            } // DEE_NOV22 end if else single engine azimuth drive else twin azimuth drive
+        } // DEE_NOV22 end if azimuth drive
+
+	
+
+        // DEE_DEC22 todo upon load ship then calculate DONE earlier
+	// 	dynamicsLateralDragA as dynamicsSpeedA * (L/B)
+	//	dynamicsLateralDragB as dynamicsSppedB * (B/L)
+	//	the submerged depth being constant we dont need to take it into account
+
+	
+	
+
+	// DEE_DEC22 this does the sway of the vessel when turning it probably models centrifugal drift too
+        irr::f32 lateralDrag;
+        if (lateralSpd<0)
+            { //Compensate for loss of sign when squaring
+            lateralDrag = -1 * dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+	    } else {
+	    lateralDrag = dynamicsLateralDragA*lateralSpd*lateralSpd + dynamicsLateralDragB*lateralSpd;
+	    } //  end if lateral drag
 		irr::f32 lateralAcceleration = (lateralThrust-lateralDrag-groundingLateralDrag)/shipMass;
 		//std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
 		//Check acceleration plausibility (not more than 1g = 9.81ms/2)
@@ -915,29 +1808,36 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
 
         //Turn dynamics
-        //Rudder
+        // Azimuth Drive
         if (azimuthDrive) {
             rudderTorque = 0;
             engineTorque = 0; // Will build up from components 
-            engineTorque += portEngine * maxForce * cos(portAzimuthAngle*irr::core::DEGTORAD) * propellorSpacing/2.0;
-            engineTorque -= portEngine * maxForce * sin(portAzimuthAngle*irr::core::DEGTORAD) * azimuthPositionAstern;
+	    // clockwise is +ve
+ 
             if (singleEngine) {
                 // Double the 'port' engine effect, as we model as if we have two half power engines in the same place
+                engineTorque += portAxialThrust * propellorSpacing/2.0;
+                engineTorque -= portLateralThrust * aziDriveLateralLeverArm; 
                 engineTorque *= 2;
             } else {
-                engineTorque -= stbdEngine * maxForce * cos(stbdAzimuthAngle*irr::core::DEGTORAD) * propellorSpacing/2.0;
-                engineTorque -= stbdEngine * maxForce * sin(stbdAzimuthAngle*irr::core::DEGTORAD) * azimuthPositionAstern;    
+		// twin azimuth drives so - the axial thrust for starboard engine and +ve the lateral as angle same direction
+                engineTorque += portAxialThrust * propellorSpacing/2.0;
+                engineTorque -= portLateralThrust * aziDriveLateralLeverArm; 
+                engineTorque -= stbdAxialThrust * propellorSpacing/2.0;
+                engineTorque -= stbdLateralThrust * aziDriveLateralLeverArm;    
             }
         } else {
             // Regular rudder
             if ((portThrust+stbdThrust) > 0) {
-                rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderB;
+                rudderTorque = rudder*axialSpd*rudderA + rudder*(portThrust+stbdThrust)*rudderB;
             } else {
-                rudderTorque = rudder*spd*rudderA + rudder*(portThrust+stbdThrust)*rudderBAstern; //Reduced effect of rudder when engines engaged astern
+                rudderTorque = rudder*axialSpd*rudderA + rudder*(portThrust+stbdThrust)*rudderBAstern; //Reduced effect of rudder when engines engaged astern
             }
             //Engine
             engineTorque = (portThrust*propellorSpacing - stbdThrust*propellorSpacing)/2.0; //propspace is spacing between propellors, so halve to get moment arm
         }
+
+
         //Prop walk
         irr::f32 propWalkTorquePort,propWalkTorqueStbd;
         if (portThrust > 0) {
@@ -962,12 +1862,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 		thrusterTorque = bowThruster*bowThrusterMaxForce*bowThrusterDistance - sternThruster*sternThrusterMaxForce*sternThrusterDistance;
         //Turn drag
         if (rateOfTurn<0) {
-            dragTorque=-1*dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
+            dragTorque=-1*(-1*dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn);
         } else {
-            dragTorque=   dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn;
+            dragTorque=-1*(dynamicsTurnDragA*rateOfTurn*rateOfTurn + dynamicsTurnDragB*rateOfTurn);
         }
         //Turn dynamics
-        irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque - dragTorque - groundingTurnDrag)/inertia;
+
+        irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque + dragTorque - groundingTurnDrag)/Izz;
+
+
+
         rateOfTurn += angularAcceleration*deltaTime; //Rad/s
         //check plausibility for rate of turn, limit to ~4Pi rad/s
         if (rateOfTurn > 12) {
@@ -1014,8 +1918,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
     //move, according to heading and speed
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xChange = sin(hdg*irr::core::DEGTORAD)*spd*deltaTime + cos(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
-        zChange = cos(hdg*irr::core::DEGTORAD)*spd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
+        // DEE_DEC22 
+        // I am assuming that the datum is the stern of the ship on its centreline, so the gps position should
+        // be corrected to its antenna position on the actual ship. Similar info is transmitted on AIS also
+        // however the AIS may have its own dedicated GPS antenna.  We'll assume it doesnt so need to look at the NEMA code
+
+        xChange = sin(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime + cos(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
+        zChange = cos(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime - sin(hdg*irr::core::DEGTORAD)*lateralSpd*deltaTime;
         //Apply tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(),model->getLat(),model->getTimestamp());
         if (getDepth() > 0) {
@@ -1108,11 +2017,11 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
         if (localIntersection > 0) {
             
             //slow down if aground 
-            if (spd>0) {
-                spd = fmin(0.1,spd); //currently hardcoded for 0.1 m/s, ~0.2kts
+            if (axialSpd>0) {
+                axialSpd = fmin(0.1,axialSpd); //currently hardcoded for 0.1 m/s, ~0.2kts
             }
-            if (spd<0) {
-                spd = fmax(-0.1,spd);
+            if (axialSpd<0) {
+                axialSpd = fmax(-0.1,axialSpd);
             }
 
             if (rateOfTurn>0) {
@@ -1198,7 +2107,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
             if (localIntersection > 0) {
                 //Simple 'proof of principle' values initially
-                //reaction += localIntersection*100*maxForce * sign(spd,0.1);
+                //reaction += localIntersection*100*maxForce * sign(axialSpd,0.1);
                 //lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
                 //turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
 
@@ -1206,7 +2115,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 irr::core::vector3df localSpeedVector;
                 localSpeedVector.X = lateralSpd + rateOfTurn*contactPoints.at(i).position.Z;
                 localSpeedVector.Y = 0;
-                localSpeedVector.Z = spd - rateOfTurn*contactPoints.at(i).position.X;
+                localSpeedVector.Z = axialSpd - rateOfTurn*contactPoints.at(i).position.X;
                 irr::core::vector3df normalLocalSpeedVector = localSpeedVector;
                 normalLocalSpeedVector.normalize();
                 irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning

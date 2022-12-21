@@ -136,6 +136,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         if (mode == OperatingMode::Secondary) {
             gui->hideEngineAndRudder();
 //      TODO      gui->hideWheel();
+//	DEE_NOV22 todo hide schottels engine indicators etc
         }
 
         //Tell the GUI what instruments to display - currently GPS and depth sounder
@@ -658,6 +659,164 @@ SimulationModel::~SimulationModel()
         return ownShip.getAzimuth2Master();
     }
 
+// DEE_NOV22 vvvv Azimuth Drive follow up code
+
+    // Schottels
+   
+    void SimulationModel::setPortSchottel(irr::f32 portAngle)
+    { // Set the Port Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
+        ownShip.setPortSchottel(portAngle);
+    }
+
+    void SimulationModel::setStbdSchottel(irr::f32 stbdAngle)
+    { // Set the Stbd Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
+        ownShip.setStbdSchottel(stbdAngle);
+    }
+
+    irr::f32 SimulationModel::getPortSchottel()
+    { // Gets the Port Schottel angle, (-ve is anticlockwise, +ve is clockwise)
+        return ownShip.getPortSchottel();
+    }
+
+    irr::f32 SimulationModel::getStbdSchottel()
+    { // Gets the Stbd Schottel angle, (-ve is anticlockwise, +ve is clockwise)
+        return ownShip.getStbdSchottel();
+    }
+
+
+    // DEE_NOV22 btn control of shcottels ... this is for when you dont use a mouse of control console, 
+    //           however it is also close enough to emergency steering mode of azimuth drives for all 
+    //		 practical playability purposes.
+    void SimulationModel::btnIncrementPortSchottel()
+    {
+	ownShip.btnIncrementPortSchottel(); // DEE_NOV22 stbd schottel clockwise 
+    }
+    
+    void SimulationModel::btnDecrementPortSchottel()
+    {
+	ownShip.btnDecrementPortSchottel(); // DEE_NOV22 port schottel anticlockwise
+    }
+    
+    void SimulationModel::btnIncrementStbdSchottel()
+    {
+	ownShip.btnIncrementStbdSchottel(); // DEE_NOV22 stbd shcottel clockwise in response to KEY_KEY_L
+    }
+    
+    void SimulationModel::btnDecrementStbdSchottel()
+    {
+	ownShip.btnDecrementStbdSchottel(); // DEE_NOV22 port schottel anticlockwise in response to KEY_KEY_J
+    }
+    
+
+
+
+    // Thrust levers
+
+    void SimulationModel::setPortThrustLever(irr::f32 portThrustLever)
+    {
+        ownShip.setPortThrustLever(portThrustLever);
+//        ownShip.setPortThrustLever(irr::f32 portThrustLever);
+    }
+
+    void SimulationModel::setStbdThrustLever(irr::f32 stbdThrustLever)
+    {
+//        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
+        ownShip.setStbdThrustLever(stbdThrustLever);
+    }
+
+    irr::f32 SimulationModel::getPortThrustLever()
+    {
+        return ownShip.getPortThrustLever();
+    }
+
+    irr::f32 SimulationModel::getStbdThrustLever()
+    {
+        return ownShip.getStbdThrustLever();
+    }
+
+
+    // DEE_NOV22 below in response to keyboard presses
+    //		 todo implement an emergency steering mode
+    //           respond to physical control's buttons emergency mode
+    //		 other code for follow up response to physical controls
+
+    void SimulationModel::btnIncrementPortThrustLever()
+    {
+	ownShip.btnIncrementPortThrustLever();
+    }
+
+    void SimulationModel::btnDecrementPortThrustLever()
+    {
+	ownShip.btnDecrementPortThrustLever();
+    }
+
+    void SimulationModel::btnIncrementStbdThrustLever()
+    {
+	ownShip.btnIncrementStbdThrustLever();
+    }
+
+    void SimulationModel::btnDecrementStbdThrustLever()
+    {
+	ownShip.btnDecrementStbdThrustLever();
+    }
+
+
+    // DEE_NOV22 Clutches , in normal operation these would be automatic, however in emergency (non follow up) mode they are manual
+    // DEE_NOV22 in future perhaps model engine stall for when clutch engaged at too low a revs and prop shaft snap if clutch
+    // DEE_NOV22 is engaged at too high a revs
+
+    void SimulationModel::setPortClutch(bool portClutch)
+    {
+        ownShip.setPortClutch(portClutch);
+    }
+
+    void SimulationModel::setStbdClutch(bool stbdClutch)
+    {
+        ownShip.setStbdClutch(stbdClutch);
+    }
+
+    bool SimulationModel::getPortClutch() 
+    {
+        return ownShip.getPortClutch();
+    }
+
+    bool SimulationModel::getStbdClutch()
+    {
+        return ownShip.getStbdClutch();
+    }
+
+
+    // DEE_NOV22 todo need to assign keys to this is emergency steering mode where there is no automatic clutch
+    //           I think we could use the follow up / non follow up flag to determine if it is in normal or
+    //		 emergency steering mode.
+    //		 todo is it better to use SimulationModel::setXXXXClutch(xxxx) for this
+
+    void SimulationModel::engagePortClutch()
+    {
+	ownShip.setPortClutch(true);
+    }
+
+    void SimulationModel::disengagePortClutch()
+    {
+	ownShip.setPortClutch(false);
+    }
+
+    void SimulationModel::engageStbdClutch() 
+    {
+	ownShip.setStbdClutch(true);
+    }
+
+    void SimulationModel::disengageStbdClutch() 
+    {
+	ownShip.setStbdClutch(false);
+    }
+
+
+
+
+
+// DEE_NOV22 ^^^^ Azimuth Drive follow up code
+
     void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
     {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         ownShip.setPortAzimuthAngle(angle);
@@ -674,6 +833,14 @@ SimulationModel::~SimulationModel()
         ownShip.setPortEngine(port); //This method limits the range applied
 
 		//Set engine sound level
+		// DEE_NOV22 unless this is a controllable pitch propellor, 
+		// where the engine turns at a constant rpm
+		// where with increased power then the sound of the engine 
+		// results in the same frequency engine noise, only louder.  
+		// Vessels where engine rpm controls power then the frequency
+		// of the engine noise should change with engine rpm
+
+
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
 		}
@@ -689,6 +856,7 @@ SimulationModel::~SimulationModel()
         ownShip.setStbdEngine(stbd); //This method limits the range applied
 
 		//Set engine sound level
+		// DEE_NOV22 same comment as for port engine
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
 		}
@@ -1188,7 +1356,7 @@ SimulationModel::~SimulationModel()
         #ifdef WITH_PROFILING
         IPROF_FUNC;
         #endif
-// DEE vvvv debug I think that this is effectively the CLOCK
+// DEE vvvv debug I think that this is effectively the cycle
 
         //Declare here, so scope added as part of profiling isn't a problem
         irr::u32 lightLevel;
@@ -1390,6 +1558,24 @@ SimulationModel::~SimulationModel()
         guiData->radarOn = radarCalculation.isRadarOn();
         guiData->pump1On = ownShip.getRudderPumpState(1);
         guiData->pump2On = ownShip.getRudderPumpState(2);
+
+
+// DEE_NOV22 vvvv
+	guiData->schottelPort = ownShip.getPortSchottel();
+	guiData->schottelStbd = ownShip.getStbdSchottel();
+
+	guiData->enginePort = (ownShip.getPortEngine()*270)-135;
+	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135;
+
+
+
+	guiData->clutchPort = ownShip.getPortClutch();
+	guiData->clutchStbd = ownShip.getStbdClutch();
+
+	guiData->emergencySteering = !(ownShip.getFollowUpRudderWorking());
+
+// DEE_NOV22 ^^^^
+
 
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();
