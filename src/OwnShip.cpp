@@ -144,7 +144,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename,"ScaleFactor");
     irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(shipIniFilename,"AngleCorrection");
-
+    // DEE_DEC22 vvvv    
+    angleCorrectionRoll = 0;  // default value
+    angleCorrectionPitch = 0; // default value
+    angleCorrectionRoll = IniFile::iniFileTof32(shipIniFilename,"AngleCorrectionRoll");
+    angleCorrectionPitch = IniFile::iniFileTof32(shipIniFilename,"AngleCorrectionPitch");
+    // DEE_DEC22 ^^^^
     //camera offset (in unscaled and uncorrected ship coords)
     irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename,"Views");
     if (numberOfViews==0) {
@@ -282,7 +287,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     irr::f32 breadth;
 	breadth = width; //  DEE_DEC22 just a more usual term that I am less likely to forget !
     irr::f32 seawaterDensity = 1024;  // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
-    irr::f32 draught = -1 * yCorrection; // DEE_DEC22 i think thats right perhaps there needs to be a SF im not sure
+    irr::f32 draught = -1 * yCorrection * scaleFactor; // DEE_DEC22 i think thats right perhaps there needs to be a SF im not sure
 
 
 
@@ -371,10 +376,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
   
 
 
-    // DEE_DEC22 if maxSpeed is defined in the .ini file then calculate drag coefficients from geometry and maxSpeed
+    // DEE_DEC22 if maxSpeed is defined in the .ini file then calculate drag coefficients from geometry and maxForce
     //           otherwise use the values declared in ini file.   So maxSpeed, a new parameter overrides the 
     //	         drag coefficient 
-    if (maxSpeed > 0) { //note maxSpeed_ms had already been calculated which is maxSpeed in metres per second
+    if (maxSpeed > 0) { //note maxSpeed_mps had already been calculated which is maxSpeed in metres per second
         device->getLogger()->log("maxSpeed is defined in boat.ini so the defined drag parameters shall be calculated from ship dimensions");
 	dynamicsSpeedA = seawaterDensity * breadth * draught;
 	dynamicsSpeedB = 0; // not worth bothering with take drag as proportional to the square of speed only
@@ -384,7 +389,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 	dynamicsTurnDragB = 0; // neglected 
 	// note this models the turning drag of the ship as if it was a vertical plane turning in the water about a vertical axis
 
-
+        maxForce = dynamicsSpeedA*(maxSpeed_mps*maxSpeed_mps)+dynamicsSpeedB*maxSpeed_mps; 
     } else {
         // maxSpeed is either invalid or undefined so use the drag coefficients from the ini file
         device->getLogger()->log("maxSpeed is undefined in boat.ini so the defined drag parameters from there shall be used");
@@ -1971,8 +1976,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
     //Set position & angles
     ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
-    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,pitch,roll));
-
+// DEE_DEC22 vvvv the original remains however this could be a replacement
+//    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
+//    ship->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
+    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,pitch,roll)); // this is the original
+// DEE_DEC22 ^^^^
 }
 
 irr::f32 OwnShip::getCOG() const

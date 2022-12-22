@@ -64,6 +64,11 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
 
     irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
+    // DEE_DEC22 vvvv
+    angleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
+    angleCorrectionRoll = IniFile::iniFileTof32(iniFilename,"AngleCorrectionRoll");
+    // DEE_DEC22 ^^^^
+
 
     std::string shipFullPath = basePath + shipFileName;
 
@@ -191,7 +196,10 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
     ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
-    ship->setRotation(irr::core::vector3df(0, hdg+angleCorrection, 0)); //Global vectors
+    // DEE_DEC22 vvvv allows modelling of trim , list and models derived from other coordinate systems
+    //ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    // DEE_DEC22 ^^^^
 
     //for each light, find range and angle
     for(std::vector<NavLight*>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {
