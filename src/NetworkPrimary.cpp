@@ -461,7 +461,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardVisible()? 1 : 0));
     stringToSend.append("#");
 
-    //3 Each 'Other' (Pos X (abs), Pos Z, angle, SART, MMSI |) #
+    //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
     for(int number = 0; number < (int)model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
@@ -470,6 +470,8 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipHeading(number)));
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipSpeed(number)*MPS_TO_KTS));
+        stringToSend.append(",");
+        stringToSend.append("0"); // Rate of turn: This is not currently used in normal mode
         stringToSend.append(",");
         stringToSend.append("0"); //Fixme: Sart enabled
         stringToSend.append(",");

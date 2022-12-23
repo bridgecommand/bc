@@ -324,8 +324,15 @@ int main()
                     irr::f32 thisOtherShipZ = 0;
                     irr::f32 thisOtherShipSpeed = 0;
                     irr::f32 thisOtherShipBearing = 0;
+                    irr::f32 thisOtherShipRateOfTurn = 0;
 
-                    shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+                    shipPositionData.getShipPosition(i,
+                                                     scenarioTime,
+                                                     thisOtherShipX,
+                                                     thisOtherShipZ,
+                                                     thisOtherShipSpeed,
+                                                     thisOtherShipBearing,
+                                                     thisOtherShipRateOfTurn);
 
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipX));
                     otherShipsString.append(",");
@@ -335,6 +342,11 @@ int main()
                     otherShipsString.append(",");
                     otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS));
                     otherShipsString.append(",");
+
+                    // TODO: Send Rate of turn here
+                    otherShipsString.append(Utilities::lexical_cast<std::string>(thisOtherShipRateOfTurn));
+                    otherShipsString.append(",");
+
                     otherShipsString.append("0,0,0,0"); //SART enabled, MMSI, number of legs,leg info. TODO: Can we get MMSI
                     otherShipsString.append("|"); //End of other ship record
                 }
@@ -382,13 +394,14 @@ int main()
                 receivedMessage = receivedMessage.substr(3,receivedMessage.length()-3); //Strip 'MPF'
                 std::vector<std::string> splitMessage = Utilities::split(receivedMessage,'#');
                 //Store information
-                if (splitMessage.size() == 5) {
+                if (splitMessage.size() == 6) {
                     irr::f32 thisOtherShipX = Utilities::lexical_cast<irr::f32>(splitMessage.at(0));
                     irr::f32 thisOtherShipZ = Utilities::lexical_cast<irr::f32>(splitMessage.at(1));
                     irr::f32 thisOtherShipBearing = Utilities::lexical_cast<irr::f32>(splitMessage.at(2));
-                    irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(3));
-                    irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
-                    shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+                    irr::f32 thisOtherShipRateOfTurn = Utilities::lexical_cast<irr::f32>(splitMessage.at(3)); // deg/s
+                    irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
+                    irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(5));
+                    shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
                 }
             }
         } //End of loop for each peer
@@ -406,8 +419,9 @@ int main()
             irr::f32 thisOtherShipZ = 0;
             irr::f32 thisOtherShipSpeed = 0;
             irr::f32 thisOtherShipBearing = 0;
+            irr::f32 thisOtherShipRateOfTurn = 0;
 
-            shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing);
+            shipPositionData.getShipPosition(i,scenarioTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
             std::string thisShipNumber = Utilities::lexical_cast<std::string>(i+1);
             std::string stringSpeed = Utilities::lexical_cast<std::string>(thisOtherShipSpeed*MPS_TO_KTS); //Should be in knots
             std::string stringHeading = Utilities::lexical_cast<std::string>(thisOtherShipBearing);

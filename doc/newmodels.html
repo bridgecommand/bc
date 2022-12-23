@@ -316,7 +316,10 @@ RadarRange(6) = 0.5
 <!--
 FullARPA=1
 MARPAContacts=20-->
-radar_sensitivity=3.0
+
+RADAR_RangeRes=256
+RADAR_AngularRes=720
+
 radar_range_sensitivity=5.0
 radar_height=10
 radar_noise=0.000000000005
@@ -361,7 +364,9 @@ radar3_blue=0-->
 </li>
 <!--<li>FullARPA: Whether fully automatic radar target detection and tracking (ARPA) is enabled on the radar. Set to 2 to enable with initial manual selection of contacts, 1 to enable with fully automatic contact selection, and 0 to disable.</li>
 <li>MARPAContacts: The number of targets that can be tracked manually on the radar. Set to 0 to disable manual tracking, and any integer to allow that number of targets to be tracked simultaneously.</li>-->
-<li>radar_sensitivity: The beam width of your radar in degrees. The smaller this is, the sharper your radar will be, but if you set this to be too low, it will reduce the program's performance.</li> 
+<li>RADAR_AngularRes: How many scan lines in a full rotation of the radar scanner. Default is 360.</li>
+<li>RADAR_RangeRes: How many steps per scan line. Default is 128.</li>
+
 <li>radar_range_sensitivity: The accuracy of the radar in detecting ranges, in metres. This is only used for contact range detection, for automatic contact tracking on the radar (ARPA).</li>
 <li>radar_height: The height of the radar scanner in metres above sea level.</li>
 <li>radar_noise: The amount of random 'noise' picked up on the radar display. Default value: 0.000000000005</li>

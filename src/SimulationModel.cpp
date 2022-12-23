@@ -376,6 +376,10 @@ SimulationModel::~SimulationModel()
         otherShips.setPos(number, positionX - offsetPosition.X, positionZ - offsetPosition.Z);
     }
 
+    void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
+        otherShips.setRateOfTurn(number, rateOfTurn);
+    }
+
     std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
         return otherShips.getLegs(number);
     }
