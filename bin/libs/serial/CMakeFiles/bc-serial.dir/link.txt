@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbc-serial.a "CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_linux.cc.o" "CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_osx.cc.o" "CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_win.cc.o" "CMakeFiles/bc-serial.dir/src/impl/unix.cc.o" "CMakeFiles/bc-serial.dir/src/impl/win.cc.o" "CMakeFiles/bc-serial.dir/src/serial.cc.o"
+/usr/bin/ranlib libbc-serial.a

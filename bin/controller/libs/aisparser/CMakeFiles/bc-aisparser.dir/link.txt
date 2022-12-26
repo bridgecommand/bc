@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbc-aisparser.a "CMakeFiles/bc-aisparser.dir/c/src/access.c.o" "CMakeFiles/bc-aisparser.dir/c/src/imo.c.o" "CMakeFiles/bc-aisparser.dir/c/src/nmea.c.o" "CMakeFiles/bc-aisparser.dir/c/src/seaway.c.o" "CMakeFiles/bc-aisparser.dir/c/src/sixbit.c.o" "CMakeFiles/bc-aisparser.dir/c/src/vdm_parse.c.o"
+/usr/bin/ranlib libbc-aisparser.a

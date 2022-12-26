@@ -1,0 +1,577 @@
+[
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/iprof.cpp.o -c /home/davide/bc/DEC22/bc/src/iprof.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/iprof.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/AIS.cpp.o -c /home/davide/bc/DEC22/bc/src/AIS.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/AIS.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Angles.cpp.o -c /home/davide/bc/DEC22/bc/src/Angles.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Angles.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Autopilot.cpp.o -c /home/davide/bc/DEC22/bc/src/Autopilot.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Autopilot.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/AzimuthDial.cpp.o -c /home/davide/bc/DEC22/bc/src/AzimuthDial.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/AzimuthDial.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Buoy.cpp.o -c /home/davide/bc/DEC22/bc/src/Buoy.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Buoy.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Buoys.cpp.o -c /home/davide/bc/DEC22/bc/src/Buoys.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Buoys.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Camera.cpp.o -c /home/davide/bc/DEC22/bc/src/Camera.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Camera.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/DefaultEventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/DefaultEventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/DefaultEventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/FFTWave.cpp.o -c /home/davide/bc/DEC22/bc/src/FFTWave.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/FFTWave.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/GUIMain.cpp.o -c /home/davide/bc/DEC22/bc/src/GUIMain.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/GUIMain.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/GUIRectangle.cpp.o -c /home/davide/bc/DEC22/bc/src/GUIRectangle.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/GUIRectangle.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/HeadingIndicator.cpp.o -c /home/davide/bc/DEC22/bc/src/HeadingIndicator.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/HeadingIndicator.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/LandLights.cpp.o -c /home/davide/bc/DEC22/bc/src/LandLights.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/LandLights.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/LandObject.cpp.o -c /home/davide/bc/DEC22/bc/src/LandObject.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/LandObject.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/LandObjects.cpp.o -c /home/davide/bc/DEC22/bc/src/LandObjects.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/LandObjects.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Light.cpp.o -c /home/davide/bc/DEC22/bc/src/Light.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Light.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/ManOverboard.cpp.o -c /home/davide/bc/DEC22/bc/src/ManOverboard.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ManOverboard.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/MovingWater.cpp.o -c /home/davide/bc/DEC22/bc/src/MovingWater.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/MovingWater.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/MyEventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/MyEventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/MyEventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/NMEA.cpp.o -c /home/davide/bc/DEC22/bc/src/NMEA.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/NMEA.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/NavLight.cpp.o -c /home/davide/bc/DEC22/bc/src/NavLight.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/NavLight.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Network.cpp.o -c /home/davide/bc/DEC22/bc/src/Network.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Network.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/NetworkPrimary.cpp.o -c /home/davide/bc/DEC22/bc/src/NetworkPrimary.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/NetworkPrimary.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/NetworkSecondary.cpp.o -c /home/davide/bc/DEC22/bc/src/NetworkSecondary.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/NetworkSecondary.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/NumberToImage.cpp.o -c /home/davide/bc/DEC22/bc/src/NumberToImage.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/NumberToImage.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/OtherShip.cpp.o -c /home/davide/bc/DEC22/bc/src/OtherShip.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/OtherShip.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/OtherShips.cpp.o -c /home/davide/bc/DEC22/bc/src/OtherShips.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/OtherShips.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/OutlineScrollBar.cpp.o -c /home/davide/bc/DEC22/bc/src/OutlineScrollBar.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/OutlineScrollBar.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/OwnShip.cpp.o -c /home/davide/bc/DEC22/bc/src/OwnShip.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/OwnShip.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/RadarCalculation.cpp.o -c /home/davide/bc/DEC22/bc/src/RadarCalculation.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/RadarCalculation.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/RadarScreen.cpp.o -c /home/davide/bc/DEC22/bc/src/RadarScreen.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/RadarScreen.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Rain.cpp.o -c /home/davide/bc/DEC22/bc/src/Rain.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Rain.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/ScenarioChoice.cpp.o -c /home/davide/bc/DEC22/bc/src/ScenarioChoice.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ScenarioChoice.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/ScenarioDataStructure.cpp.o -c /home/davide/bc/DEC22/bc/src/ScenarioDataStructure.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ScenarioDataStructure.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/ScrollDial.cpp.o -c /home/davide/bc/DEC22/bc/src/ScrollDial.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ScrollDial.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Ship.cpp.o -c /home/davide/bc/DEC22/bc/src/Ship.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Ship.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/SimulationModel.cpp.o -c /home/davide/bc/DEC22/bc/src/SimulationModel.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/SimulationModel.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Sky.cpp.o -c /home/davide/bc/DEC22/bc/src/Sky.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Sky.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Sound.cpp.o -c /home/davide/bc/DEC22/bc/src/Sound.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Sound.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/StartupEventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/StartupEventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/StartupEventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Terrain.cpp.o -c /home/davide/bc/DEC22/bc/src/Terrain.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Terrain.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Tide.cpp.o -c /home/davide/bc/DEC22/bc/src/Tide.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Tide.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/ExitMessage.cpp.o -c /home/davide/bc/DEC22/bc/src/ExitMessage.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ExitMessage.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/Water.cpp.o -c /home/davide/bc/DEC22/bc/src/Water.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Water.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/BCTerrainSceneNode.cpp.o -c /home/davide/bc/DEC22/bc/src/BCTerrainSceneNode.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/BCTerrainSceneNode.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/serial -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-bc.dir/BCTerrainTriangleSelector.cpp.o -c /home/davide/bc/DEC22/bc/src/BCTerrainTriangleSelector.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/BCTerrainTriangleSelector.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/callbacks.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/callbacks.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/callbacks.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/compress.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/compress.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/compress.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/host.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/host.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/host.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/list.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/list.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/list.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/packet.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/packet.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/packet.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/peer.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/peer.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/peer.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/protocol.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/protocol.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/protocol.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/unix.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/unix.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/unix.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/enet-1.3.14",
+  "command": "/usr/bin/cc -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETHOSTBYNAME_R=1 -DHAS_GETNAMEINFO=1 -DHAS_INET_NTOP=1 -DHAS_INET_PTON=1 -DHAS_MSGHDR_FLAGS=1 -DHAS_POLL=1 -DHAS_SOCKLEN_T=1 -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -O3 -DNDEBUG   -Wno-error -o CMakeFiles/enet.dir/win32.c.o -c /home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/win32.c",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/win32.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_linux.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_linux.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_linux.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_osx.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_osx.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_osx.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/impl/list_ports/list_ports_win.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_win.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/impl/list_ports/list_ports_win.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/impl/unix.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/impl/unix.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/impl/unix.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/impl/win.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/impl/win.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/impl/win.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/libs/serial",
+  "command": "/usr/bin/c++  -I/home/davide/bc/DEC22/bc/src/libs/serial -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bc-serial.dir/src/serial.cc.o -c /home/davide/bc/DEC22/bc/src/libs/serial/src/serial.cc",
+  "file": "/home/davide/bc/DEC22/bc/src/libs/serial/src/serial.cc"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/ControllerModel.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/ControllerModel.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/ControllerModel.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/EventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/EventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/EventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/GUI.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/GUI.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/GUI.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/Network.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/Network.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/Network.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/AISOverUDP.cpp.o -c /home/davide/bc/DEC22/bc/src/controller/AISOverUDP.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/AISOverUDP.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mc.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/access.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/access.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/access.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/imo.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/imo.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/imo.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/nmea.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/nmea.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/nmea.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/seaway.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/seaway.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/seaway.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/sixbit.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/sixbit.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/sixbit.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/controller/libs/aisparser",
+  "command": "/usr/bin/cc -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src -O3 -DNDEBUG -o CMakeFiles/bc-aisparser.dir/c/src/vdm_parse.c.o -c /home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/vdm_parse.c",
+  "file": "/home/davide/bc/DEC22/bc/src/controller/libs/aisparser/c/src/vdm_parse.c"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/editor/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/editor/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/ControllerModel.cpp.o -c /home/davide/bc/DEC22/bc/src/editor/ControllerModel.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/editor/ControllerModel.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/EventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/editor/EventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/editor/EventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/GUI.cpp.o -c /home/davide/bc/DEC22/bc/src/editor/GUI.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/editor/GUI.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/editor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ed.dir/StartupEventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/editor/StartupEventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/editor/StartupEventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/iniEditor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ini.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/iniEditor/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/iniEditor/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/iniEditor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ini.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/iniEditor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ini.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/iniEditor",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-ini.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/launcher",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/launcher/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/launcher/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/launcher",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/launcher",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/launcher",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/multiplayerHub/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/multiplayerHub/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/__/ScenarioDataStructure.cpp.o -c /home/davide/bc/DEC22/bc/src/ScenarioDataStructure.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/ScenarioDataStructure.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/Network.cpp.o -c /home/davide/bc/DEC22/bc/src/multiplayerHub/Network.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/multiplayerHub/Network.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/ScenarioChoice.cpp.o -c /home/davide/bc/DEC22/bc/src/multiplayerHub/ScenarioChoice.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/multiplayerHub/ScenarioChoice.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/ShipPositions.cpp.o -c /home/davide/bc/DEC22/bc/src/multiplayerHub/ShipPositions.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/multiplayerHub/ShipPositions.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/multiplayerHub",
+  "command": "/usr/bin/c++ -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-mh.dir/StartupEventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/multiplayerHub/StartupEventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/multiplayerHub/StartupEventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/main.cpp.o -c /home/davide/bc/DEC22/bc/src/repeater/main.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/repeater/main.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/__/IniFile.cpp.o -c /home/davide/bc/DEC22/bc/src/IniFile.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/IniFile.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/__/Lang.cpp.o -c /home/davide/bc/DEC22/bc/src/Lang.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Lang.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/__/Utilities.cpp.o -c /home/davide/bc/DEC22/bc/src/Utilities.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/Utilities.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/__/HeadingIndicator.cpp.o -c /home/davide/bc/DEC22/bc/src/HeadingIndicator.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/HeadingIndicator.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/ControllerModel.cpp.o -c /home/davide/bc/DEC22/bc/src/repeater/ControllerModel.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/repeater/ControllerModel.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/EventReceiver.cpp.o -c /home/davide/bc/DEC22/bc/src/repeater/EventReceiver.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/repeater/EventReceiver.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/GUI.cpp.o -c /home/davide/bc/DEC22/bc/src/repeater/GUI.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/repeater/GUI.cpp"
+},
+{
+  "directory": "/home/davide/bc/DEC22/bc/bin/repeater",
+  "command": "/usr/bin/c++ -DASIO_HAS_STD_THREAD -DASIO_STANDALONE -DWITH_SOUND -I/home/davide/bc/DEC22/bc/src/libs/enet-1.3.14/include -I/home/davide/bc/DEC22/bc/src/libs/asio/include -I/home/davide/bc/DEC22/bc/src/libs/Irrlicht/irrlicht-svn/include -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/bridgecommand-rp.dir/Network.cpp.o -c /home/davide/bc/DEC22/bc/src/repeater/Network.cpp",
+  "file": "/home/davide/bc/DEC22/bc/src/repeater/Network.cpp"
+}
+]
