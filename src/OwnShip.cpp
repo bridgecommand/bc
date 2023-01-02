@@ -1188,6 +1188,15 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             //And for other ship collision
             if (selectedSceneNode && strcmp(selectedSceneNode->getName(),"OtherShip")==0) {
                 otherShipCollision = true;
+
+                // Testing: behave as if other ship is solid. In multiplayer, the other ship (if another 'player') should also respond
+                irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
+                //If we're more collided with an object than the terrain, use this
+                if (collisionDistance > localIntersection) {
+                    localIntersection = collisionDistance;
+                }
+
+
             }
 
 
