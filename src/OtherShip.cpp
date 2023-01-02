@@ -33,6 +33,7 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
     //Initialise speed and heading, normally updated from leg information
     spd = 0;
     hdg = 0;
+    rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
     this->name = name;
     this->mmsi = mmsi;
@@ -172,6 +173,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     //move according to leg information
     if (legs.empty()) {
         //Don't change speed and hdg - may be in secondary mode, where these are set externally
+        //Except, use rateOfTurn to update hdg
+        hdg += deltaTime * rateOfTurn; // rateOfTurn in deg/s
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
@@ -362,6 +365,11 @@ void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceN
     stopLeg.distance=0;
     stopLeg.startTime = mainLegEndTime;
     legs.push_back(stopLeg);
+}
+
+void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only used in multiplayer mode)
+{
+    this->rateOfTurn = rateOfTurn;
 }
 
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const

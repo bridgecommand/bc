@@ -220,6 +220,13 @@ void OtherShips::setHeading(int number, irr::f32 hdg)
     }
 }
 
+void OtherShips::setRateOfTurn(int number, irr::f32 rateOfTurn)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        otherShips.at(number)->setRateOfTurn(rateOfTurn);
+    }
+}
+
 std::vector<Leg> OtherShips::getLegs(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {

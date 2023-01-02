@@ -131,9 +131,11 @@ class RadarCalculation
         irr::f32 radarGain;
         irr::f32 radarRainClutterReduction;
         irr::f32 radarSeaClutterReduction;
-        irr::u32 currentScanAngle; //Note that this MUST be an integer, as the angle is used to look up values in radar scan arrays
-        irr::u32 scanAngleStep; //Should also be an integer, as the angle being incremented is an integer
-        const irr::u32 rangeResolution;
+        irr::f32 currentScanAngle;
+        irr::f32 scanAngleStep;
+        irr::u32 currentScanLine; //Note that this MUST be an integer, as the scanline number is used to look up values in radar scan arrays
+        irr::u32 rangeResolution;
+        irr::u32 angularResolution;
         irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres
         irr::u32 radarRangeIndex;
         irr::f32 radarScannerHeight;

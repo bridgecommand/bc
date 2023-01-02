@@ -46,6 +46,7 @@ class OtherShip : public Ship
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel);
         void enableTriangleSelector(bool selectorEnabled);
+        void setRateOfTurn(irr::f32 rateOfTurn); // This could be moved to Ship.hpp
 
     protected:
     private:
@@ -56,6 +57,7 @@ class OtherShip : public Ship
         irr::f32 height; //For radar
         irr::f32 solidHeight; //For radar
         irr::f32 rcs;
+        irr::f32 rateOfTurn;
         std::vector<Leg>::size_type findCurrentLeg(irr::f32 scenarioTime);
         irr::scene::ITriangleSelector* selector;
         bool triangleSelectorEnabled;

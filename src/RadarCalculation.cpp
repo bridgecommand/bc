@@ -34,8 +34,9 @@
 
 ////using namespace irr;
 
-RadarCalculation::RadarCalculation() : rangeResolution(128)
+RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360)
 {
+    
     //Initial values for controls, all 0-100:
     radarGain = 50;
     radarRainClutterReduction=0;
@@ -60,24 +61,6 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     vectorLengthMinutes = 6;
     arpaOn = false;
 
-    //initialise scanArray size (360 x rangeResolution points per scan)
-    //rangeResolution = 64; now set initialiser list
-    scanArray.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayAmplified.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlot.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    scanArrayToPlotPrevious.resize(360,std::vector<irr::f32>(rangeResolution,0.0));
-    toReplot.resize(360);
-
-    //initialise arrays
-    for(irr::u32 i = 0; i<360; i++) {
-        for(irr::u32 j = 0; j<rangeResolution; j++) {
-            scanArray[i][j] = 0.0;
-            scanArrayAmplified[i][j] = 0.0;
-            scanArrayToPlot[i][j] = 0.0;
-            scanArrayToPlotPrevious[i][j] = -1.0;
-        }
-    }
-
     //Hard coded in GUI and here for 10 parallel index lines
     for(irr::u32 i=0; i<10; i++) {
         piBearings.push_back(0.0);
@@ -87,7 +70,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(128)
     radarScreenStale = true;
     radarRadiusPx = 10; //Set to an arbitrary value initially, will be set later.
 
-    currentScanAngle=0;
+    currentScanAngle = 0;
+    currentScanLine  = 0;
 }
 
 RadarCalculation::~RadarCalculation()
@@ -99,6 +83,17 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 {
     device = dev;
 
+    // Radar resolution defaults from bc5.ini
+    std::string userFolder = Utilities::getUserDir();
+    std::string iniFilename = "bc5.ini";
+    if (Utilities::pathExists(userFolder + iniFilename)) {
+        iniFilename = userFolder + iniFilename;
+    }
+    rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
+    angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);
+    irr::u32 rangeResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes_Max");
+    irr::u32 angularResolution_max = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes_Max");
+    
     //Load parameters from the radarConfig file (if it exists)
     irr::u32 numberOfRadarRanges = IniFile::iniFileTou32(radarConfigFile,"NumberOfRadarRanges");
     if (numberOfRadarRanges==0) {
@@ -115,7 +110,6 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         //Initial radar range
         radarRangeIndex=3;
 
-        scanAngleStep=1; //Radar angular resolution (integer degree)
         radarScannerHeight = 2.0;
         radarNoiseLevel = 0.000000000005;
         radarSeaClutter = 0.000000001;
@@ -141,6 +135,17 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         radarBackgroundColours.push_back(radarBackgroundColour);
         radarForegroundColours.push_back(radarForegroundColour);
 
+        // Check in case resolution is set to an invalid value
+        if (rangeResolution < 1) {rangeResolution = 128;}
+        if (angularResolution < 1) {angularResolution = 360;}
+        // Limit to maximum (if set)
+        if (rangeResolution_max > 0 && rangeResolution > rangeResolution_max) {
+            rangeResolution = rangeResolution_max;
+        }
+        if (angularResolution_max > 0 && angularResolution > angularResolution_max) {
+            angularResolution = angularResolution_max;
+        }
+    
     } else {
         //Load from file, but check plausibility where required
 
@@ -154,10 +159,6 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         //Initial radar range
         radarRangeIndex=numberOfRadarRanges/2;
-
-        //Radar angular resolution (integer degree)
-        scanAngleStep=IniFile::iniFileTou32(radarConfigFile,"radar_sensitivity");
-        if (scanAngleStep < 1 || scanAngleStep > 180) {scanAngleStep = 1;}
 
         //Radar scanner height (Metres)
         radarScannerHeight = IniFile::iniFileTof32(radarConfigFile,"radar_height");
@@ -212,7 +213,42 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
             }
         }
 
+        // Resolution settings:
+
+        // Override resolution if set in own ship's radar.ini file
+        rangeResolution = IniFile::iniFileTou32(radarConfigFile, "RADAR_RangeRes", rangeResolution);
+        angularResolution = IniFile::iniFileTou32(radarConfigFile, "RADAR_AngularRes", angularResolution);
+        // Check in case resolution is still not valid
+        if (rangeResolution < 1) {rangeResolution = 128;}
+        if (angularResolution < 1) {angularResolution = 360;}
+        // Limit to maximum (if set)
+        if (rangeResolution_max > 0 && rangeResolution > rangeResolution_max) {
+            rangeResolution = rangeResolution_max;
+        }
+        if (angularResolution_max > 0 && angularResolution > angularResolution_max) {
+            angularResolution = angularResolution_max;
+        }
+
     }
+
+    //initialise scanArray size (angularResolution x rangeResolution points per scan)
+    scanArray.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayAmplified.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlot.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    scanArrayToPlotPrevious.resize(angularResolution,std::vector<irr::f32>(rangeResolution,0.0));
+    toReplot.resize(angularResolution);
+
+    //initialise arrays
+    for(irr::u32 i = 0; i<angularResolution; i++) {
+        for(irr::u32 j = 0; j<rangeResolution; j++) {
+            scanArray[i][j] = 0.0;
+            scanArrayAmplified[i][j] = 0.0;
+            scanArrayToPlot[i][j] = 0.0;
+            scanArrayToPlotPrevious[i][j] = -1.0;
+        }
+    }
+
+    scanAngleStep = 360.0f / (irr::f32) angularResolution;
 }
 
 void RadarCalculation::decreaseRange()
@@ -403,7 +439,7 @@ void RadarCalculation::toggleRadarOn()
 
 	if (!radarOn) {
 		//Reset array to empty
-		for (irr::u32 i = 0; i < 360; i++) {
+		for (irr::u32 i = 0; i < angularResolution; i++) {
 			for (irr::u32 j = 0; j < rangeResolution; j++) {
 				scanArrayToPlot[i][j] = 0.0;
 			}
@@ -480,7 +516,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     if(radarScreenStale) {
         radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
         //Reset 'previous' array so it will all get re-drawn
-        for(irr::u32 i = 0; i<360; i++) {
+        for(irr::u32 i = 0; i<angularResolution; i++) {
             toReplot[i] = true;
             for(irr::u32 j = 0; j<rangeResolution; j++) {
                 scanArrayToPlotPrevious[i][j] = -1.0;
@@ -550,16 +586,20 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
     const irr::f32 RADAR_RPM = 25; //Todo: Make a ship parameter
     const irr::f32 RPMtoDEGPERSECOND = 6;
-    irr::u32 scansPerLoop = RADAR_RPM*RPMtoDEGPERSECOND*deltaTime/(irr::f32)scanAngleStep + (irr::f32)rand()/RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
+    irr::u32 scansPerLoop = RADAR_RPM * RPMtoDEGPERSECOND * deltaTime / (irr::f32) scanAngleStep + (irr::f32) rand() / RAND_MAX ; //Add random value (0-1, mean 0.5), so with rounding, we get the correct radar speed, even though we can only do an integer number of scans
 
-    if (scansPerLoop > 10) {scansPerLoop=10;} //Limit to reasonable bounds
+    if (scansPerLoop > 30) {scansPerLoop = 30;} //Limit to reasonable bounds
     for(irr::u32 i = 0; i<scansPerLoop;i++) { //Start of repeatable scan section
+
+        // the actual angle we want to work with has to be determined here
+        currentScanAngle = ((irr::f32) currentScanLine / (irr::f32) angularResolution) * 360.0f;
+
         irr::f32 scanSlope = -0.5; //Slope at start of scan (in metres/metre) - Make slightly negative so vessel contacts close in get detected
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) { //Note that currentStep starts as 1, not 0. This is used in anti-rain clutter filter, which checks element at currentStep-1
             //scan into array, accessed as  scanArray[row (angle)][column (step)]
 
             //Clear old value
-            scanArray[currentScanAngle][currentStep] = 0.0;
+            scanArray[currentScanLine][currentStep] = 0.0;
 
             //Get location of area being scanned
             irr::f32 localRange = cellLength*currentStep;
@@ -586,18 +626,32 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
                     //Start of B3D code
-                    if ((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) || (radarData.at(thisContact).minRange >= minCellRange && radarData.at(thisContact).minRange <= maxCellRange) || (radarData.at(thisContact).maxRange >= minCellRange && radarData.at(thisContact).maxRange <= maxCellRange) || (radarData.at(thisContact).minRange < minCellRange && radarData.at(thisContact).maxRange > maxCellRange)) {//Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
-                        if ((Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(radarData.at(thisContact).minAngle,minCellAngle,maxCellAngle)) || (Angles::isAngleBetween(radarData.at(thisContact).maxAngle,minCellAngle,maxCellAngle)) || ( Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90)) {//Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
+                    //Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
+                    if ((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
+                            || (radarData.at(thisContact).minRange >= minCellRange && radarData.at(thisContact).minRange <= maxCellRange)
+                            || (radarData.at(thisContact).maxRange >= minCellRange && radarData.at(thisContact).maxRange <= maxCellRange) 
+                            || (radarData.at(thisContact).minRange < minCellRange && radarData.at(thisContact).maxRange > maxCellRange)) {
+
+                        //Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
+                        if ((Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)) 
+                                || (Angles::isAngleBetween(radarData.at(thisContact).minAngle,minCellAngle,maxCellAngle))
+                                || (Angles::isAngleBetween(radarData.at(thisContact).maxAngle,minCellAngle,maxCellAngle))
+                                || (Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90)) {
 
                             irr::f32 rangeAtCellMin = rangeAtAngle(minCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
                             irr::f32 rangeAtCellMax = rangeAtAngle(maxCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
 
                             //check if the contact intersects this exact cell, if its extremes overlap it
                             //Also check if the target centre is in the cell, or the extended target spans the cell (ie RangeAtCellMin less than minCellRange and rangeAtCellMax greater than maxCellRange and vice versa)
-                            if ((((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) && (Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle))) || (rangeAtCellMin >= minCellRange && rangeAtCellMin <= maxCellRange) || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange) || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange) || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))){
+                            if ((((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
+                                            && (Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)))
+                                        || (rangeAtCellMin >= minCellRange && rangeAtCellMin <= maxCellRange)
+                                        || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange)
+                                        || (rangeAtCellMin < minCellRange && rangeAtCellMax > maxCellRange)
+                                        || (rangeAtCellMax < minCellRange && rangeAtCellMin > maxCellRange))) {
 
                                 irr::f32 radarEchoStrength = radarFactorVessel * std::pow(M_IN_NM/localRange,4) * radarData.at(thisContact).rcs;
-                                scanArray[currentScanAngle][currentStep] += radarEchoStrength;
+                                scanArray[currentScanLine][currentStep] += radarEchoStrength;
 
                                 //Start ARPA section
                                 if (arpaOn && radarEchoStrength*2 > localNoise) {
@@ -725,11 +779,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             if (heightAboveLine>0 && terrainHeightAboveSea>0) {
                 irr::f32 radarLocalGradient = heightAboveLine/cellLength;
                 scanSlope = localSlope; //Highest so far on scan
-                scanArray[currentScanAngle][currentStep] += radarFactorLand*std::atan(radarLocalGradient)*(2/PI)/std::pow(localRange/M_IN_NM,3); //make a reflection off a plane wall at 1nm have a magnitude of 1*radarFactorLand
+                scanArray[currentScanLine][currentStep] += radarFactorLand*std::atan(radarLocalGradient)*(2/PI)/std::pow(localRange/M_IN_NM,3); //make a reflection off a plane wall at 1nm have a magnitude of 1*radarFactorLand
             }
 
             //Add radar noise
-            scanArray[currentScanAngle][currentStep] += localNoise;
+            scanArray[currentScanLine][currentStep] += localNoise;
 
             //Do amplification: scanArrayAmplified between 0 and 1 will set displayed intensity, values above 1 will be limited at max intensity
 
@@ -746,41 +800,41 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             }
 
             //calculate high pass filter
-            irr::f32 intensityGradient = scanArray[currentScanAngle][currentStep] - scanArray[currentScanAngle][currentStep-1];
+            irr::f32 intensityGradient = scanArray[currentScanLine][currentStep] - scanArray[currentScanLine][currentStep-1];
             if (intensityGradient<0) {intensityGradient=0;}
 
-            irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanAngle][currentStep]*(1-rainFilter);
+            irr::f32 filteredSignal = intensityGradient*rainFilter + scanArray[currentScanLine][currentStep]*(1-rainFilter);
             irr::f32 radarLocalGain = 500000*(8*pow(radarGain/100.0,4)) * radarSTCGain ;
 
             //take log (natural) of signal
             irr::f32 logSignal = log(filteredSignal*radarLocalGain);
-            scanArrayAmplified[currentScanAngle][currentStep] = std::max(0.0f,logSignal);
+            scanArrayAmplified[currentScanLine][currentStep] = std::max(0.0f,logSignal);
 
             //Generate a filtered version, based on the angles around. Lag behind by (for example) 3 steps, so we can filter on what's ahead, as well as what's behind
-            irr::s32 filterAngle = (irr::s32)currentScanAngle - 3*scanAngleStep;
-                while(filterAngle < 0) {filterAngle+=360;}
-                while(filterAngle >= 360) {filterAngle-=360;}
-            irr::s32 filterAngle_1 = filterAngle - 3*scanAngleStep;
-                while(filterAngle_1 < 0) {filterAngle_1+=360;}
-                while(filterAngle_1 >= 360) {filterAngle_1-=360;}
-            irr::s32 filterAngle_2 = filterAngle - 2*scanAngleStep;
-                while(filterAngle_2 < 0) {filterAngle_2+=360;}
-                while(filterAngle_2 >= 360) {filterAngle_2-=360;}
-            irr::s32 filterAngle_3 = filterAngle - 1*scanAngleStep;
-                while(filterAngle_3 < 0) {filterAngle_3+=360;}
-                while(filterAngle_3 >= 360) {filterAngle_3-=360;}
+            irr::s32 filterAngle = (irr::s32)currentScanLine - 3;
+                while(filterAngle < 0) {filterAngle+=angularResolution;}
+                while(filterAngle >= angularResolution) {filterAngle-=angularResolution;}
+            irr::s32 filterAngle_1 = filterAngle - 3;
+                while(filterAngle_1 < 0) {filterAngle_1+=angularResolution;}
+                while(filterAngle_1 >= angularResolution) {filterAngle_1-=angularResolution;}
+            irr::s32 filterAngle_2 = filterAngle - 2;
+                while(filterAngle_2 < 0) {filterAngle_2+=angularResolution;}
+                while(filterAngle_2 >= angularResolution) {filterAngle_2-=angularResolution;}
+            irr::s32 filterAngle_3 = filterAngle - 1;
+                while(filterAngle_3 < 0) {filterAngle_3+=angularResolution;}
+                while(filterAngle_3 >= angularResolution) {filterAngle_3-=angularResolution;}
             irr::s32 filterAngle_4 = filterAngle;
-                while(filterAngle_4 < 0) {filterAngle_4+=360;}
-                while(filterAngle_4 >= 360) {filterAngle_4-=360;}
-            irr::s32 filterAngle_5 = filterAngle + 1*scanAngleStep;
-                while(filterAngle_5 < 0) {filterAngle_5+=360;}
-                while(filterAngle_5 >= 360) {filterAngle_5-=360;}
-            irr::s32 filterAngle_6 = filterAngle + 2*scanAngleStep;
-                while(filterAngle_6 < 0) {filterAngle_6+=360;}
-                while(filterAngle_6 >= 360) {filterAngle_6-=360;}
-            irr::s32 filterAngle_7 = filterAngle + 3*scanAngleStep;
-                while(filterAngle_7 < 0) {filterAngle_7+=360;}
-                while(filterAngle_7 >= 360) {filterAngle_7-=360;}
+                while(filterAngle_4 < 0) {filterAngle_4+=angularResolution;}
+                while(filterAngle_4 >= angularResolution) {filterAngle_4-=angularResolution;}
+            irr::s32 filterAngle_5 = filterAngle + 1;
+                while(filterAngle_5 < 0) {filterAngle_5+=angularResolution;}
+                while(filterAngle_5 >= angularResolution) {filterAngle_5-=angularResolution;}
+            irr::s32 filterAngle_6 = filterAngle + 2;
+                while(filterAngle_6 < 0) {filterAngle_6+=angularResolution;}
+                while(filterAngle_6 >= angularResolution) {filterAngle_6-=angularResolution;}
+            irr::s32 filterAngle_7 = filterAngle + 3;
+                while(filterAngle_7 < 0) {filterAngle_7+=angularResolution;}
+                while(filterAngle_7 >= angularResolution) {filterAngle_7-=angularResolution;}
             if (currentStep < rangeResolution * 0.1) {
                 scanArrayToPlot[filterAngle][currentStep] = std::max({
                     scanArrayAmplified[filterAngle_1][currentStep],
@@ -823,10 +877,10 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 
 
-        //Increment scan angle for next time
-        currentScanAngle += scanAngleStep;
-        if (currentScanAngle>=360) {
-            currentScanAngle=0;
+        //Increment scan line for next time
+        currentScanLine++;
+        if (currentScanLine >= angularResolution) {
+            currentScanLine = 0;
         }
     } //End of repeatable scan section
 
@@ -1024,19 +1078,23 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
         cellMaxRange.push_back((currentStep+0.5)*(bitmapWidth*0.5/(float)rangeResolution));
     }
 
-    for (int scanAngle = 0; scanAngle <360; scanAngle+=scanAngleStep) {
+    irr::f32 scanAngle;
 
-        irr::f32 cellMinAngle = scanAngle - scanAngleStep/2.0;
-        irr::f32 cellMaxAngle = scanAngle + scanAngleStep/2.0;
+    for (int scanLine = 0; scanLine < angularResolution; scanLine++) {
+
+        scanAngle = ((irr::f32) scanLine / (irr::f32) angularResolution) * 360.0f;
+
+        irr::f32 cellMinAngle = scanAngle - scanAngleStep / 2.0;
+        irr::f32 cellMaxAngle = scanAngle + scanAngleStep / 2.0;
 
         for (irr::u32 currentStep = 1; currentStep<rangeResolution; currentStep++) {
 
             //If the sector has changed, draw it. If we're stabilising the picture, need to re-draw all in case the ship's head has changed
-            if(toReplot[scanAngle] || stabilised)
+            if(toReplot[scanLine] || stabilised)
             {
 
-                if (headUp || scanArrayToPlotPrevious[scanAngle][currentStep] != scanArrayToPlot[scanAngle][currentStep]) { //If north up, we only need to replot if the previous plot to this sector was different
-                    irr::f32 pixelColour=scanArrayToPlot[scanAngle][currentStep];
+                if (headUp || scanArrayToPlotPrevious[scanLine][currentStep] != scanArrayToPlot[scanLine][currentStep]) { //If north up, we only need to replot if the previous plot to this sector was different
+                    irr::f32 pixelColour=scanArrayToPlot[scanLine][currentStep];
 
                     if (pixelColour>1.0) {pixelColour = 1.0;}
                     if (pixelColour<0)   {pixelColour =   0;}
@@ -1044,15 +1102,26 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     if (currentRadarColourChoice < radarForegroundColours.size() && currentRadarColourChoice < radarBackgroundColours.size()) {
                         //Interpolate colour between foreground and background
                         irr::video::SColor thisColour = radarForegroundColours.at(currentRadarColourChoice).getInterpolated(radarBackgroundColours.at(currentRadarColourChoice), pixelColour);
-                        drawSector(radarImage,centrePixel,centrePixel,cellMinRange[currentStep],cellMaxRange[currentStep],cellMinAngle,cellMaxAngle,thisColour.getAlpha(),thisColour.getRed(),thisColour.getGreen(),thisColour.getBlue(), ownShipHeading);
+                        drawSector(radarImage,
+                                centrePixel,
+                                centrePixel,
+                                cellMinRange[currentStep],
+                                cellMaxRange[currentStep],
+                                cellMinAngle,
+                                cellMaxAngle,
+                                thisColour.getAlpha(),
+                                thisColour.getRed(),
+                                thisColour.getGreen(),
+                                thisColour.getBlue(),
+                                ownShipHeading);
                     }
 
-                    scanArrayToPlotPrevious[scanAngle][currentStep] = scanArrayToPlot[scanAngle][currentStep]; //Record what we have plotted
+                    scanArrayToPlotPrevious[scanLine][currentStep] = scanArrayToPlot[scanLine][currentStep]; //Record what we have plotted
                 }
             }
         }
-        //We don't need to replot this angle
-        toReplot[scanAngle]=false;
+        //We don't need to replot this line
+        toReplot[scanLine]=false;
     }
 
     //Copy image into overlaid
