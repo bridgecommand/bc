@@ -342,7 +342,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
 
     // DEE_DEC22 set ships mass and inertia from displacement and length breadth draught and Cb (block coefficient)
-    if (cB >= 0) // ie. the block coefficient has been defined so it overrides any declaration of mass or inertia
+    if (cB > 0) // ie. the block coefficient has been defined so it overrides any declaration of mass or inertia
 	{
         device->getLogger()->log("cB defined in boat.ini mass and inertia shall be calculated from dimensions");
 	shipMass = seawaterDensity * length * breadth * draught * cB; // kg
@@ -1496,20 +1496,20 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	// Ixx = mass * (centreGravityTemporal^2 + length^2) / 12, for pitching motion
 
         //Update axialSpd and hdg with rudder and engine controls - assume two engines, should also work with single engine
-        irr::f32 portThrust; 	// DEE_DEC22 changed meaning to scalar not vector
-        irr::f32 stbdThrust;	// DEE_DEC22 changed meaning to scalar not vector
+        irr::f32 portThrust = 0; 	// DEE_DEC22 changed meaning to scalar not vector
+        irr::f32 stbdThrust = 0;	// DEE_DEC22 changed meaning to scalar not vector
 
 	// DEE_DEC22 vvvv
-	irr::f32 portAxialThrust;
-	irr::f32 stbdAxialThrust;
-	irr::f32 portLateralThrust;
-	irr::f32 stbdLateralThrust;
-	irr::f32 portTemporalThrust; // probably temporal not needed at present but for future use as trim of outboard engine
-	irr::f32 stbdTemporalThrust; // and for some configuration of sails and kites
+	irr::f32 portAxialThrust = 0;
+	irr::f32 stbdAxialThrust = 0;
+	irr::f32 portLateralThrust = 0;
+	irr::f32 stbdLateralThrust = 0;
+	irr::f32 portTemporalThrust = 0; // probably temporal not needed at present but for future use as trim of outboard engine
+	irr::f32 stbdTemporalThrust = 0; // and for some configuration of sails and kites
 
-	irr::f32 axialThrust; // sum of axial thrusts
-	irr::f32 lateralThrust; // sum of lateral thrusts
-	irr::f32 temporalThrust; // sum of temporal thrusts
+	irr::f32 axialThrust = 0; // sum of axial thrusts
+	irr::f32 lateralThrust = 0; // sum of lateral thrusts
+	irr::f32 temporalThrust = 0; // sum of temporal thrusts
 	// DEE_DEV22 ^^^^
 
 
@@ -1705,15 +1705,15 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
             // Conventional controls
 	    // DEE_DEC22 vvvv
-	    // portThrust = portEngine * maxForce;
-	    // stbdThrust = stbdEngine * maxForce;
-            portAxialThrust = portEngine * maxForce;
-            stbdAxialThrust = stbdEngine * maxForce;
+            portThrust = portEngine * maxForce;
+            stbdThrust = stbdEngine * maxForce;
 
-            // if (portThrust<0) {portThrust*=asternEfficiency;}
-            // if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
-            if (portAxialThrust<0) {portAxialThrust*=asternEfficiency;}
-            if (stbdAxialThrust<0) {stbdAxialThrust*=asternEfficiency;}
+            if (portThrust<0) {portThrust*=asternEfficiency;}
+            if (stbdThrust<0) {stbdThrust*=asternEfficiency;}
+            
+            // For conventional engine, all the thrust is axial
+            portAxialThrust = portThrust;
+            stbdAxialThrust = stbdThrust;
 
 	    // DEE_DEC22 ^^^^
 
