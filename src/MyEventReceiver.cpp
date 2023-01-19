@@ -228,63 +228,7 @@
 
 
 // DEE_NOV22 this deals with capturing input from the Azimuth gui
-              if (id == GUIMain::GUI_ID_AZIMUTH_1) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1  DEE_NOV22 todo (0..1)
-                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-		// DEE_NOV22 vvvv
-		// comment out and ....
-                //model->setPortAzimuthAngle(angle);
-                //model->setPortEngine(power);
-		// ... replace with
-		if (power < 0) {
-			power = 0;
-		}
-		model->setPortSchottel(angle);
-		model->setPortThrustLever(power);
-		// DEE_NOV22 ^^^^
-                if (rightMouseDown) {
-                    // Set the other control as well (Linked)
-		    // DEE_NOV22 vvvv 
-		    // comment out
-
-		    // DEE_NOV22 perhaps this would be better applied to the schottel control and the engine revs indicator
-		    //		 but for the time being leave the azimuth indicator capable of receiveing input from mouse		    
- 
-                    //model->setStbdAzimuthAngle(angle);
-                    //model->setStbdEngine(power);
-		    model->setStbdSchottel(angle);
-		    model->setStbdThrustLever(power);
-		    // DEE_NOV22 ^^^^
-                }
-              }
-
-              if (id == GUIMain::GUI_ID_AZIMUTH_2) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1  DEE_NOV22 todo (0..1)
-                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-		// DEE_NOV22 vvvv
-		// comment out and .....
-                // model->setStbdAzimuthAngle(angle);
-                // model->setStbdEngine(power);
-		// replace with
-		if (power < 0)
-		{	
-		power = 0;
-		}
-		model->setStbdSchottel(angle);
-		model->setStbdThrustLever(power);
-		// DEE_NOV22 ^^^^
-                if (rightMouseDown) {
-                    // Set the other control as well (Linked)
-		    // DEE_NOV22 vvvv comment out
-                    //model->setStbdAzimuthAngle(angle);
-                    //model->setStbdEngine(power);
-		    // replace by ...
-		    model->setStbdSchottel(angle);
-		    model->setStbdThrustLever(power);
-		    // DEE_NOV22 ^^^^
-                }
-              }
-
+// JP: Removed GUI inputs from GUI_ID_AZIMUTH_1 and GUI_ID_AZIMUTH_2, as I think these are intended to be display only, not for input?
 // DEE_NOV22 ^^^^ end of the inputs from the azimth GUI
 
 
