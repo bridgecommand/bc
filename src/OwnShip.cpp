@@ -761,7 +761,7 @@ void OwnShip::followupPortAzimuthDrive()
 	    // DEE_NOV22 anticlockwise rotation
 	    // DEE_NOV22 in hindsight this is probably not needed but it does make it more robust
 	    newPortAzimuthAngle = portAzimuthAngle - maxChangeInAzimuthDriveAngleThisCycle;
-	    if (newPortAzimuthAngle < 0);
+	    if (newPortAzimuthAngle < 0)
 	    {
 		newPortAzimuthAngle = newPortAzimuthAngle + 360;
 	    }
@@ -838,7 +838,7 @@ void OwnShip::followupStbdAzimuthDrive()
 	    // DEE_NOV22 anticlockwise rotation
 	    // DEE_NOV22 in hindsight this is probably not needed but it does make it more robust
 	    newStbdAzimuthAngle = stbdAzimuthAngle - maxChangeInAzimuthDriveAngleThisCycle;
-	    if (newStbdAzimuthAngle < 0);
+	    if (newStbdAzimuthAngle < 0)
 	    {
 		newStbdAzimuthAngle = newStbdAzimuthAngle + 360;
 	    }
