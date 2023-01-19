@@ -127,29 +127,76 @@ irr::core::stringw getCredits(){
 JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    if (isAzimuthDrive) {
-        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttleAzimuth_channel")-1;
-        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttleAzimuth_channel")-1;
-    } else {
+    if (!(isAzimuthDrive)) {
         joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
         joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
     }
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
-    joystickSetup.azimuth1JoystickAxis = IniFile::iniFileTou32(iniFilename, "portAzimuth_channel")-1;
-    joystickSetup.azimuth2JoystickAxis = IniFile::iniFileTou32(iniFilename, "stbdAzimuth_channel")-1;
+
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
-    //Which joystick number
+
+
     if (isAzimuthDrive) {
-        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port_throttleAzimuth");
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd_throttleAzimuth");
+        // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
+	
+	// joystick numbers used for azimuth drive controls
+	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
+	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
+	joystickSetup.portSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "portSchottel_joystickNo");
+	joystickSetup.stbdSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdSchottel_joystickNo");
+
+	// axes used for azimuth drive controls
+        joystickSetup.portThrustLever_channel = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel")-1;
+        joystickSetup.stbdThrustLever_channel = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel")-1;
+        joystickSetup.portSchottel_channel = IniFile::iniFileTou32(iniFilename, "portSchottel_channel")-1;
+        joystickSetup.stbdSchottel_channel = IniFile::iniFileTou32(iniFilename, "stbdSchottel_channel")-1;
+
+	// inversion of joystick axes
+	// NB dont use this for schottels like Shetland Traders because only one axis is inverted
+	// to model that use the boat.ini file
+
+        joystickSetup.schottelPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortSchottel")==1) {
+            joystickSetup.schottelPortDirection = -1;
+        }
+
+        joystickSetup.schottelStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdSchottel")==1) {
+            joystickSetup.schottelStbdDirection = -1;
+        }
+
+        joystickSetup.thrustLeverPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortThrustLever")==1) {
+            joystickSetup.thrustLeverPortDirection = -1;
+        }
+
+        joystickSetup.thrustLeverStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdthrustLever")==1) {
+            joystickSetup.thrustLeverStbdDirection = -1;
+        }
+
+	// offset and scaling
+	joystickSetup.schottelPortScaling = IniFile::iniFileTou32(iniFilename, "schottelPortScaling");
+	joystickSetup.schottelStbdScaling = IniFile::iniFileTou32(iniFilename, "schottelStbdScaling");
+	joystickSetup.schottelPortOffset = IniFile::iniFileTou32(iniFilename, "schottelPortOffset");
+	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "schottelStbdOffset");
+
+	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTou32(iniFilename, "thrustLeverPortScaling");
+	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTou32(iniFilename, "thrustLeverStbdScaling");
+	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTou32(iniFilename, "thrustLeverPortOffset");
+	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTou32(iniFilename, "thrustLeverStbdOffset");
+	
+
+
+	// DEE 10JAN23 ^^^^
     } else {
         joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
         joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");     
     }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
-    joystickSetup.azimuth1JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_portAzimuth");
-    joystickSetup.azimuth2JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbdAzimuth");
+
+
     joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
     joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
     //Joystick button mapping
@@ -264,20 +311,19 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
         joystickSetup.rudderDirection = -1;
     }
 
-    joystickSetup.azimuth1Direction = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth1_angle")==1) {
-        joystickSetup.azimuth1Direction = -1;
-    }
+// DEE 10JAN23 vvvv    
+    // joystickSetup.azimuth1Direction = 1;
+    // joystickSetup.azimuth1Direction = -1;
 
-    joystickSetup.azimuth2Direction = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth2_angle")==1) {
-        joystickSetup.azimuth2Direction = -1;
-    }
 
-    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
-    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
-    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
-    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+//    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
+//    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
+//    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
+//    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+
+// These are all wrapped up in an if isAzimuth earlier in this funciton
+
+// DEE 10JAN22 ^^^^
 
     return joystickSetup;
 }

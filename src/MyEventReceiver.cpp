@@ -60,13 +60,20 @@
 		this->joystickSetup = joystickSetup;
 
 		//Indicate that previous joystick information hasn't been initialised
-		previousJoystickPort = INFINITY;
-		previousJoystickStbd = INFINITY;
+		previousJoystickPort = INFINITY; 		// DEE 10JAN26 note ... port thrust lever in azimuth drive
+		previousJoystickStbd = INFINITY;		// DEE 10JAN26 note ... stbd thrust lever in azimuth drive
 		previousJoystickRudder = INFINITY;
-		previousJoystickBowThruster = INFINITY;
+		previousJoystickBowThruster = INFINITY;		
 		previousJoystickSternThruster = INFINITY;
-        previousJoystickAzimuthAngPort = INFINITY;
-        previousJoystickAzimuthAngStbd = INFINITY;
+// DEE 10JAN23 vvvv		
+//        previousJoystickAzimuthAngPort = INFINITY;
+//        previousJoystickAzimuthAngStbd = INFINITY;
+	previousJoystickSchottelPort = INFINITY;
+	previousJoystickSchottelStbd = INFINITY;
+	previousJoystickThrustLeverPort = INFINITY;
+	previousJoystickThrustLeverStbd = INFINITY;
+
+// DEE 10JAN23 ^^^^	
 
         previousJoystickPOVInitialised = false;
 
@@ -1059,6 +1066,14 @@
 			}
 		}
 
+
+
+
+
+
+
+// DEE 10JAN23 comment  joystickCode starts here
+
 		//From joystick (actually polled, once per run():
         if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
 
@@ -1099,11 +1114,23 @@
         	}
 
             // Keep joystick values the same unless they are being changed by user input
-            irr::f32 newJoystickPort = previousJoystickPort;
+            irr::f32 newJoystickPort = previousJoystickPort;  
             irr::f32 newJoystickStbd = previousJoystickStbd;
             irr::f32 newJoystickRudder = previousJoystickRudder;
-            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
-            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
+
+            // DEE 10JAN23 vvvv Azimuth drive physical controls
+	    // for disambuigity then define a separate variable for thrust levers, as they control the engine but are not the engine
+	    irr::f32 newJoystickThrustLeverPort = previousJoystickThrustLeverPort;
+	    irr::f32 newJoystickThrustLeverStbd = previousJoystickThrustLeverStbd;
+	    // DEE 10JAN23 ^^^^
+
+
+	    // DEE 10JAN23 vvvv
+//            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
+//            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
+            irr::f32 newJoystickSchottelPort = previousJoystickSchottelPort;
+            irr::f32 newJoystickSchottelStbd = previousJoystickSchottelStbd;
+	    // DEE 10JAN23 ^^^^
             irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
             irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
@@ -1133,20 +1160,67 @@
                     }
                 }
 
-                if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
-                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
+
+
+// DEE 10 Jan 23 vvvv TODO change this to control port schottel not the azimuth, let ownship.cpp take care of the follow up
+
+//		if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
+//                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
-                    if (previousJoystickAzimuthAngPort==INFINITY) {
-                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
+//                    if (previousJoystickAzimuthAngPort==INFINITY) {
+//                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
+//                    }
+//                }
+//                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
+//                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+//                    if (previousJoystickAzimuthAngStbd==INFINITY) {
+//                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
+//                    }
+//                }
+
+
+// TODO 10JAN23 apply scaling and offset to these		
+
+		// DEE 10JAN23 Port Thrust Lever for Azimuth Drive
+                if (thisJoystick == joystickSetup.portThrustLever_joystickNo && thisAxis == joystickSetup.portThrustLever_channel) {
+                    newJoystickThrustLeverPort = joystickSetup.thrustLeverPortDirection*(joystickSetup.thrustLeverPortOffset+(joystickSetup.thrustLeverPortScaling*event.JoystickEvent.Axis[joystickSetup.portThrustLever_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickThrustLeverPort==INFINITY) {
+                        previousJoystickThrustLeverPort = newJoystickThrustLeverPort;
                     }
                 }
-                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
-                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+
+		// DEE 10JAN23 Stbd Thrust Lever for Azimuth Drive
+                if (thisJoystick == joystickSetup.stbdThrustLever_joystickNo && thisAxis == joystickSetup.stbdThrustLever_channel) {
+                    newJoystickThrustLeverStbd = joystickSetup.thrustLeverStbdDirection*(joystickSetup.thrustLeverStbdOffset+(joystickSetup.thrustLeverStbdScaling*event.JoystickEvent.Axis[joystickSetup.stbdThrustLever_channel]/32768.0));
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
-                    if (previousJoystickAzimuthAngStbd==INFINITY) {
-                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
+                    if (previousJoystickThrustLeverStbd==INFINITY) {
+                        previousJoystickThrustLeverStbd = newJoystickThrustLeverStbd;
                     }
                 }
+
+		// DEE 10JAN23 Port Schottel for Azimuth Drive NB changed 180 to 360
+                if (thisJoystick == joystickSetup.portSchottel_joystickNo && thisAxis == joystickSetup.portSchottel_channel) {
+                    newJoystickSchottelPort = joystickSetup.schottelPortDirection*(joystickSetup.schottelPortOffset+joystickSetup.schottelPortScaling*(event.JoystickEvent.Axis[joystickSetup.portSchottel_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickSchottelPort==INFINITY) {
+                        previousJoystickSchottelPort = newJoystickSchottelPort;
+                    }
+                }
+
+		// DEE 10JAN23 Stbd Schottel for Azimuth Drive
+                if (thisJoystick == joystickSetup.stbdSchottel_joystickNo && thisAxis == joystickSetup.stbdSchottel_channel) {
+                    newJoystickSchottelStbd = joystickSetup.schottelStbdDirection*(joystickSetup.schottelStbdOffset+joystickSetup.schottelStbdScaling*(event.JoystickEvent.Axis[joystickSetup.stbdSchottel_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickSchottelStbd==INFINITY) {
+                        previousJoystickSchottelStbd = newJoystickSchottelStbd;
+                    }
+                }
+// TODO 10JAN23 To JAMES check apply scaling and offsets to these as I wrote it on holiday in tenerife and I dont have my rudimentary physical controls with me
+
+		// DEE 10Jan23 ^^^^
+
 
                 if (thisJoystick == joystickSetup.bowThrusterJoystickNo && thisAxis == joystickSetup.bowThrusterJoystickAxis) {
                     newJoystickBowThruster = event.JoystickEvent.Axis[joystickSetup.bowThrusterJoystickAxis]/32768.0;
@@ -1172,8 +1246,19 @@
             irr::f32 portChange = fabs(newJoystickPort - previousJoystickPort);
             irr::f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
             irr::f32 wheelChange = fabs(newJoystickRudder - previousJoystickRudder);
-            irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
-            irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
+// DEE 10JAN23 vvvv 
+//	    irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
+//          irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
+
+
+	    irr::f32 thrustLeverPortChange = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort);
+	    irr::f32 thrustLeverStbdChange = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd);
+	    irr::f32 schottelPortChange = fabs(newJoystickSchottelPort - previousJoystickSchottelPort);
+            irr::f32 schottelStbdChange = fabs(newJoystickSchottelStbd - previousJoystickSchottelStbd);
+// DEE 10JAN23 ^^^^ 
+
+
+
 
 // DEE
 //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
@@ -1183,44 +1268,107 @@
 //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
             if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 ||
                 bowThrusterChange > 0.01 || sternThrusterChange > 0.01 ||
-                azimuth1AngChange > 0.01 || azimuth2AngChange > 0.01 )
+                schottelPortChange > 0.01 || schottelStbdChange > 0.01 || thrustLeverPortChange > 0.01 || thrustLeverStbdChange > 0.01)
             {
                 joystickChanged = true;
             }
 
             //If any have changed, use all (iff non-infinite)
             if (joystickChanged) {
-                if (newJoystickPort<INFINITY) {
-                    irr::f32 mappedValue = lookup1D(newJoystickPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    model->setPortEngine(mappedValue);
-                    previousJoystickPort=newJoystickPort;
-                }
 
-                if (newJoystickStbd<INFINITY) {
+    
+
+		if (newJoystickPort<INFINITY) { // refers to the port engine control
+                    irr::f32 mappedValue = lookup1D(newJoystickPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+		    // DEE 10JAN23 vvvv
+		    // if this an azidrive then change thrust lever.  In fact in the future I suggest that all engines are controlled via thrust lever
+		    // as the bigger the engine, then the longer the spool up time is.
+
+		    
+		    if (!(model->isAzimuthDrive())) {
+		 	    model->setPortEngine(mappedValue);
+	    	    } // fi
+                    previousJoystickPort=newJoystickPort;
+                } 
+
+                if (newJoystickStbd<INFINITY) { // refers to the starboard engine control
                     irr::f32 mappedValue = lookup1D(newJoystickStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    model->setStbdEngine(mappedValue);
+		    if (!(model->isAzimuthDrive())) {
+			    model->setStbdEngine(mappedValue);
+		    }
                     previousJoystickStbd=newJoystickStbd;
                 }
 
-                if (newJoystickRudder<INFINITY) {
 
+
+		// Azimuth drive specific
+		// prefer to separate off the azimuth drive code from the conventional code for clarity and ease of future modification
+		//
+		if (model->isAzimuthDrive()) {
+
+    		    // Port Thrust Lever
+                    if (newJoystickThrustLeverPort<INFINITY) { 
+
+                        irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+			// the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
+			// we can ammend this to
+			//mappedValue = (mappedValue*0.5)+0.5;
+		    	//model->setPortThrustLever(mappedValue);
+		    	model->setPortThrustLever(0.5+newJoystickThrustLeverPort*0.5);
+                        previousJoystickThrustLeverPort=newJoystickThrustLeverPort;
+                    }
+
+		    // Stbd Thrust Lever
+                    if (newJoystickThrustLeverStbd<INFINITY) { 
+                        irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+			model->setStbdThrustLever(0.5+newJoystickThrustLeverStbd*0.5);
+			//		    	model->setStbdThrustLever(mappedValue);
+                        previousJoystickThrustLeverStbd=newJoystickThrustLeverStbd;
+                    }
+		    
+		    // Port Schottel
+		    // mapping is completely inappropriate for schottel controls
+                    if (newJoystickSchottelPort<INFINITY) { 
+                        //irr::f32 mappedValue = lookup1D(newJoystickSchottelPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+		    	//model->setPortSchottel(mappedValue);
+		    	model->setPortSchottel(newJoystickSchottelPort);
+                        previousJoystickSchottelPort=newJoystickSchottelPort;
+                    }
+
+		    // Stbd Schottel
+		    // mapping is completely inappropriate for schottel controls
+                    if (newJoystickSchottelStbd<INFINITY) { 
+                        // irr::f32 mappedValue = lookup1D(newJoystickSchottelStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+		    	// model->setStbdSchottel(mappedValue);
+		    	model->setStbdSchottel(newJoystickSchottelStbd);
+                        previousJoystickSchottelStbd=newJoystickSchottelStbd;
+                    }
+
+		    // DEE note perhaps the "master" should be implemented in here
+
+
+
+		} // end if is azimuth drive
+
+
+
+// DEE 10JAN23 ^^^^ end of joystick engine controls
+
+
+
+
+		if (newJoystickRudder<INFINITY) {
 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
                     model->setWheel(newJoystickRudder*joystickSetup.rudderDirection);
 //                    model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
                 }
 
-                if (newJoystickAzimuthAngPort<INFINITY) {
-                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.azimuth1Direction*joystickSetup.azimuth1Scaling +
-                                               joystickSetup.azimuth1Offset);
-                    previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
-                }
 
-                if (newJoystickAzimuthAngStbd<INFINITY) {
-                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.azimuth2Direction*joystickSetup.azimuth2Scaling +
-                                               joystickSetup.azimuth2Offset);
-                    previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
-                }
+
+
+
+
 
                 if (newJoystickBowThruster<INFINITY) {
                     model->setBowThruster(newJoystickBowThruster);
@@ -1232,7 +1380,7 @@
                     previousJoystickSternThruster=newJoystickSternThruster;
                 }
 
-            }
+            } // DEE 10JAN23 end if JoysickChanged
 
             //Check joystick buttons here
             //Make sure the joystickPreviousButtonStates has an entry for this joystick
@@ -1454,6 +1602,12 @@
                 }
             }
 
+
+// DEE 10JAN23 .... Ive never seen the master concept implemented on azimuth drives in real life as in practice you can steer
+// 			perfectly well with just one drive on passage.  Whilst Maneouvering or steaming in confined waters then 
+// 			both drives are needed to operate independently.  
+// 			When under autopilot, then the autopilot can be set to control port stbd or both azidrives.
+// 		    Is it worth the effort of implementing master for drives ?		    
             if (thisJoystick == joystickSetup.joystickNoAzimuth1Master) {
                 if (IsButtonPressed(joystickSetup.joystickButtonAzimuth1Master,thisButtonState)) {
                     // debounce:
