@@ -953,7 +953,7 @@ int main(int argc, char ** argv)
                 if (fullScreenRadar) {
                     driver->setViewPort(guiMain.getLargeRadarRect());
                 } else {
-                    driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+                    driver->setViewPort(guiMain.getSmallRadarRect());
                 }
                 model.setRadarCameraActive();
                 smgr->drawAll();

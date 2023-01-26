@@ -182,6 +182,7 @@ public:
     void setARPACheckboxes(bool arpaState);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
+    irr::core::rect<irr::s32> getSmallRadarRect() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;
     bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
@@ -286,6 +287,9 @@ private:
 
     irr::u32 su;
     irr::u32 sh;
+
+    irr::s32 azimuthGUIOffsetL;
+    irr::s32 azimuthGUIOffsetR;
 
     irr::f32 guiLat;
     irr::f32 guiLong;

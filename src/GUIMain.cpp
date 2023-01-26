@@ -72,6 +72,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //set if we have azimuth controls, instead of engine and rudder
         this->azimuthDrive = azimuthDrive;
 
+        // GUI position modifications if in azimuth drive mode
+        if (azimuthDrive) {
+            //azimuthGUIOffset = 0.05*su;
+            azimuthGUIOffsetL = -0.02*su;
+            azimuthGUIOffsetR = -0.07*su;
+        } else {
+            azimuthGUIOffsetL = 0;
+            azimuthGUIOffsetR = 0;
+        }
+
         //Initial settings for NFU buttons
         nfuPortDown = false;
         nfuStbdDown = false;
@@ -99,7 +109,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarTL.Y)/2;
         largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
 
-        smallRadarScreenCentreX = su-0.2*sh;
+        smallRadarScreenCentreX = su-0.2*sh+azimuthGUIOffsetR;
         smallRadarScreenCentreY = 0.8*sh;
         smallRadarScreenRadius=0.2*sh;
 
@@ -308,11 +318,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //add data display:
-        irr::s32 azimuthGUIOffset = 0;
-        if (azimuthDrive) {
-            azimuthGUIOffset = 0.05*su;
-        }
-        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.71*sh,0.45*su,0.95*sh); //In normal view
+        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.71*sh,0.45*su+azimuthGUIOffsetR,0.95*sh); //In normal view
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
@@ -324,7 +330,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiSpeed = 0;
 
         //Add heading indicator
-        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.630*sh,0.45*su,0.680*sh); //In normal view
+        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.630*sh,0.45*su+azimuthGUIOffsetR,0.680*sh); //In normal view
         radHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised radar view
         maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
@@ -332,7 +338,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         // DEE vvvvv add very basic rate of turn indicator
 // rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
 
-        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
+        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su+azimuthGUIOffsetL, 0.87*sh, 0.20*su+azimuthGUIOffsetL, 0.91*sh),rudderTics,centreTic);
 
         rateofturnScrollbar->setMax(50);
         rateofturnScrollbar->setMin(-50);
@@ -346,9 +352,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 // DEE ^^^^^
 
         // add indicators for whether the rudder pumps are working
-        pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su,0.72*sh,0.44*su,0.745*sh),true,false,0,-1,true);
-        pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su,0.75*sh,0.44*su,0.775*sh),true,false,0,-1,true);
-        ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su, 0.78*sh, 0.44*su, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
+        pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.72*sh,0.44*su+azimuthGUIOffsetR,0.745*sh),true,false,0,-1,true);
+        pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.75*sh,0.44*su+azimuthGUIOffsetR,0.775*sh),true,false,0,-1,true);
+        ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR, 0.78*sh, 0.44*su+azimuthGUIOffsetR, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
         pump1On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
@@ -402,7 +408,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //add radar buttons
         //add tab control for radar
-        radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
+        radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
@@ -413,14 +419,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        radarText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
+        radarText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.460*su+azimuthGUIOffsetR,0.610*sh,0.690*su+azimuthGUIOffsetR,0.690*sh),true,true,0,-1,true);
 
 		//Buttons for radar on/off
 		radarOnOffButton = guienv->addButton(irr::core::rect<irr::s32>(0.005*su, 0.010*sh, 0.055*su, 0.040*sh), mainRadarTab, GUI_ID_RADAR_ONOFF_BUTTON, language->translate("onoff").c_str());
 		//TODO: Complete this: To go where radar zoom + is, and squash these down a bit
 
         //Buttons for full or small radar
-        bigRadarButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
+        bigRadarButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su+azimuthGUIOffsetR,0.610*sh,0.720*su+azimuthGUIOffsetR,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
         irr::s32 smallRadarButtonLeft = radarTL.X + 0.01*su;
         irr::s32 smallRadarButtonTop = radarTL.Y + 0.01*sh;
         smallRadarButton = guienv->addButton(irr::core::rect<irr::s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
@@ -550,26 +556,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffset,0.92*sh,0.17*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffsetL,0.92*sh,0.17*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffset,0.92*sh,0.21*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffsetL,0.92*sh,0.21*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
         //Exit button
-        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffset,0.92*sh,0.25*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffsetL,0.92*sh,0.25*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffset,0.92*sh,0.33*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffset,0.92*sh,0.35*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.35*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -719,6 +725,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return (cursorPosition-radarScreenCentre);
     }
 
+    irr::core::rect<irr::s32> GUIMain::getSmallRadarRect() const
+    {
+	    irr::u32 graphicsWidth3d = su;
+	    irr::u32 graphicsHeight3d = sh * 0.6;
+        return irr::core::rect<irr::s32>(su-(sh-graphicsHeight3d)+azimuthGUIOffsetR,graphicsHeight3d,su+azimuthGUIOffsetR,sh);
+    }
+    
     irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
     {
         return irr::core::rect<irr::s32>(largeRadarScreenCentreX - largeRadarScreenRadius, largeRadarScreenCentreY - largeRadarScreenRadius, largeRadarScreenCentreX + largeRadarScreenRadius, largeRadarScreenCentreY + largeRadarScreenRadius);
