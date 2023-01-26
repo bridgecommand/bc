@@ -89,13 +89,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Default to small radar display
         radarLarge = false;
         //Find available 4:3 rectangle to fit in area for large radar display
-        irr::s32 availableWidth  = (0.99-0.09)*su;
+        irr::s32 availableWidth;
         irr::s32 availableHeight = (0.95-0.01)*sh;
+        if (azimuthDrive) {
+            // leave 0.9*su on both sides
+            availableWidth  = (0.91-0.09)*su;
+        } else {
+            // leave 0.9*su on left, 0.01*su on right
+            availableWidth  = (0.99-0.09)*su;
+        }
         if (availableWidth/(float)availableHeight > 4.0/3.0) {
+            // Wider than 4:3
             irr::s32 activeWidth = availableHeight * 4.0/3.0;
             irr::s32 activeHeight = availableHeight;
             radarLargeRect = irr::core::rect<irr::s32>(0.09*su + (availableWidth-activeWidth)/2, 0.01*sh, 0.09*su + activeWidth + (availableWidth-activeWidth)/2, 0.01+activeHeight);
         } else {
+            // 4:3 or narrower
             irr::s32 activeWidth = availableWidth;
             irr::s32 activeHeight = availableWidth * 3.0/4.0;
             radarLargeRect = irr::core::rect<irr::s32>(0.09*su, 0.01*sh+(availableHeight-activeHeight)/2, 0.09*su + activeWidth, 0.01+activeHeight+(availableHeight-activeHeight)/2);
@@ -1391,7 +1400,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //std::cout << radius*2 << std::endl;
 
         //If full screen radar, draw a 4:3 box around the radar display area
-        if (radarLarge && !azimuthDrive) {
+        if (radarLarge) {
             device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,irr::video::SColor(255,0,0,0));
         }
 
