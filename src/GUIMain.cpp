@@ -185,8 +185,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 //            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_1); 
 //            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
         
-            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.7*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
-            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.7*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
+            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
+            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
 
             azimuth1Control->setMax(360); // DEE_NOV22 comment sets maximum value port azimuth indicator
             azimuth2Control->setMax(360); // DEE_NOV22 comment sets maximum value stbd azimuth indicator
@@ -195,8 +195,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 //            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.88*sh,0.045*su,0.90*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
 //            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.095*su,0.88*sh,0.115*su,0.90*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
 
-            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.74*sh,0.045*su,0.76*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
-            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.74*sh,0.975*su,0.76*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
+            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.82*sh,0.045*su,0.84*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
+            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.82*sh,0.975*su,0.84*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
 
 // DEE_NOV22 ^^^^
 
@@ -207,11 +207,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 	    // DEE_NOV22 the schottels ... the bottom most pair of dial
 
-            schottelPort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_PORT); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
+            schottelPort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_PORT); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
 	    schottelPort->setToolTipText(language->translate("Schottel Port").c_str());
             schottelPort->setMax(360); // DEE_NOV22 sets maximum value port schottel
 
-            schottelStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_STBD); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
+            schottelStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_STBD); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
 	    schottelStbd->setToolTipText(language->translate("Schottel Starboard").c_str());
             schottelStbd->setMax(360); // DEE_NOV22 sets maximum value stbd schottel
 
@@ -223,16 +223,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 	    // DEE_NOV22 the engine rpm indicators (0..1) the top most pair
 
-            enginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.6*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+            enginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
 	    enginePort->setToolTipText(language->translate("Engine Port").c_str());
             enginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
 
-            engineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.6*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+            engineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
 	    engineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
             engineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
 
-            clutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.64*sh,0.045*su,0.66*sh),0,GUI_ID_CLUTCH_PORT);
-            clutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.64*sh,0.975*su,0.66*sh),0,GUI_ID_CLUTCH_STBD);
+            clutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_CLUTCH_PORT);
+            clutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_CLUTCH_STBD);
             clutchPort->setToolTipText(language->translate("Port Clutch").c_str());
             clutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
 
