@@ -123,17 +123,19 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
 
     for (;;) 
     {
-        // terminate thread?
-        terminateNmeaReceiveMutex.lock();
-        if (terminateNmeaReceive != 0)
-        {
-            terminateNmeaReceiveMutex.unlock();
-            break;
-        }
-        terminateNmeaReceiveMutex.unlock();
-
+        
         try
         {
+        
+            // terminate thread?
+            terminateNmeaReceiveMutex.lock();
+            if (terminateNmeaReceive != 0)
+            {
+                terminateNmeaReceiveMutex.unlock();
+                break;
+            }
+            terminateNmeaReceiveMutex.unlock();
+
             char * buf = new char[128]();
             
             // set socket timeout as in AISOverUDP
