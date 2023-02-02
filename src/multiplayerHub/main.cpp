@@ -137,6 +137,16 @@ int main()
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     int port = IniFile::iniFileTou32(iniFilename, "udp_send_port");
 
+    // How long to pause between updates
+    irr::u32 sleepTime = IniFile::iniFileTou32(iniFilename, "update_time");
+    // Set defaults, and upper limit of 10s
+    if (sleepTime==0) {
+        sleepTime = 100;
+    }
+    if (sleepTime>10000) {
+        sleepTime = 10000;
+    }
+
     //Sensible defaults if not set
     irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
 	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
@@ -278,12 +288,8 @@ int main()
 
         driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
 
-        //std::cout << "Time: " << absoluteTime << std::endl;
-        #ifdef _WIN32
-        Sleep(1000);
-        #else
-        sleep(1); //Todo: Make a better way of pausing so we don't flood clients with data!
-        #endif
+        // Pause, so we don't flood clients with data
+        device->sleep(sleepTime);
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
