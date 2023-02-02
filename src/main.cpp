@@ -139,7 +139,7 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
 
     if (isAzimuthDrive) {
         // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
-	
+
 	// joystick numbers used for azimuth drive controls
 	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
 	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
@@ -177,22 +177,22 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
         }
 
 	// offset and scaling
-	joystickSetup.schottelPortScaling = IniFile::iniFileTou32(iniFilename, "schottelPortScaling");
-	joystickSetup.schottelStbdScaling = IniFile::iniFileTou32(iniFilename, "schottelStbdScaling");
-	joystickSetup.schottelPortOffset = IniFile::iniFileTou32(iniFilename, "schottelPortOffset");
-	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "schottelStbdOffset");
+	joystickSetup.schottelPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortSchottelAngle");
+	joystickSetup.schottelStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdSchottelAngle");
+	joystickSetup.schottelPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortSchottelAngle");
+	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "offsetStbdSchottelAngle");
 
-	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTou32(iniFilename, "thrustLeverPortScaling");
-	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTou32(iniFilename, "thrustLeverStbdScaling");
-	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTou32(iniFilename, "thrustLeverPortOffset");
-	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTou32(iniFilename, "thrustLeverStbdOffset");
-	
+	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortThrustLever");
+	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdThrustLever");
+	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortThrustLever");
+	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTof32(iniFilename, "offsetStbdThrustLever");
+
 
 
 	// DEE 10JAN23 ^^^^
     } else {
         joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");     
+        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
     }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
@@ -311,7 +311,7 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
         joystickSetup.rudderDirection = -1;
     }
 
-// DEE 10JAN23 vvvv    
+// DEE 10JAN23 vvvv
     // joystickSetup.azimuth1Direction = 1;
     // joystickSetup.azimuth1Direction = -1;
 
@@ -454,7 +454,7 @@ int main(int argc, char ** argv)
         cameraMaxDistance = 6*M_IN_NM;
     }
 
-    
+
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
@@ -907,7 +907,7 @@ int main(int argc, char ** argv)
         // Update NMEA, check if new sensor or AIS data is ready to be sent
 //        nmeaProfile.tic();
         }{ IPROF("NMEA");
-        
+
         if (!nmeaUDPListenPortName.empty()) {
             nmea.receive();
         }
