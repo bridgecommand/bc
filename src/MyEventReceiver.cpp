@@ -261,6 +261,7 @@
 		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
 		// we arent interested in the getMag
 		// DEE_Boxing_Day_2022 vvvv
+                //TODO: change gui control mapping so we don't need scaling here
                 irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
 
                 if ((angle >= 0) && (angle <135)) {
@@ -298,6 +299,7 @@
 		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
 		// we arent interested in the getMag
 		// DEE_Boxing_Day_2022 vvvv
+                //TODO: change gui control mapping so we don't need scaling here
                 irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
 
                 if ((angle >= 0) && (angle <135)) {

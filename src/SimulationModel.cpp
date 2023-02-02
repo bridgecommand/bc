@@ -1568,8 +1568,8 @@ SimulationModel::~SimulationModel()
 	guiData->schottelPort = ownShip.getPortSchottel();
 	guiData->schottelStbd = ownShip.getStbdSchottel();
 
-	guiData->enginePort = (ownShip.getPortEngine()*270)-135;
-	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135;
+	guiData->enginePort = (ownShip.getPortEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
+	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
 
 
 
