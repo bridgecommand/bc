@@ -117,6 +117,8 @@ irr::core::stringw getCredits(){
     creditsString.append(L"> Sky image from 0ptikz\n\n");
     creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
 
+    creditsString.append(L"Many thanks to contributors including David Elir Evans, Antoine Saillard, Konrad Wolsing, Jan Bauer, AndreySSH, Manfred, ceeac.\n\n");
+
 	creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
 
     creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
@@ -127,29 +129,76 @@ irr::core::stringw getCredits(){
 JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    if (isAzimuthDrive) {
-        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttleAzimuth_channel")-1;
-        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttleAzimuth_channel")-1;
-    } else {
+    if (!(isAzimuthDrive)) {
         joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
         joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
     }
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
-    joystickSetup.azimuth1JoystickAxis = IniFile::iniFileTou32(iniFilename, "portAzimuth_channel")-1;
-    joystickSetup.azimuth2JoystickAxis = IniFile::iniFileTou32(iniFilename, "stbdAzimuth_channel")-1;
+
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
-    //Which joystick number
+
+
     if (isAzimuthDrive) {
-        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port_throttleAzimuth");
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd_throttleAzimuth");
+        // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
+
+	// joystick numbers used for azimuth drive controls
+	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
+	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
+	joystickSetup.portSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "portSchottel_joystickNo");
+	joystickSetup.stbdSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdSchottel_joystickNo");
+
+	// axes used for azimuth drive controls
+        joystickSetup.portThrustLever_channel = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel")-1;
+        joystickSetup.stbdThrustLever_channel = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel")-1;
+        joystickSetup.portSchottel_channel = IniFile::iniFileTou32(iniFilename, "portSchottel_channel")-1;
+        joystickSetup.stbdSchottel_channel = IniFile::iniFileTou32(iniFilename, "stbdSchottel_channel")-1;
+
+	// inversion of joystick axes
+	// NB dont use this for schottels like Shetland Traders because only one axis is inverted
+	// to model that use the boat.ini file
+
+        joystickSetup.schottelPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortSchottel")==1) {
+            joystickSetup.schottelPortDirection = -1;
+        }
+
+        joystickSetup.schottelStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdSchottel")==1) {
+            joystickSetup.schottelStbdDirection = -1;
+        }
+
+        joystickSetup.thrustLeverPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortThrustLever")==1) {
+            joystickSetup.thrustLeverPortDirection = -1;
+        }
+
+        joystickSetup.thrustLeverStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdthrustLever")==1) {
+            joystickSetup.thrustLeverStbdDirection = -1;
+        }
+
+	// offset and scaling
+	joystickSetup.schottelPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortSchottelAngle");
+	joystickSetup.schottelStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdSchottelAngle");
+	joystickSetup.schottelPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortSchottelAngle");
+	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "offsetStbdSchottelAngle");
+
+	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortThrustLever");
+	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdThrustLever");
+	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortThrustLever");
+	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTof32(iniFilename, "offsetStbdThrustLever");
+
+
+
+	// DEE 10JAN23 ^^^^
     } else {
         joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");     
+        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
     }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
-    joystickSetup.azimuth1JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_portAzimuth");
-    joystickSetup.azimuth2JoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbdAzimuth");
+
+
     joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
     joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
     //Joystick button mapping
@@ -264,20 +313,19 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
         joystickSetup.rudderDirection = -1;
     }
 
-    joystickSetup.azimuth1Direction = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth1_angle")==1) {
-        joystickSetup.azimuth1Direction = -1;
-    }
+// DEE 10JAN23 vvvv
+    // joystickSetup.azimuth1Direction = 1;
+    // joystickSetup.azimuth1Direction = -1;
 
-    joystickSetup.azimuth2Direction = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_azimuth2_angle")==1) {
-        joystickSetup.azimuth2Direction = -1;
-    }
 
-    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
-    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
-    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
-    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+//    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
+//    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
+//    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
+//    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+
+// These are all wrapped up in an if isAzimuth earlier in this funciton
+
+// DEE 10JAN22 ^^^^
 
     return joystickSetup;
 }
@@ -408,7 +456,7 @@ int main(int argc, char ** argv)
         cameraMaxDistance = 6*M_IN_NM;
     }
 
-    
+
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
@@ -861,7 +909,7 @@ int main(int argc, char ** argv)
         // Update NMEA, check if new sensor or AIS data is ready to be sent
 //        nmeaProfile.tic();
         }{ IPROF("NMEA");
-        
+
         if (!nmeaUDPListenPortName.empty()) {
             nmea.receive();
         }
@@ -907,7 +955,7 @@ int main(int argc, char ** argv)
                 if (fullScreenRadar) {
                     driver->setViewPort(guiMain.getLargeRadarRect());
                 } else {
-                    driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+                    driver->setViewPort(guiMain.getSmallRadarRect());
                 }
                 model.setRadarCameraActive();
                 smgr->drawAll();

@@ -75,6 +75,37 @@ public:
     bool getAzimuth2Master() const;
     void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
     void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+
+    // DEE_NOV22 vvvv for follow up shcottel and automatic clutch
+    void setPortSchottel(irr::f32 angle); // Set Port Schottel angle
+    irr::f32 getPortSchottel();
+    void setStbdSchottel(irr::f32 angle); // Set Stbd Schottel angle
+    irr::f32 getStbdSchottel();
+    bool getPortClutch();
+    void setPortClutch(bool);
+    bool getStbdClutch();
+    void setStbdClutch(bool);
+    void engagePortClutch();
+    void disengagePortClutch();
+    void engageStbdClutch();
+    void disengageStbdClutch();
+    void setPortThrustLever(irr::f32);   // sets port thrust lever range is 0..+1
+    irr::f32 getPortThrustLever(); 	 // gets port thrust lever range is 0..+1
+    void setStbdThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1
+    irr::f32 getStbdThrustLever(); // gets starboard thrust lever range is 0..+1	 
+
+    void btnIncrementPortThrustLever(); // increments the port thrust lever
+    void btnDecrementPortThrustLever(); // decrements the port thrust lever
+    void btnIncrementStbdThrustLever(); // increments the stbd thrust lever
+    void btnDecrementStbdThrustLever(); // decrements the stbd thrust lever
+    
+    void btnIncrementPortSchottel(); // clockwise turn of the port schottel in response to a key press
+    void btnDecrementPortSchottel(); // anticlockwise turn of the port schottel in response to a key press
+    void btnIncrementStbdSchottel(); // clockwise turn of the starboard schottel in response to a key press
+    void btnDecrementStbdSchottel(); // anticlockwise turn of the starboard schottel in response to a key press
+
+    // DEE_NOV22 ^^^^
+
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
     void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
     irr::f32 getPortEngine() const; //Range +-1

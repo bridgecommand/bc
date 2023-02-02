@@ -60,13 +60,20 @@
 		this->joystickSetup = joystickSetup;
 
 		//Indicate that previous joystick information hasn't been initialised
-		previousJoystickPort = INFINITY;
-		previousJoystickStbd = INFINITY;
+		previousJoystickPort = INFINITY; 		// DEE 10JAN26 note ... port thrust lever in azimuth drive
+		previousJoystickStbd = INFINITY;		// DEE 10JAN26 note ... stbd thrust lever in azimuth drive
 		previousJoystickRudder = INFINITY;
 		previousJoystickBowThruster = INFINITY;
 		previousJoystickSternThruster = INFINITY;
-        previousJoystickAzimuthAngPort = INFINITY;
-        previousJoystickAzimuthAngStbd = INFINITY;
+// DEE 10JAN23 vvvv
+//        previousJoystickAzimuthAngPort = INFINITY;
+//        previousJoystickAzimuthAngStbd = INFINITY;
+	previousJoystickSchottelPort = INFINITY;
+	previousJoystickSchottelStbd = INFINITY;
+	previousJoystickThrustLeverPort = INFINITY;
+	previousJoystickThrustLeverStbd = INFINITY;
+
+// DEE 10JAN23 ^^^^
 
         previousJoystickPOVInitialised = false;
 
@@ -219,29 +226,111 @@
                   }
 // DEE capture the wheel
 
-              if (id == GUIMain::GUI_ID_AZIMUTH_1) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
-                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-                model->setPortAzimuthAngle(angle);
-                model->setPortEngine(power);
-                if (rightMouseDown) {
-                    // Set the other control as well (Linked)
-                    model->setStbdAzimuthAngle(angle);
-                    model->setStbdEngine(power);
-                }
-              }
 
-              if (id == GUIMain::GUI_ID_AZIMUTH_2) {
-                irr::f32 power = ((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getMag()/100.0; //Convert to from +-100 to +-1
-                irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); //Range 0-360
-                model->setStbdAzimuthAngle(angle);
-                model->setStbdEngine(power);
-                if (rightMouseDown) {
-                    // Set the other control as well (Linked)
-                    model->setPortAzimuthAngle(angle);
-                    model->setPortEngine(power);
+// DEE_NOV22 this deals with capturing input from the Azimuth gui
+// JP: Removed GUI inputs from GUI_ID_AZIMUTH_1 and GUI_ID_AZIMUTH_2, as I think these are intended to be display only, not for input?
+// DEE_NOV22 ^^^^ end of the inputs from the azimth GUI
+
+
+// DEE_NOV22 vvvv controls for mouse inputs to the engine rpm indicators and the schottels
+
+	    if ( id == GUIMain::GUI_ID_SCHOTTEL_PORT )
+	    {
+		// DEE_NOV22 only really want this to respond to left mouse click , no master mode
+		// as in practice if you want to steer with only one schottel, you just
+		// leave the other dead ahead, for small steering corrections then that
+		// is adequate
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// not intersted in magnitude
+		model->setPortSchottel(angle);
+	    } // end if schottel port
+
+
+
+	    if ( id == GUIMain::GUI_ID_SCHOTTEL_STBD )
+	    {
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// not intersted in magnitude
+		model->setStbdSchottel(angle);
+	    } // end if schottel stbd
+
+
+
+	    if ( id == GUIMain::GUI_ID_ENGINE_PORT )
+	    {
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// we arent interested in the getMag
+		// DEE_Boxing_Day_2022 vvvv
+                //TODO: change gui control mapping so we don't need scaling here
+                irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
+
+                if ((angle >= 0) && (angle <135)) {
+                	tempEngLevel = (0.5 + angle/270);
+		}
+                if ((angle >= 135)  && (angle < 180)) {
+                	tempEngLevel = 1;
                 }
-              }
+                if ((angle >= 180)  && (angle < 180)) {
+                	tempEngLevel = 0;
+                }
+                if ((angle >= 225) && (angle < 360)) {
+                	tempEngLevel = ((angle-225)/270);
+                }
+// DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
+
+    		// limit the output to 0..1 only leaving this in for future elegant solution
+                if (tempEngLevel < 0) {tempEngLevel=0;}
+                if (tempEngLevel > 1) {tempEngLevel=1;}
+
+                model->setPortThrustLever(tempEngLevel);
+
+                // DEBUG
+                //device->getLogger()->log(f32To3dp(angle).c_str());
+		//device->getLogger()->log(f32To3dp(tempEngLevel).c_str());
+                // DEBUG END
+                		// DEE_Boxing_Day_2022 ^^^^
+            } // end if engine port
+
+
+
+	    if ( id == GUIMain::GUI_ID_ENGINE_STBD )
+	    {
+// DEE_Boxing_Day_2022 vvvv
+		irr::f32 angle = (((irr::gui::AzimuthDial*)event.GUIEvent.Caller)->getPos()); // Range 0-360
+		// we arent interested in the getMag
+		// DEE_Boxing_Day_2022 vvvv
+                //TODO: change gui control mapping so we don't need scaling here
+                irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
+
+                if ((angle >= 0) && (angle <135)) {
+                	tempEngLevel = (0.5 + angle/270);
+		}
+                if ((angle >= 135)  && (angle < 180)) {
+                	tempEngLevel = 1;
+                }
+                if ((angle >= 180)  && (angle < 180)) {
+                	tempEngLevel = 0;
+                }
+                if ((angle >= 225) && (angle < 360)) {
+                	tempEngLevel = ((angle-225)/270);
+                }
+// DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
+
+    		// limit the output to 0..1 only leaving this in for future elegant solution
+                if (tempEngLevel < 0) {tempEngLevel=0;}
+                if (tempEngLevel > 1) {tempEngLevel=1;}
+
+                model->setStbdThrustLever(tempEngLevel);
+
+
+//		model->setStbdEngine((angle/360));
+// DEE_Boxing_Day_2022 ^^^^
+
+            } // end if engine port
+
+
+
+
 
             //DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
 
@@ -647,7 +736,7 @@
                             break;
                         case irr::KEY_LEFT:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                            model->lookPort();
+                            model->lookPort(); // DEENOV22 TODO make all screens lookPort
                             break;
                         case irr::KEY_RIGHT:
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
@@ -697,9 +786,76 @@
                             model->setAccelerator(3600.0);
                             break;
 
-						case irr::KEY_KEY_H:
-							model->startHorn();
-							break;
+			case irr::KEY_KEY_H:
+			    model->startHorn();
+			    break;
+
+// DEE_NOV22 vvvvv
+
+// only assign these key bindings if this is an Azimuth Drive
+
+// Purpose of this code is to allow keyboard control of the azipods
+// they should be ineffective if the ship does not have azipods however
+// I shall put this in the model object
+
+// ultimately there should be a choice of Non followup mode and Follow up mode
+// so they keys control the movement of the schottels in follow up mode
+// the pod's azimuth then chases the commanded azimuth
+// and the engine chases each thrust lever and clutches in and out automatically when thresholds are reached
+// there can be no direct engine in reverse
+
+// todo also need to model the shetland trader type case of when going forward they act as a steering wheel
+// rather than a tiller, which could be the normal case
+
+
+// key map for this currently is as follows
+// Port Azipod : A pod anticlockwise , D pod clockwise, W thrust lever forward, S thrust lever backwards
+// Starboard Azipod : J pod anticlockwise, L pod clockwise, I thrust lever forward, K thrust lever backwards
+
+
+// the if ASDs are left in the below controls so that the keys can be assigned to something else on a
+// non azipod ship in the future
+
+
+			case irr::KEY_KEY_W:
+			    if (model->isAzimuthDrive()) {
+				// Port Azipod Thrust lever increase
+			        model->btnIncrementPortThrustLever();
+			    }
+			    break;
+
+// KEY_KEY_S ... decrement port thrust is further down the code as it has a duplicate use
+
+			case irr::KEY_KEY_J:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Schottel anticlockwise decrement
+			        model->btnDecrementStbdSchottel();
+			    }
+			    break;
+
+			case irr::KEY_KEY_L:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Schottel clockwise increment
+			        model->btnIncrementStbdSchottel();
+			    }
+			    break;
+
+			case irr::KEY_KEY_I:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Thurst lever increase
+				model->btnIncrementStbdThrustLever();
+			    }
+			    break;
+
+			case irr::KEY_KEY_K:
+			    if (model->isAzimuthDrive()) {
+				// Starboard Azipod Thrust lever decrease
+			        model->btnDecrementStbdThrustLever();
+			    }
+			    break;
+
+
+// DEE_NOV22 ^^^^^
 
                         //Camera look
                         case irr::KEY_UP:
@@ -742,43 +898,103 @@
 
                         //Keyboard control of engines
                         case irr::KEY_KEY_A:
-                            //Increase port engine revs:
-                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    if(model->isAzimuthDrive()) {
+				// if vessel is Azimuth drive then turn Port Schottel anticlockwise decrement
+				model->btnDecrementPortSchottel();
+			    } else {
+			    // DEE_NOV_22 ^^^^
+                            // (if not Azimuth Drive) Increase port engine revs:
+                                model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_Z:
                             //Decrease port engine revs:
-                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv disable this function if azimuth drive
+			    if(!(model->isAzimuthDrive())) {
+                                model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_S:
-                            //Increase stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    if(model->isAzimuthDrive()) {
+				// as Azimuth drive then Port thrust lever decrease
+				model->btnDecrementPortThrustLever();
+			    } else {
+				// this is an non azimuth drive vessel to interpret S as Increase stpd engine revs
+			    // DEE_NOV22 ^^^^
+                                //Increase stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+				} // DEE_NOV22 end if isAzimuthDrive and indentations
                             break;
+
                         case irr::KEY_KEY_X:
-                            //Decrease stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+
+			    // DEE_NOV22 vvvv only enable this response if it is not an azimuth drive
+			    if(!(model->isAzimuthDrive()))
+				{
+                                //Decrease stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+				}
+			    // DEE_NOV22 ^^^^
                             break;
+
                         case irr::KEY_KEY_D:
-                            //Increase stbd and port engine revs:
-                            model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
-                            model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv in the case of the ship being Azimuth Drive
+			    if(model->isAzimuthDrive()) {
+				// as Azimuth drive then Port Azipod Schottel clockwise
+				model->btnIncrementPortSchottel();
+			    } else {
+			    // DEE_NOV22 ^^^^
+			    // else the ship is normally propelled indents made to code below DEE_NOV22 ^^^^
+                                //Increase stbd and port engine revs:
+                                model->setStbdEngine(model->getStbdEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+                                model->setPortEngine(model->getPortEngine()+0.1); //setPortEngine clamps the setting to the allowable range
+			    } // end if DEE_NOV22
                             break;
                         case irr::KEY_KEY_C:
-                            //Decrease stbd engine revs:
-                            model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
-                            model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv only if not azimuth drive
+			    if (!(model->isAzimuthDrive()))
+			    {
+			    // DEE_NOV22 ^^^^ indentations added below
+                                //Decrease stbd engine revs:
+                                model->setStbdEngine(model->getStbdEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+                                model->setPortEngine(model->getPortEngine()-0.1); //setPortEngine clamps the setting to the allowable range
+			    // DEE_NOV22 vvvv
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
 
 // DEE vvvv key rudder to port changed to rudder wheel to port
                         case irr::KEY_KEY_V:
-//                            model->setRudder(model->getRudder()-5);
-			    model->setWheel(model->getWheel()-1);
+
+			// DEE_NOV22 vvvv the 'wheel' should be enabled only when not an azimuth drive
+			    if (!(model->isAzimuthDrive()))
+			    {
+//                               model->setRudder(model->getRudder()-5);
+			        model->setWheel(model->getWheel()-1);
+			    }
+			// DEE_NOV22 ^^^^ indentations added to original code
                             break;
 // DEE ^^^^
 
-// DEE vvvV key rudder to starboard changed to key wheel to starboard
+// DEE vvvv key rudder to starboard changed to key wheel to starboard
                         case irr::KEY_KEY_B:
-//                            model->setRudder(model->getRudder()+5);
-                            model->setWheel(model->getWheel()+1);
+			    // DEE_NOV22 vvvv
+			    if (!(model->isAzimuthDrive()))
+			    {
+			    // DEE_NOV22 ^^^^
+
+//                                model->setRudder(model->getRudder()+5);
+                                model->setWheel(model->getWheel()+1);
+			    // DEE_NOV22 vvvv
+			    }
+			    // DEE_NOV22 ^^^^
                             break;
 // DEE ^^^^
 
@@ -795,6 +1011,14 @@
 				model->endHorn();
 			}
 		}
+
+
+
+
+
+
+
+// DEE 10JAN23 comment  joystickCode starts here
 
 		//From joystick (actually polled, once per run():
         if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
@@ -839,8 +1063,20 @@
             irr::f32 newJoystickPort = previousJoystickPort;
             irr::f32 newJoystickStbd = previousJoystickStbd;
             irr::f32 newJoystickRudder = previousJoystickRudder;
-            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
-            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
+
+            // DEE 10JAN23 vvvv Azimuth drive physical controls
+	    // for disambuigity then define a separate variable for thrust levers, as they control the engine but are not the engine
+	    irr::f32 newJoystickThrustLeverPort = previousJoystickThrustLeverPort;
+	    irr::f32 newJoystickThrustLeverStbd = previousJoystickThrustLeverStbd;
+	    // DEE 10JAN23 ^^^^
+
+
+	    // DEE 10JAN23 vvvv
+//            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
+//            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
+            irr::f32 newJoystickSchottelPort = previousJoystickSchottelPort;
+            irr::f32 newJoystickSchottelStbd = previousJoystickSchottelStbd;
+	    // DEE 10JAN23 ^^^^
             irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
             irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
@@ -870,20 +1106,67 @@
                     }
                 }
 
-                if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
-                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
+
+
+// DEE 10 Jan 23 vvvv TODO change this to control port schottel not the azimuth, let ownship.cpp take care of the follow up
+
+//		if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
+//                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
-                    if (previousJoystickAzimuthAngPort==INFINITY) {
-                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
+//                    if (previousJoystickAzimuthAngPort==INFINITY) {
+//                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
+//                    }
+//                }
+//                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
+//                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+//                    if (previousJoystickAzimuthAngStbd==INFINITY) {
+//                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
+//                    }
+//                }
+
+
+// TODO 10JAN23 apply scaling and offset to these
+
+		// DEE 10JAN23 Port Thrust Lever for Azimuth Drive
+                if (thisJoystick == joystickSetup.portThrustLever_joystickNo && thisAxis == joystickSetup.portThrustLever_channel) {
+                    newJoystickThrustLeverPort = joystickSetup.thrustLeverPortDirection*(joystickSetup.thrustLeverPortOffset+(joystickSetup.thrustLeverPortScaling*event.JoystickEvent.Axis[joystickSetup.portThrustLever_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickThrustLeverPort==INFINITY) {
+                        previousJoystickThrustLeverPort = newJoystickThrustLeverPort;
                     }
                 }
-                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
-                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
+
+		// DEE 10JAN23 Stbd Thrust Lever for Azimuth Drive
+                if (thisJoystick == joystickSetup.stbdThrustLever_joystickNo && thisAxis == joystickSetup.stbdThrustLever_channel) {
+                    newJoystickThrustLeverStbd = joystickSetup.thrustLeverStbdDirection*(joystickSetup.thrustLeverStbdOffset+(joystickSetup.thrustLeverStbdScaling*event.JoystickEvent.Axis[joystickSetup.stbdThrustLever_channel]/32768.0));
                     //If previous value is Inf, store current value in previous and current, otherwise only in current
-                    if (previousJoystickAzimuthAngStbd==INFINITY) {
-                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
+                    if (previousJoystickThrustLeverStbd==INFINITY) {
+                        previousJoystickThrustLeverStbd = newJoystickThrustLeverStbd;
                     }
                 }
+
+		// DEE 10JAN23 Port Schottel for Azimuth Drive NB changed 180 to 360
+                if (thisJoystick == joystickSetup.portSchottel_joystickNo && thisAxis == joystickSetup.portSchottel_channel) {
+                    newJoystickSchottelPort = joystickSetup.schottelPortDirection*(joystickSetup.schottelPortOffset+180.0*joystickSetup.schottelPortScaling*(event.JoystickEvent.Axis[joystickSetup.portSchottel_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickSchottelPort==INFINITY) {
+                        previousJoystickSchottelPort = newJoystickSchottelPort;
+                    }
+                }
+
+		// DEE 10JAN23 Stbd Schottel for Azimuth Drive
+                if (thisJoystick == joystickSetup.stbdSchottel_joystickNo && thisAxis == joystickSetup.stbdSchottel_channel) {
+                    newJoystickSchottelStbd = joystickSetup.schottelStbdDirection*(joystickSetup.schottelStbdOffset+180.0*joystickSetup.schottelStbdScaling*(event.JoystickEvent.Axis[joystickSetup.stbdSchottel_channel]/32768.0));
+                    //If previous value is Inf, store current value in previous and current, otherwise only in current
+                    if (previousJoystickSchottelStbd==INFINITY) {
+                        previousJoystickSchottelStbd = newJoystickSchottelStbd;
+                    }
+                }
+// TODO 10JAN23 To JAMES check apply scaling and offsets to these as I wrote it on holiday in tenerife and I dont have my rudimentary physical controls with me
+
+		// DEE 10Jan23 ^^^^
+
 
                 if (thisJoystick == joystickSetup.bowThrusterJoystickNo && thisAxis == joystickSetup.bowThrusterJoystickAxis) {
                     newJoystickBowThruster = event.JoystickEvent.Axis[joystickSetup.bowThrusterJoystickAxis]/32768.0;
@@ -909,8 +1192,19 @@
             irr::f32 portChange = fabs(newJoystickPort - previousJoystickPort);
             irr::f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
             irr::f32 wheelChange = fabs(newJoystickRudder - previousJoystickRudder);
-            irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
-            irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
+// DEE 10JAN23 vvvv
+//	    irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
+//          irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
+
+
+	    irr::f32 thrustLeverPortChange = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort);
+	    irr::f32 thrustLeverStbdChange = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd);
+	    irr::f32 schottelPortChange = fabs(newJoystickSchottelPort - previousJoystickSchottelPort);
+            irr::f32 schottelStbdChange = fabs(newJoystickSchottelStbd - previousJoystickSchottelStbd);
+// DEE 10JAN23 ^^^^
+
+
+
 
 // DEE
 //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
@@ -920,44 +1214,107 @@
 //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
             if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 ||
                 bowThrusterChange > 0.01 || sternThrusterChange > 0.01 ||
-                azimuth1AngChange > 0.01 || azimuth2AngChange > 0.01 )
+                schottelPortChange > 0.01 || schottelStbdChange > 0.01 || thrustLeverPortChange > 0.01 || thrustLeverStbdChange > 0.01)
             {
                 joystickChanged = true;
             }
 
             //If any have changed, use all (iff non-infinite)
             if (joystickChanged) {
-                if (newJoystickPort<INFINITY) {
+
+
+
+		if (newJoystickPort<INFINITY) { // refers to the port engine control
                     irr::f32 mappedValue = lookup1D(newJoystickPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    model->setPortEngine(mappedValue);
+		    // DEE 10JAN23 vvvv
+		    // if this an azidrive then change thrust lever.  In fact in the future I suggest that all engines are controlled via thrust lever
+		    // as the bigger the engine, then the longer the spool up time is.
+
+
+		    if (!(model->isAzimuthDrive())) {
+		 	    model->setPortEngine(mappedValue);
+	    	    } // fi
                     previousJoystickPort=newJoystickPort;
                 }
 
-                if (newJoystickStbd<INFINITY) {
+                if (newJoystickStbd<INFINITY) { // refers to the starboard engine control
                     irr::f32 mappedValue = lookup1D(newJoystickStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    model->setStbdEngine(mappedValue);
+		    if (!(model->isAzimuthDrive())) {
+			    model->setStbdEngine(mappedValue);
+		    }
                     previousJoystickStbd=newJoystickStbd;
                 }
 
-                if (newJoystickRudder<INFINITY) {
 
+
+		// Azimuth drive specific
+		// prefer to separate off the azimuth drive code from the conventional code for clarity and ease of future modification
+		//
+		if (model->isAzimuthDrive()) {
+
+    		    // Port Thrust Lever
+                    if (newJoystickThrustLeverPort<INFINITY) {
+
+                        irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+			// the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
+			// we can ammend this to
+			//mappedValue = (mappedValue*0.5)+0.5;
+		    	//model->setPortThrustLever(mappedValue);
+		    	model->setPortThrustLever(0.5+newJoystickThrustLeverPort*0.5);
+                        previousJoystickThrustLeverPort=newJoystickThrustLeverPort;
+                    }
+
+		    // Stbd Thrust Lever
+                    if (newJoystickThrustLeverStbd<INFINITY) {
+                        irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+			model->setStbdThrustLever(0.5+newJoystickThrustLeverStbd*0.5);
+			//		    	model->setStbdThrustLever(mappedValue);
+                        previousJoystickThrustLeverStbd=newJoystickThrustLeverStbd;
+                    }
+
+		    // Port Schottel
+		    // mapping is completely inappropriate for schottel controls
+                    if (newJoystickSchottelPort<INFINITY) {
+                        //irr::f32 mappedValue = lookup1D(newJoystickSchottelPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
+		    	//model->setPortSchottel(mappedValue);
+		    	model->setPortSchottel(newJoystickSchottelPort);
+                        previousJoystickSchottelPort=newJoystickSchottelPort;
+                    }
+
+		    // Stbd Schottel
+		    // mapping is completely inappropriate for schottel controls
+                    if (newJoystickSchottelStbd<INFINITY) {
+                        // irr::f32 mappedValue = lookup1D(newJoystickSchottelStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
+		    	// model->setStbdSchottel(mappedValue);
+		    	model->setStbdSchottel(newJoystickSchottelStbd);
+                        previousJoystickSchottelStbd=newJoystickSchottelStbd;
+                    }
+
+		    // DEE note perhaps the "master" should be implemented in here
+
+
+
+		} // end if is azimuth drive
+
+
+
+// DEE 10JAN23 ^^^^ end of joystick engine controls
+
+
+
+
+		if (newJoystickRudder<INFINITY) {
 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
                     model->setWheel(newJoystickRudder*joystickSetup.rudderDirection);
 //                    model->setRudder(newJoystickRudder);
                     previousJoystickRudder=newJoystickRudder;
                 }
 
-                if (newJoystickAzimuthAngPort<INFINITY) {
-                    model->setPortAzimuthAngle(newJoystickAzimuthAngPort*joystickSetup.azimuth1Direction*joystickSetup.azimuth1Scaling +
-                                               joystickSetup.azimuth1Offset);
-                    previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
-                }
 
-                if (newJoystickAzimuthAngStbd<INFINITY) {
-                    model->setStbdAzimuthAngle(newJoystickAzimuthAngStbd*joystickSetup.azimuth2Direction*joystickSetup.azimuth2Scaling +
-                                               joystickSetup.azimuth2Offset);
-                    previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
-                }
+
+
+
+
 
                 if (newJoystickBowThruster<INFINITY) {
                     model->setBowThruster(newJoystickBowThruster);
@@ -969,7 +1326,7 @@
                     previousJoystickSternThruster=newJoystickSternThruster;
                 }
 
-            }
+            } // DEE 10JAN23 end if JoysickChanged
 
             //Check joystick buttons here
             //Make sure the joystickPreviousButtonStates has an entry for this joystick
@@ -1191,6 +1548,12 @@
                 }
             }
 
+
+// DEE 10JAN23 .... Ive never seen the master concept implemented on azimuth drives in real life as in practice you can steer
+// 			perfectly well with just one drive on passage.  Whilst Maneouvering or steaming in confined waters then
+// 			both drives are needed to operate independently.
+// 			When under autopilot, then the autopilot can be set to control port stbd or both azidrives.
+// 		    Is it worth the effort of implementing master for drives ?
             if (thisJoystick == joystickSetup.joystickNoAzimuth1Master) {
                 if (IsButtonPressed(joystickSetup.joystickButtonAzimuth1Master,thisButtonState)) {
                     // debounce:

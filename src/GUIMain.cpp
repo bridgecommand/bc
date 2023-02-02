@@ -72,6 +72,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //set if we have azimuth controls, instead of engine and rudder
         this->azimuthDrive = azimuthDrive;
 
+        // GUI position modifications if in azimuth drive mode
+        if (azimuthDrive) {
+            //azimuthGUIOffset = 0.05*su;
+            azimuthGUIOffsetL = -0.02*su;
+            azimuthGUIOffsetR = -0.07*su;
+        } else {
+            azimuthGUIOffsetL = 0;
+            azimuthGUIOffsetR = 0;
+        }
+
         //Initial settings for NFU buttons
         nfuPortDown = false;
         nfuStbdDown = false;
@@ -79,13 +89,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Default to small radar display
         radarLarge = false;
         //Find available 4:3 rectangle to fit in area for large radar display
-        irr::s32 availableWidth  = (0.99-0.09)*su;
+        irr::s32 availableWidth;
         irr::s32 availableHeight = (0.95-0.01)*sh;
+        if (azimuthDrive) {
+            // leave 0.9*su on both sides
+            availableWidth  = (0.91-0.09)*su;
+        } else {
+            // leave 0.9*su on left, 0.01*su on right
+            availableWidth  = (0.99-0.09)*su;
+        }
         if (availableWidth/(float)availableHeight > 4.0/3.0) {
+            // Wider than 4:3
             irr::s32 activeWidth = availableHeight * 4.0/3.0;
             irr::s32 activeHeight = availableHeight;
             radarLargeRect = irr::core::rect<irr::s32>(0.09*su + (availableWidth-activeWidth)/2, 0.01*sh, 0.09*su + activeWidth + (availableWidth-activeWidth)/2, 0.01+activeHeight);
         } else {
+            // 4:3 or narrower
             irr::s32 activeWidth = availableWidth;
             irr::s32 activeHeight = availableWidth * 3.0/4.0;
             radarLargeRect = irr::core::rect<irr::s32>(0.09*su, 0.01*sh+(availableHeight-activeHeight)/2, 0.09*su + activeWidth, 0.01+activeHeight+(availableHeight-activeHeight)/2);
@@ -99,7 +118,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         largeRadarScreenCentreY = (radarLargeRect.LowerRightCorner.Y+radarTL.Y)/2;
         largeRadarScreenRadius*=0.95; //Make display slightly smaller, keeping the centre in the same place
 
-        smallRadarScreenCentreX = su-0.2*sh;
+        smallRadarScreenCentreX = su-0.2*sh+azimuthGUIOffsetR;
         smallRadarScreenCentreY = 0.8*sh;
         smallRadarScreenRadius=0.2*sh;
 
@@ -167,23 +186,85 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             clickForRudderText = 0;
             clickForEngineText = 0;
 
-            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_1);
-            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2);
-            azimuth1Control->setMax(360);
-            azimuth2Control->setMax(360);
 
-            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.88*sh,0.045*su,0.90*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
-            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.095*su,0.88*sh,0.115*su,0.90*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
+	    // DEE_NOV22 defines new objects
+
+	    //DEE_NOV22 comment below code by others.  they combine control and indication,  I'm just going to move them up a little to make room for other
+	    //	    indicators.  I'd prefer it to be a simple thrust direction indicator to be honest, 1 is port 2 is stbd
+//            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_1); 
+//            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
+        
+            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
+            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
+
+            azimuth1Control->setMax(360); // DEE_NOV22 comment sets maximum value port azimuth indicator
+            azimuth2Control->setMax(360); // DEE_NOV22 comment sets maximum value stbd azimuth indicator
+	
+// DEE_NOV22 vvvv change position of these
+//            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.88*sh,0.045*su,0.90*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
+//            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.095*su,0.88*sh,0.115*su,0.90*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
+
+            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.82*sh,0.045*su,0.84*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
+            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.82*sh,0.975*su,0.84*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
+
+// DEE_NOV22 ^^^^
 
             azimuth1Master->setToolTipText(language->translate("azimuthMaster").c_str());
             azimuth2Master->setToolTipText(language->translate("azimuthMaster").c_str());
 
-        } else {
-            // Not azimuth drive
+// DEE_NOV22 defines how and where indicators are displayed
+
+	    // DEE_NOV22 the schottels ... the bottom most pair of dial
+
+            schottelPort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_PORT); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
+	    schottelPort->setToolTipText(language->translate("Schottel Port").c_str());
+            schottelPort->setMax(360); // DEE_NOV22 sets maximum value port schottel
+
+            schottelStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_STBD); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
+	    schottelStbd->setToolTipText(language->translate("Schottel Starboard").c_str());
+            schottelStbd->setMax(360); // DEE_NOV22 sets maximum value stbd schottel
+
+	    // DEE_NOV22 added emergency steering checkox todo background code for this
+
+	    emergencySteering = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.94*sh,0.975*su,0.96*sh),0,GUI_ID_EMERGENCY_STEERING);
+	    emergencySteering->setToolTipText(language->translate("Emergency Steering").c_str());
+
+
+	    // DEE_NOV22 the engine rpm indicators (0..1) the top most pair
+
+            enginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	    enginePort->setToolTipText(language->translate("Engine Port").c_str());
+            enginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
+
+            engineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	    engineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
+            engineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
+
+            clutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_CLUTCH_PORT);
+            clutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_CLUTCH_STBD);
+            clutchPort->setToolTipText(language->translate("Port Clutch").c_str());
+            clutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
+
+
+
+	    // DEE_NOV22 ^^^^
+
+        } else {  // is Not azimuth drive
             azimuth1Control = 0;
             azimuth2Control = 0;
             azimuth1Master = 0;
             azimuth2Master = 0;
+	    // DEE_NOV22 vvvv hide the azimuth drive controls
+	    schottelPort = 0; 
+	    schottelStbd = 0;
+	    clutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
+	    clutchStbd = 0; // DEE_NOV22 as above
+	    enginePort = 0; 
+	    engineStbd = 0;
+	    emergencySteering = 0; // though perhaps this would be useful for conventional ships too
+            // DEE_NOV22 ^^^^
+
+
             portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
             portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
             portText->setOverrideColor(irr::video::SColor(255,128,0,0));
@@ -246,11 +327,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //add data display:
-        irr::s32 azimuthGUIOffset = 0;
-        if (azimuthDrive) {
-            azimuthGUIOffset = 0.05*su;
-        }
-        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.71*sh,0.45*su,0.95*sh); //In normal view
+        stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.71*sh,0.45*su+azimuthGUIOffsetR,0.95*sh); //In normal view
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         altDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
         dataDisplay = guienv->addStaticText(L"", stdDataDisplayPos, true, false, 0, -1, true); //Actual text set later
@@ -262,7 +339,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiSpeed = 0;
 
         //Add heading indicator
-        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.630*sh,0.45*su,0.680*sh); //In normal view
+        stdHdgIndicatorPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.630*sh,0.45*su+azimuthGUIOffsetR,0.680*sh); //In normal view
         radHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised radar view
         maxHdgIndicatorPos = irr::core::rect<irr::s32>(0.46*su, 0.96*sh, 0.82*su, 0.99*sh); //In maximised 3d view
         headingIndicator = new irr::gui::HeadingIndicator(guienv,guienv->getRootGUIElement(),stdHdgIndicatorPos);
@@ -270,7 +347,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         // DEE vvvvv add very basic rate of turn indicator
 // rewrite this with its own class so that it is more realistic i.e. either a dial or a conning display
 
-        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su, 0.87*sh, 0.20*su, 0.91*sh),rudderTics,centreTic);
+        rateofturnScrollbar = new irr::gui::OutlineScrollBar(true,guienv,guienv->getRootGUIElement(),GUI_ID_RATE_OF_TURN_SCROLL_BAR,irr::core::rect<irr::s32>(0.10*su+azimuthGUIOffsetL, 0.87*sh, 0.20*su+azimuthGUIOffsetL, 0.91*sh),rudderTics,centreTic);
 
         rateofturnScrollbar->setMax(50);
         rateofturnScrollbar->setMin(-50);
@@ -284,9 +361,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 // DEE ^^^^^
 
         // add indicators for whether the rudder pumps are working
-        pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su,0.72*sh,0.44*su,0.745*sh),true,false,0,-1,true);
-        pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su,0.75*sh,0.44*su,0.775*sh),true,false,0,-1,true);
-        ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su, 0.78*sh, 0.44*su, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
+        pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.72*sh,0.44*su+azimuthGUIOffsetR,0.745*sh),true,false,0,-1,true);
+        pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.75*sh,0.44*su+azimuthGUIOffsetR,0.775*sh),true,false,0,-1,true);
+        ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR, 0.78*sh, 0.44*su+azimuthGUIOffsetR, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
         pump1On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
@@ -340,7 +417,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //add radar buttons
         //add tab control for radar
-        radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su,0.695*sh,0.697*su,0.990*sh),0,true);
+        radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);
@@ -351,14 +428,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //irr::gui::IGUITab* radarARPAAlarmTab = radarTabControl->addTab(language->translate("radarARPAAlarmTab").c_str(),0);
         //irr::gui::IGUITab* radarARPATrialTab = radarTabControl->addTab(language->translate("radarARPATrialTab").c_str(),0);
 
-        radarText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.460*su,0.610*sh,0.690*su,0.690*sh),true,true,0,-1,true);
+        radarText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.460*su+azimuthGUIOffsetR,0.610*sh,0.690*su+azimuthGUIOffsetR,0.690*sh),true,true,0,-1,true);
 
 		//Buttons for radar on/off
 		radarOnOffButton = guienv->addButton(irr::core::rect<irr::s32>(0.005*su, 0.010*sh, 0.055*su, 0.040*sh), mainRadarTab, GUI_ID_RADAR_ONOFF_BUTTON, language->translate("onoff").c_str());
 		//TODO: Complete this: To go where radar zoom + is, and squash these down a bit
 
         //Buttons for full or small radar
-        bigRadarButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su,0.610*sh,0.720*su,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
+        bigRadarButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su+azimuthGUIOffsetR,0.610*sh,0.720*su+azimuthGUIOffsetR,0.640*sh),0,GUI_ID_BIG_RADAR_BUTTON,language->translate("bigRadar").c_str());
         irr::s32 smallRadarButtonLeft = radarTL.X + 0.01*su;
         irr::s32 smallRadarButtonTop = radarTL.Y + 0.01*sh;
         smallRadarButton = guienv->addButton(irr::core::rect<irr::s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
@@ -488,26 +565,26 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffset,0.92*sh,0.13*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffset,0.92*sh,0.17*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffsetL,0.92*sh,0.17*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffset,0.92*sh,0.21*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffsetL,0.92*sh,0.21*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
         //Exit button
-        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffset,0.92*sh,0.25*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffsetL,0.92*sh,0.25*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffset,0.92*sh,0.33*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffset,0.92*sh,0.35*su+azimuthGUIOffset,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.35*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -528,6 +605,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         if (azimuth1Control) {azimuth1Control->drop();}
         if (azimuth2Control) {azimuth2Control->drop();}
+
+
+	// DEE_NOV22 vvvv
+	if (schottelPort) {schottelPort->drop();}
+	if (schottelStbd) {schottelStbd->drop();}
+	if (enginePort) {enginePort->drop();}
+	if (engineStbd) {engineStbd->drop();}
+	// DEE_NOV22 ^^^^
 
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
@@ -649,6 +734,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return (cursorPosition-radarScreenCentre);
     }
 
+    irr::core::rect<irr::s32> GUIMain::getSmallRadarRect() const
+    {
+	    irr::u32 graphicsWidth3d = su;
+	    irr::u32 graphicsHeight3d = sh * 0.6;
+        return irr::core::rect<irr::s32>(su-(sh-graphicsHeight3d)+azimuthGUIOffsetR,graphicsHeight3d,su+azimuthGUIOffsetR,sh);
+    }
+    
     irr::core::rect<irr::s32> GUIMain::getLargeRadarRect() const
     {
         return irr::core::rect<irr::s32>(largeRadarScreenCentreX - largeRadarScreenRadius, largeRadarScreenCentreY - largeRadarScreenRadius, largeRadarScreenCentreX + largeRadarScreenRadius, largeRadarScreenCentreY + largeRadarScreenRadius);
@@ -730,6 +822,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (azimuth2Control) {azimuth2Control->setVisible(false);}
         if (azimuth1Master) {azimuth1Master->setVisible(false);}
         if (azimuth2Master) {azimuth2Master->setVisible(false);}
+
+	// DEE_NOV22 vvvv hide these in secondary displays
+        if (enginePort) {enginePort->setVisible(false);}
+        if (engineStbd) {engineStbd->setVisible(false);}
+        if (schottelPort) {schottelPort->setVisible(false);}
+        if (schottelStbd) {schottelStbd->setVisible(false);}
+        if (clutchPort) {clutchPort->setVisible(false);}
+        if (clutchStbd) {clutchStbd->setVisible(false);}
+        if (emergencySteering) {emergencySteering->setVisible(false);}
+
+	// DEE_NOV22 ^^^^
+
         if (stbdText) {stbdText->setVisible(false);}
         if (portText) {portText->setVisible(false);}
         if (wheelScrollbar) {wheelScrollbar->setVisible(false);}
@@ -802,14 +906,63 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (stbdScrollbar) {stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));}
 
         if (azimuth1Control) {
-            azimuth1Control->setMag(Utilities::round(guiData->portEng * 100));
+	    // DEE_NOV22 should be read only with the needle showing direction only
+//            azimuth1Control->setMag(Utilities::round(guiData->portEng * 100));
+            azimuth1Control->setMag(Utilities::round(90));
             azimuth1Control->setPos(Utilities::round(guiData->portAzimuthAngle));
         }
 
         if (azimuth2Control) {
-            azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
+	    // DEE_NOV22 should be read only with the needle showing direction only
+//            azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
+            azimuth2Control->setMag(Utilities::round(90));
             azimuth2Control->setPos(Utilities::round(guiData->stbdAzimuthAngle));
         }
+
+	// DEE_NOV22 vvvv sets the displayed data in the GUI it does not receive mouse clicks
+
+	if (schottelPort)
+	{ // refers to the GUI object schottelPort as opposed to the value
+		schottelPort->setMag(Utilities::round(90)); // this is because I want a needle of fixed size
+		schottelPort->setPos(Utilities::round(guiData->schottelPort));
+	} // end if schottelPort 
+
+	if (schottelStbd)
+	{ // refers to the GUI object schottelPort as opposed to the value
+		schottelStbd->setMag(Utilities::round(90)); // this is because I want a needle of fixed size
+		schottelStbd->setPos(Utilities::round(guiData->schottelStbd));
+	} // end if schottelStbd
+
+	if (enginePort)
+	{ // refers to the GUI object that represents the engine rpm
+		enginePort->setMag(Utilities::round(90)); // fixed length needle
+		enginePort->setPos(Utilities::round(guiData->enginePort));  // i think this has already been adjusted to be
+									   // * 360, the engine proportion 0..1 
+	}
+
+	if (engineStbd)
+	{ // refers to the GUI object that represents the engine rpm
+		engineStbd->setMag(Utilities::round(90)); // fixed length needle
+		engineStbd->setPos(Utilities::round(guiData->engineStbd));  // i think this has already been adjusted to be
+									   // * 360, the engine proportion 0..1 
+	}
+
+
+	if(clutchPort) 
+	{
+		clutchPort->setChecked(guiData->clutchPort);
+	}
+
+	if(clutchStbd) 
+	{
+		clutchStbd->setChecked(guiData->clutchStbd);
+	}
+
+	// DEE_NOV22 ^^^^
+
+
+// DEE_NOV22 would prefer to get rid of all this "master" business never seen it on a ship
+//           as you can steer with one azi dead ahead, steering input with the other
 
         if (azimuth1Master) {
             azimuth1Master->setChecked(guiData->azimuth1Master);
@@ -1247,7 +1400,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //std::cout << radius*2 << std::endl;
 
         //If full screen radar, draw a 4:3 box around the radar display area
-        if (radarLarge && !azimuthDrive) {
+        if (radarLarge) {
             device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,irr::video::SColor(255,0,0,0));
         }
 

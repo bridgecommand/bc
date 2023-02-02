@@ -67,6 +67,19 @@ struct GUIData {
     bool headUp;
     bool pump1On;
     bool pump2On;
+// DEE_NOV22 Azimuth Drive related gui items
+    irr::f32 schottelPort; // angle of the schottels +ve clockwise 0 dead ahead
+    irr::f32 schottelStbd;
+    irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
+    irr::f32 thrustLeverStbd;
+    irr::f32 enginePort;
+    irr::f32 engineStbd;
+    irr::f32 emergencySteering;
+    bool clutchPort;  // Clutches true for engaged false for disengaged
+    bool clutchStbd;
+
+    // the angle of each azimuth drive and each engine level is defined elsewhere
+    // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
 };
 
 class GUIMain //Create, build and update GUI
@@ -86,6 +99,15 @@ public:
         GUI_ID_AZIMUTH_2,
         GUI_ID_AZIMUTH_1_MASTER_CHECKBOX,
         GUI_ID_AZIMUTH_2_MASTER_CHECKBOX,
+// DEE_NOV22 vvvv
+	GUI_ID_SCHOTTEL_PORT,
+	GUI_ID_SCHOTTEL_STBD,
+	GUI_ID_ENGINE_PORT,
+	GUI_ID_ENGINE_STBD,
+	GUI_ID_CLUTCH_PORT,
+	GUI_ID_CLUTCH_STBD,
+	GUI_ID_EMERGENCY_STEERING,
+// DEE_NOV22 ^^^^
         GUI_ID_RUDDER_SCROLL_BAR,
 // DEE vvvv
 	GUI_ID_WHEEL_SCROLL_BAR,
@@ -160,6 +182,7 @@ public:
     void setARPACheckboxes(bool arpaState);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
+    irr::core::rect<irr::s32> getSmallRadarRect() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;
     bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
@@ -193,6 +216,18 @@ private:
 
     irr::gui::IGUICheckBox* azimuth1Master;
     irr::gui::IGUICheckBox* azimuth2Master;
+
+    // DEE_NOV22 vvvv
+    irr::gui::AzimuthDial* enginePort;
+    irr::gui::AzimuthDial* engineStbd;
+    irr::gui::AzimuthDial* schottelPort;
+    irr::gui::AzimuthDial* schottelStbd;
+    irr::gui::IGUICheckBox* clutchPort;
+    irr::gui::IGUICheckBox* clutchStbd;
+    irr::gui::IGUICheckBox* emergencySteering;
+
+
+    // DEE_NOV22 ^^^^
 
     irr::gui::IGUIListBox* arpaList;
     irr::gui::IGUIListBox* arpaText;
@@ -252,6 +287,9 @@ private:
 
     irr::u32 su;
     irr::u32 sh;
+
+    irr::s32 azimuthGUIOffsetL;
+    irr::s32 azimuthGUIOffsetR;
 
     irr::f32 guiLat;
     irr::f32 guiLong;

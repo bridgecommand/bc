@@ -22,6 +22,11 @@
 
 //global constants
 const int IDFlag_IsPickable=1;
+const irr::f32 RHO_SW = 1024; // density of seawater kg / m^3
+const irr::f32 RHO_FW = 1000; // density of freshwater kg / m^3
+const irr::f32 RHO_AIR = 1.225; // density of air at sea level kg / m^3 approximately
+				// treated as a non compressible fluid, which it isnt but
+				// good enough to use for simulation purposes
 
 //units conversions
 const irr::f32 SECONDS_IN_HOUR = 3600.0;
