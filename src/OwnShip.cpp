@@ -28,7 +28,7 @@
 
 //using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
+void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //Store reference to terrain
     this->terrain = terrain;
@@ -38,6 +38,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     //reference to device (for logging etc)
     device=dev;
+
+    this->contactStiffnessFactor = contactStiffnessFactor;
+    this->contactDampingFactor = contactDampingFactor;
 
     //Load from ownShip.ini file
     std::string ownShipName = ownShipData.ownShipName;
@@ -532,8 +535,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     for (int i = 0; i<numberOfContactPoints.X; i++) {
         for (int j = 0; j<numberOfContactPoints.Z; j++) {
 
-            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(numberOfContactPoints.X-1);
-            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Z-1);
+            irr::f32 xSpacing = (maxX-minX)/(irr::f32)(numberOfContactPoints.X-1);
+            irr::f32 zSpacing = (maxZ-minZ)/(irr::f32)(numberOfContactPoints.Z-1);
+
+            irr::f32 xTestPos = minX + (irr::f32)i*xSpacing;
+            irr::f32 zTestPos = minZ + (irr::f32)j*zSpacing;
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = minY-0.1; ray.start.Z = zTestPos;
@@ -541,7 +547,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             ray.end.Y = maxY+0.1;
 
             //Check the ray and add the contact point if it exists
-            addContactPointFromRay(ray);
+            addContactPointFromRay(ray, xSpacing*zSpacing);
         }
     }
 
@@ -549,8 +555,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     for (int i = 0; i<numberOfContactPoints.X; i++) {
         for (int j = 0; j<numberOfContactPoints.Y; j++) {
 
-            irr::f32 xTestPos = minX + (maxX-minX)*(irr::f32)i/(irr::f32)(numberOfContactPoints.X-1);
-            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
+            irr::f32 xSpacing = (maxX-minX)/(irr::f32)(numberOfContactPoints.X-1);
+            irr::f32 ySpacing = (maxY-minY)/(irr::f32)(numberOfContactPoints.Y-1);
+
+            irr::f32 xTestPos = minX + (irr::f32)i*xSpacing;
+            irr::f32 yTestPos = minY + (irr::f32)j*ySpacing;
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = xTestPos; ray.start.Y = yTestPos; ray.start.Z = maxZ+0.1;
@@ -558,11 +567,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             ray.end.Z = minZ-0.1;
 
             //Check the ray and add the contact point if it exists
-            addContactPointFromRay(ray);
+            addContactPointFromRay(ray, xSpacing*ySpacing);
             //swap ray direction and check again
             ray.start.Z = minZ-0.1;
             ray.end.Z = maxZ+0.1;
-            addContactPointFromRay(ray);
+            addContactPointFromRay(ray, xSpacing*ySpacing);
         }
     }
 
@@ -570,8 +579,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     for (int i = 0; i<numberOfContactPoints.Z; i++) {
         for (int j = 0; j<numberOfContactPoints.Y; j++) {
 
-            irr::f32 zTestPos = minZ + (maxZ-minZ)*(irr::f32)i/(irr::f32)(numberOfContactPoints.Z-1);
-            irr::f32 yTestPos = minY + (maxY-minY)*(irr::f32)j/(irr::f32)(numberOfContactPoints.Y-1);
+            irr::f32 zSpacing = (maxZ-minZ)/(irr::f32)(numberOfContactPoints.Z-1);
+            irr::f32 ySpacing = (maxY-minY)/(irr::f32)(numberOfContactPoints.Y-1);
+
+            irr::f32 zTestPos = minZ + (irr::f32)i*zSpacing;
+            irr::f32 yTestPos = minY + (irr::f32)j*ySpacing;
 
             irr::core::line3df ray; //Make a ray. This will start outside the mesh, looking in
             ray.start.X = maxX+0.1; ray.start.Y = yTestPos; ray.start.Z = zTestPos;
@@ -579,11 +591,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             ray.end.X = minX-0.1;
 
             //Check the ray and add the contact point if it exists
-            addContactPointFromRay(ray);
+            addContactPointFromRay(ray, ySpacing*zSpacing);
             //swap ray direction and check again
             ray.start.X = minX-0.1;
             ray.end.X = maxX+0.1;
-            addContactPointFromRay(ray);
+            addContactPointFromRay(ray, ySpacing*zSpacing);
         }
     }
 
@@ -593,7 +605,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     device->getLogger()->log(irr::core::stringw(contactPoints.size()).c_str());
 }
 
-void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
+void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 contactArea)
 {
     irr::core::vector3df intersection;
     irr::core::triangle3df hitTriangle;
@@ -631,6 +643,9 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray)
             //Find cross product, for torque component
             irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
             contactPoint.torqueEffect = crossProduct.Y;
+            
+            // Store effective area represented by the contact
+            contactPoint.effectiveArea = contactArea;
 
             //Store the contact point that we have found
             contactPoints.push_back(contactPoint); //Store
@@ -2118,8 +2133,8 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
 
             //Contact model (proof of principle!)
-            if (localIntersection > 1) {
-                localIntersection = 1; //Limit
+            if (localIntersection > 5) {
+                localIntersection = 5; //Limit to 5m intersection
             }
 
             if (localIntersection > 0) {
@@ -2127,6 +2142,13 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 //reaction += localIntersection*100*maxForce * sign(axialSpd,0.1);
                 //lateralReaction += localIntersection*100*maxForce * sign(lateralSpd,0.1);
                 //turnReaction += localIntersection*100*maxForce * sign(rateOfTurn,0.1);
+
+                // Find effective area of contact point
+                irr::f32 contactArea = contactPoints.at(i).effectiveArea;
+
+                // Define stiffness & damping
+                irr::f32 contactStiffness = contactStiffnessFactor * contactArea; // N/m per m2 * area
+                irr::f32 contactDamping = contactDampingFactor * 2.0 * sqrt(contactStiffness * shipMass); //Critical damping, assuming that only one point is in contact...
 
                 //Local speed at this point (TODO, include y component from pitch and roll?)
                 irr::core::vector3df localSpeedVector;
@@ -2138,7 +2160,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
 
                 //Simple 'stiffness' based response
-                irr::f32 reactionForce = localIntersection*50*maxForce;
+                irr::f32 reactionForce = localIntersection*contactStiffness;
 
                 turnReaction    += reactionForce * contactPoints.at(i).torqueEffect;
                 reaction        += reactionForce * contactPoints.at(i).normal.Z;
@@ -2152,8 +2174,9 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
                 //Damping
                 //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
+                // TODO: Ideally we would know the other object velocity (e.g. for pushing!), and find the relative speed
                 irr::f32 normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
-                irr::f32 dampingForce = normalSpeed*0.1*maxForce; //TODO - tune or make this configurable?
+                irr::f32 dampingForce = normalSpeed*contactDamping;
                 turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
                 reaction        += dampingForce * contactPoints.at(i).normal.Z;
                 lateralReaction += dampingForce * contactPoints.at(i).normal.X;

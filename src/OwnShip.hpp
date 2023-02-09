@@ -33,13 +33,14 @@ struct ContactPoint {
     irr::core::vector3df normal;
     irr::core::vector3df internalPosition; //Position within the ship, for use as a starting point for ray intersection checks
     irr::f32 torqueEffect; //From cross product, how much a unit force along the contact vector gives a torque around the vertical axis
+    irr::f32 effectiveArea; // Contact area represented (in m2)
 };
 
 class OwnShip : public Ship
 {
     public:
 
-        void load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
+        void load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::vector<bool> getCameraIsHighView() const;
@@ -153,7 +154,7 @@ class OwnShip : public Ship
         irr::f32 requiredEngineProportion(irr::f32 speed);
         irr::f32 sign(irr::f32 inValue) const;
         irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;
-        void addContactPointFromRay(irr::core::line3d<irr::f32> ray);
+        void addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 contactArea);
 
         irr::IrrlichtDevice* device;
         std::vector<irr::core::vector3df> views; //The offset of the camera origin from the own ship origin
@@ -320,6 +321,10 @@ class OwnShip : public Ship
 		bool otherShipCollision;
 
         std::vector<ContactPoint> contactPoints;
+        
+        irr::f32 contactStiffnessFactor;
+        irr::f32 contactDampingFactor;
+        
         //Debugging
         //std::vector<irr::scene::IMeshSceneNode*> contactDebugPoints;
 

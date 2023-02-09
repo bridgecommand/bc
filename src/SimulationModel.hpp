@@ -51,7 +51,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::u32 limitTerrainResolution);
+    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::u32 limitTerrainResolution);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
