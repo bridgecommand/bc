@@ -80,6 +80,8 @@ struct GUIData {
 
     // the angle of each azimuth drive and each engine level is defined elsewhere
     // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
+
+    irr::f32 tideHeight; // DEE FEB 23
 };
 
 class GUIMain //Create, build and update GUI
@@ -298,6 +300,7 @@ private:
     irr::f32 viewElev;
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
+    irr::f32 guiTideHeight;
     bool guiRadarOn;
     irr::f32 guiRadarRangeNm;
     irr::f32 guiRadarGain;
