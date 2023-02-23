@@ -1476,6 +1476,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 groundingTurnDrag = 0;
         collisionDetectAndRespond(groundingAxialDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
 
+        //std::cout << "Collision forces: Axial: " << groundingAxialDrag << " Lateral: " << groundingLateralDrag << " Turn: " << groundingTurnDrag << std::endl;
+
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
         if (bowThruster>1) {
@@ -2148,7 +2150,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
                 // Define stiffness & damping
                 irr::f32 contactStiffness = contactStiffnessFactor * contactArea; // N/m per m2 * area
-                irr::f32 contactDamping = contactDampingFactor * 2.0 * sqrt(contactStiffness * shipMass); //Critical damping, assuming that only one point is in contact...
+                irr::f32 contactDamping = contactDampingFactor * 2.0 * sqrt(contactStiffness * shipMass); //Critical damping, assuming that only one point is in contact, and that mass of own ship is the smaller in two body contact...
 
                 //Local speed at this point (TODO, include y component from pitch and roll?)
                 irr::core::vector3df localSpeedVector;
@@ -2166,11 +2168,11 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 reaction        += reactionForce * contactPoints.at(i).normal.Z;
                 lateralReaction += reactionForce * contactPoints.at(i).normal.X;
 
-                //Friction response
-                irr::f32 frictionCoeff = 0.5;
-                turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
-                reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
-                lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
+                //Friction response. Disabled for now, needs speed dependency, - think about stability implications, maybe use tanh?
+                //irr::f32 frictionCoeff = 0.5; 
+                //turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
+                //reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
+                //lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
 
                 //Damping
                 //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
