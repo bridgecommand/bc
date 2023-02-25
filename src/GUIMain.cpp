@@ -1014,6 +1014,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiTime = guiData->currentTime;
         guiPaused = guiData->paused;
         guiCollided = guiData->collided;
+// DEE Feb 23 vvvv height of tide
+guiTideHeight = guiData->tideHeight;
+
 
         radarHeadUp = guiData->headUp;
 
@@ -1141,6 +1144,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             displayText.append(language->translate("fps"));
             displayText.append(irr::core::stringw(device->getVideoDriver()->getFPS()).c_str());
             displayText.append(L"\n");
+
+	    // DEE FEB 23 vvv add height of tide to the display
+	    displayText.append(language->translate("hot"));
+            displayText.append(f32To1dp(guiTideHeight).c_str());
+	    displayText.append(L"\n");
+	    // DEE FEB 23 ^^^
         }
         if (guiPaused) {
             displayText.append(language->translate("paused"));

@@ -1580,6 +1580,9 @@ SimulationModel::~SimulationModel()
 
 // DEE_NOV22 ^^^^
 
+	// DEE FEB 23 vvv
+	guiData->tideHeight = tideHeight;
+	// DEE FEB 23 ^^^
 
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();
