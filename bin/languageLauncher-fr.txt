@@ -1,0 +1,17 @@
+Launcher Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+
+startBC = "Démarrer Bridge Command"
+startMC = "Contrôleur de carte"
+startRP = "Répéteur de cap/compas"
+startED = "Editeur de scénario"
+startMH = "Hub multijoueurs"
+startINIBC = "Paramêtres : Principaux"
+startINIMC = "Paramêtres : Carte"
+startINIRP = "Paramêtres : Répéteur"
+startINIMH = "Paramêtres : Hub multijoueurs"
+startDOC = "Documentation"
+user = "Ouvrir le répertoire utilisateur"
+leave = "Quitter"

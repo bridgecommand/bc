@@ -1,0 +1,73 @@
+Map Controller Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+
+waiting = "Patientez..."
+startBC = "Veuillez démarrer la session Bridge Command. Le nom et le port de cet ordinateur sont :"
+loadingMap = "Mise à l'échelle et chargement de l'image de la carte"
+
+pos="Position : "
+minSymbol="'"
+own = "Votre navire"
+other = "Autre navire"
+
+selectShip = "Choisissez le navire"
+shipType="Choisissez le type"
+selectLeg = "Choisissez l'itinéraire"
+setCourse = "Cap"
+setSpeed = "Vitesse (kts)"
+weather = "Météo"
+rain = "Pluie"
+visibility="Visibilité"
+setDistance = "Distance (Nm)"
+
+setMMSI = "Paramétrer MMSI"
+
+releaseMOB = "Relâcher\nMOB"
+retrieveMOB = "Récupérer\nMOB"
+
+main="Principal"
+failures="Pannes"
+
+past = " (Passé)"
+current = " (Actuel)"
+future = " (Futur)"
+
+changeLeg = "Changer l'itinéraire"	
+changeLegCourseSpeed = "Changer le cap de l'itinéraire + vitesse"
+addLeg = "Ajouter itinéraire (après sélectionné)"
+addShip = "Ajouter navire"
+deleteLeg = "Supprimer itinéraire"
+deleteShip = "X"
+move = "Déplacer navire"
+
+pump1Working = "Pompe gouvernail 1 Allumée"
+pump1Failed = "Pompe gouvernail 1 Eteinte"
+pump2Working = "Pompe gouvernail 2 Allumée"
+pump2Failed = "Pompe gouvernail 1 Eteinte"
+followUpWorking = "Gouvernail : Follow up"
+followUpFailed = "Gouvernail : Non follow up"
+
+editScenario="Editer le scénario"
+newScenario="Nouveau scénario"
+selectScenario="Choisissez un scénario existant à éditer"
+selectWorld="Ou choisissez un modèle de monde pour un nouveau scénario"
+
+startTime = "Heure de début"
+startDate="Date (YYYY-MM-DD)"
+sunRise="Lever du soleil"
+sunSet="Coucher du soleil"
+scenario="Nom de scénario"
+apply="Appliquer"
+save="Sauvegarder"
+
+saved="Sauvé"
+failed="Echec"
+scenarioSaved="Scénario enregistré"
+failedScenarioSave="Echec à sauvegarder le scénario"
+overwrite="The scénario sera écrasé"
+multiplayer="Mode multijoueurs ?"
+multiplayerinfo="Edition d'un scénario multijoueurs :\n\nL'entrée 'Votre navire' sera ignorée.\n\nChaque 'autre navire' est utilisé dans l'ordre par les clients multijoueurs comme leur navire. Ajoutez un itinéraire pour chaque navire pour paramétrer la vitesse et le cap initiaux."
+multiplayerNeedsMP="Le nom du scénario multijoueurs doit se terminer par _mp"
+nonMultiplayerNoMP="Le scénario non multijoueurs ne doit pas se terminer par  _mp"
