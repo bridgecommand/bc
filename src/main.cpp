@@ -511,6 +511,14 @@ int main(int argc, char ** argv)
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
 
+    // Check if collision warning should be shown
+    bool showCollided;
+    if (IniFile::iniFileTou32(iniFilename, "hide_collision_warning") == 1) {
+        showCollided = false;
+    } else {
+        showCollided = true;
+    }
+
     //load language
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
     if (modifier.length()==0) {
@@ -835,7 +843,7 @@ int main(int argc, char ** argv)
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator());
+    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

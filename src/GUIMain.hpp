@@ -89,7 +89,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -334,6 +334,7 @@ private:
     bool hasDepthSounder;
     irr::f32 maxSounderDepth;
     bool hasGPS;
+    bool showCollided;
 
     Lang* language;
     std::vector<std::string>* logMessages;

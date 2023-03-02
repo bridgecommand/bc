@@ -37,12 +37,13 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
+        this->showCollided = showCollided;
         this->hasBowThruster = hasBowThruster;
         this->hasRateOfTurnIndicator = hasRateOfTurnIndicator;
         this->controlsHidden = controlsHidden;
@@ -1332,7 +1333,7 @@ guiTideHeight = guiData->tideHeight;
 
 
         //add a collision warning
-        if (guiCollided) {
+        if (guiCollided && showCollided) {
             drawCollisionWarning();
         }
 
