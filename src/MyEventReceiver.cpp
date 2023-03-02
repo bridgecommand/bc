@@ -690,6 +690,10 @@
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->moveCameraBackwards();
                             break;
+                        case irr::KEY_SPACE:
+                            device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
+                            model->toggleFrozenCamera();
+                            break;
                         default:
                             //don't do anything
                             break;
@@ -742,11 +746,9 @@
                             device->getGUIEnvironment()->setFocus(0); //Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
                             model->lookStbd();
                             break;
-
                         case irr::KEY_KEY_M:
                             model->retrieveManOverboard();
                             break;
-
                         default:
                             //don't do anything
                             break;

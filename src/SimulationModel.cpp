@@ -1072,6 +1072,16 @@ SimulationModel::~SimulationModel()
         return camera.getView();
     }
 
+    void SimulationModel::setFrozenCamera(bool frozen)
+    {
+        camera.setFrozen(frozen);
+    }
+    
+    void SimulationModel::toggleFrozenCamera()
+    {
+        camera.toggleFrozen();
+    }
+
     void SimulationModel::setAlarm(bool alarmState)
     {
         if (alarmState) {
@@ -1463,6 +1473,9 @@ SimulationModel::~SimulationModel()
             landObjects.moveNode(deltaX,0,deltaZ);
             landLights.moveNode(deltaX,0,deltaZ);
             manOverboard.moveNode(deltaX,0,deltaZ);
+
+            // Also move camera if in 'frozen' mode
+            camera.applyOffset(deltaX,0,deltaZ);
 
             //Change stored offset
             offsetPosition.X -= deltaX;

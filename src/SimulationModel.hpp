@@ -199,6 +199,8 @@ public:
     void changeView();
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
+    void setFrozenCamera(bool frozen);
+    void toggleFrozenCamera();
 	void setAlarm(bool alarmState);
     void toggleRadarOn();
     bool isRadarOn() const;

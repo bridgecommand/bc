@@ -56,6 +56,8 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
     isHighViewActive = false;
     previousLookAngle = lookAngle;
     previousLookUpAngle = lookUpAngle;
+
+    frozen = false;
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -309,6 +311,27 @@ void Camera::setFarValue(irr::f32 zf)
     camera->setFarValue(zf);
 }
 
+void Camera::setFrozen(bool frozen)
+{
+    this->frozen = frozen;
+}
+
+void Camera::toggleFrozen()
+{
+    frozen = !frozen;
+}
+
+void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+{
+    if (frozen) {
+        // Only applicable in frozen mode, otherwise update will be 
+        // handled when own ship position offset is applied
+        parentPosition.X += deltaX;
+        parentPosition.Y += deltaY;
+        parentPosition.Z += deltaZ;
+    }
+}
+
 void Camera::update(irr::f32 deltaTime)
 {
      //link camera rotation to shipNode
@@ -329,27 +352,30 @@ void Camera::update(irr::f32 deltaTime)
             lookUpAngle = minLookUpAngle;
         }
 
-        // get transformation matrix of node
-        irr::core::matrix4 m;
-        m.setRotationDegrees(parent->getRotation());
+        // get position and transformation matrix of parent node, unless camera is static
+        if (!frozen) {
+            parentAngles.setRotationDegrees(parent->getRotation());
+            parentPosition = parent->getPosition();
+        }
 
         // transform forward vector of camera
         irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-        m.transformVect(frv);
+        parentAngles.transformVect(frv);
 
         // transform upvector of camera
         irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
-        m.transformVect(upv);
+        parentAngles.transformVect(upv);
 
         // transform camera offset ('offset' is relative to the local ship coordinates, and stays the same.)
         //'offsetTransformed' is transformed into the global coordinates
         irr::core::vector3df offsetTransformed;
-        m.transformVect(offsetTransformed,views[currentView]);
+        parentAngles.transformVect(offsetTransformed,views[currentView]);
 
         //move camera and angle
-        camera->setPosition(parent->getPosition() + offsetTransformed);
+        irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;
+        camera->setPosition(cameraPosition);
         camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(parent->getPosition() + offsetTransformed + frv); //set target of camera (look at point)
+        camera->setTarget(cameraPosition + frv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
 
         //also set rotation, so we can get camera's direction
