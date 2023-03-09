@@ -32,7 +32,7 @@ struct RadarData;
 class OtherShip : public Ship
 {
     public:
-        OtherShip (const std::string& name, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         ~OtherShip();
 
         irr::f32 getHeight() const;

@@ -27,7 +27,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -110,7 +110,7 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
     //This is applied depending on distance to own ship, for speed
     triangleSelectorEnabled=false;
     
-    ship->setName("OtherShip");
+    ship->setName(internalName.c_str());
 
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
     //FIXME: Note in documentation that this is height above waterline in model units

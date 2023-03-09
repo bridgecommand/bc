@@ -1476,7 +1476,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 groundingTurnDrag = 0;
         collisionDetectAndRespond(groundingAxialDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
 
-        //std::cout << "Collision forces: Axial: " << groundingAxialDrag << " Lateral: " << groundingLateralDrag << " Turn: " << groundingTurnDrag << std::endl;
+        //std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
 
         //Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
@@ -2090,6 +2090,9 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 localIntersection = -1*localDepth*abs(contactPoints.at(i).normal.Y); //Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
             }
 
+            irr::f32 remotePointAxialSpeed = 0;
+            irr::f32 remotePointLateralSpeed = 0;
+
             //Also check contact with pickable scenery elements here (or other ships?)
             irr::core::line3d<irr::f32> ray(internalPointPosition,pointPosition);
             irr::core::vector3df intersection;
@@ -2120,14 +2123,34 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             }
 
             //And for other ship collision
-            if (selectedSceneNode && strcmp(selectedSceneNode->getName(),"OtherShip")==0) {
+            if (selectedSceneNode && std::string(selectedSceneNode->getName()).find("OtherShip")==0) {
                 otherShipCollision = true;
+
+                irr::s32 otherShipID = -1;
+                // Find other ship ID from name (should be OtherShip_#)
+                std::vector<std::string> splitName = Utilities::split(std::string(selectedSceneNode->getName()),'_'); 
+                if (splitName.size() == 2) {
+                    otherShipID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+                //std::cout << "In contact with " << std::string(selectedSceneNode->getName()) << " Length of split: " << splitName.size() << std::endl;
 
                 // Testing: behave as if other ship is solid. In multiplayer, the other ship (if another 'player') should also respond
                 irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
                 //If we're more collided with an object than the terrain, use this
                 if (collisionDistance > localIntersection) {
                     localIntersection = collisionDistance;
+
+                    // Calculate velocity of other ship, in our reference frame
+                    if (otherShipID >= 0) {
+                        irr::f32 otherShipHeading = model->getOtherShipHeading(otherShipID);
+                        irr::f32 otherShipSpeed = model->getOtherShipSpeed(otherShipID);
+                        irr::f32 otherShipRelativeHeading = otherShipHeading - hdg;
+
+                        // TODO: Initially ignore rate of turn of other ship, but should be included
+                        remotePointAxialSpeed = otherShipSpeed * cos(irr::core::DEGTORAD * otherShipRelativeHeading); 
+                        remotePointLateralSpeed = otherShipSpeed * sin(irr::core::DEGTORAD * otherShipRelativeHeading); 
+                    }
+
                 }
 
 
@@ -2153,10 +2176,11 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 irr::f32 contactDamping = contactDampingFactor * 2.0 * sqrt(contactStiffness * shipMass); //Critical damping, assuming that only one point is in contact, and that mass of own ship is the smaller in two body contact...
 
                 //Local speed at this point (TODO, include y component from pitch and roll?)
+                // Relative to the speed of the point we're in contact with
                 irr::core::vector3df localSpeedVector;
-                localSpeedVector.X = lateralSpd + rateOfTurn*contactPoints.at(i).position.Z;
+                localSpeedVector.X = lateralSpd + rateOfTurn*contactPoints.at(i).position.Z - remotePointLateralSpeed;
                 localSpeedVector.Y = 0;
-                localSpeedVector.Z = axialSpd - rateOfTurn*contactPoints.at(i).position.X;
+                localSpeedVector.Z = axialSpd - rateOfTurn*contactPoints.at(i).position.X - remotePointAxialSpeed;
                 irr::core::vector3df normalLocalSpeedVector = localSpeedVector;
                 normalLocalSpeedVector.normalize();
                 irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
@@ -2182,6 +2206,8 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
                 reaction        += dampingForce * contactPoints.at(i).normal.Z;
                 lateralReaction += dampingForce * contactPoints.at(i).normal.X;
+
+                //std::cout << "remotePointAxialSpeed: " << remotePointAxialSpeed << std::endl;
 
             }
 

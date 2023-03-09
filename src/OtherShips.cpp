@@ -87,7 +87,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         }
 
         //Create otherShip and load into vector
-        otherShips.push_back(new OtherShip (otherShipName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        std::string internalName = "OtherShip_";
+        internalName.append(std::to_string(i));
+        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
     }
 
 }
