@@ -2183,6 +2183,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 localSpeedVector.Z = axialSpd - rateOfTurn*contactPoints.at(i).position.X - remotePointAxialSpeed;
                 irr::core::vector3df normalLocalSpeedVector = localSpeedVector;
                 normalLocalSpeedVector.normalize();
+                irr::f32 localSpeedAmplitude = localSpeedVector.getLength(); // TODO: Could use getLengthSQ for speed?
                 irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
 
                 //Simple 'stiffness' based response
@@ -2192,15 +2193,14 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 reaction        += reactionForce * contactPoints.at(i).normal.Z;
                 lateralReaction += reactionForce * contactPoints.at(i).normal.X;
 
-                //Friction response. Disabled for now, needs speed dependency, - think about stability implications, maybe use tanh?
-                //irr::f32 frictionCoeff = 0.5; 
-                //turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
-                //reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
-                //lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
+                //Friction response. Use tanh function for better stability at low speed (think about multiplier & friction coefficient, maybe a parameter)
+                irr::f32 frictionCoeff = 0.5 * tanh(100.0 * localSpeedAmplitude);  
+                turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
+                reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
+                lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
 
                 //Damping
                 //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
-                // TODO: Ideally we would know the other object velocity (e.g. for pushing!), and find the relative speed
                 irr::f32 normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
                 irr::f32 dampingForce = normalSpeed*contactDamping;
                 turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
