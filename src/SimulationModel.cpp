@@ -40,7 +40,7 @@
 
 //using namespace irr;
 
-SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::u32 limitTerrainResolution):
+SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::u32 limitTerrainResolution):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -118,7 +118,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, contactStiffnessFactor, contactDampingFactor, smgr, this, &terrain, device);
+        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, smgr, this, &terrain, device);
         if(mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }

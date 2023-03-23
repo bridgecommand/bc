@@ -28,7 +28,7 @@
 
 //using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
+void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //Store reference to terrain
     this->terrain = terrain;
@@ -41,6 +41,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     this->contactStiffnessFactor = contactStiffnessFactor;
     this->contactDampingFactor = contactDampingFactor;
+    this->frictionCoefficient = frictionCoefficient;
+    this->tanhFrictionFactor = tanhFrictionFactor;
 
     //Load from ownShip.ini file
     std::string ownShipName = ownShipData.ownShipName;
@@ -2212,8 +2214,8 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 reaction        += reactionForce * contactPoints.at(i).normal.Z;
                 lateralReaction += reactionForce * contactPoints.at(i).normal.X;
 
-                //Friction response. Use tanh function for better stability at low speed (think about multiplier & friction coefficient, maybe a parameter)
-                irr::f32 frictionCoeff = 0.5 * tanh(1.0 * localSpeedAmplitude);  
+                //Friction response. Use tanh function for better stability at low speed
+                irr::f32 frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * localSpeedAmplitude);
                 turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
                 reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
                 lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;

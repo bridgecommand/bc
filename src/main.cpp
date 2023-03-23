@@ -442,7 +442,13 @@ int main(int argc, char ** argv)
     irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
     irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
     irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
-    
+    irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
+    irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
+    if (frictionCoefficient < 0) {frictionCoefficient = 0;}
+    if (frictionCoefficient > 1) {frictionCoefficient = 1;}
+    if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
+
+
     //Initial view configuration
     irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
     irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
@@ -836,7 +842,7 @@ int main(int argc, char ** argv)
 
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, contactStiffnessFactor, contactDampingFactor, limitTerrainResolution);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution);
 
     //Load the gui
     bool hideEngineAndRudder=false;
