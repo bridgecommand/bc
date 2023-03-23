@@ -531,6 +531,25 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     irr::f32 minZ = boundingBox.MinEdge.Z;
     irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
+    device->getLogger()->log("Own bounding box (scaled): ");
+    irr::core::stringw boundingBoxInfo;
+    boundingBoxInfo.append("X (beam): ");
+    boundingBoxInfo.append(irr::core::stringw(minX));
+    boundingBoxInfo.append(" to ");
+    boundingBoxInfo.append(irr::core::stringw(maxX));
+
+    boundingBoxInfo.append(" Y (height): ");
+    boundingBoxInfo.append(irr::core::stringw(minY));
+    boundingBoxInfo.append(" to ");
+    boundingBoxInfo.append(irr::core::stringw(maxY));
+
+    boundingBoxInfo.append(" Z (length): ");
+    boundingBoxInfo.append(irr::core::stringw(minZ));
+    boundingBoxInfo.append(" to ");
+    boundingBoxInfo.append(irr::core::stringw(maxZ));
+
+    device->getLogger()->log(boundingBoxInfo.c_str());
+
     //Grid from below looking up
     for (int i = 0; i<numberOfContactPoints.X; i++) {
         for (int j = 0; j<numberOfContactPoints.Z; j++) {
@@ -2194,7 +2213,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 lateralReaction += reactionForce * contactPoints.at(i).normal.X;
 
                 //Friction response. Use tanh function for better stability at low speed (think about multiplier & friction coefficient, maybe a parameter)
-                irr::f32 frictionCoeff = 0.5 * tanh(100.0 * localSpeedAmplitude);  
+                irr::f32 frictionCoeff = 0.5 * tanh(1.0 * localSpeedAmplitude);  
                 turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
                 reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
                 lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
