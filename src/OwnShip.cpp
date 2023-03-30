@@ -2202,10 +2202,19 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 localSpeedVector.X = lateralSpd + rateOfTurn*contactPoints.at(i).position.Z - remotePointLateralSpeed;
                 localSpeedVector.Y = 0;
                 localSpeedVector.Z = axialSpd - rateOfTurn*contactPoints.at(i).position.X - remotePointAxialSpeed;
-                irr::core::vector3df normalLocalSpeedVector = localSpeedVector;
-                normalLocalSpeedVector.normalize();
-                irr::f32 localSpeedAmplitude = localSpeedVector.getLength(); // TODO: Could use getLengthSQ for speed?
-                irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalLocalSpeedVector)).Y; //Effect of unit friction force on ship's turning
+
+                // Find the speed component, tangential to the contact plane (for friction)
+                irr::core::vector3df tangentialSpeedComponent;
+                // Find this here, by subtracting the part normal to the contact plane
+                // part normal to the contact plane is speedVector.normal * normal (normal is already normalised length)
+                tangentialSpeedComponent = localSpeedVector - localSpeedVector.dotProduct(contactPoints.at(i).normal) * contactPoints.at(i).normal;
+
+                irr::f32 tangentialSpeedAmplitude = tangentialSpeedComponent.getLength();
+                irr::core::vector3df normalisedTangentialSpeedComponent = tangentialSpeedComponent; // Normalised, so we just have the direction
+                normalisedTangentialSpeedComponent.normalize();
+                
+                // TODO: Check this, I think it's correct
+                irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalisedTangentialSpeedComponent)).Y; //Effect of unit friction force on ship's turning
 
                 //Simple 'stiffness' based response
                 irr::f32 reactionForce = localIntersection*contactStiffness;
@@ -2215,10 +2224,10 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 lateralReaction += reactionForce * contactPoints.at(i).normal.X;
 
                 //Friction response. Use tanh function for better stability at low speed
-                irr::f32 frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * localSpeedAmplitude);
+                irr::f32 frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * tangentialSpeedAmplitude);
                 turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
-                reaction        += reactionForce * frictionCoeff * normalLocalSpeedVector.Z;
-                lateralReaction += reactionForce * frictionCoeff * normalLocalSpeedVector.X;
+                reaction        += reactionForce * frictionCoeff * normalisedTangentialSpeedComponent.Z;
+                lateralReaction += reactionForce * frictionCoeff * normalisedTangentialSpeedComponent.X;
 
                 //Damping
                 //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
