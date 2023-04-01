@@ -1880,7 +1880,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         rateOfTurn += angularAcceleration*deltaTime; //Rad/s
         //check plausibility for rate of turn, limit to ~4Pi rad/s
         if (rateOfTurn > 12) {
-            rateOfTurn = 2;
+            rateOfTurn = 12;
         } else if (rateOfTurn < -12) {
             rateOfTurn = -12;
         }
