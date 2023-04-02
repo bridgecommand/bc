@@ -277,9 +277,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
+    ship->updateAbsolutePosition();
 
-    length = ship->getBoundingBox().getExtent().Z*scaleFactor; //Store length for basic collision calculation
-    width = ship->getBoundingBox().getExtent().X*scaleFactor; //Store length for basic collision calculation
+    length = ship->getTransformedBoundingBox().getExtent().Z; //Store length for basic collision calculation
+    width = ship->getTransformedBoundingBox().getExtent().X; //Store length for basic collision calculation
 
 // DEE_DEC22 ---------- End of reading in information from .ini files and ownShipData
 
@@ -292,7 +293,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     irr::f32 breadth;
 	breadth = width; //  DEE_DEC22 just a more usual term that I am less likely to forget !
     irr::f32 seawaterDensity = 1024;  // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
-    irr::f32 draught = -1 * yCorrection * scaleFactor; // DEE_DEC22 i think thats right perhaps there needs to be a SF im not sure
+    irr::f32 draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
 
 
 
@@ -549,6 +550,16 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     boundingBoxInfo.append(irr::core::stringw(minZ));
     boundingBoxInfo.append(" to ");
     boundingBoxInfo.append(irr::core::stringw(maxZ));
+
+    device->getLogger()->log(boundingBoxInfo.c_str());
+
+    boundingBoxInfo=" Draught: ";
+    boundingBoxInfo.append(irr::core::stringw(draught));
+    boundingBoxInfo.append(" length: ");
+    boundingBoxInfo.append(irr::core::stringw(length));
+    boundingBoxInfo.append(" breadth: ");
+    boundingBoxInfo.append(irr::core::stringw(breadth));
+
 
     device->getLogger()->log(boundingBoxInfo.c_str());
 

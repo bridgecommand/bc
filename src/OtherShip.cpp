@@ -94,9 +94,11 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 	ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
-    length = ship->getBoundingBox().getExtent().Z*scaleFactor;
-    width = ship->getBoundingBox().getExtent().X*scaleFactor;
-    height = ship->getBoundingBox().getExtent().Y * 0.75 * scaleFactor; //Assume 3/4 of the mesh is above water
+    ship->updateAbsolutePosition();
+    length = ship->getTransformedBoundingBox().getExtent().Z;
+    width = ship->getTransformedBoundingBox().getExtent().X;
+    height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
     logMessage.append(shipFullPath);
