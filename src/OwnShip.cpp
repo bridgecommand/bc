@@ -28,7 +28,7 @@
 
 //using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
+void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 minContactPointSpacing, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
     //Store reference to terrain
     this->terrain = terrain;
@@ -581,6 +581,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
 
     device->getLogger()->log(boundingBoxInfo.c_str());
+
+    // Find if we need more contact points to maintain minContactPointSpacing
+    if (minContactPointSpacing > 0) {
+        numberOfContactPoints.X = std::max(numberOfContactPoints.X,(int)ceil((maxX-minX)/minContactPointSpacing));
+        numberOfContactPoints.Y = std::max(numberOfContactPoints.Y,(int)ceil((maxY-minY)/minContactPointSpacing));
+        numberOfContactPoints.Z = std::max(numberOfContactPoints.Z,(int)ceil((maxZ-minZ)/minContactPointSpacing));    
+    }
 
     //Grid from below looking up
     for (int i = 0; i<numberOfContactPoints.X; i++) {
