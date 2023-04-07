@@ -349,12 +349,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     // DEE_DEC22 set ships mass and inertia from displacement and length breadth draught and Cb (block coefficient)
     if (cB > 0) // ie. the block coefficient has been defined so it overrides any declaration of mass or inertia
-	{
+	{    
+	    shipMass = seawaterDensity * length * breadth * draught * cB; // kg
+	    Izz = shipMass * ((length * length) + (breadth * breadth))/12; // inertia about the vertical zz axis kg m^2
         device->getLogger()->log("cB defined in boat.ini mass and inertia shall be calculated from dimensions");
-	shipMass = seawaterDensity * length * breadth * draught * cB; // kg
-
- 
-	Izz = shipMass * ((length * length) + (breadth * breadth))/12; // inertia about the vertical zz axis kg m^2
+        device->getLogger()->log("Mass, inertia are calculated as:");
+        device->getLogger()->log(irr::core::stringw(shipMass).c_str());
+        device->getLogger()->log(irr::core::stringw(Izz).c_str());
 	} else { // BlockCoefficient , cB has not been defined in the ini file 
 		 // so use the declared values for mass and inertia
 	if (shipMass <= 0) {
@@ -380,7 +381,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // DEE_DEC22 end of mass and inertia definitions
 
   
-
+    if (propellorSpacing==0) {
+        singleEngine=true;
+        maxForce *= 0.5; //Internally simulated with two equal engines, so halve the value
+        device->getLogger()->log("Single engine");
+    } else {
+        singleEngine=false;
+    }
 
     // DEE_DEC22 if maxSpeed is defined in the .ini file then calculate drag coefficients from geometry and maxForce
     //           otherwise use the values declared in ini file.   So maxSpeed, a new parameter overrides the 
@@ -396,6 +403,18 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 	// note this models the turning drag of the ship as if it was a vertical plane turning in the water about a vertical axis
 
         maxForce = dynamicsSpeedA*(maxSpeed_mps*maxSpeed_mps)+dynamicsSpeedB*maxSpeed_mps; 
+        if (!singleEngine) {
+            maxForce *= 0.5; // We need the max force per engine, so half of the total max force 
+        }
+
+        device->getLogger()->log("dynamicsSpeedA, dynamicsSpeedB, thrust per engine are calculated as:");
+        device->getLogger()->log(irr::core::stringw(dynamicsSpeedA).c_str());
+        device->getLogger()->log(irr::core::stringw(dynamicsSpeedB).c_str());
+        device->getLogger()->log(irr::core::stringw(maxForce).c_str());
+        device->getLogger()->log("dynamicsTurnDragA, dynamicsTurnDragB are calculated as:");
+        device->getLogger()->log(irr::core::stringw(dynamicsTurnDragA).c_str());
+        device->getLogger()->log(irr::core::stringw(dynamicsTurnDragB).c_str());
+
     } else {
         // maxSpeed is either invalid or undefined so use the drag coefficients from the ini file
         device->getLogger()->log("maxSpeed is undefined in boat.ini so the defined drag parameters from there shall be used");
