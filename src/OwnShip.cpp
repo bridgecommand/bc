@@ -2249,30 +2249,30 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 irr::f32 tangentialSpeedAmplitude = tangentialSpeedComponent.getLength();
                 irr::core::vector3df normalisedTangentialSpeedComponent = tangentialSpeedComponent; // Normalised, so we just have the direction
                 normalisedTangentialSpeedComponent.normalize();
-                
-                // TODO: Check this, I think it's correct
-                irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalisedTangentialSpeedComponent)).Y; //Effect of unit friction force on ship's turning
 
                 //Simple 'stiffness' based response
                 irr::f32 reactionForce = localIntersection*contactStiffness;
-
-                turnReaction    += reactionForce * contactPoints.at(i).torqueEffect;
-                reaction        += reactionForce * contactPoints.at(i).normal.Z;
-                lateralReaction += reactionForce * contactPoints.at(i).normal.X;
-
-                //Friction response. Use tanh function for better stability at low speed
-                irr::f32 frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * tangentialSpeedAmplitude);
-                turnReaction    += reactionForce * frictionCoeff * frictionTorqueFactor;
-                reaction        += reactionForce * frictionCoeff * normalisedTangentialSpeedComponent.Z;
-                lateralReaction += reactionForce * frictionCoeff * normalisedTangentialSpeedComponent.X;
-
-                //Damping
-                //Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
+                //Damping: Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
                 irr::f32 normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
                 irr::f32 dampingForce = normalSpeed*contactDamping;
-                turnReaction    += dampingForce * contactPoints.at(i).torqueEffect;
-                reaction        += dampingForce * contactPoints.at(i).normal.Z;
-                lateralReaction += dampingForce * contactPoints.at(i).normal.X;
+
+                // Find combined stiffness and damping effect. Only allow to be positive, so no 'sticking'
+                irr::f32 combinedStiffnessDamping = reactionForce + dampingForce;
+                if (combinedStiffnessDamping<0.0) {
+                    combinedStiffnessDamping = 0.0;
+                }
+
+                // Apply this force
+                turnReaction    += combinedStiffnessDamping * contactPoints.at(i).torqueEffect;
+                reaction        += combinedStiffnessDamping * contactPoints.at(i).normal.Z;
+                lateralReaction += combinedStiffnessDamping * contactPoints.at(i).normal.X;
+
+                //Friction response. Use tanh function for better stability at low speed
+                irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalisedTangentialSpeedComponent)).Y; //Effect of unit friction force on ship's turning. TODO: Check this, I think it's correct
+                irr::f32 frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * tangentialSpeedAmplitude);
+                turnReaction    += combinedStiffnessDamping * frictionCoeff * frictionTorqueFactor;
+                reaction        += combinedStiffnessDamping * frictionCoeff * normalisedTangentialSpeedComponent.Z;
+                lateralReaction += combinedStiffnessDamping * frictionCoeff * normalisedTangentialSpeedComponent.X;
 
                 //std::cout << "remotePointAxialSpeed: " << remotePointAxialSpeed << std::endl;
 
@@ -2284,6 +2284,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
         }
     }
+    std::cout << "Reaction: " << reaction << " Lateral reaction: " << lateralReaction << " Turn reaction: " << turnReaction << std::endl;
 }
 
 irr::f32 OwnShip::getAngleCorrection() const
