@@ -135,11 +135,11 @@ class OwnShip : public Ship
 	void btnIncrementStbdThrustLever();	// Increment stbd thrust lever
 	void btnDecrementStbdThrustLever();	// Decrement stbd thrust lever
 	bool isConventionalAzidriveSchottel() const;	// True if azimuth stern drive turns in the same direction as the schottel
-	void followupPortAzimuthDrive() ;		// Follow up angle of port azimuth drive in response to port schottel control 
+	void followupPortAzimuthDrive() ;		// Follow up angle of port azimuth drive in response to port schottel control
 	void followupStbdAzimuthDrive();		// Follow up angle of stbd azimuth drive in response to stbd schottel control
         irr::f32 getLastDeltaTime();			// gets the delta time for the last cycle
 	void setLastDeltaTime(irr::f32 myDeltaTime);	// sets the delta time for the last cycle
-	void setCommandedPortAngle(irr::f32 myDeltaTime); // sets the delta time for the last cycle 
+	void setCommandedPortAngle(irr::f32 myDeltaTime); // sets the delta time for the last cycle
 
 // DEE_NOV22 ^^^^
 
@@ -164,6 +164,7 @@ class OwnShip : public Ship
         Terrain* terrain;
         SimulationModel* model;
         bool is360textureShip;
+        bool showDebugData;
         irr::f32 rollPeriod; //Roll period (s)  DEE this should be dynamically loaded
         irr::f32 rollAngle; //Roll Angle (deg)
         irr::f32 pitchPeriod; //Roll period (s)
@@ -193,7 +194,7 @@ class OwnShip : public Ship
 	irr::f32 azimuthDriveEngineIdleRPM;		// Idling rpm of each engine
 	irr::f32 azimuthDriveClutchEngageRPM;		// for each engine, the rpm which when exceeded the clutch is automatically engaged
 	irr::f32 azimuthDriveClutchDisengageRPM;	// for each engine, the rpm which when reduced to below, the clutch is automatically disengaged
-	irr::f32 schottelMaxDegPerSecond;		// only really relevant to keyboard control to make it playable 
+	irr::f32 schottelMaxDegPerSecond;		// only really relevant to keyboard control to make it playable
 							// the shchottel itself can be turned as fast as your wrist can move it
 							// so if using physical controls then its not needed
 	irr::f32 azimuthDriveMaxDegPerSecond;		// the maximum number of degrees per second that the azimuth drive
@@ -247,20 +248,20 @@ class OwnShip : public Ship
 	bool portClutch;		// port clutch true for clutch engaged false for clutch disengaged
 	bool stbdClutch;		// stbd clutch ditto for stbd
 	irr::f32 maxChangeInEngineThisCycle; // the calculated maximum the engine level can change by in one cycle
-	irr::f32 idleEngine;	// DEE TODO check this 
+	irr::f32 idleEngine;	// DEE TODO check this
 	irr::f32 newPortEngine;		// (0..1) the new port engine level calculated by update
 	irr::f32 newStbdEngine;		// (0..1) the new stbd engine level calculated by update
 	irr::f32 newPortSchottel;	// (0..360) if outside that range then adjust by 360 degrees
 	irr::f32 newStbdSchottel;	// (0..360) if outside that range then adjust by 360 degrees
 
 	irr::f32 commandedPortAngle;			// whereas this is the same as the schottel angle, some vessels have left and right swapped
-	irr::f32 commandedStbdAngle;			// with the aim of making steering on passage easier for those who can't cope with the 
+	irr::f32 commandedStbdAngle;			// with the aim of making steering on passage easier for those who can't cope with the
 							// concept of tiller steering.
 	irr::f32 maxChangeInAzimuthDriveAngleThisCycle; // calculated maximum angular change of an azimuth drive in one cycle
 	irr::f32 newPortAzimuthDriveAngle;		// in hindsight dont really need one for port and starboard
 	irr::f32 newStbdAzimuthDriveAngle;		// ditto
 
-	
+
 // DEE_NOV22 ^^^^
 
         irr::f32 shipMass;
@@ -321,14 +322,14 @@ class OwnShip : public Ship
 		bool otherShipCollision;
 
         std::vector<ContactPoint> contactPoints;
-        
+
         irr::f32 contactStiffnessFactor;
         irr::f32 contactDampingFactor;
         irr::f32 frictionCoefficient;
         irr::f32 tanhFrictionFactor;
-        
+
         //Debugging
-        //std::vector<irr::scene::IMeshSceneNode*> contactDebugPoints;
+        std::vector<irr::scene::IMeshSceneNode*> contactDebugPoints;
 
 };
 

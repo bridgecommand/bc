@@ -51,25 +51,26 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, 
-                    irr::scene::ISceneManager* scene, 
-                    GUIMain* gui, 
-                    Sound* sound, 
-                    ScenarioData scenarioData, 
-                    OperatingMode::Mode mode, 
-                    irr::f32 viewAngle, 
-                    irr::f32 lookAngle, 
-                    irr::f32 cameraMinDistance, 
-                    irr::f32 cameraMaxDistance, 
-                    irr::u32 disableShaders, 
-                    irr::u32 waterSegments, 
+    SimulationModel(irr::IrrlichtDevice* dev,
+                    irr::scene::ISceneManager* scene,
+                    GUIMain* gui,
+                    Sound* sound,
+                    ScenarioData scenarioData,
+                    OperatingMode::Mode mode,
+                    irr::f32 viewAngle,
+                    irr::f32 lookAngle,
+                    irr::f32 cameraMinDistance,
+                    irr::f32 cameraMaxDistance,
+                    irr::u32 disableShaders,
+                    irr::u32 waterSegments,
                     irr::core::vector3di numberOfContactPoints,
-                    irr::f32 minContactPointSpacing, 
-                    irr::f32 contactStiffnessFactor, 
-                    irr::f32 contactDampingFactor, 
-                    irr::f32 frictionCoefficient, 
-                    irr::f32 tanhFrictionFactor, 
-                    irr::u32 limitTerrainResolution);
+                    irr::f32 minContactPointSpacing,
+                    irr::f32 contactStiffnessFactor,
+                    irr::f32 contactDampingFactor,
+                    irr::f32 frictionCoefficient,
+                    irr::f32 tanhFrictionFactor,
+                    irr::u32 limitTerrainResolution,
+                    bool debugMode);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -110,13 +111,13 @@ public:
     void setPortThrustLever(irr::f32);   // sets port thrust lever range is 0..+1
     irr::f32 getPortThrustLever(); 	 // gets port thrust lever range is 0..+1
     void setStbdThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1
-    irr::f32 getStbdThrustLever(); // gets starboard thrust lever range is 0..+1	 
+    irr::f32 getStbdThrustLever(); // gets starboard thrust lever range is 0..+1
 
     void btnIncrementPortThrustLever(); // increments the port thrust lever
     void btnDecrementPortThrustLever(); // decrements the port thrust lever
     void btnIncrementStbdThrustLever(); // increments the stbd thrust lever
     void btnDecrementStbdThrustLever(); // decrements the stbd thrust lever
-    
+
     void btnIncrementPortSchottel(); // clockwise turn of the port schottel in response to a key press
     void btnDecrementPortSchottel(); // anticlockwise turn of the port schottel in response to a key press
     void btnIncrementStbdSchottel(); // clockwise turn of the starboard schottel in response to a key press
@@ -150,7 +151,7 @@ public:
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
-    irr::f32 getDepth() const; 
+    irr::f32 getDepth() const;
 
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
@@ -269,6 +270,7 @@ public:
     bool hasBowThruster() const;
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
+    bool debugModeOn() const;
 
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
@@ -315,6 +317,7 @@ private:
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
     bool moveViewWithPrimary;
+    bool debugMode;
     ManOverboard manOverboard;
 
     //Simulation time handling

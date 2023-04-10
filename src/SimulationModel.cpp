@@ -40,25 +40,26 @@
 
 //using namespace irr;
 
-SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, 
-                                 irr::scene::ISceneManager* scene, 
-                                 GUIMain* gui, 
-                                 Sound* sound, 
-                                 ScenarioData scenarioData, 
-                                 OperatingMode::Mode mode, 
-                                 irr::f32 viewAngle, 
-                                 irr::f32 lookAngle, 
-                                 irr::f32 cameraMinDistance, 
-                                 irr::f32 cameraMaxDistance, 
-                                 irr::u32 disableShaders, 
-                                 irr::u32 waterSegments, 
-                                 irr::core::vector3di numberOfContactPoints, 
+SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
+                                 irr::scene::ISceneManager* scene,
+                                 GUIMain* gui,
+                                 Sound* sound,
+                                 ScenarioData scenarioData,
+                                 OperatingMode::Mode mode,
+                                 irr::f32 viewAngle,
+                                 irr::f32 lookAngle,
+                                 irr::f32 cameraMinDistance,
+                                 irr::f32 cameraMaxDistance,
+                                 irr::u32 disableShaders,
+                                 irr::u32 waterSegments,
+                                 irr::core::vector3di numberOfContactPoints,
                                  irr::f32 minContactPointSpacing,
-                                 irr::f32 contactStiffnessFactor, 
-                                 irr::f32 contactDampingFactor, 
-                                 irr::f32 frictionCoefficient, 
-                                 irr::f32 tanhFrictionFactor, 
-                                 irr::u32 limitTerrainResolution):
+                                 irr::f32 contactStiffnessFactor,
+                                 irr::f32 contactDampingFactor,
+                                 irr::f32 frictionCoefficient,
+                                 irr::f32 tanhFrictionFactor,
+                                 irr::u32 limitTerrainResolution,
+                                 bool debugMode):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -77,6 +78,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //store what mode we're in
         this->mode = mode;
+
+        //Store if we should show debug details
+        this->debugMode = debugMode;
 
         //store default view angle
         this->viewAngle = viewAngle;
@@ -665,7 +669,7 @@ SimulationModel::~SimulationModel()
     { // Set if azimuth 1 should also control azimuth 2
         ownShip.setAzimuth1Master(isMaster);
     }
-    
+
     void SimulationModel::setAzimuth2Master(bool isMaster)
     { // Set if azimuth 2 should also control azimuth 1
         ownShip.setAzimuth2Master(isMaster);
@@ -684,7 +688,7 @@ SimulationModel::~SimulationModel()
 // DEE_NOV22 vvvv Azimuth Drive follow up code
 
     // Schottels
-   
+
     void SimulationModel::setPortSchottel(irr::f32 portAngle)
     { // Set the Port Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
         ownShip.setPortSchottel(portAngle);
@@ -706,29 +710,29 @@ SimulationModel::~SimulationModel()
     }
 
 
-    // DEE_NOV22 btn control of shcottels ... this is for when you dont use a mouse of control console, 
-    //           however it is also close enough to emergency steering mode of azimuth drives for all 
+    // DEE_NOV22 btn control of shcottels ... this is for when you dont use a mouse of control console,
+    //           however it is also close enough to emergency steering mode of azimuth drives for all
     //		 practical playability purposes.
     void SimulationModel::btnIncrementPortSchottel()
     {
-	ownShip.btnIncrementPortSchottel(); // DEE_NOV22 stbd schottel clockwise 
+	ownShip.btnIncrementPortSchottel(); // DEE_NOV22 stbd schottel clockwise
     }
-    
+
     void SimulationModel::btnDecrementPortSchottel()
     {
 	ownShip.btnDecrementPortSchottel(); // DEE_NOV22 port schottel anticlockwise
     }
-    
+
     void SimulationModel::btnIncrementStbdSchottel()
     {
 	ownShip.btnIncrementStbdSchottel(); // DEE_NOV22 stbd shcottel clockwise in response to KEY_KEY_L
     }
-    
+
     void SimulationModel::btnDecrementStbdSchottel()
     {
 	ownShip.btnDecrementStbdSchottel(); // DEE_NOV22 port schottel anticlockwise in response to KEY_KEY_J
     }
-    
+
 
 
 
@@ -797,7 +801,7 @@ SimulationModel::~SimulationModel()
         ownShip.setStbdClutch(stbdClutch);
     }
 
-    bool SimulationModel::getPortClutch() 
+    bool SimulationModel::getPortClutch()
     {
         return ownShip.getPortClutch();
     }
@@ -823,12 +827,12 @@ SimulationModel::~SimulationModel()
 	ownShip.setPortClutch(false);
     }
 
-    void SimulationModel::engageStbdClutch() 
+    void SimulationModel::engageStbdClutch()
     {
 	ownShip.setStbdClutch(true);
     }
 
-    void SimulationModel::disengageStbdClutch() 
+    void SimulationModel::disengageStbdClutch()
     {
 	ownShip.setStbdClutch(false);
     }
@@ -855,10 +859,10 @@ SimulationModel::~SimulationModel()
         ownShip.setPortEngine(port); //This method limits the range applied
 
 		//Set engine sound level
-		// DEE_NOV22 unless this is a controllable pitch propellor, 
+		// DEE_NOV22 unless this is a controllable pitch propellor,
 		// where the engine turns at a constant rpm
-		// where with increased power then the sound of the engine 
-		// results in the same frequency engine noise, only louder.  
+		// where with increased power then the sound of the engine
+		// results in the same frequency engine noise, only louder.
 		// Vessels where engine rpm controls power then the frequency
 		// of the engine noise should change with engine rpm
 
@@ -1094,7 +1098,7 @@ SimulationModel::~SimulationModel()
     {
         camera.setFrozen(frozen);
     }
-    
+
     void SimulationModel::toggleFrozenCamera()
     {
         camera.toggleFrozen();
@@ -1361,6 +1365,11 @@ SimulationModel::~SimulationModel()
         return ownShip.hasTurnIndicator();
     }
 
+    bool SimulationModel::debugModeOn() const
+    {
+        return debugMode;
+    }
+
     irr::f32 SimulationModel::getMaxSounderDepth() const
     {
         return ownShip.getMaxSounderDepth();
@@ -1547,7 +1556,7 @@ SimulationModel::~SimulationModel()
         elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
         }{ IPROF("Get radar ARPA data for GUI");
-        
+
         //get radar ARPA data to show
         irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
         guiData->arpaContactStates.clear();
