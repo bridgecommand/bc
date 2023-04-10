@@ -689,37 +689,41 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 c
         contactPoint.normal = hitTriangle.getNormal().normalize();
         contactPoint.position.Y -= heightCorrection; //Adjust for height correction
 
-        //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
-        ray.start = contactPoint.position;
-        ray.end = ray.start - 100*contactPoint.normal;
-        //Check for the internal node
-        selectedSceneNode =
-            device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-            ray,
-            intersection, // This will be the position of the collision
-            hitTriangle, // This will be the triangle hit in the collision
-            IDFlag_IsPickable, // (bitmask)
-            0); // Check all nodes
+        // Check if the normal is pointing 'towards' the incoming ray used to find the contact point, i.e. if it is pointing in roughly the right direction
+        if (contactPoint.normal.dotProduct(ray.getVector()) < 0) {
 
-        if (selectedSceneNode) {
-            contactPoint.internalPosition = intersection;
-            contactPoint.internalPosition.Y -= heightCorrection; //Adjust for height correction
+            //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
+            ray.start = contactPoint.position;
+            ray.end = ray.start - 100*contactPoint.normal;
+            //Check for the internal node
+            selectedSceneNode =
+                device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+                ray,
+                intersection, // This will be the position of the collision
+                hitTriangle, // This will be the triangle hit in the collision
+                IDFlag_IsPickable, // (bitmask)
+                0); // Check all nodes
 
-            //Find cross product, for torque component
-            irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
-            contactPoint.torqueEffect = crossProduct.Y;
+            if (selectedSceneNode) {
+                contactPoint.internalPosition = intersection;
+                contactPoint.internalPosition.Y -= heightCorrection; //Adjust for height correction
 
-            // Store effective area represented by the contact
-            contactPoint.effectiveArea = contactArea;
+                //Find cross product, for torque component
+                irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
+                contactPoint.torqueEffect = crossProduct.Y;
 
-            //Store the contact point that we have found
-            contactPoints.push_back(contactPoint); //Store
+                // Store effective area represented by the contact
+                contactPoint.effectiveArea = contactArea;
 
-            //Debugging
-            if (showDebugData) {
-                contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
+                //Store the contact point that we have found
+                contactPoints.push_back(contactPoint); //Store
+
+                //Debugging
+                if (showDebugData) {
+                    contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
+                }
+                //contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
             }
-            //contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
         }
     }
 }
