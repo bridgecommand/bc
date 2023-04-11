@@ -25,6 +25,7 @@
 #include "Angles.hpp"
 #include "Utilities.hpp"
 #include <cstdlib> //For rand()
+#include <algorithm>
 
 //using namespace irr;
 
