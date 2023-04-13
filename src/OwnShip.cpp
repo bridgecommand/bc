@@ -2316,6 +2316,19 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             //contactDebugPoints.at(i*2 + 1)->setPosition(internalPointPosition);
 
         }
+
+        // If showing debug data, draw a big circle series for the model centre
+        if (showDebugData) {
+            irr::core::position2d<irr::s32> centrePosition2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                ship->getAbsolutePosition(),device->getSceneManager()->getActiveCamera(),false);
+            device->getVideoDriver()->draw2DPolygon(centrePosition2d,5,irr::video::SColor(100,0,255,0));
+            device->getVideoDriver()->draw2DPolygon(centrePosition2d,10,irr::video::SColor(100,0,255,0));
+            device->getVideoDriver()->draw2DPolygon(centrePosition2d,15,irr::video::SColor(100,0,255,0));
+            device->getVideoDriver()->draw2DPolygon(centrePosition2d,20,irr::video::SColor(100,0,255,0));
+            device->getVideoDriver()->draw2DPolygon(centrePosition2d,25,irr::video::SColor(100,0,255,0));
+        }
+        
+
     }
     //std::cout << "Reaction: " << reaction << " Lateral reaction: " << lateralReaction << " Turn reaction: " << turnReaction << std::endl;
 }
