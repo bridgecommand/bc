@@ -2137,15 +2137,18 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
         for (int i = 0; i<contactPoints.size(); i++) {
             irr::core::vector3df pointPosition = contactPoints.at(i).position;
+            irr::core::vector3df pointPositionForNormal = pointPosition + contactPoints.at(i).normal;
             irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
 
             //Rotate with own ship
             irr::core::matrix4 rot;
             rot.setRotationDegrees(ship->getRotation());
             rot.transformVect(pointPosition);
+            rot.transformVect(pointPositionForNormal);
             rot.transformVect(internalPointPosition);
 
             pointPosition += ship->getAbsolutePosition();
+            pointPositionForNormal += ship->getAbsolutePosition();
             internalPointPosition += ship->getAbsolutePosition();
 
             irr::f32 localIntersection = 0; //Ready to use
@@ -2290,7 +2293,10 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                     // Show points in contact in red
                     irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPosition,device->getSceneManager()->getActiveCamera(),false);
+                    irr::core::position2d<irr::s32> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                        pointPositionForNormal,device->getSceneManager()->getActiveCamera(),false);
                     device->getVideoDriver()->draw2DPolygon(contactPoint2d,10,irr::video::SColor(100,255,0,0));
+                    device->getVideoDriver()->draw2DLine(contactPoint2d,contactPoint2dNormal,irr::video::SColor(100,255,0,0));
                 }
 
             } else {
@@ -2299,7 +2305,10 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                     // Show points not in contact in white
                     irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPosition,device->getSceneManager()->getActiveCamera(),false);
+                    irr::core::position2d<irr::s32> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                        pointPositionForNormal,device->getSceneManager()->getActiveCamera(),false);
                     device->getVideoDriver()->draw2DPolygon(contactPoint2d,10);
+                    device->getVideoDriver()->draw2DLine(contactPoint2d,contactPoint2dNormal);
                 }
 
             }
