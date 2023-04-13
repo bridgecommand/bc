@@ -246,6 +246,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         guiData = new GUIData;
 
+        // Initialise as paused to start with
+        guiData->paused = true;
+
     } //end of SimulationModel constructor
 
 SimulationModel::~SimulationModel()

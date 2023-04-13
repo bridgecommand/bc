@@ -952,14 +952,6 @@ int main(int argc, char ** argv)
 //        nmeaProfile.toc();
 
 //        modelProfile.tic();
-        }{ IPROF("Model");
-        model.update();
-//        modelProfile.toc();
-
-
-        //Set up
-
-//        renderSetupProfile.tic();
         }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
@@ -1008,6 +1000,14 @@ int main(int argc, char ** argv)
  //       renderProfile.toc();
 
  //       guiProfile.tic();
+        }{ IPROF("Model");
+        model.update();
+//        modelProfile.toc();
+
+
+        //Set up
+
+//        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
