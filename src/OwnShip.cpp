@@ -269,7 +269,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         // For debugging:
         if (showDebugData) {
-            ship->setDebugDataVisible(irr::scene::EDS_NORMALS|irr::scene::EDS_BBOX_ALL);
+            //ship->setDebugDataVisible(irr::scene::EDS_NORMALS|irr::scene::EDS_BBOX_ALL);
+            ship->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
         }
 
         ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
@@ -695,7 +696,7 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 c
 
             //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
             ray.start = contactPoint.position;
-            ray.end = ray.start - 100*contactPoint.normal;
+            // leave ray.end as the same as before
             //Check for the internal node
             selectedSceneNode =
                 device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
@@ -719,11 +720,6 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 c
                 //Store the contact point that we have found
                 contactPoints.push_back(contactPoint); //Store
 
-                //Debugging
-                if (showDebugData) {
-                    contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
-                }
-                //contactDebugPoints.push_back(device->getSceneManager()->addCubeSceneNode(0.1));
             }
         }
     }
@@ -2290,11 +2286,22 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
 
                 //std::cout << "remotePointAxialSpeed: " << remotePointAxialSpeed << std::endl;
 
-            }
+                if (showDebugData) {
+                    // Show points in contact in red
+                    irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                        pointPosition,device->getSceneManager()->getActiveCamera(),false);
+                    device->getVideoDriver()->draw2DPolygon(contactPoint2d,10,irr::video::SColor(100,255,0,0));
+                }
 
-            //Debugging, show points:
-            if (showDebugData) {
-                contactDebugPoints.at(i)->setPosition(pointPosition);
+            } else {
+                // Not in contact at this point
+                if (showDebugData) {
+                    // Show points not in contact in white
+                    irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
+                        pointPosition,device->getSceneManager()->getActiveCamera(),false);
+                    device->getVideoDriver()->draw2DPolygon(contactPoint2d,10);
+                }
+
             }
             //contactDebugPoints.at(i*2)->setPosition(internalPointPosition);
             //contactDebugPoints.at(i*2 + 1)->setPosition(internalPointPosition);
