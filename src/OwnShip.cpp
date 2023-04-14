@@ -2302,13 +2302,21 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             } else {
                 // Not in contact at this point
                 if (showDebugData) {
-                    // Show points not in contact in white
+                    // Show points not in contact
+                    irr::video::SColor pointColour;
+                    if (contactPoints.at(i).torqueEffect>0) {
+                        pointColour = irr::video::SColor(100,0,255,0);
+                    } else {
+                        pointColour = irr::video::SColor(100,0,0,255);
+                    }
+
+
                     irr::core::position2d<irr::s32> contactPoint2d = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPosition,device->getSceneManager()->getActiveCamera(),false);
                     irr::core::position2d<irr::s32> contactPoint2dNormal = device->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
                         pointPositionForNormal,device->getSceneManager()->getActiveCamera(),false);
-                    device->getVideoDriver()->draw2DPolygon(contactPoint2d,10);
-                    device->getVideoDriver()->draw2DLine(contactPoint2d,contactPoint2dNormal);
+                    device->getVideoDriver()->draw2DPolygon(contactPoint2d,10,pointColour);
+                    device->getVideoDriver()->draw2DLine(contactPoint2d,contactPoint2dNormal,pointColour);
                 }
 
             }
