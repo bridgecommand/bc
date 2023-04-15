@@ -348,7 +348,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     if (length <= 0) {device->getLogger()->log("Invalid length from boat.x");}
     if (breadth <= 0) {device->getLogger()->log("Invalid breadth from boat.x");}
-    if (draught <= 0) {device->getLogger()->log("Invalid draught from boat.ini YCorrection");}
+    if (draught <= 0) {device->getLogger()->log("Invalid draught");}
 
     // DEE_DEC22 calculate moment arm from amidships , approximated to the centre of lateral water resistance
     //				      to the azipods, hence the arm of the lateral thrust from them
@@ -692,7 +692,8 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 c
         contactPoint.position.Y -= heightCorrection; //Adjust for height correction
 
         // Check if the normal is pointing 'towards' the incoming ray used to find the contact point, i.e. if it is pointing in roughly the right direction
-        if (contactPoint.normal.dotProduct(ray.getVector()) < 0) {
+        // 0.707 is approximately cos(45deg), so should be within +- 45 degrees of the incoming ray.
+        if (contactPoint.normal.dotProduct(ray.getVector().normalize()) < -0.707) {
 
             //Find an internal node position, i.e. a point at which a ray check for internal intersection can start
             ray.start = contactPoint.position;
@@ -2175,6 +2176,16 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
                 hitTriangle, // This will be the triangle hit in the collision
                 IDFlag_IsPickable, // (bitmask)
                 0); // Check all nodes
+
+            // Check normal directions of contact triangle  - if they are pointing in the same direction, then we are on the 'free' side of the contact, and can ignore it
+            if (selectedSceneNode) {
+                // First find the normal of the contact point (on the ship) in world coordinates
+                irr::core::vector3df worldCoordsShipNormal = pointPositionForNormal-pointPosition;
+                if (hitTriangle.getNormal().dotProduct(worldCoordsShipNormal) > 0) {
+                    // Ignore this contact
+                    selectedSceneNode = 0;
+                }
+            }
 
             //If this returns something, we must be in contact, so find distance between intersection and pointPosition
             if(selectedSceneNode && strcmp(selectedSceneNode->getName(),"LandObject")==0) {
