@@ -37,12 +37,13 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
     {
         this->device = device;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
+        this->showTideHeight = showTideHeight;
         this->showCollided = showCollided;
         this->hasBowThruster = hasBowThruster;
         this->hasRateOfTurnIndicator = hasRateOfTurnIndicator;
@@ -1146,11 +1147,14 @@ guiTideHeight = guiData->tideHeight;
             displayText.append(irr::core::stringw(device->getVideoDriver()->getFPS()).c_str());
             displayText.append(L"\n");
 
-	    // DEE FEB 23 vvv add height of tide to the display
-	    displayText.append(language->translate("hot"));
-            displayText.append(f32To1dp(guiTideHeight).c_str());
-	    displayText.append(L"\n");
-	    // DEE FEB 23 ^^^
+	        if (showTideHeight) {
+                // DEE FEB 23 vvv add height of tide to the display
+                displayText.append(language->translate("hot"));
+                displayText.append(f32To1dp(guiTideHeight).c_str());
+                displayText.append(L"\n");
+                // DEE FEB 23 ^^^
+            }
+	    
         }
         if (guiPaused) {
             displayText.append(language->translate("paused"));

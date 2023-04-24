@@ -110,4 +110,6 @@ followUpWorking = "Gouvernail : Follow up"
 followUpFailed = "Gouvernail : Non follow up"
 ackAlarms = "Acquitter"
 
+hot = "Hauteur de marée: "
+
 fps="FPS: "

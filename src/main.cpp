@@ -442,6 +442,8 @@ int main(int argc, char ** argv)
 
     bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
 
+    bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
+
     irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
 
 
@@ -854,7 +856,7 @@ int main(int argc, char ** argv)
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
+    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

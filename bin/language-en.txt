@@ -110,5 +110,7 @@ followUpWorking = "Rudder: Follow up"
 followUpFailed = "Rudder: Non follow up"
 ackAlarms = "Acknowledge"
 
+hot = "Height of tide: "
+
 fps="FPS: "
 
