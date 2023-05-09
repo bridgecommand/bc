@@ -723,6 +723,7 @@ int main(int argc, char ** argv)
 	irr::u32 graphicsHeight3d = sh * 0.6;
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+    irr::f32 aspectvr = aspect / 2;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -879,6 +880,10 @@ int main(int argc, char ** argv)
 
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
+    // Hardcoded VR mode for now
+    bool vr3dMode = true;
+    guiMain.hide2dInterface();
+
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
         guiMain.hide2dInterface();
@@ -986,7 +991,18 @@ int main(int argc, char ** argv)
 
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
-        if (!fullScreenRadar) {
+        
+        if (vr3dMode) {
+            // Left viewport
+            driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth/2,graphicsHeight));
+            model.updateViewport(aspectvr);
+            smgr->drawAll();
+            // Right viewport
+            driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,graphicsWidth,graphicsHeight));
+            // todo: Move camera 'right' to match pupil distance for stereo
+            smgr->drawAll();
+
+        } else if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
                 driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth3d,graphicsHeight3d));
                 model.updateViewport(aspect3d);
