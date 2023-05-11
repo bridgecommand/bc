@@ -1394,6 +1394,11 @@ SimulationModel::~SimulationModel()
         moveViewWithPrimary = moveView;
     }
 
+    void SimulationModel::updateCameraVRPos(bool leftView)
+    {
+        camera.update(0, leftView);
+    }
+
     void SimulationModel::update()
     {
 
