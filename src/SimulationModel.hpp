@@ -278,6 +278,8 @@ public:
 	void startHorn();
 	void endHorn();
 
+    void updateCameraVRPos(bool leftView);
+
     void update();
 
 private:

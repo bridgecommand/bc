@@ -60,7 +60,7 @@ class Camera
         void setFrozen(bool frozen);
         void toggleFrozen();
         void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime=0);
+        void update(irr::f32 deltaTime=0,  bool leftView=false);
 
     private:
         irr::scene::ICameraSceneNode* camera;
@@ -80,6 +80,7 @@ class Camera
         irr::s32 horizontalPanSpeed; //Degrees per second
         irr::s32 verticalPanSpeed; //Degrees per second
         irr::f32 hFOV;//horizontal field of view (radians)
+        irr::core::vector3df sideViewVector; // Side vector
 
         bool isHighViewActive;
         irr::f32 previousLookAngle;

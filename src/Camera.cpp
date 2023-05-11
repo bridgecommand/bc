@@ -58,6 +58,8 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
     previousLookUpAngle = lookUpAngle;
 
     frozen = false;
+
+    sideViewVector = irr::core::vector3df(1,0,0);
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -332,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime)
+void Camera::update(irr::f32 deltaTime, bool leftView)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -366,10 +368,18 @@ void Camera::update(irr::f32 deltaTime)
         irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
         parentAngles.transformVect(upv);
 
+        // Update side view vector (must be perpendicular to upv and frv)
+        sideViewVector = upv.crossProduct(frv);
+
         // transform camera offset ('offset' is relative to the local ship coordinates, and stays the same.)
         //'offsetTransformed' is transformed into the global coordinates
         irr::core::vector3df offsetTransformed;
         parentAngles.transformVect(offsetTransformed,views[currentView]);
+
+        if (leftView) {
+            irr::f32 ipd = 0.065;
+            offsetTransformed = offsetTransformed - ipd * sideViewVector;
+        }
 
         //move camera and angle
         irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;

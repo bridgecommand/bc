@@ -996,10 +996,11 @@ int main(int argc, char ** argv)
             // Left viewport
             driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth/2,graphicsHeight));
             model.updateViewport(aspectvr);
+            model.updateCameraVRPos(true);
             smgr->drawAll();
             // Right viewport
             driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,graphicsWidth,graphicsHeight));
-            // todo: Move camera 'right' to match pupil distance for stereo
+            model.updateCameraVRPos(false);
             smgr->drawAll();
 
         } else if (!fullScreenRadar) {
