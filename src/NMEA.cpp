@@ -597,7 +597,10 @@ void NMEA::sendNMEAUDP()
 {    
     if (!messageQueue.empty()) {
         try {
-            if (!socket->is_open()) socket->open(asio::ip::udp::v4());
+            if (!socket->is_open()) {
+                socket->open(asio::ip::udp::v4());
+                socket->set_option(asio::socket_base::broadcast(true));
+            }
             for (auto message : messageQueue)
             {
                 socket->send_to(asio::buffer(message), receiver_endpoint);
