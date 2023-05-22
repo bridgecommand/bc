@@ -278,7 +278,7 @@ public:
 	void startHorn();
 	void endHorn();
 
-    void updateCameraVRPos(bool leftView);
+    void updateCameraVRPos(bool leftView, irr::core::vector3df forwardView, irr::core::vector3df upView);
 
     void update();
 

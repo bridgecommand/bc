@@ -54,6 +54,9 @@
 
 #include "profile.hpp"
 
+// OpenHMD
+#include <openhmd.h>
+
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -643,6 +646,27 @@ int main(int argc, char ** argv)
     }
     #endif
 
+    int ohmd_device_idx = 0; // Default to 0, in future make configurable?
+    ohmd_context* ohmd_ctx = ohmd_ctx_create();
+    bool ohmd_available;
+    // Probe for devices
+    int ohmd_num_devices = ohmd_ctx_probe(ohmd_ctx);
+    std::cout << "OpenHMD Devices: " << ohmd_num_devices << std::endl;
+    if (ohmd_num_devices < 0) {
+        ohmd_available = false;
+    } else {
+        ohmd_available = true;
+    }
+
+    ohmd_device* hmd;
+    if (ohmd_available) {
+        hmd = ohmd_list_open_device(ohmd_ctx, ohmd_device_idx);
+        if(!hmd){
+            ohmd_available = false;
+            std::cout << "OpenHMD failed to open device: " << ohmd_ctx_get_error(ohmd_ctx) << std::endl;
+        }
+    }
+
     //create device
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
 	//Allow optional directX if available
@@ -991,24 +1015,46 @@ int main(int argc, char ** argv)
 
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
-        
+
         if (vr3dMode) {
-            
+            irr::core::vector3df vrForwardVector;
+            irr::core::vector3df vrUpVector;
+            if(ohmd_available) {
+                ohmd_ctx_update(ohmd_ctx);
+                float quaternion[4];
+                if (ohmd_device_getf(hmd, OHMD_ROTATION_QUAT, quaternion) == 0 ) {
+                    //std::cout << "Quat: " << quaternion[0] << " " << quaternion[1] << " " << quaternion[2] << " " << quaternion[3] << std::endl;
+
+                    vrForwardVector= irr::core::vector3df(
+                        2.0 * (quaternion[0]*quaternion[2] + quaternion[3]*quaternion[1]),
+                        2.0 * (quaternion[1]*quaternion[2] - quaternion[3]*quaternion[0]),
+                        1.0 - 2.0 * (quaternion[0]*quaternion[0] + quaternion[1]*quaternion[1])
+                    );
+
+                    vrUpVector= irr::core::vector3df(
+                        2.0 * (quaternion[0]*quaternion[1] - quaternion[3]*quaternion[2]),
+                        1.0 - 2.0 * (quaternion[0]*quaternion[0] + quaternion[2]*quaternion[2]),
+                        2.0 * (quaternion[1]*quaternion[2] + quaternion[3]*quaternion[0])
+                    );
+
+                }
+            }
+
             irr::s32 vrInwardsShift = 0.1*graphicsWidth;
             irr::s32 vrLeftStart = vrInwardsShift;
             irr::s32 vrRightEnd = graphicsWidth - vrInwardsShift;
             irr::s32 vrWidth = graphicsWidth/2 - vrInwardsShift;
 
             aspectvr = (irr::f32)(vrWidth) / (irr::f32)graphicsHeight;
-            
+
             // Left viewport
             driver->setViewPort(irr::core::rect<irr::s32>(vrLeftStart,0,graphicsWidth/2,graphicsHeight));
             model.updateViewport(aspectvr);
-            model.updateCameraVRPos(true);
+            model.updateCameraVRPos(true, vrForwardVector, vrUpVector);
             smgr->drawAll();
             // Right viewport
             driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,vrRightEnd,graphicsHeight));
-            model.updateCameraVRPos(false);
+            model.updateCameraVRPos(false, vrForwardVector, vrUpVector);
             smgr->drawAll();
 
         } else if (!fullScreenRadar) {
