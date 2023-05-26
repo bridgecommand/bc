@@ -1025,17 +1025,27 @@ int main(int argc, char ** argv)
                 if (ohmd_device_getf(hmd, OHMD_ROTATION_QUAT, quaternion) == 0 ) {
                     //std::cout << "Quat: " << quaternion[0] << " " << quaternion[1] << " " << quaternion[2] << " " << quaternion[3] << std::endl;
 
-                    vrForwardVector= irr::core::vector3df(
-                        2.0 * (quaternion[0]*quaternion[2] + quaternion[3]*quaternion[1]),
-                        2.0 * (quaternion[1]*quaternion[2] - quaternion[3]*quaternion[0]),
-                        1.0 - 2.0 * (quaternion[0]*quaternion[0] + quaternion[1]*quaternion[1])
-                    );
+                    irr::f32 qX = quaternion[0];
+                    irr::f32 qY = quaternion[1];
+                    irr::f32 qZ = quaternion[2];
+                    irr::f32 qW = quaternion[3];
 
-                    vrUpVector= irr::core::vector3df(
-                        2.0 * (quaternion[0]*quaternion[1] - quaternion[3]*quaternion[2]),
-                        1.0 - 2.0 * (quaternion[0]*quaternion[0] + quaternion[2]*quaternion[2]),
-                        2.0 * (quaternion[1]*quaternion[2] + quaternion[3]*quaternion[0])
-                    );
+                    //vrForwardVector= irr::core::vector3df(
+                    //    2.0 * (qX*qZ - qW*qY),
+                    //    2.0 * (qY*qZ + qW*qX),
+                    //    1.0 - 2.0 * (qX*qX + qY*qY)
+                    //);
+
+                    //vrUpVector= irr::core::vector3df(
+                    //    2.0 * (qX*qY + qW*qZ),
+                    //    1.0 - 2.0 * (qX*qX + qZ*qZ),
+                    //    2.0 * (qY*qZ - qW*qX)
+                    //);
+                    
+                    irr::core::quaternion quat = irr::core::quaternion(qX,-1.0*qY,qZ,-1.0*qW); // Swap!
+                    
+                    vrForwardVector = quat*irr::core::vector3df(0,0,1);
+                    vrUpVector = quat*irr::core::vector3df(0,1,0);
 
                 }
             }
