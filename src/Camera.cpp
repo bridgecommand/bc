@@ -334,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::vector3df forwardView, irr::core::vector3df upView)
+void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::quaternion quat)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -360,14 +360,19 @@ void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::vector3df forw
             parentPosition = parent->getPosition();
         }
 
+        // Quaternion for the view angles
+        irr::core::quaternion viewQuat = irr::core::quaternion(irr::core::DEGTORAD*(-1*lookUpAngle),irr::core::DEGTORAD*(lookAngle-angleCorrection),0);
+
         // transform forward vector of camera
-        //irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-        irr::core::vector3df frv = forwardView; //TODO: Also enable key movement etc.
+        irr::core::vector3df frv(0.0f,0.0f,1.0f);
+        frv=quat*frv;
+        frv=viewQuat*frv;
         parentAngles.transformVect(frv);
 
         // transform upvector of camera
-        //irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
-        irr::core::vector3df upv = upView; // TODO: Also enable key movement etc
+        irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
+        upv = quat*upv;
+        upv = viewQuat*upv;
         parentAngles.transformVect(upv);
 
         // Update side view vector (must be perpendicular to upv and frv)

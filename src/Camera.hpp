@@ -60,7 +60,7 @@ class Camera
         void setFrozen(bool frozen);
         void toggleFrozen();
         void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime=0,  bool leftView=false, irr::core::vector3df forwardView=irr::core::vector3df(0,0,1), irr::core::vector3df upView=irr::core::vector3df(0,1,0));
+        void update(irr::f32 deltaTime=0,  bool leftView=false, irr::core::quaternion quat=irr::core::quaternion(0,0,0,1));
 
     private:
         irr::scene::ICameraSceneNode* camera;

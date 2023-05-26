@@ -1394,9 +1394,9 @@ SimulationModel::~SimulationModel()
         moveViewWithPrimary = moveView;
     }
 
-    void SimulationModel::updateCameraVRPos(bool leftView, irr::core::vector3df forwardView, irr::core::vector3df upView)
+    void SimulationModel::updateCameraVRPos(bool leftView, irr::core::quaternion quat)
     {
-        camera.update(0, leftView, forwardView, upView);
+        camera.update(0, leftView, quat);
     }
 
     void SimulationModel::update()

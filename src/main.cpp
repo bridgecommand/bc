@@ -906,7 +906,9 @@ int main(int argc, char ** argv)
 
     // Hardcoded VR mode for now
     bool vr3dMode = true;
-    guiMain.hide2dInterface();
+    if (vr3dMode) {
+        guiMain.hide2dInterface();
+    }
 
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
@@ -1017,8 +1019,7 @@ int main(int argc, char ** argv)
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
         if (vr3dMode) {
-            irr::core::vector3df vrForwardVector;
-            irr::core::vector3df vrUpVector;
+            irr::core::quaternion quat=irr::core::quaternion(0,0,0,1);
             if(ohmd_available) {
                 ohmd_ctx_update(ohmd_ctx);
                 float quaternion[4];
@@ -1029,10 +1030,8 @@ int main(int argc, char ** argv)
                     irr::f32 qZ = quaternion[2];
                     irr::f32 qW = quaternion[3];
 
-                    irr::core::quaternion quat = irr::core::quaternion(1.0*qX,1.0*qY,-1.0*qZ,-1.0*qW); // Set signs to match our coordinate system
+                    quat = irr::core::quaternion(1.0*qX,1.0*qY,-1.0*qZ,-1.0*qW); // Set signs to match our coordinate system
 
-                    vrForwardVector = quat*irr::core::vector3df(0,0,1);
-                    vrUpVector = quat*irr::core::vector3df(0,1,0);
                 }
             }
 
@@ -1046,11 +1045,11 @@ int main(int argc, char ** argv)
             // Left viewport
             driver->setViewPort(irr::core::rect<irr::s32>(vrLeftStart,0,graphicsWidth/2,graphicsHeight));
             model.updateViewport(aspectvr);
-            model.updateCameraVRPos(true, vrForwardVector, vrUpVector);
+            model.updateCameraVRPos(true, quat);
             smgr->drawAll();
             // Right viewport
             driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,vrRightEnd,graphicsHeight));
-            model.updateCameraVRPos(false, vrForwardVector, vrUpVector);
+            model.updateCameraVRPos(false, quat);
             smgr->drawAll();
 
         } else if (!fullScreenRadar) {
