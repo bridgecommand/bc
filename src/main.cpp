@@ -904,12 +904,6 @@ int main(int argc, char ** argv)
 
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
-    // Hardcoded VR mode for now
-    bool vr3dMode = true;
-    if (vr3dMode) {
-        guiMain.hide2dInterface();
-    }
-
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
         guiMain.hide2dInterface();
@@ -930,6 +924,14 @@ int main(int argc, char ** argv)
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
     }
+
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+        guiMain.hide2dInterface();
+    }
+
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
