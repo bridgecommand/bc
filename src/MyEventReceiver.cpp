@@ -111,7 +111,7 @@
                     mouseClickY = event.MouseInput.Y;
 
                     // Add line (mooring/towing) start or end if in required mode
-                    if ((linesMode == 1) or (linesMode == 2)) {
+                    if ((linesMode == 1) || (linesMode == 2)) {
                         // Scale if required because 3d view may be different
                         irr::s32 scaledMouseY = mouseClickY;
                         if (gui->getShowInterface()) {
