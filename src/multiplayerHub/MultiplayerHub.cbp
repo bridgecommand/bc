@@ -80,6 +80,8 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="LinesData.cpp" />
+		<Unit filename="LinesData.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
 		<Unit filename="ScenarioChoice.cpp" />

@@ -29,6 +29,7 @@
 #include "ScenarioChoice.hpp"
 #include "Network.hpp"
 #include "ShipPositions.hpp"
+#include "LinesData.hpp"
 
 #include <fstream> //To save to log
 
@@ -258,14 +259,16 @@ int main()
     //Load overall scenario information
     ScenarioData masterScenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName,scenarioName);
 
-    irr::u32 numberOfOtherShips;
+    irr::u32 numberOfOtherShips; // This is the number of 'other' ships in each simulation. The total number of controllable ships is numberOfOtherShips+1
     if (masterScenarioData.otherShipsData.size() > 0) {
         numberOfOtherShips = masterScenarioData.otherShipsData.size()-1;
     } else {
         numberOfOtherShips = 0;
     }
 
+    // These both use +1 because we are storing data for all ships. numberOfOtherShips is the number of 'other' ships in each simulation, so we need to add 1 for the 'own ship'
     ShipPositions shipPositionData(numberOfOtherShips+1);
+    LinesData linesData(numberOfOtherShips+1);
 
     //Get time information and initialise
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
@@ -360,7 +363,9 @@ int main()
             //2: Number of other ships: Size of master other ships list -1, as we don't count the one being used as our own ship
             stringToSend.append(Utilities::lexical_cast<std::string>(numberOfOtherShips));
             stringToSend.append(",");
-            stringToSend.append("0,0#"); //Number of buoys and MOB, values not used
+            stringToSend.append("0,0,"); //Number of buoys and MOB, values not used
+            stringToSend.append(Utilities::lexical_cast<std::string>(linesData.getNumberOfOtherLines(thisPeer))); // Number of lines (mooring/towing)
+            stringToSend.append("#"); //Terminate number info
 
             //3: Info on each other ship
             //For each Other, terminated with '#' at end of list
@@ -406,8 +411,16 @@ int main()
             stringToSend.append(otherShipsString);
             stringToSend.append("#");
 
-            //Remaining entries need to be present, but values aren't used
-            stringToSend.append("4#5#6#7#8#9#10");
+            //Intermediate entries need to be present, but values aren't used
+            stringToSend.append("4#5#6#7#8#9#10#");
+
+            //Lines information (mooring/towing)
+            std::string linesString = linesData.getLineDataString(thisPeer);
+            //strip trailing '|' if present
+            if(linesString.length()>0) {
+                linesString = linesString.substr(0,linesString.length()-1);
+            }
+            stringToSend.append(linesString);
 
             //std::cout << stringToSend << std::endl;
 
@@ -433,6 +446,8 @@ int main()
 
             Records 4 to 10 not used (separate with '#')
 
+            (11) Lines information...
+
 
             */
 
@@ -442,7 +457,7 @@ int main()
                 receivedMessage = receivedMessage.substr(3,receivedMessage.length()-3); //Strip 'MPF'
                 std::vector<std::string> splitMessage = Utilities::split(receivedMessage,'#');
                 //Store information
-                if (splitMessage.size() == 6) {
+                if (splitMessage.size() == 7) {
                     irr::f32 thisOtherShipX = Utilities::lexical_cast<irr::f32>(splitMessage.at(0));
                     irr::f32 thisOtherShipZ = Utilities::lexical_cast<irr::f32>(splitMessage.at(1));
                     irr::f32 thisOtherShipBearing = Utilities::lexical_cast<irr::f32>(splitMessage.at(2));
@@ -450,8 +465,74 @@ int main()
                     irr::f32 thisOtherShipSpeed = Utilities::lexical_cast<irr::f32>(splitMessage.at(4));
                     irr::f32 thisOtherShipTime = Utilities::lexical_cast<irr::f32>(splitMessage.at(5));
                     shipPositionData.setShipPosition(thisPeer,thisOtherShipTime,thisOtherShipX,thisOtherShipZ,thisOtherShipSpeed,thisOtherShipBearing,thisOtherShipRateOfTurn);
-                }
-            }
+
+                    // Lines data, from splitMessage.at(6)
+                    std::vector<std::string> linesDataString = Utilities::split(splitMessage.at(6),'|');
+
+                    //std::cout << "Message in from " << thisPeer << ": " << splitMessage.at(6) << std::endl;
+                    
+                    // If necessary, add or delete line
+                    linesData.setLineDataSize(thisPeer, linesDataString.size());
+                    
+                    // Update line information
+                    for (int lineID = 0; lineID < linesDataString.size(); lineID++) {
+                        std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(lineID),',');
+                        // Check number of elements for line data line
+                        if (thisLineData.size()==15) {
+                            irr::f32 thisStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
+                            irr::f32 thisStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
+                            irr::f32 thisStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
+                            irr::f32 thisEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
+                            irr::f32 thisEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
+                            irr::f32 thisEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
+                            int thisStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
+                            int thisEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
+                            int thisStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
+                            int thisEndID = Utilities::lexical_cast<int>(thisLineData.at(9));
+                            irr::f32 thisNominalLength = Utilities::lexical_cast<irr::f32>(thisLineData.at(10));
+                            irr::f32 thisBreakingTension = Utilities::lexical_cast<irr::f32>(thisLineData.at(11));
+                            irr::f32 thisBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
+                            irr::f32 thisNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
+                            int thisKeepSlack = Utilities::lexical_cast<int>(thisLineData.at(14));
+
+                            // Modify start and end data to internal IDs (e.g. all ownShip will change to otherShip)
+                            if (thisStartType == 1) {
+                                // Own ship
+                                thisStartType = 2;
+                                thisStartID = thisPeer;
+                            } else if (thisStartType == 2) {
+                                // Other ship. Essential to use else if, to avoid accidentally changing own ship again
+                                // Convert from local thisStartID (as used by thisPeer) to the overall list of other ships in the multiplayer scenario
+                                if (thisStartID >= thisPeer) {
+                                    thisStartID = thisStartID + 1;
+                                }
+                            }
+                            if (thisEndType == 1) {
+                                // Own ship
+                                thisEndType = 2;
+                                thisEndID = thisPeer;
+                            } else if (thisEndType == 2) {
+                                // Other ship. Essential to use else if, to avoid accidentally changing own ship again
+                                // Convert from local thisStartID (as used by thisPeer) to the overall list of other ships in the multiplayer scenario
+                                if (thisEndID >= thisPeer) {
+                                    thisEndID = thisEndID + 1;
+                                }
+                            }
+
+                            linesData.setLineData(thisPeer, lineID, 
+                                                  thisStartType, thisEndType, thisStartID, thisEndID, 
+                                                  thisKeepSlack, 
+                                                  thisStartX, thisStartY, thisStartZ, 
+                                                  thisEndX, thisEndY, thisEndZ, 
+                                                  thisNominalLength, 
+                                                  thisBreakingTension, 
+                                                  thisBreakingStrain, 
+                                                  thisNominalShipMass);
+                        }
+                    }
+                    // End lines data
+                } // Correct number of entries in MPF
+            } // MPF record
         } //End of loop for each peer
 
 
@@ -490,6 +571,8 @@ int main()
 
             displayText.append(thisShipInfo);
         }
+        displayText.append(L"\n");
+        displayText.append(irr::core::stringw(linesData.getNumberOfLines()));
 
 
         text->setText(displayText.c_str());

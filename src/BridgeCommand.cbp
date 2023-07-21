@@ -135,6 +135,10 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />
+		<Unit filename="Line.cpp" />
+		<Unit filename="Line.hpp" />
+		<Unit filename="Lines.cpp" />
+		<Unit filename="Lines.hpp" />
 		<Unit filename="ManOverboard.cpp" />
 		<Unit filename="ManOverboard.hpp" />
 		<Unit filename="MovingWater.cpp" />

@@ -137,7 +137,7 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 11) { //11 basic records in data sent
+            if (receivedData.size() == 12) { //12 basic records in data sent
 
                 //Time info is record 0
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');

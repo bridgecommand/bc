@@ -100,6 +100,12 @@ exit="Quitter"
 log="!"
 extraControls="Contr�les suppl�mentaires"
 
+lines="Amarres"
+
+addLine="Ajouter ligne d'amarrage"
+removeLine="Retirer l'amarre"
+keepLineSlack="Gardez la ligne d’amarrage relâchée"
+
 pump1="Gouvernail pompe 1"
 pump2="Gouvernail pompe 2"
 pump1Working = "Gouvernail pompe 1 Marche"

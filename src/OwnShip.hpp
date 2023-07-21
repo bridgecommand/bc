@@ -41,7 +41,7 @@ class OwnShip : public Ship
     public:
 
         void load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 minContactPointSpacing, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather);
+        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
         std::vector<irr::core::vector3df> getCameraViews() const;
         std::vector<bool> getCameraIsHighView() const;
         void setViewVisibility(irr::u32 view);
@@ -145,6 +145,9 @@ class OwnShip : public Ship
 
         bool isBuoyCollision() const;
         bool isOtherShipCollision() const;
+        irr::f32 getShipMass() const;
+
+        void enableTriangleSelector(bool selectorEnabled);
 
 
     protected:
@@ -327,6 +330,9 @@ class OwnShip : public Ship
         irr::f32 contactDampingFactor;
         irr::f32 frictionCoefficient;
         irr::f32 tanhFrictionFactor;
+
+        irr::scene::ITriangleSelector* selector;
+        bool triangleSelectorEnabled; //Keep track of this so we don't keep re-setting the selector
 
         //Debugging
         std::vector<irr::scene::IMeshSceneNode*> contactDebugPoints;

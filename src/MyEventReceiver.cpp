@@ -20,8 +20,10 @@
 
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
+#include "Lines.hpp"
 #include "Utilities.hpp"
 #include "AzimuthDial.h"
+#include "Constants.hpp"
 
 //using namespace irr;
 
@@ -84,6 +86,8 @@
         rightMouseDown = false;
 
         shutdownDialogActive = false;
+
+        linesMode = 0;
 	}
 
     bool MyEventReceiver::OnEvent(const irr::SEvent& event)
@@ -105,6 +109,73 @@
                     //Log position of mouse click, so we can track relative movement
                     mouseClickX = event.MouseInput.X;
                     mouseClickY = event.MouseInput.Y;
+
+                    // Add line (mooring/towing) start or end if in required mode
+                    if ((linesMode == 1) or (linesMode == 2)) {
+                        // Scale if required because 3d view may be different
+                        irr::s32 scaledMouseY = mouseClickY;
+                        if (gui->getShowInterface()) {
+                            scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                        }
+
+                        irr::scene::ISceneNode* contactNode = model->getContactFromRay(
+                            device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX,scaledMouseY)),
+                            linesMode
+                        );
+
+                        if (contactNode) {
+                            // If returns non-null, then successful, so move onto next point or finish
+                            
+                            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
+                            int nodeType = 0;
+                            int nodeID = 0;
+
+                            // Find node type and ID from name
+                            std::string nodeName = std::string(contactNode->getName());
+                            
+                            if (nodeName.find("OwnShip")==0) {
+                                nodeType = 1;
+                                nodeID = 0;
+                            } else if (nodeName.find("OtherShip")==0) {
+                                nodeType = 2;
+                                // Find other ship ID from name (should be OtherShip_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            } else if (nodeName.find("Buoy")==0) {
+                                nodeType = 3;
+                                // Find other buoy ID from name (should be Buoy_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            } else if (nodeName.find("LandObject")==0) {
+                                nodeType = 4;
+                                // Find other land object ID from name (should be LandObject_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            }
+                            //std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
+
+                            if (linesMode == 2) {
+                                 
+                                model->getLines()->setLineEnd(contactNode, model->getOwnShipMass(), nodeType, nodeID);
+                                // Finished
+                                linesMode = 0;
+                                gui->setLinesControlsText("");
+                            }
+                            if (linesMode == 1) {
+                                model->getLines()->setLineStart(contactNode, nodeType, nodeID); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
+                                // Move on to end point
+                                linesMode = 2;
+                                gui->setLinesControlsText("Click in 3d view to set end position for line"); //TODO: Add translation
+                            }
+                        }
+                    }
+
             }
             if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {
                     leftMouseDown=false;
@@ -152,6 +223,13 @@
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
+            if (event.GUIEvent.EventType ==  irr::gui::EGET_LISTBOX_CHANGED )
+            {
+                if (id == GUIMain::GUI_ID_LINES_LIST) {
+                    model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                }
+            }
+            
             if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED)
             {
                 if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX) {
@@ -492,6 +570,16 @@
                     gui->setExtraControlsWindowVisible(true);
                 }
 
+                if (id == GUIMain::GUI_ID_HIDE_LINES_CONTROLS_BUTTON)
+                {
+                    gui->setLinesControlsWindowVisible(false);
+                }
+
+                if (id == GUIMain::GUI_ID_SHOW_LINES_CONTROLS_BUTTON)
+                {
+                    gui->setLinesControlsWindowVisible(true);
+                }
+
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON)
                 {
                     model->setRudderPumpState(1,true);
@@ -533,6 +621,25 @@
                 if (id ==GUIMain::GUI_ID_ACK_ALARMS_BUTTON)
                 {
                     model->setAlarm(false);
+                }
+
+                if (id == GUIMain::GUI_ID_ADD_LINE_BUTTON)
+                {
+                    linesMode = 1;
+                    model->addLine();
+                    gui->setLinesControlsText("Click in 3d view to set start position for line (on own ship)"); //TODO: Add translation
+                }
+
+                if (id == GUIMain::GUI_ID_REMOVE_LINE_BUTTON)
+                {
+                    model->getLines()->removeLine(model->getLines()->getSelectedLine());
+                }
+
+                if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_BUTTON) {
+                    model->getLines()->setKeepSlack(
+                        model->getLines()->getSelectedLine(),
+                        ((irr::gui::IGUIButton*)event.GUIEvent.Caller)->isPressed()
+                    );   
                 }
 
             } //Button clicked
@@ -722,7 +829,6 @@
                             //don't do anything
                             break;
                     }
-
 
                 } else if (event.KeyInput.Control) {
                     //Ctrl down

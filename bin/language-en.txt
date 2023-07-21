@@ -100,6 +100,12 @@ exit="Exit"
 log="!"
 extraControls="Extra controls"
 
+lines="Lines"
+
+addLine="Add line"
+removeLine="Remove line"
+keepLineSlack="Keep line slack"
+
 pump1="Rudder pump 1"
 pump2="Rudder pump 2"
 pump1Working = "Rudder pump 1 On"

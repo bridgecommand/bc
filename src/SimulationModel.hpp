@@ -44,6 +44,7 @@ class Sound;
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
+#include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
@@ -271,12 +272,24 @@ public:
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
     bool debugModeOn() const;
+    irr::f32 getOwnShipMass() const;
 
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
 
 	void startHorn();
 	void endHorn();
+
+    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
+    
+    irr::scene::ISceneNode* getOwnShipSceneNode();
+    irr::scene::ISceneNode* getOtherShipSceneNode(int number);
+    irr::scene::ISceneNode* getBuoySceneNode(int number);
+    irr::scene::ISceneNode* getLandObjectSceneNode(int number);
+
+    void addLine(); // Add a line, which will be undefined
+    
+    Lines* getLines(); // Get pointer to lines object
 
     void update();
 
@@ -311,6 +324,7 @@ private:
     Water water;
     Tide tide;
     Rain rain;
+    Lines lines;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;

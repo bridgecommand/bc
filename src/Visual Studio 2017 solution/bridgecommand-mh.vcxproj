@@ -151,6 +151,7 @@
     <ClCompile Include="..\libs\serial\src\serial.cc" />
     <ClCompile Include="..\ScenarioDataStructure.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
+    <ClCompile Include="..\multiplayerHub\LinesData.cpp" />
     <ClCompile Include="..\multiplayerHub\Network.cpp" />
     <ClCompile Include="..\multiplayerHub\ScenarioChoice.cpp" />
     <ClCompile Include="..\multiplayerHub\ShipPositions.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\Lang.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
+    <ClInclude Include="..\multiplayerHub\LinesData.hpp" />
     <ClInclude Include="..\multiplayerHub\Network.hpp" />
     <ClInclude Include="..\multiplayerHub\ScenarioChoice.hpp" />
     <ClInclude Include="..\multiplayerHub\ShipPositions.hpp" />

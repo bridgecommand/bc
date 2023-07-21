@@ -284,6 +284,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         }
     }
 
+    ship->setName("OwnShip");
+
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
     ship->updateAbsolutePosition();
@@ -546,11 +548,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     //Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     //Add a triangle selector
-    irr::scene::ITriangleSelector* selector=smgr->createTriangleSelector(ship);
+    selector=smgr->createTriangleSelector(ship);
     if(selector) {
         device->getLogger()->log("Created triangle selector");
         ship->setTriangleSelector(selector);
     }
+    triangleSelectorEnabled = true;
 
     ship->updateAbsolutePosition();
 
@@ -668,6 +671,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     //We don't want to do further triangle selection with the ship, so set the selector to null
     ship->setTriangleSelector(0);
+    triangleSelectorEnabled = false;
+
     device->getLogger()->log("Own ship points found: ");
     device->getLogger()->log(irr::core::stringw(contactPoints.size()).c_str());
 }
@@ -1499,6 +1504,27 @@ bool OwnShip::isOtherShipCollision() const
     return otherShipCollision;
 }
 
+void OwnShip::enableTriangleSelector(bool selectorEnabled)
+{
+    
+    //Only re-set if we need to change the state
+    
+    if (selectorEnabled && !triangleSelectorEnabled) {
+        ship->setTriangleSelector(selector);
+        triangleSelectorEnabled = true;
+    } 
+    
+    if (!selectorEnabled && triangleSelectorEnabled) {
+        ship->setTriangleSelector(0);
+        triangleSelectorEnabled = false;
+    }
+}
+
+irr::f32 OwnShip::getShipMass() const
+{
+    return shipMass;
+}
+
 irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)
 {
     irr::f32 proportion = 0;
@@ -1528,7 +1554,7 @@ void OwnShip::setLastDeltaTime(irr::f32 myDeltaTime)
 
 
 
-void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather)
+void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque)
 {
 
     // DEE_NOV22 vvvv
@@ -1544,6 +1570,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 groundingLateralDrag = 0;
         irr::f32 groundingTurnDrag = 0;
         collisionDetectAndRespond(groundingAxialDrag,groundingLateralDrag,groundingTurnDrag); //The drag values will get modified by this call
+
+        // Add in response from mooring lines here
+        groundingAxialDrag -= linesForce.Z;
+        groundingLateralDrag -= linesForce.X;
+        groundingTurnDrag -= linesTorque.Y;
 
         //std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
 
@@ -2188,7 +2219,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             }
 
             //If this returns something, we must be in contact, so find distance between intersection and pointPosition
-            if(selectedSceneNode && strcmp(selectedSceneNode->getName(),"LandObject")==0) {
+            if(selectedSceneNode && std::string(selectedSceneNode->getName()).find("LandObject")==0) {
 
                 irr::f32 collisionDistance = pointPosition.getDistanceFrom(intersection);
 
@@ -2200,7 +2231,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32& reaction, irr::f32& lateralRea
             }
 
             //Also check for buoy collision
-            if (selectedSceneNode && strcmp(selectedSceneNode->getName(),"Buoy")==0) {
+            if (selectedSceneNode && std::string(selectedSceneNode->getName()).find("Buoy")==0) {
                 buoyCollision = true;
             }
 

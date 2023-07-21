@@ -24,6 +24,7 @@
 //forward declarations
 class GUIMain;
 class SimulationModel;
+class Lines;
 
 //Data about joystick setup
 class JoystickSetup {
@@ -214,6 +215,8 @@ private:
 
     irr::u16 previousJoystickPOV;
     bool previousJoystickPOVInitialised;
+
+    irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
 
     void startShutdown();
     irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);

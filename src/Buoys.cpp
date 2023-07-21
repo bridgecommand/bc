@@ -73,7 +73,9 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         }
 
         //Create buoy and load into vector
-        buoys.push_back(Buoy (buoyName.c_str(),worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
+        std::string internalName = "Buoy_";
+        internalName.append(std::to_string(currentBuoy-1)); // -1 as we want index from 0
+        buoys.push_back(Buoy (buoyName.c_str(),internalName,worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
@@ -151,6 +153,14 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
     }
 }
 
+void Buoys::enableAllTriangleSelectors()
+{
+    for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
+        // This will return to normal the next time Buoys::update is called.
+        it->enableTriangleSelector(true);
+    }
+}
+
 RadarData Buoys::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
 //Get data for Buoy (number) relative to scannerPosition
 {
@@ -177,6 +187,16 @@ irr::core::vector3df Buoys::getPosition(int number) const
     }
 
 }
+
+irr::scene::ISceneNode* Buoys::getSceneNode(int number)
+{
+    if (number < (int)buoys.size() && number >= 0) {
+        return buoys.at(number).getSceneNode();
+    } else {
+        return 0;
+    }
+}
+
 
 void Buoys::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {

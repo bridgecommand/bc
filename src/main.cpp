@@ -720,7 +720,7 @@ int main(int argc, char ** argv)
 	graphicsWidth = su;
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * 0.6;
+	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
@@ -856,7 +856,7 @@ int main(int argc, char ** argv)
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model
     network->setModel(&model);

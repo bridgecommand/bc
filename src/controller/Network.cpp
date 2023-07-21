@@ -212,7 +212,7 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
     //Check number of elements
-    if (receivedData.size() == 11) { //11 basic records in data sent
+    if (receivedData.size() == 12) { //12 basic records in data sent
 
         //Time info is record 0
         std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
@@ -225,9 +225,9 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
         std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
         findOwnShipPositionData(positionData, ownShipData); //Populate ownShipData from the positionData
 
-        //Numbers of objects in record 2 (Others, buoys, MOBs)
+        //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
         std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
-        if (numberData.size() == 3) {
+        if (numberData.size() == 4) {
             irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
             irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
 

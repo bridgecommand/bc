@@ -459,6 +459,8 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfBuoys()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardVisible()? 1 : 0));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getNumberOfLines()));
     stringToSend.append("#");
 
     //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
@@ -538,6 +540,10 @@ std::string NetworkPrimary::generateSendString()
 
     //10 Multiplayer request here (Not used)
     stringToSend.append("0");
+    stringToSend.append("#");
+
+    //11 Lines (mooring/towing)
+    stringToSend.append(makeNetworkLinesString(model));
 
     return stringToSend;
 }

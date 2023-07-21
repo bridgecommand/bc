@@ -124,6 +124,23 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
 
 }
 
+void OtherShips::enableAllTriangleSelectors()
+{
+    for(std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        // This will return to normal the next time OtherShips::update is called.
+        (*it)->enableTriangleSelector(true);
+    }
+}
+
+irr::scene::ISceneNode* OtherShips::getSceneNode(int number)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getSceneNode();
+    } else {
+        return 0;
+    }
+}
+
 RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 {

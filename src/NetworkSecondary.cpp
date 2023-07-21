@@ -177,7 +177,7 @@ void NetworkSecondary::receiveMessage()
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 11) { //11 basic records in data sent
+            if (receivedData.size() == 12) { //12 basic records in data sent
 
                 irr::f32 timeError;
 
@@ -218,9 +218,9 @@ void NetworkSecondary::receiveMessage()
 
                 //Start
                 //Get other ship info from records 2 and 3
-                //Numbers of objects in record 2 (Others, buoys, MOBs)
+                //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
                 std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
-                if (numberData.size() == 3) {
+                if (numberData.size() == 4) {
                     irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
 
                     //Update other ship data
@@ -260,7 +260,160 @@ void NetworkSecondary::receiveMessage()
                         model->setManOverboardVisible(false);
                     }
 
-                } //Check if 3 number elements for Other ships, buoys and MOBs
+                    irr::u32 numberLines = Utilities::lexical_cast<irr::u32>(numberData.at(3));
+                    // Update lines information
+                    if (numberLines > 0) {
+                        
+                        // Check if numberLines is different from the number of lines being shown (on network lines list)
+                        if (numberLines > model->getLines()->getNumberOfLines(true)) {
+                            // Need to add lines, initially undefined
+                            while (numberLines > model->getLines()->getNumberOfLines(true)) {
+                                model->getLines()->addLine(true);
+                            }
+                        } else if (numberLines < model->getLines()->getNumberOfLines(true)) {
+                            // Need to remove lines
+                            while (numberLines < model->getLines()->getNumberOfLines(true)) {
+                                // We don't really know which to remove, so just remove from start, and update as needed later
+                                model->getLines()->removeLine(0, true); 
+                            }
+                        }
+
+                        // For each line, check that data is correct, and if not, update it
+                        std::vector<std::string> linesDataString = Utilities::split(receivedData.at(11),'|');
+                        // Additional check, that the number of lines matches the number of data entries
+                        if (numberLines == linesDataString.size()) { 
+                            
+                            for (irr::u32 i=0; i<linesDataString.size(); i++) {
+                                std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(i),',');
+                                if (thisLineData.size() == 15) { //15 elements for each line
+                                    
+                                    irr::f32 lineStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
+                                    irr::f32 lineStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
+                                    irr::f32 lineStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
+                                    irr::f32 lineEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
+                                    irr::f32 lineEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
+                                    irr::f32 lineEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
+                                    
+                                    int lineStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
+                                    int lineEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
+                                    int lineStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
+                                    int lineEndID = Utilities::lexical_cast<int>(thisLineData.at(9));
+
+                                    irr::f32 lineNominalLength = Utilities::lexical_cast<irr::f32>(thisLineData.at(10));
+                                    irr::f32 lineBreakingTension = Utilities::lexical_cast<irr::f32>(thisLineData.at(11));
+                                    irr::f32 lineBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
+                                    irr::f32 lineNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
+
+                                    int lineKeepSlackInt = Utilities::lexical_cast<int>(thisLineData.at(14));
+                                    bool lineKeepSlack;
+                                    if (lineKeepSlackInt == 1) {
+                                        lineKeepSlack = true;
+                                    } else {
+                                        lineKeepSlack = false;
+                                    }
+
+                                    // Check if lineStartType, lineStartID, lineEndType, lineEndID match. If not, clearLine, and re-create
+                                    if ((model->getLines()->getLineStartType(i, true) != lineStartType) || 
+                                        (model->getLines()->getLineEndType(i, true) != lineEndType) ||
+                                        (model->getLines()->getLineStartID(i, true) != lineStartID) ||
+                                        (model->getLines()->getLineEndID(i, true) != lineEndID)) 
+                                    {
+                                        model->getLines()->clearLine(i, true);
+
+                                        if ((lineStartType > 0) && (lineEndType > 0)) {
+                                            // Create Spheres for the start and end scene nodes, remember to match parent name for completeness
+                                            // find start parent sceneNode
+                                            // find end parent sceneNode
+
+                                            irr::scene::ISceneNode* startParent = 0;
+                                            irr::scene::ISceneNode* endParent = 0;
+                                            if (lineStartType == 1) {
+                                                // Own ship
+                                                startParent = model->getOwnShipSceneNode();
+                                            } else if (lineStartType == 2) {
+                                                // Other ship
+                                                startParent = model->getOtherShipSceneNode(lineStartID);
+                                            } else if (lineStartType == 3) {
+                                                // Buoy
+                                                startParent = model->getBuoySceneNode(lineStartID);
+                                            } else if (lineStartType == 4) {
+                                                // Land object
+                                                startParent = model->getLandObjectSceneNode(lineStartID);
+                                            }
+
+                                            if (lineEndType == 1) {
+                                                // Own ship
+                                                endParent = model->getOwnShipSceneNode();
+                                            } else if (lineEndType == 2) {
+                                                // Other ship
+                                                endParent = model->getOtherShipSceneNode(lineEndID);
+                                            } else if (lineEndType == 3) {
+                                                // Buoy
+                                                endParent = model->getBuoySceneNode(lineEndID);
+                                            } else if (lineEndType == 4) {
+                                                // Land object
+                                                endParent = model->getLandObjectSceneNode(lineEndID);
+                                            }
+
+                                            // Make child sphere nodes based on these (in the right position), then pass in to create the lines
+                                            irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+                                            if (startParent && startParent->getScale().X > 0) {
+                                                sphereScale = irr::core::vector3df(1.0f/startParent->getScale().X, 
+                                                                                1.0f/startParent->getScale().X, 
+                                                                                1.0f/startParent->getScale().X);
+                                            }
+                                            irr::scene::ISceneNode* startNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,
+                                                                                        irr::core::vector3df(lineStartX, lineStartY, lineStartZ),
+                                                                                        irr::core::vector3df(0, 0, 0),
+                                                                                        sphereScale);
+                                            sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+                                            if (endParent && endParent->getScale().X > 0) {
+                                                sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X, 
+                                                                                1.0f/endParent->getScale().X, 
+                                                                                1.0f/endParent->getScale().X);
+                                            }
+                                            irr::scene::ISceneNode* endNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,
+                                                                                        irr::core::vector3df(lineEndX, lineEndY, lineEndZ),
+                                                                                        irr::core::vector3df(0, 0, 0),
+                                                                                        sphereScale);
+                                            
+                                            // Set name to match parent for convenience
+                                            if (startParent && startNode) {
+                                                startNode->setName(startParent->getName());
+                                            }
+                                            if (endParent && endNode) {
+                                                endNode->setName(endParent->getName());
+                                            }
+
+                                            // Create the lines
+                                            model->getLines()->setLineStart(startNode, lineStartType, lineStartID, true, i);
+                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, true, i);
+                                        }
+
+                                    }
+
+                                    // Check and update other parameters
+                                    model->getLines()->setKeepSlack(i, lineKeepSlack, true);
+                                    model->getLines()->setLineNominalLength(i, lineNominalLength, true);
+                                    model->getLines()->setLineBreakingTension(i, lineBreakingTension, true);
+                                    model->getLines()->setLineBreakingStrain(i, lineBreakingStrain, true);
+                                    model->getLines()->setLineNominalShipMass(i, lineNominalShipMass, true);
+
+                                    // TODO: Think about case where start or end positions have changed, but object/ID havent?
+
+                                }
+                            }
+                        }
+
+                    } else {
+                        // No lines, so remove all from network list
+                        while (model->getLines()->getNumberOfLines(true) > 0) {
+                            model->getLines()->removeLine(0, true);
+                        }
+                    }
+
+
+                } //Check if 4 number elements for Other ships, buoys, MOBs and lines
 
                 //Get weather info from record 7
                 //0 is weather, 1 is visibility, 3 is rain
@@ -296,7 +449,11 @@ void NetworkSecondary::receiveMessage()
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
+                    multiplayerFeedback.append("#");
 
+                    // Mooring/towing lines
+                    multiplayerFeedback.append(makeNetworkLinesString(model));
+                    
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {

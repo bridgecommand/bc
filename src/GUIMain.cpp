@@ -27,6 +27,9 @@
 #include "ScrollDial.h"
 #include "AzimuthDial.h"
 
+#include "SimulationModel.hpp"
+#include "Lines.hpp"
+
 #include <iostream> //for debugging
 #include <cmath> //For fmod
 
@@ -37,9 +40,10 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
     {
         this->device = device;
+        this->model = model;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
@@ -417,6 +421,24 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
+        //Add an additional window for lines (will normally be hidden)
+        linesControlsWindow=guienv->addWindow(stdDataDisplayPos);
+        linesControlsWindow->getCloseButton()->setVisible(false);
+        linesControlsWindow->setText(language->translate("lines").c_str());
+        guienv->addButton(linesControlsWindow->getCloseButton()->getRelativePosition(),linesControlsWindow,GUI_ID_HIDE_LINES_CONTROLS_BUTTON,L"X");
+        linesControlsWindow->setVisible(false);
+
+        //Lines controls interface
+        addLine = guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.030*sh,0.121*su,0.080*sh),linesControlsWindow,GUI_ID_ADD_LINE_BUTTON,language->translate("addLine").c_str());
+        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),linesControlsWindow,GUI_ID_LINES_LIST);
+        
+        removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
+        keepLineSlack = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_BUTTON,language->translate("keepLineSlack").c_str());
+        keepLineSlack->setIsPushButton(true);
+
+        linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.122*su,0.030*sh,0.300*su,0.080*sh),true,true,linesControlsWindow);
+
+         
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
@@ -585,8 +607,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Show button to display extra controls window
         showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
+        //Show button to display lines control window
+        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.37*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
+
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.35*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.37*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
 
         //Set initial visibility
         updateVisibility();
@@ -739,7 +764,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     irr::core::rect<irr::s32> GUIMain::getSmallRadarRect() const
     {
 	    irr::u32 graphicsWidth3d = su;
-	    irr::u32 graphicsHeight3d = sh * 0.6;
+	    irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
         return irr::core::rect<irr::s32>(su-(sh-graphicsHeight3d)+azimuthGUIOffsetR,graphicsHeight3d,su+azimuthGUIOffsetR,sh);
     }
     
@@ -764,6 +789,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //visibilityScrollbar->setVisible(showInterface);
         pcLogButton->setVisible(showInterface);
         showExtraControlsButton->setVisible(showInterface);
+        showLinesControlsButton->setVisible(showInterface);
 
         exitButton->setVisible(showInterface);
 
@@ -1380,6 +1406,31 @@ guiTideHeight = guiData->tideHeight;
             }
         }
 
+        // Update lines display
+        if (model && model->getLines()) {
+            std::vector<std::string> linesNames = model->getLines()->getLineNames();
+            
+            irr::s32 previousSelection = linesList->getSelected();
+            linesList->clear();
+
+            for (unsigned int i = 0; i < linesNames.size(); i++) {
+                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
+            }
+
+            if (linesList->getItemCount() > previousSelection) {
+                linesList->setSelected(previousSelection);
+            }
+
+            // Get 'keepSlack' status of current line
+            if (linesList->getSelected() > -1) {
+                keepLineSlack->setPressed(model->getLines()->getKeepSlack(linesList->getSelected()));
+            } else {
+                keepLineSlack->setPressed(false);
+            }
+
+
+        }
+
         guienv->drawAll();
 
         //draw the heading line on the radar
@@ -1568,4 +1619,17 @@ guiTideHeight = guiData->tideHeight;
         if (windowVisible) {
             guienv->setFocus(extraControlsWindow);
         }
+    }
+
+    void GUIMain::setLinesControlsWindowVisible(bool windowVisible)
+    {
+        linesControlsWindow->setVisible(windowVisible);
+        if (windowVisible) {
+            guienv->setFocus(linesControlsWindow);
+        }
+    }
+
+    void GUIMain::setLinesControlsText(std::string textToShow)
+    {
+        linesText->setText(irr::core::stringw(textToShow.c_str()).c_str());
     }

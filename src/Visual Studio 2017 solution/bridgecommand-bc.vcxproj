@@ -161,6 +161,8 @@
     <ClCompile Include="..\LandObject.cpp" />
     <ClCompile Include="..\LandObjects.cpp" />
     <ClCompile Include="..\Lang.cpp" />
+    <ClCompile Include="..\Line.cpp" />
+    <ClCompile Include="..\Lines.cpp" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
@@ -226,6 +228,8 @@
     <ClInclude Include="..\Lang.hpp" />
     <ClInclude Include="..\Leg.hpp" />
     <ClInclude Include="..\Light.hpp" />
+    <ClInclude Include="..\Line.hpp" />
+    <ClInclude Include="..\Lines.hpp" />
     <ClInclude Include="..\ManOverboard.hpp" />
     <ClInclude Include="..\MovingWater.hpp" />
     <ClInclude Include="..\MyEventReceiver.hpp" />

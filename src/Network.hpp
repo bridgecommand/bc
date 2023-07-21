@@ -37,6 +37,8 @@ class Network
     virtual void update() = 0;
     virtual int getPort() = 0;
     virtual ~Network();
+    protected:
+    std::string makeNetworkLinesString(SimulationModel* model);
 };
 
 #endif

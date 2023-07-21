@@ -1373,6 +1373,11 @@ SimulationModel::~SimulationModel()
         return debugMode;
     }
 
+    irr::f32 SimulationModel::getOwnShipMass() const
+    {
+        return ownShip.getShipMass();
+    }
+
     irr::f32 SimulationModel::getMaxSounderDepth() const
     {
         return ownShip.getMaxSounderDepth();
@@ -1392,6 +1397,104 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setMoveViewWithPrimary(bool moveView) {
         moveViewWithPrimary = moveView;
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
+        
+        // Temporarily enable all required triangle selectors
+        if (linesMode == 1) {
+            // Start - on own ship
+            ownShip.enableTriangleSelector(true);
+        } else if (linesMode == 2) {
+            // End - not on own ship
+            otherShips.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+            buoys.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+            // TODO: Temporarily enable triangle selector for:
+            //   Terrain
+            //   Land objects
+        } else {
+            // Not start or end, return null;
+            return 0;
+        }
+        
+        irr::core::vector3df intersection;
+        irr::core::triangle3df hitTriangle;
+
+        irr::scene::ISceneNode * selectedSceneNode =
+            smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+            ray,
+            intersection, // This will be the position of the collision
+            hitTriangle, // This will be the triangle hit in the collision
+            0, // (bitmask), 0 for all
+            0); // Check all nodes
+        
+        irr::scene::ISceneNode* contactPointNode = 0;
+
+        if (selectedSceneNode && 
+            (
+                ((linesMode == 1) && (selectedSceneNode == ownShip.getSceneNode())) || // Valid start node
+                ((linesMode == 2) && (selectedSceneNode != ownShip.getSceneNode()))    // Valid end node
+            )
+           ) {
+
+            // Add a 'sphere' scene node, with selectedSceneNode as parent.
+            // Find local coordinates from the global one
+            irr::core::vector3df localPosition(intersection);
+            irr::core::matrix4 worldToLocal = selectedSceneNode->getAbsoluteTransformation();
+            worldToLocal.makeInverse();
+            worldToLocal.transformVect(localPosition);
+
+            irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+            if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
+                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X, 
+                                                   1.0f/selectedSceneNode->getScale().X, 
+                                                   1.0f/selectedSceneNode->getScale().X);
+            }
+
+            contactPointNode = smgr->addSphereSceneNode(0.25f,16,selectedSceneNode,-1,
+                                                        localPosition,
+                                                        irr::core::vector3df(0, 0, 0),
+                                                        sphereScale);
+            
+            // Set name to match parent for convenience
+            contactPointNode->setName(selectedSceneNode->getName());
+        } 
+
+        // Reset triangle selectors
+        ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
+        // buoys and otherShips will be reset when their update() method is called
+
+        return contactPointNode;
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getOwnShipSceneNode()
+    {
+        return (irr::scene::ISceneNode*)ownShip.getSceneNode();
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
+    {
+        return otherShips.getSceneNode(number);
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getBuoySceneNode(int number)
+    {
+        return buoys.getSceneNode(number);
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
+    {
+        return landObjects.getSceneNode(number);
+    }
+
+    void SimulationModel::addLine() // Add a line, which will be undefined
+    {
+        lines.addLine();
+    }
+
+    Lines* SimulationModel::getLines() // Get pointer to lines object
+    {
+        return &lines;
     }
 
     void SimulationModel::update()
@@ -1468,9 +1571,12 @@ SimulationModel::~SimulationModel()
         //Update land lights
         landLights.update(deltaTime,scenarioTime,lightLevel);
 
-        }{ IPROF("Update own ship");
+        } { IPROF("Update lines");
+        //update all lines, ready to be used for own ship force
+        lines.update(deltaTime);
+        } { IPROF("Update own ship");
         //update own ship
-        ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
+        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 
         }{ IPROF("Update MOB");
         //update man overboard
