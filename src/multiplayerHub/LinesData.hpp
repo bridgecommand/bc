@@ -18,6 +18,7 @@
 #define __LINESDATA_HPP_INCLUDED__
 
 #include <vector>
+#include <string>
 #include "irrlicht.h"
 
 
