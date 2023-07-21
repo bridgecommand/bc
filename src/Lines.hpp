@@ -18,6 +18,7 @@
 #define __LINES_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include <string>
 #include <vector>
 
 //Forward declarations
