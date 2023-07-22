@@ -521,9 +521,6 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     rudder = 0;
     wheel = 0;
 
-    portAzimuthAngle = 0;
-    stbdAzimuthAngle = 0;
-
 // DEE_NOV22 vvvv Azimuth Drive code
 // calculate some parameters here for computational efficiency
 // HERE
@@ -536,6 +533,19 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
    stbdThrustLever = 0.1;		// stbd thrust lever  DEBUG set to 0.1
    portClutch = false;		// Port clutch is disengaged DEGUG set to engaged
    stbdClutch = false;		// Starboard clutch is disengaged
+
+   if (azimuthDrive) {
+    portEngine = portThrustLever;
+    stbdEngine = stbdThrustLever;
+   }
+   if (azimuthDriveSameDirectionAsSchottel) {
+    portAzimuthAngle = portSchottel;
+    stbdAzimuthAngle = stbdSchottel;
+   } else {
+    portAzimuthAngle = 360 - portSchottel;
+    stbdAzimuthAngle = 360 - stbdSchottel;
+   }
+   
 
 // DEE_NOV22 DEBUG setting thrust lever to 0.1 and clutches disengaged
 
