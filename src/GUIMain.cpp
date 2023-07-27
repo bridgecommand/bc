@@ -327,11 +327,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
         }
 
-        //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
-        if (controlsHidden) {
-            hideInSecondary();
-        }
-
         //add data display:
         stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.71*sh,0.45*su+azimuthGUIOffsetR,0.95*sh); //In normal view
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
@@ -612,7 +607,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Show internal log window button
         pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.37*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
-
+        
         //Set initial visibility
         updateVisibility();
 
@@ -850,6 +845,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (azimuth2Control) {azimuth2Control->setVisible(false);}
         if (azimuth1Master) {azimuth1Master->setVisible(false);}
         if (azimuth2Master) {azimuth2Master->setVisible(false);}
+
+        if (showLinesControlsButton) {showLinesControlsButton->setVisible(false);}
+        if (showExtraControlsButton) {showExtraControlsButton->setVisible(false);}
 
 	// DEE_NOV22 vvvv hide these in secondary displays
         if (enginePort) {enginePort->setVisible(false);}
