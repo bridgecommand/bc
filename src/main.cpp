@@ -817,7 +817,6 @@ int main(int argc, char ** argv)
     network->connectToServer(hostname);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    // TODO: Test what happens if you try to use controller with this!
     Network* extraNetwork = 0;
     if (mode == OperatingMode::Multiplayer) {
         extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
