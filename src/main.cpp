@@ -816,6 +816,14 @@ int main(int argc, char ** argv)
     //Network network(&model);
     network->connectToServer(hostname);
 
+    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
+    // TODO: Test what happens if you try to use controller with this!
+    Network* extraNetwork = 0;
+    if (mode == OperatingMode::Multiplayer) {
+        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
+        extraNetwork->connectToServer(hostname);
+    }
+
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
     if (mode == OperatingMode::Normal) {
@@ -860,6 +868,9 @@ int main(int argc, char ** argv)
 
     //Give the network class a pointer to the model
     network->setModel(&model);
+    if (extraNetwork) {
+        extraNetwork->setModel(&model);
+    }
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -928,6 +939,9 @@ int main(int argc, char ** argv)
         { IPROF("Network");
 //        networkProfile.tic();
         network->update();
+        if (extraNetwork) {
+            extraNetwork->update();
+        }
 //        networkProfile.toc();
 
         // Update NMEA, check if new sensor or AIS data is ready to be sent
@@ -1035,6 +1049,9 @@ int main(int argc, char ** argv)
     //networking should be stopped (presumably with destructor when it goes out of scope?)
     device->getLogger()->log("About to stop network");
     delete network;
+    if (extraNetwork) {
+        delete extraNetwork;
+    }
 
     device->drop();
 
