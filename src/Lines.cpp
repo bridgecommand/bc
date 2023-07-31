@@ -19,6 +19,7 @@
 
 Lines::Lines()
 {
+    selectedLine = -1; // None selected
 }
 
 Lines::~Lines()

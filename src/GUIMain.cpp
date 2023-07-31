@@ -428,19 +428,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),linesControlsWindow,GUI_ID_LINES_LIST);
         
         removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
-        keepLineSlack = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_BUTTON,language->translate("keepLineSlack").c_str());
-        keepLineSlack->setIsPushButton(true);
-        keepLineSlack->setScaleImage(true);
-        irr::video::IImage* slackBGImage = device->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8,irr::core::dimension2du(10,10));
-        slackBGImage->fill(irr::video::SColor(255, 255, 0, 0));
-        irr::video::ITexture* slackBGTexture = device->getVideoDriver()->addTexture("bgKeepSlack",slackBGImage);
-        keepLineSlack->setPressedImage(slackBGTexture);
-        slackBGImage->drop();
-
-
+        
+        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.285*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.280*su,0.160*sh),true,true,linesControlsWindow);
+        keepLineSlackText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+        
         linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.122*su,0.030*sh,0.300*su,0.080*sh),true,true,linesControlsWindow);
-
-         
+ 
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
@@ -1428,9 +1422,9 @@ guiTideHeight = guiData->tideHeight;
 
             // Get 'keepSlack' status of current line
             if (linesList->getSelected() > -1) {
-                keepLineSlack->setPressed(model->getLines()->getKeepSlack(linesList->getSelected()));
+                keepLineSlack->setChecked(model->getLines()->getKeepSlack(linesList->getSelected()));
             } else {
-                keepLineSlack->setPressed(false);
+                keepLineSlack->setChecked(false);
             }
 
 

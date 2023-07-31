@@ -248,6 +248,13 @@
                     //Set the linked checkbox (big/small radar window)
                     gui->setARPACheckboxes(boxState);
                 }
+
+                if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_CHECKBOX) {
+                    model->getLines()->setKeepSlack(
+                        model->getLines()->getSelectedLine(),
+                        ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()
+                    );   
+                }
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED)
@@ -633,13 +640,6 @@
                 if (id == GUIMain::GUI_ID_REMOVE_LINE_BUTTON)
                 {
                     model->getLines()->removeLine(model->getLines()->getSelectedLine());
-                }
-
-                if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_BUTTON) {
-                    model->getLines()->setKeepSlack(
-                        model->getLines()->getSelectedLine(),
-                        ((irr::gui::IGUIButton*)event.GUIEvent.Caller)->isPressed()
-                    );   
                 }
 
             } //Button clicked
