@@ -315,13 +315,14 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
             if (lineExtension > 0) {
                 irr::f32 lineStiffness = lineBreakingTension / (lineNominalLength * lineBreakingStrain);
                 
-                // Upper limit to stiffness for stability (based on 1m length) - Todo, could be improved?
-                if (lineStiffness > (lineBreakingTension / lineBreakingStrain)) {
-                    lineStiffness = lineBreakingTension / lineBreakingStrain;
+                // Upper limit to stiffness for stability (based on 10m length) - Todo, could be improved?
+                if (lineStiffness > (lineBreakingTension / (10 * lineBreakingStrain))) {
+                    lineStiffness = lineBreakingTension / (10 * lineBreakingStrain);
                 }
 
                 // TODO: If we want to maintain a certain tension, find the line extension for this, 
                 // and then reset lineNominalLength based on this? Don't include damping in the calculation.
+                // Alternatively, reduce lineNominalLength at a rate dependent on the line tension
 
 
                 // Calculate the stiffness based force
