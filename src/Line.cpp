@@ -115,7 +115,6 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
         lineVisualisation2 = lineStart->getSceneManager()->addCubeSceneNode(1.0); // Will be scaled and aligned later. No parent as we will control with absolute position
 
         //Set lighting to use diffuse and ambient, so lighting of untextured models works
-        /*
         if(lineVisualisation1->getMaterialCount()>0) {
             for(irr::u32 mat=0;mat<lineVisualisation1->getMaterialCount();mat++) {
                 lineVisualisation1->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -126,7 +125,6 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
                 lineVisualisation2->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
             }
         }
-        */
 
        // Set line properties proportional to the ship size
        lineBreakingStrain = 0.25; // Initial guess
@@ -322,6 +320,11 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     lineStiffness = lineBreakingTension / lineBreakingStrain;
                 }
 
+                // TODO: If we want to maintain a certain tension, find the line extension for this, 
+                // and then reset lineNominalLength based on this? Don't include damping in the calculation.
+
+
+                // Calculate the stiffness based force
                 forceMagnitude = lineExtension * lineStiffness;
 
                 // Add damping (50% of critical) here
@@ -387,12 +390,19 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
             lineVisualisation1->setPosition((startPosAbs + lineCentrePoint)/2.0);
             lineVisualisation2->setPosition((lineCentrePoint + endPosAbs)/2.0);
 
+            irr::video::SColor lineColour = irr::video::SColor(255, 255, 255, 255);
+            
             // set x & y size based on what's selected
             irr::f32 xySize = 0.05;
             if (isSelected) {
                 xySize *= 2;
+                lineColour = irr::video::SColor(255, 255, 0, 0);
             }
             
+            // Apply colour to vertex (TODO: Store scene manager, to reduce duplication)
+            lineVisualisation1->getSceneManager()->getMeshManipulator()->setVertexColors(lineVisualisation1->getMesh(),lineColour);
+            lineVisualisation2->getSceneManager()->getMeshManipulator()->setVertexColors(lineVisualisation2->getMesh(),lineColour);
+
             // set z scale to line length
             lineVisualisation1->setScale(irr::core::vector3df(xySize,xySize,startPosAbs.getDistanceFrom(lineCentrePoint)));
             lineVisualisation2->setScale(irr::core::vector3df(xySize,xySize,endPosAbs.getDistanceFrom(lineCentrePoint)));
