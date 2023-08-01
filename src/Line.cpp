@@ -24,6 +24,7 @@ Line::Line()
     lineBreakingTension = 0;
     shipNominalMass = 0;
     keepSlack = false;
+    heaveIn = false;
     isSelected = false;
     lineName = "In progress";
 
@@ -156,6 +157,22 @@ bool Line::getKeepSlack() const
 void Line::setKeepSlack(bool keepSlack)
 {
     this->keepSlack = keepSlack;
+    if (keepSlack) {
+        heaveIn = false;
+    }
+}
+
+bool Line::getHeaveIn() const
+{
+    return heaveIn;
+}
+
+void Line::setHeaveIn(bool heaveIn)
+{
+    this->heaveIn = heaveIn;
+    if (heaveIn) {
+        keepSlack = false;
+    }
 }
 
 void Line::setSelected(bool selected)
@@ -334,6 +351,9 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
                     forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping;
                 }
+
+                // Reduce line length for next time if 'tension lines' is active
+                if (!keepSlack && )
             }
 
         }

@@ -37,6 +37,9 @@ class Line
         void setLineName(std::string lineName);
         bool getKeepSlack() const;
         void setKeepSlack(bool keepSlack);
+        bool getHeaveIn() const;
+        void setHeaveIn(bool heaveIn);
+
         void setSelected(bool selected);
 
         irr::f32 getLineStartX() const;
@@ -75,6 +78,7 @@ class Line
         irr::f32 lineBreakingTension;
         std::string lineName;
         bool keepSlack;
+        bool heaveIn;
         bool isSelected;
         int startNodeType; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
         int endNodeType; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object

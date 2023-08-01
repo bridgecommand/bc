@@ -1420,11 +1420,13 @@ guiTideHeight = guiData->tideHeight;
                 linesList->setSelected(previousSelection);
             }
 
-            // Get 'keepSlack' status of current line
+            // Get 'keepSlack' & 'heaveIn' status of current line
             if (linesList->getSelected() > -1) {
                 keepLineSlack->setChecked(model->getLines()->getKeepSlack(linesList->getSelected()));
+                heaveLineIn->setChecked(model->getLines()->getHeaveIn(linesList->getSelected()));
             } else {
                 keepLineSlack->setChecked(false);
+                heaveLineIn->setChecked(false);
             }
 
 
