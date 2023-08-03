@@ -255,6 +255,14 @@
                         ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()
                     );   
                 }
+
+                if (id == GUIMain::GUI_ID_HAUL_IN_LINE_CHECKBOX) {
+                    model->getLines()->setHeaveIn(
+                        model->getLines()->getSelectedLine(),
+                        ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()
+                    );   
+                }
+                
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED)

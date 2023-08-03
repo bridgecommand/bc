@@ -285,7 +285,7 @@ void NetworkSecondary::receiveMessage()
                             
                             for (irr::u32 i=0; i<linesDataString.size(); i++) {
                                 std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(i),',');
-                                if (thisLineData.size() == 15) { //15 elements for each line
+                                if (thisLineData.size() == 16) { //16 elements for each line
                                     
                                     irr::f32 lineStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
                                     irr::f32 lineStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
@@ -305,11 +305,20 @@ void NetworkSecondary::receiveMessage()
                                     irr::f32 lineNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
 
                                     int lineKeepSlackInt = Utilities::lexical_cast<int>(thisLineData.at(14));
+                                    int lineHeaveInInt = Utilities::lexical_cast<int>(thisLineData.at(15));
+
                                     bool lineKeepSlack;
                                     if (lineKeepSlackInt == 1) {
                                         lineKeepSlack = true;
                                     } else {
                                         lineKeepSlack = false;
+                                    }
+
+                                    bool lineHeaveIn;
+                                    if (lineHeaveInInt == 1) {
+                                        lineHeaveIn = true;
+                                    } else {
+                                        lineHeaveIn = false;
                                     }
 
                                     // Check if lineStartType, lineStartID, lineEndType, lineEndID match. If not, clearLine, and re-create
@@ -394,6 +403,7 @@ void NetworkSecondary::receiveMessage()
 
                                     // Check and update other parameters
                                     model->getLines()->setKeepSlack(i, lineKeepSlack, true);
+                                    model->getLines()->setHeaveIn(i, lineHeaveIn, true);
                                     model->getLines()->setLineNominalLength(i, lineNominalLength, true);
                                     model->getLines()->setLineBreakingTension(i, lineBreakingTension, true);
                                     model->getLines()->setLineBreakingStrain(i, lineBreakingStrain, true);

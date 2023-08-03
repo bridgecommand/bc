@@ -105,6 +105,7 @@ lines="Lines"
 addLine="Add line"
 removeLine="Remove line"
 keepLineSlack="Keep line slack"
+haulLineIn="Haul in line"
 
 pump1="Rudder pump 1"
 pump2="Rudder pump 2"

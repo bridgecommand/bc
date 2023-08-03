@@ -105,6 +105,7 @@ lines="Amarres"
 addLine="Ajouter ligne d'amarrage"
 removeLine="Retirer l'amarre"
 keepLineSlack="Gardez la ligne d’amarrage relâchée"
+haulLineIn="Raidir la ligne d'amarrage"
 
 pump1="Gouvernail pompe 1"
 pump2="Gouvernail pompe 2"

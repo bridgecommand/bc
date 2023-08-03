@@ -478,7 +478,7 @@ int main()
                     for (int lineID = 0; lineID < linesDataString.size(); lineID++) {
                         std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(lineID),',');
                         // Check number of elements for line data line
-                        if (thisLineData.size()==15) {
+                        if (thisLineData.size() == 16) {
                             irr::f32 thisStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
                             irr::f32 thisStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
                             irr::f32 thisStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
@@ -494,6 +494,7 @@ int main()
                             irr::f32 thisBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
                             irr::f32 thisNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
                             int thisKeepSlack = Utilities::lexical_cast<int>(thisLineData.at(14));
+                            int thisHeaveIn = Utilities::lexical_cast<int>(thisLineData.at(15));
 
                             // Modify start and end data to internal IDs (e.g. all ownShip will change to otherShip)
                             if (thisStartType == 1) {
@@ -521,7 +522,8 @@ int main()
 
                             linesData.setLineData(thisPeer, lineID, 
                                                   thisStartType, thisEndType, thisStartID, thisEndID, 
-                                                  thisKeepSlack, 
+                                                  thisKeepSlack,
+                                                  thisHeaveIn, 
                                                   thisStartX, thisStartY, thisStartZ, 
                                                   thisEndX, thisEndY, thisEndZ, 
                                                   thisNominalLength, 

@@ -41,6 +41,9 @@ class Lines
         std::vector<std::string> getLineNames();
         bool getKeepSlack(int lineID, bool networkLine = false);
         void setKeepSlack(int lineID, bool keepSlack, bool networkLine = false);
+        bool getHeaveIn(int lineID, bool networkLine = false);
+        void setHeaveIn(int lineID, bool heaveIn, bool networkLine = false);
+
         
         irr::f32 getLineStartX(int lineID, bool networkLine = false);
         irr::f32 getLineStartY(int lineID, bool networkLine = false);

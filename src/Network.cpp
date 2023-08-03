@@ -78,6 +78,12 @@ std::string Network::makeNetworkLinesString(SimulationModel* model)
         } else {
             stringToSend.append("0");
         }
+        stringToSend.append(",");
+        if (model->getLines()->getHeaveIn(number)) {
+            stringToSend.append("1");
+        } else {
+            stringToSend.append("0");
+        }
         
         if (number < (int)model->getLines()->getNumberOfLines()-1) {stringToSend.append("|");}
     }

@@ -146,7 +146,39 @@ void Lines::setKeepSlack(int lineID, bool keepSlack, bool networkLine)
     }   
 }
 
+bool Lines::getHeaveIn(int lineID, bool networkLine)
+{
+    
+    std::vector<Line>* thisLines;
+    if (networkLine) {
+        thisLines = &networkLines;
+    } else {
+        thisLines = &lines;
+    }
+    
+    if (thisLines->size() > lineID && lineID >= 0) {
+        std::vector<Line>::iterator it = thisLines->begin() + lineID;
+        return it->getHeaveIn();
+    } else {
+        // default
+        return false;
+    }
+    
+}
 
+void Lines::setHeaveIn(int lineID, bool heaveIn, bool networkLine)
+{
+    std::vector<Line>* thisLines;
+    if (networkLine) {
+        thisLines = &networkLines;
+    } else {
+        thisLines = &lines;
+    }
+    if (thisLines->size() > lineID && lineID >= 0) {
+        std::vector<Line>::iterator it = thisLines->begin() + lineID;
+        it->setHeaveIn(heaveIn);
+    }   
+}
 
 // Reset a line without removing it
 void Lines::clearLine(int lineID, bool networkLine)

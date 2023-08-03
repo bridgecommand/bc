@@ -73,7 +73,7 @@ class Line
         irr::scene::IMeshSceneNode* lineVisualisation2;
         irr::f32 shipNominalMass;
         irr::f32 lineNominalLength;
-        irr::f32 lineActualLength;
+        irr::f32 lineExtension;
         irr::f32 lineBreakingStrain;
         irr::f32 lineBreakingTension;
         std::string lineName;

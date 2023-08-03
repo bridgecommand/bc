@@ -69,7 +69,7 @@ void LinesData::setLineDataSize(unsigned int shipNumber, unsigned int numberOfLi
     }
 }
 
-void LinesData::setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, irr::f32 startX, irr::f32 startY, irr::f32 startZ, irr::f32 endX, irr::f32 endY, irr::f32 endZ, irr::f32 nominalLength, irr::f32 breakingTension, irr::f32 breakingStrain, irr::f32 nominalShipMass)
+void LinesData::setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, int heaveIn, irr::f32 startX, irr::f32 startY, irr::f32 startZ, irr::f32 endX, irr::f32 endY, irr::f32 endZ, irr::f32 nominalLength, irr::f32 breakingTension, irr::f32 breakingStrain, irr::f32 nominalShipMass)
 {
     if (linesData.size() > shipNumber) {
         // Call setLineDataSize before so this is true.   
@@ -79,6 +79,7 @@ void LinesData::setLineData(unsigned int shipNumber, unsigned int lineNumber, in
             linesData.at(shipNumber).at(lineNumber).startID = startID;
             linesData.at(shipNumber).at(lineNumber).endID = endID;
             linesData.at(shipNumber).at(lineNumber).keepSlack = keepSlack;
+            linesData.at(shipNumber).at(lineNumber).heaveIn = heaveIn;
             linesData.at(shipNumber).at(lineNumber).startX = startX;
             linesData.at(shipNumber).at(lineNumber).startY = startY;
             linesData.at(shipNumber).at(lineNumber).startZ = startZ;
@@ -183,6 +184,8 @@ std::string LinesData::getLineDataString(const unsigned int& shipNumber)
                 linesDataString.append(Utilities::lexical_cast<std::string>(linesData.at(i).at(j).nominalShipMass));
                 linesDataString.append(",");
                 linesDataString.append(Utilities::lexical_cast<std::string>(linesData.at(i).at(j).keepSlack));
+                linesDataString.append(",");
+                linesDataString.append(Utilities::lexical_cast<std::string>(linesData.at(i).at(j).heaveIn));
                 linesDataString.append("|");
             }
         }

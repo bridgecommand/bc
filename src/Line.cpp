@@ -15,11 +15,12 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Line.hpp"
+#include <iostream>
 
 Line::Line()
 {
     lineNominalLength = 0;
-    lineActualLength = 0;
+    lineExtension = 0;
     lineBreakingStrain = 0;
     lineBreakingTension = 0;
     shipNominalMass = 0;
@@ -109,7 +110,7 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
         
         irr::core::vector3df lineVectorAbs = endPosAbs - startPosAbs;
         lineNominalLength = lineVectorAbs.getLength();
-        lineActualLength = lineNominalLength; // Initialise
+        lineExtension = 0; // Initialise
 
         // make a node to visualise the line itself
         lineVisualisation1 = lineStart->getSceneManager()->addCubeSceneNode(1.0); // Will be scaled and aligned later. No parent as we will control with absolute position
@@ -314,20 +315,20 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
         irr::core::vector3df endPosAbs = lineEnd->getAbsolutePosition();
         
         irr::core::vector3df lineVectorAbs = endPosAbs - startPosAbs;
-        irr::f32 linePreviousLength = lineActualLength;
-        lineActualLength = lineVectorAbs.getLength();
-        irr::f32 lineLengthChange = lineActualLength - linePreviousLength;
-
+        irr::f32 lineExtensionPrevious = lineExtension;
+        irr::f32 lineActualLength = lineVectorAbs.getLength();
+        
         if (keepSlack) {
             lineNominalLength = lineActualLength;
         }
+
+        lineExtension = lineActualLength - lineNominalLength;
+        irr::f32 lineExtensionChange = lineExtension - lineExtensionPrevious;
 
         // Find force in local coordinate system (i.e. force magnitude * local unit vector)
         irr::f32 forceMagnitude = 0;
         if (lineActualLength > 0 && lineNominalLength > 0 && lineBreakingStrain > 0 && lineBreakingTension > 0) {
             // Valid line parameters
-            
-            irr::f32 lineExtension = (lineActualLength - lineNominalLength);
             
             if (lineExtension > 0) {
                 irr::f32 lineStiffness = lineBreakingTension / (lineNominalLength * lineBreakingStrain);
@@ -347,16 +348,34 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
 
                 // Add damping (50% of critical) here
                 if (deltaTime > 0 && shipNominalMass > 0 && lineStiffness > 0) {
-                    irr::f32 lineExtensionSpeed = lineLengthChange / deltaTime;
+                    irr::f32 lineExtensionSpeed = lineExtensionChange / deltaTime;
                     irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
                     forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping;
                 }
-
-                // Reduce line length for next time if 'tension lines' is active
-                if (!keepSlack && )
+    
             }
+            // Reduce line length for next time if 'heave in' is active
+            if (!keepSlack && heaveIn) {
+                irr::f32 haulInSpeed = 0;
+                if (forceMagnitude <= 0) {
+                    // 1m/s heave in speed if unloaded
+                    haulInSpeed = 1.0;
+                } else if (forceMagnitude < 0.1 * lineBreakingTension) {
+                    // linear reduction in speed up to zero speed at 10% of line breaking tension
+                    haulInSpeed = 1.0 - forceMagnitude/(0.1*lineBreakingTension);
+                }
+                
+                // Don't allow length to get shorter than 1m while hauling in
+                if (lineNominalLength > 1.0 + haulInSpeed * deltaTime) {
+                    lineNominalLength -= haulInSpeed * deltaTime;
+                }
+
+            }  
 
         }
+
+        // Debugging output
+        //std::cout << "Line tension: " << forceMagnitude << " Nominal length: " << lineNominalLength << " Actual distance: " << lineActualLength << std::endl;
         
         // Transform positions to the own ship (start) local coordinate system
         irr::core::vector3df lineStartLocal;
