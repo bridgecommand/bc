@@ -338,9 +338,12 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     lineStiffness = lineBreakingTension / (10 * lineBreakingStrain);
                 }
 
-                // TODO: If we want to maintain a certain tension, find the line extension for this, 
-                // and then reset lineNominalLength based on this? Don't include damping in the calculation.
-                // Alternatively, reduce lineNominalLength at a rate dependent on the line tension
+                // Ramp in line stiffness for low extensions
+                irr::f32 strainProportion = lineExtension / (lineNominalLength * lineBreakingStrain); // Ratio of actual strain to breaking strain
+                if (strainProportion < 0.1) {
+                    // Linear increase of stiffness up to full stiffness at 10% of breaking strain
+                    lineStiffness = lineStiffness * strainProportion / 0.1;
+                }
 
 
                 // Calculate the stiffness based force
@@ -351,6 +354,11 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     irr::f32 lineExtensionSpeed = lineExtensionChange / deltaTime;
                     irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
                     forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping;
+                }
+
+                // Avoid force magnitude going negative with damping
+                if (forceMagnitude < 0) {
+                    forceMagnitude = 0;
                 }
     
             }
