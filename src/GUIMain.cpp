@@ -429,12 +429,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         
         removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
         
-        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.285*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.280*su,0.160*sh),true,true,linesControlsWindow);
+        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.275*su,0.160*sh),true,true,linesControlsWindow);
         keepLineSlackText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
         
-        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.285*su,0.170*sh,0.300*su,0.200*sh),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.122*su,0.170*sh,0.280*su,0.200*sh),true,true,linesControlsWindow);
+        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.170*sh,0.300*su,0.200*sh),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.122*su,0.170*sh,0.275*su,0.200*sh),true,true,linesControlsWindow);
         haulLineInText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
 
         linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.122*su,0.030*sh,0.300*su,0.080*sh),true,true,linesControlsWindow);
