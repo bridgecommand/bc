@@ -41,8 +41,8 @@ NetworkPrimary::NetworkPrimary(int port, irr::IrrlichtDevice* dev) //Constructor
     client = enet_host_create (NULL /* create a client host */,
     10 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
     2 /* allow up 2 channels to be used, 0 and 1 */,
-    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */, //Todo: Think about bandwidth limits
-    14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
+    0 /* Unlimited bandwidth */,
+    0 /* Unlimited bandwidth */);
     if (client == NULL) {
         std::cerr << "An error occurred while trying to create an ENet client host." << std::endl;
 		enet_deinitialize();
@@ -326,7 +326,7 @@ void NetworkPrimary::receiveNetwork()
                                                         model->setAlarm(false); //Only turn off alarm if other pump is working
                                                     }
                                                 }
-                                            } 
+                                            }
                                         }
                                     } else if (thisCommand.substr(0,2).compare("RF") == 0) {
                                         //'RF', How rudder follow up is working (0, or 1)
