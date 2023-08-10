@@ -39,8 +39,8 @@ NetworkPrimary::NetworkPrimary(int port, irr::IrrlichtDevice* dev) //Constructor
     }
 
     client = enet_host_create (NULL /* create a client host */,
-    10 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
-    2 /* allow up 2 channels to be used, 0 and 1 */,
+    32 /* Allow up to 32 outgoing connections */, //Todo: Should this be configurable?
+    0 /* allow maximum number of channels */,
     0 /* Unlimited bandwidth */,
     0 /* Unlimited bandwidth */);
     if (client == NULL) {
@@ -369,7 +369,9 @@ void NetworkPrimary::sendNetwork()
     }
 
     std::string stringToSend;
+    bool scenarioPacket = false;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
+        scenarioPacket = true;
         stringToSend = generateSendStringScn();
     } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
         stringToSend = generateSendString();
@@ -378,10 +380,17 @@ void NetworkPrimary::sendNetwork()
     }
 
     if (stringToSend.length() > 0) {
+
+        // Type of packet - reliable for scenario data as we want to make sure some gets through!
+        enet_uint32 packetFlag = 0;
+        if (scenarioPacket) {
+            packetFlag = ENET_PACKET_FLAG_RELIABLE;
+        }
+
         /* Create a packet */
         ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
         strlen (stringToSend.c_str()) + 1,
-        /*ENET_PACKET_FLAG_RELIABLE*/0);
+        packetFlag);
 
         /* Send the packet to all connected peers over channel id 0. */
         enet_host_broadcast(client, 0, packet);

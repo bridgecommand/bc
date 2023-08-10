@@ -53,7 +53,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
         address.port = port;
         server = enet_host_create (& address /* the address to bind the server host to */,
         32 /* allow up to 32 clients and/or outgoing connections */,
-        2 /* allow up to 2 channels to be used, 0 and 1 */,
+        0 /* allow maximum number of channels */,
         0 /* assume any amount of incoming bandwidth */,
         0 /* assume any amount of outgoing bandwidth */);
 
@@ -232,10 +232,10 @@ void NetworkSecondary::receiveMessage()
                                 //Update data
                                 model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
                                 model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
-                                
+
                                 // Set other ship rate of turn from thisShipData.at(4) in deg/s (only used in multiplayer)
                                 model->setOtherShipRateOfTurn(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(4)));
-                                
+
                                 irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
                                 irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
                                 model->setOtherShipPos(i,receivedPosX,receivedPosZ);
@@ -263,7 +263,7 @@ void NetworkSecondary::receiveMessage()
                     irr::u32 numberLines = Utilities::lexical_cast<irr::u32>(numberData.at(3));
                     // Update lines information
                     if (numberLines > 0) {
-                        
+
                         // Check if numberLines is different from the number of lines being shown (on network lines list)
                         if (numberLines > model->getLines()->getNumberOfLines(true)) {
                             // Need to add lines, initially undefined
@@ -274,26 +274,26 @@ void NetworkSecondary::receiveMessage()
                             // Need to remove lines
                             while (numberLines < model->getLines()->getNumberOfLines(true)) {
                                 // We don't really know which to remove, so just remove from start, and update as needed later
-                                model->getLines()->removeLine(0, true); 
+                                model->getLines()->removeLine(0, true);
                             }
                         }
 
                         // For each line, check that data is correct, and if not, update it
                         std::vector<std::string> linesDataString = Utilities::split(receivedData.at(11),'|');
                         // Additional check, that the number of lines matches the number of data entries
-                        if (numberLines == linesDataString.size()) { 
-                            
+                        if (numberLines == linesDataString.size()) {
+
                             for (irr::u32 i=0; i<linesDataString.size(); i++) {
                                 std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(i),',');
                                 if (thisLineData.size() == 16) { //16 elements for each line
-                                    
+
                                     irr::f32 lineStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
                                     irr::f32 lineStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
                                     irr::f32 lineStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
                                     irr::f32 lineEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
                                     irr::f32 lineEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
                                     irr::f32 lineEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
-                                    
+
                                     int lineStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
                                     int lineEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
                                     int lineStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
@@ -322,10 +322,10 @@ void NetworkSecondary::receiveMessage()
                                     }
 
                                     // Check if lineStartType, lineStartID, lineEndType, lineEndID match. If not, clearLine, and re-create
-                                    if ((model->getLines()->getLineStartType(i, true) != lineStartType) || 
+                                    if ((model->getLines()->getLineStartType(i, true) != lineStartType) ||
                                         (model->getLines()->getLineEndType(i, true) != lineEndType) ||
                                         (model->getLines()->getLineStartID(i, true) != lineStartID) ||
-                                        (model->getLines()->getLineEndID(i, true) != lineEndID)) 
+                                        (model->getLines()->getLineEndID(i, true) != lineEndID))
                                     {
                                         model->getLines()->clearLine(i, true);
 
@@ -367,8 +367,8 @@ void NetworkSecondary::receiveMessage()
                                             // Make child sphere nodes based on these (in the right position), then pass in to create the lines
                                             irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
                                             if (startParent && startParent->getScale().X > 0) {
-                                                sphereScale = irr::core::vector3df(1.0f/startParent->getScale().X, 
-                                                                                1.0f/startParent->getScale().X, 
+                                                sphereScale = irr::core::vector3df(1.0f/startParent->getScale().X,
+                                                                                1.0f/startParent->getScale().X,
                                                                                 1.0f/startParent->getScale().X);
                                             }
                                             irr::scene::ISceneNode* startNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,
@@ -377,15 +377,15 @@ void NetworkSecondary::receiveMessage()
                                                                                         sphereScale);
                                             sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
                                             if (endParent && endParent->getScale().X > 0) {
-                                                sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X, 
-                                                                                1.0f/endParent->getScale().X, 
+                                                sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X,
+                                                                                1.0f/endParent->getScale().X,
                                                                                 1.0f/endParent->getScale().X);
                                             }
                                             irr::scene::ISceneNode* endNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,
                                                                                         irr::core::vector3df(lineEndX, lineEndY, lineEndZ),
                                                                                         irr::core::vector3df(0, 0, 0),
                                                                                         sphereScale);
-                                            
+
                                             // Set name to match parent for convenience
                                             if (startParent && startNode) {
                                                 startNode->setName(startParent->getName());
@@ -463,7 +463,7 @@ void NetworkSecondary::receiveMessage()
 
                     // Mooring/towing lines
                     multiplayerFeedback.append(makeNetworkLinesString(model));
-                    
+
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (multiplayerFeedback.c_str(), strlen (multiplayerFeedback.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
