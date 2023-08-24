@@ -440,8 +440,19 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
 
             irr::video::SColor lineColour = irr::video::SColor(255, 255, 255, 255);
             
-            // set x & y size based on what's selected
-            irr::f32 xySize = 0.05;
+            // set x & y size based on strength what's selected
+            irr::f32 xySize = 0;
+            if (lineBreakingTension > 0) {
+                xySize = sqrt(lineBreakingTension) * 0.00001;
+            }
+            if (xySize < 0.030) {
+                // Min size: 3cm
+                xySize = 0.030;
+            }
+            if (xySize > 0.300) {
+                // Max size: 30cm
+                xySize = 0.300;
+            }
             if (isSelected) {
                 xySize *= 2;
                 lineColour = irr::video::SColor(255, 255, 0, 0);

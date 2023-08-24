@@ -223,6 +223,15 @@
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
+            if (event.GUIEvent.EventType == irr::gui:: EGET_LISTBOX_SELECTED_AGAIN )
+            {
+                if (id == GUIMain::GUI_ID_LINES_LIST) {
+                    // Allow de-selection by double click
+                    ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->setSelected(-1);
+                    model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                }    
+            } 
+            
             if (event.GUIEvent.EventType ==  irr::gui::EGET_LISTBOX_CHANGED )
             {
                 if (id == GUIMain::GUI_ID_LINES_LIST) {

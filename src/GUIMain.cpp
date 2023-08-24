@@ -417,7 +417,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
         //Add an additional window for lines (will normally be hidden)
-        linesControlsWindow=guienv->addWindow(stdDataDisplayPos);
+        linesControlsWindow=guienv->addWindow(irr::core::rect<irr::s32>(
+            stdDataDisplayPos.UpperLeftCorner, 
+            stdDataDisplayPos.LowerRightCorner - irr::core::position2d<irr::s32>(0,0.03*sh)
+        ));
         linesControlsWindow->getCloseButton()->setVisible(false);
         linesControlsWindow->setText(language->translate("lines").c_str());
         guienv->addButton(linesControlsWindow->getCloseButton()->getRelativePosition(),linesControlsWindow,GUI_ID_HIDE_LINES_CONTROLS_BUTTON,L"X");
@@ -425,7 +428,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Lines controls interface
         addLine = guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.030*sh,0.121*su,0.080*sh),linesControlsWindow,GUI_ID_ADD_LINE_BUTTON,language->translate("addLine").c_str());
-        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),linesControlsWindow,GUI_ID_LINES_LIST);
+        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.200*sh),linesControlsWindow,GUI_ID_LINES_LIST);
         
         removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
         
