@@ -99,8 +99,8 @@ void Network::connectToServer(std::string hostnames)
 
         enet_address_set_host (& address, thisHostname.c_str());
 
-        /* Initiate the connection, allocating the two channels 0 and 1. */
-        peer = enet_host_connect (client, & address, 2, 0);
+        /* Initiate the connection, allocating the maximum number of channels. */
+        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
 
         if (peer == NULL)
         {

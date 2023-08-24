@@ -821,6 +821,7 @@ int main(int argc, char ** argv)
     if (mode == OperatingMode::Multiplayer) {
         extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
         extraNetwork->connectToServer(hostname);
+        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
     }
 
     //Read in scenario data (work in progress)

@@ -87,7 +87,7 @@ void NetworkSecondary::connectToServer(std::string hostnames)
 
 void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not used by primary
 {
-     if (enet_host_service (server, & event, 1000) > 0) { //Wait 1s for event
+     if (enet_host_service (server, & event, 10) > 0) { //Wait 10ms for event
         if (event.type ==ENET_EVENT_TYPE_RECEIVE) {
 
             //receive it

@@ -109,11 +109,13 @@ void NetworkPrimary::connectToServer(std::string hostnames)
                 }
             }
 
+            //std::cout << "In NetworkPrimary, trying to set up to " << address.port << std::endl;
+
             /* Connect to some.server.net:18304. */
             enet_address_set_host (& address, thisHostname.c_str());
 
-            /* Initiate the connection, allocating the two channels 0 and 1. */
-            peer = enet_host_connect (client, & address, 2, 0);
+            /* Initiate the connection, allocating the maximum number of channels. */
+            peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
             //Note we don't store peer pointer, as we broadcast to all connected peers.
             if (peer == NULL)
             {
