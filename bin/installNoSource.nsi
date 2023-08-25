@@ -1,7 +1,7 @@
 ;setup names
 !define PROGRAMNAME "Bridge Command 5.8"
 !ifndef OUTPUTFILE
-!define OUTPUTFILE "..\BridgeCommand5.8.11.exe"
+!define OUTPUTFILE "..\BridgeCommand5.8.12.exe"
 !endif
 !define INSTALLLOCATION "Bridge Command 5.8"
 !define SMFOLDER "Bridge Command 5.8"
