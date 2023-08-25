@@ -177,6 +177,7 @@ class RadarCalculation
         void drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading);
         void drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
         void drawCircle(irr::video::IImage * radarImage, irr::f32 centreX, irr::f32 centreY, irr::f32 radius, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue);//Try with f32 as inputs so we can do interpolation based on the theoretical start and end
+        bool isPointInEllipse(irr::f32 pointX, irr::f32 pointZ, irr::f32 centreX, irr::f32 centreZ, irr::f32 width, irr::f32 length, irr::f32 angle);
 
 };
 

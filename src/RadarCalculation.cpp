@@ -614,6 +614,16 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             irr::f32 minCellRange = localRange - cellLength/2.0;
             irr::f32 maxCellRange = localRange + cellLength/2.0;
 
+            // Get extreme points
+            irr::f32 relXCorner1 = minCellRange*sin(minCellAngle*irr::core::DEGTORAD);
+            irr::f32 relXCorner2 = minCellRange*sin(maxCellAngle*irr::core::DEGTORAD);
+            irr::f32 relXCorner3 = maxCellRange*sin(minCellAngle*irr::core::DEGTORAD);
+            irr::f32 relXCorner4 = maxCellRange*sin(maxCellAngle*irr::core::DEGTORAD);
+            irr::f32 relZCorner1 = minCellRange*cos(minCellAngle*irr::core::DEGTORAD);
+            irr::f32 relZCorner2 = minCellRange*cos(maxCellAngle*irr::core::DEGTORAD);
+            irr::f32 relZCorner3 = maxCellRange*cos(minCellAngle*irr::core::DEGTORAD);
+            irr::f32 relZCorner4 = maxCellRange*cos(maxCellAngle*irr::core::DEGTORAD);
+
             //get adjustment of height for earth's curvature
             irr::f32 dropWithCurvature = std::pow(localRange,2)/(2*EARTH_RAD_M*EARTH_RAD_CORRECTION);
 
@@ -625,25 +635,45 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
                 irr::f32 contactHeightAboveLine = (radarData.at(thisContact).height - radarScannerHeight - dropWithCurvature) - scanSlope*localRange;
                 if (contactHeightAboveLine > 0) {
                     //Contact would be visible if in this cell. Check if it is
+                    
+                    //Ellipse based check - check if any corner point of the cell is within the contact ellipse. If so, then it's definitely visible. If not, fall back to old checks
+                    bool contactEllipseFound = false;
+                    
+                    if (isPointInEllipse(relX, relZ, radarData.at(thisContact).relX, radarData.at(thisContact).relZ, radarData.at(thisContact).width, radarData.at(thisContact).length, radarData.at(thisContact).heading)) {
+                        contactEllipseFound = true;
+                    } else if (isPointInEllipse(relXCorner1, relZCorner1, radarData.at(thisContact).relX, radarData.at(thisContact).relZ, radarData.at(thisContact).width, radarData.at(thisContact).length, radarData.at(thisContact).heading)) {
+                        contactEllipseFound = true;
+                    } else if (isPointInEllipse(relXCorner2, relZCorner2, radarData.at(thisContact).relX, radarData.at(thisContact).relZ, radarData.at(thisContact).width, radarData.at(thisContact).length, radarData.at(thisContact).heading)) {
+                        contactEllipseFound = true;
+                    } else if (isPointInEllipse(relXCorner3, relZCorner3, radarData.at(thisContact).relX, radarData.at(thisContact).relZ, radarData.at(thisContact).width, radarData.at(thisContact).length, radarData.at(thisContact).heading)) {
+                        contactEllipseFound = true;
+                    } else if (isPointInEllipse(relXCorner4, relZCorner4, radarData.at(thisContact).relX, radarData.at(thisContact).relZ, radarData.at(thisContact).width, radarData.at(thisContact).length, radarData.at(thisContact).heading)) {
+                        contactEllipseFound = true;
+                    }
+                    
+
                     //Start of B3D code
                     //Check if centre of target within the cell. If not then check if Either min range or max range of contact is within the cell, or min and max span the cell
-                    if ((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
+                    if (contactEllipseFound 
+                            || (radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
                             || (radarData.at(thisContact).minRange >= minCellRange && radarData.at(thisContact).minRange <= maxCellRange)
                             || (radarData.at(thisContact).maxRange >= minCellRange && radarData.at(thisContact).maxRange <= maxCellRange) 
                             || (radarData.at(thisContact).minRange < minCellRange && radarData.at(thisContact).maxRange > maxCellRange)) {
 
                         //Check if centre of target within the cell. If not then check if either min angle or max angle of contact is within the cell, or min and max span the cell
-                        if ((Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)) 
-                                || (Angles::isAngleBetween(radarData.at(thisContact).minAngle,minCellAngle,maxCellAngle))
-                                || (Angles::isAngleBetween(radarData.at(thisContact).maxAngle,minCellAngle,maxCellAngle))
-                                || (Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90)) {
+                        if (contactEllipseFound 
+                            || (Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)) 
+                            || (Angles::isAngleBetween(radarData.at(thisContact).minAngle,minCellAngle,maxCellAngle))
+                            || (Angles::isAngleBetween(radarData.at(thisContact).maxAngle,minCellAngle,maxCellAngle))
+                            || (Angles::normaliseAngle(radarData.at(thisContact).minAngle-minCellAngle) > 270 && Angles::normaliseAngle(radarData.at(thisContact).maxAngle-maxCellAngle) < 90)) {
 
                             irr::f32 rangeAtCellMin = rangeAtAngle(minCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
                             irr::f32 rangeAtCellMax = rangeAtAngle(maxCellAngle,radarData.at(thisContact).relX,radarData.at(thisContact).relZ,radarData.at(thisContact).heading);
 
                             //check if the contact intersects this exact cell, if its extremes overlap it
                             //Also check if the target centre is in the cell, or the extended target spans the cell (ie RangeAtCellMin less than minCellRange and rangeAtCellMax greater than maxCellRange and vice versa)
-                            if ((((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
+                            if (contactEllipseFound 
+                                    || (((radarData.at(thisContact).range >= minCellRange && radarData.at(thisContact).range <= maxCellRange) 
                                             && (Angles::isAngleBetween(radarData.at(thisContact).angle,minCellAngle,maxCellAngle)))
                                         || (rangeAtCellMin >= minCellRange && rangeAtCellMin <= maxCellRange)
                                         || (rangeAtCellMax >= minCellRange && rangeAtCellMax <= maxCellRange)
@@ -1018,13 +1048,13 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                     }
 
                     //Estimated current position:
-                    irr::f32 relX = currentScanData.x - absolutePosition.X + thisArpaContact.estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
-                    irr::f32 relZ = currentScanData.z - absolutePosition.Z + thisArpaContact.estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
-                    thisArpaContact.estimate.bearing = std::atan2(relX,relZ)/RAD_IN_DEG;
+                    irr::f32 relXEst = currentScanData.x - absolutePosition.X + thisArpaContact.estimate.absVectorX * (absoluteTime - currentScanData.timeStamp);
+                    irr::f32 relZEst = currentScanData.z - absolutePosition.Z + thisArpaContact.estimate.absVectorZ * (absoluteTime - currentScanData.timeStamp);
+                    thisArpaContact.estimate.bearing = std::atan2(relXEst,relZEst)/RAD_IN_DEG;
                     while (thisArpaContact.estimate.bearing < 0 ) {
                         thisArpaContact.estimate.bearing += 360;
                     }
-                    thisArpaContact.estimate.range =  std::sqrt(pow(relX,2)+pow(relZ,2))/M_IN_NM; //Nm
+                    thisArpaContact.estimate.range =  std::sqrt(pow(relXEst,2)+pow(relZEst,2))/M_IN_NM; //Nm
                     thisArpaContact.estimate.speed = std::sqrt(pow(thisArpaContact.estimate.absVectorX,2) + pow(thisArpaContact.estimate.absVectorZ,2))*MPS_TO_KTS;
 
                     //TODO: CPA AND TCPA here: Need checking/testing
@@ -1454,4 +1484,37 @@ irr::f32 RadarCalculation::radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSe
 	}
 
 	return radarNoiseVal;
+}
+
+bool RadarCalculation::isPointInEllipse(irr::f32 pointX, irr::f32 pointZ, irr::f32 centreX, irr::f32 centreZ, irr::f32 width, irr::f32 length, irr::f32 angle)
+{
+    
+    // Quick first check
+    if ( fmax(abs(pointX - centreX), abs(pointZ - centreZ)) > fmax(width, length)) {
+        return false;
+    }
+    
+    // Detailed check
+
+    // See https://stackoverflow.com/a/16824748/12829372
+    irr::f32 cosAngle = cos(-1.0 * angle * irr::core::DEGTORAD);
+    irr::f32 sinAngle = sin(-1.0 * angle * irr::core::DEGTORAD);
+
+    irr::f32 halfWidth2 = width/2 * width/2;
+    irr::f32 halfLength2 = length/2 * length/2;
+    
+    if (halfLength2 == 0 || halfWidth2 == 0) {
+        return false;
+    }
+
+    irr::f32 paramA = pow(cosAngle*(pointX-centreX)+sinAngle*(pointZ-centreZ),2);
+    irr::f32 paramB = pow(sinAngle*(pointX-centreX)-cosAngle*(pointZ-centreZ),2);
+
+    irr::f32 ellipse=(paramA/halfWidth2)+(paramB/halfLength2);
+
+    if (ellipse <= 1) {
+        return true;
+    } else {
+        return false;
+    }
 }

@@ -401,6 +401,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.solidHeight=solidHeight;
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
+    radarData.width=getWidth();
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact
