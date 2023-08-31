@@ -229,13 +229,33 @@
                     // Allow de-selection by double click
                     ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->setSelected(-1);
                     model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
-                }    
+                }
+
+                if (id == GUIMain::GUI_ID_ARPA_LIST || id == GUIMain::GUI_ID_BIG_ARPA_LIST)
+                {
+                    // Allow de-selection
+                    int arpaSelected = -1;
+                    gui->setARPAList(arpaSelected);
+                    // Set selected ID via model.
+                    model->setArpaListSelection(arpaSelected);
+                }
+
             } 
             
             if (event.GUIEvent.EventType ==  irr::gui::EGET_LISTBOX_CHANGED )
             {
                 if (id == GUIMain::GUI_ID_LINES_LIST) {
                     model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                }
+
+                if (id == GUIMain::GUI_ID_ARPA_LIST || id == GUIMain::GUI_ID_BIG_ARPA_LIST)
+                {
+                    // Set coupled list
+                    int arpaSelected = ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected();
+                    gui->setARPAList(arpaSelected);
+
+                    // Set selected ID via model.
+                    model->setArpaListSelection(arpaSelected);
                 }
             }
             
@@ -577,6 +597,12 @@
                 if (id == GUIMain::GUI_ID_RADAR_HEAD_BUTTON)
                 {
                     model->setRadarHeadUp();
+                }
+
+                //MARPA acquire/update
+                if (id == GUIMain::GUI_ID_MARPA_BUTTON)
+                {
+                    model->addMARPAPoint();
                 }
 
                 if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)

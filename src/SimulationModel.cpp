@@ -1196,6 +1196,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.setArpaOn(on);
     }
 
+    void SimulationModel::setArpaListSelection(irr::s32 selection)
+    {
+        radarCalculation.setArpaListSelection(selection);
+    }
+
     void SimulationModel::setRadarARPARel()
     {
         radarCalculation.setRadarARPARel();
@@ -1215,6 +1220,11 @@ SimulationModel::~SimulationModel()
     {
         radarCalculation.setRadarDisplayRadius(radiusPx);
         radarScreen.setRadarDisplayRadius(radiusPx);
+    }
+
+    void SimulationModel::addMARPAPoint()
+    {
+        radarCalculation.addMARPAPoint(offsetPosition, ownShip, absoluteTime);
     }
 
     irr::u32 SimulationModel::getARPATracks() const

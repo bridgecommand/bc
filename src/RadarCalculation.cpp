@@ -61,6 +61,9 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
     vectorLengthMinutes = 6;
     arpaOn = false;
 
+    // What's selected in the GUI arpa list
+    arpaListSelection = -1;
+
     //Hard coded in GUI and here for 10 parallel index lines
     for(irr::u32 i=0; i<10; i++) {
         piBearings.push_back(0.0);
@@ -473,6 +476,11 @@ void RadarCalculation::setRadarARPATrue()
     trueVectors = true;
 }
 
+void RadarCalculation::setArpaListSelection(irr::s32 selection) 
+{
+    arpaListSelection = selection;
+}
+
 void RadarCalculation::setRadarARPAVectors(irr::f32 vectorMinutes)
 {
     vectorLengthMinutes = vectorMinutes;
@@ -493,7 +501,12 @@ irr::u32 RadarCalculation::getARPATracks() const
 
 ARPAContact RadarCalculation::getARPATrack(irr::u32 index) const
 {
-    return arpaContacts.at(arpaTracks.at(index));
+    if (index >= 0 && index < arpaContacts.size()) {
+        return arpaContacts.at(arpaTracks.at(index));
+    } else {
+        ARPAContact emptyContact;
+        return emptyContact;
+    }
 }
 
 void RadarCalculation::changeRadarColourChoice() 
@@ -918,6 +931,76 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 }
 
+void RadarCalculation::addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+{
+    // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
+
+    // Check if a MARPA contact is selected, if not, create a new one. If yes, add a 'scan'
+    // Contact selected from GUI is arpaListSelection
+
+    // Should be able to find selected ARPA contact from ID using getARPATrack(). If it's a MARPA one, then use this, otherwise create a new one
+
+    int existingArpaContact=-1;
+    if (getARPATrack(arpaListSelection).contactType == CONTACT_MANUAL) {
+        // Note that this assumes the GUI list is in the same order as the ARPA track list
+        existingArpaContact = arpaListSelection; 
+    }
+
+    std::cout << "In addMARPAPoint, arpaListSelection = " << arpaListSelection << " existingArpaContact = " << existingArpaContact << std::endl;
+    
+    //If it doesn't exist, add it, and make existingArpaContact point to it
+    if (existingArpaContact<0) {
+        ARPAContact newContact;
+        newContact.contact = 0; // This is a pointer used for ARPA types, not relevant for MARPA
+        newContact.contactType=CONTACT_MANUAL;
+        //newContact.displayID = 0; //Initially not displayed
+        newContact.totalXMovementEst = 0; // These are also not used for MARPA
+        newContact.totalZMovementEst = 0; // These are also not used for MARPA
+
+        //Zeros for estimated state
+        newContact.estimate.displayID = 0;
+        newContact.estimate.stationary = true;
+        newContact.estimate.lost = false;
+        newContact.estimate.absVectorX = 0;
+        newContact.estimate.absVectorZ = 0;
+        newContact.estimate.absHeading = 0;
+        newContact.estimate.bearing = 0;
+        newContact.estimate.range = 0;
+        newContact.estimate.speed = 0;
+        newContact.estimate.contactType = newContact.contactType; //Redundant here, but useful to pass to the GUI later
+
+        arpaContacts.push_back(newContact);
+        existingArpaContact = arpaContacts.size()-1;
+
+        std::cout << "Created new contact, existingArpaContact now = " << existingArpaContact << std::endl;
+    }
+
+    // Set up
+    irr::core::vector3df position = ownShip.getPosition();
+    // Get absolute position relative to SW corner of world model
+    irr::core::vector3d<int64_t> absolutePosition = offsetPosition;
+    absolutePosition.X += position.X;
+    absolutePosition.Y += position.Y;
+    absolutePosition.Z += position.Z;
+
+    //Add this 'scan' (Actually a MARPA Update) 
+    ARPAScan newScan;
+    newScan.timeStamp = absoluteTime;
+
+    //Don't add noise/uncertainty
+    newScan.bearingDeg = CursorBrg;
+    newScan.rangeNm = CursorRangeNm;
+
+    newScan.x = absolutePosition.X + newScan.rangeNm*M_IN_NM * sin(newScan.bearingDeg*RAD_IN_DEG);
+    newScan.z = absolutePosition.Z + newScan.rangeNm*M_IN_NM * cos(newScan.bearingDeg*RAD_IN_DEG);;
+    //newScan.estimatedRCS = 100;//Todo: Implement
+
+    //Don't need to keep track of totalXMovementEst and totalZMovementEst for MARPA
+    
+    arpaContacts.at(existingArpaContact).scans.push_back(newScan);
+    //Todo: should we limit the size of this, so it doesn't continue accumulating?
+}
+
 void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
@@ -938,23 +1021,21 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
 void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime) 
 {
-    if (!arpaOn) {
+    if (!arpaOn && thisArpaContact.contactType == CONTACT_NORMAL) {
         //Set all contacts to zero (untracked) if normal type
-        if (thisArpaContact.contactType == CONTACT_NORMAL) {
-            thisArpaContact.estimate.displayID = 0;
-            thisArpaContact.estimate.stationary = true;
-            thisArpaContact.estimate.lost = false;
-            thisArpaContact.estimate.absVectorX = 0;
-            thisArpaContact.estimate.absVectorZ = 0;
-            thisArpaContact.estimate.absHeading = 0;
-            thisArpaContact.estimate.bearing = 0;
-            thisArpaContact.estimate.range = 0;
-            thisArpaContact.estimate.speed = 0;
-            thisArpaContact.estimate.contactType = CONTACT_NONE;
-        }
+        thisArpaContact.estimate.displayID = 0;
+        thisArpaContact.estimate.stationary = true;
+        thisArpaContact.estimate.lost = false;
+        thisArpaContact.estimate.absVectorX = 0;
+        thisArpaContact.estimate.absVectorZ = 0;
+        thisArpaContact.estimate.absHeading = 0;
+        thisArpaContact.estimate.bearing = 0;
+        thisArpaContact.estimate.range = 0;
+        thisArpaContact.estimate.speed = 0;
+        thisArpaContact.estimate.contactType = CONTACT_NONE;
     } else {
         //Check there are at least two scans, so we can estimate behaviour
-        if (thisArpaContact.scans.size() > 1) {
+        if (thisArpaContact.scans.size() > 1 || thisArpaContact.contactType == CONTACT_MANUAL) {
 
             //Record the contact type in the estimate
             thisArpaContact.estimate.contactType = thisArpaContact.contactType;
@@ -968,13 +1049,18 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                 }
                 irr::f32 weightedMotionX = fabs(thisArpaContact.totalXMovementEst/latestRangeNm);
                 irr::f32 weightedMotionZ = fabs(thisArpaContact.totalZMovementEst/latestRangeNm);
-                if (weightedMotionX >= 100 || weightedMotionZ >= 100) {
+                if (thisArpaContact.estimate.contactType == CONTACT_MANUAL || 
+                    weightedMotionX >= 100 || 
+                    weightedMotionZ >= 100) {
+                    // Always show for manually acquired targets, or if movement has been detected
                     thisArpaContact.estimate.stationary = false;
                 }
             }
 
-            //Check if contact lost, if last scanned more than 60 seconds ago
-            if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60) {
+            // Check if contact lost, if last scanned more than 60 seconds ago 
+            // (exception for MARPA, don't detect as lost)
+            if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60 && 
+                 thisArpaContact.estimate.contactType != CONTACT_MANUAL) {
                 thisArpaContact.estimate.lost=true;
                 //std::cout << "Contact " << i << " lost" << std::endl;
             } else if (!thisArpaContact.estimate.stationary) {
@@ -1028,7 +1114,16 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
 
                 //Find difference in time, position x, position z
                 irr::f32 deltaTime = currentScanData.timeStamp - referenceScanData.timeStamp;
-                if (deltaTime>0) {
+                if (deltaTime<=0) {
+                    // Special case to just show estimated position if nothing else can be calculated
+                    irr::f32 relXEst = currentScanData.x - absolutePosition.X;
+                    irr::f32 relZEst = currentScanData.z - absolutePosition.Z;
+                    thisArpaContact.estimate.bearing = std::atan2(relXEst,relZEst)/RAD_IN_DEG;
+                    while (thisArpaContact.estimate.bearing < 0 ) {
+                        thisArpaContact.estimate.bearing += 360;
+                    }
+                    thisArpaContact.estimate.range =  std::sqrt(pow(relXEst,2)+pow(relZEst,2))/M_IN_NM; //Nm
+                } else {
                     irr::f32 deltaX = currentScanData.x - referenceScanData.x;
                     irr::f32 deltaZ = currentScanData.z - referenceScanData.z;
 

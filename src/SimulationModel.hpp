@@ -241,10 +241,12 @@ public:
     void setRadarHeadUp();
     void changeRadarColourChoice();
     void setArpaOn(bool on);
+    void setArpaListSelection(irr::s32 selection);
     void setRadarARPARel();
     void setRadarARPATrue();
     void setRadarARPAVectors(irr::f32 vectorMinutes);
     void setRadarDisplayRadius(irr::u32 radiusPx);
+    void addMARPAPoint();
     irr::u32 getARPATracks() const;
     ARPAContact getARPATrack(irr::u32 index) const;
     void setMainCameraActive();
