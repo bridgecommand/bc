@@ -27,12 +27,13 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
     spd = 0;
     hdg = 0;
+    rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
     this->name = name;
     this->mmsi = mmsi;
@@ -64,6 +65,11 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
 
     irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
+    // DEE_DEC22 vvvv
+    angleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
+    angleCorrectionRoll = IniFile::iniFileTof32(iniFilename,"AngleCorrectionRoll");
+    // DEE_DEC22 ^^^^
+
 
     std::string shipFullPath = basePath + shipFileName;
 
@@ -88,9 +94,11 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
 	ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
-    length = ship->getBoundingBox().getExtent().Z*scaleFactor;
-    width = ship->getBoundingBox().getExtent().X*scaleFactor;
-    height = ship->getBoundingBox().getExtent().Y * 0.75 * scaleFactor; //Assume 3/4 of the mesh is above water
+    ship->updateAbsolutePosition();
+    length = ship->getTransformedBoundingBox().getExtent().Z;
+    width = ship->getTransformedBoundingBox().getExtent().X;
+    height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
     logMessage.append(shipFullPath);
@@ -104,7 +112,7 @@ OtherShip::OtherShip (const std::string& name, const irr::u32& mmsi, const irr::
     //This is applied depending on distance to own ship, for speed
     triangleSelectorEnabled=false;
     
-    ship->setName("OtherShip");
+    ship->setName(internalName.c_str());
 
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
     //FIXME: Note in documentation that this is height above waterline in model units
@@ -172,6 +180,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     //move according to leg information
     if (legs.empty()) {
         //Don't change speed and hdg - may be in secondary mode, where these are set externally
+        //Except, use rateOfTurn to update hdg
+        hdg += deltaTime * rateOfTurn; // rateOfTurn in deg/s
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
@@ -191,7 +201,10 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
     ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
-    ship->setRotation(irr::core::vector3df(0, hdg+angleCorrection, 0)); //Global vectors
+    // DEE_DEC22 vvvv allows modelling of trim , list and models derived from other coordinate systems
+    //ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    // DEE_DEC22 ^^^^
 
     //for each light, find range and angle
     for(std::vector<NavLight*>::size_type currentLight = 0; currentLight<navLights.size(); currentLight++) {
@@ -364,6 +377,11 @@ void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceN
     legs.push_back(stopLeg);
 }
 
+void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only used in multiplayer mode)
+{
+    this->rateOfTurn = rateOfTurn;
+}
+
 RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Similar code in Buoy.cpp
@@ -383,6 +401,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.solidHeight=solidHeight;
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
+    radarData.width=getWidth();
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact

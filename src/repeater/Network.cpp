@@ -43,7 +43,7 @@ Network::Network(int port)
         address.port = port;
         server = enet_host_create (& address /* the address to bind the server host to */,
         32 /* allow up to 32 clients and/or outgoing connections */,
-        2 /* allow up to 2 channels to be used, 0 and 1 */,
+        0 /* allow maximum number of channels */,
         0 /* assume any amount of incoming bandwidth */,
         0 /* assume any amount of outgoing bandwidth */);
 
@@ -137,7 +137,7 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 11) { //11 basic records in data sent
+            if (receivedData.size() == 12) { //12 basic records in data sent
 
                 //Time info is record 0
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
@@ -148,7 +148,7 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData)
 
                 //Position info is record 1
                 std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
-                if (positionData.size() == 9) { //8 elements in position data sent
+                if (positionData.size() == 9) { //9 elements in position data sent
                     ownShipData.X = Utilities::lexical_cast<irr::f32>(positionData.at(0));
                     ownShipData.Z = Utilities::lexical_cast<irr::f32>(positionData.at(1));
                     ownShipData.heading = Utilities::lexical_cast<irr::f32>(positionData.at(2));

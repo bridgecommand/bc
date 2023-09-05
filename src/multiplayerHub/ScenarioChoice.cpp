@@ -43,7 +43,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
-    titleText.append(L"\nCopyright 2021 James Packer");
+    titleText.append(L"\nCopyright 2022 James Packer");
     irr::core::dimension2d<irr::u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
     irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<irr::s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
 
@@ -52,7 +52,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.32*su,0.40*sh,0.98*su,0.50*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
     irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.32*su,0.13*sh,0.98*su, 0.22*sh));
-    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(L"",irr::core::rect<irr::s32>(0.32*su,0.20*sh,0.98*su,0.23*sh));
+    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.32*su,0.20*sh,0.98*su,0.23*sh));
 
     irr::gui::IGUIStaticText* instructionText = gui->addStaticText(language->translate("startupInstructions").c_str(),irr::core::rect<irr::s32>(0.32*su,0.26*sh,0.98*su, 0.32*sh));
 

@@ -30,6 +30,7 @@ struct RadarData {
     irr::f32 relZ;
     irr::f32 heading;
     irr::f32 length;
+    irr::f32 width;
     irr::f32 minRange;
     irr::f32 maxRange;
     irr::f32 minAngle;
@@ -53,6 +54,7 @@ struct RadarData {
         relZ(0),
         heading(0),
         length(0),
+        width(0),
         minRange(0),
         maxRange(0),
         minAngle(0),

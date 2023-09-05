@@ -1,9 +1,11 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.7"
-!define OUTPUTFILE "..\BridgeCommand5.7.11.exe"
-!define INSTALLLOCATION "Bridge Command 5.7"
-!define SMFOLDER "Bridge Command 5.7"
-!define REGKEY "BridgeCommand5.7"
+!define PROGRAMNAME "Bridge Command 5.8"
+!ifndef OUTPUTFILE
+!define OUTPUTFILE "..\BridgeCommand5.8.12.exe"
+!endif
+!define INSTALLLOCATION "Bridge Command 5.8"
+!define SMFOLDER "Bridge Command 5.8"
+!define REGKEY "BridgeCommand5.8"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -93,6 +95,12 @@ SetShellVarContext all
   Delete "$INSTDIR\languageLauncher-en.txt"
   Delete "$INSTDIR\languageIniEditor-en.txt"
   Delete "$INSTDIR\languageMultiplayer-en.txt"
+  Delete "$INSTDIR\language-fr.txt"
+  Delete "$INSTDIR\languageController-fr.txt"
+  Delete "$INSTDIR\languageRepeater-fr.txt"
+  Delete "$INSTDIR\languageLauncher-fr.txt"
+  Delete "$INSTDIR\languageIniEditor-fr.txt"
+  Delete "$INSTDIR\languageMultiplayer-fr.txt"
   Delete "$INSTDIR\mph.ini"
   Delete "$INSTDIR\map.ini"
   Delete "$INSTDIR\repeater.ini"

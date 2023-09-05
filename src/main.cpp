@@ -117,11 +117,217 @@ irr::core::stringw getCredits(){
     creditsString.append(L"> Sky image from 0ptikz\n\n");
     creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
 
+    creditsString.append(L"Many thanks to contributors including David Elir Evans, Antoine Saillard, Konrad Wolsing, Jan Bauer, AndreySSH, Manfred, ceeac.\n\n");
+
 	creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
 
     creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
 
     return creditsString;
+}
+
+JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
+    //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
+    JoystickSetup joystickSetup;
+    if (!(isAzimuthDrive)) {
+        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
+        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
+    }
+    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+
+    joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
+    joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
+
+
+    if (isAzimuthDrive) {
+        // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
+
+	// joystick numbers used for azimuth drive controls
+	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
+	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
+	joystickSetup.portSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "portSchottel_joystickNo");
+	joystickSetup.stbdSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdSchottel_joystickNo");
+
+	// axes used for azimuth drive controls
+        joystickSetup.portThrustLever_channel = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel")-1;
+        joystickSetup.stbdThrustLever_channel = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel")-1;
+        joystickSetup.portSchottel_channel = IniFile::iniFileTou32(iniFilename, "portSchottel_channel")-1;
+        joystickSetup.stbdSchottel_channel = IniFile::iniFileTou32(iniFilename, "stbdSchottel_channel")-1;
+
+	// inversion of joystick axes
+	// NB dont use this for schottels like Shetland Traders because only one axis is inverted
+	// to model that use the boat.ini file
+
+        joystickSetup.schottelPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortSchottel")==1) {
+            joystickSetup.schottelPortDirection = -1;
+        }
+
+        joystickSetup.schottelStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdSchottel")==1) {
+            joystickSetup.schottelStbdDirection = -1;
+        }
+
+        joystickSetup.thrustLeverPortDirection = 1;
+        if (IniFile::iniFileTou32(iniFilename, "invertPortThrustLever")==1) {
+            joystickSetup.thrustLeverPortDirection = -1;
+        }
+
+        joystickSetup.thrustLeverStbdDirection = -1;
+        if (IniFile::iniFileTou32(iniFilename, "invertStbdthrustLever")==1) {
+            joystickSetup.thrustLeverStbdDirection = -1;
+        }
+
+	// offset and scaling
+	joystickSetup.schottelPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortSchottelAngle");
+	joystickSetup.schottelStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdSchottelAngle");
+	joystickSetup.schottelPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortSchottelAngle");
+	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "offsetStbdSchottelAngle");
+
+	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortThrustLever");
+	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdThrustLever");
+	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortThrustLever");
+	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTof32(iniFilename, "offsetStbdThrustLever");
+
+
+
+	// DEE 10JAN23 ^^^^
+    } else {
+        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
+    }
+    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
+
+
+    joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
+    joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
+    //Joystick button mapping
+    joystickSetup.joystickNoHorn=IniFile::iniFileTou32(iniFilename, "joystick_no_horn");
+    joystickSetup.joystickButtonHorn=IniFile::iniFileTou32(iniFilename, "joystick_button_horn")-1;
+
+    joystickSetup.joystickNoChangeView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_view");
+    joystickSetup.joystickButtonChangeView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_view")-1;
+
+    joystickSetup.joystickNoChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_and_lock_view");
+    joystickSetup.joystickButtonChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_and_lock_view")-1;
+
+    joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
+    joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
+
+    joystickSetup.joystickNoLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_right");
+    joystickSetup.joystickButtonLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_right")-1;
+
+    joystickSetup.joystickNoIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_bow_thrust");
+    joystickSetup.joystickButtonIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_bow_thrust")-1;
+
+    joystickSetup.joystickNoDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_bow_thrust");
+    joystickSetup.joystickButtonDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_bow_thrust")-1;
+
+    joystickSetup.joystickNoIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_stern_thrust");
+    joystickSetup.joystickButtonIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_stern_thrust")-1;
+
+    joystickSetup.joystickNoDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_stern_thrust");
+    joystickSetup.joystickButtonDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_stern_thrust")-1;
+
+    joystickSetup.joystickNoBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_on");
+    joystickSetup.joystickButtonBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_on")-1;
+
+    joystickSetup.joystickNoBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_off");
+    joystickSetup.joystickButtonBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_off")-1;
+
+    joystickSetup.joystickNoZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_on");
+    joystickSetup.joystickButtonZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_on")-1;
+
+    joystickSetup.joystickNoZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_off");
+    joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
+
+    joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
+    joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
+
+    joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
+    joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
+
+    joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
+    joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
+
+    joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
+    joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
+
+    joystickSetup.joystickNoPump1On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_on");
+    joystickSetup.joystickButtonPump1On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_on")-1;
+
+    joystickSetup.joystickNoPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_off");
+    joystickSetup.joystickButtonPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_off")-1;
+
+    joystickSetup.joystickNoPump2On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_on");
+    joystickSetup.joystickButtonPump2On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_on")-1;
+
+    joystickSetup.joystickNoPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_off");
+    joystickSetup.joystickButtonPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_off")-1;
+
+    joystickSetup.joystickNoFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_on");
+    joystickSetup.joystickButtonFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_on")-1;
+
+    joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
+    joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
+
+    joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
+    joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
+
+    joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
+    joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
+
+    joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
+    joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
+
+    joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
+    joystickSetup.joystickNoAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth2_master");
+    joystickSetup.joystickButtonAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth1_master")-1;
+    joystickSetup.joystickButtonAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth2_master")-1;
+
+    joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
+    joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
+    joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
+    joystickSetup.joystickPOVLookUp=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_up");
+    joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
+
+    //Joystick mapping
+    irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+    if (numberOfJoystickPoints > 0) {
+        for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
+            joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
+            joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
+        }
+    }
+    //Default linear mapping if not set
+    if (joystickSetup.inputPoints.size()<2) {
+        joystickSetup.inputPoints.clear();
+        joystickSetup.outputPoints.clear();
+        joystickSetup.inputPoints.push_back(-1.0);
+        joystickSetup.inputPoints.push_back(1.0);
+        joystickSetup.outputPoints.push_back(-1.0);
+        joystickSetup.outputPoints.push_back(1.0);
+    }
+    joystickSetup.rudderDirection = 1;
+    if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
+        joystickSetup.rudderDirection = -1;
+    }
+
+// DEE 10JAN23 vvvv
+    // joystickSetup.azimuth1Direction = 1;
+    // joystickSetup.azimuth1Direction = -1;
+
+
+//    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
+//    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
+//    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
+//    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+
+// These are all wrapped up in an if isAzimuth earlier in this funciton
+
+// DEE 10JAN22 ^^^^
+
+    return joystickSetup;
 }
 
 #ifdef _WIN32
@@ -230,10 +436,26 @@ int main(int argc, char ** argv)
 	if (numberOfContactPointsZ == 0) {
 		numberOfContactPointsZ = 30;
 	}
-    
+    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
+
+    irr::f32 minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
+
+    bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
+
+    bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
+
     irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
 
-    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
+
+    irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
+    irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+    irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
+    irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
+    if (frictionCoefficient < 0) {frictionCoefficient = 0;}
+    if (frictionCoefficient > 1) {frictionCoefficient = 1;}
+    if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
+
+
     //Initial view configuration
     irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
     irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
@@ -250,128 +472,13 @@ int main(int argc, char ** argv)
         cameraMaxDistance = 6*M_IN_NM;
     }
 
-    //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
-    JoystickSetup joystickSetup;
-    joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-    joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
-    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
-    joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
-    joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
-    //Which joystick number
-    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
-    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
-    joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
-    joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
-    //Joystick button mapping
-    joystickSetup.joystickNoHorn=IniFile::iniFileTou32(iniFilename, "joystick_no_horn");
-    joystickSetup.joystickButtonHorn=IniFile::iniFileTou32(iniFilename, "joystick_button_horn")-1;
-
-    joystickSetup.joystickNoChangeView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_view");
-    joystickSetup.joystickButtonChangeView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_view")-1;
-
-    joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
-    joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
-
-    joystickSetup.joystickNoLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_right");
-    joystickSetup.joystickButtonLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_right")-1;
-
-    joystickSetup.joystickNoIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_bow_thrust");
-    joystickSetup.joystickButtonIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_bow_thrust")-1;
-
-    joystickSetup.joystickNoDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_bow_thrust");
-    joystickSetup.joystickButtonDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_bow_thrust")-1;
-
-    joystickSetup.joystickNoIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_stern_thrust");
-    joystickSetup.joystickButtonIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_stern_thrust")-1;
-
-    joystickSetup.joystickNoDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_stern_thrust");
-    joystickSetup.joystickButtonDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_stern_thrust")-1;
-
-    joystickSetup.joystickNoBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_on");
-    joystickSetup.joystickButtonBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_on")-1;
-
-    joystickSetup.joystickNoBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_off");
-    joystickSetup.joystickButtonBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_off")-1;
-
-    joystickSetup.joystickNoZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_on");
-    joystickSetup.joystickButtonZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_on")-1;
-
-    joystickSetup.joystickNoZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_off");
-    joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
-
-    joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
-    joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
-
-    joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
-    joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
-
-    joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
-    joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
-
-    joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
-    joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
-
-    joystickSetup.joystickNoPump1On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_on");
-    joystickSetup.joystickButtonPump1On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_on")-1;
-
-    joystickSetup.joystickNoPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_off");
-    joystickSetup.joystickButtonPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_off")-1;
-
-    joystickSetup.joystickNoPump2On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_on");
-    joystickSetup.joystickButtonPump2On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_on")-1;
-
-    joystickSetup.joystickNoPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_off");
-    joystickSetup.joystickButtonPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_off")-1;
-
-    joystickSetup.joystickNoFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_on");
-    joystickSetup.joystickButtonFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_on")-1;
-
-    joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
-    joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
-
-    joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
-    joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
-    
-    joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
-    joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
-
-    joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
-    joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
-
-    joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
-    joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
-    joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
-    joystickSetup.joystickPOVLookUp=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_up");
-    joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
-
-    //Joystick mapping
-    irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
-    if (numberOfJoystickPoints > 0) {
-        for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
-            joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
-            joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
-        }
-    }
-    //Default linear mapping if not set
-    if (joystickSetup.inputPoints.size()<2) {
-        joystickSetup.inputPoints.clear();
-        joystickSetup.outputPoints.clear();
-        joystickSetup.inputPoints.push_back(-1.0);
-        joystickSetup.inputPoints.push_back(1.0);
-        joystickSetup.outputPoints.push_back(-1.0);
-        joystickSetup.outputPoints.push_back(1.0);
-    }
-    joystickSetup.rudderDirection = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
-        joystickSetup.rudderDirection = -1;
-    }
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
     std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
     std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
+    std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
     irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
@@ -416,6 +523,14 @@ int main(int argc, char ** argv)
 	}
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
+
+    // Check if collision warning should be shown
+    bool showCollided;
+    if (IniFile::iniFileTou32(iniFilename, "hide_collision_warning") == 1) {
+        showCollided = false;
+    } else {
+        showCollided = true;
+    }
 
     //load language
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
@@ -605,7 +720,7 @@ int main(int argc, char ** argv)
 	graphicsWidth = su;
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * 0.6;
+	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
@@ -701,6 +816,14 @@ int main(int argc, char ** argv)
     //Network network(&model);
     network->connectToServer(hostname);
 
+    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
+    Network* extraNetwork = 0;
+    if (mode == OperatingMode::Multiplayer) {
+        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
+        extraNetwork->connectToServer(hostname);
+        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
+    }
+
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
     if (mode == OperatingMode::Normal) {
@@ -734,27 +857,33 @@ int main(int argc, char ** argv)
 
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, limitTerrainResolution);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator());
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
+    if (extraNetwork) {
+        extraNetwork->setModel(&model);
+    }
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+
+    //load joystick setup
+    JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, device);
+    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, nmeaUDPListenPortName, device);
 
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
@@ -790,8 +919,6 @@ int main(int argc, char ** argv)
     //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
-    const irr::u32 NMEA_UPDATE_MS = 75;
-    irr::u32 nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
 
 //    Profiling
 //    Profiler networkProfile("Network");
@@ -812,38 +939,35 @@ int main(int argc, char ** argv)
         { IPROF("Network");
 //        networkProfile.tic();
         network->update();
+        if (extraNetwork) {
+            extraNetwork->update();
+        }
 //        networkProfile.toc();
 
-        //Check if time has elapsed, so we send data once per NMEA_UPDATE_MS.
+        // Update NMEA, check if new sensor or AIS data is ready to be sent
 //        nmeaProfile.tic();
         }{ IPROF("NMEA");
-        if (device->getTimer()->getTime() >= nextNMEATime) {
 
-            if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
-                nmea.updateNMEA();
+        if (!nmeaUDPListenPortName.empty()) {
+            nmea.receive();
+        }
 
-                if (!nmeaSerialPortName.empty()) {
-                    nmea.sendNMEASerial();
-                }
+        if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
+            nmea.updateNMEA();
 
-                if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
-                    nmea.sendNMEAUDP();
-                }
-
-            nextNMEATime = device->getTimer()->getTime()+NMEA_UPDATE_MS;
+            if (!nmeaSerialPortName.empty()) {
+                nmea.sendNMEASerial();
             }
+
+            if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
+                nmea.sendNMEAUDP();
+            }
+
+            nmea.clearQueue();
         }
 //        nmeaProfile.toc();
 
 //        modelProfile.tic();
-        }{ IPROF("Model");
-        model.update();
-//        modelProfile.toc();
-
-
-        //Set up
-
-//        renderSetupProfile.tic();
         }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
@@ -861,7 +985,7 @@ int main(int argc, char ** argv)
                 if (fullScreenRadar) {
                     driver->setViewPort(guiMain.getLargeRadarRect());
                 } else {
-                    driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth-(graphicsHeight-graphicsHeight3d),graphicsHeight3d,graphicsWidth,graphicsHeight));
+                    driver->setViewPort(guiMain.getSmallRadarRect());
                 }
                 model.setRadarCameraActive();
                 smgr->drawAll();
@@ -892,6 +1016,14 @@ int main(int argc, char ** argv)
  //       renderProfile.toc();
 
  //       guiProfile.tic();
+        }{ IPROF("Model");
+        model.update();
+//        modelProfile.toc();
+
+
+        //Set up
+
+//        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
@@ -917,6 +1049,9 @@ int main(int argc, char ** argv)
     //networking should be stopped (presumably with destructor when it goes out of scope?)
     device->getLogger()->log("About to stop network");
     delete network;
+    if (extraNetwork) {
+        delete extraNetwork;
+    }
 
     device->drop();
 

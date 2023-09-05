@@ -39,10 +39,10 @@ NetworkPrimary::NetworkPrimary(int port, irr::IrrlichtDevice* dev) //Constructor
     }
 
     client = enet_host_create (NULL /* create a client host */,
-    10 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
-    2 /* allow up 2 channels to be used, 0 and 1 */,
-    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */, //Todo: Think about bandwidth limits
-    14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
+    32 /* Allow up to 32 outgoing connections */, //Todo: Should this be configurable?
+    0 /* allow maximum number of channels */,
+    0 /* Unlimited bandwidth */,
+    0 /* Unlimited bandwidth */);
     if (client == NULL) {
         std::cerr << "An error occurred while trying to create an ENet client host." << std::endl;
 		enet_deinitialize();
@@ -109,11 +109,13 @@ void NetworkPrimary::connectToServer(std::string hostnames)
                 }
             }
 
+            //std::cout << "In NetworkPrimary, trying to set up to " << address.port << std::endl;
+
             /* Connect to some.server.net:18304. */
             enet_address_set_host (& address, thisHostname.c_str());
 
-            /* Initiate the connection, allocating the two channels 0 and 1. */
-            peer = enet_host_connect (client, & address, 2, 0);
+            /* Initiate the connection, allocating the maximum number of channels. */
+            peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
             //Note we don't store peer pointer, as we broadcast to all connected peers.
             if (peer == NULL)
             {
@@ -326,7 +328,7 @@ void NetworkPrimary::receiveNetwork()
                                                         model->setAlarm(false); //Only turn off alarm if other pump is working
                                                     }
                                                 }
-                                            } 
+                                            }
                                         }
                                     } else if (thisCommand.substr(0,2).compare("RF") == 0) {
                                         //'RF', How rudder follow up is working (0, or 1)
@@ -369,7 +371,9 @@ void NetworkPrimary::sendNetwork()
     }
 
     std::string stringToSend;
+    bool scenarioPacket = false;
     if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
+        scenarioPacket = true;
         stringToSend = generateSendStringScn();
     } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
         stringToSend = generateSendString();
@@ -378,10 +382,17 @@ void NetworkPrimary::sendNetwork()
     }
 
     if (stringToSend.length() > 0) {
+
+        // Type of packet - reliable for scenario data as we want to make sure some gets through!
+        enet_uint32 packetFlag = 0;
+        if (scenarioPacket) {
+            packetFlag = ENET_PACKET_FLAG_RELIABLE;
+        }
+
         /* Create a packet */
         ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
         strlen (stringToSend.c_str()) + 1,
-        /*ENET_PACKET_FLAG_RELIABLE*/0);
+        packetFlag);
 
         /* Send the packet to all connected peers over channel id 0. */
         enet_host_broadcast(client, 0, packet);
@@ -459,9 +470,11 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getNumberOfBuoys()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getManOverboardVisible()? 1 : 0));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getNumberOfLines()));
     stringToSend.append("#");
 
-    //3 Each 'Other' (Pos X (abs), Pos Z, angle, SART, MMSI |) #
+    //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
     for(int number = 0; number < (int)model->getNumberOfOtherShips(); number++ ) {
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipPosX(number)));
         stringToSend.append(",");
@@ -470,6 +483,8 @@ std::string NetworkPrimary::generateSendString()
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipHeading(number)));
         stringToSend.append(",");
         stringToSend.append(Utilities::lexical_cast<std::string>(model->getOtherShipSpeed(number)*MPS_TO_KTS));
+        stringToSend.append(",");
+        stringToSend.append("0"); // Rate of turn: This is not currently used in normal mode
         stringToSend.append(",");
         stringToSend.append("0"); //Fixme: Sart enabled
         stringToSend.append(",");
@@ -536,6 +551,10 @@ std::string NetworkPrimary::generateSendString()
 
     //10 Multiplayer request here (Not used)
     stringToSend.append("0");
+    stringToSend.append("#");
+
+    //11 Lines (mooring/towing)
+    stringToSend.append(makeNetworkLinesString(model));
 
     return stringToSend;
 }

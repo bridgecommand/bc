@@ -142,7 +142,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\AIS.cpp" />
     <ClCompile Include="..\Angles.cpp" />
+    <ClCompile Include="..\Autopilot.cpp" />
+    <ClCompile Include="..\AzimuthDial.cpp" />
 	<ClCompile Include="..\BCTerrainSceneNode.cpp" />
 	<ClCompile Include="..\BCTerrainTriangleSelector.cpp" />
     <ClCompile Include="..\Buoy.cpp" />
@@ -158,6 +161,8 @@
     <ClCompile Include="..\LandObject.cpp" />
     <ClCompile Include="..\LandObjects.cpp" />
     <ClCompile Include="..\Lang.cpp" />
+    <ClCompile Include="..\Line.cpp" />
+    <ClCompile Include="..\Lines.cpp" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
     <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
@@ -198,7 +203,10 @@
     <ClCompile Include="..\iprof.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\AIS.hpp" />
     <ClInclude Include="..\Angles.hpp" />
+    <ClInclude Include="..\Autopilot.hpp" />
+    <ClInclude Include="..\AzimuthDial.h" />
 	<ClInclude Include="..\BCDynamicMeshBuffer.h" />
 	<ClInclude Include="..\BCIndexBuffer.h" />
 	<ClInclude Include="..\BCTerrainSceneNode.h" />
@@ -220,6 +228,8 @@
     <ClInclude Include="..\Lang.hpp" />
     <ClInclude Include="..\Leg.hpp" />
     <ClInclude Include="..\Light.hpp" />
+    <ClInclude Include="..\Line.hpp" />
+    <ClInclude Include="..\Lines.hpp" />
     <ClInclude Include="..\ManOverboard.hpp" />
     <ClInclude Include="..\MovingWater.hpp" />
     <ClInclude Include="..\MyEventReceiver.hpp" />

@@ -17,8 +17,10 @@
 #ifndef __NMEA_HPP_INCLUDED__
 #define __NMEA_HPP_INCLUDED__
 
+#include "Autopilot.hpp"
 #include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
+#include <mutex>
 #include <string>
 #include <asio.hpp> //For UDP
 
@@ -29,27 +31,40 @@ class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
     void sendNMEAUDP();
-    enum NMEAMessage { RMC=0, GLL, GGA, RSA, RPM, TTM, /*RSD,*/ ZDA, /*OSD, POS,*/ DTM, HDT, DPT, ROT/*, VTG, HRM, VDM, VDO, HBT*/ };
+    void clearQueue();
+    void ReceiveThread(std::string udpListenPortName);
+    void receive();
+    // not implemented: RSD, OSD, POS, VTG, HRM, VDO, HBT
+    enum NMEAMessage { RMC=0, GPROT, GLL, RSA, RPM, GPHDT, HEROT, TTM, GGA, ZDA, DTM, HEHDT, TIROT, DPT};
 
 private:
+    Autopilot autopilot;
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
+    irr::u32 lastSendEvent; // when was the last time an NMEA message was sent
+    static const irr::u32 sensorReportInterval = 100; // milliseconds between sensor reports
+    std::vector<std::string> messageQueue;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
-    const int maxMessages = (ROT - RMC) + 1; // how many messages are defined
+    const int maxMessages = (DPT - RMC) + 1; // how many messages are defined
 	static const int maxSentenceChars = 79+1+1; // iaw EN 61162-1:2011 + start char + null termination
     const char northing[2] = {'N', 'S'};
     const char easting[2] = {'E', 'W'};
     int currentMessageType; // sequentially send different sentences
     asio::io_service io_service;
     asio::ip::udp::endpoint receiver_endpoint;
-    //asio::ip::udp::socket* socket;
+    asio::ip::udp::socket* socket;
+
+    irr::u32 terminateNmeaReceive;
+    std::mutex terminateNmeaReceiveMutex;
+    std::vector<std::string> receivedNmeaMessages;
+    std::mutex receivedNmeaMessagesMutex;
 };
 
 #endif // __NMEA_HPP_INCLUDED__

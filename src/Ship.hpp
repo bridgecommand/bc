@@ -58,7 +58,11 @@ class Ship
         irr::f32 width;
         irr::f32 heightCorrection;
         irr::f32 angleCorrection;
-        int controlMode;
+// DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
+        irr::f32 angleCorrectionRoll;
+        irr::f32 angleCorrectionPitch;
+// DEE_DEC22
+	int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
         irr::u32 mmsi;
         enum CONTROL_MODE

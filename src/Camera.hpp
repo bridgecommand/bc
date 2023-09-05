@@ -57,11 +57,17 @@ class Camera
         irr::u32 getView() const;
         void setNearValue(irr::f32 zn);
         void setFarValue(irr::f32 zf);
+        void setFrozen(bool frozen);
+        void toggleFrozen();
+        void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         void update(irr::f32 deltaTime=0);
 
     private:
         irr::scene::ICameraSceneNode* camera;
         irr::scene::ISceneNode* parent;
+        irr::core::vector3df parentPosition;
+        irr::core::matrix4 parentAngles;
+        bool frozen;
         irr::ILogger* logger;
         irr::u32 currentView;
         std::vector<irr::core::vector3df> views;

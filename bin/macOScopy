@@ -42,3 +42,9 @@ cp -a languageMultiplayer-en.txt BridgeCommand.app/Contents/Resources/languageMu
 cp -a languageLauncher-en.txt BridgeCommand.app/Contents/Resources/languageLauncher-en.txt
 cp -a languageIniEditor-en.txt BridgeCommand.app/Contents/Resources/languageIniEditor-en.txt
 cp -a languageRepeater-en.txt BridgeCommand.app/Contents/Resources/languageRepeater-en.txt
+cat language-fr.txt | sed -E 's/Ctrl/Cmd/g' > BridgeCommand.app/Contents/Resources/language-fr.txt
+cp -a languageController-fr.txt BridgeCommand.app/Contents/Resources/languageController-fr.txt
+cp -a languageMultiplayer-fr.txt BridgeCommand.app/Contents/Resources/languageMultiplayer-fr.txt
+cp -a languageLauncher-fr.txt BridgeCommand.app/Contents/Resources/languageLauncher-fr.txt
+cp -a languageIniEditor-fr.txt BridgeCommand.app/Contents/Resources/languageIniEditor-fr.txt
+cp -a languageRepeater-fr.txt BridgeCommand.app/Contents/Resources/languageRepeater-fr.txt

@@ -108,6 +108,21 @@ DynamicsSpeedA=18.71
 DynamicsSpeedB=100
 
 PropSpace=2.0
+AzimuthDrive=0
+
+BlockCoefficient=0.87
+MaxSpeed=6
+aziToLengthRatio 0.2
+azimuthDriveEngineIdleRPM=700
+azimuthDriveClutchEngageRPM=1000
+azimuthDriveClutchDisengageRPM=950
+engineMaxChangePerSecond=0.25
+schottelMaxDegPerSec=60
+thrustLeverMaxChangePerSecond=0.4
+azimuthDriveSameDirectionAsSchottel=1
+azimuthDriveMaxDegPerSecond
+
+
 DynamicsTurnDragA=180000
 DynamicsTurnDragB=12000
 DynamicsLateralDragA=187.1
@@ -163,14 +178,48 @@ DeviationMaximumHeading=10
 <li>MaxDepth: If there is a depth sounder, the maximum depth that can be measured (m)</li>
 <li>HasGPS: If this is set to 1, the GPS position will be displayed</li>
 <li>HasRateOfTurnIndicator: If this is set to 1, a rate of turn indicator will be displayed</li>
-<li>Mass: The vessel's mass (in kg)</li>
-<li>DynamicsSpeedA: The amount of drag on the ship proportional to its speed squared (drag(N)=DynamicsSpeedA*Speed(m/s)^2)</li>
-<li>DynamicsSpeedB: The amount of drag on the ship proportional to its speed (drag(N)=DynamicsSpeedB*Speed(m/s))</li> 
-<li>DynamicsTurnDragA: The amount of angular drag on the ship proportional to the rate of turn squared (drag(Nm)=DynamicsTurnDragA*Rate Of Turn(rad/s)^2)</li>
-<li>DynamicsTurnDragB: The amount of angular drag on the ship proportional to the rate of turn (drag(Nm)=DynamicsTurnDragB*Rate Of Turn(rad/s))</li>
-<li>DynamicsLateralDragA: The amount of drag on the ship proportional to its lateral (sideways) speed squared (drag(N)=DynamicsLateralDragA*Speed(m/s)^2)</li>
-<li>DynamicsLateralDragB: The amount of drag on the ship proportional to its lateral (sideways) speed (drag(N)=DynamicsLateralDragB*Speed(m/s))</li> 
-<li>Inertia: The ship's polar moment of inertia about it's vertical axis(kg m^2)</li>
+
+<!-- DEE_DEC22 vvvv -->
+<li>BlockCoefficient (Optional): The ratio of the volume a ships hull displaces of water and the volume of a cuboid of the same length, breadth and draught as the ship.  It is used to calculate the ships mass.  A typical values are 0.68 for a high speed container ship, 0.75 for an LNG tanker, 0.87 for a bulk carrier.  If BlockCoefficient is defined then it overrides Mass and Inertia parameters as the ships mass and inertias are calculated from the dimensions of the ship model and draught.  So if Block Coefficient is defined then there is no need to define Mass , Inertia.  If however a non displacement craft such as a  hovercraft is being modelled then the mass would need to be explicitly declared.</li>
+
+<li>MaxSpeedAhead (Optional): The speed ahead of the vessel at maximum power ahead in knots.  If this is defined then it is not necessary to define maxForce, DynamicsSpeedA, DynamicsSpeedB, </li>
+
+<li>aziToLengthRatio (needed for Azimuth Drive models):  the distance along the axis of the vessel of the azimuth drives expressed as a proportion of the vessels length.  Valid values lie between (0 and 1).  Typical values 0.2 for an azimuth stern drive tug, 0.1 for an azimuth driven coaster, 0.75 for a tractor tug</li>
+
+<li>azimuthDriveEngineIdleRPM (needed for Azimuth Drive models): The engine RPM at which an engine idles with the thrust lever all the way back , engine declutched. It must be less than the azimuthDriveClutchDisengageRPM (a typical value for azimuthDriveEngineIdleRPM is 700)</li>
+
+<li>azimuthDriveClutchDisengageRPM (needed for Azimuth Drive models): The engine RPM below which the clutch automatically disengages. It must be less than the azimuthDriveClutchEngageRPM but greater than the azimuthDriveEngineIdleRPM. (A typical value for azimuthDriveClutchDisengageRPM is 950)</li>
+
+<li>azimuthDriveClutchEngageRPM (needed for Azimuth Drive models): The engine RPM which, when exceeded the clutch automaticall engages. It must be greater than the azimuthDriveClutchDisengageRPM (a typical value for azimuthDriveClutchEngageRPM is 1000)</li>
+
+<li>engineMaxChangePerSecond (needed for Azimuth Drive models): the proportion of the maximum engine rpm that the engine can change rpm in one second.  e.g. 0.25 would mean it takes 4 seconds for an engine to go from a standstill to full power (typical value for a coaster 0.25, for an outboard engine on a speedboat 1, for a large bulk carrier 0.05)</li>
+
+<li>schottelMaxDegPerSec (needed for Azimuth Drive models): the maximum number of degrees that a schottel control can be rotated in within one second.  It only applies to keyboard control for playability.  In reality the schottel control can be turned as fast as your wrist can move it, however it will take time for the azimuth drive to follow it up.  This is ignored if you have physical controls (typical value 60)</li>
+
+<li>thrustLeverMaxChangePerSecond (needed for Azimuth Drive models) : the maximum proportion of the full range that a thrust lever control can be changed in within one second, e.g 0.2 would mean it takes 5 seconds for the lever to go from full back to full forward.  It only applies to keyboard control for playability.  In reality the thrust lever can be moved as fast as your wrist can move it, however it will take time for the engine to respond to it.  This is ignored if you have physical controls (typical value 0.4)</li>
+
+<li>azimuthDriveMaxDegPerSecond (needed for Azimuth Drive models) : the maximum number of degrees that the azipod drive can rotate in the lateral plane in one second. (typically 30)</li>
+
+
+
+<li>azimuthDriveSameDirectionAsSchottel (needed for Azimuth Drive models) : On most vessels the azimuth drive turns in the same direction as the shcottel, so the thrust lever is in the same direction as the actual thrust from the propellor.  So in the case of an azimuth stern drive configuration, the turning behaviour is similar to a tiller.  Turn the schottel clockwise and the ship will turn to port.  The opposite is true in a tractor configuration where the azimuth drives are ahead of amidships.  However, some vessels equipped with aft mounted azimuth drives (e.g. Lass class ships, Shetland Trader , Neptune) have a different control response, which is when the schottel is turned clockwise then the azimuth drive turns anticlockwise.  So when the schottel is turned clockwise the ship steers to starboard. So the thrust lever only points in the direction of the thrust when it is in the dead ahead or dead astern position.  The objective is to make it easier to steer.  Trust me it doesn't.  (value is typically and normally 1)</li>
+
+<li>AzimuthDrive (Optional): Set to 1 if the ship has azimuth drives, or 0 for conventional engine and rudder</li>
+<li><strike>AzimuthPositionAstern (Optional): If the ship has azimuth drives, how far (in m) aft they are of the turning centre of the vessel</strike></li>
+
+<!-- DEE_DEC22 ^^^^ -->
+
+<li>Mass: The vessel's mass (in kg) (not needed if BlockCoefficient is defined)</li>
+<li>Inertia: The ship's polar moment of inertia about it's vertical axis(kg m^2) (not needed if BlockCoefficient is defined)</li>
+<li><b>The below Dynamics variables are not needed if the maxSpeedAhead has been defined</b>
+<ul>DynamicsSpeedA: The amount of drag on the ship proportional to its speed squared (drag(N)=DynamicsSpeedA*Speed(m/s)^2)(not needed if Block Coefficient is defined)</ul>
+<ul>DynamicsSpeedB: The amount of drag on the ship proportional to its speed (drag(N)=DynamicsSpeedB*Speed(m/s))</ul> 
+<ul>DynamicsTurnDragA: The amount of angular drag on the ship proportional to the rate of turn squared (drag(Nm)=DynamicsTurnDragA*Rate Of Turn(rad/s)^2)</ul>
+<ul>DynamicsTurnDragB: The amount of angular drag on the ship proportional to the rate of turn (drag(Nm)=DynamicsTurnDragB*Rate Of Turn(rad/s))</ul>
+<ul>DynamicsLateralDragA: The amount of drag on the ship proportional to its lateral (sideways) speed squared (drag(N)=DynamicsLateralDragA*Speed(m/s)^2)</ul>
+<ul>DynamicsLateralDragB: The amount of drag on the ship proportional to its lateral (sideways) speed (drag(N)=DynamicsLateralDragB*Speed(m/s))</ul> 
+</li>
+
 <li>RudderA: The turning effect of the rudder proportional to the ship's speed (Rudder torque(Nm)=RudderA*Speed(m/s)*rudder angle (deg)</li>
 <li>RudderB: The turning effect of the rudder proportional to the engine speed (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
 <li>RudderBAstern: The turning effect of the rudder proportional to the engine speed when going astern (Rudder torque(Nm)=Rudder*Engine Thrust (N)*rudder angle (deg)</li>
@@ -193,6 +242,7 @@ DeviationMaximumHeading=10
 <li>AsternEfficiency: (Optional) The proportion of thrust available when going astern (range 0-1, default 1)</li>
 <li>MaxRevs: The ship's maximum engine revolutions (RPM)</li>
 <li>PropSpace: The spacing between the port and starboard propellors in metres (world, not model units). Set to zero to model a one-engined vessel.</li>
+
 <li>PropWalkAhead: (Optional) The maximum turning moment (Nm) applied by the 'prop walk' effect on the ship, with the engine engaged forwards. If the vessel has a normal propellor arrangement, with a single right turning propellor, or double outwards turning propellors, this should be positive.</li>
 <li>PropWalkAstern: (Optional) The maximum turning moment (Nm) applied by the 'prop walk' effect on the ship, with the engine engaged astern. This should be positive for normal vessels, and should normally be larger than the ahead value.</li>
 <li>PropWalkDriftEffect: (Optional) The amount the ship should move sidways due to the 'prop walk' effect (Metres per Nm of prop walk)</li>
@@ -266,7 +316,10 @@ RadarRange(6) = 0.5
 <!--
 FullARPA=1
 MARPAContacts=20-->
-radar_sensitivity=3.0
+
+RADAR_RangeRes=256
+RADAR_AngularRes=720
+
 radar_range_sensitivity=5.0
 radar_height=10
 radar_noise=0.000000000005
@@ -311,7 +364,9 @@ radar3_blue=0-->
 </li>
 <!--<li>FullARPA: Whether fully automatic radar target detection and tracking (ARPA) is enabled on the radar. Set to 2 to enable with initial manual selection of contacts, 1 to enable with fully automatic contact selection, and 0 to disable.</li>
 <li>MARPAContacts: The number of targets that can be tracked manually on the radar. Set to 0 to disable manual tracking, and any integer to allow that number of targets to be tracked simultaneously.</li>-->
-<li>radar_sensitivity: The beam width of your radar in degrees. The smaller this is, the sharper your radar will be, but if you set this to be too low, it will reduce the program's performance.</li> 
+<li>RADAR_AngularRes: How many scan lines in a full rotation of the radar scanner. Default is 360.</li>
+<li>RADAR_RangeRes: How many steps per scan line. Default is 128.</li>
+
 <li>radar_range_sensitivity: The accuracy of the radar in detecting ranges, in metres. This is only used for contact range detection, for automatic contact tracking on the radar (ARPA).</li>
 <li>radar_height: The height of the radar scanner in metres above sea level.</li>
 <li>radar_noise: The amount of random 'noise' picked up on the radar display. Default value: 0.000000000005</li>

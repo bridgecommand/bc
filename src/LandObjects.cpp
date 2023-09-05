@@ -68,7 +68,9 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         bool radarObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Radar",currentObject))==1;
 
         //Create land object and load into vector
-        landObjects.push_back(LandObject (objectName.c_str(),worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,terrain,smgr,dev));
+        std::string internalName = "LandObject_";
+        internalName.append(std::to_string(currentObject-1)); // -1 as we want index from 0
+        landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,terrain,smgr,dev));
 
     }
 }
@@ -82,6 +84,15 @@ void LandObjects::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     for(std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
         it->moveNode(deltaX,deltaY,deltaZ);
+    }
+}
+
+irr::scene::ISceneNode* LandObjects::getSceneNode(int number)
+{
+    if (number < (int)landObjects.size() && number >= 0) {
+        return landObjects.at(number).getSceneNode();
+    } else {
+        return 0;
     }
 }
 

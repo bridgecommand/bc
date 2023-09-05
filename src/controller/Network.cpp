@@ -43,7 +43,7 @@ Network::Network(int port)
         address.port = port;
         server = enet_host_create (& address /* the address to bind the server host to */,
         32 /* allow up to 32 clients and/or outgoing connections */,
-        2 /* allow up to 2 channels to be used, 0 and 1 */,
+        0 /* allow maximum number of channels */,
         0 /* assume any amount of incoming bandwidth */,
         0 /* assume any amount of outgoing bandwidth */);
 
@@ -212,7 +212,7 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
     //Check number of elements
-    if (receivedData.size() == 11) { //11 basic records in data sent
+    if (receivedData.size() == 12) { //12 basic records in data sent
 
         //Time info is record 0
         std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
@@ -225,9 +225,9 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
         std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
         findOwnShipPositionData(positionData, ownShipData); //Populate ownShipData from the positionData
 
-        //Numbers of objects in record 2 (Others, buoys, MOBs)
+        //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
         std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
-        if (numberData.size() == 3) {
+        if (numberData.size() == 4) {
             irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
             irr::u32 numberBuoys  = Utilities::lexical_cast<irr::u32>(numberData.at(1));
 
@@ -304,14 +304,14 @@ void Network::findOtherShipData(const std::vector<std::string>& otherShipsDataSt
 
     for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
         std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
-        if (thisShipData.size() == 8) { //7 elements for each ship
+        if (thisShipData.size() == 9) { //9 elements for each ship
             //Update data
             otherShipsData.at(i).X=Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
             otherShipsData.at(i).Z=Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
-            otherShipsData.at(i).mmsi =Utilities::lexical_cast<irr::u32>(thisShipData.at(5));
+            otherShipsData.at(i).mmsi =Utilities::lexical_cast<irr::u32>(thisShipData.at(6));
             //Todo: use SART etc
-            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(6));
-            std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(7),'/');
+            irr::u32 numberOfLegs = Utilities::lexical_cast<irr::u32>(thisShipData.at(7));
+            std::vector<std::string> legsDataString = Utilities::split(thisShipData.at(8),'/');
             if (numberOfLegs == legsDataString.size()) {
                 //Ensure legs vector is the right size
                 if (otherShipsData.at(i).legs.size() != legsDataString.size()) {

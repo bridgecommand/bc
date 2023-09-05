@@ -80,7 +80,7 @@ namespace scene
 
 	//! Initializes the terrain data. Loads the vertices from the heightMapFile
 	bool CTerrainSceneNode::loadHeightMap(io::IReadFile* file, video::SColor vertexColor,
-			s32 smoothFactor, bool rgbEncoded)
+			s32 smoothFactor)
 	{
 		if (!file)
 			return false;
@@ -97,38 +97,6 @@ namespace scene
 
 		HeightmapFile = file->getFileName();
 		SmoothFactor = smoothFactor;
-
-		//JAMES: New, scale image if needed
-		//Check if heightmap is 2^n+1 in size both ways. If not, create an IImage big enough to hold it
-		u32 originalWidth = heightMap->getDimension().Width;
-		u32 originalHeight = heightMap->getDimension().Height;
-		//Subtract 1 and find next power of 2, and add one (we need a size that is (2^n)+1)
-		if (originalWidth==0 || originalWidth==0) {
-			os::Printer::log("Zero size heightmap.");
-			return false;
-		}
-		u32 regularWidth=originalWidth-1;
-		u32 regularHeight=originalHeight-1;
-		regularWidth = pow(2.0,ceil(log2(regularWidth))) + 1;
-		regularHeight = pow(2.0,ceil(log2(regularHeight))) + 1;
-		//Make square
-		if (regularWidth > regularHeight) {
-			regularHeight = regularWidth;
-		} else if (regularHeight > regularWidth) {
-			regularWidth = regularHeight;
-		}
-		if (originalWidth != regularWidth || originalHeight != regularHeight) {
-			//Scale it
-			video::IImage* tempMap = SceneManager->getVideoDriver()->createImage(heightMap->getColorFormat(),core::dimension2du(regularWidth,regularHeight));
-			heightMap->copyToScaling(tempMap);
-			heightMap->drop();
-			heightMap = tempMap;
-			//Log
-			c8 tmp[255];
-			snprintf_irr(tmp, 255, "Scaled heightmap image from (%dx%d) to (%dx%d)",
-				originalWidth, originalHeight, regularWidth, regularHeight );
-			os::Printer::log(tmp);
-		}
 
 		// Get the dimension of the heightmap data
 		TerrainData.Size = heightMap->getDimension().Width;
@@ -203,18 +171,11 @@ namespace scene
 				vertex.Normal.set(0.0f, 1.0f, 0.0f);
 				vertex.Color = vertexColor;
 				vertex.Pos.X = fx;
-				//JAMES: Either use greyscale lightness, or use full RGB encoding
-				if (rgbEncoded) {
-					//Absolute height is (red * 256 + green + blue / 256) - 32768
-					video::SColor pixelColor = heightMap->getPixel(x,TerrainData.Size-z-1);
-					vertex.Pos.Y = ((f32)pixelColor.getRed()*256 + (f32)pixelColor.getGreen() + (f32)pixelColor.getBlue()/256.0)-32768.0; //JAMES: Flipped both x and z, to rotate loading by 180 degrees
-				} else {
-					vertex.Pos.Y = (f32) heightMap->getPixel(x,TerrainData.Size-z-1).getLightness(); //JAMES: Flipped both x and z, to rotate loading by 180 degrees
-				}
+				vertex.Pos.Y = (f32) heightMap->getPixel(TerrainData.Size-x-1,z).getLightness();
 				vertex.Pos.Z = fz;
 
-				vertex.TCoords.X = vertex.TCoords2.X = fx2; //JAMES: Flipped X
-                vertex.TCoords.Y = vertex.TCoords2.Y = 1.f-fz2; //JAMES: Flipped Y
+				vertex.TCoords.X = vertex.TCoords2.X = 1.f-fx2;
+				vertex.TCoords.Y = vertex.TCoords2.Y = fz2;
 
 				++fz;
 				fz2 += tdSize;

@@ -40,7 +40,26 @@
 
 //using namespace irr;
 
-SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::u32 limitTerrainResolution):
+SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
+                                 irr::scene::ISceneManager* scene,
+                                 GUIMain* gui,
+                                 Sound* sound,
+                                 ScenarioData scenarioData,
+                                 OperatingMode::Mode mode,
+                                 irr::f32 viewAngle,
+                                 irr::f32 lookAngle,
+                                 irr::f32 cameraMinDistance,
+                                 irr::f32 cameraMaxDistance,
+                                 irr::u32 disableShaders,
+                                 irr::u32 waterSegments,
+                                 irr::core::vector3di numberOfContactPoints,
+                                 irr::f32 minContactPointSpacing,
+                                 irr::f32 contactStiffnessFactor,
+                                 irr::f32 contactDampingFactor,
+                                 irr::f32 frictionCoefficient,
+                                 irr::f32 tanhFrictionFactor,
+                                 irr::u32 limitTerrainResolution,
+                                 bool debugMode):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -50,6 +69,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         guiMain = gui;
 		this->sound = sound;
         isMouseDown = false;
+        moveViewWithPrimary = true;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
         serialisedScenarioData = scenarioData.serialise();
@@ -58,6 +78,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
 
         //store what mode we're in
         this->mode = mode;
+
+        //Store if we should show debug details
+        this->debugMode = debugMode;
 
         //store default view angle
         this->viewAngle = viewAngle;
@@ -117,7 +140,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, smgr, this, &terrain, device);
+        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, smgr, this, &terrain, device);
         if(mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
@@ -135,6 +158,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         if (mode == OperatingMode::Secondary) {
             gui->hideEngineAndRudder();
 //      TODO      gui->hideWheel();
+//	DEE_NOV22 todo hide schottels engine indicators etc
         }
 
         //Tell the GUI what instruments to display - currently GPS and depth sounder
@@ -221,6 +245,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneMan
         previousTime = device->getTimer()->getTime();
 
         guiData = new GUIData;
+
+        // Initialise as paused to start with
+        guiData->paused = true;
 
     } //end of SimulationModel constructor
 
@@ -338,6 +365,14 @@ SimulationModel::~SimulationModel()
         return otherShips.getPosition(number).Z + offsetPosition.Z;
     }
 
+    irr::f32 SimulationModel::getOtherShipLong(int number) const{
+        return terrain.xToLong(getOtherShipPosX(number));
+    }
+
+    irr::f32 SimulationModel::getOtherShipLat(int number) const{
+        return terrain.zToLat(getOtherShipPosZ(number));
+    }
+
     irr::f32 SimulationModel::getOtherShipHeading(int number) const{
         return otherShips.getHeading(number);
     }
@@ -364,6 +399,10 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ){
         otherShips.setPos(number, positionX - offsetPosition.X, positionZ - offsetPosition.Z);
+    }
+
+    void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
+        otherShips.setRateOfTurn(number, rateOfTurn);
     }
 
     std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
@@ -629,6 +668,193 @@ SimulationModel::~SimulationModel()
     }
 // DEE ^^^^^^^^^^^
 
+    void SimulationModel::setAzimuth1Master(bool isMaster)
+    { // Set if azimuth 1 should also control azimuth 2
+        ownShip.setAzimuth1Master(isMaster);
+    }
+
+    void SimulationModel::setAzimuth2Master(bool isMaster)
+    { // Set if azimuth 2 should also control azimuth 1
+        ownShip.setAzimuth2Master(isMaster);
+    }
+
+    bool SimulationModel::getAzimuth1Master() const
+    {
+        return ownShip.getAzimuth1Master();
+    }
+
+    bool SimulationModel::getAzimuth2Master() const
+    {
+        return ownShip.getAzimuth2Master();
+    }
+
+// DEE_NOV22 vvvv Azimuth Drive follow up code
+
+    // Schottels
+
+    void SimulationModel::setPortSchottel(irr::f32 portAngle)
+    { // Set the Port Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
+        ownShip.setPortSchottel(portAngle);
+    }
+
+    void SimulationModel::setStbdSchottel(irr::f32 stbdAngle)
+    { // Set the Stbd Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
+        ownShip.setStbdSchottel(stbdAngle);
+    }
+
+    irr::f32 SimulationModel::getPortSchottel()
+    { // Gets the Port Schottel angle, (-ve is anticlockwise, +ve is clockwise)
+        return ownShip.getPortSchottel();
+    }
+
+    irr::f32 SimulationModel::getStbdSchottel()
+    { // Gets the Stbd Schottel angle, (-ve is anticlockwise, +ve is clockwise)
+        return ownShip.getStbdSchottel();
+    }
+
+
+    // DEE_NOV22 btn control of shcottels ... this is for when you dont use a mouse of control console,
+    //           however it is also close enough to emergency steering mode of azimuth drives for all
+    //		 practical playability purposes.
+    void SimulationModel::btnIncrementPortSchottel()
+    {
+	ownShip.btnIncrementPortSchottel(); // DEE_NOV22 stbd schottel clockwise
+    }
+
+    void SimulationModel::btnDecrementPortSchottel()
+    {
+	ownShip.btnDecrementPortSchottel(); // DEE_NOV22 port schottel anticlockwise
+    }
+
+    void SimulationModel::btnIncrementStbdSchottel()
+    {
+	ownShip.btnIncrementStbdSchottel(); // DEE_NOV22 stbd shcottel clockwise in response to KEY_KEY_L
+    }
+
+    void SimulationModel::btnDecrementStbdSchottel()
+    {
+	ownShip.btnDecrementStbdSchottel(); // DEE_NOV22 port schottel anticlockwise in response to KEY_KEY_J
+    }
+
+
+
+
+    // Thrust levers
+
+    void SimulationModel::setPortThrustLever(irr::f32 portThrustLever)
+    {
+        ownShip.setPortThrustLever(portThrustLever);
+//        ownShip.setPortThrustLever(irr::f32 portThrustLever);
+    }
+
+    void SimulationModel::setStbdThrustLever(irr::f32 stbdThrustLever)
+    {
+//        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
+        ownShip.setStbdThrustLever(stbdThrustLever);
+    }
+
+    irr::f32 SimulationModel::getPortThrustLever()
+    {
+        return ownShip.getPortThrustLever();
+    }
+
+    irr::f32 SimulationModel::getStbdThrustLever()
+    {
+        return ownShip.getStbdThrustLever();
+    }
+
+
+    // DEE_NOV22 below in response to keyboard presses
+    //		 todo implement an emergency steering mode
+    //           respond to physical control's buttons emergency mode
+    //		 other code for follow up response to physical controls
+
+    void SimulationModel::btnIncrementPortThrustLever()
+    {
+	ownShip.btnIncrementPortThrustLever();
+    }
+
+    void SimulationModel::btnDecrementPortThrustLever()
+    {
+	ownShip.btnDecrementPortThrustLever();
+    }
+
+    void SimulationModel::btnIncrementStbdThrustLever()
+    {
+	ownShip.btnIncrementStbdThrustLever();
+    }
+
+    void SimulationModel::btnDecrementStbdThrustLever()
+    {
+	ownShip.btnDecrementStbdThrustLever();
+    }
+
+
+    // DEE_NOV22 Clutches , in normal operation these would be automatic, however in emergency (non follow up) mode they are manual
+    // DEE_NOV22 in future perhaps model engine stall for when clutch engaged at too low a revs and prop shaft snap if clutch
+    // DEE_NOV22 is engaged at too high a revs
+
+    void SimulationModel::setPortClutch(bool portClutch)
+    {
+        ownShip.setPortClutch(portClutch);
+    }
+
+    void SimulationModel::setStbdClutch(bool stbdClutch)
+    {
+        ownShip.setStbdClutch(stbdClutch);
+    }
+
+    bool SimulationModel::getPortClutch()
+    {
+        return ownShip.getPortClutch();
+    }
+
+    bool SimulationModel::getStbdClutch()
+    {
+        return ownShip.getStbdClutch();
+    }
+
+
+    // DEE_NOV22 todo need to assign keys to this is emergency steering mode where there is no automatic clutch
+    //           I think we could use the follow up / non follow up flag to determine if it is in normal or
+    //		 emergency steering mode.
+    //		 todo is it better to use SimulationModel::setXXXXClutch(xxxx) for this
+
+    void SimulationModel::engagePortClutch()
+    {
+	ownShip.setPortClutch(true);
+    }
+
+    void SimulationModel::disengagePortClutch()
+    {
+	ownShip.setPortClutch(false);
+    }
+
+    void SimulationModel::engageStbdClutch()
+    {
+	ownShip.setStbdClutch(true);
+    }
+
+    void SimulationModel::disengageStbdClutch()
+    {
+	ownShip.setStbdClutch(false);
+    }
+
+
+
+
+
+// DEE_NOV22 ^^^^ Azimuth Drive follow up code
+
+    void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
+    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        ownShip.setPortAzimuthAngle(angle);
+    }
+
+    void SimulationModel::setStbdAzimuthAngle(irr::f32 angle)
+    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+        ownShip.setStbdAzimuthAngle(angle);
+    }
 
     void SimulationModel::setPortEngine(irr::f32 port)
     {
@@ -636,6 +862,14 @@ SimulationModel::~SimulationModel()
         ownShip.setPortEngine(port); //This method limits the range applied
 
 		//Set engine sound level
+		// DEE_NOV22 unless this is a controllable pitch propellor,
+		// where the engine turns at a constant rpm
+		// where with increased power then the sound of the engine
+		// results in the same frequency engine noise, only louder.
+		// Vessels where engine rpm controls power then the frequency
+		// of the engine noise should change with engine rpm
+
+
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
 		}
@@ -651,7 +885,13 @@ SimulationModel::~SimulationModel()
         ownShip.setStbdEngine(stbd); //This method limits the range applied
 
 		//Set engine sound level
-		sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		// DEE_NOV22 same comment as for port engine
+		if (ownShip.isSingleEngine()) {
+			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+		}
+		else {
+			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+		}
     }
 
     irr::f32 SimulationModel::getPortEngine() const
@@ -713,7 +953,7 @@ SimulationModel::~SimulationModel()
     {
         return ownShip.getRudderPumpState(whichPump);
     }
-    
+
     void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {
         ownShip.setFollowUpRudderWorking(followUpRudderWorking);
     }
@@ -855,6 +1095,16 @@ SimulationModel::~SimulationModel()
     irr::u32 SimulationModel::getCameraView() const
     {
         return camera.getView();
+    }
+
+    void SimulationModel::setFrozenCamera(bool frozen)
+    {
+        camera.setFrozen(frozen);
+    }
+
+    void SimulationModel::toggleFrozenCamera()
+    {
+        camera.toggleFrozen();
     }
 
     void SimulationModel::setAlarm(bool alarmState)
@@ -1093,6 +1343,11 @@ SimulationModel::~SimulationModel()
         return ownShip.isSingleEngine();
     }
 
+    bool SimulationModel::isAzimuthDrive() const
+    {
+        return ownShip.isAzimuthDrive();
+    }
+
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
@@ -1113,6 +1368,16 @@ SimulationModel::~SimulationModel()
         return ownShip.hasTurnIndicator();
     }
 
+    bool SimulationModel::debugModeOn() const
+    {
+        return debugMode;
+    }
+
+    irr::f32 SimulationModel::getOwnShipMass() const
+    {
+        return ownShip.getShipMass();
+    }
+
     irr::f32 SimulationModel::getMaxSounderDepth() const
     {
         return ownShip.getMaxSounderDepth();
@@ -1126,13 +1391,119 @@ SimulationModel::~SimulationModel()
 		sound->setVolumeHorn(0.0);
 	}
 
+    bool SimulationModel::getMoveViewWithPrimary() const {
+        return moveViewWithPrimary;
+    }
+
+    void SimulationModel::setMoveViewWithPrimary(bool moveView) {
+        moveViewWithPrimary = moveView;
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
+        
+        // Temporarily enable all required triangle selectors
+        if (linesMode == 1) {
+            // Start - on own ship
+            ownShip.enableTriangleSelector(true);
+        } else if (linesMode == 2) {
+            // End - not on own ship
+            otherShips.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+            buoys.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+            // TODO: Temporarily enable triangle selector for:
+            //   Terrain
+            //   Land objects
+        } else {
+            // Not start or end, return null;
+            return 0;
+        }
+        
+        irr::core::vector3df intersection;
+        irr::core::triangle3df hitTriangle;
+
+        irr::scene::ISceneNode * selectedSceneNode =
+            smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+            ray,
+            intersection, // This will be the position of the collision
+            hitTriangle, // This will be the triangle hit in the collision
+            0, // (bitmask), 0 for all
+            0); // Check all nodes
+        
+        irr::scene::ISceneNode* contactPointNode = 0;
+
+        if (selectedSceneNode && 
+            (
+                ((linesMode == 1) && (selectedSceneNode == ownShip.getSceneNode())) || // Valid start node
+                ((linesMode == 2) && (selectedSceneNode != ownShip.getSceneNode()))    // Valid end node
+            )
+           ) {
+
+            // Add a 'sphere' scene node, with selectedSceneNode as parent.
+            // Find local coordinates from the global one
+            irr::core::vector3df localPosition(intersection);
+            irr::core::matrix4 worldToLocal = selectedSceneNode->getAbsoluteTransformation();
+            worldToLocal.makeInverse();
+            worldToLocal.transformVect(localPosition);
+
+            irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+            if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
+                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X, 
+                                                   1.0f/selectedSceneNode->getScale().X, 
+                                                   1.0f/selectedSceneNode->getScale().X);
+            }
+
+            contactPointNode = smgr->addSphereSceneNode(0.25f,16,selectedSceneNode,-1,
+                                                        localPosition,
+                                                        irr::core::vector3df(0, 0, 0),
+                                                        sphereScale);
+            
+            // Set name to match parent for convenience
+            contactPointNode->setName(selectedSceneNode->getName());
+        } 
+
+        // Reset triangle selectors
+        ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
+        // buoys and otherShips will be reset when their update() method is called
+
+        return contactPointNode;
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getOwnShipSceneNode()
+    {
+        return (irr::scene::ISceneNode*)ownShip.getSceneNode();
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
+    {
+        return otherShips.getSceneNode(number);
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getBuoySceneNode(int number)
+    {
+        return buoys.getSceneNode(number);
+    }
+
+    irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
+    {
+        return landObjects.getSceneNode(number);
+    }
+
+    void SimulationModel::addLine() // Add a line, which will be undefined
+    {
+        lines.addLine();
+    }
+
+    Lines* SimulationModel::getLines() // Get pointer to lines object
+    {
+        return &lines;
+    }
+
     void SimulationModel::update()
     {
 
         #ifdef WITH_PROFILING
         IPROF_FUNC;
         #endif
-// DEE vvvv debug I think that this is effectively the CLOCK
+// DEE vvvv debug I think that this is effectively the cycle
 
         //Declare here, so scope added as part of profiling isn't a problem
         irr::u32 lightLevel;
@@ -1200,9 +1571,12 @@ SimulationModel::~SimulationModel()
         //Update land lights
         landLights.update(deltaTime,scenarioTime,lightLevel);
 
-        }{ IPROF("Update own ship");
+        } { IPROF("Update lines");
+        //update all lines, ready to be used for own ship force
+        lines.update(deltaTime);
+        } { IPROF("Update own ship");
         //update own ship
-        ownShip.update(deltaTime, scenarioTime, tideHeight, weather);
+        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 
         }{ IPROF("Update MOB");
         //update man overboard
@@ -1235,6 +1609,9 @@ SimulationModel::~SimulationModel()
             landObjects.moveNode(deltaX,0,deltaZ);
             landLights.moveNode(deltaX,0,deltaZ);
             manOverboard.moveNode(deltaX,0,deltaZ);
+
+            // Also move camera if in 'frozen' mode
+            camera.applyOffset(deltaX,0,deltaZ);
 
             //Change stored offset
             offsetPosition.X -= deltaX;
@@ -1287,17 +1664,14 @@ SimulationModel::~SimulationModel()
         irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
         elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
 
-        }{ IPROF("Get radar ARPA data");
+        }{ IPROF("Get radar ARPA data for GUI");
+
         //get radar ARPA data to show
         irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
+        guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
-            ARPAEstimatedState state = radarCalculation.getARPATrack(i).estimate;
-            CPAs.push_back(state.cpa);
-            TCPAs.push_back(state.tcpa);
-			headings.push_back(state.absHeading);
-			speeds.push_back(state.speed);
+			guiData->arpaContactStates.push_back(radarCalculation.getARPATrack(i).estimate);
         }
-
 
         }{ IPROF("Collate GUI data ");
 
@@ -1312,6 +1686,10 @@ SimulationModel::~SimulationModel()
         guiData->stbdEng = ownShip.getStbdEngine();
         guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
         guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
+        guiData->portAzimuthAngle = ownShip.getPortAzimuthAngle();
+        guiData->stbdAzimuthAngle = ownShip.getStbdAzimuthAngle();
+        guiData->azimuth1Master = ownShip.getAzimuth1Master();
+        guiData->azimuth2Master = ownShip.getAzimuth2Master();
         guiData->bowThruster = ownShip.getBowThruster();
         guiData->sternThruster = ownShip.getSternThruster();
         guiData->depth = ownShip.getDepth();
@@ -1324,10 +1702,8 @@ SimulationModel::~SimulationModel()
         guiData->radarRain = radarCalculation.getRainClutter();
         guiData->guiRadarEBLBrg = radarCalculation.getEBLBrg();
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
-        guiData->CPAs = CPAs;
-        guiData->TCPAs = TCPAs;
-		guiData->headings = headings;
-		guiData->speeds = speeds;
+        guiData->guiRadarCursorBrg = radarCalculation.getCursorBrg();
+        guiData->guiRadarCursorRangeNm = radarCalculation.getCursorRangeNm();
         guiData->currentTime = Utilities::timestampToString(absoluteTime);
         guiData->paused = paused;
         guiData->collided = collided;
@@ -1335,6 +1711,27 @@ SimulationModel::~SimulationModel()
         guiData->radarOn = radarCalculation.isRadarOn();
         guiData->pump1On = ownShip.getRudderPumpState(1);
         guiData->pump2On = ownShip.getRudderPumpState(2);
+
+
+// DEE_NOV22 vvvv
+	guiData->schottelPort = ownShip.getPortSchottel();
+	guiData->schottelStbd = ownShip.getStbdSchottel();
+
+	guiData->enginePort = (ownShip.getPortEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
+	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
+
+
+
+	guiData->clutchPort = ownShip.getPortClutch();
+	guiData->clutchStbd = ownShip.getStbdClutch();
+
+	guiData->emergencySteering = !(ownShip.getFollowUpRudderWorking());
+
+// DEE_NOV22 ^^^^
+
+	// DEE FEB 23 vvv
+	guiData->tideHeight = tideHeight;
+	// DEE FEB 23 ^^^
 
 // DEE vvvv units are rad per second
 	guiData->RateOfTurn = ownShip.getRateOfTurn();

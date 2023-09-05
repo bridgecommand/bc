@@ -4,6 +4,7 @@ project(bridgecommand)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -37,7 +38,10 @@ find_package(Threads REQUIRED)
 set(BC_SOURCES
     iprof.cpp
     main.cpp
+    AIS.cpp
     Angles.cpp
+    Autopilot.cpp
+    AzimuthDial.cpp
     Buoy.cpp
     Buoys.cpp
     Camera.cpp
@@ -52,6 +56,8 @@ set(BC_SOURCES
     LandObjects.cpp
     Lang.cpp
     Light.cpp
+    Line.cpp
+    Lines.cpp
     ManOverboard.cpp
     MovingWater.cpp
     MyEventReceiver.cpp

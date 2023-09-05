@@ -26,7 +26,7 @@
 
 //using namespace irr;
 
-Buoy::Buoy(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -78,7 +78,7 @@ Buoy::Buoy(const std::string& name, const std::string& worldName, const irr::cor
     }
 
     triangleSelectorEnabled = false;
-    buoy->setName("Buoy");
+    buoy->setName(internalName.c_str());
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
@@ -177,6 +177,7 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.solidHeight=0; //Assume buoy never blocks radar
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
+    radarData.width=getLength(); // Same as length (assumed circular)
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact

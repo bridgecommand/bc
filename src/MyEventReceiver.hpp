@@ -24,6 +24,7 @@
 //forward declarations
 class GUIMain;
 class SimulationModel;
+class Lines;
 
 //Data about joystick setup
 class JoystickSetup {
@@ -41,11 +42,65 @@ public:
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
-    //Buttons:
+    
+    
+// DEE 10JAN23 Azimuth Drive Specific vvvv
+// for class JoystickSetup
+
+// which joysticks control each lever and control, in the case of azimuth drives the specific controls are     
+//    irr::u32 azimuth1JoystickNo;
+//    irr::u32 azimuth2JoystickNo;
+    irr::u32 portThrustLever_joystickNo;
+    irr::u32 stbdThrustLever_joystickNo;
+    irr::u32 portSchottel_joystickNo;
+    irr::u32 stbdSchottel_joystickNo;
+
+// defines the channel aka axis of the already defined joystick no    
+//    irr::u32 azimuth1JoystickAxis;
+//    irr::u32 azimuth2JoystickAxis;
+    irr::u32 portSchottel_channel;    
+    irr::u32 stbdSchottel_channel;
+    irr::u32 portThrustLever_channel;
+    irr::u32 stbdThrustLever_channel;
+
+// determines if the schottel is inverted
+//    irr::s32 azimuth1Direction;
+//    irr::s32 azimuth2Direction;
+    irr::s32 schottelPortDirection;
+    irr::s32 schottelStbdDirection;    
+    irr::s32 thrustLeverPortDirection;
+    irr::s32 thrustLeverStbdDirection;
+
+// scaling and offset values for the schottel    
+//    irr::f32 azimuth1Scaling;
+//    irr::f32 azimuth2Scaling;
+//    irr::f32 azimuth1Offset;
+//    irr::f32 azimuth2Offset;
+    irr::f32 schottelPortScaling;
+    irr::f32 schottelStbdScaling;
+    irr::f32 schottelPortOffset;
+    irr::f32 schottelStbdOffset;
+    
+// scaling and offset for the thrust levers
+    irr::f32 thrustLeverPortScaling;
+    irr::f32 thrustLeverStbdScaling;
+    irr::f32 thrustLeverPortOffset;
+    irr::f32 thrustLeverStbdOffset;
+    
+    
+// DEE 10JAN2023 ^^^^
+
+
+
+
+
+//Buttons:
     irr::u32 joystickNoHorn;
     irr::u32 joystickButtonHorn;
     irr::u32 joystickNoChangeView;
     irr::u32 joystickButtonChangeView;
+    irr::u32 joystickNoChangeAndLockView;
+    irr::u32 joystickButtonChangeAndLockView;
     irr::u32 joystickNoLookStepLeft;
     irr::u32 joystickButtonLookStepLeft;
     irr::u32 joystickNoLookStepRight;
@@ -92,6 +147,12 @@ public:
     irr::u32 joystickButtonNFUStbd;
     irr::u32 joystickNoAckAlarm;
     irr::u32 joystickButtonAckAlarm;
+    // DEE 10JAN23 vvvv
+    irr::u32 joystickButtonAzimuth1Master;
+    irr::u32 joystickButtonAzimuth2Master;
+    // DEE 10JAN23 ^^^^
+    irr::u32 joystickNoAzimuth1Master;
+    irr::u32 joystickNoAzimuth2Master;
     irr::u32 joystickNoPOV;
     irr::u16 joystickPOVLookLeft;
     irr::u16 joystickPOVLookRight;
@@ -123,6 +184,21 @@ private:
     irr::f32 previousJoystickPort;
     irr::f32 previousJoystickStbd;
     irr::f32 previousJoystickRudder;
+// DEE 10JAN23 vvvv
+//    irr::f32 previousJoystickAzimuthAngPort;
+//    irr::f32 previousJoystickAzimuthAngStbd;
+
+    irr::f32 previousJoystickThrustLeverPort;
+    irr::f32 previousJoystickThrustLeverStbd;
+    irr::f32 newJoystickThrustLeverPort;
+    irr::f32 newJoystickThrustLeverStbd;
+
+    irr::f32 previousJoystickSchottelPort;
+    irr::f32 previousJoystickSchottelStbd;
+    irr::f32 newJoystickSchottelPort;
+    irr::f32 newJoystickSchottelStbd;
+
+// DEE 10JAN23 ^^^^
     irr::f32 previousJoystickBowThruster;
     irr::f32 previousJoystickSternThruster;
 
@@ -134,9 +210,13 @@ private:
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;
     irr::u32 lastShownJoystickStatus;
+    irr::u32 lastTimeAzimuth1MasterChanged;
+    irr::u32 lastTimeAzimuth2MasterChanged;
 
     irr::u16 previousJoystickPOV;
     bool previousJoystickPOVInitialised;
+
+    irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
 
     void startShutdown();
     irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);

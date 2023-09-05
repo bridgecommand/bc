@@ -24,7 +24,7 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     device = dev;
@@ -86,7 +86,7 @@ LandObject::LandObject(const std::string& name, const std::string& worldName, co
     landObject->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     landObject->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
-    landObject->setName("LandObject");
+    landObject->setName(internalName.c_str());
 
     //===========================================
     //Get contact points for radar detection here
@@ -174,4 +174,9 @@ void LandObject::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     irr::f32 newPosZ = currentPos.Z + deltaZ;
 
     landObject->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
+}
+
+irr::scene::ISceneNode* LandObject::getSceneNode() const
+{
+    return (irr::scene::ISceneNode*)landObject;
 }

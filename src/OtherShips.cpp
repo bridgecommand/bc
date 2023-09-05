@@ -87,7 +87,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         }
 
         //Create otherShip and load into vector
-        otherShips.push_back(new OtherShip (otherShipName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        std::string internalName = "OtherShip_";
+        internalName.append(std::to_string(i));
+        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
     }
 
 }
@@ -120,6 +122,23 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
         }
     }
 
+}
+
+void OtherShips::enableAllTriangleSelectors()
+{
+    for(std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        // This will return to normal the next time OtherShips::update is called.
+        (*it)->enableTriangleSelector(true);
+    }
+}
+
+irr::scene::ISceneNode* OtherShips::getSceneNode(int number)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getSceneNode();
+    } else {
+        return 0;
+    }
 }
 
 RadarData OtherShips::getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const
@@ -217,6 +236,13 @@ void OtherShips::setHeading(int number, irr::f32 hdg)
 {
     if (number < (int)otherShips.size() && number >= 0) {
         otherShips.at(number)->setHeading(hdg);
+    }
+}
+
+void OtherShips::setRateOfTurn(int number, irr::f32 rateOfTurn)
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        otherShips.at(number)->setRateOfTurn(rateOfTurn);
     }
 }
 

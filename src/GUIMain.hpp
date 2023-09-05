@@ -23,9 +23,14 @@
 #include "HeadingIndicator.h"
 //#include "RateOfTurnIndicator.h" // DEE addition
 #include "OutlineScrollBar.h"
+#include "AzimuthDial.h"
 #include "GUIRectangle.hpp"
+#include "RadarCalculation.hpp"
 #include <vector>
 #include <string>
+
+// Forward declarations
+class SimulationModel;
 
 struct GUIData {
     irr::f32 lat;
@@ -39,10 +44,12 @@ struct GUIData {
     irr::f32 rudder;
     irr::f32 bowThruster;
     irr::f32 sternThruster;
-// DEE vvvv
     irr::f32 wheel;
+    irr::f32 portAzimuthAngle;
+    irr::f32 stbdAzimuthAngle;
+    bool azimuth1Master;
+    bool azimuth2Master;
     irr::f32 RateOfTurn;
-// DEE ^^^
     irr::f32 depth;
     irr::f32 weather;
     irr::f32 rain;
@@ -54,16 +61,30 @@ struct GUIData {
     irr::f32 radarRain;
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
-    std::vector<irr::f32> CPAs;
-    std::vector<irr::f32> TCPAs;
-	std::vector<irr::f32> headings;
-	std::vector<irr::f32> speeds;
+    irr::f32 guiRadarCursorBrg;
+    irr::f32 guiRadarCursorRangeNm;
+    std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
     bool collided;
     bool headUp;
     bool pump1On;
     bool pump2On;
+// DEE_NOV22 Azimuth Drive related gui items
+    irr::f32 schottelPort; // angle of the schottels +ve clockwise 0 dead ahead
+    irr::f32 schottelStbd;
+    irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
+    irr::f32 thrustLeverStbd;
+    irr::f32 enginePort;
+    irr::f32 engineStbd;
+    irr::f32 emergencySteering;
+    bool clutchPort;  // Clutches true for engaged false for disengaged
+    bool clutchStbd;
+
+    // the angle of each azimuth drive and each engine level is defined elsewhere
+    // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
+
+    irr::f32 tideHeight; // DEE FEB 23
 };
 
 class GUIMain //Create, build and update GUI
@@ -71,7 +92,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -79,6 +100,19 @@ public:
         GUI_ID_SPEED_SCROLL_BAR,
         GUI_ID_PORT_SCROLL_BAR,
         GUI_ID_STBD_SCROLL_BAR,
+        GUI_ID_AZIMUTH_1,
+        GUI_ID_AZIMUTH_2,
+        GUI_ID_AZIMUTH_1_MASTER_CHECKBOX,
+        GUI_ID_AZIMUTH_2_MASTER_CHECKBOX,
+// DEE_NOV22 vvvv
+	GUI_ID_SCHOTTEL_PORT,
+	GUI_ID_SCHOTTEL_STBD,
+	GUI_ID_ENGINE_PORT,
+	GUI_ID_ENGINE_STBD,
+	GUI_ID_CLUTCH_PORT,
+	GUI_ID_CLUTCH_STBD,
+	GUI_ID_EMERGENCY_STEERING,
+// DEE_NOV22 ^^^^
         GUI_ID_RUDDER_SCROLL_BAR,
 // DEE vvvv
 	GUI_ID_WHEEL_SCROLL_BAR,
@@ -128,6 +162,8 @@ public:
         GUI_ID_SHOW_LOG_BUTTON,
         GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,
         GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,
+        GUI_ID_SHOW_LINES_CONTROLS_BUTTON,
+        GUI_ID_HIDE_LINES_CONTROLS_BUTTON,
         GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,
         GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,
         GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,
@@ -135,6 +171,11 @@ public:
         GUI_ID_FOLLOWUP_WORKING_BUTTON,
         GUI_ID_FOLLOWUP_FAILED_BUTTON,
         GUI_ID_ACK_ALARMS_BUTTON,
+        GUI_ID_ADD_LINE_BUTTON,
+        GUI_ID_REMOVE_LINE_BUTTON,
+        GUI_ID_KEEP_SLACK_LINE_CHECKBOX,
+        GUI_ID_HAUL_IN_LINE_CHECKBOX,
+        GUI_ID_LINES_LIST,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -153,6 +194,7 @@ public:
     void setARPACheckboxes(bool arpaState);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
+    irr::core::rect<irr::s32> getSmallRadarRect() const;
     irr::core::rect<irr::s32> getLargeRadarRect() const;
     bool isNFUActive() const;
     void setSingleEngine(); //Used for single engine operation
@@ -162,6 +204,8 @@ public:
     void showLogWindow();
     void drawGUI();
     void setExtraControlsWindowVisible(bool windowVisible);
+    void setLinesControlsWindowVisible(bool windowVisible);
+    void setLinesControlsText(std::string textToShow);
 
 private:
 
@@ -181,6 +225,25 @@ private:
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
+    irr::gui::AzimuthDial* azimuth1Control;
+    irr::gui::AzimuthDial* azimuth2Control;
+
+    irr::gui::IGUICheckBox* azimuth1Master;
+    irr::gui::IGUICheckBox* azimuth2Master;
+
+    // DEE_NOV22 vvvv
+    irr::gui::AzimuthDial* enginePort;
+    irr::gui::AzimuthDial* engineStbd;
+    irr::gui::AzimuthDial* schottelPort;
+    irr::gui::AzimuthDial* schottelStbd;
+    irr::gui::IGUICheckBox* clutchPort;
+    irr::gui::IGUICheckBox* clutchStbd;
+    irr::gui::IGUICheckBox* emergencySteering;
+
+
+    // DEE_NOV22 ^^^^
+
+    irr::gui::IGUIListBox* arpaList;
     irr::gui::IGUIListBox* arpaText;
     irr::gui::IGUIButton* pausedButton;
     irr::gui::IGUIButton* bigRadarButton;
@@ -210,6 +273,7 @@ private:
     irr::gui::IGUIButton* eblUpButton2;
     irr::gui::IGUIButton* eblDownButton2;
     irr::gui::IGUIStaticText* radarText2;
+    irr::gui::IGUIListBox* arpaList2;
     irr::gui::IGUIListBox* arpaText2;
 
     irr::gui::IGUIScrollBar* visibilityScrollbar;
@@ -224,6 +288,14 @@ private:
     irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
     irr::gui::IGUIButton* showExtraControlsButton;
+    irr::gui::IGUIButton* showLinesControlsButton;
+
+    irr::gui::IGUIButton* addLine;
+    irr::gui::IGUIButton* removeLine;
+    irr::gui::IGUICheckBox* keepLineSlack;
+    irr::gui::IGUICheckBox* heaveLineIn;
+    irr::gui::IGUIListBox* linesList;
+    irr::gui::IGUIStaticText* linesText;
 
     irr::gui::IGUIStaticText* pump1On;
     irr::gui::IGUIStaticText* pump2On;
@@ -233,10 +305,13 @@ private:
     irr::gui::IGUIStaticText* clickForEngineText;
 
     irr::gui::IGUIWindow* extraControlsWindow;
-
+    irr::gui::IGUIWindow* linesControlsWindow;
 
     irr::u32 su;
     irr::u32 sh;
+
+    irr::s32 azimuthGUIOffsetL;
+    irr::s32 azimuthGUIOffsetR;
 
     irr::f32 guiLat;
     irr::f32 guiLong;
@@ -245,6 +320,7 @@ private:
     irr::f32 viewElev;
     irr::f32 guiSpeed;
     irr::f32 guiDepth;
+    irr::f32 guiTideHeight;
     bool guiRadarOn;
     irr::f32 guiRadarRangeNm;
     irr::f32 guiRadarGain;
@@ -252,6 +328,8 @@ private:
     irr::f32 guiRadarRain;
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
+    irr::f32 guiRadarCursorBrg;
+    irr::f32 guiRadarCursorRangeNm;
     bool radarHeadUp;
     bool radarLarge;
     irr::core::rect<irr::s32> radarLargeRect;
@@ -261,12 +339,10 @@ private:
     irr::s32 smallRadarScreenCentreX;
     irr::s32 smallRadarScreenCentreY;
     irr::s32 smallRadarScreenRadius;
-    std::vector<irr::f32> guiCPAs;
-    std::vector<irr::f32> guiTCPAs; //Time to CPA in minutes
-	std::vector<irr::f32> guiARPAheadings;
-	std::vector<irr::f32> guiARPAspeeds; //in knots
+    std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
+    bool azimuthDrive;
     bool hasBowThruster;
     bool hasSternThruster;
     bool hasRateOfTurnIndicator;
@@ -278,9 +354,12 @@ private:
     bool hasDepthSounder;
     irr::f32 maxSounderDepth;
     bool hasGPS;
+    bool showTideHeight;
+    bool showCollided;
 
     Lang* language;
     std::vector<std::string>* logMessages;
+    SimulationModel* model;
 
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;

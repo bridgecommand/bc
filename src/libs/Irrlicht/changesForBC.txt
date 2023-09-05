@@ -1,10 +1,5 @@
 The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1/1.8.4 release:
 
-Terrain loading modified to rotate heightmap and texture images by 180 degrees, for more standard height map loading
-Also automatically scale heightmap image if needed
-Allow use of RGB encoded heightmaps
-(CTerrainSceneNode.cpp, CTerrainSceneNode.h, ITerrainSceneNode.h)
-
 OSX specific code (CIrrDeviceMacOSX.mm) modified to use Command key (NSCommandKeyMask) instead of Control.
 
 CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.

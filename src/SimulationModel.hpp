@@ -44,6 +44,7 @@ class Sound;
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
+#include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
@@ -51,7 +52,26 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
-    SimulationModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, Sound* sound, ScenarioData scenarioData, OperatingMode::Mode mode, irr::f32 viewAngle, irr::f32 lookAngle, irr::f32 cameraMinDistance, irr::f32 cameraMaxDistance, irr::u32 disableShaders, irr::u32 waterSegments, irr::core::vector3di numberOfContactPoints, irr::u32 limitTerrainResolution);
+    SimulationModel(irr::IrrlichtDevice* dev,
+                    irr::scene::ISceneManager* scene,
+                    GUIMain* gui,
+                    Sound* sound,
+                    ScenarioData scenarioData,
+                    OperatingMode::Mode mode,
+                    irr::f32 viewAngle,
+                    irr::f32 lookAngle,
+                    irr::f32 cameraMinDistance,
+                    irr::f32 cameraMaxDistance,
+                    irr::u32 disableShaders,
+                    irr::u32 waterSegments,
+                    irr::core::vector3di numberOfContactPoints,
+                    irr::f32 minContactPointSpacing,
+                    irr::f32 contactStiffnessFactor,
+                    irr::f32 contactDampingFactor,
+                    irr::f32 frictionCoefficient,
+                    irr::f32 tanhFrictionFactor,
+                    irr::u32 limitTerrainResolution,
+                    bool debugMode);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -69,6 +89,43 @@ public:
     void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
     irr::f32 getRudder() const;
     irr::f32 getWheel() const; // DEE
+    void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
+    void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
+    bool getAzimuth1Master() const;
+    bool getAzimuth2Master() const;
+    void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+    void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
+
+    // DEE_NOV22 vvvv for follow up shcottel and automatic clutch
+    void setPortSchottel(irr::f32 angle); // Set Port Schottel angle
+    irr::f32 getPortSchottel();
+    void setStbdSchottel(irr::f32 angle); // Set Stbd Schottel angle
+    irr::f32 getStbdSchottel();
+    bool getPortClutch();
+    void setPortClutch(bool);
+    bool getStbdClutch();
+    void setStbdClutch(bool);
+    void engagePortClutch();
+    void disengagePortClutch();
+    void engageStbdClutch();
+    void disengageStbdClutch();
+    void setPortThrustLever(irr::f32);   // sets port thrust lever range is 0..+1
+    irr::f32 getPortThrustLever(); 	 // gets port thrust lever range is 0..+1
+    void setStbdThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1
+    irr::f32 getStbdThrustLever(); // gets starboard thrust lever range is 0..+1
+
+    void btnIncrementPortThrustLever(); // increments the port thrust lever
+    void btnDecrementPortThrustLever(); // decrements the port thrust lever
+    void btnIncrementStbdThrustLever(); // increments the stbd thrust lever
+    void btnDecrementStbdThrustLever(); // decrements the stbd thrust lever
+
+    void btnIncrementPortSchottel(); // clockwise turn of the port schottel in response to a key press
+    void btnDecrementPortSchottel(); // anticlockwise turn of the port schottel in response to a key press
+    void btnIncrementStbdSchottel(); // clockwise turn of the starboard schottel in response to a key press
+    void btnDecrementStbdSchottel(); // anticlockwise turn of the starboard schottel in response to a key press
+
+    // DEE_NOV22 ^^^^
+
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
     void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
     irr::f32 getPortEngine() const; //Range +-1
@@ -95,7 +152,7 @@ public:
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
-    irr::f32 getDepth() const; 
+    irr::f32 getDepth() const;
 
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
@@ -114,11 +171,14 @@ public:
     std::string getOtherShipName(int number) const;
     irr::f32 getOtherShipPosX(int number) const;
     irr::f32 getOtherShipPosZ(int number) const;
+    irr::f32 getOtherShipLat(int number) const;
+    irr::f32 getOtherShipLong(int number) const;
     irr::f32 getOtherShipHeading(int number) const;
     irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
     irr::u32 getOtherShipMMSI(int number) const;
     void setOtherShipHeading(int number, irr::f32 hdg);
     void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
+    void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);
     void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
     void setOtherShipMMSI(int number, irr::u32 mmsi);
     std::vector<Leg> getOtherShipLegs(int number) const;
@@ -159,6 +219,8 @@ public:
     void changeView();
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
+    void setFrozenCamera(bool frozen);
+    void toggleFrozenCamera();
 	void setAlarm(bool alarmState);
     void toggleRadarOn();
     bool isRadarOn() const;
@@ -203,14 +265,31 @@ public:
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
     bool hasGPS() const;
     bool isSingleEngine() const;
+    bool isAzimuthDrive() const;
     bool hasDepthSounder() const;
     irr::f32 getMaxSounderDepth() const;
     bool hasBowThruster() const;
     bool hasSternThruster() const;
     bool hasTurnIndicator() const;
+    bool debugModeOn() const;
+    irr::f32 getOwnShipMass() const;
+
+    bool getMoveViewWithPrimary() const;
+    void setMoveViewWithPrimary(bool moveView);
 
 	void startHorn();
 	void endHorn();
+
+    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
+    
+    irr::scene::ISceneNode* getOwnShipSceneNode();
+    irr::scene::ISceneNode* getOtherShipSceneNode(int number);
+    irr::scene::ISceneNode* getBuoySceneNode(int number);
+    irr::scene::ISceneNode* getLandObjectSceneNode(int number);
+
+    void addLine(); // Add a line, which will be undefined
+    
+    Lines* getLines(); // Get pointer to lines object
 
     void update();
 
@@ -245,11 +324,14 @@ private:
     Water water;
     Tide tide;
     Rain rain;
+    Lines lines;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
     GUIMain* guiMain;
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
+    bool moveViewWithPrimary;
+    bool debugMode;
     ManOverboard manOverboard;
 
     //Simulation time handling
