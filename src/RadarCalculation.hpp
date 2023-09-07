@@ -48,6 +48,7 @@ struct ARPAScan {
 };
 
 struct ARPAEstimatedState {
+    // TODO: Do we need initialisation for this, so a new empty struct is in a known state?
     irr::u32 displayID; //User displayed ID
     bool stationary; // E.g. if detected as static and a small RCS or a buoy.
     irr::f32 absVectorX; //Estimated X speed (m/s)
@@ -66,6 +67,7 @@ struct ARPAEstimatedState {
 };
 
 struct ARPAContact {
+    // TODO: Do we need initialisation for this, so a new empty struct is in a known state?
     std::vector<ARPAScan> scans;
     irr::f32 totalXMovementEst; //Estimates of total movement (sum of absolutes) in X and Z, to help detect stationary contacts
     irr::f32 totalZMovementEst;

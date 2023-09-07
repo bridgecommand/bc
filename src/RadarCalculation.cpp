@@ -1060,7 +1060,7 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
             // Check if contact lost, if last scanned more than 60 seconds ago 
             // (exception for MARPA, don't detect as lost)
             if ( absoluteTime - thisArpaContact.scans.back().timeStamp > 60 && 
-                 thisArpaContact.estimate.contactType != CONTACT_MANUAL) {
+                 thisArpaContact.estimate.contactType == CONTACT_NORMAL) {
                 thisArpaContact.estimate.lost=true;
                 //std::cout << "Contact " << i << " lost" << std::endl;
             } else if (!thisArpaContact.estimate.stationary) {
