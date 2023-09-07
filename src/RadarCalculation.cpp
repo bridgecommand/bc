@@ -460,9 +460,18 @@ void RadarCalculation::setArpaOn(bool on)
 {
     arpaOn = on;
     if (!arpaOn) {
-        //Clear arpa scans
-        arpaContacts.clear(); //TODO: Clear ones that aren't MARPA?
-        arpaTracks.clear(); //TODO: Clear ones that aren't MARPA?
+        // Clear arpa scans:
+        // Remove all ARPA (not MARPA) contacts from arpaContacts. Clear arpaTracks, but reset estimate.displayID to 0 for MARPA contacts, so it is regenerated 
+        for (int i = arpaContacts.size() - 1; i >= 0; i--) {
+            // Iterate from end to start, as we may be removing items
+            if (arpaContacts.at(i).contactType == CONTACT_MANUAL) {
+                arpaContacts.at(i).estimate.displayID = 0;
+            } else {
+                // Remove it
+                arpaContacts.erase(arpaContacts.begin() + i);
+            }
+        }
+        arpaTracks.clear(); // This will be regenerated as we have set display ID to 0
     }
 }
 
