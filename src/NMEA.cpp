@@ -454,10 +454,10 @@ void NMEA::updateNMEA()
         }
         case TTM: // 8.3.85 Tracked target message
         {
-            if (model->getARPATracks() > 0) {
+            if (model->getARPATracksSize() > 0) {
                 std::string messageToSend = "";
                 //To think about/add: Lost contacts? Manually aquired contacts?
-                for (int i=0; i<model->getARPATracks(); i++) {
+                for (int i=0; i<model->getARPATracksSize(); i++) {
                     ARPAContact contact = model->getARPAContactFromTrackIndex(i);
                     ARPAEstimatedState state = contact.estimate;
                     snprintf(messageBuffer,maxSentenceChars,"$RATTM,%02d,%.1f,%.1f,T,%.1f,%.1f,T,%.1f,%.1f,N,TGT%02d,T,,%s.00,A",

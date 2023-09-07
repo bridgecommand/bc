@@ -494,7 +494,7 @@ void RadarCalculation::setRadarDisplayRadius(irr::u32 radiusPx)
     }
 }
 
-irr::u32 RadarCalculation::getARPATracks() const
+irr::u32 RadarCalculation::getARPATracksSize() const
 {
     return arpaTracks.size();
 }
@@ -1027,7 +1027,7 @@ void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, c
 
     //Based on scans data in arpaContacts, estimate current speed, heading and position
     for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc. TODO: Passing in the ID will need to change for MARPA
+        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc.
     } //For loop through arpa contacts
 }
 
@@ -1079,7 +1079,7 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                 //If ID is 0 (unassigned), set id and increment
                 if (thisArpaContact.estimate.displayID==0) {
                     arpaTracks.push_back(contactID);
-                    thisArpaContact.estimate.displayID = getARPATracks(); // The display ID is the current size of thr arpaTracks list. TODO: Will need update for MARPA
+                    thisArpaContact.estimate.displayID = getARPATracksSize(); // The display ID is the current size of thr arpaTracks list.
                 }
 
                 irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)

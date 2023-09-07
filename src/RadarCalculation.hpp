@@ -116,7 +116,7 @@ class RadarCalculation
         void setRadarARPAVectors(irr::f32 vectorMinutes);
         void setRadarDisplayRadius(irr::u32 radiusPx);
         void changeRadarColourChoice();
-        irr::u32 getARPATracks() const;
+        irr::u32 getARPATracksSize() const;
         int getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const;
         ARPAContact getARPAContactFromTrackIndex(irr::u32 trackIndex) const;
         void addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);

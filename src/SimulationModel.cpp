@@ -1227,9 +1227,9 @@ SimulationModel::~SimulationModel()
         radarCalculation.addMARPAPoint(offsetPosition, ownShip, absoluteTime);
     }
 
-    irr::u32 SimulationModel::getARPATracks() const
+    irr::u32 SimulationModel::getARPATracksSize() const
     {
-        return radarCalculation.getARPATracks();
+        return radarCalculation.getARPATracksSize();
     }
 
     ARPAContact SimulationModel::getARPAContactFromTrackIndex(irr::u32 index) const
@@ -1677,7 +1677,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Get radar ARPA data for GUI");
 
         //get radar ARPA data to show
-        irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
+        irr::u32 numberOfARPATracks = radarCalculation.getARPATracksSize();
         guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
 			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
