@@ -1232,9 +1232,9 @@ SimulationModel::~SimulationModel()
         return radarCalculation.getARPATracks();
     }
 
-    ARPAContact SimulationModel::getARPATrack(irr::u32 index) const
+    ARPAContact SimulationModel::getARPAContactFromTrackIndex(irr::u32 index) const
     {
-        return radarCalculation.getARPATrack(index);
+        return radarCalculation.getARPAContactFromTrackIndex(index);
     }
 
     void SimulationModel::setMainCameraActive()
@@ -1680,7 +1680,7 @@ SimulationModel::~SimulationModel()
         irr::u32 numberOfARPATracks = radarCalculation.getARPATracks();
         guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
-			guiData->arpaContactStates.push_back(radarCalculation.getARPATrack(i).estimate);
+			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
         }
 
         }{ IPROF("Collate GUI data ");

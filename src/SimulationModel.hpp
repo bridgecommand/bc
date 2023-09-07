@@ -248,7 +248,7 @@ public:
     void setRadarDisplayRadius(irr::u32 radiusPx);
     void addMARPAPoint();
     irr::u32 getARPATracks() const;
-    ARPAContact getARPATrack(irr::u32 index) const;
+    ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

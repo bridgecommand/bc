@@ -499,10 +499,23 @@ irr::u32 RadarCalculation::getARPATracks() const
     return arpaTracks.size();
 }
 
-ARPAContact RadarCalculation::getARPATrack(irr::u32 index) const
+int RadarCalculation::getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const
 {
-    if (index >= 0 && index < arpaContacts.size()) {
-        return arpaContacts.at(arpaTracks.at(index));
+    if (trackIndex >= 0 && trackIndex < arpaTracks.size()) {
+        return arpaTracks.at(trackIndex);
+    } else {
+        // Not found
+        return -1;
+    }
+}
+
+ARPAContact RadarCalculation::getARPAContactFromTrackIndex(irr::u32 trackIndex) const
+{
+    
+    int contactID = getARPAContactIDFromTrackIndex(trackIndex);
+
+    if(contactID >=0 && contactID < arpaContacts.size()){
+        return arpaContacts.at(contactID);
     } else {
         ARPAContact emptyContact;
         return emptyContact;
@@ -938,12 +951,11 @@ void RadarCalculation::addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition
     // Check if a MARPA contact is selected, if not, create a new one. If yes, add a 'scan'
     // Contact selected from GUI is arpaListSelection
 
-    // Should be able to find selected ARPA contact from ID using getARPATrack(). If it's a MARPA one, then use this, otherwise create a new one
+    // Should be able to find selected ARPA contact from ID using getARPAContactFromTrackIndex(). If it's a MARPA one, then use this, otherwise create a new one
 
     int existingArpaContact=-1;
-    if (getARPATrack(arpaListSelection).contactType == CONTACT_MANUAL) {
-        // Note that this assumes the GUI list is in the same order as the ARPA track list
-        existingArpaContact = arpaListSelection; 
+    if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
+        existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
     }
 
     std::cout << "In addMARPAPoint, arpaListSelection = " << arpaListSelection << " existingArpaContact = " << existingArpaContact << std::endl;
@@ -1068,7 +1080,6 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                 if (thisArpaContact.estimate.displayID==0) {
                     arpaTracks.push_back(contactID);
                     thisArpaContact.estimate.displayID = getARPATracks(); // The display ID is the current size of thr arpaTracks list. TODO: Will need update for MARPA
-
                 }
 
                 irr::s32 stepsBack = 60; //Default time for tracking (time = stepsBack * SECONDS_BETWEEN_SCANS)
