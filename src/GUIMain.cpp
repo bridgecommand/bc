@@ -522,7 +522,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         eblDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         // TODO: Location to be improved:
-        guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.275*radarSu,0.190*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_MARPA_BUTTON,language->translate("marpaAcquire").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.275*radarSu,0.190*radarSu,0.295*radarSu),largeRadarControls,GUI_ID_MARPA_BUTTON,language->translate("marpaAcquire").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.295*radarSu,0.190*radarSu,0.315*radarSu),largeRadarControls,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("marpaClear").c_str());
 
         radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
 
@@ -578,6 +579,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),radarARPATab,GUI_ID_ARPA_LIST);
         arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.090*sh,0.237*su,0.230*sh),radarARPATab);
+        guienv->addButton(irr::core::rect<irr::s32>(0.145*su,0.010*sh,0.237*su,0.030*sh),radarARPATab,GUI_ID_MARPA_BUTTON,language->translate("marpaAcquire").c_str());
 
         //Radar ARPA on big radar screen
         guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
@@ -1309,64 +1311,75 @@ guiTideHeight = guiData->tideHeight;
             if ( i==selectedItem || i==selectedItem2 ) {
                 //Show arpa details
 
-                //CPA
-                displayText = L"";
-                displayText.append(language->translate("cpa"));
-                displayText.append(L":");
-                displayText.append(f32To2dp(cpa).c_str());
-                displayText.append(language->translate("nm"));
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
-
-                //TCPA
-                displayText = L"";
-                displayText.append(language->translate("tcpa"));
-                displayText.append(L":");
-                if (tcpa >= 0) {
-                    displayText.append(tcpaDisplayMins);
-                    displayText.append(L":");
-                    displayText.append(tcpaDisplaySecs);
+                if (arpaContactStates.at(i).range == 0) {
+                    // Exactly 0 means untracked
+                    displayText = language->translate("untracked");
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 } else {
-                    displayText.append(L" ");
-                    displayText.append(language->translate("past"));
-                }
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
+                    //CPA
+                    displayText = L"";
+                    displayText.append(language->translate("cpa"));
+                    displayText.append(L":");
+                    displayText.append(f32To2dp(cpa).c_str());
+                    displayText.append(language->translate("nm"));
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
 
-                //Heading and speed
-                //Pad heading to three decimals
-                irr::core::stringw headingText = irr::core::stringw(arpahdg);
-                if (headingText.size() == 1) {
-                    irr::core::stringw zeroPadded = L"00";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                else if (headingText.size() == 2) {
-                    irr::core::stringw zeroPadded = L"0";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                displayText = L"";
-                displayText.append(headingText);
-                displayText.append(L"° ");
-                displayText.append(irr::core::stringw(arpaspd));
-                displayText.append(L" kts");
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
+                    //TCPA
+                    displayText = L"";
+                    displayText.append(language->translate("tcpa"));
+                    displayText.append(L":");
+                    if (tcpa >= 0) {
+                        displayText.append(tcpaDisplayMins);
+                        displayText.append(L":");
+                        displayText.append(tcpaDisplaySecs);
+                    } else {
+                        displayText.append(L" ");
+                        displayText.append(language->translate("past"));
+                    }
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
+
+                    //Heading and speed
+                    //Pad heading to three decimals
+                    irr::core::stringw headingText = irr::core::stringw(arpahdg);
+                    if (headingText.size() == 1) {
+                        irr::core::stringw zeroPadded = L"00";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    else if (headingText.size() == 2) {
+                        irr::core::stringw zeroPadded = L"0";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    displayText = L"";
+                    displayText.append(headingText);
+                    displayText.append(L"° ");
+                    displayText.append(irr::core::stringw(arpaspd));
+                    displayText.append(L" kts");
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 }
 
             }

@@ -1227,6 +1227,11 @@ SimulationModel::~SimulationModel()
         radarCalculation.addMARPAPoint(offsetPosition, ownShip, absoluteTime);
     }
 
+    void SimulationModel::clearMARPAPoints()
+    {
+        radarCalculation.clearMARPAPoints();
+    }
+
     irr::u32 SimulationModel::getARPATracksSize() const
     {
         return radarCalculation.getARPATracksSize();

@@ -605,6 +605,11 @@
                     model->addMARPAPoint();
                 }
 
+                if (id == GUIMain::GUI_ID_MARPA_CLEAR_BUTTON)
+                {
+                    model->clearMARPAPoints();
+                }
+
                 if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)
                 {
                     gui->showLogWindow();

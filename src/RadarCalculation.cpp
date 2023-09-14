@@ -1022,6 +1022,20 @@ void RadarCalculation::addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition
     //Todo: should we limit the size of this, so it doesn't continue accumulating?
 }
 
+void RadarCalculation::clearMARPAPoints()
+{
+    int existingArpaContact=-1;
+    if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
+        existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
+    }
+
+    if (existingArpaContact >= 0) {
+        // Found the contact, remove all scans. Estimate will be regenerated later.
+        arpaContacts.at(existingArpaContact).scans.clear();
+    }
+
+}
+
 void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
@@ -1055,8 +1069,23 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
         thisArpaContact.estimate.speed = 0;
         thisArpaContact.estimate.contactType = CONTACT_NONE;
     } else {
-        //Check there are at least two scans, so we can estimate behaviour
-        if (thisArpaContact.scans.size() > 1 || thisArpaContact.contactType == CONTACT_MANUAL) {
+        if (thisArpaContact.scans.size() == 0) {
+            // Reset estimate if there are no scans at all
+            //thisArpaContact.estimate.displayID = 0; // Don't reset display ID, so contact can be re-used
+            thisArpaContact.estimate.stationary = true;
+            thisArpaContact.estimate.lost = false;
+            thisArpaContact.estimate.absVectorX = 0;
+            thisArpaContact.estimate.absVectorZ = 0;
+            thisArpaContact.estimate.absHeading = 0;
+            thisArpaContact.estimate.bearing = 0;
+            thisArpaContact.estimate.range = 0;
+            thisArpaContact.estimate.speed = 0;
+            thisArpaContact.estimate.cpa = 0;
+            thisArpaContact.estimate.tcpa = 0;
+            thisArpaContact.estimate.contactType = thisArpaContact.contactType;
+        } else if (thisArpaContact.scans.size() > 1 || thisArpaContact.contactType == CONTACT_MANUAL) {
+            //Check there are at least two scans, so we can estimate behaviour, 
+            // or a manual scan, in which case we want to show the first manual scan
 
             //Record the contact type in the estimate
             thisArpaContact.estimate.contactType = thisArpaContact.contactType;
