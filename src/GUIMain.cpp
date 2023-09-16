@@ -573,16 +573,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Radar ARPA tab
         guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
         (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.030*su,0.010*sh,0.140*su,0.030*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.080*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
+        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.070*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
-        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.080*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
-        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),radarARPATab,GUI_ID_ARPA_LIST);
-        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.090*sh,0.237*su,0.230*sh),radarARPATab);
-        
-        guienv->addButton(irr::core::rect<irr::s32>(0.145*su,0.010*sh,0.237*su,0.030*sh),radarARPATab,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaAcquire").c_str()); 
-        // TODO: Add MARPA new button and MARPA clear
+        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.070*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
+        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.070*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.075*sh,0.121*su,0.190*sh),radarARPATab,GUI_ID_ARPA_LIST);
+        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.075*sh,0.237*su,0.190*sh),radarARPATab);
+        // MARPA buttons
+        guienv->addStaticText(language->translate("marpa").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab);
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MARPA_SCAN_BUTTON,language->translate("scan").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
 
         //Radar ARPA on big radar screen
         guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
