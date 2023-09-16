@@ -63,6 +63,7 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     irr::f32 guiRadarCursorBrg;
     irr::f32 guiRadarCursorRangeNm;
+    irr::s32 arpaListSelection;
     std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;

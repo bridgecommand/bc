@@ -113,6 +113,7 @@ class RadarCalculation
         void setRadarARPARel();
         void setRadarARPATrue();
         void setArpaListSelection(irr::s32 selection);
+        irr::s32 getArpaListSelection() const;
         void setRadarARPAVectors(irr::f32 vectorMinutes);
         void setRadarDisplayRadius(irr::u32 radiusPx);
         void changeRadarColourChoice();

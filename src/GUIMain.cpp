@@ -1087,6 +1087,7 @@ guiTideHeight = guiData->tideHeight;
 
         //Update ARPA data
         arpaContactStates = guiData->arpaContactStates;
+        setARPAList(guiData->arpaListSelection);
 
         //Update rudder pump indicators
         if (guiData->pump1On == true) {

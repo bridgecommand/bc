@@ -1687,6 +1687,7 @@ SimulationModel::~SimulationModel()
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
 			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
         }
+        guiData->arpaListSelection = radarCalculation.getArpaListSelection();
 
         }{ IPROF("Collate GUI data ");
 
