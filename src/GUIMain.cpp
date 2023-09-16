@@ -521,9 +521,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         eblUpButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.215*radarSu,0.135*radarSu,0.245*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_UP_BUTTON,language->translate("eblUp").c_str());
         eblDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
-        // TODO: Location to be improved:
-        guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.275*radarSu,0.190*radarSu,0.295*radarSu),largeRadarControls,GUI_ID_MARPA_BUTTON,language->translate("marpaAcquire").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.135*radarSu,0.295*radarSu,0.190*radarSu,0.315*radarSu),largeRadarControls,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("marpaClear").c_str());
+        guienv->addStaticText(language->translate("marpa").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.515*radarSu,0.200*radarSu,0.535*radarSu), false, true, largeRadarControls);
+        guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.535*radarSu,0.073*radarSu,0.555*radarSu),largeRadarControls,GUI_ID_MARPA_SCAN_BUTTON,language->translate("scan").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.535*radarSu,0.136*radarSu,0.555*radarSu),largeRadarControls,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.535*radarSu,0.200*radarSu,0.555*radarSu),largeRadarControls,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
 
         radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
 
@@ -579,7 +580,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),radarARPATab,GUI_ID_ARPA_LIST);
         arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.090*sh,0.237*su,0.230*sh),radarARPATab);
-        guienv->addButton(irr::core::rect<irr::s32>(0.145*su,0.010*sh,0.237*su,0.030*sh),radarARPATab,GUI_ID_MARPA_BUTTON,language->translate("marpaAcquire").c_str());
+        
+        guienv->addButton(irr::core::rect<irr::s32>(0.145*su,0.010*sh,0.237*su,0.030*sh),radarARPATab,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaAcquire").c_str()); 
+        // TODO: Add MARPA new button and MARPA clear
 
         //Radar ARPA on big radar screen
         guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
@@ -589,8 +592,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
         guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.010*radarSu,0.480*radarSu,0.050*radarSu,0.510*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.520*radarSu,0.105*radarSu,0.700*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
-        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),largeRadarControls);
+        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.560*radarSu,0.105*radarSu,0.700*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
+        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.560*radarSu,0.200*radarSu,0.700*radarSu),largeRadarControls);
 
         //Add paused button
         pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());

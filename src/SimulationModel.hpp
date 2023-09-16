@@ -246,7 +246,7 @@ public:
     void setRadarARPATrue();
     void setRadarARPAVectors(irr::f32 vectorMinutes);
     void setRadarDisplayRadius(irr::u32 radiusPx);
-    void addMARPAPoint();
+    void addMARPAPoint(bool newContact);
     void clearMARPAPoints();
     irr::u32 getARPATracksSize() const;
     ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;

@@ -958,24 +958,13 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 }
 
-void RadarCalculation::addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+void RadarCalculation::addMARPAPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
 {
     // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
-
-    // Check if a MARPA contact is selected, if not, create a new one. If yes, add a 'scan'
-    // Contact selected from GUI is arpaListSelection
-
-    // Should be able to find selected ARPA contact from ID using getARPAContactFromTrackIndex(). If it's a MARPA one, then use this, otherwise create a new one
-
-    int existingArpaContact=-1;
-    if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
-        existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
-    }
-
-    std::cout << "In addMARPAPoint, arpaListSelection = " << arpaListSelection << " existingArpaContact = " << existingArpaContact << std::endl;
     
-    //If it doesn't exist, add it, and make existingArpaContact point to it
-    if (existingArpaContact<0) {
+    int existingArpaContact=-1;
+    
+    if (newContact) {
         ARPAContact newContact;
         newContact.contact = 0; // This is a pointer used for ARPA types, not relevant for MARPA
         newContact.contactType=CONTACT_MANUAL;
@@ -998,8 +987,21 @@ void RadarCalculation::addMARPAPoint(irr::core::vector3d<int64_t> offsetPosition
         arpaContacts.push_back(newContact);
         existingArpaContact = arpaContacts.size()-1;
 
-        std::cout << "Created new contact, existingArpaContact now = " << existingArpaContact << std::endl;
+        //std::cout << "Created new contact, existingArpaContact now = " << existingArpaContact << std::endl;
+    } else {
+        // Update existing selected MARPA Contact:
+
+        // Find if a MARPA contact is selected
+        if (getARPAContactFromTrackIndex(arpaListSelection).contactType == CONTACT_MANUAL) {
+            existingArpaContact = getARPAContactIDFromTrackIndex(arpaListSelection); 
+        }
+        if (existingArpaContact < 0) {
+            // No contact found, don't do anything
+            return;
+        }
     }
+
+    //std::cout << "In addMARPAPoint, arpaListSelection = " << arpaListSelection << " existingArpaContact = " << existingArpaContact << std::endl;
 
     // Set up
     irr::core::vector3df position = ownShip.getPosition();

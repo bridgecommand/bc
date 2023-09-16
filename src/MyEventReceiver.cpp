@@ -600,9 +600,14 @@
                 }
 
                 //MARPA acquire/update
-                if (id == GUIMain::GUI_ID_MARPA_BUTTON)
+                if (id == GUIMain::GUI_ID_MARPA_SCAN_BUTTON)
                 {
-                    model->addMARPAPoint();
+                    model->addMARPAPoint(false);
+                }
+
+                if (id == GUIMain::GUI_ID_MARPA_NEW_BUTTON)
+                {
+                    model->addMARPAPoint(true);
                 }
 
                 if (id == GUIMain::GUI_ID_MARPA_CLEAR_BUTTON)

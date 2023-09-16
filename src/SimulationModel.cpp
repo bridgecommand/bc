@@ -1222,9 +1222,9 @@ SimulationModel::~SimulationModel()
         radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
-    void SimulationModel::addMARPAPoint()
+    void SimulationModel::addMARPAPoint(bool newContact)
     {
-        radarCalculation.addMARPAPoint(offsetPosition, ownShip, absoluteTime);
+        radarCalculation.addMARPAPoint(newContact, offsetPosition, ownShip, absoluteTime);
     }
 
     void SimulationModel::clearMARPAPoints()
