@@ -135,6 +135,10 @@ public:
         GUI_ID_RADAR_EBL_RIGHT_BUTTON,
         GUI_ID_RADAR_EBL_UP_BUTTON,
         GUI_ID_RADAR_EBL_DOWN_BUTTON,
+        GUI_ID_RADAR_INCREASE_X_BUTTON,
+        GUI_ID_RADAR_DECREASE_X_BUTTON,
+        GUI_ID_RADAR_INCREASE_Y_BUTTON,
+        GUI_ID_RADAR_DECREASE_Y_BUTTON,
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
@@ -260,6 +264,14 @@ private:
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton;
+    irr::gui::IGUIButton* radarCursorRightButton;
+    irr::gui::IGUIButton* radarCursorUpButton;
+    irr::gui::IGUIButton* radarCursorDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton2;
+    irr::gui::IGUIButton* radarCursorRightButton2;
+    irr::gui::IGUIButton* radarCursorUpButton2;
+    irr::gui::IGUIButton* radarCursorDownButton2;
     irr::gui::IGUIButton* radarColourButton;
     irr::gui::IGUIButton* radarColourButton2;
     irr::gui::IGUIButton* nonFollowUpPortButton;

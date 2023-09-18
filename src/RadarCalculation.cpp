@@ -49,8 +49,10 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
 
     CursorRangeNm = 0;
     CursorBrg = 0;
+    cursorRangeXNm = 0;
+    cursorRangeYNm = 0;
 
-    EBLLastUpdated = clock();
+    radarCursorsLastUpdated = clock();
 
     radarOn = true;
 
@@ -349,13 +351,90 @@ irr::f32 RadarCalculation::getPIrange(irr::s32 PIid) const
     }
 }
 
+void RadarCalculation::increaseCursorRangeXNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeXNm = cursorRangeXNm;
+        cursorRangeXNm += getRangeNm()/100;
+
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(oldCursorRangeXNm,cursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::decreaseCursorRangeXNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeXNm = cursorRangeXNm;
+        cursorRangeXNm -= getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(oldCursorRangeXNm,cursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::increaseCursorRangeYNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeYNm = cursorRangeYNm;
+        cursorRangeYNm += getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(cursorRangeXNm,oldCursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
+void RadarCalculation::decreaseCursorRangeYNm()
+{
+    //Only trigger this if there's been enough time since the last update.
+    clock_t clockNow = clock();
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
+    if (elapsed > 0.03) {
+        radarCursorsLastUpdated = clockNow;
+        irr::f32 oldCursorRangeYNm = cursorRangeYNm;
+        cursorRangeYNm -= getRangeNm()/100;
+        // Limit: 
+        irr::f32 testCursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
+        if (testCursorRangeNm > getRangeNm()) {
+            irr::f32 testCursorBrgRad = std::atan2(cursorRangeXNm,oldCursorRangeYNm);
+            cursorRangeXNm = getRangeNm() * sin(testCursorBrgRad);
+            cursorRangeYNm = getRangeNm() * cos(testCursorBrgRad);
+        }
+    }
+}
+
 void RadarCalculation::increaseEBLRange()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLRangeNm += getRangeNm()/100;
 
@@ -366,9 +445,9 @@ void RadarCalculation::decreaseEBLRange()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLRangeNm -= getRangeNm()/100;
         if (EBLRangeNm<0) {
@@ -381,9 +460,9 @@ void RadarCalculation::increaseEBLBrg()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLBrg++;
         while (EBLBrg >= 360) {
@@ -396,9 +475,9 @@ void RadarCalculation::decreaseEBLBrg()
 {
     //Only trigger this if there's been enough time since the last update.
     clock_t clockNow = clock();
-    float elapsed = (float)(clockNow - EBLLastUpdated)/CLOCKS_PER_SEC;
+    float elapsed = (float)(clockNow - radarCursorsLastUpdated)/CLOCKS_PER_SEC;
     if (elapsed > 0.03) {
-        EBLLastUpdated = clockNow;
+        radarCursorsLastUpdated = clockNow;
 
         EBLBrg--;
         while (EBLBrg < 0) {
@@ -565,26 +644,28 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         radarScreenStale = false;
     }
 
-    //Find position of mouse cursor
+    //Find position of mouse cursor for radar cursor
     if (isMouseDown) {
         irr::f32 mouseCursorRangeXNm = (irr::f32)mouseRelPosition.X/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
         irr::f32 mouseCursorRangeYNm = -1.0*(irr::f32)mouseRelPosition.Y/(irr::f32)radarRadiusPx*radarRangeNm.at(radarRangeIndex);//Nm
         irr::f32 mouseCursorRange = pow(pow(mouseCursorRangeXNm,2)+pow(mouseCursorRangeYNm,2),0.5);
-        irr::f32 mouseCursorBearing = irr::core::RADTODEG*std::atan2(mouseCursorRangeXNm,mouseCursorRangeYNm);
+        
         //Check if in range
         if (mouseCursorRange <= radarRangeNm.at(radarRangeIndex) ) {
-            
-            //Adjust angle if needed
-            if (headUp) {
-                mouseCursorBearing += ownShip.getHeading();
-            }
-            mouseCursorBearing = Angles::normaliseAngle(mouseCursorBearing);
-            
-            // Set the radar cursor
-            CursorRangeNm = mouseCursorRange;
-            CursorBrg = mouseCursorBearing;
+            // Store
+            cursorRangeXNm = mouseCursorRangeXNm;
+            cursorRangeYNm = mouseCursorRangeYNm;
         }
     }
+
+    // Always update the CursorRangeNm and CursorBrg from the current cursorRangeXNm and cursorRangeYNm 
+    CursorBrg = irr::core::RADTODEG*std::atan2(cursorRangeXNm,cursorRangeYNm);
+    if (headUp) {
+        // Adjust angle if needed
+        CursorBrg += ownShip.getHeading();
+    }
+    CursorBrg = Angles::normaliseAngle(CursorBrg);
+    CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
 
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()

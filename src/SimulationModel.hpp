@@ -236,6 +236,10 @@ public:
     void decreaseRadarEBLRange();
     void increaseRadarEBLBrg();
     void decreaseRadarEBLBrg();
+    void increaseRadarXCursor();
+    void decreaseRadarXCursor();
+    void increaseRadarYCursor();
+    void decreaseRadarYCursor();
     void setRadarNorthUp();
     void setRadarCourseUp();
     void setRadarHeadUp();

@@ -580,6 +580,26 @@
                     model->decreaseRadarEBLRange();
                 }
 
+                if (id == GUIMain::GUI_ID_RADAR_INCREASE_X_BUTTON)
+                {
+                    model->increaseRadarXCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_DECREASE_X_BUTTON)
+                {
+                    model->decreaseRadarXCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_INCREASE_Y_BUTTON)
+                {
+                    model->increaseRadarYCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_DECREASE_Y_BUTTON)
+                {
+                    model->decreaseRadarYCursor();
+                }
+
                 if (id == GUIMain::GUI_ID_RADAR_COLOUR_BUTTON)
                 {
                     model->changeRadarColourChoice();

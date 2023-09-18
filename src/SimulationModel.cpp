@@ -1170,6 +1170,11 @@ SimulationModel::~SimulationModel()
     void SimulationModel::decreaseRadarEBLRange() {radarCalculation.decreaseEBLRange();}
     void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
     void SimulationModel::decreaseRadarEBLBrg() {radarCalculation.decreaseEBLBrg();}
+    
+    void SimulationModel::increaseRadarXCursor() {radarCalculation.increaseCursorRangeXNm();}
+    void SimulationModel::decreaseRadarXCursor() {radarCalculation.decreaseCursorRangeXNm();}
+    void SimulationModel::increaseRadarYCursor() {radarCalculation.increaseCursorRangeYNm();}
+    void SimulationModel::decreaseRadarYCursor() {radarCalculation.decreaseCursorRangeYNm();}
 
     void SimulationModel::setRadarNorthUp()
     {

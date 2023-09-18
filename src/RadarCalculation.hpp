@@ -99,6 +99,10 @@ class RadarCalculation
         void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
         irr::f32 getPIbearing(irr::s32 PIid) const;
         irr::f32 getPIrange(irr::s32 PIid) const;
+        void increaseCursorRangeXNm();
+        void decreaseCursorRangeXNm();
+        void increaseCursorRangeYNm();
+        void decreaseCursorRangeYNm();
         void increaseEBLRange();
         void decreaseEBLRange();
         void increaseEBLBrg();
@@ -158,8 +162,10 @@ class RadarCalculation
         //Parameters for EBL
         irr::f32 EBLRangeNm;
         irr::f32 EBLBrg;
-        clock_t EBLLastUpdated;
+        clock_t radarCursorsLastUpdated;
         //Parameters for radar cursor
+        irr::f32 cursorRangeXNm;
+        irr::f32 cursorRangeYNm;
         irr::f32 CursorRangeNm;
         irr::f32 CursorBrg;
         //Radar config

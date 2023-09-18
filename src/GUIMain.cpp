@@ -469,6 +469,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
 
+        // Radar cursor buttons
+        radarCursorLeftButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su+azimuthGUIOffsetR,0.950*sh,0.715*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton = guienv->addButton(irr::core::rect<irr::s32>(0.730*su+azimuthGUIOffsetR,0.950*sh,0.745*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.930*sh,0.730*su+azimuthGUIOffsetR,0.950*sh),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.970*sh,0.730*su+azimuthGUIOffsetR,0.990*sh),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
+
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.045*sh,0.055*su,0.085*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.085*sh,0.055*su,0.125*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
@@ -522,6 +528,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         eblDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.275*radarSu,0.135*radarSu,0.305*radarSu),largeRadarControls,GUI_ID_RADAR_EBL_DOWN_BUTTON,language->translate("eblDown").c_str());
 
         radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
+
+        // Radar cursor buttons
+        radarCursorLeftButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.670*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.760*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.610*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.700*radarSu),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
 
         radarText2 = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.400*radarSu),true,true,largeRadarControls,-1,true);
 
@@ -809,6 +821,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Items to show if we're showing interface
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
+
+        radarCursorLeftButton->setVisible(showInterface && !radarLarge);
+        radarCursorRightButton->setVisible(showInterface && !radarLarge);
+        radarCursorUpButton->setVisible(showInterface && !radarLarge);
+        radarCursorDownButton->setVisible(showInterface && !radarLarge);
+
+        radarCursorLeftButton2->setVisible(radarLarge);
+        radarCursorRightButton2->setVisible(radarLarge);
+        radarCursorUpButton2->setVisible(radarLarge);
+        radarCursorDownButton2->setVisible(radarLarge);
 
         //weatherScrollbar->setVisible(showInterface);
         //rainScrollbar->setVisible(showInterface);
@@ -1422,6 +1444,16 @@ guiTideHeight = guiData->tideHeight;
         if (eblDownButton2->isPressed()) {manuallyTriggerClick(eblDownButton2);}
         if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
         if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
+
+        if (radarCursorLeftButton->isPressed()) {manuallyTriggerClick(radarCursorLeftButton);}
+        if (radarCursorRightButton->isPressed()) {manuallyTriggerClick(radarCursorRightButton);}
+        if (radarCursorUpButton->isPressed()) {manuallyTriggerClick(radarCursorUpButton);}
+        if (radarCursorDownButton->isPressed()) {manuallyTriggerClick(radarCursorDownButton);}
+
+        if (radarCursorLeftButton2->isPressed()) {manuallyTriggerClick(radarCursorLeftButton2);}
+        if (radarCursorRightButton2->isPressed()) {manuallyTriggerClick(radarCursorRightButton2);}
+        if (radarCursorUpButton2->isPressed()) {manuallyTriggerClick(radarCursorUpButton2);}
+        if (radarCursorDownButton2->isPressed()) {manuallyTriggerClick(radarCursorDownButton2);}
 
         if (nonFollowUpPortButton && wheelScrollbar ) {
             //Handle port NFU rudder button
