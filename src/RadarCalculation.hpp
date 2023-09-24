@@ -45,10 +45,17 @@ struct ARPAScan {
     //irr::f32 estimatedRCS; //Estimated radar cross section
     irr::f32 rangeNm; //Reference only
     irr::f32 bearingDeg; //For reference only
+
+    ARPAScan() {
+        x = 0;
+        z = 0;
+        timeStamp = 0;
+        rangeNm = 0;
+        bearingDeg = 0;
+    }
 };
 
 struct ARPAEstimatedState {
-    // TODO: Do we need initialisation for this, so a new empty struct is in a known state?
     irr::u32 displayID; //User displayed ID
     bool stationary; // E.g. if detected as static and a small RCS or a buoy.
     irr::f32 absVectorX; //Estimated X speed (m/s)
@@ -64,10 +71,27 @@ struct ARPAEstimatedState {
     irr::f32 cpa; //Closest point of approach in Nm
     irr::f32 tcpa; //Time to closest point of approach (mins)
     ARPA_CONTACT_TYPE contactType; //Duplicate of what's in the parent, but useful to pass to the GUI
+
+    ARPAEstimatedState() {
+        displayID = 0;
+        stationary = false;
+        absVectorX = 0;
+        absVectorZ = 0;
+        absHeading = 0;
+        relVectorX = 0;
+        relVectorZ = 0;
+        relHeading = 0;
+        range = 0;
+        bearing = 0;
+        speed = 0;
+        lost = false;
+        cpa = 0;
+        tcpa = 0;
+        contactType = CONTACT_NONE;    
+    }
 };
 
 struct ARPAContact {
-    // TODO: Do we need initialisation for this, so a new empty struct is in a known state?
     std::vector<ARPAScan> scans;
     irr::f32 totalXMovementEst; //Estimates of total movement (sum of absolutes) in X and Z, to help detect stationary contacts
     irr::f32 totalZMovementEst;
@@ -75,6 +99,13 @@ struct ARPAContact {
     void* contact;
     //irr::u32 displayID;
     ARPAEstimatedState estimate;
+
+    ARPAContact() {
+        totalXMovementEst = 0;
+        totalZMovementEst = 0;
+        contactType = CONTACT_NONE;
+        contact = 0;
+    } 
 };
 
 class RadarCalculation
