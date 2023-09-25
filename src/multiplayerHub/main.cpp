@@ -162,14 +162,14 @@ int main()
 	nulldevice->drop();
     if (graphicsWidth==0) {
         graphicsWidth = 1200 * fontScale;
-        if (graphicsWidth > deskres.Width*0.8) {
-            graphicsWidth = deskres.Width*0.8;
+        if (graphicsWidth > deskres.Width*0.75) {
+            graphicsWidth = deskres.Width*0.75;
         }
     }
     if (graphicsHeight==0) {
         graphicsHeight = 900 * fontScale;
-        if (graphicsHeight > deskres.Height*0.8) {
-            graphicsHeight = deskres.Height*0.8;
+        if (graphicsHeight > deskres.Height*0.75) {
+            graphicsHeight = deskres.Height*0.75;
         }
     }
     if (graphicsDepth==0) {graphicsDepth=32;}

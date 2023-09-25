@@ -431,12 +431,12 @@ int main (int argc, char ** argv)
 	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 	nulldevice->drop();
     graphicsWidth = 1200 * fontScale;
-    if (graphicsWidth > deskres.Width*0.8) {
-        graphicsWidth = deskres.Width*0.8;
+    if (graphicsWidth > deskres.Width*0.75) {
+        graphicsWidth = deskres.Width*0.75;
     }
     graphicsHeight = 900 * fontScale;
-    if (graphicsHeight > deskres.Height*0.8) {
-        graphicsHeight = deskres.Height*0.8;
+    if (graphicsHeight > deskres.Height*0.75) {
+        graphicsHeight = deskres.Height*0.75;
     }
     
     irr::u32 graphicsDepth = 32;
