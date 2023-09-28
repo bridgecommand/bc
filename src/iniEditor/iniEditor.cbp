@@ -12,6 +12,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
 					<Add library="../libs/Irrlicht/irrlicht-svn/lib/Win32-gcc/libIrrlicht.a" />
 					<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
 				</Linker>
