@@ -15,6 +15,8 @@
 #include "../IniFile.hpp"
 #include "../Utilities.hpp"
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // For GetSystemMetrics
 #include <direct.h> //for windows _mkdir
 #else
 #include <sys/stat.h>
@@ -427,16 +429,25 @@ int main (int argc, char ** argv)
     
     irr::u32 graphicsWidth;
     irr::u32 graphicsHeight;
+    irr::core::dimension2d<irr::u32> deskres;
+    #ifdef _WIN32
+    // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+    deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+    deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+    #else
+    // For other OSs, use Irrlicht's resolution call
     irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-	irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+	deskres = nulldevice->getVideoModeList()->getDesktopResolution();
 	nulldevice->drop();
+    #endif
+
     graphicsWidth = 1200 * fontScale;
-    if (graphicsWidth > deskres.Width*0.75) {
-        graphicsWidth = deskres.Width*0.75;
+    if (graphicsWidth > deskres.Width*0.90) {
+        graphicsWidth = deskres.Width*0.90;
     }
     graphicsHeight = 900 * fontScale;
-    if (graphicsHeight > deskres.Height*0.75) {
-        graphicsHeight = deskres.Height*0.75;
+    if (graphicsHeight > deskres.Height*0.90) {
+        graphicsHeight = deskres.Height*0.90;
     }
     
     irr::u32 graphicsDepth = 32;
