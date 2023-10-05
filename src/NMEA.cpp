@@ -136,7 +136,8 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
             }
             terminateNmeaReceiveMutex.unlock();
 
-            char * buf = new char[128]();
+            int bufferSize = 128;
+            char * buf = new char[bufferSize]();
             
             // set socket timeout as in AISOverUDP
             #ifdef WIN32
@@ -149,9 +150,9 @@ void NMEA::ReceiveThread(std::string udpListenPortName)
             
             // read from socket
             #ifdef WIN32
-            int nread = ::recv(rcvSocket.native_handle(), buf, sizeof(buf),0);
+            int nread = ::recv(rcvSocket.native_handle(), buf, bufferSize,0);
             #else
-            ssize_t nread = ::read(rcvSocket.native_handle(), buf, sizeof(buf));
+            ssize_t nread = ::read(rcvSocket.native_handle(), buf, bufferSize);
             #endif
 
             if (nread > 0) 
