@@ -588,7 +588,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.075*sh,0.121*su,0.190*sh),radarARPATab,GUI_ID_ARPA_LIST);
         arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.075*sh,0.237*su,0.190*sh),radarARPATab);
         // MARPA buttons
-        (guienv->addStaticText(language->translate("marpaContact").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("manualContact").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaLog").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
@@ -604,7 +604,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.515*radarSu,0.105*radarSu,0.655*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
         arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.515*radarSu,0.200*radarSu,0.655*radarSu),largeRadarControls);
         // MARPA buttons
-        (guienv->addStaticText(language->translate("marpaContact").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("manualContact").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.675*radarSu,0.073*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaLog").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.675*radarSu,0.136*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.675*radarSu,0.200*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
@@ -1326,7 +1326,7 @@ guiTideHeight = guiData->tideHeight;
             }
 
             if (arpaContactStates.at(i).contactType == CONTACT_MANUAL) {
-                displayText.append(language->translate("marpaContact"));
+                displayText.append(language->translate("manualContact"));
             } else {
                 displayText.append(language->translate("arpaContact"));
             }
