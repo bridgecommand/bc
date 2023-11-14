@@ -7,11 +7,11 @@
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
 #include "SAnimatedMesh.h"
+#include "SOverrideMaterial.h"
 #include "CMeshCache.h"
 #include "IXMLWriter.h"
 #include "ISceneUserDataSerializer.h"
 #include "IGUIEnvironment.h"
-#include "IMaterialRenderer.h"
 #include "IReadFile.h"
 #include "IWriteFile.h"
 #include "ISceneLoader.h"
@@ -427,7 +427,7 @@ CSceneManager::~CSceneManager()
 }
 
 
-//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+//! gets an animatable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& alternativeCacheName)
 {
 	io::path cacheName = alternativeCacheName.empty() ? filename : alternativeCacheName;
@@ -438,7 +438,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& 
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
 	if (!file)
 	{
-		os::Printer::log("Could not load mesh, because file could not be opened: ", filename, ELL_ERROR);
+		os::Printer::log("Could not load mesh, because file could not be opened", filename, ELL_ERROR);
 		return 0;
 	}
 
@@ -450,7 +450,7 @@ IAnimatedMesh* CSceneManager::getMesh(const io::path& filename, const io::path& 
 }
 
 
-//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+//! gets an animatable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 {
 	if (!file)
@@ -609,13 +609,14 @@ IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(
 //! the returned pointer must not be dropped.
 IMeshSceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
 		s32 id, const core::vector3df& position,
-		const core::vector3df& rotation, const core::vector3df& scale)
+		const core::vector3df& rotation, const core::vector3df& scale,
+		ECUBE_MESH_TYPE type)
 {
 #ifdef _IRR_COMPILE_WITH_CUBE_SCENENODE_
 	if (!parent)
 		parent = this;
 
-	IMeshSceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale);
+	IMeshSceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale, type);
 	node->drop();
 
 	return node;
@@ -774,14 +775,16 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id, f32 distance,
-	bool makeActive)
+	bool makeActive
+	, f32 rotX, f32 rotY)
 {
 	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
 			core::vector3df(0,0,100), id, makeActive);
 	if (node)
 	{
 		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
-			rotateSpeed, zoomSpeed, translationSpeed, distance);
+			rotateSpeed, zoomSpeed, translationSpeed, distance
+			,rotX,rotY);
 
 		node->addAnimator(anm);
 		anm->drop();
@@ -1092,14 +1095,14 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 //! Adds an arrow mesh to the mesh pool.
 IAnimatedMesh* CSceneManager::addArrowMesh(const io::path& name,
 		video::SColor vtxColor0, video::SColor vtxColor1,
-		u32 tesselationCylinder, u32 tesselationCone, f32 height,
+		u32 tessellationCylinder, u32 tessellationCone, f32 height,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByName(name);
 
-	IMesh* mesh = GeometryCreator->createArrowMesh( tesselationCylinder,
-			tesselationCone, height, cylinderHeight, width0,width1,
+	IMesh* mesh = GeometryCreator->createArrowMesh( tessellationCylinder,
+			tessellationCone, height, cylinderHeight, width0,width1,
 			vtxColor0, vtxColor1);
 	if (!mesh)
 		return 0;
@@ -1224,7 +1227,7 @@ void CSceneManager::render()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 {
-	_IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
+	IRR_DEBUG_BREAK_IF(true) // Bounding Box of Scene Manager should never be used.
 
 	static const core::aabbox3d<f32> dummy;
 	return dummy;
@@ -1244,7 +1247,7 @@ bool CSceneManager::isCulled(const ISceneNode* node) const
 	// has occlusion query information
 	if (node->getAutomaticCulling() & scene::EAC_OCC_QUERY)
 	{
-		result = (Driver->getOcclusionQueryResult(const_cast<ISceneNode*>(node))==0);
+		result = (Driver->getOcclusionQueryResult(node)==0);
 	}
 
 	// can be seen by a bounding box ?
@@ -1872,10 +1875,10 @@ ISceneNodeAnimatorCollisionResponse* CSceneManager::createCollisionResponseAnima
 //! Creates a follow spline animator.
 ISceneNodeAnimator* CSceneManager::createFollowSplineAnimator(s32 startTime,
 	const core::array< core::vector3df >& points,
-	f32 speed, f32 tightness, bool loop, bool pingpong)
+	f32 speed, f32 tightness, bool loop, bool pingpong, bool steer)
 {
 	ISceneNodeAnimator* a = new CSceneNodeAnimatorFollowSpline(startTime, points,
-		speed, tightness, loop, pingpong);
+		speed, tightness, loop, pingpong, steer);
 	return a;
 }
 
@@ -2374,7 +2377,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 			ret = SceneLoaderList[i]->loadScene(file, userDataSerializer, rootNode);
 
 	if (!ret)
-		os::Printer::log("Could not load scene file, perhaps the format is unsupported: ", file->getFileName().c_str(), ELL_ERROR);
+		os::Printer::log("Could not load scene file, perhaps the format is unsupported", file->getFileName().c_str(), ELL_ERROR);
 
 	return ret;
 }

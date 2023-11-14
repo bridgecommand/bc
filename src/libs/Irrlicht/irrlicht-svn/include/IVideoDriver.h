@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_I_VIDEO_DRIVER_H_INCLUDED__
-#define __IRR_I_VIDEO_DRIVER_H_INCLUDED__
+#ifndef IRR_I_VIDEO_DRIVER_H_INCLUDED
+#define IRR_I_VIDEO_DRIVER_H_INCLUDED
 
 #include "rect.h"
 #include "SColor.h"
@@ -13,12 +13,13 @@
 #include "plane3d.h"
 #include "dimension2d.h"
 #include "position2d.h"
-#include "IMeshBuffer.h"
 #include "triangle3d.h"
 #include "EDriverTypes.h"
 #include "EDriverFeatures.h"
+#include "EPrimitiveTypes.h"
 #include "SExposedVideoData.h"
-#include "SOverrideMaterial.h"
+#include "S3DVertex.h"
+#include "SVertexIndex.h"
 
 namespace irr
 {
@@ -43,6 +44,8 @@ namespace video
 	struct S3DVertex2TCoords;
 	struct S3DVertexTangents;
 	struct SLight;
+	struct SOverrideMaterial;
+	class SMaterial;
 	class IImageLoader;
 	class IImageWriter;
 	class IMaterialRenderer;
@@ -330,7 +333,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		_IRR_DEPRECATED_ ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData)
+		IRR_DEPRECATED ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData)
 		{
 			if (image)
 				image->setMipMapsData(mipmapData, false, true);
@@ -382,13 +385,14 @@ namespace video
 		\param format The color format of the render target. Floating point formats are supported.
 		\return Pointer to the created texture or 0 if the texture
 		could not be created. This pointer should not be dropped. See
-		IReferenceCounted::drop() for more information. */
+		IReferenceCounted::drop() for more information.
+		You may want to remove it from driver texture cache with removeTexture if you no longer need it.
+		*/
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Adds a new render target texture with 6 sides for a cubemap map to the texture cache.
-		/** NOTE: Only supported on D3D9 so far.
-		\param sideLen Length of one cubemap side.
+		/** \param sideLen Length of one cubemap side.
 		\param name A name for the texture. Later calls of getTexture() with this name will return this texture.
 		The name can _not_ be empty.
 		\param format The color format of the render target. Floating point formats are supported.
@@ -458,7 +462,7 @@ namespace video
 		/** Return value is the number of visible pixels/fragments.
 		The value is a safe approximation, i.e. can be larger than the
 		actual value of pixels. */
-		virtual u32 getOcclusionQueryResult(scene::ISceneNode* node) const =0;
+		virtual u32 getOcclusionQueryResult(const scene::ISceneNode* node) const =0;
 
 		//! Create render target.
 		virtual IRenderTarget* addRenderTarget() = 0;
@@ -481,7 +485,7 @@ namespace video
 		example in picture edit programs. To avoid this problem, you
 		could use the makeColorKeyTexture method, which takes the
 		position of a pixel instead a color value.
-		\param zeroTexels \deprecated If set to true, then any texels that match
+		\param zeroTexels (deprecated) If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behavior matches the legacy (buggy) behavior prior
 		to release 1.5 and is provided for backwards compatibility only.
@@ -498,7 +502,7 @@ namespace video
 		\param colorKeyPixelPos Position of a pixel with the color key
 		color. Every texel with this color will become fully transparent as
 		described above.
-		\param zeroTexels \deprecated If set to true, then any texels that match
+		\param zeroTexels (deprecated) If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behavior matches the legacy (buggy) behavior prior
 		to release 1.5 and is provided for backwards compatibility only.
@@ -512,8 +516,8 @@ namespace video
 		- For a 32-bit texture only the red channel is regarded
 		- For a 16-bit texture the rgb-values are averaged.
 		Output channels red/green for X/Y and blue for up (Z).
-		For a 32-bit texture we store additionally the height value in the 
-		alpha channel. This value is used by the video::EMT_PARALLAX_MAP_SOLID 
+		For a 32-bit texture we store additionally the height value in the
+		alpha channel. This value is used by the video::EMT_PARALLAX_MAP_SOLID
 		material and similar materials.
 		On the borders the texture is considered to repeat.
 		\param texture Height map texture which is converted to a normal map.
@@ -787,7 +791,7 @@ namespace video
 		//! Draws a 2d image without any special effects
 		/** \param texture Pointer to texture to use.
 		\param destPos Upper left 2d destination position where the
-		image will be drawn. 
+		image will be drawn.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of
 		the texture is used to draw the image.*/
 		virtual void draw2DImage(const video::ITexture* texture,
@@ -799,7 +803,7 @@ namespace video
 		\param texture Texture to be drawn.
 		\param destPos Upper left 2d destination position where the
 		image will be drawn.
-		\param sourceRect Source rectangle in the image.
+		\param sourceRect Source rectangle in the texture (based on it's OriginalSize)
 		\param clipRect Pointer to rectangle on the screen where the
 		image is clipped to.
 		If this pointer is NULL the image is not clipped.
@@ -821,7 +825,7 @@ namespace video
 		\param texture Texture to be drawn.
 		\param pos Upper left 2d destination position where the image
 		will be drawn.
-		\param sourceRects Source rectangles of the image.
+		\param sourceRects Source rectangles of the texture (based on it's OriginalSize)
 		\param indices List of indices which choose the actual
 		rectangle used each time.
 		\param kerningWidth Offset to Position on X
@@ -849,7 +853,7 @@ namespace video
 		\param texture Texture to be drawn.
 		\param positions Array of upper left 2d destinations where the
 		images will be drawn.
-		\param sourceRects Source rectangles of the image.
+		\param sourceRects Source rectangles of the texture (based on it's OriginalSize)
 		\param clipRect Pointer to rectangle on the screen where the
 		images are clipped to.
 		If this pointer is 0 then the image is not clipped.
@@ -869,7 +873,7 @@ namespace video
 		/** Suggested and first implemented by zola.
 		\param texture The texture to draw from
 		\param destRect The rectangle to draw into
-		\param sourceRect The rectangle denoting a part of the texture
+		\param sourceRect The rectangle denoting a part of the texture (based on it's OriginalSize)
 		\param clipRect Clips the destination rectangle (may be 0)
 		\param colors Array of 4 colors denoting the color values of
 		the corners of the destRect
@@ -1229,7 +1233,7 @@ namespace video
 		\param data A byte array with pixel color information
 		\param ownForeignMemory If true, the image will use the data
 		pointer directly and own it afterward. If false, the memory
-		will by copied internally. 
+		will by copied internally.
 		WARNING: Setting this to 'true' will not work across dll boundaries.
 		So unless you link Irrlicht statically you should keep this to 'false'.
 		The parameter is mainly for internal usage.
@@ -1258,7 +1262,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		_IRR_DEPRECATED_ virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
+		IRR_DEPRECATED virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
 
 		//! Creates a software image from a part of another image.
 		/** \deprecated Create an empty image and use copyTo(). This method may be removed by Irrlicht 1.9.
@@ -1268,7 +1272,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		_IRR_DEPRECATED_ virtual IImage* createImage(IImage* imageToCopy,
+		IRR_DEPRECATED virtual IImage* createImage(IImage* imageToCopy,
 				const core::position2d<s32>& pos,
 				const core::dimension2d<u32>& size) =0;
 
@@ -1332,7 +1336,7 @@ namespace video
 		E_MATERIAL_TYPE enum or a value which was returned by
 		addMaterialRenderer().
 		\return String with the name of the renderer, or 0 if not
-		exisiting */
+		existing */
 		virtual const c8* getMaterialRendererName(u32 idx) const =0;
 
 		//! Sets the name of a material renderer.
@@ -1341,7 +1345,7 @@ namespace video
 		E_MATERIAL_TYPE enum or a value which was returned by
 		addMaterialRenderer().
 		\param name: New name of the material renderer. */
-		virtual void setMaterialRendererName(s32 idx, const c8* name) =0;
+		virtual void setMaterialRendererName(u32 idx, const c8* name) =0;
 
 		//! Swap the material renderers used for certain id's
 		/** Swap the IMaterialRenderers responsible for rendering specific
@@ -1398,7 +1402,7 @@ namespace video
 		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) = 0;
 
 		//! Clear the color, depth and/or stencil buffers.
-		_IRR_DEPRECATED_ void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
+		IRR_DEPRECATED void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)
 		{
 			u16 flag = 0;
 
@@ -1421,13 +1425,15 @@ namespace video
 		you have to render some special things, you can clear the
 		zbuffer during the rendering process with this method any time.
 		*/
-		_IRR_DEPRECATED_ void clearZBuffer()
+		void clearZBuffer()
 		{
 			clearBuffers(ECBF_DEPTH, SColor(255,0,0,0), 1.f, 0);
 		}
 
 		//! Make a screenshot of the last rendered frame.
-		/** \return An image created from the last rendered frame. */
+		/**
+		\param target All current drivers only support ERT_FRAME_BUFFER
+		\return An image created from the last rendered frame. */
 		virtual IImage* createScreenShot(video::ECOLOR_FORMAT format=video::ECF_UNKNOWN, video::E_RENDER_TARGET target=video::ERT_FRAME_BUFFER) =0;
 
 		//! Check if the image is already loaded.
@@ -1476,7 +1482,7 @@ namespace video
 		other flags can be changed, though some might have to effect
 		in most cases.
 		Please note that you have to enable/disable this effect with
-		enableInitMaterial2D(). This effect is costly, as it increases
+		enableMaterial2D(). This effect is costly, as it increases
 		the number of state changes considerably. Always reset the
 		values when done.
 		\return Material reference which should be altered to reflect

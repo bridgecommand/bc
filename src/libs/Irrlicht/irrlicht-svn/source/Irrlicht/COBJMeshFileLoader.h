@@ -2,14 +2,14 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_OBJ_MESH_FILE_LOADER_H_INCLUDED__
-#define __C_OBJ_MESH_FILE_LOADER_H_INCLUDED__
+#ifndef IRR_C_OBJ_MESH_FILE_LOADER_H_INCLUDED
+#define IRR_C_OBJ_MESH_FILE_LOADER_H_INCLUDED
 
 #include "IMeshLoader.h"
 #include "IFileSystem.h"
 #include "ISceneManager.h"
 #include "irrString.h"
-#include "SMeshBuffer.h"
+#include "CDynamicMeshBuffer.h"
 #include "irrMap.h"
 
 namespace irr
@@ -30,22 +30,24 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".obj")
-	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+	virtual bool isALoadableFileExtension(const io::path& filename) const IRR_OVERRIDE;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
-	virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file) IRR_OVERRIDE;
 
 private:
 
 	struct SObjMtl
 	{
-		SObjMtl() : Meshbuffer(0), Bumpiness (1.0f), Illumination(0),
+		SObjMtl(E_INDEX_TYPE_HINT typeHint) 
+			: IndexType(typeHint == EITH_16BIT ? video::EIT_16BIT : video::EIT_32BIT)
+			, Meshbuffer(0), Bumpiness (1.0f), Illumination(0),
 			RecalculateNormals(false)
 		{
-			Meshbuffer = new SMeshBuffer();
+			Meshbuffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, IndexType);
 			Meshbuffer->Material.Shininess = 0.0f;
 			Meshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
 			Meshbuffer->Material.DiffuseColor = video::SColorf(0.8f, 0.8f, 0.8f, 1.0f).toSColor();
@@ -53,16 +55,17 @@ private:
 		}
 
 		SObjMtl(const SObjMtl& o)
-			: Name(o.Name), Group(o.Group),
+			: IndexType(o.IndexType), Name(o.Name), Group(o.Group),
 			Bumpiness(o.Bumpiness), Illumination(o.Illumination),
 			RecalculateNormals(false)
 		{
-			Meshbuffer = new SMeshBuffer();
+			Meshbuffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, IndexType);
 			Meshbuffer->Material = o.Meshbuffer->Material;
 		}
 
 		core::map<video::S3DVertex, int> VertMap;
-		scene::SMeshBuffer *Meshbuffer;
+		irr::video::E_INDEX_TYPE IndexType;
+		scene::CDynamicMeshBuffer *Meshbuffer;
 		core::stringc Name;
 		core::stringc Group;
 		f32 Bumpiness;
@@ -119,4 +122,3 @@ private:
 } // end namespace irr
 
 #endif
-

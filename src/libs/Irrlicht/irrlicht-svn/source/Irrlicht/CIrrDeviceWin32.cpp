@@ -117,8 +117,8 @@ namespace irr
 			if (dev)
 			{
 				dev->Unacquire();
+				dev->Release();
 			}
-			dev->Release();
 		}
 
 		if (DirectInputDevice)
@@ -187,11 +187,11 @@ namespace irr
 		activeJoystick.axisValid[3]= (info.lRx!=0) ? 1 : 0;
 		activeJoystick.axisValid[4]= (info.lRy!=0) ? 1 : 0;
 		activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
-		activeJoystick.axisValid[6] = (info.rglSlider[0] != 0) ? 1 : 0; //JAMES
-		activeJoystick.axisValid[7] = (info.rglSlider[1] != 0) ? 1 : 0; //JAMES
+		activeJoystick.axisValid[6] = (info.rglSlider[0] != 0) ? 1 : 0; //JAMES: Add 7 & 8th axis
+		activeJoystick.axisValid[7] = (info.rglSlider[1] != 0) ? 1 : 0; //JAMES: Add 7 & 8th axis 
 
 		int caxis=0;
-		for (u8 i=0; i<8; i++) //JAMES
+		for (u8 i=0; i<8; i++) //JAMES: Add 7 & 8th axis 
 		{
 			if (activeJoystick.axisValid[i])
 				caxis++;
@@ -244,7 +244,7 @@ void SJoystickWin32Control::pollJoysticks()
 			u16 dxAxis=0;
 			u16 irrAxis=0;
 
-			while (dxAxis < 8 && irrAxis <caps.dwAxes) //JAMES
+			while (dxAxis < 8 && irrAxis <caps.dwAxes) //JAMES: Add 7 & 8th axis 
 			{
 				bool axisFound=0;
 				s32 axisValue=0;
@@ -1039,7 +1039,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		clientSize.right = CreationParams.WindowSize.Width;
 		clientSize.bottom = CreationParams.WindowSize.Height;
 
-		DWORD style = getWindowStyle(CreationParams.Fullscreen, CreationParams.WindowResizable);
+		DWORD style = getWindowStyle(CreationParams.Fullscreen, CreationParams.WindowResizable > 0 ? true : false);
 		AdjustWindowRect(&clientSize, style, FALSE);
 
 		const s32 realWidth = clientSize.right - clientSize.left;
@@ -1233,7 +1233,7 @@ bool CIrrDeviceWin32::run()
 //! Pause the current process for the minimum time allowed only to allow other processes to execute
 void CIrrDeviceWin32::yield()
 {
-	Sleep(1);
+	Sleep(0);
 }
 
 //! Pause execution and let other processes to run for a specified amount of time.
@@ -1287,7 +1287,7 @@ DWORD CIrrDeviceWin32::getWindowStyle(bool fullscreen, bool resizable) const
 		return WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
 	return WS_BORDER | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-}	
+}
 
 //! sets the caption of the window
 void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
@@ -1306,7 +1306,7 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 {
 	HWND hwnd = HWnd;
 	if ( windowId )
-		hwnd = reinterpret_cast<HWND>(windowId);
+		hwnd = static_cast<HWND>(windowId);
 
 	HDC dc = GetDC(hwnd);
 
@@ -1352,12 +1352,12 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 //! notifies the device that it should close itself
 void CIrrDeviceWin32::closeDevice()
 {
-	MSG msg;
-	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
-	PostQuitMessage(0);
-	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 	if (!ExternalWindow)
 	{
+		MSG msg;
+		PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
+		PostQuitMessage(0);
+		PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 		DestroyWindow(HWnd);
 		const fschar_t* ClassName = __TEXT("CIrrDeviceWin32");
 		HINSTANCE hInstance = GetModuleHandle(0);
@@ -1531,7 +1531,6 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 {
 	OSVERSIONINFOEX osvi;
-	PGPI pGPI;
 	BOOL bOsVersionInfoEx;
 
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
@@ -1583,9 +1582,14 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		{
 			if (osvi.dwMajorVersion == 6)
 			{
-				DWORD dwType;
-				pGPI = (PGPI)GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "GetProductInfo");
-				pGPI(osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+				DWORD dwType = 0; // (PRODUCT_UNDEFINED not available on MinGW)
+				HMODULE hmKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
+				if ( hmKernel32 )
+				{
+					PGPI pGPI = (PGPI)GetProcAddress(hmKernel32, "GetProductInfo");
+					if ( pGPI )
+						pGPI(osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+				}
 
 				switch (dwType)
 				{
@@ -1660,7 +1664,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 					(LPBYTE) szProductType, &dwBufLen);
 			RegCloseKey( hKey );
 
-			
+
 			if (irr::core::stringc("WINNT").equals_ignore_case(szProductType))
 				out.append("Professional ");
 			if (irr::core::stringc("LANMANNT").equals_ignore_case(szProductType))

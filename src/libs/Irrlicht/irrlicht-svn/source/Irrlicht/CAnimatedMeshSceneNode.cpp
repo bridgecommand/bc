@@ -5,8 +5,8 @@
 #include "CAnimatedMeshSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
-#include "S3DVertex.h"
 #include "os.h"
+#include "IFileSystem.h"
 #ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
 #else
@@ -14,9 +14,7 @@
 #endif // _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "IAnimatedMeshMD3.h"
 #include "CSkinnedMesh.h"
-#include "IDummyTransformationSceneNode.h"
 #include "IBoneSceneNode.h"
-#include "IMaterialRenderer.h"
 #include "IMesh.h"
 #include "IMeshCache.h"
 #include "IAnimatedMesh.h"
@@ -206,7 +204,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame()
 		// As multiple scene nodes may be sharing the same skinned mesh, we have to
 		// re-animate it every frame to ensure that this node gets the mesh that it needs.
 
-		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
+		CSkinnedMesh* skinnedMesh = static_cast<CSkinnedMesh*>(Mesh);
 
 		if (JointMode == EJUOR_CONTROL)//write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
@@ -949,7 +947,7 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 		checkJoints();
 		const f32 frame = getFrameNr(); //old?
 
-		CSkinnedMesh* skinnedMesh=reinterpret_cast<CSkinnedMesh*>(Mesh);
+		CSkinnedMesh* skinnedMesh=static_cast<CSkinnedMesh*>(Mesh);
 
 		skinnedMesh->transferOnlyJointsHintsToMesh( JointChildSceneNodes );
 		skinnedMesh->animateMesh(frame, 1.0f);

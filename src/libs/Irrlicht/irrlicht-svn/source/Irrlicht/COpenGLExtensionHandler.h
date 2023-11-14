@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#ifndef __C_OPEN_GL_FEATURE_MAP_H_INCLUDED__
-#define __C_OPEN_GL_FEATURE_MAP_H_INCLUDED__
+#ifndef IRR_C_OPEN_GL_FEATURE_MAP_H_INCLUDED
+#define IRR_C_OPEN_GL_FEATURE_MAP_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 
@@ -1051,6 +1051,9 @@ class COpenGLExtensionHandler
 	u16 ShaderLanguageVersion;
 
 	bool OcclusionQuerySupport;
+
+	// Info needed for workarounds.
+	bool IsAtiRadeonX;
 
 	//! Workaround until direct state access with framebuffers is stable enough in drivers
 	// https://devtalk.nvidia.com/default/topic/1030494/opengl/bug-amp-amp-spec-violation-checknamedframebufferstatus-returns-gl_framebuffer_incomplete_dimensions_ext-under-gl-4-5-core/
@@ -3436,4 +3439,3 @@ inline void COpenGLExtensionHandler::extGlSwapInterval(int interval)
 #endif
 
 #endif
-

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED__
-#define __I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED__
+#ifndef IRR_I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED
+#define IRR_I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED
 
 #include "IReferenceCounted.h"
 
@@ -21,6 +21,14 @@ OnSetConstants method will be called every frame now. */
 class IShaderConstantSetCallBack : public virtual IReferenceCounted
 {
 public:
+
+	//! Called by the engine after a shader material has been created successfully
+	/** If you are using one callback instance per shader (much recommended)
+	this is a good place to get shader constant id's for high level shaders.
+	\param services: Pointer to an interface providing methods to set/get the constants for the shader.
+	\param userData: Userdata int which can be specified when creating the shader.	*/
+	virtual void OnCreate(IMaterialRendererServices* services, s32 userData) { }
+
 
 	//! Called to let the callBack know the used material (optional method)
 	/**
@@ -82,4 +90,3 @@ public:
 } // end namespace irr
 
 #endif
-

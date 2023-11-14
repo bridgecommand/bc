@@ -408,7 +408,8 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 		return false;
 	}
 
-	Buffer = new c8[size];
+	Buffer = new c8[size+1];
+	Buffer[size] = 0x0; // null-terminate (thx @ sfan5)
 
 	//! read all into memory
 	if (file->read(Buffer, size) != static_cast<size_t>(size))
@@ -491,7 +492,7 @@ bool CXMeshFileLoader::parseDataObject()
 
 	// parse specific object
 #ifdef _XREADER_DEBUG
-	os::Printer::log("debug DataObject:", objectName.c_str(), ELL_DEBUG);
+	os::Printer::log("debug DataObject", objectName.c_str(), ELL_DEBUG);
 #endif
 
 	if (objectName == "template")
@@ -760,10 +761,12 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 
 	// read vertices
 	mesh.Vertices.set_used(nVertices);
+	irr::video::S3DVertex vertex;	// set_used doesn't call constructor, so we initalize it explicit here
+	vertex.Color = 0xFFFFFFFF;
 	for (u32 n=0; n<nVertices; ++n)
 	{
-		readVector3(mesh.Vertices[n].Pos);
-		mesh.Vertices[n].Color=0xFFFFFFFF;
+		readVector3(vertex.Pos);
+		mesh.Vertices[n] = vertex;
 	}
 
 	if (!checkForTwoFollowingSemicolons())
@@ -846,7 +849,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 
 #ifdef _XREADER_DEBUG
-		os::Printer::log("debug DataObject in mesh:", objectName.c_str(), ELL_DEBUG);
+		os::Printer::log("debug DataObject in mesh", objectName.c_str(), ELL_DEBUG);
 #endif
 
 		if (objectName == "MeshNormals")
@@ -1116,7 +1119,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	if (!getNextTokenAsString(TransformNodeName))
 	{
-		os::Printer::log("Unknown syntax while reading transfrom node name string in .x file", ELL_WARNING);
+		os::Printer::log("Unknown syntax while reading transform node name string in .x file", ELL_WARNING);
 		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 		return false;
 	}

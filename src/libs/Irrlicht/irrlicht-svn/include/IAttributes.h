@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_ATTRIBUTES_H_INCLUDED__
-#define __I_ATTRIBUTES_H_INCLUDED__
+#ifndef IRR_I_ATTRIBUTES_H_INCLUDED
+#define IRR_I_ATTRIBUTES_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "SColor.h"
@@ -635,7 +635,7 @@ public:
 	//! Adds an attribute as 3d triangle
 	virtual void addTriangle3d(const c8* attributeName, const core::triangle3df& v) = 0;
 
-	//! Sets an attribute as 3d trianle
+	//! Sets an attribute as 3d triangle
 	virtual void setAttribute(const c8* attributeName, const core::triangle3df& v) = 0;
 
 	//! Gets an attribute as a 3d triangle
@@ -759,6 +759,3 @@ public:
 } // end namespace irr
 
 #endif
-
-
-

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_POINT_2D_H_INCLUDED__
-#define __IRR_POINT_2D_H_INCLUDED__
+#ifndef IRR_POINT_2D_H_INCLUDED
+#define IRR_POINT_2D_H_INCLUDED
 
 #include "irrMath.h"
 #include "dimension2d.h"
@@ -27,16 +27,12 @@ public:
 	vector2d(T nx, T ny) : X(nx), Y(ny) {}
 	//! Constructor with the same value for both members
 	explicit vector2d(T n) : X(n), Y(n) {}
-	//! Copy constructor
-	vector2d(const vector2d<T>& other) : X(other.X), Y(other.Y) {}
 
 	vector2d(const dimension2d<T>& other) : X(other.Width), Y(other.Height) {}
 
 	// operators
 
 	vector2d<T> operator-() const { return vector2d<T>(-X, -Y); }
-
-	vector2d<T>& operator=(const vector2d<T>& other) { X = other.X; Y = other.Y; return *this; }
 
 	vector2d<T>& operator=(const dimension2d<T>& other) { X = other.Width; Y = other.Height; return *this; }
 
@@ -66,14 +62,14 @@ public:
 
 	T& operator [](u32 index)
 	{
-		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+		IRR_DEBUG_BREAK_IF(index>1) // access violation
 
 		return *(&X+index);
 	}
 
 	const T& operator [](u32 index) const
 	{
-		_IRR_DEBUG_BREAK_IF(index>1) // access violation
+		IRR_DEBUG_BREAK_IF(index>1) // access violation
 
 		return *(&X+index);
 	}
@@ -145,7 +141,7 @@ public:
 	bool nearlyParallel( const vector2d<T> & other, const T factor = relativeErrorFactor<T>()) const
 	{
 		// https://eagergames.wordpress.com/2017/04/01/fast-parallel-lines-and-vectors-test/
-		// if a || b then  a.x/a.y = b.x/b.y (similiar triangles)
+		// if a || b then  a.x/a.y = b.x/b.y (similar triangles)
 		// if a || b then either both x are 0 or both y are 0.
 
 		return  equalsRelative( X*other.Y, other.X* Y, factor)
@@ -419,4 +415,3 @@ public:
 } // end namespace irr
 
 #endif
-

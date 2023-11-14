@@ -53,7 +53,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_ANYFORMAT),
 	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Resizable(param.WindowResizable), WindowMinimized(false)
+	Resizable(param.WindowResizable == 1 ? true : false), WindowMinimized(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
@@ -69,7 +69,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 #endif
 					SDL_INIT_NOPARACHUTE ) < 0)
 		{
-			os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
+			os::Printer::log("Unable to initialize SDL!", SDL_GetError());
 			Close = true;
 		}
 		else
@@ -219,7 +219,7 @@ bool CIrrDeviceSDL::createWindow()
 	}
 	if ( !Screen )
 	{
-		os::Printer::log( "Could not initialize display!" );
+		os::Printer::log("Could not initialize display!" );
 		return false;
 	}
 
@@ -335,7 +335,7 @@ bool CIrrDeviceSDL::run()
 				else
 				{
 					irrevent.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
-					MouseButtonStates &= !irr::EMBSM_RIGHT;
+					MouseButtonStates &= ~irr::EMBSM_RIGHT;
 				}
 				break;
 
@@ -348,7 +348,7 @@ bool CIrrDeviceSDL::run()
 				else
 				{
 					irrevent.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
-					MouseButtonStates &= !irr::EMBSM_MIDDLE;
+					MouseButtonStates &= ~irr::EMBSM_MIDDLE;
 				}
 				break;
 

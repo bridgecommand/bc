@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
-#ifndef __IRR_ARRAY_H_INCLUDED__
-#define __IRR_ARRAY_H_INCLUDED__
+#ifndef IRR_ARRAY_H_INCLUDED
+#define IRR_ARRAY_H_INCLUDED
 
 #include "irrTypes.h"
 #include "heapsort.h"
@@ -131,7 +131,7 @@ public:
 	\param index: Where position to insert the new element. */
 	void insert(const T& element, u32 index=0)
 	{
-		_IRR_DEBUG_BREAK_IF(index>used) // access violation
+		IRR_DEBUG_BREAK_IF(index>used) // access violation
 
 		if (used + 1 > allocated)
 		{
@@ -231,6 +231,41 @@ public:
 		free_when_destroyed=_free_when_destroyed;
 	}
 
+	//! Set (copy) data from given memory block
+	/** \param newData data to set, must have newSize elements
+	\param newSize Amount of elements in newData
+	\param newDataIsSorted Info if you pass sorted/unsorted data
+	\param canShrink Specifies whether the array is reallocated even if
+	enough space is available. Setting this flag to false can speed up
+	array usage, but may use more memory than required by the data.
+	*/
+	void set_data(const T* newData, u32 newSize, bool newDataIsSorted=false, bool canShrink=false)
+	{
+		reallocate(newSize, canShrink);
+		set_used(newSize);
+		for ( u32 i=0; i<newSize; ++i)
+		{
+			data[i] = newData[i];
+		}
+		is_sorted = newDataIsSorted;
+	}
+
+	//! Compare if given data block is identical to the data in our array
+	/** Like operator ==, but without the need to create the array
+	\param otherData Address to data against which we compare, must contain size elements
+	\param size Amount of elements in otherData	*/
+	bool equals(const T* otherData, u32 size) const
+	{
+		if (used != size)
+			return false;
+
+		for (u32 i=0; i<size; ++i)
+			if (data[i] != otherData[i])
+				return false;
+		return true;
+	}
+
+
 
 	//! Sets if the array should delete the memory it uses upon destruction.
 	/** Also clear and set_pointer will only delete the (original) memory
@@ -258,7 +293,6 @@ public:
 		used = usedNow;
 	}
 
-
 	//! Assignment operator
 	const array<T, TAlloc>& operator=(const array<T, TAlloc>& other)
 	{
@@ -266,22 +300,27 @@ public:
 			return *this;
 		strategy = other.strategy;
 
+		// (TODO: we could probably avoid re-allocations of data when (allocated < other.allocated)
+
 		if (data)
 			clear();
-
-		//if (allocated < other.allocated)
-		if (other.allocated == 0)
-			data = 0;
-		else
-			data = allocator.allocate(other.allocated); // new T[other.allocated];
 
 		used = other.used;
 		free_when_destroyed = true;
 		is_sorted = other.is_sorted;
 		allocated = other.allocated;
 
-		for (u32 i=0; i<other.used; ++i)
-			allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
+		if (other.allocated == 0)
+		{
+			data = 0;
+		}
+		else
+		{
+			data = allocator.allocate(other.allocated); // new T[other.allocated];
+
+			for (u32 i=0; i<other.used; ++i)
+				allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
+		}
 
 		return *this;
 	}
@@ -290,13 +329,7 @@ public:
 	//! Equality operator
 	bool operator == (const array<T, TAlloc>& other) const
 	{
-		if (used != other.used)
-			return false;
-
-		for (u32 i=0; i<other.used; ++i)
-			if (data[i] != other[i])
-				return false;
-		return true;
+		return equals(other.const_pointer(), other.size());
 	}
 
 
@@ -310,7 +343,7 @@ public:
 	//! Direct access operator
 	T& operator [](u32 index)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
+		IRR_DEBUG_BREAK_IF(index>=used) // access violation
 
 		return data[index];
 	}
@@ -319,7 +352,7 @@ public:
 	//! Direct const access operator
 	const T& operator [](u32 index) const
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
+		IRR_DEBUG_BREAK_IF(index>=used) // access violation
 
 		return data[index];
 	}
@@ -328,7 +361,7 @@ public:
 	//! Gets last element.
 	T& getLast()
 	{
-		_IRR_DEBUG_BREAK_IF(!used) // access violation
+		IRR_DEBUG_BREAK_IF(!used) // access violation
 
 		return data[used-1];
 	}
@@ -337,7 +370,7 @@ public:
 	//! Gets last element
 	const T& getLast() const
 	{
-		_IRR_DEBUG_BREAK_IF(!used) // access violation
+		IRR_DEBUG_BREAK_IF(!used) // access violation
 
 		return data[used-1];
 	}
@@ -493,29 +526,31 @@ public:
 	}
 
 
-	//! Finds an element in linear time, which is very slow.
-	/** Use binary_search for faster finding. Only works if ==operator is
-	implemented.
-	\param element Element to search for.
+	//! Finds an element by searching linearly from array start to end
+	/** Can be slow with large arrays, try binary_search for those.
+	Only works if corresponding operator== is implemented.
+	\param element Element to search for. 
 	\return Position of the searched element if it was found, otherwise -1
 	is returned. */
-	s32 linear_search(const T& element) const
+	template <class E>
+	s32 linear_search(const E& element) const
 	{
 		for (u32 i=0; i<used; ++i)
-			if (element == data[i])
+			if (data[i] == element)
 				return (s32)i;
 
 		return -1;
 	}
 
 
-	//! Finds an element in linear time, which is very slow.
-	/** Use binary_search for faster finding. Only works if ==operator is
-	implemented.
-	\param element: Element to search for.
+	//! Finds an element by searching linearly from array end to start.
+	/** Can be slow with large arrays, try binary_search for those.
+	Only works if corresponding operator== is implemented.
+	\param element Element to search for.
 	\return Position of the searched element if it was found, otherwise -1
 	is returned. */
-	s32 linear_reverse_search(const T& element) const
+	template <class E>
+	s32 linear_reverse_search(const E& element) const
 	{
 		for (s32 i=used-1; i>=0; --i)
 			if (data[i] == element)
@@ -531,7 +566,7 @@ public:
 	\param index: Index of element to be erased. */
 	void erase(u32 index)
 	{
-		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
+		IRR_DEBUG_BREAK_IF(index>=used) // access violation
 
 		for (u32 i=index+1; i<used; ++i)
 		{

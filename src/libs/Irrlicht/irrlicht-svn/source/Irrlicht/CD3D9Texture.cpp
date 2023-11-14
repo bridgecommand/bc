@@ -23,7 +23,7 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 	setDebugName("CD3D9Texture");
 #endif
 
-	_IRR_DEBUG_BREAK_IF(image.size() == 0)
+	IRR_DEBUG_BREAK_IF(image.size() == 0)
 
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
 
@@ -38,17 +38,19 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 
 	DWORD flags = 0;
 
+	LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
+	D3DDISPLAYMODE d3ddm;
+	intf->GetAdapterDisplayMode(Driver->Params.DisplayAdapter, &d3ddm);
 	if (HasMipMaps && HardwareMipMaps)
 	{
-		LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
-		D3DDISPLAYMODE d3ddm;
-		intf->GetAdapterDisplayMode(Driver->Params.DisplayAdapter, &d3ddm);
-
 		if (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_AUTOGENMIPMAP, D3DRTYPE_TEXTURE, InternalFormat))
 			flags = D3DUSAGE_AUTOGENMIPMAP;
 		else
 			HardwareMipMaps = false;
 	}
+	
+	VertexTextureSupport = Driver->getTextureCreationFlag(ETCF_SUPPORT_VERTEXT_TEXTURE) 
+	                       && (D3D_OK == intf->CheckDeviceFormat(Driver->Params.DisplayAdapter, D3DDEVTYPE_HAL, d3ddm.Format, D3DUSAGE_QUERY_VERTEXTEXTURE, D3DRTYPE_TEXTURE, InternalFormat));
 
 	HRESULT hr = 0;
 	
@@ -61,7 +63,7 @@ CD3D9Texture::CD3D9Texture(const io::path& name, const core::array<IImage*>& ima
 		hr = Device->CreateCubeTexture(Size.Width, HasMipMaps ? 0 : 1, flags, InternalFormat, D3DPOOL_MANAGED, &CubeTexture, NULL);
 		break;
 	default:
-		_IRR_DEBUG_BREAK_IF(true)
+		IRR_DEBUG_BREAK_IF(true)
 		break;
 	}
 
@@ -223,7 +225,7 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel, u32 layer, E
 		}
 		else if (CubeTexture)
 		{
-			_IRR_DEBUG_BREAK_IF(layer > 5)
+			IRR_DEBUG_BREAK_IF(layer > 5)
 
 			hr = CubeTexture->LockRect(static_cast<_D3DCUBEMAP_FACES>(layer), MipLevelLocked, &rect, 0, LockReadOnly ? D3DLOCK_READONLY : 0);
 		}
@@ -333,7 +335,7 @@ void CD3D9Texture::regenerateMipMapLevels(void* data, u32 layer)
 		u32 width = Size.Width;
 		u32 height = Size.Height;
 		u8* tmpData = static_cast<u8*>(data);
-		u32 dataSize = 0;
+		size_t dataSize = 0;
 		u32 level = 0;
 
 		do
@@ -589,7 +591,7 @@ void CD3D9Texture::generateRenderTarget()
 				hr = Device->CreateCubeTexture(Size.Width, 1, flags, InternalFormat, D3DPOOL_DEFAULT, &CubeTexture, NULL);
 			break;
 		default:
-			_IRR_DEBUG_BREAK_IF(true)
+			IRR_DEBUG_BREAK_IF(true)
 			break;
 	}
 
@@ -712,7 +714,7 @@ void CD3D9Texture::uploadTexture(void* data, u32 mipmapLevel, u32 layer)
 	u32 width = Size.Width >> mipmapLevel;
 	u32 height = Size.Height >> mipmapLevel;
 
-	u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
+	size_t dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
 
 	HRESULT hr = 0;
 
@@ -724,7 +726,7 @@ void CD3D9Texture::uploadTexture(void* data, u32 mipmapLevel, u32 layer)
 	}
 	else if (CubeTexture)
 	{
-		_IRR_DEBUG_BREAK_IF(layer > 5)
+		IRR_DEBUG_BREAK_IF(layer > 5)
 
 		hr = CubeTexture->LockRect(static_cast<_D3DCUBEMAP_FACES>(layer), mipmapLevel, &lockRectangle, 0, 0);
 	}

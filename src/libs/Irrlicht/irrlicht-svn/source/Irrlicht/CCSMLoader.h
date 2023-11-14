@@ -38,9 +38,7 @@
 #ifndef __CSM_LOADER_H_INCLUDED__
 #define __CSM_LOADER_H_INCLUDED__
 
-#include "irrArray.h"
 #include "IMesh.h"
-#include "irrString.h"
 #include "IFileSystem.h"
 #include "IMeshLoader.h"
 
@@ -59,10 +57,10 @@ namespace scene
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".bsp")
-		virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+		virtual bool isALoadableFileExtension(const io::path& filename) const IRR_OVERRIDE;
 
 		//! creates/loads an animated mesh from the file.
-		virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file) IRR_OVERRIDE;
 
 	private:
 

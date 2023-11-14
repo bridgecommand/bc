@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_BUTTON_H_INCLUDED__
-#define __I_GUI_BUTTON_H_INCLUDED__
+#ifndef IRR_I_GUI_BUTTON_H_INCLUDED
+#define IRR_I_GUI_BUTTON_H_INCLUDED
 
 #include "IGUIElement.h"
 
@@ -139,6 +139,10 @@ namespace gui
 		/** \return: The override color */
 		virtual video::SColor getOverrideColor(void) const = 0;
 
+		//! Gets the currently used text color
+		/** Either a skin-color for the current state or the override color */
+		virtual video::SColor getActiveColor() const = 0;
+
 		//! Sets if the button text should use the override color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
 		with IGUIStaticText::setOverrideColor is used, otherwise the
@@ -261,4 +265,3 @@ namespace gui
 } // end namespace irr
 
 #endif
-

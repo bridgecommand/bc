@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_COMPILE_CONFIG_H_INCLUDED__
-#define __IRR_COMPILE_CONFIG_H_INCLUDED__
+#ifndef IRR_COMPILE_CONFIG_H_INCLUDED
+#define IRR_COMPILE_CONFIG_H_INCLUDED
 
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
@@ -202,7 +202,7 @@ comment this define out */
 
 //! Define _IRR_COMPILE_WITH_BURNINGSVIDEO_ to compile the Irrlicht engine with Burning's video driver
 /** If you do not need this software driver, you can comment this define out. */
-//#define _IRR_COMPILE_WITH_BURNINGSVIDEO_
+//#define _IRR_COMPILE_WITH_BURNINGSVIDEO_ //JAMES: Remove option for this software driver
 //#ifdef NO_IRR_COMPILE_WITH_BURNINGSVIDEO_
 #undef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 //#endif
@@ -216,17 +216,21 @@ define out. */
 #undef _IRR_COMPILE_WITH_X11_
 #endif
 
-//! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
-//! to remove the dependencies such that Irrlicht will compile on those systems, too.
-//! If you don't need colored cursors you can also disable the Xcursor extension
+//! On some Linux systems the XF86 vidmode extension, X11 RandR, or XInput2 are missing.
+//! Use these defines to add/remove support for those dependencies as needed.
+//! XInput2 (library called Xi) is currently only used to support touch-input.
 #if defined(_IRR_LINUX_PLATFORM_) && defined(_IRR_COMPILE_WITH_X11_)
 #define _IRR_LINUX_X11_VIDMODE_
 //#define _IRR_LINUX_X11_RANDR_
+//#define _IRR_LINUX_X11_XINPUT2_
 #ifdef NO_IRR_LINUX_X11_VIDMODE_
 #undef _IRR_LINUX_X11_VIDMODE_
 #endif
 #ifdef NO_IRR_LINUX_X11_RANDR_
 #undef _IRR_LINUX_X11_RANDR_
+#endif
+#ifdef NO_IRR_LINUX_X11_XINPUT2_
+#undef _IRR_LINUX_X11_XINPUT2_
 #endif
 
 //! X11 has by default only monochrome cursors, but using the Xcursor library we can also get color cursor support.
@@ -247,7 +251,7 @@ you will not be able to use anything provided by the GUI Environment, including 
 #undef _IRR_COMPILE_WITH_GUI_
 #endif
 
-//! Define _IRR_COMPILE_WITH_PARTICLES to compile the engine the withe build-in particle system
+//! Define _IRR_COMPILE_WITH_PARTICLES to compile the engine the with the build-in particle system
 /** You can disable this if you don't need particles or use an external particle system. */
 #define _IRR_COMPILE_WITH_PARTICLES_
 #ifdef NO_IRR_COMPILE_WITH_PARTICLES_
@@ -264,7 +268,7 @@ for Windows based systems. You also have to set #define UNICODE for this to comp
 #undef _IRR_WCHAR_FILESYSTEM
 #endif
 
-//! Define _IRR_COMPILE_WITH_JPEGLIB_ to enable compiling the engine using libjpeg.
+//! Define _IRR_COMPILE_WITH_LIBJPEG_ to enable compiling the engine using libjpeg.
 /** This enables the engine to read jpeg images. If you comment this out,
 the engine will no longer read .jpeg images. */
 #define _IRR_COMPILE_WITH_LIBJPEG_
@@ -858,5 +862,11 @@ precision will be lower but speed higher. currently X86 only
 	#endif
 #endif
 
-#endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
+//! Solve Camera errors - Debug Feature
+/* - Allow Camera 90 degree up, Target==Position,buildCameraLookAtMatrixLH
+   - pre v1.9 CCameraSceneNode moved the up non-particular in the positive x-Direction. not compatible
+   - Enabled is not compatible with Irrlicht Collision and Response. 
+*/
+//#define _IRR_COMPILE_WITH_90_DEGREE_CAMERA
 
+#endif // IRR_COMPILE_CONFIG_H_INCLUDED

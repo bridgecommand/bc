@@ -786,13 +786,10 @@ void COpenGLDriver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 /** Return value is the number of visible pixels/fragments.
 The value is a safe approximation, i.e. can be larger than the
 actual value of pixels. */
-u32 COpenGLDriver::getOcclusionQueryResult(scene::ISceneNode* node) const
+u32 COpenGLDriver::getOcclusionQueryResult(const scene::ISceneNode* node) const
 {
-	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
-	if (index != -1)
-		return OcclusionQueries[index].Result;
-	else
-		return ~0;
+	const s32 index = OcclusionQueries.linear_search(node);
+	return index < 0 ? ~0 : OcclusionQueries[index].Result;
 }
 
 
@@ -806,10 +803,10 @@ IRenderTarget* COpenGLDriver::addRenderTarget()
 }
 
 
-// small helper function to create vertex buffer object adress offsets
-static inline u8* buffer_offset(const long offset)
+// small helper function to create vertex buffer object address offsets
+static inline const GLvoid * buffer_offset(const size_t offset)
 {
-	return ((u8*)0 + offset);
+	return (const GLvoid *)offset;
 }
 
 
@@ -864,7 +861,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		else
 		{
 			// avoid passing broken pointer to OpenGL
-			_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+			IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 		}
 	}
@@ -1191,7 +1188,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		else
 		{
 			// avoid passing broken pointer to OpenGL
-			_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+			IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 		}
 	}
@@ -1349,7 +1346,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::posi
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size() == 0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size() == 0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -1433,7 +1430,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size() == 0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size() == 0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -1444,7 +1441,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 }
 
 
-void COpenGLDriver::draw2DImage(const video::ITexture* texture, u32 layer, bool flip)
+void COpenGLDriver::draw2DImageQuad(const video::ITexture* texture, u32 layer, bool flip)
 {
 	if (!texture || !CacheHandler->getTextureCache().set(0, texture))
 		return;
@@ -1597,7 +1594,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -1768,7 +1765,7 @@ void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -1873,7 +1870,7 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -1916,7 +1913,7 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 		else
 		{
-			_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+			IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 			glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 		}
 
@@ -1954,7 +1951,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -2081,7 +2078,7 @@ bool COpenGLDriver::testGLError(int code)
 		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", core::stringc(code).c_str(), ELL_ERROR); break;
 #endif
 	};
-//	_IRR_DEBUG_BREAK_IF(true);
+//	IRR_DEBUG_BREAK_IF(true);
 	return true;
 #else
 	return false;
@@ -3447,7 +3444,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -3558,7 +3555,7 @@ void COpenGLDriver::draw3DBox( const core::aabbox3d<f32>& box, SColor color )
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(v))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -3594,7 +3591,7 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(Quad2DVertices))[0].Color);
 	else
 	{
-		_IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
+		IRR_DEBUG_BREAK_IF(ColorBuffer.size()==0);
 		glColorPointer(colorSize, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 	}
 
@@ -3615,7 +3612,7 @@ bool COpenGLDriver::queryTextureFormat(ECOLOR_FORMAT format) const
 	GLint dummyInternalFormat;
 	GLenum dummyPixelFormat;
 	GLenum dummyPixelType;
-	void (*dummyConverter)(const void*, s32, void*);
+	void (*dummyConverter)(const void*, u32, void*);
 	return getColorFormatParameters(format, dummyInternalFormat, dummyPixelFormat, dummyPixelType, &dummyConverter);
 }
 
@@ -3728,6 +3725,12 @@ s32 COpenGLDriver::addShaderMaterial(const c8* vertexShaderProgram,
 		callback, baseMaterial, userData);
 
 	r->drop();
+
+	if (callback && nr >= 0)
+	{
+		callback->OnCreate(this, userData);
+	}
+
 	return nr;
 }
 
@@ -3761,6 +3764,13 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 			callback,baseMaterial, userData);
 
 	r->drop();
+
+	if (callback && nr >= 0)
+	{
+		r->startUseProgram();
+		callback->OnCreate(r, userData);
+		r->stopUseProgram();
+	}
 
 	return nr;
 }
@@ -3968,7 +3978,7 @@ IImage* COpenGLDriver::createScreenShot(video::ECOLOR_FORMAT format, video::E_RE
 	if (format==video::ECF_UNKNOWN)
 		format=getColorFormat();
 
-	// TODO: Maybe we could support more formats (floating point and some of those beyond ECF_R8), didn't really try yet 
+	// TODO: Maybe we could support more formats (floating point and some of those beyond ECF_R8), didn't really try yet
 	if (IImage::isCompressedFormat(format) || IImage::isDepthFormat(format) || IImage::isFloatingPointFormat(format) || format >= ECF_R8)
 		return 0;
 
@@ -4204,7 +4214,7 @@ GLenum COpenGLDriver::getZBufferBits() const
 }
 
 bool COpenGLDriver::getColorFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLenum& pixelFormat,
-	GLenum& pixelType, void(**converter)(const void*, s32, void*)) const
+	GLenum& pixelType, void(**converter)(const void*, u32, void*)) const
 {
 	// NOTE: Converter variable not used here, but don't remove, it's used in the OGL-ES drivers.
 

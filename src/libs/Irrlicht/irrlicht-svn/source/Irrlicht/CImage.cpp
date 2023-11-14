@@ -3,7 +3,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImage.h"
-#include "irrString.h"
 #include "CColorConverter.h"
 #include "CBlit.h"
 #include "os.h"
@@ -24,8 +23,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 	}
 	else
 	{
-		const u32 dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
-
+		const size_t dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
 		Data = new u8[align_next(dataSize,16)];
 		memcpy(Data, data, dataSize);
 		DeleteMemory = true;
@@ -36,7 +34,8 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 //! Constructor of empty image
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) : IImage(format, size, true)
 {
-	Data = new u8[align_next(getDataSizeFromFormat(Format, Size.Width, Size.Height),16)];
+	const size_t dataSize = getDataSizeFromFormat(Format, Size.Width, Size.Height);
+	Data = new u8[align_next(dataSize,16)];
 	DeleteMemory = true;
 }
 
@@ -194,7 +193,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 	{
 		if (pitch==Pitch)
 		{
-			memcpy(target, Data, height*pitch);
+			memcpy(target, Data, (size_t)height*pitch);
 			return;
 		}
 		else
@@ -284,8 +283,8 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 
 	target->getData();
 
-	s32 fx = core::ceil32( sourceXStep );
-	s32 fy = core::ceil32( sourceYStep );
+	const s32 fx = core::ceil32( sourceXStep );
+	const s32 fy = core::ceil32( sourceYStep );
 	f32 sx;
 	f32 sy;
 
@@ -332,8 +331,8 @@ void CImage::fill(const SColor &color)
 		{
 			u8 rgb[3];
 			CColorConverter::convert_A8R8G8B8toR8G8B8(&color, 1, rgb);
-			const u32 size = getImageDataSizeInBytes();
-			for (u32 i=0; i<size; i+=3)
+			const size_t size = getImageDataSizeInBytes();
+			for (size_t i=0; i<size; i+=3)
 			{
 				memcpy(Data+i, rgb, 3);
 			}
@@ -347,16 +346,71 @@ void CImage::fill(const SColor &color)
 	memset32( Data, c, getImageDataSizeInBytes() );
 }
 
+void CImage::flip(bool topBottom, bool leftRight)
+{
+	if ( !topBottom && !leftRight)
+		return;
+
+	const core::dimension2du dim(getDimension());
+	if ( dim.Width == 0 || dim.Height == 0 )
+		return;
+
+	u8* data = (u8*)getData();
+	if (!data) 
+		return;
+
+	const u32 bpp = getBytesPerPixel();
+	const u32 pitch = getPitch();
+
+	if ( topBottom )
+	{
+		for ( u32 i=0; i<dim.Height/2; ++i)
+		{
+			// Reverse bottom/top lines
+			u8* l1 = data+i*pitch;
+			u8* l2 = data+(dim.Height-1-i)*pitch;
+			for ( u32 b=0; b<pitch; ++b)
+			{
+				irr::u8 dummy = *l1;
+				*l1 = *l2;
+				*l2 = dummy;
+				++l1;
+				++l2;
+			}
+		}
+	}
+	if ( leftRight )
+	{
+		for ( u32 i=0; i<dim.Height; ++i)
+		{
+			// Reverse left/right for each line
+			u8* l1 = data+i*pitch;
+			u8* l2 = l1+(dim.Width-1)*bpp;
+			for ( u32 p=0; p<dim.Width/2; ++p)
+			{
+				for ( u32 b=0; b<bpp; ++b)
+				{
+					irr::u8 dummy = l1[b];
+					l1[b] = l2[b];
+					l2[b] = dummy;
+				}
+				l1 += bpp;
+				l2 -= bpp;
+			}
+		}
+	}
+}
 
 //! get a filtered pixel
-inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const
+inline SColor CImage::getPixelBox( const s32 x, const s32 y, const s32 fx, const s32 fy, const s32 bias ) const
 {
+/*
 	if (IImage::isCompressedFormat(Format))
 	{
 		os::Printer::log("IImage::getPixelBox method doesn't work with compressed images.", ELL_WARNING);
 		return SColor(0);
 	}
-
+*/
 	SColor c;
 	s32 a = 0, r = 0, g = 0, b = 0;
 
@@ -376,12 +430,12 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 
 	}
 
-	s32 sdiv = s32_log2_s32(fx * fy);
+	const s32 sdiv = fx * fy; // s32_log2_s32(fx * fy);
 
-	a = core::s32_clamp( ( a >> sdiv ) + bias, 0, 255 );
-	r = core::s32_clamp( ( r >> sdiv ) + bias, 0, 255 );
-	g = core::s32_clamp( ( g >> sdiv ) + bias, 0, 255 );
-	b = core::s32_clamp( ( b >> sdiv ) + bias, 0, 255 );
+	a = core::s32_clamp( ( a / sdiv ) + bias, 0, 255 );
+	r = core::s32_clamp( ( r / sdiv ) + bias, 0, 255 );
+	g = core::s32_clamp( ( g / sdiv ) + bias, 0, 255 );
+	b = core::s32_clamp( ( b / sdiv ) + bias, 0, 255 );
 
 	c.set( a, r, g, b );
 	return c;

@@ -2,10 +2,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Written by Michael Zeilfelder
 
-#ifndef __C_PROFILER_H_INCLUDED__
-#define __C_PROFILER_H_INCLUDED__
+#ifndef IRR_C_PROFILER_H_INCLUDED
+#define IRR_C_PROFILER_H_INCLUDED
 
-#include "IrrCompileConfig.h"
 #include "IProfiler.h"
 
 namespace irr
@@ -18,10 +17,10 @@ public:
 	virtual ~CProfiler();
 
 	//! Write all profile-data into a string
-    virtual void printAll(core::stringw &result, bool includeOverview,bool suppressUncalled) const  _IRR_OVERRIDE_;
+    virtual void printAll(core::stringw &result, bool includeOverview,bool suppressUncalled) const  IRR_OVERRIDE;
 
 	//! Write the profile data of one group into a string
-    virtual void printGroup(core::stringw &result, u32 groupIndex, bool suppressUncalled) const  _IRR_OVERRIDE_;
+    virtual void printGroup(core::stringw &result, u32 groupIndex, bool suppressUncalled) const  IRR_OVERRIDE;
 
 protected:
 	core::stringw makeTitleString() const;
@@ -29,4 +28,4 @@ protected:
 };
 } // namespace irr
 
-#endif // __C_PROFILER_H_INCLUDED__
+#endif // IRR_C_PROFILER_H_INCLUDED

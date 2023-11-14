@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_ANIMATED_MESH_SCENE_NODE_H_INCLUDED__
-#define __I_ANIMATED_MESH_SCENE_NODE_H_INCLUDED__
+#ifndef IRR_I_ANIMATED_MESH_SCENE_NODE_H_INCLUDED
+#define IRR_I_ANIMATED_MESH_SCENE_NODE_H_INCLUDED
 
 #include "ISceneNode.h"
 #include "IBoneSceneNode.h"
@@ -102,7 +102,7 @@ namespace scene
 		zfail method, if not, zpass is used.
 		\param infinity: Value used by the shadow volume algorithm to
 		scale the shadow volume. For zfail shadow volumes on some drivers 
-		only suppport finite shadows, so camera zfar must be larger than 
+		only support finite shadows, so camera zfar must be larger than 
 		shadow back cap,which is depending on the infinity parameter).
 		Infinity value also scales by the scaling factors of the model.
 		If shadows don't show up with zfail then try reducing infinity.
@@ -230,4 +230,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

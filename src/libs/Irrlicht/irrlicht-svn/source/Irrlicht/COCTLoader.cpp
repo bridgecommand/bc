@@ -17,8 +17,9 @@
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
 #include "os.h"
+#include "SMesh.h"
 #include "SAnimatedMesh.h"
-#include "SMeshBufferLightMap.h"
+#include "CMeshBuffer.h"
 #include "irrString.h"
 #include "ISceneManager.h"
 
@@ -102,18 +103,29 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 
 	file->read(verts, sizeof(octVert) * header.numVerts);
 	file->read(faces, sizeof(octFace) * header.numFaces);
-	//TODO: Make sure id is in the legal range for Textures and Lightmaps
 
 	u32 i;
-	for (i = 0; i < header.numTextures; i++) {
-		octTexture t;
-		file->read(&t, sizeof(octTexture));
-		textures[t.id] = t;
+	for (i = 0; i < header.numTextures; i++) 
+	{
+		u32 id;
+		file->read(&id, sizeof(id));
+		if ( id >= header.numTextures )
+		{
+			os::Printer::log("COCTLoader: Invalid texture id", irr::ELL_WARNING);
+			id = i;
+		}
+		file->read(&textures[id], sizeof(octTexture));
 	}
-	for (i = 0; i < header.numLightmaps; i++) {
-		octLightmap t;
-		file->read(&t, sizeof(octLightmap));
-		lightmaps[t.id] = t;
+	for (i = 0; i < header.numLightmaps; i++) 
+	{
+		u32 id;
+		file->read(&id, sizeof(id));
+		if ( id >= header.numLightmaps )
+		{
+			os::Printer::log("COCTLoader: Invalid lightmap id", irr::ELL_WARNING);
+			id = i;
+		}
+		file->read(&lightmaps[id], sizeof(octLightmap));
 	}
 	file->read(lights, sizeof(octLight) * header.numLights);
 

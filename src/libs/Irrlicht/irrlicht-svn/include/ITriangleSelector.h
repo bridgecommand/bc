@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_TRIANGLE_SELECTOR_H_INCLUDED__
-#define __I_TRIANGLE_SELECTOR_H_INCLUDED__
+#ifndef IRR_I_TRIANGLE_SELECTOR_H_INCLUDED
+#define IRR_I_TRIANGLE_SELECTOR_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "triangle3d.h"
@@ -49,7 +49,7 @@ struct SCollisionTriangleRange
 	irr::u32 RangeSize;
 
 	//! Real selector which contained those triangles (useful when working with MetaTriangleSelector)
-	ITriangleSelector* Selector;
+	const ITriangleSelector* Selector;
 
 	//! SceneNode from which the triangles are from
 	ISceneNode* SceneNode;

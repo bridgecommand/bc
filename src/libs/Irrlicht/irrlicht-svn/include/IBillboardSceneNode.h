@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_BILLBOARD_SCENE_NODE_H_INCLUDED__
-#define __I_BILLBOARD_SCENE_NODE_H_INCLUDED__
+#ifndef IRR_I_BILLBOARD_SCENE_NODE_H_INCLUDED
+#define IRR_I_BILLBOARD_SCENE_NODE_H_INCLUDED
 
 #include "ISceneNode.h"
 
@@ -12,6 +12,7 @@ namespace irr
 namespace scene
 {
 	class ICameraSceneNode;
+	class IMeshBuffer;
 
 //! A billboard scene node.
 /** A billboard is like a 3d sprite: A 2d element,
@@ -74,11 +75,20 @@ public:
 	    That is why the usual getBoundingBox will return a "safe" boundingbox which is guaranteed
 	    to contain the billboard. While this function can return the real one. */
 	virtual const core::aabbox3d<f32>& getTransformedBillboardBoundingBox(const irr::scene::ICameraSceneNode* camera) = 0;
+
+	//! Get the amount of mesh buffers.
+	/** \return Amount of mesh buffers (IMeshBuffer) in this mesh. */
+	virtual u32 getMeshBufferCount() const = 0;
+
+	//! Get pointer to a mesh buffer.
+	/** NOTE: Positions and normals of this meshbuffers are re-calculated before rendering.
+	So this is mainly useful to access/modify the uv-coordinates.
+	\param nr: Zero based index of the mesh buffer.
+	\return Pointer to the mesh buffer or 0 if there is no such	mesh buffer. */
+	virtual IMeshBuffer* getMeshBuffer(u32 nr) const = 0;
 };
 
 } // end namespace scene
 } // end namespace irr
 
-
 #endif
-

@@ -6,8 +6,6 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "IGPUProgrammingServices.h"
-#include "IShaderConstantSetCallBack.h"
 #include "IVideoDriver.h"
 #include "os.h"
 
@@ -156,7 +154,7 @@ const char OPENGL_PARALLAX_MAP_PSH[] =
 	"MAD normalMapColor, normalMapColor, {2,2,2,2}, {-1,-1,-1,-1}; \n"\
 	"\n"\
 	"\n"\
-	"# extract eye vector (so substract 0.5f and multiply by 2)\n"\
+	"# extract eye vector (so subtract 0.5f and multiply by 2)\n"\
 	"MAD temp, eyeVector, {2,2,2,2}, {-1,-1,-1,-1};\n"\
 	"\n"\
 	"# height = height * scale \n"\

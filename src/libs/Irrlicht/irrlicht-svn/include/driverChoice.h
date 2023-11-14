@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __E_DRIVER_CHOICE_H_INCLUDED__
-#define __E_DRIVER_CHOICE_H_INCLUDED__
+#ifndef IRR_E_DRIVER_CHOICE_H_INCLUDED
+#define IRR_E_DRIVER_CHOICE_H_INCLUDED
 
 #include <iostream>
 #include <cstdio>
@@ -50,6 +50,42 @@ namespace irr
 #endif
     }
     
+	/*
+		For using an alternative camera in the examples.
+		Try to translate the viewpoint (Maya internal CameraRotation)
+	*/
+	static inline void switchToMayaCamera(IrrlichtDevice* device)
+	{
+#if 1
+		return;
+#else
+		if (!device) return;
+
+		scene::ICameraSceneNode* camera = device->getSceneManager()->getActiveCamera();
+		if (!camera || camera->getID() == 54321) return;
+
+
+		core::vector3df target = camera->getTarget() - camera->getPosition();
+		core::vector3df relativeRotation = target.getHorizontalAngle();
+
+		scene::ICameraSceneNode* maya = device->getSceneManager()->addCameraSceneNodeMaya(
+			0, -1500, 1000, 1500,
+			54321,
+			target.getLength(),
+			true,
+			relativeRotation.X + 90, relativeRotation.Y
+		);
+		if (maya)
+		{
+			maya->setNearValue(camera->getNearValue());
+			maya->setFarValue(camera->getFarValue());
+		}
+
+		device->getCursorControl()->setVisible(true);
+		device->setResizable(true);
+#endif
+	}
+
 } // end namespace irr
 
 #endif

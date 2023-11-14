@@ -28,7 +28,7 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 	temp[2] = b->Pos.x - a->Pos.x;
 	temp[3] = ba;
 
-	scan.left = (temp[0] * temp[3] - temp[1] * temp[2]) > 0.f ? 0 : 1;
+	scan.left = (temp[0] * temp[3] - temp[1] * temp[2]) < 0.f ? 1 : 0;
 	scan.right = 1 - scan.left;
 
 	// calculate slopes for the major edge
@@ -48,6 +48,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #ifdef IPOL_C0
 	scan.slopeC[0][0] = (c->Color[0] - a->Color[0]) * scan.invDeltaY[0];
 	scan.c[0][0] = a->Color[0];
+#endif
+
+#ifdef IPOL_C1
+	scan.slopeC[1][0] = (c->Color[1] - a->Color[1]) * scan.invDeltaY[0];
+	scan.c[1][0] = a->Color[1];
 #endif
 
 #ifdef IPOL_T0
@@ -91,6 +96,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 		scan.c[0][1] = a->Color[0];
 #endif
 
+#ifdef IPOL_C1
+		scan.slopeC[1][1] = (b->Color[1] - a->Color[1]) * scan.invDeltaY[1];
+		scan.c[1][1] = a->Color[1];
+#endif
+
 #ifdef IPOL_T0
 		scan.slopeT[0][1] = (b->Tex[0] - a->Tex[0]) * scan.invDeltaY[1];
 		scan.t[0][1] = a->Tex[0];
@@ -102,8 +112,8 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left(a->Pos.y);
-		yEnd = fill_convention_right(b->Pos.y);
+		yStart = fill_convention_top(a->Pos.y);
+		yEnd = fill_convention_down(b->Pos.y);
 
 #ifdef SUBTEXEL
 		subPixel = ((f32)yStart) - a->Pos.y;
@@ -127,6 +137,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 		scan.c[0][1] += scan.slopeC[0][1] * subPixel;
 #endif
 
+#ifdef IPOL_C1
+		scan.c[1][0] += scan.slopeC[1][0] * subPixel;
+		scan.c[1][1] += scan.slopeC[1][1] * subPixel;
+#endif
+
 #ifdef IPOL_T0
 		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
 		scan.t[0][1] += scan.slopeT[0][1] * subPixel;
@@ -139,8 +154,10 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 
 #endif
 
+		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
+
 		// rasterize the edge scanlines
-		for (line.y = yStart; line.y <= yEnd; ++line.y)
+		for (line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -160,6 +177,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
+#ifdef IPOL_C1
+			line.c[1][scan.left] = scan.c[1][0];
+			line.c[1][scan.right] = scan.c[1][1];
+#endif
+
 #ifdef IPOL_T0
 			line.t[0][scan.left] = scan.t[0][0];
 			line.t[0][scan.right] = scan.t[0][1];
@@ -171,6 +193,7 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 			// render a scanline
+			if_interlace_scanline
 			(this->*fragmentShader) ();
 			if (EdgeTestPass & edge_test_first_line) break;
 
@@ -190,6 +213,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #ifdef IPOL_C0
 			scan.c[0][0] += scan.slopeC[0][0];
 			scan.c[0][1] += scan.slopeC[0][1];
+#endif
+
+#ifdef IPOL_C1
+			scan.c[1][0] += scan.slopeC[1][0];
+			scan.c[1][1] += scan.slopeC[1][1];
 #endif
 
 #ifdef IPOL_T0
@@ -222,6 +250,9 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #ifdef IPOL_C0
 			scan.c[0][0] = a->Color[0] + scan.slopeC[0][0] * temp[0];
 #endif
+#ifdef IPOL_C1
+			scan.c[1][0] = a->Color[1] + scan.slopeC[1][0] * temp[0];
+#endif
 #ifdef IPOL_T0
 			scan.t[0][0] = a->Tex[0] + scan.slopeT[0][0] * temp[0];
 #endif
@@ -249,6 +280,10 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 		scan.slopeC[0][1] = (c->Color[0] - b->Color[0]) * scan.invDeltaY[2];
 		scan.c[0][1] = b->Color[0];
 #endif
+#ifdef IPOL_C1
+		scan.slopeC[1][1] = (c->Color[1] - b->Color[1]) * scan.invDeltaY[2];
+		scan.c[1][1] = b->Color[1];
+#endif
 
 #ifdef IPOL_T0
 		scan.slopeT[0][1] = (c->Tex[0] - b->Tex[0]) * scan.invDeltaY[2];
@@ -261,11 +296,10 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = fill_convention_left(b->Pos.y);
-		yEnd = fill_convention_right(c->Pos.y);
+		yStart = fill_convention_top(b->Pos.y);
+		yEnd = fill_convention_down(c->Pos.y);
 
 #ifdef SUBTEXEL
-
 		subPixel = ((f32)yStart) - b->Pos.y;
 
 		// correct to pixel center
@@ -287,6 +321,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 		scan.c[0][1] += scan.slopeC[0][1] * subPixel;
 #endif
 
+#ifdef IPOL_C1
+		scan.c[1][0] += scan.slopeC[1][0] * subPixel;
+		scan.c[1][1] += scan.slopeC[1][1] * subPixel;
+#endif
+
 #ifdef IPOL_T0
 		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
 		scan.t[0][1] += scan.slopeT[0][1] * subPixel;
@@ -299,8 +338,10 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 
 #endif
 
+		line.x_edgetest = fill_convention_edge(scan.slopeX[scan.left]);
+
 		// rasterize the edge scanlines
-		for (line.y = yStart; line.y <= yEnd; ++line.y)
+		for (line.y = yStart; line.y <= yEnd; line.y += SOFTWARE_DRIVER_2_STEP_Y)
 		{
 			line.x[scan.left] = scan.x[0];
 			line.x[scan.right] = scan.x[1];
@@ -320,6 +361,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
+#ifdef IPOL_C1
+			line.c[1][scan.left] = scan.c[1][0];
+			line.c[1][scan.right] = scan.c[1][1];
+#endif
+
 #ifdef IPOL_T0
 			line.t[0][scan.left] = scan.t[0][0];
 			line.t[0][scan.right] = scan.t[0][1];
@@ -331,6 +377,7 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #endif
 
 			// render a scanline
+			if_interlace_scanline
 			(this->*fragmentShader) ();
 			if (EdgeTestPass & edge_test_first_line) break;
 
@@ -350,6 +397,11 @@ void burning_shader_class::drawTriangle(const s4DVertex* burning_restrict a, con
 #ifdef IPOL_C0
 			scan.c[0][0] += scan.slopeC[0][0];
 			scan.c[0][1] += scan.slopeC[0][1];
+#endif
+
+#ifdef IPOL_C1
+			scan.c[1][0] += scan.slopeC[1][0];
+			scan.c[1][1] += scan.slopeC[1][1];
 #endif
 
 #ifdef IPOL_T0

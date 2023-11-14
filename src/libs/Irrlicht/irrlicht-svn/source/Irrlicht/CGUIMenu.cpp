@@ -7,11 +7,8 @@
 
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
-#include "IVideoDriver.h"
 #include "IGUIFont.h"
 #include "IGUIWindow.h"
-
-#include "os.h"
 
 namespace irr
 {
@@ -42,6 +39,9 @@ void CGUIMenu::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
+	if ( !skin )
+		return;
+
 	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	if (font != LastFont)
@@ -199,6 +199,8 @@ void CGUIMenu::recalculateSize()
 
 
 	IGUISkin* skin = Environment->getSkin();
+	if ( !skin )
+		return;
 	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	if (!font)

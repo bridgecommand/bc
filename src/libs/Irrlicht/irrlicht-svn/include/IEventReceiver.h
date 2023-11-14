@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_EVENT_RECEIVER_H_INCLUDED__
-#define __I_EVENT_RECEIVER_H_INCLUDED__
+#ifndef IRR_I_EVENT_RECEIVER_H_INCLUDED
+#define IRR_I_EVENT_RECEIVER_H_INCLUDED
 
 #include "ILogger.h"
 #include "Keycodes.h"
@@ -33,6 +33,9 @@ namespace irr
 		/** Like mouse events, keyboard events are created by the device and passed to
 		IrrlichtDevice::postEventFromUser. They take the same path as mouse events. */
 		EET_KEY_INPUT_EVENT,
+
+        //! A touch input event.
+		EET_TOUCH_INPUT_EVENT,
 
 		//! A joystick (joypad, gamepad) input event.
 		/** Joystick events are created by polling all connected joysticks once per
@@ -140,6 +143,22 @@ namespace irr
 		EMBSM_EXTRA2  = 0x10,
 
 		EMBSM_FORCE_32_BIT = 0x7fffffff
+	};
+
+    //! Enumeration for all touch input events
+	enum ETOUCH_INPUT_EVENT
+	{
+		//! Touch was pressed down.
+		ETIE_PRESSED_DOWN = 0,
+
+		//! Touch was left up.
+		ETIE_LEFT_UP,
+
+		//! The touch changed its position.
+		ETIE_MOVED,
+
+		//! No real event. Just for convenience to get number of events
+		ETIE_COUNT
 	};
 
 	namespace gui
@@ -275,6 +294,22 @@ struct SEvent
 
 	};
 
+    //! Any kind of touch event.
+	struct STouchInput
+	{
+        // Touch ID.
+        size_t ID;
+
+        // X position of simple touch.
+		s32 X;
+
+        // Y position of simple touch.
+		s32 Y;
+
+		//! Type of touch event.
+		ETOUCH_INPUT_EVENT Event;
+	};
+
 	//! Any kind of mouse event.
 	struct SMouseInput
 	{
@@ -330,6 +365,7 @@ struct SEvent
 		//! True if ctrl was also pressed
 		bool Control:1;
 	};
+
 
 	//! A joystick event.
 	/** Unlike other events, joystick events represent the result of polling
@@ -417,6 +453,7 @@ struct SEvent
 		struct SGUIEvent GUIEvent;
 		struct SMouseInput MouseInput;
 		struct SKeyInput KeyInput;
+		struct STouchInput TouchInput;
 		struct SJoystickEvent JoystickEvent;
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;
@@ -487,4 +524,3 @@ struct SJoystickInfo
 } // end namespace irr
 
 #endif
-

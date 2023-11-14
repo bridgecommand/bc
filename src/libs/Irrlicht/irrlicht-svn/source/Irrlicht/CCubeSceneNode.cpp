@@ -7,9 +7,6 @@
 #include "CCubeSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
-#include "S3DVertex.h"
-#include "SMeshBuffer.h"
-#include "os.h"
 #ifdef _IRR_COMPILE_WITH_SHADOW_VOLUME_SCENENODE_
 #include "CShadowVolumeSceneNode.h"
 #else
@@ -37,9 +34,10 @@ namespace scene
 //! constructor
 CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 		s32 id, const core::vector3df& position,
-		const core::vector3df& rotation, const core::vector3df& scale)
+		const core::vector3df& rotation, const core::vector3df& scale,
+		ECUBE_MESH_TYPE type)
 	: IMeshSceneNode(parent, mgr, id, position, rotation, scale),
-	Mesh(0), Shadow(0), Size(size)
+	Mesh(0), Shadow(0), Size(size), MeshType(type)
 {
 	#ifdef _DEBUG
 	setDebugName("CCubeSceneNode");
@@ -62,7 +60,7 @@ void CCubeSceneNode::setSize()
 {
 	if (Mesh)
 		Mesh->drop();
-	Mesh = SceneManager->getGeometryCreator()->createCubeMesh(core::vector3df(Size));
+	Mesh = SceneManager->getGeometryCreator()->createCubeMesh(core::vector3df(Size), MeshType);
 }
 
 
@@ -75,14 +73,26 @@ void CCubeSceneNode::render()
 	if (Shadow)
 		Shadow->updateShadowVolumes();
 
-	// for debug purposes only:
-	video::SMaterial mat = Mesh->getMeshBuffer(0)->getMaterial();
-
-	// overwrite half transparency
-	if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
-		mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-	driver->setMaterial(mat);
-	driver->drawMeshBuffer(Mesh->getMeshBuffer(0));
+	for (u32 i=0; i<Mesh->getMeshBufferCount(); ++i)
+	{
+		const scene::IMeshBuffer* mb = Mesh->getMeshBuffer(i);
+		{
+			// for debug purposes only:
+			if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
+			{
+				// overwrite half transparency
+				video::SMaterial mat = mb->getMaterial();
+				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+				driver->setMaterial(mat);
+			}
+			else
+			{
+				const video::SMaterial& mat = mb->getMaterial();
+				driver->setMaterial(mat);
+			}
+			driver->drawMeshBuffer(mb);
+		}
+	}
 
 	// for debug purposes only:
 	if (DebugDataVisible)
@@ -94,21 +104,18 @@ void CCubeSceneNode::render()
 
 		if (DebugDataVisible & scene::EDS_BBOX)
 		{
-			driver->draw3DBox(Mesh->getMeshBuffer(0)->getBoundingBox(), video::SColor(255,255,255,255));
+			driver->draw3DBox(Mesh->getBoundingBox(), video::SColor(255,255,255,255));
 		}
 		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS)
 		{
-			driver->draw3DBox(Mesh->getMeshBuffer(0)->getBoundingBox(),
-					video::SColor(255,190,128,128));
+			driver->draw3DBox(Mesh->getBoundingBox(), video::SColor(255,190,128,128));
 		}
 		if (DebugDataVisible & scene::EDS_NORMALS)
 		{
 			// draw normals
 			const f32 debugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
 			const video::SColor debugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
-			const u32 count = Mesh->getMeshBufferCount();
-
-			for (u32 i=0; i != count; ++i)
+			for (u32 i=0; i < Mesh->getMeshBufferCount(); ++i)
 			{
 				driver->drawMeshBufferNormals(Mesh->getMeshBuffer(i), debugNormalLength, debugNormalColor);
 			}
@@ -120,7 +127,10 @@ void CCubeSceneNode::render()
 			m.Wireframe = true;
 			driver->setMaterial(m);
 
-			driver->drawMeshBuffer(Mesh->getMeshBuffer(0));
+			for (u32 i=0; i < Mesh->getMeshBufferCount(); ++i)
+			{
+				driver->drawMeshBuffer(Mesh->getMeshBuffer(i));
+			}
 		}
 	}
 }
@@ -129,13 +139,13 @@ void CCubeSceneNode::render()
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CCubeSceneNode::getBoundingBox() const
 {
-	return Mesh->getMeshBuffer(0)->getBoundingBox();
+	return Mesh->getBoundingBox();
 }
 
 
 //! Removes a child from this scene node.
 //! Implemented here, to be able to remove the shadow properly, if there is one,
-//! or to remove attached childs.
+//! or to remove attached child.
 bool CCubeSceneNode::removeChild(ISceneNode* child)
 {
 	if (child && Shadow == child)
@@ -182,14 +192,16 @@ void CCubeSceneNode::OnRegisterSceneNode()
 //! returns the material based on the zero based index i.
 video::SMaterial& CCubeSceneNode::getMaterial(u32 i)
 {
-	return Mesh->getMeshBuffer(0)->getMaterial();
+	return Mesh->getMeshBuffer(i)->getMaterial();
 }
 
 
 //! returns amount of materials used by this scene node.
 u32 CCubeSceneNode::getMaterialCount() const
 {
-	return 1;
+	if ( Mesh )
+		return Mesh->getMeshBufferCount();
+	return 0;
 }
 
 
@@ -199,17 +211,20 @@ void CCubeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	ISceneNode::serializeAttributes(out, options);
 
 	out->addFloat("Size", Size);
+	out->addEnum("MeshType", (irr::s32)MeshType, CubeMeshTypeNames);
 }
 
 
 //! Reads attributes of the scene node.
 void CCubeSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	f32 newSize = in->getAttributeAsFloat("Size");
+	f32 newSize = in->getAttributeAsFloat("Size", Size);
+	ECUBE_MESH_TYPE newMeshType = (ECUBE_MESH_TYPE)in->getAttributeAsEnumeration("MeshType", CubeMeshTypeNames, (irr::s32)MeshType);
 	newSize = core::max_(newSize, 0.0001f);
-	if (newSize != Size)
+	if (newSize != Size || newMeshType != MeshType)
 	{
 		Size = newSize;
+		MeshType = newMeshType;
 		setSize();
 	}
 
@@ -226,10 +241,11 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 		newManager = SceneManager;
 
 	CCubeSceneNode* nb = new CCubeSceneNode(Size, newParent,
-		newManager, ID, RelativeTranslation);
+		newManager, ID, RelativeTranslation, RelativeRotation, RelativeScale, MeshType);
 
 	nb->cloneMembers(this, newManager);
-	nb->getMaterial(0) = getMaterial(0);
+	for ( irr::u32 i=0; i < getMaterialCount(); ++i )
+		nb->getMaterial(i) = getMaterial(i);
 	nb->Shadow = Shadow;
 	if ( nb->Shadow )
 		nb->Shadow->grab();

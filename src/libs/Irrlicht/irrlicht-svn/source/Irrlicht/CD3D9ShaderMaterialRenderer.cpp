@@ -6,9 +6,9 @@
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #include "CD3D9ShaderMaterialRenderer.h"
+#include "CD3D9Driver.h"
 #include "IShaderConstantSetCallBack.h"
 #include "IMaterialRendererServices.h"
-#include "IVideoDriver.h"
 #include "os.h"
 #include "irrString.h"
 
@@ -23,7 +23,7 @@ namespace video
 {
 
 //! Public constructor
-CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev, video::IVideoDriver* driver,
+CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev, video::CD3D9Driver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData)
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
@@ -46,7 +46,7 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 //! constructor only for use by derived classes who want to
 //! create a fall back material for example.
 CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev,
-			video::IVideoDriver* driver,
+			video::CD3D9Driver* driver,
 			IShaderConstantSetCallBack* callback,
 			IMaterialRenderer* baseMaterial, s32 userData)
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
@@ -132,7 +132,7 @@ void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 		}
 	}
 
-	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 	if (BaseMaterial)
         BaseMaterial->OnSetMaterial(material, lastMaterial, resetAllRenderstates, services);

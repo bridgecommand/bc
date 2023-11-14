@@ -10,7 +10,6 @@
 #include "IMeshManipulator.h"
 #include "IVideoDriver.h"
 #include "SMesh.h"
-#include "SMeshBuffer.h"
 #include "SAnimatedMesh.h"
 #include "IReadFile.h"
 #include "IAttributes.h"
@@ -68,13 +67,26 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	if (!file)
 		return 0;
+	size_t filesize = file->getSize();
+	if (filesize == 0 || filesize == (size_t)-1L)
+		return 0;
+
+	const io::path fullName = file->getFileName();
+	const io::path relPath = FileSystem->getFileDir(fullName)+"/";
+
+	c8* buf = new c8[filesize+1]; // plus null-terminator (some string functions used in parsing)
+	filesize = file->read((void*)buf, filesize);
+	if ( filesize == 0 )
+	{
+		delete[] buf;
+		return 0;
+	}
+	buf[filesize] = 0;
 
 	if ( getMeshTextureLoader() )
 		getMeshTextureLoader()->setMeshFile(file);
 
-	const long filesize = file->getSize();
-	if (!filesize)
-		return 0;
+	const c8* const bufEnd = buf+filesize;
 
 	const u32 WORD_BUFFER_LENGTH = 512;
 
@@ -82,17 +94,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	core::array<core::vector3df, core::irrAllocatorFast<core::vector3df> > normalsBuffer(1000);
 	core::array<core::vector2df, core::irrAllocatorFast<core::vector2df> > textureCoordBuffer(1000);
 
-	SObjMtl * currMtl = new SObjMtl();
+	SObjMtl * currMtl = new SObjMtl(getIndexTypeHint());
 	Materials.push_back(currMtl);
 	u32 smoothingGroup=0;
-
-	const io::path fullName = file->getFileName();
-	const io::path relPath = FileSystem->getFileDir(fullName)+"/";
-
-	c8* buf = new c8[filesize];
-	memset(buf, 0, filesize);
-	file->read((void*)buf, filesize);
-	const c8* const bufEnd = buf+filesize;
 
 	// Process obj information
 	const c8* bufPtr = buf;
@@ -114,12 +118,18 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			if (useMaterials)
 			{
-				c8 name[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(name, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+				// Bit fuzzy definition. Some doc (http://paulbourke.net) says there can be more then one file and they are separated by spaces
+				// Other doc (Wikipedia) says it's one file. Which does allow loading mtl files with spaces in the name.
+				// Other tools I tested seem to go with the Wikipedia definition
+				// Irrlicht did just use first word in Irrlicht 1.8, but with 1.9 we switch to allowing filenames with spaces
+				// If this turns out to cause troubles we can maybe try to catch those cases by looking for ".mtl " inside the string
+				const c8 * inBuf = goNextWord(bufPtr, bufEnd, false);
+				core::stringc name = copyLine(inBuf, bufEnd);
+
 #ifdef _IRR_DEBUG_OBJ_LOADER_
 				os::Printer::log("Reading material file",name);
 #endif
-				readMTL(name, relPath);
+				readMTL(name.c_str(), relPath);
 			}
 		}
 			break;
@@ -218,6 +228,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				v.Color = currMtl->Meshbuffer->Material.DiffuseColor;
 
 			// get all vertices data in this face (current line of obj file)
+			IVertexBuffer& mbVertexBuffer = currMtl->Meshbuffer->getVertexBuffer();
+			IIndexBuffer& mbIndexBuffer = currMtl->Meshbuffer->getIndexBuffer();
 			const core::stringc wordBuffer = copyLine(bufPtr, bufEnd);
 			const c8* linePtr = wordBuffer.c_str();
 			const c8* const endPtr = linePtr+wordBuffer.size();
@@ -238,19 +250,20 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				u32 wlength = copyWord(vertexWord, linePtr, WORD_BUFFER_LENGTH, endPtr);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
 				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size(), textureCoordBuffer.size(), normalsBuffer.size());
-				if ( -1 != Idx[0] && Idx[0] < (irr::s32)vertexBuffer.size() )
+				if ( Idx[0] >= 0 && Idx[0] < (irr::s32)vertexBuffer.size() )
 					v.Pos = vertexBuffer[Idx[0]];
 				else
 				{
-					os::Printer::log("Invalid vertex index in this line:", wordBuffer.c_str(), ELL_ERROR);
+					os::Printer::log("Invalid vertex index in this line", wordBuffer.c_str(), ELL_ERROR);
 					delete [] buf;
+					cleanUp();
 					return 0;
 				}
-				if ( -1 != Idx[1] && Idx[1] < (irr::s32)textureCoordBuffer.size() )
+				if ( Idx[1] >= 0 && Idx[1] < (irr::s32)textureCoordBuffer.size() )
 					v.TCoords = textureCoordBuffer[Idx[1]];
 				else
 					v.TCoords.set(0.0f,0.0f);
-				if ( -1 != Idx[2] && Idx[2] < (irr::s32)normalsBuffer.size() )
+				if ( Idx[2] >= 0 && Idx[2] < (irr::s32)normalsBuffer.size() )
 					v.Normal = normalsBuffer[Idx[2]];
 				else
 				{
@@ -266,8 +279,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				}
 				else
 				{
-					currMtl->Meshbuffer->Vertices.push_back(v);
-					vertLocation = currMtl->Meshbuffer->Vertices.size() -1;
+					mbVertexBuffer.push_back(v);
+					vertLocation = mbVertexBuffer.size() -1;
 					currMtl->VertMap.insert(v, vertLocation);
 				}
 
@@ -278,22 +291,29 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 
 			// triangulate the face
-			const int c = faceCorners[0];
-			for ( u32 i = 1; i < faceCorners.size() - 1; ++i )
+			if ( faceCorners.size() >= 3)
 			{
-				// Add a triangle
-				const int a = faceCorners[i + 1];
-				const int b = faceCorners[i];
-				if (a != b && a != c && b != c)	// ignore degenerated faces. We can get them when we merge vertices above in the VertMap.
+				const int c = faceCorners[0];
+				for ( u32 i = 1; i < faceCorners.size() - 1; ++i )
 				{
-					currMtl->Meshbuffer->Indices.push_back(a);
-					currMtl->Meshbuffer->Indices.push_back(b);
-					currMtl->Meshbuffer->Indices.push_back(c);
+					// Add a triangle
+					const int a = faceCorners[i + 1];
+					const int b = faceCorners[i];
+					if (a != b && a != c && b != c)	// ignore degenerated faces. We can get them when we merge vertices above in the VertMap.
+					{
+						mbIndexBuffer.push_back(a);
+						mbIndexBuffer.push_back(b);
+						mbIndexBuffer.push_back(c);
+					}
+					else
+					{
+						++degeneratedFaces;
+					}
 				}
-				else
-				{
-					++degeneratedFaces;
-				}
+			}
+			else
+			{
+				os::Printer::log("Too few vertices in this line", wordBuffer.c_str());
 			}
 		}
 		break;
@@ -322,19 +342,21 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	{
 		if ( Materials[m]->Meshbuffer->getIndexCount() > 0 )
 		{
+			if ( getIndexTypeHint() == EITH_OPTIMAL
+				&& Materials[m]->Meshbuffer->getVertexCount() <= 65536 )
+			{
+				Materials[m]->Meshbuffer->getIndexBuffer().setType(video::EIT_16BIT);
+			}
+
+
 			Materials[m]->Meshbuffer->recalculateBoundingBox();
 			if (Materials[m]->RecalculateNormals)
 				SceneManager->getMeshManipulator()->recalculateNormals(Materials[m]->Meshbuffer);
 			if (Materials[m]->Meshbuffer->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
 			{
-				SMesh tmp;
-				tmp.addMeshBuffer(Materials[m]->Meshbuffer);
-				IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
-				mesh->addMeshBuffer(tangentMesh->getMeshBuffer(0));
-				tangentMesh->drop();
+				Materials[m]->Meshbuffer->getVertexBuffer().setType(video::EVT_TANGENTS);
 			}
-			else
-				mesh->addMeshBuffer( Materials[m]->Meshbuffer );
+			mesh->addMeshBuffer( Materials[m]->Meshbuffer );
 		}
 	}
 
@@ -545,7 +567,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 	const long filesize = mtlReader->getSize();
 	if (!filesize)
 	{
-		os::Printer::log("Skipping empty material file", realFile, ELL_WARNING);
+		os::Printer::log("Skipping empty material file", realFile, ELL_INFORMATION);	// it's fine some tools export empty mtl files
 		mtlReader->drop();
 		return;
 	}
@@ -571,7 +593,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, const io::path& relPath)
 				c8 mtlNameBuf[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(mtlNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 
-				currMaterial = new SObjMtl;
+				currMaterial = new SObjMtl(getIndexTypeHint());
 				currMaterial->Name = mtlNameBuf;
 			}
 			break;
@@ -711,11 +733,11 @@ const c8* COBJMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, 
 	c8 colStr[COLOR_BUFFER_LENGTH];
 
 	bufPtr = goAndCopyNextWord(colStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
-	color.setRed((s32)(core::fast_atof(colStr) * 255.0f));
+	color.setRed((u32)core::round32(core::fast_atof(colStr)*255.f));
 	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
-	color.setGreen((s32)(core::fast_atof(colStr) * 255.0f));
+	color.setGreen((u32)core::round32(core::fast_atof(colStr)*255.f));
 	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
-	color.setBlue((s32)(core::fast_atof(colStr) * 255.0f));
+	color.setBlue((u32)core::round32(core::fast_atof(colStr)*255.f));
 	return bufPtr;
 }
 
@@ -784,7 +806,7 @@ COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const core::stringc& mt
 		Materials.getLast()->Group = grpName;
 		return Materials.getLast();
 	}
-	// we found a new group for a non-existant material
+	// we found a new group for a non-existent material
 	else if (grpName.size())
 	{
 		Materials.push_back(new SObjMtl(*Materials[0]));
@@ -871,12 +893,11 @@ core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* bufEnd)
 	const c8* ptr = inBuf;
 	while (ptr<bufEnd)
 	{
-		if (*ptr=='\n' || *ptr=='\r')
+		if (*ptr=='\n' || *ptr=='\r')	// not copying the line end character
 			break;
 		++ptr;
 	}
-	// we must avoid the +1 in case the array is used up
-	return core::stringc(inBuf, (u32)(ptr-inBuf+((ptr < bufEnd) ? 1 : 0)));
+	return core::stringc(inBuf, (u32)(ptr-inBuf));
 }
 
 

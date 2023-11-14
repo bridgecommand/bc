@@ -2,15 +2,14 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_IMAGE_H_INCLUDED__
-#define __I_IMAGE_H_INCLUDED__
+#ifndef IRR_I_IMAGE_H_INCLUDED
+#define IRR_I_IMAGE_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "position2d.h"
 #include "rect.h"
 #include "SColor.h"
 #include "irrAllocator.h"
-#include <string.h>
 
 namespace irr
 {
@@ -29,6 +28,9 @@ public:
 	//! constructor
 	IImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, bool deleteMemory) :
 		Format(format), Size(size), Data(0), MipMapsData(0), BytesPerPixel(0), Pitch(0), DeleteMemory(deleteMemory), DeleteMipMapsMemory(false)
+#if defined(IRRLICHT_sRGB)
+		,Format_sRGB(1)
+#endif
 	{
 		BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
 		Pitch = BytesPerPixel * Size.Width;
@@ -50,6 +52,18 @@ public:
 		return Format;
 	}
 
+#if defined(IRRLICHT_sRGB)
+	//! Texture is linear/sRGB (should be part of ColorFormat: default yes)
+	int get_sRGB() const
+	{
+		return Format_sRGB;
+	}
+	void set_sRGB(int val)
+	{
+		Format_sRGB = val;
+	}
+#endif
+
 	//! Returns width and height of image data.
 	const core::dimension2d<u32>& getDimension() const
 	{
@@ -59,7 +73,6 @@ public:
 	//! Returns bits per pixel.
 	u32 getBitsPerPixel() const
 	{
-
 		return getBitsPerPixelFromFormat(Format);
 	}
 
@@ -70,7 +83,7 @@ public:
 	}
 
 	//! Returns image data size in bytes
-	u32 getImageDataSizeInBytes() const
+	size_t getImageDataSizeInBytes() const
 	{
 		return getDataSizeFromFormat(Format, Size.Width, Size.Height);
 	}
@@ -175,7 +188,7 @@ public:
 	depends on the color format of the image. For example if the color
 	format is ECF_A8R8G8B8, it is of u32. Be sure to call unlock() after
 	you don't need the pointer any more. */
-	_IRR_DEPRECATED_ void* lock()
+	IRR_DEPRECATED void* lock()
 	{
 		return getData();
 	}
@@ -183,7 +196,7 @@ public:
 	//! Unlock function.
 	/** Should be called after the pointer received by lock() is not
 	needed anymore. */
-	_IRR_DEPRECATED_ void unlock()
+	IRR_DEPRECATED void unlock()
 	{
 	}
 
@@ -281,7 +294,7 @@ public:
 				}
 				else
 				{
-					u32 dataSize = 0;
+					size_t dataSize = 0;
 					u32 width = Size.Width;
 					u32 height = Size.Height;
 
@@ -344,18 +357,23 @@ public:
 	/**	NOTE: mipmaps are ignored */
 	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) = 0;
 
+	//! Flips (mirrors) the image in one or two directions
+	/** \param topBottom Flip around central x-axis (vertical flipping)
+	\param leftRight Flip around central y-axis (typical mirror, horizontal flipping) */
+	virtual void flip(bool topBottom, bool leftRight) = 0;
+
 	//! fills the surface with given color
 	virtual void fill(const SColor &color) =0;
 
 	//! Inform whether the image is compressed
-	_IRR_DEPRECATED_ bool isCompressed() const
+	IRR_DEPRECATED bool isCompressed() const
 	{
 		return IImage::isCompressedFormat(Format);
 	}
 
 	//! Check whether the image has MipMaps
 	/** \return True if image has MipMaps, else false. */
-	_IRR_DEPRECATED_ bool hasMipMaps() const
+	IRR_DEPRECATED bool hasMipMaps() const
 	{
 		return (getMipMapsData() != 0);
 	}
@@ -426,43 +444,57 @@ public:
 		}
 	}
 
-	//! calculate image data size in bytes for selected format, width and height.
-	static u32 getDataSizeFromFormat(ECOLOR_FORMAT format, u32 width, u32 height)
+	//! You should not create images where the result of getDataSizeFromFormat doesn't pass this function
+	/** Note that CImage does not yet check for this, but going beyond this limit is not supported well.
+	Image loaders should check for this.
+	If you don't have the format yet then checking width*height*bytes_per_pixel is mostly fine, but make
+	sure to work with size_t so it doesn't clip the result to u32 too early.
+	\return true when dataSize is small enough that it should be fine. */
+	static bool checkDataSizeLimit(size_t dataSize)
 	{
-		u32 imageSize = 0;
+		// 2gb for now. Could be we could do more on some platforms, but we still will run into
+		// problems right now then for example in then color converter (which currently still uses
+		// s32 for sizes).
+		return (size_t)(s32)(dataSize) == dataSize;
+	}
+
+	//! calculate image data size in bytes for selected format, width and height.
+	static size_t getDataSizeFromFormat(ECOLOR_FORMAT format, u32 width, u32 height)
+	{
+		size_t imageSize = 0;
 
 		switch (format)
 		{
 		case ECF_DXT1:
-			imageSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
+			imageSize = (size_t)((width + 3) / 4) * ((height + 3) / 4) * 8;
 			break;
 		case ECF_DXT2:
 		case ECF_DXT3:
 		case ECF_DXT4:
 		case ECF_DXT5:
-			imageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+			imageSize = (size_t)((width + 3) / 4) * ((height + 3) / 4) * 16;
 			break;
 		case ECF_PVRTC_RGB2:
 		case ECF_PVRTC_ARGB2:
-			imageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
+			imageSize = ((size_t)core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
 			break;
 		case ECF_PVRTC_RGB4:
 		case ECF_PVRTC_ARGB4:
-			imageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
+			imageSize = ((size_t)core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
 			break;
 		case ECF_PVRTC2_ARGB2:
-			imageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
+			imageSize = (size_t)core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
 			break;
 		case ECF_PVRTC2_ARGB4:
 		case ECF_ETC1:
 		case ECF_ETC2_RGB:
-			imageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
+			imageSize = (size_t)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
 			break;
 		case ECF_ETC2_ARGB:
-			imageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
+			imageSize = (size_t)core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
 			break;
 		default: // uncompressed formats
-			imageSize = getBitsPerPixelFromFormat(format) / 8 * width;
+			imageSize = (size_t)getBitsPerPixelFromFormat(format) / 8 * width;
 			imageSize *= height;
 			break;
 		}
@@ -531,6 +563,22 @@ public:
 		return false;
 	}
 
+#if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
+	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)
+	{
+		switch (format)
+		{
+		case ECF_A1R5G5B5:
+		case ECF_R5G6B5:
+		case ECF_R8G8B8:
+		case ECF_A8R8G8B8:
+			return false;
+		default:
+			return true;
+		}
+	}
+#endif
+
 protected:
 	ECOLOR_FORMAT Format;
 	core::dimension2d<u32> Size;
@@ -545,10 +593,13 @@ protected:
 	bool DeleteMipMapsMemory;
 
 	core::irrAllocator<u8> Allocator;
+#if defined(IRRLICHT_sRGB)
+	int Format_sRGB;
+#endif
 };
+
 
 } // end namespace video
 } // end namespace irr
 
 #endif
-
