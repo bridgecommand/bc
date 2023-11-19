@@ -144,7 +144,8 @@ class RadarCalculation
         bool getHeadUp() const; //Head or course up
 		void toggleRadarOn();
         bool isRadarOn() const;
-		void setArpaOn(bool on);
+		int getArpaMode() const;
+        void setArpaMode(int mode);
         void setRadarARPARel();
         void setRadarARPATrue();
         void setArpaListSelection(irr::s32 selection);
@@ -155,8 +156,10 @@ class RadarCalculation
         irr::u32 getARPATracksSize() const;
         int getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const;
         ARPAContact getARPAContactFromTrackIndex(irr::u32 trackIndex) const;
-        void addMARPAPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
-        void clearMARPAPoints();
+        void addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime);
+        void clearManualPoints();
+        void trackTargetFromCursor();
+        void clearTargetFromCursor();
         void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:
@@ -169,7 +172,7 @@ class RadarCalculation
         std::vector<ARPAContact> arpaContacts;
         std::vector<irr::u32> arpaTracks;
         bool radarOn;
-        bool arpaOn;
+        int arpaMode; // 0: Off/Manual, 1: MARPA, 2: ARPA
         irr::s32 arpaListSelection;
         irr::f32 radarGain;
         irr::f32 radarRainClutterReduction;
@@ -182,7 +185,6 @@ class RadarCalculation
         irr::f32 rangeSensitivity; //Used for ARPA contacts - in metres
         irr::u32 radarRangeIndex;
         irr::f32 radarScannerHeight;
-        irr::u32 marpaContacts;
         //parameters for noise behaviour
         irr::f32 radarNoiseLevel;
         irr::f32 radarSeaClutter;

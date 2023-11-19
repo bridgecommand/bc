@@ -269,15 +269,6 @@
                     model->setAzimuth2Master(((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
                 }
 
-                if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX)) {
-                    //ARPA on/off checkbox
-                    bool boxState = ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
-                    model->setArpaOn(boxState);
-
-                    //Set the linked checkbox (big/small radar window)
-                    gui->setARPACheckboxes(boxState);
-                }
-
                 if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_CHECKBOX) {
                     model->getLines()->setKeepSlack(
                         model->getLines()->getSelectedLine(),
@@ -619,20 +610,34 @@
                     model->setRadarHeadUp();
                 }
 
-                //MARPA acquire/update
-                if (id == GUIMain::GUI_ID_MARPA_SCAN_BUTTON)
+                //Manual/MARPA acquire/update
+                if (id == GUIMain::GUI_ID_MANUAL_SCAN_BUTTON)
                 {
-                    model->addMARPAPoint(false);
+                    if (model->getArpaMode()==0) {
+                        model->addManualPoint(false);
+                    } 
+                    // Don't do anything in full ARPA mode (as updated automatically)
                 }
 
-                if (id == GUIMain::GUI_ID_MARPA_NEW_BUTTON)
+                if (id == GUIMain::GUI_ID_MANUAL_NEW_BUTTON)
                 {
-                    model->addMARPAPoint(true);
+                    if (model->getArpaMode()==0) {
+                        model->addManualPoint(true);
+                    } else if (model->getArpaMode()==1) {
+                        model->trackTargetFromCursor();
+                    }
+                    // TODO: Should we allow user to trigger manual tracking in full ARPA?
                 }
 
-                if (id == GUIMain::GUI_ID_MARPA_CLEAR_BUTTON)
+                if (id == GUIMain::GUI_ID_MANUAL_CLEAR_BUTTON)
                 {
-                    model->clearMARPAPoints();
+                    if (model->getArpaMode()==0) {
+                        model->clearManualPoints();
+                    } else if (model->getArpaMode()==1) {
+                        model->clearTargetFromCursor();
+                    }
+                    // TODO: Should we allow user to manually stop tracking in full ARPA?
+                    // And should this allow clearing of manual target if acquired in manual mode, but switched to MARPA/ARPA
                 }
 
                 if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)
@@ -719,6 +724,15 @@
 
             if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {
 
+                if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX)) {
+                    //ARPA on/off options
+                    irr::s32 boxState = ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
+                    model->setArpaMode(boxState);
+
+                    //Set the linked checkbox (big/small radar window)
+                    gui->setARPAComboboxes(boxState);
+                }
+                
                 if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX || id == GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX)
                 {
                     irr::s32 selected = ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
@@ -966,10 +980,9 @@
                         case irr::KEY_KEY_7:
                             model->setAccelerator(3600.0);
                             break;
-
-			case irr::KEY_KEY_H:
-			    model->startHorn();
-			    break;
+                        case irr::KEY_KEY_H:
+                            model->startHorn();
+                            break;
 
 // DEE_NOV22 vvvvv
 

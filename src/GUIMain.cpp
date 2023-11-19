@@ -578,8 +578,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addEditBox(L"0",irr::core::rect<irr::s32>(0.080*radarSu,0.080*radarSu,0.125*radarSu,0.105*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
 
         //Radar ARPA tab
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.030*su,0.010*sh,0.140*su,0.030*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        irr::gui::IGUIComboBox* arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.005*sh,0.150*su,0.035*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
         irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.070*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
@@ -587,15 +589,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.070*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.075*sh,0.121*su,0.190*sh),radarARPATab,GUI_ID_ARPA_LIST);
         arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.075*sh,0.237*su,0.190*sh),radarARPATab);
-        // MARPA buttons
-        (guienv->addStaticText(language->translate("manualContact").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaLog").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
 
         //Radar ARPA on big radar screen
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.040*radarSu,0.410*radarSu,0.160*radarSu,0.430*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.405*radarSu,0.200*radarSu,0.435*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
         arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.440*radarSu,0.200*radarSu,0.470*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
@@ -603,11 +607,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.515*radarSu,0.105*radarSu,0.655*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
         arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.515*radarSu,0.200*radarSu,0.655*radarSu),largeRadarControls);
-        // MARPA buttons
-        (guienv->addStaticText(language->translate("manualContact").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.675*radarSu,0.073*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_SCAN_BUTTON,language->translate("marpaLog").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.675*radarSu,0.136*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_NEW_BUTTON,language->translate("new").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.675*radarSu,0.200*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MARPA_CLEAR_BUTTON,language->translate("clear").c_str());
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.675*radarSu,0.073*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.675*radarSu,0.136*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.675*radarSu,0.200*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
 
 
         //Add paused button
@@ -746,16 +750,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return radarLarge;
     }
 
-    void GUIMain::setARPACheckboxes(bool arpaState)
+    void GUIMain::setARPAComboboxes(irr::s32 arpaState)
     {
         //Set both linked inputs - brute force
         irr::gui::IGUIElement* arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
         }
         arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
         }
     }
 
@@ -1299,7 +1303,13 @@ guiTideHeight = guiData->tideHeight;
             //Convert TCPA from decimal minutes into minutes and seconds.
             //TODO: Filter list based on risk?
 
-
+            // If stationary, show placeholder only
+            if (arpaContactStates.at(i).stationary) {
+                displayText = language->translate("untracked");
+                arpaList->addItem(displayText.c_str());
+                arpaList2->addItem(displayText.c_str());
+                continue;
+            }
 
             displayText = L"";
 

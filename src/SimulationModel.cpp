@@ -1196,9 +1196,14 @@ SimulationModel::~SimulationModel()
         radarCalculation.changeRadarColourChoice();
     }
 
-    void SimulationModel::setArpaOn(bool on)
+    int SimulationModel::getArpaMode() const
     {
-        radarCalculation.setArpaOn(on);
+        return radarCalculation.getArpaMode();
+    }
+    
+    void SimulationModel::setArpaMode(int mode)
+    {
+        radarCalculation.setArpaMode(mode);
     }
 
     void SimulationModel::setArpaListSelection(irr::s32 selection)
@@ -1227,14 +1232,24 @@ SimulationModel::~SimulationModel()
         radarScreen.setRadarDisplayRadius(radiusPx);
     }
 
-    void SimulationModel::addMARPAPoint(bool newContact)
+    void SimulationModel::addManualPoint(bool newContact)
     {
-        radarCalculation.addMARPAPoint(newContact, offsetPosition, ownShip, absoluteTime);
+        radarCalculation.addManualPoint(newContact, offsetPosition, ownShip, absoluteTime);
     }
 
-    void SimulationModel::clearMARPAPoints()
+    void SimulationModel::clearManualPoints()
     {
-        radarCalculation.clearMARPAPoints();
+        radarCalculation.clearManualPoints();
+    }
+
+    void SimulationModel::trackTargetFromCursor()
+    {
+        radarCalculation.trackTargetFromCursor();
+    }
+
+    void SimulationModel::clearTargetFromCursor()
+    {
+        radarCalculation.clearTargetFromCursor();
     }
 
     irr::u32 SimulationModel::getARPATracksSize() const

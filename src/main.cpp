@@ -911,8 +911,8 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterface();
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
-        guiMain.setARPACheckboxes(true);
-        model.setArpaOn(true);
+        guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
+        model.setArpaMode(2);
     }
     irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {

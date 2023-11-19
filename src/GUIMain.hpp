@@ -158,9 +158,9 @@ public:
         GUI_ID_BIG_ARPA_TRUE_REL_BOX,
         GUI_ID_BIG_ARPA_VECTOR_TIME_BOX,
         GUI_ID_ARPA_LIST,
-        GUI_ID_MARPA_SCAN_BUTTON,
-        GUI_ID_MARPA_NEW_BUTTON,
-        GUI_ID_MARPA_CLEAR_BUTTON,
+        GUI_ID_MANUAL_SCAN_BUTTON,
+        GUI_ID_MANUAL_NEW_BUTTON,
+        GUI_ID_MANUAL_CLEAR_BUTTON,
         GUI_ID_BIG_ARPA_LIST,
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
@@ -201,7 +201,7 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
-    void setARPACheckboxes(bool arpaState);
+    void setARPAComboboxes(irr::s32 arpaState);
     void setARPAList(int arpaSelected);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
