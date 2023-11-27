@@ -29,6 +29,9 @@
 #include <vector>
 #include <string>
 
+// Forward declarations
+class SimulationModel;
+
 struct GUIData {
     irr::f32 lat;
     irr::f32 longitude;
@@ -60,6 +63,7 @@ struct GUIData {
     irr::f32 guiRadarEBLRangeNm;
     irr::f32 guiRadarCursorBrg;
     irr::f32 guiRadarCursorRangeNm;
+    irr::s32 arpaListSelection;
     std::vector<ARPAEstimatedState> arpaContactStates;
 	std::string currentTime;
     bool paused;
@@ -89,7 +93,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided);
+    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -131,6 +135,10 @@ public:
         GUI_ID_RADAR_EBL_RIGHT_BUTTON,
         GUI_ID_RADAR_EBL_UP_BUTTON,
         GUI_ID_RADAR_EBL_DOWN_BUTTON,
+        GUI_ID_RADAR_INCREASE_X_BUTTON,
+        GUI_ID_RADAR_DECREASE_X_BUTTON,
+        GUI_ID_RADAR_INCREASE_Y_BUTTON,
+        GUI_ID_RADAR_DECREASE_Y_BUTTON,
         GUI_ID_RADAR_NORTH_BUTTON,
         GUI_ID_RADAR_COURSE_BUTTON,
         GUI_ID_RADAR_HEAD_BUTTON,
@@ -149,6 +157,11 @@ public:
         GUI_ID_ARPA_VECTOR_TIME_BOX,
         GUI_ID_BIG_ARPA_TRUE_REL_BOX,
         GUI_ID_BIG_ARPA_VECTOR_TIME_BOX,
+        GUI_ID_ARPA_LIST,
+        GUI_ID_MANUAL_SCAN_BUTTON,
+        GUI_ID_MANUAL_NEW_BUTTON,
+        GUI_ID_MANUAL_CLEAR_BUTTON,
+        GUI_ID_BIG_ARPA_LIST,
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_VISIBILITY_SCROLL_BAR,
@@ -159,6 +172,8 @@ public:
         GUI_ID_SHOW_LOG_BUTTON,
         GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,
         GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,
+        GUI_ID_SHOW_LINES_CONTROLS_BUTTON,
+        GUI_ID_HIDE_LINES_CONTROLS_BUTTON,
         GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,
         GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,
         GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,
@@ -166,6 +181,11 @@ public:
         GUI_ID_FOLLOWUP_WORKING_BUTTON,
         GUI_ID_FOLLOWUP_FAILED_BUTTON,
         GUI_ID_ACK_ALARMS_BUTTON,
+        GUI_ID_ADD_LINE_BUTTON,
+        GUI_ID_REMOVE_LINE_BUTTON,
+        GUI_ID_KEEP_SLACK_LINE_CHECKBOX,
+        GUI_ID_HAUL_IN_LINE_CHECKBOX,
+        GUI_ID_LINES_LIST,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -181,7 +201,8 @@ public:
     void hideBearings();
     void setLargeRadar(bool radarState);
     bool getLargeRadar() const;
-    void setARPACheckboxes(bool arpaState);
+    void setARPAComboboxes(irr::s32 arpaState);
+    void setARPAList(int arpaSelected);
     irr::u32 getRadarPixelRadius() const;
     irr::core::vector2di getCursorPositionRadar() const;
     irr::core::rect<irr::s32> getSmallRadarRect() const;
@@ -194,6 +215,8 @@ public:
     void showLogWindow();
     void drawGUI();
     void setExtraControlsWindowVisible(bool windowVisible);
+    void setLinesControlsWindowVisible(bool windowVisible);
+    void setLinesControlsText(std::string textToShow);
 
 private:
 
@@ -241,6 +264,14 @@ private:
     irr::gui::IGUIButton* eblRightButton;
     irr::gui::IGUIButton* eblUpButton;
     irr::gui::IGUIButton* eblDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton;
+    irr::gui::IGUIButton* radarCursorRightButton;
+    irr::gui::IGUIButton* radarCursorUpButton;
+    irr::gui::IGUIButton* radarCursorDownButton;
+    irr::gui::IGUIButton* radarCursorLeftButton2;
+    irr::gui::IGUIButton* radarCursorRightButton2;
+    irr::gui::IGUIButton* radarCursorUpButton2;
+    irr::gui::IGUIButton* radarCursorDownButton2;
     irr::gui::IGUIButton* radarColourButton;
     irr::gui::IGUIButton* radarColourButton2;
     irr::gui::IGUIButton* nonFollowUpPortButton;
@@ -276,6 +307,14 @@ private:
     irr::gui::IGUIButton* exitButton;
     irr::gui::IGUIButton* pcLogButton;
     irr::gui::IGUIButton* showExtraControlsButton;
+    irr::gui::IGUIButton* showLinesControlsButton;
+
+    irr::gui::IGUIButton* addLine;
+    irr::gui::IGUIButton* removeLine;
+    irr::gui::IGUICheckBox* keepLineSlack;
+    irr::gui::IGUICheckBox* heaveLineIn;
+    irr::gui::IGUIListBox* linesList;
+    irr::gui::IGUIStaticText* linesText;
 
     irr::gui::IGUIStaticText* pump1On;
     irr::gui::IGUIStaticText* pump2On;
@@ -285,7 +324,7 @@ private:
     irr::gui::IGUIStaticText* clickForEngineText;
 
     irr::gui::IGUIWindow* extraControlsWindow;
-
+    irr::gui::IGUIWindow* linesControlsWindow;
 
     irr::u32 su;
     irr::u32 sh;
@@ -339,6 +378,7 @@ private:
 
     Lang* language;
     std::vector<std::string>* logMessages;
+    SimulationModel* model;
 
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;

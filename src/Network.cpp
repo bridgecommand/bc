@@ -24,6 +24,7 @@
 #include "Leg.hpp"
 #include <iostream>
 #include <cstdio>
+#include <string>
 
 Network::~Network() //Virtual destructor
 {
@@ -36,4 +37,55 @@ Network* Network::createNetwork(OperatingMode::Mode mode, int port, irr::Irrlich
     } else {
         return new NetworkPrimary(port, dev);
     }
+}
+
+std::string Network::makeNetworkLinesString(SimulationModel* model)
+{
+    
+    std::string stringToSend = "";
+    
+    for(int number = 0; number < (int)(model->getLines()->getNumberOfLines()); number++ ) {
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineStartX(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineStartY(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineStartZ(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineEndX(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineEndY(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineEndZ(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineStartType(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineEndType(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineStartID(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineEndID(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineNominalLength(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineBreakingTension(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineBreakingStrain(number)));
+        stringToSend.append(",");
+        stringToSend.append(Utilities::lexical_cast<std::string>(model->getLines()->getLineNominalShipMass(number)));
+        stringToSend.append(",");
+        if (model->getLines()->getKeepSlack(number)) {
+            stringToSend.append("1");
+        } else {
+            stringToSend.append("0");
+        }
+        stringToSend.append(",");
+        if (model->getLines()->getHeaveIn(number)) {
+            stringToSend.append("1");
+        } else {
+            stringToSend.append("0");
+        }
+        
+        if (number < (int)model->getLines()->getNumberOfLines()-1) {stringToSend.append("|");}
+    }
+    return stringToSend;
 }

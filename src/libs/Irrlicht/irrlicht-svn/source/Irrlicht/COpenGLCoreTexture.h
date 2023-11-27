@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_OGLCORE_TEXTURE_H_INCLUDED__
-#define __C_OGLCORE_TEXTURE_H_INCLUDED__
+#ifndef IRR_C_OGLCORE_TEXTURE_H_INCLUDED
+#define IRR_C_OGLCORE_TEXTURE_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 
@@ -54,7 +54,7 @@ public:
 		TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA), PixelType(GL_UNSIGNED_BYTE), Converter(0), LockReadOnly(false), LockImage(0), LockLayer(0),
 		KeepImage(false), MipLevelStored(0), LegacyAutoGenerateMipMaps(false)
 	{
-		_IRR_DEBUG_BREAK_IF(images.size() == 0)
+		IRR_DEBUG_BREAK_IF(images.size() == 0)
 
 		DriverType = Driver->getDriverType();
 		TextureType = TextureTypeIrrToGL(Type);
@@ -225,7 +225,7 @@ public:
 			Images[i]->drop();
 	}
 
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) _IRR_OVERRIDE_
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode = ETLM_READ_WRITE, u32 mipmapLevel=0, u32 layer = 0, E_TEXTURE_LOCK_FLAGS lockFlags = ETLF_FLIP_Y_UP_RTT) IRR_OVERRIDE
 	{
 		if (LockImage)
 			return getLockImageData(MipLevelStored);
@@ -239,7 +239,7 @@ public:
 
 		if (KeepImage)
 		{
-			_IRR_DEBUG_BREAK_IF(LockLayer > Images.size())
+			IRR_DEBUG_BREAK_IF(LockLayer > Images.size())
 
 			if ( mipmapLevel == 0 || (Images[LockLayer] && Images[LockLayer]->getMipMapsData(mipmapLevel)) )
 			{
@@ -269,7 +269,7 @@ public:
 
 				if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
 				{
-					_IRR_DEBUG_BREAK_IF(layer > 5)
+					IRR_DEBUG_BREAK_IF(layer > 5)
 
 					tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
 				}
@@ -318,7 +318,7 @@ public:
 
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				Driver->draw2DImage(this, layer, true);
+				Driver->draw2DImageQuad(this, layer, true);
 
 				IImage* tmpImage = Driver->createImage(ECF_A8R8G8B8, Size);
 				glReadPixels(0, 0, Size.Width, Size.Height, GL_RGBA, GL_UNSIGNED_BYTE, tmpImage->getData());
@@ -366,7 +366,7 @@ public:
 		return (LockImage) ? getLockImageData(MipLevelStored) : 0;
 	}
 
-	virtual void unlock() _IRR_OVERRIDE_
+	virtual void unlock() IRR_OVERRIDE
 	{
 		if (!LockImage)
 			return;
@@ -388,7 +388,7 @@ public:
 		LockLayer = 0;
 	}
 
-	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) _IRR_OVERRIDE_
+	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) IRR_OVERRIDE
 	{
 		if (!HasMipMaps || LegacyAutoGenerateMipMaps || (Size.Width <= 1 && Size.Height <= 1))
 			return;
@@ -401,7 +401,7 @@ public:
 			u32 width = Size.Width;
 			u32 height = Size.Height;
 			u8* tmpData = static_cast<u8*>(data);
-			u32 dataSize = 0;
+			size_t dataSize = 0;
 			u32 level = 0;
 
 			do
@@ -562,7 +562,7 @@ protected:
 
 		if (tmpTextureType == GL_TEXTURE_CUBE_MAP)
 		{
-			_IRR_DEBUG_BREAK_IF(layer > 5)
+			IRR_DEBUG_BREAK_IF(layer > 5)
 
 			tmpTextureType = GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer;
 		}
@@ -600,7 +600,7 @@ protected:
 		}
 		else
 		{
-			u32 dataSize = IImage::getDataSizeFromFormat(ColorFormat, width, height);
+			GLsizei dataSize = (GLsizei)IImage::getDataSizeFromFormat(ColorFormat, width, height);
 
 			switch (TextureType)
 			{
@@ -639,7 +639,7 @@ protected:
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
-	void (*Converter)(const void*, s32, void*);
+	void (*Converter)(const void*, u32, void*);
 
 	bool LockReadOnly;
 	IImage* LockImage;

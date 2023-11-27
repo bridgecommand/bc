@@ -47,6 +47,8 @@
 #include <asio.hpp> //To display hostname
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // For GetSystemMetrics
 #include <direct.h> //for windows _mkdir
 #else
 #include <sys/stat.h>
@@ -499,16 +501,25 @@ int main(int argc, char ** argv)
 
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
-		irr::core::dimension2d<irr::u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-		nulldevice->drop();
+        irr::core::dimension2d<irr::u32> deskres;
+        #ifdef _WIN32
+        // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+        deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+        deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+        #else
+        // For other OSs, use Irrlicht's resolution call
+        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+        deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+        nulldevice->drop();
+        #endif
+
 		if (graphicsWidth == 0) {
 			if (fullScreen || fakeFullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
-                if (graphicsWidth > deskres.Width*0.9) {
-                    graphicsWidth = deskres.Width*0.9;
+                if (graphicsWidth > deskres.Width*0.90) {
+                    graphicsWidth = deskres.Width*0.90;
                 }
 			}
 		}
@@ -518,8 +529,8 @@ int main(int argc, char ** argv)
 			}
 			else {
 				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
-                if (graphicsHeight > deskres.Height*0.9) {
-                    graphicsHeight = deskres.Height*0.9;
+                if (graphicsHeight > deskres.Height*0.90) {
+                    graphicsHeight = deskres.Height*0.90;
                 }
 			}
 		}
@@ -744,7 +755,7 @@ int main(int argc, char ** argv)
 	graphicsWidth = su;
 	graphicsHeight = sh;
 	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * 0.6;
+	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
     irr::f32 aspectvr = aspect / 2;
@@ -841,6 +852,14 @@ int main(int argc, char ** argv)
     //Network network(&model);
     network->connectToServer(hostname);
 
+    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
+    Network* extraNetwork = 0;
+    if (mode == OperatingMode::Multiplayer) {
+        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
+        extraNetwork->connectToServer(hostname);
+        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
+    }
+
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
     if (mode == OperatingMode::Normal) {
@@ -881,10 +900,13 @@ int main(int argc, char ** argv)
     if (mode==OperatingMode::Secondary) {
         hideEngineAndRudder=true;
     }
-    guiMain.load(device, &language, &logMessages, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
+    if (extraNetwork) {
+        extraNetwork->setModel(&model);
+    }
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -914,8 +936,8 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterface();
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
-        guiMain.setARPACheckboxes(true);
-        model.setArpaOn(true);
+        guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
+        model.setArpaMode(2);
     }
     irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {
@@ -961,6 +983,9 @@ int main(int argc, char ** argv)
         { IPROF("Network");
 //        networkProfile.tic();
         network->update();
+        if (extraNetwork) {
+            extraNetwork->update();
+        }
 //        networkProfile.toc();
 
         // Update NMEA, check if new sensor or AIS data is ready to be sent
@@ -1103,6 +1128,9 @@ int main(int argc, char ** argv)
     //networking should be stopped (presumably with destructor when it goes out of scope?)
     device->getLogger()->log("About to stop network");
     delete network;
+    if (extraNetwork) {
+        delete extraNetwork;
+    }
 
     device->drop();
 

@@ -1,12 +1,11 @@
 // This file is part of the "Irrlicht Engine".
 // written by Reinhard Ostermeier, reinhard@nospam.r-ostermeier.de
 
-#ifndef __I_GUI_IMAGE_LIST_H_INCLUDED__
-#define __I_GUI_IMAGE_LIST_H_INCLUDED__
+#ifndef IRR_I_GUI_IMAGE_LIST_H_INCLUDED
+#define IRR_I_GUI_IMAGE_LIST_H_INCLUDED
 
-#include "IGUIElement.h"
 #include "rect.h"
-#include "irrTypes.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -42,4 +41,3 @@ public:
 } // end namespace irr
 
 #endif
-

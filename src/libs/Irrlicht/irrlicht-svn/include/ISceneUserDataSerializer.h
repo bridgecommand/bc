@@ -2,10 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED__
-#define __I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED__
-
-#include "IReferenceCounted.h"
+#ifndef IRR_I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED
+#define IRR_I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED
 
 namespace irr
 {
@@ -48,4 +46,3 @@ public:
 } // end namespace irr
 
 #endif
-

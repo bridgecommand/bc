@@ -34,10 +34,10 @@ Network::Network(int port) //Constructor
     }
 
     client = enet_host_create (NULL /* create a client host */,
-    10 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
-    2 /* allow up 2 channels to be used, 0 and 1 */,
-    57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */, //Todo: Think about bandwidth limits
-    14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
+    32 /* Allow up to 10 outgoing connections */, //Todo: Should this be configurable?
+    0 /* allow maximum number of channels */,
+    0 /* unlimited bandwidth */,
+    0 /* unlimited bandwidth */);
     if (client == NULL) {
         std::cout << "An error occurred while trying to create an ENet client host." << std::endl;
         exit (EXIT_FAILURE);
@@ -99,8 +99,8 @@ void Network::connectToServer(std::string hostnames)
 
         enet_address_set_host (& address, thisHostname.c_str());
 
-        /* Initiate the connection, allocating the two channels 0 and 1. */
-        peer = enet_host_connect (client, & address, 2, 0);
+        /* Initiate the connection, allocating the maximum number of channels. */
+        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
 
         if (peer == NULL)
         {

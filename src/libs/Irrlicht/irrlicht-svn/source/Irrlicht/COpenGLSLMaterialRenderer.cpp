@@ -14,7 +14,6 @@
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-#include "IGPUProgrammingServices.h"
 #include "IShaderConstantSetCallBack.h"
 #include "IMaterialRendererServices.h"
 #include "IVideoDriver.h"
@@ -22,7 +21,6 @@
 
 #include "COpenGLDriver.h"
 #include "COpenGLCacheHandler.h"
-#include "COpenGLMaterialRenderer.h"
 
 #include "COpenGLCoreFeature.h"
 
@@ -237,7 +235,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 
 	COpenGLCacheHandler* cacheHandler = Driver->getCacheHandler();
 
-	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
+	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)	// each program has it's own type
 	{
 		if (Program2)
 			Driver->irrGlUseProgram(Program2);
@@ -563,13 +561,25 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 	return true;
 }
 
-
-void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
-						const SMaterial& lastMaterial,
-						bool resetAllRenderstates)
+void COpenGLSLMaterialRenderer::startUseProgram()
 {
-	// forward
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+	if (Program2)
+		Driver->irrGlUseProgram(Program2);
+	else if (Program)
+		Driver->extGlUseProgramObject(Program);
+}
+
+void COpenGLSLMaterialRenderer::stopUseProgram()
+{
+	// Necessary as fixed function pipeline breaks if programs are not reset to 0
+	if (Program)
+		Driver->extGlUseProgramObject(0);
+	if (Program2)
+		Driver->irrGlUseProgram(0);
+
+	// Force reset of material to ensure OnSetMaterial will be called or we can miss 
+	// the next UseProgram call as stopUseProgram can be called from anywhere
+	Driver->DoResetRenderStates();
 }
 
 s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)

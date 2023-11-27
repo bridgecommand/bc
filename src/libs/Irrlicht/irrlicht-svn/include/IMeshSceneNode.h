@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_MESH_SCENE_NODE_H_INCLUDED__
-#define __I_MESH_SCENE_NODE_H_INCLUDED__
+#ifndef IRR_I_MESH_SCENE_NODE_H_INCLUDED
+#define IRR_I_MESH_SCENE_NODE_H_INCLUDED
 
 #include "ISceneNode.h"
 
@@ -14,6 +14,20 @@ namespace scene
 
 class IShadowVolumeSceneNode;
 class IMesh;
+
+//! Option for nodes how to register themeselves at the SceneManager
+enum ENodeRegistration
+{
+	//! Each node registers once and renders all it's mesh-buffers
+	ENR_DEFAULT,
+
+	//! Register a new node per mesh-buffer at the SceneManager
+	//! It allows the SceneManager to sort in each render stage per buffer instead of per node.
+	//! This can be useful when having several transparent buffers in a mesh.
+	//! Depending on the scene (and hardware) this can have a positive or negative effect on performance.
+	//! It can avoid texture-switches, but adds nodes to sort and more matrix transformations are set.
+	ENR_PER_MESH_BUFFER
+};
 
 
 //! A scene node displaying a static mesh
@@ -28,9 +42,11 @@ public:
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1,1,1))
-		: ISceneNode(parent, mgr, id, position, rotation, scale) {}
+		: ISceneNode(parent, mgr, id, position, rotation, scale) 
+		, NodeRegistration(ENR_DEFAULT)
+	{}
 
-	//! Sets a new mesh to display
+	//! Sets a new mesh to display or update mesh when it changed
 	/** \param mesh Mesh to display. */
 	virtual void setMesh(IMesh* mesh) = 0;
 
@@ -52,7 +68,7 @@ public:
 	zfail method, if not, zpass is used.
 	\param infinity: Value used by the shadow volume algorithm to
 	scale the shadow volume. For zfail shadow volumes on some drivers 
-	only suppport finite shadows, so camera zfar must be larger than 
+	only support finite shadows, so camera zfar must be larger than 
 	shadow back cap,which is depending on the infinity parameter).
 	Infinity value also scales by the scaling factors of the model.
 	If shadows don't show up with zfail then try reducing infinity.
@@ -73,11 +89,26 @@ public:
 	/** This flag can be set by setReadOnlyMaterials().
 	\return Whether the materials are read-only. */
 	virtual bool isReadOnlyMaterials() const = 0;
+
+	//! Set how the node registers itself to the SceneManager
+	/** Note: Derived classes can ignore this flag, so think of it as a hint. */
+	virtual void setNodeRegistration(ENodeRegistration nodeRegistration) 
+	{
+		NodeRegistration = nodeRegistration;
+	}
+
+	//! How does a node register itself to the SceneManager
+	/** Note: Derived classes may ignore this flag */
+	virtual ENodeRegistration getNodeRegistration() const
+	{
+		return NodeRegistration;
+	}
+
+protected:
+	ENodeRegistration NodeRegistration;
 };
 
 } // end namespace scene
 } // end namespace irr
 
-
 #endif
-

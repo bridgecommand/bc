@@ -28,16 +28,16 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 
 	// set default projection
 	Fovy = core::PI / 2.5f;	// Field of view, in radians.
+	Aspect = 4.0f / 3.0f;	// Aspect ratio.
 
 	const video::IVideoDriver* const d = mgr?mgr->getVideoDriver():0;
 	if (d)
 	{
-		Aspect = (f32)d->getCurrentRenderTargetSize().Width /
-			(f32)d->getCurrentRenderTargetSize().Height;
+		if ( d->getCurrentRenderTargetSize().Height )
+			Aspect = (f32)d->getCurrentRenderTargetSize().Width /
+				(f32)d->getCurrentRenderTargetSize().Height;
 		HasD3DStyleProjectionMatrix = d->getDriverType() != video::EDT_OPENGL;
 	}
-	else
-		Aspect = 4.0f / 3.0f;	// Aspect ratio.
 
 	ViewArea.setFarNearDistance(ZFar - ZNear);
 	recalculateProjectionMatrix();
@@ -201,6 +201,11 @@ f32 CCameraSceneNode::getFOV() const
 	return Fovy;
 }
 
+core::vector2df CCameraSceneNode::getLensShift() const
+{
+	return LensShift;
+}
+
 
 void CCameraSceneNode::setNearValue(f32 f)
 {
@@ -231,10 +236,15 @@ void CCameraSceneNode::setFOV(f32 f)
 	recalculateProjectionMatrix();
 }
 
+void CCameraSceneNode::setLensShift(const core::vector2df& shift)
+{
+	LensShift = shift;
+	recalculateProjectionMatrix();
+}
 
 void CCameraSceneNode::recalculateProjectionMatrix()
 {
-	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar, HasD3DStyleProjectionMatrix);
+	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar, HasD3DStyleProjectionMatrix, LensShift.X, LensShift.Y);
 	IsOrthogonal = false;
 }
 
@@ -252,6 +262,7 @@ void CCameraSceneNode::OnRegisterSceneNode()
 //! render
 void CCameraSceneNode::render()
 {
+	updateAbsolutePosition();	// depending on that call in onAnimate is risky (might not be in SceneManager or it or it's parent might be invisible and still should render)
 	updateMatrices();
 
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
@@ -265,6 +276,9 @@ void CCameraSceneNode::render()
 //! update
 void CCameraSceneNode::updateMatrices()
 {
+#if defined(_IRR_COMPILE_WITH_90_DEGREE_CAMERA)
+	ViewArea.getTransform(video::ETS_VIEW).buildCameraLookAtMatrixLH(getAbsolutePosition(), Target, UpVector);
+#else
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
@@ -282,6 +296,7 @@ void CCameraSceneNode::updateMatrices()
 	}
 
 	ViewArea.getTransform(video::ETS_VIEW).buildCameraLookAtMatrixLH(pos, Target, up);
+#endif
 	ViewArea.getTransform(video::ETS_VIEW) *= Affector;
 	recalculateViewArea();
 }
@@ -325,6 +340,7 @@ void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	out->addFloat("Aspect", Aspect);
 	out->addFloat("ZNear", ZNear);
 	out->addFloat("ZFar", ZFar);
+	out->addVector2d("LensShift", LensShift);
 	out->addBool("Binding", TargetAndRotationAreBound);
 	out->addBool("ReceiveInput", InputReceiverEnabled);
 }
@@ -334,15 +350,15 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 {
 	ICameraSceneNode::deserializeAttributes(in, options);
 
-	Target = in->getAttributeAsVector3d("Target");
-	UpVector = in->getAttributeAsVector3d("UpVector");
-	Fovy = in->getAttributeAsFloat("Fovy");
-	Aspect = in->getAttributeAsFloat("Aspect");
-	ZNear = in->getAttributeAsFloat("ZNear");
-	ZFar = in->getAttributeAsFloat("ZFar");
-	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
-	if ( in->findAttribute("ReceiveInput") )
-		InputReceiverEnabled = in->getAttributeAsBool("ReceiveInput");
+	Target = in->getAttributeAsVector3d("Target", Target);
+	UpVector = in->getAttributeAsVector3d("UpVector", UpVector);
+	Fovy = in->getAttributeAsFloat("Fovy", Fovy);
+	Aspect = in->getAttributeAsFloat("Aspect", Aspect);
+	ZNear = in->getAttributeAsFloat("ZNear", ZNear);
+	ZFar = in->getAttributeAsFloat("ZFar", ZFar);
+	LensShift = in->getAttributeAsVector2d("LensShift", LensShift);
+	TargetAndRotationAreBound = in->getAttributeAsBool("Binding", TargetAndRotationAreBound);
+	InputReceiverEnabled = in->getAttributeAsBool("ReceiveInput", InputReceiverEnabled);
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();

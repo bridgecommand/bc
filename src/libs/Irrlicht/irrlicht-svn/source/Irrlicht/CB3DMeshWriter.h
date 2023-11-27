@@ -4,15 +4,12 @@
 
 // Modified version with rigging/skinning support
 
-#ifndef __IRR_B3D_MESH_WRITER_H_INCLUDED__
-#define __IRR_B3D_MESH_WRITER_H_INCLUDED__
+#ifndef IRR_B3D_MESH_WRITER_H_INCLUDED
+#define IRR_B3D_MESH_WRITER_H_INCLUDED
 
 #include "IMeshWriter.h"
 #include "IWriteFile.h"
-#include "SB3DStructs.h"
 #include "ISkinnedMesh.h"
-
-
 
 namespace irr
 {
@@ -27,17 +24,17 @@ public:
 	CB3DMeshWriter();
 
 	//! Returns the type of the mesh writer
-    virtual EMESH_WRITER_TYPE getType() const _IRR_OVERRIDE_;
+    virtual EMESH_WRITER_TYPE getType() const IRR_OVERRIDE;
 
 	//! writes a mesh
-    virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE) _IRR_OVERRIDE_;
+    virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags=EMWF_NONE) IRR_OVERRIDE;
 
 private:
     void writeJointChunk(io::IWriteFile* file, ISkinnedMesh* mesh , ISkinnedMesh::SJoint* joint, f32 animationSpeedMultiplier);
     u32 getJointChunkSize(const ISkinnedMesh* mesh, ISkinnedMesh::SJoint* joint);
     core::array<ISkinnedMesh::SJoint*> getRootJoints(const ISkinnedMesh* mesh);
 
-    u32 getUVlayerCount(IMesh *mesh);
+    u32 getUVlayerCount(const IMesh *mesh);
     ISkinnedMesh* getSkinned (IMesh *mesh);
 
     inline void writeVector2(io::IWriteFile* file, const core::vector2df& vec);

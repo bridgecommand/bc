@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_OPEN_GL_RENDER_TARGET_H_INCLUDED__
-#define __C_OPEN_GL_RENDER_TARGET_H_INCLUDED__
+#ifndef IRR_C_OPEN_GL_RENDER_TARGET_H_INCLUDED
+#define IRR_C_OPEN_GL_RENDER_TARGET_H_INCLUDED
 
 #include "IrrCompileConfig.h"
 
@@ -29,7 +29,7 @@ namespace irr
 			CD3D9RenderTarget(CD3D9Driver* driver);
 			virtual ~CD3D9RenderTarget();
 
-			virtual void setTexture(const core::array<ITexture*>& texture, ITexture* depthStencil, const core::array<E_CUBE_SURFACE>& cubeSurfaces) _IRR_OVERRIDE_;
+			virtual void setTextures(ITexture* const * textures, u32 numTextures, ITexture* depthStencil, const E_CUBE_SURFACE* cubeSurfaces, u32 numCubeSurfaces) IRR_OVERRIDE;
 
 			const core::dimension2d<u32>& getSize() const;
 
@@ -46,7 +46,7 @@ namespace irr
 		protected:
 			core::dimension2d<u32> Size;
 
-			core::array<IDirect3DSurface9*> Surface;
+			core::array<IDirect3DSurface9*> Surfaces;
 
 			IDirect3DSurface9* DepthStencilSurface;
 

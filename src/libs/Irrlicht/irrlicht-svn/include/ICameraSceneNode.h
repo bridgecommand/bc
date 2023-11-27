@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_CAMERA_SCENE_NODE_H_INCLUDED__
-#define __I_CAMERA_SCENE_NODE_H_INCLUDED__
+#ifndef IRR_I_CAMERA_SCENE_NODE_H_INCLUDED
+#define IRR_I_CAMERA_SCENE_NODE_H_INCLUDED
 
 #include "ISceneNode.h"
 #include "IEventReceiver.h"
@@ -72,7 +72,7 @@ namespace scene
 		ISceneManager::addCameraSceneNodeFPS, may want to get
 		this input for changing their position, look at target or
 		whatever. */
-		virtual bool OnEvent(const SEvent& event) =0;
+		virtual bool OnEvent(const SEvent& event) IRR_OVERRIDE =0;
 
 		//! Sets the look at target of the camera
 		/** If the camera's target and rotation are bound ( @see
@@ -90,7 +90,7 @@ namespace scene
 		bindTargetAndRotation() ) then calling this will also change
 		the camera's target to match the rotation.
 		\param rotation New rotation of the node in degrees. */
-		virtual void setRotation(const core::vector3df& rotation) =0;
+		virtual void setRotation(const core::vector3df& rotation) IRR_OVERRIDE =0;
 
 		//! Gets the current look at target of the camera
 		/** \return The current look at target of the camera, in world co-ordinates */
@@ -116,25 +116,46 @@ namespace scene
 		/** \return The aspect ratio of the camera. */
 		virtual f32 getAspectRatio() const =0;
 
-		//! Gets the field of view of the camera.
+		//! Gets the vertical field of view of the camera.
 		/** \return The field of view of the camera in radians. */
 		virtual f32 getFOV() const =0;
 
+		//! Get the horizontal and vertical lens/projection plane shift
+		/** \return Project plane offset */
+		virtual core::vector2df getLensShift() const
+		{
+			return core::vector2df(0.f, 0.f);	
+		}
+
 		//! Sets the value of the near clipping plane. (default: 1.0f)
-		/** \param zn: New z near value. */
+		/** Also changes projection matrix and resets IsOrthogonal flag.
+		\param zn: New z near value. */
 		virtual void setNearValue(f32 zn) =0;
 
 		//! Sets the value of the far clipping plane (default: 2000.0f)
-		/** \param zf: New z far value. */
+		/** Also changes projection matrix and resets IsOrthogonal flag.
+		\param zf: New z far value. */
 		virtual void setFarValue(f32 zf) =0;
 
 		//! Sets the aspect ratio (default: 4.0f / 3.0f)
-		/** \param aspect: New aspect ratio. */
+		/** Also changes projection matrix and resets IsOrthogonal flag.
+		\param aspect: New aspect ratio. */
 		virtual void setAspectRatio(f32 aspect) =0;
 
-		//! Sets the field of view (Default: PI / 2.5f)
-		/** \param fovy: New field of view in radians. */
+		//! Sets the vertical field of view (Default: PI / 2.5f)
+		/** Also changes projection matrix and resets IsOrthogonal flag.
+		\param fovy: New field of view in radians. */
 		virtual void setFOV(f32 fovy) =0;
+
+		//! Set the horizontal and vertical lens/projection plane shift
+		/** Like rendering a larger field of view and then cropping
+		it off-center. Allows for things like 2-point perspective.
+		\param shift: Offset by which the projection plane is moved.
+		If you move by 1 or -1 it will move the center by half a screen.
+		Positive X go to the left and positive Y go down.
+		By default it will be 0,0 */
+		virtual void setLensShift(const core::vector2df& shift)
+		{}
 
 		//! Get the view frustum.
 		/** \return The current view frustum. */
@@ -165,7 +186,10 @@ namespace scene
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) =0;
 
-		//! Updates the matrices without uploading them to the driver
+		//! Updates the view matrix and frustum without uploading the matrix to the driver.
+		/** You need this when you want an up-to-date camera view matrix & frustum before the render() call.
+		Usually you should call updateAbsolutePosition() before calling this.
+		Despite it's function name, the projection matrix is not touched. */
 		virtual void updateMatrices() = 0;
 
 		//! Queries if the camera scene node's rotation and its target position are bound together.
@@ -173,7 +197,7 @@ namespace scene
 		virtual bool getTargetAndRotationBinding(void) const =0;
 
 		//! Writes attributes of the camera node
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const IRR_OVERRIDE
 		{
 			ISceneNode::serializeAttributes(out, options);
 
@@ -183,7 +207,7 @@ namespace scene
 		}
 
 		//! Reads attributes of the camera node
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) IRR_OVERRIDE
 		{
 			ISceneNode::deserializeAttributes(in, options);
 			if (!in)
@@ -207,4 +231,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

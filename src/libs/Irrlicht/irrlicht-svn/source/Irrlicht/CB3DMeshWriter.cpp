@@ -2,13 +2,12 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// TODO: replace printf's by logging messages
-
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_B3D_WRITER_
 
 #include "CB3DMeshWriter.h"
+#include "SB3DStructs.h"
 #include "os.h"
 #include "ISkinnedMesh.h"
 #include "IMeshBuffer.h"
@@ -98,7 +97,7 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
     u32 numTexture = texs.size();
     for (u32 i = 0; i < numTexture; i++)
 	{
-        file->write(texs[i].TextureName.c_str(), texs[i].TextureName.size() + 1);
+        file->write(texs[i].TextureName.c_str(), (size_t)texs[i].TextureName.size() + 1);
         file->write(&texs[i].Flags, 7*4);
     }
 
@@ -255,18 +254,36 @@ bool CB3DMeshWriter::writeMesh(io::IWriteFile* file, IMesh* const mesh, s32 flag
         file->write(&i, 4);
 
         u32 numIndices = mb->getIndexCount();
-        const u16 * const idx = (u16 *) mb->getIndices();
-        for (u32 j = 0; j < numIndices; j += 3)
+		if ( mb->getIndexType() == video::EIT_16BIT )
 		{
-            u32 tmp = idx[j] + currentMeshBufferIndex;
-            file->write(&tmp, sizeof(u32));
+			const u16 * const idx = mb->getIndices();
+			for (u32 j = 0; j < numIndices; j += 3)
+			{
+				u32 tmp = idx[j] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
 
-            tmp = idx[j + 1] + currentMeshBufferIndex;
-            file->write(&tmp, sizeof(u32));
+				tmp = idx[j + 1] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
 
-            tmp = idx[j + 2] + currentMeshBufferIndex;
-            file->write(&tmp, sizeof(u32));
-        }
+				tmp = idx[j + 2] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
+			}
+		}
+		else if ( mb->getIndexType() == video::EIT_32BIT )
+		{
+			const u32 * const idx = (const u32*) mb->getIndices();
+			for (u32 j = 0; j < numIndices; j += 3)
+			{
+				u32 tmp = idx[j] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
+
+				tmp = idx[j + 1] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
+
+				tmp = idx[j + 2] + currentMeshBufferIndex;
+				file->write(&tmp, sizeof(u32));
+			}
+		}
         writeSizeFrom(file, trisSizeAdress+4, trisSizeAdress);  // TRIS chunk size
 
         currentMeshBufferIndex += mb->getVertexCount();
@@ -480,7 +497,7 @@ core::array<ISkinnedMesh::SJoint*> CB3DMeshWriter::getRootJoints(const ISkinnedM
     return roots;
 }
 
-u32 CB3DMeshWriter::getUVlayerCount(IMesh* mesh)
+u32 CB3DMeshWriter::getUVlayerCount(const IMesh* mesh)
 {
     const u32 numBeshBuffers = mesh->getMeshBufferCount();
     for (u32 i = 0; i < numBeshBuffers; i++)

@@ -11,6 +11,10 @@ VERSION_RELEASE = 0
 # This will compile Irrlicht, create a static lib (libIrrlicht.a), and copy it
 # into the subdirectory lib/Linux. That's all.
 #
+# If you switch any settings (like debug/release/static/shared) then first run:
+#
+# make clean
+#
 # If you want Irrlicht to be compiled as shared lib (libIrrlicht.so.versionnumber), then run:
 #
 # make sharedlib
@@ -44,13 +48,15 @@ IRRDRVROBJ = CNullDriver.o COpenGLCacheHandler.o COpenGLDriver.o COpenGLNormalMa
 IRRIMAGEOBJ = CColorConverter.o CImage.o CImageLoaderBMP.o CImageLoaderDDS.o CImageLoaderJPG.o CImageLoaderPCX.o CImageLoaderPNG.o CImageLoaderPSD.o CImageLoaderPVR.o CImageLoaderTGA.o CImageLoaderPPM.o CImageLoaderWAL.o CImageLoaderRGB.o \
 	CImageWriterBMP.o CImageWriterJPG.o CImageWriterPCX.o CImageWriterPNG.o CImageWriterPPM.o CImageWriterPSD.o CImageWriterTGA.o
 IRRVIDEOOBJ = CVideoModeList.o CFPSCounter.o $(IRRDRVROBJ) $(IRRIMAGEOBJ)
-IRRSWRENDEROBJ = CSoftwareDriver.o CSoftwareTexture.o CTRFlat.o CTRFlatWire.o CTRGouraud.o CTRGouraudWire.o CTRNormalMap.o \
-	CTRStencilShadow.o CTRTextureFlat.o CTRTextureFlatWire.o CTRTextureGouraud.o CTRTextureGouraudAdd.o CTRTextureGouraudNoZ.o \
-	CTRTextureGouraudWire.o CZBuffer.o CTRTextureGouraudVertexAlpha2.o CTRTextureGouraudNoZ2.o CTRTextureLightMap2_M2.o \
-	CTRTextureLightMap2_M4.o CTRTextureLightMap2_M1.o CSoftwareDriver2.o CSoftwareTexture2.o CTRTextureGouraud2.o CTRGouraud2.o \
-	CTRGouraudAlpha2.o CTRGouraudAlphaNoZ2.o CTRTextureDetailMap2.o CTRTextureGouraudAdd2.o CTRTextureGouraudAddNoZ2.o CTRTextureWire2.o \
-	CTRTextureLightMap2_Add.o CTRTextureLightMapGouraud2_M4.o IBurningShader.o CTRTextureBlend.o CTRTextureGouraudAlpha.o \
-	CTRTextureGouraudAlphaNoZ.o CDepthBuffer.o CBurningShader_Raster_Reference.o CTR_transparent_reflection_2_layer.o CTRGouraudNoZ2.o burning_shader_color.o
+IRRSWRENDEROBJ = CSoftwareDriver.o CSoftwareTexture.o CTRFlat.o CTRFlatWire.o CTRGouraud.o CTRGouraudWire.o  \
+	CTRTextureFlat.o CTRTextureFlatWire.o CTRTextureGouraud.o CTRTextureGouraudAdd.o CTRTextureGouraudNoZ.o \
+	CTRTextureGouraudWire.o CZBuffer.o
+IRRBURNINGOBJ = CSoftwareDriver2.o CSoftwareTexture2.o CDepthBuffer.o IBurningShader.o CTRNormalMap.o CTRParallaxMap.o \
+	CTRStencilShadow.o CTRTextureGouraudVertexAlpha2.o CTRTextureGouraudNoZ2.o CTRTextureLightMap2_M2.o \
+	CTRTextureLightMap2_M1.o CTRTextureLightMapGouraud2_M4.o CTRTextureLightMap2_M4.o  CTRTextureGouraud2.o CTRGouraud2.o \
+	CTRGouraudAlphaNoZ2.o CTRTextureDetailMap2.o CTRTextureGouraudAdd2.o CTRTextureGouraudAddNoZ2.o CTRTextureWire2.o \
+	CTRTextureLightMap2_Add.o CTRTextureBlend.o CTRTextureGouraudAlpha.o burning_shader_color.o \
+	CTRTextureGouraudAlphaNoZ.o  CBurningShader_Raster_Reference.o CTR_transparent_reflection_2_layer.o CTRGouraudNoZ2.o
 IRRIOOBJ = CFileList.o CFileSystem.o CLimitReadFile.o CMemoryFile.o CReadFile.o CWriteFile.o CXMLReader.o CXMLWriter.o CWADReader.o CZipReader.o CPakReader.o CNPKReader.o CTarReader.o CMountPointReader.o irrXML.o CAttributes.o lzma/LzmaDec.o
 IRROTHEROBJ = CIrrDeviceSDL.o CIrrDeviceLinux.o CIrrDeviceConsole.o CIrrDeviceStub.o CIrrDeviceWin32.o CIrrDeviceFB.o CLogger.o COSOperator.o Irrlicht.o os.o leakHunter.o 	CProfiler.o utf8.o
 IRRGUIOBJ = CGUIButton.o CGUICheckBox.o CGUIComboBox.o CGUIContextMenu.o CGUIEditBox.o CGUIEnvironment.o CGUIFileOpenDialog.o CGUIFont.o CGUIImage.o CGUIInOutFader.o CGUIListBox.o CGUIMenu.o CGUIMeshViewer.o CGUIMessageBox.o CGUIModalScreen.o CGUIScrollBar.o CGUISpinBox.o CGUISkin.o CGUIStaticText.o CGUITabControl.o CGUITable.o CGUIToolBar.o CGUIWindow.o CGUIColorSelectDialog.o CDefaultGUIElementFactory.o CGUISpriteBank.o CGUIImageList.o CGUITreeView.o CGUIProfiler.o
@@ -63,7 +69,7 @@ BZIP2OBJ = bzip2/blocksort.o bzip2/huffman.o bzip2/crctable.o bzip2/randtable.o 
 # Next variable is for additional scene nodes etc. of customized Irrlicht versions
 EXTRAOBJ =
 LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
-	$(IRRVIDEOOBJ) $(IRRSWRENDEROBJ) $(IRRIOOBJ) $(IRROTHEROBJ) \
+	$(IRRVIDEOOBJ) $(IRRSWRENDEROBJ) $(IRRBURNINGOBJ) $(IRRIOOBJ) $(IRROTHEROBJ) \
 	$(IRRGUIOBJ) $(ZLIBOBJ) $(JPEGLIBOBJ) $(LIBPNGOBJ) $(LIBAESGM) \
 	$(BZIP2OBJ) $(EXTRAOBJ)
 
@@ -71,20 +77,21 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 #Compiler flags
 CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS += $(CXXINCS) -DIRRLICHT_EXPORTS=1
-CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
+CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti
 #CXXFLAGS += -std=gnu++11 -U__STRICT_ANSI__
 ifndef NDEBUG
-CXXFLAGS += -g -D_DEBUG
+CPPFLAGS += -g -D_DEBUG
 else
-CXXFLAGS += -fexpensive-optimizations -O3
+CPPFLAGS += -O3
 endif
 ifdef PROFILE
-CXXFLAGS += -pg
+CPPFLAGS += -pg
 endif
-CFLAGS := -O3 -fexpensive-optimizations -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
+CFLAGS += -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES -DPNG_ARM_NEON_OPT=0
 
-sharedlib sharedlib_osx: CXXFLAGS += -fPIC
-sharedlib sharedlib_osx: CFLAGS += -fPIC
+sharedlib sharedlib_osx: CPPFLAGS += -fPIC
+# TODO: also necessary on sharedlib_osx?
+sharedlib: LDFLAGS += -fPIC
 
 #multilib handling
 ifeq ($(HOSTTYPE), x86_64)
@@ -173,11 +180,11 @@ TAGS:
 
 # Create dependency files for automatic recompilation
 %.d:%.cpp
-	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MF $@ $<
 
 # Create dependency files for automatic recompilation
 %.d:%.c
-	$(CC) $(CPPFLAGS) -MM -MF $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MM -MF $@ $<
 
 # Create object files from objective-c code
 %.o:%.mm

@@ -56,6 +56,8 @@ set(BC_SOURCES
     LandObjects.cpp
     Lang.cpp
     Light.cpp
+    Line.cpp
+    Lines.cpp
     ManOverboard.cpp
     MovingWater.cpp
     MyEventReceiver.cpp

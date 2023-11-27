@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_TEXTURE_H_INCLUDED__
-#define __I_TEXTURE_H_INCLUDED__
+#ifndef IRR_I_TEXTURE_H_INCLUDED
+#define IRR_I_TEXTURE_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "IImage.h"
@@ -97,6 +97,14 @@ enum E_TEXTURE_CREATION_FLAG
 	  */
 	ETCF_AUTO_GENERATE_MIP_MAPS = 0x00000100,
 
+	//! Enable support for vertex shader texture sampling on some drivers
+	/** Default is false.
+	This adds a small costs to all texture switches.
+	Currently only affects D3D9. 
+	On OpenGL vertex shaders use the same texture unit as pixel shaders, so support there only depends on GL version and not on this flag
+	*/
+	ETCF_SUPPORT_VERTEXT_TEXTURE = 0x00000200,
+
 	/** This flag is never used, it only forces the compiler to compile
 	these enumeration values to 32 bit. */
 	ETCF_FORCE_32_BIT_DO_NOT_USE = 0x7fffffff
@@ -187,20 +195,23 @@ public:
 	//! Lock function.
 	/** Locks the Texture and returns a pointer to access the
 	pixels. After lock() has been called and all operations on the pixels
-	are done, you must call unlock().
-	Locks are not accumulating, hence one unlock will do for an arbitrary
-	number of previous locks. You should avoid locking different levels without
-	unlocking in between, though, because only the last level locked will be
-	unlocked.
+	are done, you must call unlock(). Locks are not accumulating, hence one 
+	unlock will do for an arbitrary number of previous locks. You should avoid 
+	locking different levels without unlocking in between, because only the 
+	last level locked will be unlocked.
+
 	The size of the i-th mipmap level is defined as max(getSize().Width>>i,1)
-	and max(getSize().Height>>i,1)
+	and max(getSize().Height>>i,1).
+	Except for textures of EDT_SOFTWARE driver which returns data for 
+	getOriginalSize(). Reason: Both original sized and modified sized textures are used 
+	in that driver depending on whether the texture is used in 2d or 3d.
+
 	\param mode Specifies what kind of changes to the locked texture are
 	allowed. Unspecified behavior will arise if texture is written in read
 	only mode or read from in write only mode.
 	Support for this feature depends on the driver, so don't rely on the
 	texture being write-protected when locking with read-only, etc.
-	\param mipmapLevel NOTE: Currently broken, sorry, we try if we can repair it for 1.9 release.
-	Number of the mipmapLevel to lock. 0 is main texture.
+	\param mipmapLevel Number of the mipmapLevel to lock. 0 is main texture.
 	Non-existing levels will silently fail and return 0.
 	\param layer It determines which cubemap face or texture array layer should be locked.
 	\param lockFlags See E_TEXTURE_LOCK_FLAGS documentation.
@@ -347,4 +358,3 @@ protected:
 } // end namespace irr
 
 #endif
-

@@ -6,9 +6,6 @@
 
 #ifdef _IRR_COMPILE_WITH_XML_
 
-#include "irrString.h"
-#include "irrArray.h"
-#include "fast_atof.h"
 #include "CXMLReaderImpl.h"
 
 namespace irr
@@ -48,7 +45,7 @@ public:
 	}
 
 	//! Reads an amount of bytes from the file.
-	virtual int read(void* buffer, int sizeToRead) _IRR_OVERRIDE_
+	virtual int read(void* buffer, int sizeToRead) IRR_OVERRIDE
 	{
 		if (!File)
 			return 0;
@@ -57,7 +54,7 @@ public:
 	}
 
 	//! Returns size of file in bytes
-	virtual long getSize() const _IRR_OVERRIDE_
+	virtual long getSize() const IRR_OVERRIDE
 	{
 		return Size;
 	}

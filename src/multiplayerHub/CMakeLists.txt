@@ -5,6 +5,7 @@ add_executable(bridgecommand-mh
     ../Lang.cpp
     ../Utilities.cpp
     ../ScenarioDataStructure.cpp
+    LinesData.cpp
     Network.cpp
     ScenarioChoice.cpp
     ShipPositions.cpp

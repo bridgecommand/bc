@@ -20,8 +20,10 @@
 
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
+#include "Lines.hpp"
 #include "Utilities.hpp"
 #include "AzimuthDial.h"
+#include "Constants.hpp"
 
 //using namespace irr;
 
@@ -84,6 +86,8 @@
         rightMouseDown = false;
 
         shutdownDialogActive = false;
+
+        linesMode = 0;
 	}
 
     bool MyEventReceiver::OnEvent(const irr::SEvent& event)
@@ -105,6 +109,73 @@
                     //Log position of mouse click, so we can track relative movement
                     mouseClickX = event.MouseInput.X;
                     mouseClickY = event.MouseInput.Y;
+
+                    // Add line (mooring/towing) start or end if in required mode
+                    if ((linesMode == 1) || (linesMode == 2)) {
+                        // Scale if required because 3d view may be different
+                        irr::s32 scaledMouseY = mouseClickY;
+                        if (gui->getShowInterface()) {
+                            scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                        }
+
+                        irr::scene::ISceneNode* contactNode = model->getContactFromRay(
+                            device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX,scaledMouseY)),
+                            linesMode
+                        );
+
+                        if (contactNode) {
+                            // If returns non-null, then successful, so move onto next point or finish
+                            
+                            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
+                            int nodeType = 0;
+                            int nodeID = 0;
+
+                            // Find node type and ID from name
+                            std::string nodeName = std::string(contactNode->getName());
+                            
+                            if (nodeName.find("OwnShip")==0) {
+                                nodeType = 1;
+                                nodeID = 0;
+                            } else if (nodeName.find("OtherShip")==0) {
+                                nodeType = 2;
+                                // Find other ship ID from name (should be OtherShip_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            } else if (nodeName.find("Buoy")==0) {
+                                nodeType = 3;
+                                // Find other buoy ID from name (should be Buoy_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            } else if (nodeName.find("LandObject")==0) {
+                                nodeType = 4;
+                                // Find other land object ID from name (should be LandObject_#)
+                                std::vector<std::string> splitName = Utilities::split(nodeName,'_');
+                                if (splitName.size() == 2) {
+                                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                                }
+                            }
+                            //std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
+
+                            if (linesMode == 2) {
+                                 
+                                model->getLines()->setLineEnd(contactNode, model->getOwnShipMass(), nodeType, nodeID);
+                                // Finished
+                                linesMode = 0;
+                                gui->setLinesControlsText("");
+                            }
+                            if (linesMode == 1) {
+                                model->getLines()->setLineStart(contactNode, nodeType, nodeID); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
+                                // Move on to end point
+                                linesMode = 2;
+                                gui->setLinesControlsText("Click in 3d view to set end position for line"); //TODO: Add translation
+                            }
+                        }
+                    }
+
             }
             if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP ) {
                     leftMouseDown=false;
@@ -152,6 +223,42 @@
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
+            if (event.GUIEvent.EventType == irr::gui:: EGET_LISTBOX_SELECTED_AGAIN )
+            {
+                if (id == GUIMain::GUI_ID_LINES_LIST) {
+                    // Allow de-selection by double click
+                    ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->setSelected(-1);
+                    model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                }
+
+                if (id == GUIMain::GUI_ID_ARPA_LIST || id == GUIMain::GUI_ID_BIG_ARPA_LIST)
+                {
+                    // Allow de-selection
+                    int arpaSelected = -1;
+                    gui->setARPAList(arpaSelected);
+                    // Set selected ID via model.
+                    model->setArpaListSelection(arpaSelected);
+                }
+
+            } 
+            
+            if (event.GUIEvent.EventType ==  irr::gui::EGET_LISTBOX_CHANGED )
+            {
+                if (id == GUIMain::GUI_ID_LINES_LIST) {
+                    model->getLines()->setSelectedLine(((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected());
+                }
+
+                if (id == GUIMain::GUI_ID_ARPA_LIST || id == GUIMain::GUI_ID_BIG_ARPA_LIST)
+                {
+                    // Set coupled list
+                    int arpaSelected = ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected();
+                    gui->setARPAList(arpaSelected);
+
+                    // Set selected ID via model.
+                    model->setArpaListSelection(arpaSelected);
+                }
+            }
+            
             if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED)
             {
                 if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX) {
@@ -162,14 +269,20 @@
                     model->setAzimuth2Master(((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
                 }
 
-                if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX)) {
-                    //ARPA on/off checkbox
-                    bool boxState = ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
-                    model->setArpaOn(boxState);
-
-                    //Set the linked checkbox (big/small radar window)
-                    gui->setARPACheckboxes(boxState);
+                if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_CHECKBOX) {
+                    model->getLines()->setKeepSlack(
+                        model->getLines()->getSelectedLine(),
+                        ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()
+                    );   
                 }
+
+                if (id == GUIMain::GUI_ID_HAUL_IN_LINE_CHECKBOX) {
+                    model->getLines()->setHeaveIn(
+                        model->getLines()->getSelectedLine(),
+                        ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked()
+                    );   
+                }
+                
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED)
@@ -458,6 +571,26 @@
                     model->decreaseRadarEBLRange();
                 }
 
+                if (id == GUIMain::GUI_ID_RADAR_INCREASE_X_BUTTON)
+                {
+                    model->increaseRadarXCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_DECREASE_X_BUTTON)
+                {
+                    model->decreaseRadarXCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_INCREASE_Y_BUTTON)
+                {
+                    model->increaseRadarYCursor();
+                }
+
+                if (id == GUIMain::GUI_ID_RADAR_DECREASE_Y_BUTTON)
+                {
+                    model->decreaseRadarYCursor();
+                }
+
                 if (id == GUIMain::GUI_ID_RADAR_COLOUR_BUTTON)
                 {
                     model->changeRadarColourChoice();
@@ -477,6 +610,36 @@
                     model->setRadarHeadUp();
                 }
 
+                //Manual/MARPA acquire/update
+                if (id == GUIMain::GUI_ID_MANUAL_SCAN_BUTTON)
+                {
+                    if (model->getArpaMode()==0) {
+                        model->addManualPoint(false);
+                    } 
+                    // Don't do anything in full ARPA mode (as updated automatically)
+                }
+
+                if (id == GUIMain::GUI_ID_MANUAL_NEW_BUTTON)
+                {
+                    if (model->getArpaMode()==0) {
+                        model->addManualPoint(true);
+                    } else if (model->getArpaMode()==1) {
+                        model->trackTargetFromCursor();
+                    }
+                    // TODO: Should we allow user to trigger manual tracking in full ARPA?
+                }
+
+                if (id == GUIMain::GUI_ID_MANUAL_CLEAR_BUTTON)
+                {
+                    if (model->getArpaMode()==0) {
+                        model->clearManualPoints();
+                    } else if (model->getArpaMode()==1) {
+                        model->clearTargetFromCursor();
+                    }
+                    // TODO: Should we allow user to manually stop tracking in full ARPA?
+                    // And should this allow clearing of manual target if acquired in manual mode, but switched to MARPA/ARPA
+                }
+
                 if (id == GUIMain::GUI_ID_SHOW_LOG_BUTTON)
                 {
                     gui->showLogWindow();
@@ -490,6 +653,16 @@
                 if (id == GUIMain::GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON)
                 {
                     gui->setExtraControlsWindowVisible(true);
+                }
+
+                if (id == GUIMain::GUI_ID_HIDE_LINES_CONTROLS_BUTTON)
+                {
+                    gui->setLinesControlsWindowVisible(false);
+                }
+
+                if (id == GUIMain::GUI_ID_SHOW_LINES_CONTROLS_BUTTON)
+                {
+                    gui->setLinesControlsWindowVisible(true);
                 }
 
                 if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON)
@@ -535,10 +708,31 @@
                     model->setAlarm(false);
                 }
 
+                if (id == GUIMain::GUI_ID_ADD_LINE_BUTTON)
+                {
+                    linesMode = 1;
+                    model->addLine();
+                    gui->setLinesControlsText("Click in 3d view to set start position for line (on own ship)"); //TODO: Add translation
+                }
+
+                if (id == GUIMain::GUI_ID_REMOVE_LINE_BUTTON)
+                {
+                    model->getLines()->removeLine(model->getLines()->getSelectedLine());
+                }
+
             } //Button clicked
 
             if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED) {
 
+                if ((id==GUIMain::GUI_ID_ARPA_ON_BOX || id==GUIMain::GUI_ID_BIG_ARPA_ON_BOX)) {
+                    //ARPA on/off options
+                    irr::s32 boxState = ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
+                    model->setArpaMode(boxState);
+
+                    //Set the linked checkbox (big/small radar window)
+                    gui->setARPAComboboxes(boxState);
+                }
+                
                 if (id == GUIMain::GUI_ID_ARPA_TRUE_REL_BOX || id == GUIMain::GUI_ID_BIG_ARPA_TRUE_REL_BOX)
                 {
                     irr::s32 selected = ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected();
@@ -723,7 +917,6 @@
                             break;
                     }
 
-
                 } else if (event.KeyInput.Control) {
                     //Ctrl down
 
@@ -787,10 +980,9 @@
                         case irr::KEY_KEY_7:
                             model->setAccelerator(3600.0);
                             break;
-
-			case irr::KEY_KEY_H:
-			    model->startHorn();
-			    break;
+                        case irr::KEY_KEY_H:
+                            model->startHorn();
+                            break;
 
 // DEE_NOV22 vvvvv
 

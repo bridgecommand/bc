@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_QUATERNION_H_INCLUDED__
-#define __IRR_QUATERNION_H_INCLUDED__
+#ifndef IRR_QUATERNION_H_INCLUDED
+#define IRR_QUATERNION_H_INCLUDED
 
 #include "irrTypes.h"
 #include "irrMath.h"
@@ -54,9 +54,6 @@ class quaternion
 
 		//! inequality operator
 		bool operator!=(const quaternion& other) const;
-
-		//! Assignment operator
-		inline quaternion& operator=(const quaternion& other);
 
 #ifndef IRR_TEST_BROKEN_QUATERNION_USE
 		//! Matrix assignment operator
@@ -240,15 +237,6 @@ inline bool quaternion::operator!=(const quaternion& other) const
 	return !(*this == other);
 }
 
-// assignment operator
-inline quaternion& quaternion::operator=(const quaternion& other)
-{
-	X = other.X;
-	Y = other.Y;
-	Z = other.Z;
-	W = other.W;
-	return *this;
-}
 
 #ifndef IRR_TEST_BROKEN_QUATERNION_USE
 // matrix assignment operator
@@ -733,6 +721,8 @@ inline core::quaternion& quaternion::makeIdentity()
 inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const vector3df& to)
 {
 	// Based on Stan Melax's article in Game Programming Gems
+	// Optimized by Robert Eisele: https://raw.org/proof/quaternion-from-two-vectors
+
 	// Copy, since cannot modify local
 	vector3df v0 = from;
 	vector3df v1 = to;
@@ -757,10 +747,8 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 		return set(axis.X, axis.Y, axis.Z, 0).normalize();
 	}
 
-	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
-	const f32 invs = 1.f / s;
-	const vector3df c = v0.crossProduct(v1)*invs;
-	return set(c.X, c.Y, c.Z, s * 0.5f).normalize();
+	const vector3df c = v0.crossProduct(v1);
+	return set(c.X, c.Y, c.Z, 1 + d).normalize();
 }
 
 
@@ -768,4 +756,3 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 } // end namespace irr
 
 #endif
-

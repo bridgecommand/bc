@@ -16,6 +16,9 @@
 					<Add option="-D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -DWITH_SOUND -DIRR_COMPILE_WITH_DX9_DEV_PACK" />
 				</Compiler>
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
 					<Add option="-L ./libs/Irrlicht/irrlicht-svn/lib/Win32-gcc" />
 					<Add option="-L./libs/libsndfile/lib" />
 					<Add option="-L./libs/portaudio/lib" />
@@ -140,6 +143,10 @@
 		<Unit filename="Leg.hpp" />
 		<Unit filename="Light.cpp" />
 		<Unit filename="Light.hpp" />
+		<Unit filename="Line.cpp" />
+		<Unit filename="Line.hpp" />
+		<Unit filename="Lines.cpp" />
+		<Unit filename="Lines.hpp" />
 		<Unit filename="ManOverboard.cpp" />
 		<Unit filename="ManOverboard.hpp" />
 		<Unit filename="MovingWater.cpp" />

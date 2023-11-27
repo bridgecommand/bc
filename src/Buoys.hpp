@@ -39,6 +39,8 @@ class Buoys
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void enableAllTriangleSelectors();
+        irr::scene::ISceneNode* getSceneNode(int number);
 
     private:
         std::vector<Buoy> buoys;

@@ -101,6 +101,8 @@ CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* drive
 //! destructor
 CGUIEnvironment::~CGUIEnvironment()
 {
+	clearDeletionQueue();
+
 	if ( HoveredNoSubelement && HoveredNoSubelement != this )
 	{
 		HoveredNoSubelement->drop();
@@ -191,19 +193,18 @@ void CGUIEnvironment::loadBuiltInFont()
 
 
 //! draws all gui elements
-void CGUIEnvironment::drawAll()
+void CGUIEnvironment::drawAll(bool useScreenSize)
 {
-	if (Driver)
+	if (useScreenSize && Driver)
 	{
 		core::dimension2d<s32> dim(Driver->getScreenSize());
 		if (AbsoluteRect.LowerRightCorner.X != dim.Width ||
-			AbsoluteRect.LowerRightCorner.Y != dim.Height)
+			AbsoluteRect.UpperLeftCorner.X != 0 ||
+			AbsoluteRect.LowerRightCorner.Y != dim.Height ||
+			AbsoluteRect.UpperLeftCorner.Y != 0
+			)
 		{
-			// resize gui environment
-			DesiredRect.LowerRightCorner = dim;
-			AbsoluteClippingRect = DesiredRect;
-			AbsoluteRect = DesiredRect;
-			updateAbsolutePosition();
+			setRelativePosition(core::recti(0,0,dim.Width, dim.Height));
 		}
 	}
 
@@ -213,6 +214,8 @@ void CGUIEnvironment::drawAll()
 
 	draw();
 	OnPostRender ( os::Timer::getTime () );
+
+	clearDeletionQueue();
 }
 
 
@@ -471,6 +474,28 @@ void CGUIEnvironment::OnPostRender( u32 time )
 	IGUIElement::OnPostRender ( time );
 }
 
+void CGUIEnvironment::addToDeletionQueue(IGUIElement* element)
+{
+	if (!element)
+		return;
+
+	element->grab();
+	DeletionQueue.push_back(element);
+}
+
+void CGUIEnvironment::clearDeletionQueue()
+{
+	if (DeletionQueue.empty())
+		return;
+
+	for (u32 i=0; i<DeletionQueue.size(); ++i)
+	{
+		DeletionQueue[i]->remove();
+		DeletionQueue[i]->drop();
+	}
+
+	DeletionQueue.clear();
+}
 
 //
 void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
@@ -617,8 +642,8 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 
 			// For keys we handle the event before changing focus to give elements the chance for catching the TAB
 			// Send focus changing event
+			// CAREFUL when changing - there's an identical check in CGUIModalScreen::OnEvent
 			if (FocusFlags & EFF_SET_ON_TAB &&
-				event.EventType == EET_KEY_INPUT_EVENT &&
 				event.KeyInput.PressedDown &&
 				event.KeyInput.Key == KEY_TAB)
 			{
@@ -785,7 +810,7 @@ bool CGUIEnvironment::loadGUI(const io::path& filename, IGUIElement* parent)
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
 	if (!read)
 	{
-		os::Printer::log("Unable to open gui file", filename, ELL_ERROR);
+		os::Printer::log("Unable to open GUI file", filename, ELL_ERROR);
 		return false;
 	}
 
@@ -1048,11 +1073,12 @@ IGUIWindow* CGUIEnvironment::addWindow(const core::rect<s32>& rectangle, bool mo
 
 
 //! adds a modal screen. The returned pointer must not be dropped.
-IGUIElement* CGUIEnvironment::addModalScreen(IGUIElement* parent)
+IGUIElement* CGUIEnvironment::addModalScreen(IGUIElement* parent, int blinkMode)
 {
 	parent = parent ? parent : this;
 
-	IGUIElement *win = new CGUIModalScreen(this, parent, -1);
+	CGUIModalScreen *win = new CGUIModalScreen(this, parent, -1);
+	win->setBlinkMode(blinkMode);
 	win->drop();
 
 	return win;

@@ -12,6 +12,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />					
 					<Add option="../libs/Irrlicht/irrlicht-svn/lib/Win32-gcc/libIrrlicht.a" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
@@ -80,6 +83,8 @@
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
 		</Unit>
+		<Unit filename="LinesData.cpp" />
+		<Unit filename="LinesData.hpp" />
 		<Unit filename="Network.cpp" />
 		<Unit filename="Network.hpp" />
 		<Unit filename="ScenarioChoice.cpp" />

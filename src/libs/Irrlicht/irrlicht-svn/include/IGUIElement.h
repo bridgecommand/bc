@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_ELEMENT_H_INCLUDED__
-#define __I_GUI_ELEMENT_H_INCLUDED__
+#ifndef IRR_I_GUI_ELEMENT_H_INCLUDED
+#define IRR_I_GUI_ELEMENT_H_INCLUDED
 
 #include "IAttributeExchangingObject.h"
 #include "irrList.h"
@@ -81,7 +81,7 @@ public:
 		{
 			const core::rect<s32>& r2 = Parent->getAbsolutePosition();
 
-			core::dimension2df d((f32)(r2.getSize().Width), (f32)(r2.getSize().Height));
+			const core::dimension2df d((f32)(r2.getSize().Width), (f32)(r2.getSize().Height));
 
 			if (AlignLeft   == EGUIA_SCALE)
 				ScaleRect.UpperLeftCorner.X = (f32)r.UpperLeftCorner.X / d.Width;
@@ -194,9 +194,8 @@ public:
 
 		if (Parent)
 		{
-			core::rect<s32> r(Parent->getAbsolutePosition());
-
-			core::dimension2df d((f32)r.getSize().Width, (f32)r.getSize().Height);
+			const core::rect<s32> r(Parent->getAbsolutePosition());
+			const core::dimension2df d((f32)r.getSize().Width, (f32)r.getSize().Height);
 
 			if (AlignLeft   == EGUIA_SCALE)
 				ScaleRect.UpperLeftCorner.X = (f32)DesiredRect.UpperLeftCorner.X / d.Width;
@@ -209,6 +208,29 @@ public:
 		}
 	}
 
+	//! How left element border is aligned when parent is resized
+	EGUI_ALIGNMENT getAlignLeft() const 
+	{
+		return AlignLeft;
+	}
+
+	//! How right element border is aligned when parent is resized
+	EGUI_ALIGNMENT getAlignRight() const 
+	{
+		return AlignRight;
+	}
+
+	//! How top element border is aligned when parent is resized
+	EGUI_ALIGNMENT getAlignTop() const 
+	{
+		return AlignTop;
+	}
+
+	//! How bottom element border is aligned when parent is resized
+	EGUI_ALIGNMENT getAlignBottom() const 
+	{
+		return AlignBottom;
+	}
 
 	//! Updates the absolute position.
 	virtual void updateAbsolutePosition()
@@ -412,7 +434,7 @@ public:
 			if (el)
 			{
 				// find the highest element number
-				el->getNextElement(-1, true, IsTabGroup, first, closest, true);
+				el->getNextElement(-1, true, IsTabGroup, first, closest, true, true);
 				if (first)
 				{
 					TabOrder = first->getTabOrder() + 1;
@@ -524,7 +546,7 @@ public:
 
 
 	//! Called if an event happened.
-	virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_
+	virtual bool OnEvent(const SEvent& event) IRR_OVERRIDE
 	{
 		return Parent ? Parent->OnEvent(event) : false;
 	}
@@ -698,7 +720,7 @@ public:
 					}
 				}
 				// search within children
-				if ((*it)->getNextElement(startOrder, reverse, group, first, closest))
+				if ((*it)->getNextElement(startOrder, reverse, group, first, closest, includeInvisible, includeDisabled))
 				{
 					return true;
 				}
@@ -769,7 +791,7 @@ public:
 	//! Writes attributes of the scene node.
 	/** Implement this to expose the attributes of your scene node for
 	scripting languages, editors, debuggers or xml serialization purposes. */
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const IRR_OVERRIDE
 	{
 		out->addString("Name", Name.c_str());
 		out->addInt("Id", ID );
@@ -794,7 +816,7 @@ public:
 	//! Reads attributes of the scene node.
 	/** Implement this to set the attributes of your scene node for
 	scripting languages, editors, debuggers or xml deserialization purposes. */
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) IRR_OVERRIDE
 	{
 		setName(in->getAttributeAsString("Name", Name));
 		setID(in->getAttributeAsInt("Id", ID));
@@ -1043,4 +1065,3 @@ protected:
 } // end namespace irr
 
 #endif
-

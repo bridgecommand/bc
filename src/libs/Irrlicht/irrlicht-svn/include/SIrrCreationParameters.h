@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED__
-#define __I_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED__
+#ifndef IRR_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED
+#define IRR_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED
 
 #include "EDriverTypes.h"
 #include "EDeviceTypes.h"
@@ -28,7 +28,7 @@ namespace irr
 			Bits(32),
 			ZBufferBits(24),
 			Fullscreen(false),
-			WindowResizable(false),
+			WindowResizable(2),
 			Stencilbuffer(true),
 			Vsync(false),
 			AntiAlias(0),
@@ -48,7 +48,7 @@ namespace irr
 			DisplayAdapter(0),
 			DriverMultithreaded(false),
 			UsePerformanceTimer(true),
-			X11borderless(false), //JAMES
+			X11borderless(false), //JAMES: Add option for X11 borderless window
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
 		{
 		}
@@ -82,7 +82,7 @@ namespace irr
 			DisplayAdapter = other.DisplayAdapter;
 			DriverMultithreaded = other.DriverMultithreaded;
 			UsePerformanceTimer = other.UsePerformanceTimer;
-			X11borderless = other.X11borderless; //JAMES
+			X11borderless = other.X11borderless; //JAMES: Add option for X11 borderless window
 			return *this;
 		}
 
@@ -123,8 +123,9 @@ namespace irr
 
 		//! Should a non-fullscreen window be resizable.
 		/** Might not be supported by all devices. Ignored when Fullscreen is true.
-		Default: false */
-		bool WindowResizable;
+		Values: 0 = not resizable, 1 = resizable, 2 = system decides default itself
+		Default: 2*/
+		u8 WindowResizable;
 
 		//! Specifies if the stencil buffer should be enabled.
 		/** Set this to true, if you want the engine be able to draw
@@ -296,11 +297,11 @@ namespace irr
 		problems with speed stepping and other techniques.
 		*/
 		bool UsePerformanceTimer;
-
+		
 		//! For X11 only, use window manager hints to request a borderless window. 
 		/** Default is false
 		*/
-		bool X11borderless; //JAMES
+		bool X11borderless; //JAMES: Add option for X11 borderless window
 
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
@@ -312,4 +313,3 @@ namespace irr
 } // end namespace irr
 
 #endif
-

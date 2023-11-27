@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_Z2_BUFFER_H_INCLUDED__
-#define __I_Z2_BUFFER_H_INCLUDED__
+#ifndef IRR_I_Z2_BUFFER_H_INCLUDED
+#define IRR_I_Z2_BUFFER_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "dimension2d.h"
@@ -21,7 +21,7 @@ namespace video
 		virtual ~IDepthBuffer() {};
 
 		//! clears the zbuffer
-		virtual void clear(f32 value) = 0;
+		virtual void clear(f32 value, const interlaced_control interlaced) = 0;
 
 		//! sets the new size of the zbuffer
 		virtual void setSize(const core::dimension2d<u32>& size) = 0;
@@ -52,7 +52,7 @@ namespace video
 		virtual ~IStencilBuffer() {};
 
 		//! clears the stencil buffer
-		virtual void clear(u8 value) = 0;
+		virtual void clear(u32 value, const interlaced_control interlaced) = 0;
 
 		//! sets the new size of the zbuffer
 		virtual void setSize(const core::dimension2d<u32>& size) = 0;
@@ -79,4 +79,3 @@ namespace video
 } // end namespace irr
 
 #endif
-

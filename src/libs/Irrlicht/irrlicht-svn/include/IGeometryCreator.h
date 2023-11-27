@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GEOMETRY_CREATOR_H_INCLUDED__
-#define __I_GEOMETRY_CREATOR_H_INCLUDED__
+#ifndef IRR_I_GEOMETRY_CREATOR_H_INCLUDED
+#define IRR_I_GEOMETRY_CREATOR_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "IMesh.h"
@@ -24,14 +24,30 @@ namespace scene
 	{
 		//! Single buffer with 12 different vertices, normals are average of adjacent planes
 		//! Order for outgoing (front-face) normals of planes would be: NEG_Z, POS_X, POS_Z, NEG_X, POS_Y, NEG_Y
+		//! This was the only available type before Irrlicht 1.9, so it's still the default in some functions.
+		//! It has the least vertices, but is pretty much unusable if you have dynamic light
 		ECMT_1BUF_12VTX_NA,
 
 		//! One buffer per side, each with 4 vertices, normals are perpendicular to sides
-		//! Note: You probably will have to scale down your texture uv's to avoid white lines at borders 
-		//        as this mesh sets them to 0,1 values. We can't do that when creating the mesh as it 
-		//        depends on texture resolution which we don't know at that point.
-		ECMT_6BUF_4VTX_NP
+		//! You can use this one if you need different texture on each cube side
+		ECMT_6BUF_4VTX_NP,
+
+		//! Single buffer with 24 different vertices, normals are perpendicular to sides
+		ECMT_1BUF_24VTX_NP,
+
+		//! not used, counts the number of enumerated types
+		ECMT_COUNT
 	};
+
+	//! Names for ECUBE_MESH_TYPE
+	const c8* const CubeMeshTypeNames[ECMT_COUNT+1] =
+	{
+		"1BUF_12VTX_NA",
+		"ECMT_6BUF_4VTX_NP",
+		"1BUF_24VTX_NP",
+		0
+	};
+
 
 //! Helper class for creating geometry on the fly.
 /** You can get an instance of this class through ISceneManager::getGeometryCreator() */
@@ -44,6 +60,9 @@ public:
 	\param size Dimensions of the cube.
 	\param type One of ECUBE_MESH_TYPE. So you can chose between cubes with single material or independent materials per side.
 	\return Generated mesh.
+	Note: UV's go always from 0 to 1. Which can produce wrong colors at edges with texture filtering.
+	      Fixing UV's depends on texture-size (have to be moved half a pixel towards the inside, so 0.5f/texure_size as then the pixel center is exactly on the border)
+		  Easier solution is usually to set TextureWrapU and TextureWrapV to ETC_CLAMP_TO_EDGE in the Material.
 	*/
 	virtual IMesh* createCubeMesh(const core::vector3df& size=core::vector3df(5.f,5.f,5.f), ECUBE_MESH_TYPE type = ECMT_1BUF_12VTX_NA) const =0;
 
@@ -116,8 +135,8 @@ public:
 
 	//! Create an arrow mesh, composed of a cylinder and a cone.
 	/**
-	\param tesselationCylinder Number of quads composing the cylinder.
-	\param tesselationCone Number of triangles composing the cone's roof.
+	\param tessellationCylinder Number of quads composing the cylinder.
+	\param tessellationCone Number of triangles composing the cone's roof.
 	\param height Total height of the arrow
 	\param cylinderHeight Total height of the cylinder, should be lesser
 	than total height
@@ -128,8 +147,8 @@ public:
 	\param colorCone color of the cone
 	\return Generated mesh.
 	*/
-	virtual IMesh* createArrowMesh(const u32 tesselationCylinder = 4,
-			const u32 tesselationCone = 8, const f32 height = 1.f,
+	virtual IMesh* createArrowMesh(const u32 tessellationCylinder = 4,
+			const u32 tessellationCone = 8, const f32 height = 1.f,
 			const f32 cylinderHeight = 0.6f, const f32 widthCylinder = 0.05f,
 			const f32 widthCone = 0.3f, const video::SColor colorCylinder = 0xFFFFFFFF,
 			const video::SColor colorCone = 0xFFFFFFFF) const =0;
@@ -149,7 +168,7 @@ public:
 	/**
 	\param radius Radius of the cylinder.
 	\param length Length of the cylinder.
-	\param tesselation Number of quads around the circumference of the cylinder.
+	\param tessellation Number of quads around the circumference of the cylinder.
 	\param color The color of the cylinder.
 	\param closeTop If true, close the ends of the cylinder, otherwise leave them open.
 	\param oblique X-offset (shear) of top compared to bottom. 
@@ -164,7 +183,7 @@ public:
 	\return Generated mesh.
 	*/
 	virtual IMesh* createCylinderMesh(f32 radius, f32 length,
-			u32 tesselation,
+			u32 tessellation,
 			const video::SColor& color=video::SColor(0xffffffff),
 			bool closeTop=true, f32 oblique=0.f, u32 normalType=0) const =0;
 
@@ -172,16 +191,36 @@ public:
 	/**
 	\param radius Radius of the cone.
 	\param length Length of the cone.
-	\param tesselation Number of quads around the circumference of the cone.
+	\param tessellation Number of quads around the circumference of the cone.
 	\param colorTop The color of the top of the cone.
 	\param colorBottom The color of the bottom of the cone.
 	\param oblique (to be documented)
 	\return Generated mesh.
 	*/
-	virtual IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation,
+	virtual IMesh* createConeMesh(f32 radius, f32 length, u32 tessellation,
 			const video::SColor& colorTop=video::SColor(0xffffffff),
 			const video::SColor& colorBottom=video::SColor(0xffffffff),
 			f32 oblique=0.f) const =0;
+
+	//! Create a torus mesh
+	/** Note: Segments might get reduced to ensure it fits into 16-bit meshbuffer.
+	With 255 segments for minor and major circle you'll hit the maximum.
+	When using caps 2 more vertices are added.
+	Note: UV's for caps are probably not useful
+	\param majorRadius Starting from mesh center
+	\param minorRadius Starting from a circle at majorRadius distance around center
+	\param majorSegments Segments for major circle. Will use at least 3 segments. 
+	\param minorSegments Segments for minor circle. Will use at least 3 segments.
+	\param angleStart Start major circle between 0 and 360° and < angleEnd
+	\param angleEnd End major circle between 0 and 360° and > angleStart
+	\param capEnds When you don't create a full major circle you might want caps
+	               0 = no caps (default)
+				   Bit 1: add cap at angleStart
+	               Bit 2: add cap at angleEnd
+	*/
+	virtual IMesh* createTorusMesh(f32 majorRadius, f32 minorRadius, 
+		u32 majorSegments = 32, u32 minorSegments = 16, 
+		f32 angleStart=0.f, f32 angleEnd=360.f, int capEnds=0) const = 0;
 
 	//! Create a volume light mesh.
 	/**
@@ -205,5 +244,4 @@ public:
 } // end namespace scene
 } // end namespace irr
 
-#endif // __I_GEOMETRY_CREATOR_H_INCLUDED__
-
+#endif // IRR_I_GEOMETRY_CREATOR_H_INCLUDED

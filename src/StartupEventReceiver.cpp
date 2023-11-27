@@ -53,17 +53,32 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED) {
-                if (id == secondaryBoxID || id == multiplayerBoxID) {
+                //Only one check box should be on
+                if (id == secondaryBoxID) {
+                    multiplayerBox->setChecked(false);
+                }
+                if (id == multiplayerBoxID) {
+                    secondaryBox->setChecked(false);
+                }
+                
+                if (id == secondaryBoxID || id == multiplayerBoxID) {   
                     //Check state, and set hostname box and text visible
-                    if ( ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked() ){
+                    if (multiplayerBox->isChecked() || secondaryBox->isChecked()) {
                         scenarioListBox->setVisible(false);
                         scenarioText->setVisible(false);
-                        hostnameBox->setVisible(false);
-                        hostnameText->setVisible(false);
                         description->setVisible(false);
                         portText->setVisible(true);
                         portBox->setVisible(true);
+                        if (multiplayerBox->isChecked()) {
+                            // If multiplayer, we also want to be able to send to secondary display
+                            hostnameBox->setVisible(true);
+                            hostnameText->setVisible(true);
+                        } else {
+                            hostnameBox->setVisible(false);
+                            hostnameText->setVisible(false);
+                        }
                     } else {
+                        // Normal mode
                         scenarioListBox->setVisible(true);
                         scenarioText->setVisible(true);
                         hostnameBox->setVisible(true);
@@ -72,14 +87,9 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                         portText->setVisible(false);
                         portBox->setVisible(false);
                     }
+                    
                 }
-                //Only one check box should be on
-                if (id == secondaryBoxID) {
-                    multiplayerBox->setChecked(false);
-                }
-                if (id == multiplayerBoxID) {
-                    secondaryBox->setChecked(false);
-                }
+                
             }
 		}
 

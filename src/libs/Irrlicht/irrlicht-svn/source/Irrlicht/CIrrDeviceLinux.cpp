@@ -25,6 +25,10 @@
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 
+#if defined(_IRR_LINUX_X11_XINPUT2_)
+#include <X11/extensions/XInput2.h>
+#endif
+
 #if defined(_IRR_COMPILE_WITH_OPENGL_)
 #include "CGLXManager.h"
 #endif
@@ -72,13 +76,16 @@ namespace
 	Atom X_ATOM_NETWM_MAXIMIZE_VERT;
 	Atom X_ATOM_NETWM_MAXIMIZE_HORZ;
 	Atom X_ATOM_NETWM_STATE;
+
+	Atom X_ATOM_WM_DELETE_WINDOW;
+
+#if defined(_IRR_LINUX_X11_XINPUT2_)
+	int XI_EXTENSIONS_OPCODE;
+#endif
 };
 
 namespace irr
 {
-
-const char wmDeleteWindow[] = "WM_DELETE_WINDOW";
-
 //! constructor
 CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
@@ -126,7 +133,8 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 		// create the window, only if we do not use the null device
 		if (!createWindow())
 			return;
-		setResizable(param.WindowResizable);
+		if (param.WindowResizable < 2 )
+			setResizable(param.WindowResizable == 1 ? true : false);
 	}
 
 	// create cursor control
@@ -298,8 +306,8 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 		if (bestMode != -1)
 		{
 			os::Printer::log("Starting vidmode fullscreen mode...", ELL_INFORMATION);
-			os::Printer::log("hdisplay: ", core::stringc(modes[bestMode]->hdisplay).c_str(), ELL_INFORMATION);
-			os::Printer::log("vdisplay: ", core::stringc(modes[bestMode]->vdisplay).c_str(), ELL_INFORMATION);
+			os::Printer::log("hdisplay", core::stringc(modes[bestMode]->hdisplay).c_str(), ELL_INFORMATION);
+			os::Printer::log("vdisplay", core::stringc(modes[bestMode]->vdisplay).c_str(), ELL_INFORMATION);
 
 			XF86VidModeSwitchToMode(XDisplay, Screennr, modes[bestMode]);
 			XF86VidModeSetViewPort(XDisplay, Screennr, 0, 0);
@@ -335,8 +343,8 @@ bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 		if (bestMode != -1)
 		{
 			os::Printer::log("Starting randr fullscreen mode...", ELL_INFORMATION);
-			os::Printer::log("width: ", core::stringc(modes[bestMode].width).c_str(), ELL_INFORMATION);
-			os::Printer::log("height: ", core::stringc(modes[bestMode].height).c_str(), ELL_INFORMATION);
+			os::Printer::log("width", core::stringc(modes[bestMode].width).c_str(), ELL_INFORMATION);
+			os::Printer::log("height", core::stringc(modes[bestMode].height).c_str(), ELL_INFORMATION);
 
 			XRRSetScreenConfig(XDisplay,config,DefaultRootWindow(XDisplay),bestMode,OldRandrRotation,CurrentTime);
 			UseXRandR=true;
@@ -359,26 +367,26 @@ void IrrPrintXGrabError(int grabResult, const c8 * grabCommand )
 {
 	if ( grabResult == GrabSuccess )
 	{
-//		os::Printer::log(grabCommand, ": GrabSuccess", ELL_INFORMATION);
+//		os::Printer::log(grabCommand, "GrabSuccess", ELL_INFORMATION);
 		return;
 	}
 
 	switch ( grabResult )
 	{
 		case AlreadyGrabbed:
-			os::Printer::log(grabCommand, ": AlreadyGrabbed", ELL_WARNING);
+			os::Printer::log(grabCommand, "AlreadyGrabbed", ELL_WARNING);
 			break;
 		case GrabNotViewable:
-			os::Printer::log(grabCommand, ": GrabNotViewable", ELL_WARNING);
+			os::Printer::log(grabCommand, "GrabNotViewable", ELL_WARNING);
 			break;
 		case GrabFrozen:
-			os::Printer::log(grabCommand, ": GrabFrozen", ELL_WARNING);
+			os::Printer::log(grabCommand, "GrabFrozen", ELL_WARNING);
 			break;
 		case GrabInvalidTime:
-			os::Printer::log(grabCommand, ": GrabInvalidTime", ELL_WARNING);
+			os::Printer::log(grabCommand, "GrabInvalidTime", ELL_WARNING);
 			break;
 		default:
-			os::Printer::log(grabCommand, ": grab failed with unknown problem", ELL_WARNING);
+			os::Printer::log(grabCommand, "grab failed with unknown problem", ELL_WARNING);
 			break;
 	}
 }
@@ -447,7 +455,7 @@ bool CIrrDeviceLinux::createWindow()
 	}
 #ifdef _DEBUG
 	else
-		os::Printer::log("Visual chosen: ", core::stringc(static_cast<u32>(VisualInfo->visualid)).c_str(), ELL_DEBUG);
+		os::Printer::log("Visual chosen", core::stringc(static_cast<u32>(VisualInfo->visualid)).c_str(), ELL_DEBUG);
 #endif
 
 	// create color map
@@ -489,9 +497,8 @@ bool CIrrDeviceLinux::createWindow()
 
 		XMapRaised(XDisplay, XWindow);
 		CreationParams.WindowId = (void*)XWindow;
-		Atom wmDelete;
-		wmDelete = XInternAtom(XDisplay, wmDeleteWindow, True);
-		XSetWMProtocols(XDisplay, XWindow, &wmDelete, 1);
+		X_ATOM_WM_DELETE_WINDOW = XInternAtom(XDisplay, "WM_DELETE_WINDOW", True);
+		XSetWMProtocols(XDisplay, XWindow, &X_ATOM_WM_DELETE_WINDOW, 1);
 		if (CreationParams.Fullscreen)
 		{
 			XSetInputFocus(XDisplay, XWindow, RevertToParent, CurrentTime);
@@ -515,12 +522,25 @@ bool CIrrDeviceLinux::createWindow()
 		XWindow = (Window)CreationParams.WindowId;
 		if (!CreationParams.IgnoreInput)
 		{
-			XCreateWindow(XDisplay,
+			// Note: This might be further improved by using a InputOnly window instead of InputOutput.
+			// I think then it should be possible to render into the given parent window instead of
+			// creating a child-window.
+			// That could also be a third option for IgnoreInput in the CreationParams.
+			// But we need another window variable then and have to split input/output in
+			// the rest of the device code.
+			// Also... this does possibly leak.
+			Window child_window = XCreateWindow(XDisplay,
 					XWindow,
 					0, 0, Width, Height, 0, VisualInfo->depth,
 					InputOutput, VisualInfo->visual,
 					CWBorderPixel | CWColormap | CWEventMask,
 					&WndAttributes);
+
+			// do not forget to map new window
+			XMapWindow(XDisplay, child_window);
+
+			// overwrite device window id
+			XWindow = child_window;
 		}
 		XWindowAttributes wa;
 		XGetWindowAttributes(XDisplay, XWindow, &wa);
@@ -534,7 +554,8 @@ bool CIrrDeviceLinux::createWindow()
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(XDisplay, True, &AutorepeatSupport);
 
-	/*	
+	// JAMES: Commented out, reinserted below X11borderless section
+	/*
 	Window tmp;
 	u32 borderWidth;
 	int x,y;
@@ -571,7 +592,7 @@ bool CIrrDeviceLinux::createWindow()
 	Atom WMCheck = XInternAtom(XDisplay, "_NET_SUPPORTING_WM_CHECK", true);
 	if (WMCheck != None)
 		HasNetWM = true;
-
+	
 	//JAMES: Boderless window, code from https://www.raspberrypi.org/forums/viewtopic.php?t=254924
 	if (CreationParams.X11borderless) {	
 		//Full screen
@@ -615,12 +636,12 @@ bool CIrrDeviceLinux::createWindow()
 	int x,y;
 	unsigned int bits;
 
-	
-
 	XGetGeometry(XDisplay, XWindow, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
 	CreationParams.Bits = bits;
 	CreationParams.WindowSize.Width = Width;
 	CreationParams.WindowSize.Height = Height;
+
+	initXInput2();
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
@@ -1017,7 +1038,7 @@ bool CIrrDeviceLinux::run()
 								os::Printer::log("XLookupNone", ELL_INFORMATION);
 							else if ( status ==  XLookupKeySym )
 								// Getting this also when user did not set setlocale(LC_ALL, ""); and using an unknown locale
-								// XSupportsLocale doesn't seeem to catch that unfortunately - any other ideas to catch it are welcome.
+								// XSupportsLocale doesn't seem to catch that unfortunately - any other ideas to catch it are welcome.
 								os::Printer::log("XLookupKeySym", ELL_INFORMATION);
 							else if ( status ==  XBufferOverflow )
 								os::Printer::log("XBufferOverflow", ELL_INFORMATION);
@@ -1050,8 +1071,7 @@ bool CIrrDeviceLinux::run()
 
 			case ClientMessage:
 				{
-					char *atom = XGetAtomName(XDisplay, event.xclient.message_type);
-					if (*atom == *wmDeleteWindow)
+					if (static_cast<Atom>(event.xclient.data.l[0]) == X_ATOM_WM_DELETE_WINDOW && X_ATOM_WM_DELETE_WINDOW != None)
 					{
 						os::Printer::log("Quit message received.", ELL_INFORMATION);
 						Close = true;
@@ -1064,7 +1084,6 @@ bool CIrrDeviceLinux::run()
 						irrevent.UserEvent.UserData2 = static_cast<size_t>(event.xclient.data.l[1]);
 						postEventFromUser(irrevent);
 					}
-					XFree(atom);
 				}
 				break;
 
@@ -1111,6 +1130,28 @@ bool CIrrDeviceLinux::run()
 					XFlush (XDisplay);
 				}
 				break;
+#if defined(_IRR_LINUX_X11_XINPUT2_)
+				case GenericEvent:
+				{
+					XGenericEventCookie *cookie = &event.xcookie;
+					if (XGetEventData(XDisplay, cookie) && cookie->extension == XI_EXTENSIONS_OPCODE && XI_EXTENSIONS_OPCODE
+					&& (cookie->evtype == XI_TouchUpdate || cookie->evtype == XI_TouchBegin || cookie->evtype == XI_TouchEnd))
+					{
+						XIDeviceEvent *de = (XIDeviceEvent *) cookie->data;
+
+						irrevent.EventType = EET_TOUCH_INPUT_EVENT;
+
+						irrevent.TouchInput.Event = cookie->evtype == XI_TouchUpdate ? ETIE_MOVED : (cookie->evtype == XI_TouchBegin ? ETIE_PRESSED_DOWN : ETIE_LEFT_UP);
+
+						irrevent.TouchInput.ID = de->detail;
+						irrevent.TouchInput.X = de->event_x;
+						irrevent.TouchInput.Y = de->event_y;
+
+						postEventFromUser(irrevent);
+					}
+				}
+				break;
+#endif
 
 			default:
 				break;
@@ -1371,7 +1412,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 			else
 			#endif
 			{
-				os::Printer::log("VidMode or RandR X11 extension requireed for VideoModeList." , ELL_WARNING);
+				os::Printer::log("VidMode or RandR X11 extension required for VideoModeList." , ELL_WARNING);
 			}
 		}
 		if (XDisplay && temporaryDisplay)
@@ -1955,7 +1996,7 @@ Bool PredicateIsEventType(Display *display, XEvent *event, XPointer arg)
 {
 	if ( event && event->type == *(int*)arg )
 	{
-//		os::Printer::log("remove event:", core::stringc((int)arg).c_str(), ELL_INFORMATION);
+//		os::Printer::log("remove event", core::stringc((int)arg).c_str(), ELL_INFORMATION);
 		return True;
 	}
 	return False;
@@ -1996,6 +2037,42 @@ void CIrrDeviceLinux::initXAtoms()
 #endif
 }
 
+void CIrrDeviceLinux::initXInput2()
+{
+#if defined(_IRR_LINUX_X11_XINPUT2_)
+	int ev=0;
+	int err=0;
+	if (!XQueryExtension(XDisplay, "XInputExtension", &XI_EXTENSIONS_OPCODE, &ev, &err))
+	{
+		os::Printer::log("X Input extension not available.", ELL_WARNING);
+		return;
+	}
+
+	int major = 2;
+	int minor = 3;
+	int rc = XIQueryVersion(XDisplay, &major, &minor);
+	if ( rc != Success )
+	{
+		os::Printer::log("No XI2 support.", ELL_WARNING);
+		return;
+	}
+
+	// So far we only use XInput2 for touch events.
+	// So we enable those and disable all other events for now.
+	XIEventMask eventMask;
+	unsigned char mask[XIMaskLen(XI_TouchEnd)];
+	memset(mask, 0, sizeof(mask));
+	eventMask.deviceid = XIAllMasterDevices;
+	eventMask.mask_len = sizeof(mask);
+	eventMask.mask = mask;
+	XISetMask(eventMask.mask, XI_TouchBegin);
+	XISetMask(eventMask.mask, XI_TouchUpdate);
+	XISetMask(eventMask.mask, XI_TouchEnd);
+
+	XISelectEvents(XDisplay, XWindow, &eventMask, 1);
+#endif
+}
+
 
 #ifdef _IRR_COMPILE_WITH_X11_
 
@@ -2006,7 +2083,7 @@ Cursor CIrrDeviceLinux::TextureToMonochromeCursor(irr::video::ITexture * tex, co
 										ZPixmap,	// XYBitmap (depth=1), ZPixmap(depth=x)
 										0, 0, sourceRect.getWidth(), sourceRect.getHeight(),
 										32, // bitmap_pad,
-										0// bytes_per_line (0 means continuos in memory)
+										0// bytes_per_line (0 means continuous in memory)
 										);
 	sourceImage->data = new char[sourceImage->height * sourceImage->bytes_per_line];
 	XImage * maskImage = XCreateImage(XDisplay, VisualInfo->visual,
@@ -2141,6 +2218,9 @@ CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
 	: Device(dev)
 #ifdef _IRR_COMPILE_WITH_X11_
 	, PlatformBehavior(gui::ECPB_NONE), LastQuery(0)
+#ifdef _IRR_LINUX_X11_XINPUT2_
+	, DeviceId(0)
+#endif
 #endif
 	, IsVisible(true), Null(null), UseReferenceRect(false)
 	, ActiveIcon(gui::ECI_NORMAL), ActiveIconStartTime(0)
@@ -2148,6 +2228,10 @@ CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (!Null)
 	{
+#ifdef _IRR_LINUX_X11_XINPUT2_
+		XIGetClientPointer(Device->XDisplay, Device->XWindow, &DeviceId);
+#endif
+
 		XGCValues values;
 		unsigned long valuemask = 0;
 
@@ -2182,7 +2266,7 @@ CIrrDeviceLinux::CCursorControl::CCursorControl(CIrrDeviceLinux* dev, bool null)
 CIrrDeviceLinux::CCursorControl::~CCursorControl()
 {
 	// Do not clearCursors here as the display is already closed
-	// TODO (cutealien): droping cursorcontrol earlier might work, not sure about reason why that's done in stub currently.
+	// TODO (cutealien): dropping cursorcontrol earlier might work, not sure about reason why that's done in stub currently.
 }
 
 #ifdef _IRR_COMPILE_WITH_X11_

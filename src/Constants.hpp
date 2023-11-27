@@ -27,6 +27,7 @@ const irr::f32 RHO_FW = 1000; // density of freshwater kg / m^3
 const irr::f32 RHO_AIR = 1.225; // density of air at sea level kg / m^3 approximately
 				// treated as a non compressible fluid, which it isnt but
 				// good enough to use for simulation purposes
+const irr::f32 VIEW_PROPORTION_3D = 0.6;
 
 //units conversions
 const irr::f32 SECONDS_IN_HOUR = 3600.0;
@@ -42,8 +43,8 @@ const irr::f32 DEG_IN_RAD = 180.0 / PI;
 const irr::f32 RAD_PER_S_IN_DEG_PER_MINUTE = 180.0/PI * 60 ;
 
 //general definitions
-const std::string LONGNAME = "Bridge Command 5.8.8";
+const std::string LONGNAME = "Bridge Command 5.8.13";
 const std::string VERSION = "5.8";
-const std::string LONGVERSION = "5.8.8" ;
+const std::string LONGVERSION = "5.8.13" ;
 
 #endif

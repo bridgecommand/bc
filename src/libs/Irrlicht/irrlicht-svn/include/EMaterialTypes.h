@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __E_MATERIAL_TYPES_H_INCLUDED__
-#define __E_MATERIAL_TYPES_H_INCLUDED__
+#ifndef IRR_E_MATERIAL_TYPES_H_INCLUDED
+#define IRR_E_MATERIAL_TYPES_H_INCLUDED
 
 namespace irr
 {
@@ -73,7 +73,7 @@ namespace video
 		EMT_SPHERE_MAP,
 
 		//! A reflecting material with an optional non reflecting texture layer.
-		/** The reflection map should be set as first texture. */
+		/** The reflection map should be set as second texture. */
 		EMT_REFLECTION_2_LAYER,
 
 		//! A transparent material.
@@ -229,6 +229,4 @@ namespace video
 } // end namespace video
 } // end namespace irr
 
-
-#endif // __E_MATERIAL_TYPES_H_INCLUDED__
-
+#endif // IRR_E_MATERIAL_TYPES_H_INCLUDED

@@ -1,13 +1,54 @@
-The following modifications have been made for Bridge Command to the base Irrlicht 1.8.1/1.8.4 release:
+Notes on Irrlicht as used in Bridge Command
+===========================================
 
-OSX specific code (CIrrDeviceMacOSX.mm) modified to use Command key (NSCommandKeyMask) instead of Control.
+Irrlicht updated to r6565 from SVN trunk
 
-CFileSystem.cpp changed so it doesn't convert file lists to lowercase on windows.
+The following changes are applied for Bridge Command from 
+Irrlicht trunk, and all changes marked in source with //JAMES:
 
-CIrrDeviceWin32.cpp changed to recognize up to 8 joystick axes
+In include:
+-----------
+
+IrrCompileConfig.h: Comment out #define _IRR_COMPILE_WITH_BURNINGSVIDEO_
+SIrrCreationParameters.h: X11borderless definitions (3 blocks in file)
+
+In source:
+----------
+
+Main source changes: 
+
+CFileSystem.cpp
+-:r = new CFileList(Path, true, false);
++:r = new CFileList(Path, false, false); //JAMES: Changed ignoreCase parameter from true to false - Don't make the returned file names lower case
 
 CIrrDeviceLinux.cpp
-SIrrCreationParameters.h modified for borderless windows on X11
+Changes for X11borderless, including commenting out initial section 
+Window tmp;
+...to
+CreationParams.WindowSize.Height = Height;
+Plus adding code block below to handle the actual window creation
 
-All changes marked in source with //JAMES
+CIrrDeviceOSX.mm:
+-:ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
++:ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSCommandKeyMask) != 0; //JAMES: Changed from Control to Command
 
+-:ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
++:ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSCommandKeyMask) != 0;  //JAMES
+
+-:ievent.MouseInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
++:ievent.MouseInput.Control = ([(NSEvent *)event modifierFlags] & NSCommandKeyMask) != 0; //JAMES
+
+CIrrDeviceWin32.cpp:
+Below activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
++:activeJoystick.axisValid[6] = (info.rglSlider[0] != 0) ? 1 : 0; //JAMES
++:activeJoystick.axisValid[7] = (info.rglSlider[1] != 0) ? 1 : 0; //JAMES
+
+-:for (u8 i=0; i<6; i++)
++:for (u8 i=0; i<8; i++) //JAMES
+
+-:while (dxAxis < 6 && irrAxis <caps.dwAxes)
++:while (dxAxis < 8 && irrAxis <caps.dwAxes) //JAMES
+
+Irrlicht-gcc.cbp: Added options to include directx compilation
+
+Irrlicht.xcodeproj: Set all MACOSX_DEPLOYMENT_TARGET to 10.7

@@ -111,6 +111,9 @@
     <ClInclude Include="..\..\include\IEventReceiver.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IProfiler.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\ILogger.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -124,6 +127,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\irrlicht.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\leakHunter.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IrrlichtDevice.h">
@@ -987,6 +993,9 @@
     <ClInclude Include="os.h">
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
+    <ClInclude Include="CProfiler.h">
+      <Filter>Irrlicht\irr</Filter>
+    </ClInclude>
     <ClInclude Include="EProfileIDs.h">
       <Filter>Irrlicht\irr</Filter>
     </ClInclude>
@@ -1254,7 +1263,6 @@
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h">
       <Filter>include\scene</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="CSceneLoaderIrr.h">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClInclude>
@@ -1275,12 +1283,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\SSharedMeshBuffer.h">
       <Filter>include\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\IProfiler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="CProfiler.h">
-      <Filter>Irrlicht\irr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IRenderTarget.h">
       <Filter>include\video</Filter>
@@ -1345,7 +1347,7 @@
     <ClInclude Include="..\..\include\IOctreeSceneNode.h">
       <Filter>include\scene</Filter>
     </ClInclude>
-	<ClInclude Include="burning_shader_color_fraq.h">
+    <ClInclude Include="burning_shader_color_fraq.h">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClInclude>
     <ClInclude Include="burning_shader_compile_fragment_default.h">
@@ -1365,6 +1367,84 @@
     </ClInclude>
     <ClInclude Include="burning_shader_compile_verify.h">
       <Filter>Irrlicht\video\Burning Video</Filter>
+    </ClInclude>
+    <ClInclude Include="CBlit.h">
+      <Filter>Irrlicht\video\Null</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fast_atof.h">
+      <Filter>include\core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ILightManager.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SVertexManipulator.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IBoneSceneNode.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IDynamicMeshBuffer.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IGUIFontBitmap.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ISceneNodeAnimatorFinishing.h">
+      <Filter>Irrlicht\scene\animators</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\SVertexIndex.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IVertexBuffer.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ISceneUserDataSerializer.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IMemoryReadFile.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IIndexBuffer.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IImageWriter.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IGUITable.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IFileArchive.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IColladaMeshWriter.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IBillboardTextSceneNode.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EShaderTypes.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EReadFileType.h">
+      <Filter>include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EMaterialTypes.h">
+      <Filter>include\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EHardwareBufferFlags.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EDeviceTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\EMeshBufferTypes.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ESceneNodeUpdateAbs.h">
+      <Filter>include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="CBufferRenderNode.h">
+      <Filter>Irrlicht\scene\sceneNodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1766,13 +1846,13 @@
     <ClCompile Include="CTRGouraud2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
-    <ClCompile Include="CTRGouraudAlpha2.cpp">
-      <Filter>Irrlicht\video\Burning Video</Filter>
-    </ClCompile>
     <ClCompile Include="CTRGouraudAlphaNoZ2.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTRNormalMap.cpp">
+      <Filter>Irrlicht\video\Burning Video</Filter>
+    </ClCompile>
+    <ClCompile Include="CTRParallaxMap.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTRStencilShadow.cpp">
@@ -1842,6 +1922,9 @@
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>
     <ClCompile Include="CProfiler.cpp">
+      <Filter>Irrlicht\irr</Filter>
+    </ClCompile>
+    <ClCompile Include="leakHunter.cpp">
       <Filter>Irrlicht\irr</Filter>
     </ClCompile>
     <ClCompile Include="lzma\LzmaDec.c">
@@ -2267,9 +2350,6 @@
     <ClCompile Include="CSMFMeshFileLoader.cpp">
       <Filter>Irrlicht\scene\loaders</Filter>
     </ClCompile>
-    <ClCompile Include="leakHunter.cpp">
-      <Filter>Irrlicht\irr</Filter>
-    </ClCompile>
     <ClCompile Include="CD3D9RenderTarget.cpp">
       <Filter>Irrlicht\video\Direct3D9</Filter>
     </ClCompile>
@@ -2303,7 +2383,7 @@
     <ClCompile Include="CWGLManager.cpp">
       <Filter>Irrlicht\video\OpenGL Context</Filter>
     </ClCompile>
-	<ClCompile Include="burning_shader_color.cpp">
+    <ClCompile Include="burning_shader_color.cpp">
       <Filter>Irrlicht\video\Burning Video</Filter>
     </ClCompile>
     <ClCompile Include="CTR_transparent_reflection_2_layer.cpp">

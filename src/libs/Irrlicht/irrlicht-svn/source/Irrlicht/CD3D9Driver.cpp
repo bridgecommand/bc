@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#define _IRR_DONT_DO_MEMORY_DEBUGGING_HERE
+#define IRR_DONT_DO_MEMORY_DEBUGGING_HERE
 #include "CD3D9Driver.h"
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
@@ -698,12 +698,6 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	if (CurrentTexture[stage] == texture)
 		return true;
 
-	if (texture && texture->getDriverType() != EDT_DIRECT3D9)
-	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
-		return false;
-	}
-
 	CurrentTexture[stage] = texture;
 
 	if (!texture)
@@ -711,13 +705,20 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 		pID3DDevice->SetTexture(stage, 0);
 		pID3DDevice->SetTextureStageState( stage, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
 	}
-	else
+	else if (texture->getDriverType() == EDT_DIRECT3D9)
 	{
 		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 
-		if (stage <= 4)
+		if (((const CD3D9Texture*)texture)->HasVertexTextureSupport() && stage < 4 )
             pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9BaseTexture());
 	}
+	else
+	{
+		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
+		setActiveTexture(stage, 0);
+		return false;
+	}
+
 	return true;
 }
 
@@ -906,13 +907,6 @@ void CD3D9Driver::setViewPort(const core::rect<s32>& area)
 		else
 			ViewPort = vp;
 	}
-}
-
-
-//! gets the area of the current viewport
-const core::rect<s32>& CD3D9Driver::getViewPort() const
-{
-	return ViewPort;
 }
 
 
@@ -1198,7 +1192,7 @@ void CD3D9Driver::removeOcclusionQuery(scene::ISceneNode* node)
 	if (index != -1)
 	{
 		if (OcclusionQueries[index].PID != 0)
-			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Release();
+			static_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Release();
 		CNullDriver::removeOcclusionQuery(node);
 	}
 }
@@ -1216,10 +1210,10 @@ void CD3D9Driver::runOcclusionQuery(scene::ISceneNode* node, bool visible)
 	if (index != -1)
 	{
 		if (OcclusionQueries[index].PID)
-			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Issue(D3DISSUE_BEGIN);
+			static_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Issue(D3DISSUE_BEGIN);
 		CNullDriver::runOcclusionQuery(node,visible);
 		if (OcclusionQueries[index].PID)
-			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Issue(D3DISSUE_END);
+			static_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->Issue(D3DISSUE_END);
 	}
 }
 
@@ -1238,12 +1232,12 @@ void CD3D9Driver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 		bool available = block?true:false;
 		int tmp=0;
 		if (!block)
-			available=(reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->GetData(&tmp, sizeof(DWORD), 0)==S_OK);
+			available=(static_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->GetData(&tmp, sizeof(DWORD), 0)==S_OK);
 		else
 		{
 			do
 			{
-				HRESULT hr = reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->GetData(&tmp, sizeof(DWORD), D3DGETDATA_FLUSH);
+				HRESULT hr = static_cast<IDirect3DQuery9*>(OcclusionQueries[index].PID)->GetData(&tmp, sizeof(DWORD), D3DGETDATA_FLUSH);
 				available = (hr == S_OK);
 				if (hr!=S_FALSE)
 					break;
@@ -1259,13 +1253,10 @@ void CD3D9Driver::updateOcclusionQuery(scene::ISceneNode* node, bool block)
 /** Return value is the number of visible pixels/fragments.
 The value is a safe approximation, i.e. can be larger than the
 actual value of pixels. */
-u32 CD3D9Driver::getOcclusionQueryResult(scene::ISceneNode* node) const
+u32 CD3D9Driver::getOcclusionQueryResult(const scene::ISceneNode* node) const
 {
-	const s32 index = OcclusionQueries.linear_search(SOccQuery(node));
-	if (index != -1)
-		return OcclusionQueries[index].Result;
-	else
-		return ~0;
+	const s32 index = OcclusionQueries.linear_search(node);
+	return index < 0 ? ~0 : OcclusionQueries[index].Result;
 }
 
 
@@ -2951,7 +2942,7 @@ bool CD3D9Driver::reset()
 	{
 		if (OcclusionQueries[i].PID)
 		{
-			reinterpret_cast<IDirect3DQuery9*>(OcclusionQueries[i].PID)->Release();
+			static_cast<IDirect3DQuery9*>(OcclusionQueries[i].PID)->Release();
 			OcclusionQueries[i].PID=0;
 		}
 	}
@@ -3009,7 +3000,7 @@ bool CD3D9Driver::reset()
 		}
 		else
 		{
-			os::Printer::log("Resetting failed due to unknown reason.", core::stringc((int)hr).c_str(), ELL_WARNING);
+			os::Printer::log("Resetting failed due to unknown reason", core::stringc((int)hr).c_str(), ELL_WARNING);
 		}
 		return false;
 	}
@@ -3109,38 +3100,12 @@ const core::matrix4& CD3D9Driver::getTransform(E_TRANSFORMATION_STATE state) con
 }
 
 
-//! Get a vertex shader constant index.
-s32 CD3D9Driver::getVertexShaderConstantID(const c8* name)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->getVariableID(true, name);
-	}
-
-	return -1;
-}
-
-//! Get a pixel shader constant index.
-s32 CD3D9Driver::getPixelShaderConstantID(const c8* name)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->getVariableID(false, name);
-	}
-
-	return -1;
-}
-
-
 //! Sets a vertex shader constant.
 void CD3D9Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 	if (data)
 		pID3DDevice->SetVertexShaderConstantF(startRegister, data, constantAmount);
 }
-
 
 //! Sets a pixel shader constant.
 void CD3D9Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -3149,84 +3114,53 @@ void CD3D9Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32
 		pID3DDevice->SetPixelShaderConstantF(startRegister, data, constantAmount);
 }
 
+s32 CD3D9Driver::getVertexShaderConstantID(const c8* name)
+{
+	os::Printer::log("Error: Please call services->getVertexShaderConstantID(), not VideoDriver->getVertexShaderConstantID().");
+	return -1;
+}
 
-//! Sets a constant for the vertex shader based on an index.
+s32 CD3D9Driver::getPixelShaderConstantID(const c8* name)
+{
+	os::Printer::log("Error: Please call services->getPixelShaderConstantID(), not VideoDriver->getPixelShaderConstantID().");
+	return -1;
+}
+
 bool CD3D9Driver::setVertexShaderConstant(s32 index, const f32* floats, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, index, floats, count);
-	}
-
+	os::Printer::log("Error: Please call services->setVertexShaderConstant(), not VideoDriver->setVertexShaderConstant().");
 	return false;
 }
 
-
-//! Int interface for the above.
 bool CD3D9Driver::setVertexShaderConstant(s32 index, const s32* ints, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, index, ints, count);
-	}
-
+	os::Printer::log("Error: Please call services->setVertexShaderConstant(), not VideoDriver->setVertexShaderConstant().");
 	return false;
 }
 
-
-//! Uint interface for the above.
 bool CD3D9Driver::setVertexShaderConstant(s32 index, const u32* ints, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, index, ints, count);
-	}
-
+	os::Printer::log("Error: Please call services->setVertexShaderConstant(), not VideoDriver->setVertexShaderConstant().");
 	return false;
 }
 
-
-//! Sets a constant for the pixel shader based on an index.
 bool CD3D9Driver::setPixelShaderConstant(s32 index, const f32* floats, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, index, floats, count);
-	}
-
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	return false;
 }
 
-
-//! Int interface for the above.
 bool CD3D9Driver::setPixelShaderConstant(s32 index, const s32* ints, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, index, ints, count);
-	}
-
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	return false;
 }
 
-
-//! Uint interface for the above.
 bool CD3D9Driver::setPixelShaderConstant(s32 index, const u32* ints, int count)
 {
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, index, ints, count);
-	}
-
+	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	return false;
 }
-
 
 
 //! Adds a new material renderer to the VideoDriver, using pixel and/or
@@ -3242,6 +3176,10 @@ s32 CD3D9Driver::addShaderMaterial(const c8* vertexShaderProgram,
 		callback, getMaterialRenderer(baseMaterial), userData);
 
 	r->drop();
+
+	if (callback && nr >= 0)
+		callback->OnCreate(this, userData);
+
 	return nr;
 }
 
@@ -3278,6 +3216,9 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 			userData);
 
 	r->drop();
+
+	if (callback && nr >= 0)
+		callback->OnCreate(r, userData);
 
 	return nr;
 }

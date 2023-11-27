@@ -2,34 +2,35 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-
-#ifndef __S_4D_VERTEX_H_INCLUDED__
-#define __S_4D_VERTEX_H_INCLUDED__
+#ifndef S_4D_VERTEX_H_INCLUDED
+#define S_4D_VERTEX_H_INCLUDED
 
 #include "SoftwareDriver2_compile_config.h"
 #include "SoftwareDriver2_helper.h"
 #include "irrAllocator.h"
 #include "EPrimitiveTypes.h"
+#include "SVertexIndex.h"
 
-namespace irr
-{
+burning_namespace_start
 
-namespace video
-{
+struct sVec4;
 
 //! sVec2 used in BurningShader texture coordinates
 struct sVec2
 {
-	f32 x;
-	f32 y;
+	union
+	{
+		struct { f32 x, y; };
+		struct { f32 s, t; } st;
+	};
 
-	sVec2 () {}
+	sVec2() {}
 
-	sVec2 ( f32 s) : x ( s ), y ( s ) {}
-	sVec2 ( f32 _x, f32 _y )
-		: x ( _x ), y ( _y ) {}
+	sVec2(f32 s) : x(s), y(s) {}
+	sVec2(f32 _x, f32 _y)
+		: x(_x), y(_y) {}
 
-	void set ( f32 _x, f32 _y )
+	void set(f32 _x, f32 _y)
 	{
 		x = _x;
 		y = _y;
@@ -38,8 +39,8 @@ struct sVec2
 	// f = a * t + b * ( 1 - t )
 	void interpolate(const sVec2& burning_restrict a, const sVec2& burning_restrict b, const ipoltype t)
 	{
-		x = (f32)(b.x + ( ( a.x - b.x ) * t ));
-		y = (f32)(b.y + ( ( a.y - b.y ) * t ));
+		x = (f32)(b.x + ((a.x - b.x) * t));
+		y = (f32)(b.y + ((a.y - b.y) * t));
 	}
 
 	sVec2 operator-(const sVec2& other) const
@@ -60,10 +61,10 @@ struct sVec2
 
 	sVec2 operator*(const f32 s) const
 	{
-		return sVec2(x * s , y * s);
+		return sVec2(x * s, y * s);
 	}
 
-	void operator*=( const f32 s)
+	void operator*=(const f32 s)
 	{
 		x *= s;
 		y *= s;
@@ -75,9 +76,34 @@ struct sVec2
 		y = other.y;
 	}
 
+	// shader
+/*
+	void operator=(const core::vector2df& other)
+	{
+		x = other.X;
+		y = other.Y;
+	}
+*/
+	sVec2 st_op() const
+	{
+		return sVec2(x,y);
+	}
+	sVec2& st_op()
+	{
+		return *this;
+	}
+	void operator=(const sVec4& other);
+
 };
 
 #include "irrpack.h"
+
+//! sVec2Pack is Irrlicht S3DVertex,S3DVertex2TCoords,S3DVertexTangents Texture Coordinates.
+// Start address is not 4 byte aligned
+struct sVec2Pack
+{
+	f32 x, y;
+};
 
 //! sVec3Pack used in BurningShader, packed direction
 struct sVec3Pack
@@ -131,35 +157,42 @@ struct sVec3Pack
 #include "irrunpack.h"
 
 //! sVec4 used in Driver,BurningShader, direction/color
-struct sVec4
+struct ALIGN(16) sVec4
 {
 	union
 	{
 		struct { f32 x, y, z, w; };
-		struct { f32 a, r, g, b; };
+		struct { f32 r, g, b, a; };
+		struct { f32 s, t, p, q; };
 	};
 
-	sVec4 () {}
-	sVec4 ( f32 _x, f32 _y, f32 _z, f32 _w )
-		: x ( _x ), y ( _y ), z( _z ), w ( _w ){}
+#if __GNUC__
+	//have one warning i can't find
+	sVec4(f32 _x = 0.f, f32 _y = 0.f, f32 _z = 0.f, f32 _w = 0.f)
+		: x(_x), y(_y), z(_z), w(_w) {}
+#else
+	sVec4() {}
+	sVec4(f32 _x, f32 _y, f32 _z, f32 _w=0.f)
+		: x(_x), y(_y), z(_z), w(_w) {}
+#endif
 
 	// f = a * t + b * ( 1 - t )
-	void interpolate(const sVec4& burning_restrict a, const sVec4& burning_restrict b, const ipoltype t)
+	REALINLINE void interpolate(const sVec4& burning_restrict a, const sVec4& burning_restrict b, const ipoltype t)
 	{
-		x = (f32)(b.x + ( ( a.x - b.x ) * t ));
-		y = (f32)(b.y + ( ( a.y - b.y ) * t ));
-		z = (f32)(b.z + ( ( a.z - b.z ) * t ));
-		w = (f32)(b.w + ( ( a.w - b.w ) * t ));
+		x = (f32)(b.x + ((a.x - b.x) * t));
+		y = (f32)(b.y + ((a.y - b.y) * t));
+		z = (f32)(b.z + ((a.z - b.z) * t));
+		w = (f32)(b.w + ((a.w - b.w) * t));
 	}
 
 	sVec4 operator-(const sVec4& other) const
 	{
-		return sVec4(x - other.x, y - other.y, z - other.z,w - other.w);
+		return sVec4(x - other.x, y - other.y, z - other.z, w - other.w);
 	}
 
 	sVec4 operator+(const sVec4& other) const
 	{
-		return sVec4(x + other.x, y + other.y, z + other.z,w + other.w);
+		return sVec4(x + other.x, y + other.y, z + other.z, w + other.w);
 	}
 
 	void operator+=(const sVec4& other)
@@ -172,15 +205,15 @@ struct sVec4
 
 	sVec4 operator*(const f32 s) const
 	{
-		return sVec4(x * s , y * s, z * s,w * s);
+		return sVec4(x * s, y * s, z * s, w * s);
 	}
 
-	sVec4 operator*(const sVec4 &other) const
+	sVec4 operator*(const sVec4& other) const
 	{
-		return sVec4(x * other.x , y * other.y, z * other.z,w * other.w);
+		return sVec4(x * other.x, y * other.y, z * other.z, w * other.w);
 	}
 
-	void operator*=(const sVec4 &other)
+	void operator*=(const sVec4& other)
 	{
 		x *= other.x;
 		y *= other.y;
@@ -188,12 +221,13 @@ struct sVec4
 		w *= other.w;
 	}
 
-	void operator=(const sVec4& other)
+	sVec4& operator=(const sVec4& other)
 	{
 		x = other.x;
 		y = other.y;
 		z = other.z;
 		w = other.w;
+		return *this;
 	}
 
 	//outside shader
@@ -204,13 +238,7 @@ struct sVec4
 		z = _z;
 		w = _w;
 	}
-	void setA8R8G8B8(const u32 argb)
-	{
-		a = ((argb & 0xFF000000) >> 24) * (1.f / 255.f);
-		r = ((argb & 0x00FF0000) >> 16) * (1.f / 255.f);
-		g = ((argb & 0x0000FF00) >> 8 ) * (1.f / 255.f);
-		b = ((argb & 0x000000FF)      ) * (1.f / 255.f);
-	}
+
 
 	REALINLINE ipoltype dot_xyzw(const sVec4& other) const
 	{
@@ -222,9 +250,14 @@ struct sVec4
 		return x * other.x + y * other.y + z * other.z;
 	}
 
+	REALINLINE f32 dot(const irr::core::vector3df& other) const
+	{
+		return x * other.X + y * other.Y + z * other.Z;
+	}
+
 	REALINLINE f32 dot_minus_xyz(const sVec4& other) const
 	{
-		return -x * other.x + -y * other.y + -z * other.z;
+		return x * -other.x + y * -other.y + z * -other.z;
 	}
 
 	void mul_xyz(const f32 s)
@@ -243,11 +276,40 @@ struct sVec4
 	{
 		//const f32 l = core::reciprocal_squareroot(x * x + y * y + z * z);
 		f32 l = x * x + y * y + z * z;
-		l = l > 0.0000001f ? 1.f / sqrtf(l) : 1.f;
-		x *= l;
-		y *= l;
-		z *= l;
+		if (l > 0.00000001f)
+		{
+			l = 1.f / sqrtf(l);
+			x *= l;
+			y *= l;
+			z *= l;
+		}
+		else
+		{
+			x = 0.f;
+			y = -1.f;
+			z = 0.f;
+		}
 	}
+
+	void normalize_dir_xyz_zero()
+	{
+		//const f32 l = core::reciprocal_squareroot(x * x + y * y + z * z);
+		f32 l = x * x + y * y + z * z;
+		if (l > 0.00000001f)
+		{
+			l = 1.f / sqrtf(l);
+			x *= l;
+			y *= l;
+			z *= l;
+		}
+		else
+		{
+			x = 0.f;
+			y = 0.f;
+			z = 0.f;
+		}
+	}
+
 
 
 	//unpack sVec3 to aligned during runtime
@@ -264,21 +326,37 @@ struct sVec4
 		//const f32 l = len * core::reciprocal_squareroot ( r * r + g * g + b * b );
 		f32 l = x * x + y * y + z * z;
 
-		l = l > 0.0000001f ? len / sqrtf(l) : 0.f;
-		out.x = (x*l) + ofs;
-		out.y = (y*l) + ofs;
-		out.z = (z*l) + ofs;
+		l = l > 0.00000001f ? len / sqrtf(l) : 0.f;
+		out.x = (x * l) + ofs;
+		out.y = (y * l) + ofs;
+		out.z = (z * l) + ofs;
 	}
 
-};
+	//shader support
+	sVec4(const sVec4& a, double _w)
+	{
+		x = a.x;
+		y = a.y;
+		z = a.z;
+		w = (float)_w;
+	}
+	sVec4 xyz() const
+	{
+		return sVec4(x, y, z, 0.f);
+	}
 
-//!during runtime sVec3Pack
-typedef sVec4 sVec3Pack_unpack;
+	//operator f32* () { return &x; }
 
-//!sVec4 is argb. sVec3Color is rgba
-struct sVec3Color
-{
-	f32 r, g, b,a;
+	void clampf01()
+	{
+		if (x < 0.f) x = 0.f; else if (x > 1.f) x = 1.f;
+		if (y < 0.f) y = 0.f; else if (y > 1.f) y = 1.f;
+		if (z < 0.f) z = 0.f; else if (z > 1.f) z = 1.f;
+		if (w < 0.f) w = 0.f; else if (w > 1.f) w = 1.f;
+	}
+
+	//Color
+	void setA8R8G8B8(const u32 argb);
 
 	void set(const f32 s)
 	{
@@ -288,15 +366,7 @@ struct sVec3Color
 		a = s;
 	}
 
-	void setA8R8G8B8(const u32 argb)
-	{
-		r = ((argb & 0x00FF0000) >> 16) * (1.f / 255.f);
-		g = ((argb & 0x0000FF00) >> 8 ) * (1.f / 255.f);
-		b = ((argb & 0x000000FF)      ) * (1.f / 255.f);
-		a = ((argb & 0xFF000000) >> 24) * (1.f / 255.f);
-	}
-
-	void setColorf(const video::SColorf & color)
+	void setColorf(const video::SColorf& color)
 	{
 		r = color.r;
 		g = color.g;
@@ -304,21 +374,21 @@ struct sVec3Color
 		a = color.a;
 	}
 
-	void add_rgb(const sVec3Color& other)
+	void add_rgb(const sVec4& other)
 	{
 		r += other.r;
 		g += other.g;
 		b += other.b;
 	}
 
-	void mad_rgb(const sVec3Color& other, const f32 v)
+	void mad_rgb(const sVec4& other, const f32 v)
 	{
 		r += other.r * v;
 		g += other.g * v;
 		b += other.b * v;
 	}
 
-	void mad_rgbv(const sVec3Color& v0, const sVec3Color& v1)
+	void mad_rgbv(const sVec4& v0, const sVec4& v1)
 	{
 		r += v0.r * v1.r;
 		g += v0.g * v1.g;
@@ -326,23 +396,25 @@ struct sVec3Color
 	}
 
 	//sVec4 is a,r,g,b, alpha pass
-	void sat(sVec4 &dest, const u32 argb) const
+#if 0
+	void sat_alpha_pass(sVec4& dest, const u32 argb) const
 	{
 		dest.a = ((argb & 0xFF000000) >> 24) * (1.f / 255.f);
 		dest.r = r <= 1.f ? r : 1.f;
 		dest.g = g <= 1.f ? g : 1.f;
 		dest.b = b <= 1.f ? b : 1.f;
 	}
-
-	void sat_xyz(sVec3Pack &dest, const sVec3Color& v1) const
+#endif
+	void sat_alpha_pass(sVec4& dest, const f32 vertex_alpha) const
 	{
-		f32 v;
-		v = r * v1.r;	dest.x = v < 1.f ? v : 1.f;
-		v = g * v1.g;	dest.y = v < 1.f ? v : 1.f;
-		v = b * v1.b;	dest.z = v < 1.f ? v : 1.f;
+		dest.a = vertex_alpha;
+		dest.r = r <= 1.f ? r : 1.f;
+		dest.g = g <= 1.f ? g : 1.f;
+		dest.b = b <= 1.f ? b : 1.f;
 	}
 
-	void sat_xyz(sVec4 &dest, const sVec3Color& v1) const
+
+	void sat_mul_xyz(sVec4& dest, const sVec4& v1) const
 	{
 		f32 v;
 		dest.a = 1.f;
@@ -351,26 +423,45 @@ struct sVec3Color
 		v = b * v1.b;	dest.b = v < 1.f ? v : 1.f;
 	}
 
+	void sat_mul_xyz(sVec3Pack& dest, const sVec4& v1) const
+	{
+		f32 v;
+		v = r * v1.r;	dest.x = v < 1.f ? v : 1.f;
+		v = g * v1.g;	dest.y = v < 1.f ? v : 1.f;
+		v = b * v1.b;	dest.z = v < 1.f ? v : 1.f;
+	}
 
 };
 
-//internal BurningShaderFlag for a Vertex
+//shader
+inline void irr::video::sVec2::operator=(const sVec4& b)
+{
+	x = b.x;
+	y = b.y;
+}
+
+//!during runtime sVec3Pack
+typedef sVec4 sVec3Pack_unpack;
+
+typedef sVec4 sVec3Color;
+
+//internal BurningShaderFlag for a Vertex (Attributes)
 enum e4DVertexFlag
 {
-	VERTEX4D_CLIPMASK				= 0x0000003F,
-	VERTEX4D_CLIP_NEAR				= 0x00000001,
-	VERTEX4D_CLIP_FAR				= 0x00000002,
-	VERTEX4D_CLIP_LEFT				= 0x00000004,
-	VERTEX4D_CLIP_RIGHT				= 0x00000008,
-	VERTEX4D_CLIP_BOTTOM			= 0x00000010,
-	VERTEX4D_CLIP_TOP				= 0x00000020,
-	VERTEX4D_INSIDE					= 0x0000003F,
+	VERTEX4D_CLIPMASK = 0x0000003F,
+	VERTEX4D_CLIP_NEAR = 0x00000001,
+	VERTEX4D_CLIP_FAR = 0x00000002,
+	VERTEX4D_CLIP_LEFT = 0x00000004,
+	VERTEX4D_CLIP_RIGHT = 0x00000008,
+	VERTEX4D_CLIP_BOTTOM = 0x00000010,
+	VERTEX4D_CLIP_TOP = 0x00000020,
+	VERTEX4D_INSIDE = 0x0000003F,
 
-	VERTEX4D_PROJECTED				= 0x00000100,
-	VERTEX4D_VAL_ZERO				= 0x00000200,
-	VERTEX4D_VAL_ONE				= 0x00000400,
+	VERTEX4D_PROJECTED = 0x00000100,
+	//VERTEX4D_VAL_ZERO = 0x00000200,
+	//VERTEX4D_VAL_ONE = 0x00000400,
 
-	VERTEX4D_FORMAT_MASK			= 0xFFFF0000,
+	VERTEX4D_FORMAT_MASK = 0xFFFF0000,
 
 	VERTEX4D_FORMAT_MASK_TEXTURE	= 0x000F0000,
 	VERTEX4D_FORMAT_TEXTURE_1		= 0x00010000,
@@ -378,19 +469,20 @@ enum e4DVertexFlag
 	VERTEX4D_FORMAT_TEXTURE_3		= 0x00030000,
 	VERTEX4D_FORMAT_TEXTURE_4		= 0x00040000,
 
-	VERTEX4D_FORMAT_MASK_COLOR		= 0x00F00000,
-	VERTEX4D_FORMAT_COLOR_1			= 0x00100000,
-	VERTEX4D_FORMAT_COLOR_2_FOG		= 0x00200000,
-	VERTEX4D_FORMAT_COLOR_3			= 0x00300000,
-	VERTEX4D_FORMAT_COLOR_4			= 0x00400000,
+	VERTEX4D_FORMAT_MASK_COLOR	= 0x00F00000,
+	VERTEX4D_FORMAT_COLOR_1		= 0x00100000,
+	VERTEX4D_FORMAT_COLOR_2_FOG = 0x00200000,
+	VERTEX4D_FORMAT_COLOR_3		= 0x00300000,
+	VERTEX4D_FORMAT_COLOR_4		= 0x00400000,
 
-	VERTEX4D_FORMAT_MASK_LIGHT		= 0x0F000000,
-	VERTEX4D_FORMAT_LIGHT_1			= 0x01000000,
-	VERTEX4D_FORMAT_LIGHT_2			= 0x02000000,
+	VERTEX4D_FORMAT_MASK_LIGHT	= 0x0F000000,
+	VERTEX4D_FORMAT_LIGHT_1		= 0x01000000,
+	//VERTEX4D_FORMAT_LIGHT_2		= 0x02000000,
 
 	VERTEX4D_FORMAT_MASK_TANGENT	= 0xF0000000,
 	VERTEX4D_FORMAT_BUMP_DOT3		= 0x10000000,
-	VERTEX4D_FORMAT_SPECULAR		= 0x20000000,
+	VERTEX4D_FORMAT_PARALLAX		= 0x20000000,
+	//VERTEX4D_FORMAT_SPECULAR		= 0x20000000,
 
 };
 
@@ -400,10 +492,13 @@ enum e4DVertexType
 	E4VT_STANDARD = 0,			// EVT_STANDARD, video::S3DVertex.
 	E4VT_2TCOORDS = 1,			// EVT_2TCOORDS, video::S3DVertex2TCoords.
 	E4VT_TANGENTS = 2,			// EVT_TANGENTS, video::S3DVertexTangents
-	E4VT_REFLECTION_MAP = 3,
-	E4VT_SHADOW = 4,			// float * 3
-	E4VT_NO_TEXTURE = 5,		// runtime if texture missing
-	E4VT_LINE = 6,
+
+	//encode attributes
+	E4VT_TANGENTS_PARALLAX = 4,
+	E4VT_REFLECTION_MAP = 5,
+	E4VT_SHADOW = 6,			// float * 3
+	E4VT_NO_TEXTURE = 7,		// runtime if texture missing
+	E4VT_LINE = 8,
 
 	E4VT_COUNT
 };
@@ -412,28 +507,28 @@ enum e4DIndexType
 {
 	E4IT_16BIT = 1, // EIT_16BIT,
 	E4IT_32BIT = 2, // EIT_32BIT,
-	E4IT_NONE  = 4, //
+	E4IT_NONE = 4, //
 };
 
-#ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	#define BURNING_MATERIAL_MAX_TEXTURES 4
-	#define BURNING_MATERIAL_MAX_COLORS 4
-	#define BURNING_MATERIAL_MAX_LIGHT_TANGENT 1
+#if defined(BURNINGVIDEO_RENDERER_BEAUTIFUL) || defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
+#define BURNING_MATERIAL_MAX_TEXTURES 4
+#define BURNING_MATERIAL_MAX_COLORS 4
+#define BURNING_MATERIAL_MAX_LIGHT_TANGENT 1
 
-	//ensure handcrafted sizeof(s4DVertex)
-	#define sizeof_s4DVertex	128
+//ensure handcrafted sizeof(s4DVertex)
+#define sizeof_s4DVertex	128
 
 #else
-	#define BURNING_MATERIAL_MAX_TEXTURES 2
-	#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-		#define BURNING_MATERIAL_MAX_COLORS 1
-	#else
-		#define BURNING_MATERIAL_MAX_COLORS 0
-	#endif
-	#define BURNING_MATERIAL_MAX_LIGHT_TANGENT 1
+#define BURNING_MATERIAL_MAX_TEXTURES 2
+#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
+#define BURNING_MATERIAL_MAX_COLORS 1
+#else
+#define BURNING_MATERIAL_MAX_COLORS 0
+#endif
+#define BURNING_MATERIAL_MAX_LIGHT_TANGENT 1
 
-	//ensure handcrafted sizeof(s4DVertex)
-	#define sizeof_s4DVertex	64
+//ensure handcrafted sizeof(s4DVertex)
+#define sizeof_s4DVertex	64
 #endif
 
 // dummy Vertex. used for calculation vertex memory size
@@ -461,10 +556,10 @@ struct s4DVertex
 {
 	sVec4 Pos;
 #if BURNING_MATERIAL_MAX_TEXTURES > 0
-	sVec2 Tex[ BURNING_MATERIAL_MAX_TEXTURES ];
+	sVec2 Tex[BURNING_MATERIAL_MAX_TEXTURES];
 #endif
 #if BURNING_MATERIAL_MAX_COLORS > 0
-	sVec4 Color[ BURNING_MATERIAL_MAX_COLORS ];
+	sVec4 Color[BURNING_MATERIAL_MAX_COLORS];
 #endif
 #if BURNING_MATERIAL_MAX_LIGHT_TANGENT > 0
 	sVec3Pack LightTangent[BURNING_MATERIAL_MAX_LIGHT_TANGENT];
@@ -474,13 +569,13 @@ struct s4DVertex
 
 
 #if BURNING_MATERIAL_MAX_COLORS < 1 || BURNING_MATERIAL_MAX_LIGHT_TANGENT < 1
-	u8 __align [sizeof_s4DVertex - sizeof (s4DVertex_proxy) ];
+	u8 __align[sizeof_s4DVertex - sizeof(s4DVertex_proxy)];
 #endif
 
 	// f = a * t + b * ( 1 - t )
-	void interpolate(const s4DVertex& burning_restrict b, const s4DVertex& burning_restrict a, const ipoltype t)
+	REALINLINE void interpolate(const s4DVertex& burning_restrict b, const s4DVertex& burning_restrict a, const ipoltype t)
 	{
-		Pos.interpolate ( a.Pos, b.Pos, t );
+		Pos.interpolate(a.Pos, b.Pos, t);
 #if 0
 		Tex[0].interpolate(a.Tex[0], b.Tex[0], t);
 		Tex[1].interpolate(a.Tex[1], b.Tex[1], t);
@@ -493,45 +588,103 @@ struct s4DVertex
 
 #if BURNING_MATERIAL_MAX_TEXTURES > 0
 		size = (flag & VERTEX4D_FORMAT_MASK_TEXTURE) >> 16;
-		for ( i = 0; i!= size; ++i )
+		for (i = 0; i != size; ++i)
 		{
-			Tex[i].interpolate ( a.Tex[i], b.Tex[i], t );
+			Tex[i].interpolate(a.Tex[i], b.Tex[i], t);
 		}
 #endif
 
 #if BURNING_MATERIAL_MAX_COLORS > 0
 		size = (flag & VERTEX4D_FORMAT_MASK_COLOR) >> 20;
-		for ( i = 0; i!= size; ++i )
+		for (i = 0; i != size; ++i)
 		{
-			Color[i].interpolate ( a.Color[i], b.Color[i], t );
+			Color[i].interpolate(a.Color[i], b.Color[i], t);
 		}
 #endif
 
 #if BURNING_MATERIAL_MAX_LIGHT_TANGENT > 0
 		size = (flag & VERTEX4D_FORMAT_MASK_LIGHT) >> 24;
-		for ( i = 0; i!= size; ++i )
+		for (i = 0; i != size; ++i)
 		{
-			LightTangent[i].interpolate ( a.LightTangent[i], b.LightTangent[i], t );
+			LightTangent[i].interpolate(a.LightTangent[i], b.LightTangent[i], t);
 		}
 #endif
 
 	}
+
+	REALINLINE void reset_interpolate()
+	{
+#if 1
+#if BURNING_MATERIAL_MAX_TEXTURES > 0
+		Tex[0].x = 0.f;
+		Tex[0].y = 0.f;
+#endif
+#if BURNING_MATERIAL_MAX_TEXTURES > 1
+		Tex[1].x = 0.f;
+		Tex[1].y = 0.f;
+#endif
+#if BURNING_MATERIAL_MAX_TEXTURES > 2
+		Tex[2].x = 0.f;
+		Tex[2].y = 0.f;
+#endif
+#if BURNING_MATERIAL_MAX_TEXTURES > 3
+		Tex[3].x = 0.f;
+		Tex[3].y = 0.f;
+#endif
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS > 0
+		Color[0].r = 0.f;
+		Color[0].g = 0.f;
+		Color[0].b = 0.f;
+		Color[0].a = 1.f;
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS > 1
+		//specular
+		Color[1].r = 0.f;
+		Color[1].g = 0.f;
+		Color[1].b = 0.f;
+		Color[1].a = 1.f;
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS > 2
+		Color[2].r = 0.f;
+		Color[2].g = 0.f;
+		Color[2].b = 0.f;
+		Color[2].a = 1.f;
+#endif
+
+#if BURNING_MATERIAL_MAX_COLORS > 3
+		Color[3].r = 0.f;
+		Color[3].g = 0.f;
+		Color[3].b = 0.f;
+		Color[3].a = 1.f;
+#endif
+
+#if BURNING_MATERIAL_MAX_LIGHT_TANGENT > 0
+		LightTangent[0].x = 0.f;
+		LightTangent[0].y = 0.f;
+		LightTangent[0].z = 0.f;
+#endif
+	}
+
 };
 
 // ----------------- Vertex Cache ---------------------------
 
-// Buffer is used as pairs of S4DVertex (0 ... ndc, 1 .. dc and projected)
+// Buffer is used as interleaved pairs of S4DVertex (0 ... ndc, 1 .. dc and projected)
 typedef s4DVertex s4DVertexPair;
 #define sizeof_s4DVertexPairRel 2
-#define s4DVertex_ofs(index)  ((index)*sizeof_s4DVertexPairRel)
-#define s4DVertex_proj(index) ((index)*sizeof_s4DVertexPairRel) + 1
+#define s4DVertex_ofs(index) ((index)*sizeof_s4DVertexPairRel)
+#define s4DVertex_pro(index) (((index)*sizeof_s4DVertexPairRel) + 1)
 
 struct SAligned4DVertex
 {
 	SAligned4DVertex()
-		:data(0),mem(0), ElementSize(0)	{}
+		:data(0), ElementSize(0), mem(0) {}
 
-	virtual ~SAligned4DVertex ()
+	virtual ~SAligned4DVertex()
 	{
 		if (mem)
 		{
@@ -553,8 +706,11 @@ struct SAligned4DVertex
 	}
 
 	s4DVertex* data;	//align to 16 byte
-	u8* mem;
 	size_t ElementSize;
+
+private:
+
+	u8* mem;
 };
 
 //#define memcpy_s4DVertexPair(dst,src) memcpy(dst,src,sizeof_s4DVertex * 2)
@@ -572,17 +728,17 @@ static REALINLINE void memcpy_s4DVertexPair(void* burning_restrict dst, const vo
 	u64* burning_restrict dst64 = (u64*)dst;
 	const u64* burning_restrict src64 = (const u64*)src;
 
-	dst64[0]  = src64[0];
-	dst64[1]  = src64[1];
-	dst64[2]  = src64[2];
-	dst64[3]  = src64[3];
-	dst64[4]  = src64[4];
-	dst64[5]  = src64[5];
-	dst64[6]  = src64[6];
-	dst64[7]  = src64[7];
+	dst64[0] = src64[0];
+	dst64[1] = src64[1];
+	dst64[2] = src64[2];
+	dst64[3] = src64[3];
+	dst64[4] = src64[4];
+	dst64[5] = src64[5];
+	dst64[6] = src64[6];
+	dst64[7] = src64[7];
 
-	dst64[8]  = src64[8];
-	dst64[9]  = src64[9];
+	dst64[8] = src64[8];
+	dst64[9] = src64[9];
 	dst64[10] = src64[10];
 	dst64[11] = src64[11];
 	dst64[12] = src64[12];
@@ -594,17 +750,17 @@ static REALINLINE void memcpy_s4DVertexPair(void* burning_restrict dst, const vo
 	u64* burning_restrict dst64 = (u64*)dst;
 	const u64* burning_restrict src64 = (const u64*)src;
 
-	dst64[0]  = src64[0];
-	dst64[1]  = src64[1];
-	dst64[2]  = src64[2];
-	dst64[3]  = src64[3];
-	dst64[4]  = src64[4];
-	dst64[5]  = src64[5];
-	dst64[6]  = src64[6];
-	dst64[7]  = src64[7];
+	dst64[0] = src64[0];
+	dst64[1] = src64[1];
+	dst64[2] = src64[2];
+	dst64[3] = src64[3];
+	dst64[4] = src64[4];
+	dst64[5] = src64[5];
+	dst64[6] = src64[6];
+	dst64[7] = src64[7];
 
-	dst64[8]  = src64[8];
-	dst64[9]  = src64[9];
+	dst64[8] = src64[8];
+	dst64[9] = src64[9];
 	dst64[10] = src64[10];
 	dst64[11] = src64[11];
 	dst64[12] = src64[12];
@@ -647,28 +803,29 @@ static REALINLINE void memcpy_s4DVertexPair(void* burning_restrict dst, const vo
 		*dst32++ = *src32++;
 		len -= 32;
 	}
-/*
-	while (len >= 4)
-	{
-		*dst32++ = *src32++;
-		len -= 4;
-	}
-*/
+	/*
+		while (len >= 4)
+		{
+			*dst32++ = *src32++;
+			len -= 4;
+		}
+	*/
 #endif
 }
 
 
-//! hold info for different Vertex Types
+//! hold info for different Vertex Types (Attribute mapping)
 struct SVSize
 {
-	size_t Format;		// e4DVertexFlag VERTEX4D_FORMAT_MASK_TEXTURE
-	size_t Pitch;		// sizeof Vertex
-	size_t TexSize;	// amount Textures
-	size_t TexCooSize;	// sizeof TextureCoordinates
+	u32 Format;		// e4DVertexFlag VERTEX4D_FORMAT_MASK_TEXTURE
+	u32 Pitch;		// sizeof Vertex
+	u32 TexSize;	// amount Textures
+	u32 TexCooSize;	// amount TextureCoordinates
+	u32 ColSize;	// amount Color Interpolators
 };
 
 
-// a cache info
+// index cache info
 struct SCacheInfo
 {
 	u32 index;
@@ -678,17 +835,10 @@ struct SCacheInfo
 //must at least hold all possible (clipped) vertices of primitive.
 #define VERTEXCACHE_ELEMENT	16			
 #define VERTEXCACHE_MISS 0xFFFFFFFF
-struct SVertexCache
+struct SVertexShader
 {
-	SVertexCache () {}
-	~SVertexCache() {}
-
-	//VertexType
-	SVSize vSize[E4VT_COUNT];
-
-	SCacheInfo info[VERTEXCACHE_ELEMENT];
-	SCacheInfo info_temp[VERTEXCACHE_ELEMENT];
-
+	SVertexShader() {}
+	~SVertexShader() {}
 
 	// Transformed and lite, clipping state
 	// + Clipped, Projected
@@ -705,12 +855,53 @@ struct SVertexCache
 	u32 indicesPitch;
 
 	// primitives consist of x vertices
-	size_t primitiveHasVertex;
+	u32 primitiveHasVertex;
+	u32 primitiveRun;
+
+	//VertexType
+	SVSize vSize[E4VT_COUNT];
 
 	e4DVertexType vType;		//E_VERTEX_TYPE
 	scene::E_PRIMITIVE_TYPE pType;		//scene::E_PRIMITIVE_TYPE
 	e4DIndexType iType;		//E_INDEX_TYPE iType
 
+	REALINLINE u32 index(u32 i) const
+	{
+		u32 o;
+		if (i >= indexCount)
+			i = 0;
+		switch (iType)
+		{
+			case E4IT_16BIT: o = ((u16*)indices)[i]; break;
+			case E4IT_32BIT: o = ((u32*)indices)[i]; break;
+			default: case E4IT_NONE: o = i; break;
+		}
+		return o;
+	}
+
+	REALINLINE s4DVertexPair* vertex(const u32 sourceIndex) const
+	{
+		for (size_t i = 0; i < VERTEXCACHE_ELEMENT; ++i)
+		{
+			if (info[i].index == sourceIndex)
+			{
+				return mem.data + s4DVertex_ofs(i);
+			}
+		}
+		return mem.data; //error
+	}
+
+	void setPrimitiveType(const scene::E_PRIMITIVE_TYPE pType, const u32 primitiveCount);
+	void setIndices(const void* indices, const video::E_INDEX_TYPE iType);
+
+	SCacheInfo info[VERTEXCACHE_ELEMENT];
+	SCacheInfo info_temp[VERTEXCACHE_ELEMENT];
+
+	void set_info_miss();
+
+	u32 fillIndex;
+	void get_next_index_cacheline();
+	void getPrimitive(s4DVertexPair* face[4],CBurningVideoDriver* driver);
 };
 
 
@@ -732,7 +923,7 @@ struct sScanConvertData
 {
 	u32 left;			// major edge left/right
 	u32 right;			// !left
-	u32 _unused_pack[2];
+	u8 _unused_pack[8];
 
 	f32 invDeltaY[4];	// inverse edge delta for screen space sorted triangle 
 
@@ -759,7 +950,7 @@ struct sScanConvertData
 
 #if BURNING_MATERIAL_MAX_LIGHT_TANGENT > 0
 	sVec3Pack_unpack l[BURNING_MATERIAL_MAX_LIGHT_TANGENT][2];		// Light Tangent
-	sVec3Pack_unpack slopeL[BURNING_MATERIAL_MAX_LIGHT_TANGENT][2];	// tanget slope along edges
+	sVec3Pack_unpack slopeL[BURNING_MATERIAL_MAX_LIGHT_TANGENT][2];	// tangent slope along edges
 #endif
 };
 
@@ -767,7 +958,7 @@ struct sScanConvertData
 struct sScanLineData
 {
 	s32 y;				// y position of scanline
-	u32 _unused_pack[1];
+	u8 _unused_pack[4];
 	f32 x[2];			// x start, x end of scanline
 
 #if defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) || defined ( SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT )
@@ -776,7 +967,8 @@ struct sScanLineData
 	f32 z[2];			// z start, z end of scanline
 #endif
 
-	u32 _unused_pack_1[2];
+	s32 x_edgetest;		// slope x
+	u8 _unused_pack_1[4];
 
 #if BURNING_MATERIAL_MAX_COLORS > 0
 	sVec4 c[BURNING_MATERIAL_MAX_COLORS][2];			// color start, color end of scanline
@@ -794,8 +986,8 @@ struct sScanLineData
 // passed to pixel Shader
 struct sPixelShaderData
 {
-	tVideoSample *dst;
-	fp24 *z;
+	tVideoSample* dst;
+	fp24* z;
 
 	s32 xStart;
 	s32 xEnd;
@@ -806,7 +998,7 @@ struct sPixelShaderData
 /*
 	load a color value
 */
-REALINLINE void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v	)
+REALINLINE void getTexel_plain2(tFixPoint& r, tFixPoint& g, tFixPoint& b, const sVec4& v)
 {
 	r = tofix(v.r, FIX_POINT_F32_MUL);
 	g = tofix(v.g, FIX_POINT_F32_MUL);
@@ -817,22 +1009,22 @@ REALINLINE void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,const
 /*
 	load a color value
 */
-REALINLINE void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b,	const sVec4 &v )
+REALINLINE void getSample_color(tFixPoint& a, tFixPoint& r, tFixPoint& g, tFixPoint& b, const sVec4& v)
 {
-	a = tofix ( v.a, FIX_POINT_F32_MUL);
-	r = tofix ( v.r, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = tofix ( v.g, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = tofix ( v.b, COLOR_MAX * FIX_POINT_F32_MUL);
+	a = tofix(v.a, FIX_POINT_F32_MUL);
+	r = tofix(v.r, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix(v.g, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix(v.b, COLOR_MAX * FIX_POINT_F32_MUL);
 }
 
 /*
 	load a color value
 */
-REALINLINE void getSample_color ( tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v )
+REALINLINE void getSample_color(tFixPoint& r, tFixPoint& g, tFixPoint& b, const sVec4& v)
 {
-	r = tofix ( v.r, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = tofix ( v.g, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = tofix ( v.b, COLOR_MAX * FIX_POINT_F32_MUL);
+	r = tofix(v.r, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix(v.g, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix(v.b, COLOR_MAX * FIX_POINT_F32_MUL);
 }
 #endif
 
@@ -840,14 +1032,15 @@ REALINLINE void getSample_color ( tFixPoint &r, tFixPoint &g, tFixPoint &b,const
 	load a color value. mulby controls [0;1] or [0;ColorMax]
 	aka getSample_color
 */
-REALINLINE void vec4_to_fix(tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v, const f32 mulby )
+REALINLINE void vec4_to_fix(tFixPoint& r, tFixPoint& g, tFixPoint& b, const sVec4& v, const f32 mulby)
 {
 	r = tofix(v.r, mulby);
 	g = tofix(v.g, mulby);
 	b = tofix(v.b, mulby);
 }
 
-REALINLINE void vec4_to_fix(tFixPoint &a,tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v, const f32 mulby)
+
+REALINLINE void vec4_to_fix(tFixPoint& a, tFixPoint& r, tFixPoint& g, tFixPoint& b, const sVec4& v, const f32 mulby)
 {
 	a = tofix(v.a, mulby);
 	r = tofix(v.r, mulby);
@@ -855,10 +1048,5 @@ REALINLINE void vec4_to_fix(tFixPoint &a,tFixPoint &r, tFixPoint &g, tFixPoint &
 	b = tofix(v.b, mulby);
 }
 
-
-}
-
-}
-
+burning_namespace_end
 #endif
-

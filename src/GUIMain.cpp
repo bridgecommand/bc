@@ -27,6 +27,9 @@
 #include "ScrollDial.h"
 #include "AzimuthDial.h"
 
+#include "SimulationModel.hpp"
+#include "Lines.hpp"
+
 #include <iostream> //for debugging
 #include <cmath> //For fmod
 
@@ -37,9 +40,10 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided)
     {
         this->device = device;
+        this->model = model;
         this->hasDepthSounder = hasDepthSounder;
         this->maxSounderDepth = maxSounderDepth;
         this->hasGPS = hasGPS;
@@ -323,11 +327,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
         }
 
-        //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
-        if (controlsHidden) {
-            hideInSecondary();
-        }
-
         //add data display:
         stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.71*sh,0.45*su+azimuthGUIOffsetR,0.95*sh); //In normal view
         radDataDisplayPos = irr::core::rect<irr::s32>(0.83*su,0.96*sh,0.99*su,0.99*sh); //In maximised 3d view
@@ -417,6 +416,32 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
+        //Add an additional window for lines (will normally be hidden)
+        linesControlsWindow=guienv->addWindow(irr::core::rect<irr::s32>(
+            stdDataDisplayPos.UpperLeftCorner, 
+            stdDataDisplayPos.LowerRightCorner - irr::core::position2d<irr::s32>(0,0.03*sh)
+        ));
+        linesControlsWindow->getCloseButton()->setVisible(false);
+        linesControlsWindow->setText(language->translate("lines").c_str());
+        guienv->addButton(linesControlsWindow->getCloseButton()->getRelativePosition(),linesControlsWindow,GUI_ID_HIDE_LINES_CONTROLS_BUTTON,L"X");
+        linesControlsWindow->setVisible(false);
+
+        //Lines controls interface
+        addLine = guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.030*sh,0.121*su,0.080*sh),linesControlsWindow,GUI_ID_ADD_LINE_BUTTON,language->translate("addLine").c_str());
+        linesList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.200*sh),linesControlsWindow,GUI_ID_LINES_LIST);
+        
+        removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.122*su,0.090*sh,0.300*su,0.120*sh),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
+        
+        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.130*sh,0.300*su,0.160*sh),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.122*su,0.130*sh,0.275*su,0.160*sh),true,true,linesControlsWindow);
+        keepLineSlackText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+        
+        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.280*su,0.170*sh,0.300*su,0.200*sh),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.122*su,0.170*sh,0.275*su,0.200*sh),true,true,linesControlsWindow);
+        haulLineInText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
+
+        linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.122*su,0.030*sh,0.300*su,0.080*sh),true,true,linesControlsWindow);
+ 
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
@@ -443,6 +468,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         smallRadarButton = guienv->addButton(irr::core::rect<irr::s32>(smallRadarButtonLeft,smallRadarButtonTop,smallRadarButtonLeft+0.020*su,smallRadarButtonTop+0.030*sh),0,GUI_ID_SMALL_RADAR_BUTTON,language->translate("smallRadar").c_str());
         bigRadarButton->setToolTipText(language->translate("fullScreenRadar").c_str());
         smallRadarButton->setToolTipText(language->translate("minimiseRadar").c_str());
+
+        // Radar cursor buttons
+        radarCursorLeftButton = guienv->addButton(irr::core::rect<irr::s32>(0.700*su+azimuthGUIOffsetR,0.950*sh,0.715*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton = guienv->addButton(irr::core::rect<irr::s32>(0.730*su+azimuthGUIOffsetR,0.950*sh,0.745*su+azimuthGUIOffsetR,0.970*sh),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.930*sh,0.730*su+azimuthGUIOffsetR,0.950*sh),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton = guienv->addButton(irr::core::rect<irr::s32>(0.715*su+azimuthGUIOffsetR,0.970*sh,0.730*su+azimuthGUIOffsetR,0.990*sh),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
 
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.045*sh,0.055*su,0.085*sh),mainRadarTab,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.085*sh,0.055*su,0.125*sh),mainRadarTab,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
@@ -498,6 +529,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         radarColourButton2 = guienv->addButton(irr::core::rect<irr::s32>(0.080*radarSu,0.245*radarSu,0.135*radarSu,0.275*radarSu),largeRadarControls,GUI_ID_RADAR_COLOUR_BUTTON,language->translate("radarColour").c_str());
 
+        // Radar cursor buttons
+        radarCursorLeftButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.670*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_DECREASE_X_BUTTON,L"<");
+        radarCursorRightButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu,radarTL.X+0.760*radarSu,radarTL.Y+0.670*radarSu),0,GUI_ID_RADAR_INCREASE_X_BUTTON,L">");
+        radarCursorUpButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.610*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.640*radarSu),0,GUI_ID_RADAR_INCREASE_Y_BUTTON,L"^");
+        radarCursorDownButton2 = guienv->addButton(irr::core::rect<irr::s32>(radarTL.X+0.700*radarSu,radarTL.Y+0.670*radarSu,radarTL.X+0.730*radarSu,radarTL.Y+0.700*radarSu),0,GUI_ID_RADAR_DECREASE_Y_BUTTON,L"v");
+
         radarText2 = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.010*radarSu,0.310*radarSu,0.200*radarSu,0.400*radarSu),true,true,largeRadarControls,-1,true);
 
         //Radar PI tab
@@ -541,26 +578,41 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addEditBox(L"0",irr::core::rect<irr::s32>(0.080*radarSu,0.080*radarSu,0.125*radarSu,0.105*radarSu),true,largeRadarPIControls,GUI_ID_BIG_PI_BEARING_BOX);
 
         //Radar ARPA tab
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.005*su,0.010*sh,0.025*su,0.030*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.030*su,0.010*sh,0.140*su,0.030*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.080*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
+        irr::gui::IGUIComboBox* arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.005*sh,0.150*su,0.035*sh),radarARPATab,GUI_ID_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
+        irr::gui::IGUIComboBox* arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.005*su,0.040*sh,0.150*su,0.070*sh),radarARPATab,GUI_ID_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
-        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.080*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
-        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.080*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.090*sh,0.121*su,0.230*sh),radarARPATab);
-        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.090*sh,0.237*su,0.230*sh),radarARPATab);
+        guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.155*su,0.040*sh,0.195*su,0.070*sh),true,radarARPATab,GUI_ID_ARPA_VECTOR_TIME_BOX);
+        (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.200*su,0.040*sh,0.237*su,0.070*sh),false,true,radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaList = guienv->addListBox(irr::core::rect<irr::s32>(0.005*su,0.075*sh,0.121*su,0.190*sh),radarARPATab,GUI_ID_ARPA_LIST);
+        arpaText = guienv->addListBox(irr::core::rect<irr::s32>(0.121*su,0.075*sh,0.237*su,0.190*sh),radarARPATab);
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.005*su,0.190*sh,0.237*su,0.215*sh), false, true, radarARPATab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.215*sh,0.082*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.082*su,0.215*sh,0.159*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.159*su,0.215*sh,0.237*su,0.240*sh),radarARPATab,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
 
         //Radar ARPA on big radar screen
-        guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.010*radarSu,0.410*radarSu,0.030*radarSu,0.430*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
-        (guienv->addStaticText(language->translate("ARPAon").c_str(),irr::core::rect<irr::s32>(0.040*radarSu,0.410*radarSu,0.160*radarSu,0.430*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        arpaMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.405*radarSu,0.200*radarSu,0.435*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_ON_BOX);
+        arpaMode->addItem(language->translate("arpaManual").c_str());
+        arpaMode->addItem(language->translate("marpaOn").c_str());
+        arpaMode->addItem(language->translate("arpaOn").c_str());
         arpaVectorMode = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*radarSu,0.440*radarSu,0.200*radarSu,0.470*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_TRUE_REL_BOX);
         arpaVectorMode->addItem(language->translate("trueArpa").c_str());
         arpaVectorMode->addItem(language->translate("relArpa").c_str());
         guienv->addEditBox(L"6",irr::core::rect<irr::s32>(0.010*radarSu,0.480*radarSu,0.050*radarSu,0.510*radarSu),true,largeRadarControls,GUI_ID_BIG_ARPA_VECTOR_TIME_BOX);
         (guienv->addStaticText(language->translate("minsARPA").c_str(),irr::core::rect<irr::s32>(0.060*radarSu,0.480*radarSu,0.105*radarSu,0.510*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.520*radarSu,0.105*radarSu,0.700*radarSu),largeRadarControls);
-        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.520*radarSu,0.200*radarSu,0.700*radarSu),largeRadarControls);
+        arpaList2 = guienv->addListBox(irr::core::rect<irr::s32>(0.010*radarSu,0.515*radarSu,0.105*radarSu,0.655*radarSu),largeRadarControls,GUI_ID_BIG_ARPA_LIST);
+        arpaText2 = guienv->addListBox(irr::core::rect<irr::s32>(0.105*radarSu,0.515*radarSu,0.200*radarSu,0.655*radarSu),largeRadarControls);
+        // Manual/MARPA buttons
+        (guienv->addStaticText(language->translate("manualOrMarpa").c_str(), irr::core::rect<irr::s32>(0.010*radarSu,0.655*radarSu,0.200*radarSu,0.675*radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        guienv->addButton(irr::core::rect<irr::s32>(0.010*radarSu,0.675*radarSu,0.073*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_NEW_BUTTON,language->translate("new").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.073*radarSu,0.675*radarSu,0.136*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_SCAN_BUTTON,language->translate("manualLog").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.136*radarSu,0.675*radarSu,0.200*radarSu,0.695*radarSu),largeRadarControls,GUI_ID_MANUAL_CLEAR_BUTTON,language->translate("clear").c_str());
+
 
         //Add paused button
         pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON,language->translate("pausedbutton").c_str());
@@ -585,9 +637,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Show button to display extra controls window
         showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
-        //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.35*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        //Show button to display lines control window
+        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.37*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
 
+        //Show internal log window button
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.37*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        
         //Set initial visibility
         updateVisibility();
 
@@ -695,16 +750,28 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return radarLarge;
     }
 
-    void GUIMain::setARPACheckboxes(bool arpaState)
+    void GUIMain::setARPAComboboxes(irr::s32 arpaState)
     {
         //Set both linked inputs - brute force
         irr::gui::IGUIElement* arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
         }
         arpaCheckbox = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_ARPA_ON_BOX,true);
         if(arpaCheckbox!=0) {
-            ((irr::gui::IGUICheckBox*)arpaCheckbox)->setChecked(arpaState);
+            ((irr::gui::IGUIComboBox*)arpaCheckbox)->setSelected(arpaState);
+        }
+    }
+
+    void GUIMain::setARPAList(int arpaSelected)
+    {
+        //Set both linked inputs - brute force
+        if(arpaList!=0) {
+            arpaList->setSelected(arpaSelected);
+        }
+        
+        if(arpaList2!=0) {
+            arpaList2->setSelected(arpaSelected);
         }
     }
 
@@ -739,7 +806,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     irr::core::rect<irr::s32> GUIMain::getSmallRadarRect() const
     {
 	    irr::u32 graphicsWidth3d = su;
-	    irr::u32 graphicsHeight3d = sh * 0.6;
+	    irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
         return irr::core::rect<irr::s32>(su-(sh-graphicsHeight3d)+azimuthGUIOffsetR,graphicsHeight3d,su+azimuthGUIOffsetR,sh);
     }
     
@@ -759,11 +826,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
 
+        radarCursorLeftButton->setVisible(showInterface && !radarLarge);
+        radarCursorRightButton->setVisible(showInterface && !radarLarge);
+        radarCursorUpButton->setVisible(showInterface && !radarLarge);
+        radarCursorDownButton->setVisible(showInterface && !radarLarge);
+
+        radarCursorLeftButton2->setVisible(radarLarge);
+        radarCursorRightButton2->setVisible(radarLarge);
+        radarCursorUpButton2->setVisible(radarLarge);
+        radarCursorDownButton2->setVisible(radarLarge);
+
         //weatherScrollbar->setVisible(showInterface);
         //rainScrollbar->setVisible(showInterface);
         //visibilityScrollbar->setVisible(showInterface);
         pcLogButton->setVisible(showInterface);
         showExtraControlsButton->setVisible(showInterface);
+        showLinesControlsButton->setVisible(showInterface);
 
         exitButton->setVisible(showInterface);
 
@@ -824,6 +902,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (azimuth2Control) {azimuth2Control->setVisible(false);}
         if (azimuth1Master) {azimuth1Master->setVisible(false);}
         if (azimuth2Master) {azimuth2Master->setVisible(false);}
+
+        if (showLinesControlsButton) {showLinesControlsButton->setVisible(false);}
+        if (showExtraControlsButton) {showExtraControlsButton->setVisible(false);}
 
 	// DEE_NOV22 vvvv hide these in secondary displays
         if (enginePort) {enginePort->setVisible(false);}
@@ -1038,6 +1119,7 @@ guiTideHeight = guiData->tideHeight;
 
         //Update ARPA data
         arpaContactStates = guiData->arpaContactStates;
+        setARPAList(guiData->arpaListSelection);
 
         //Update rudder pump indicators
         if (guiData->pump1On == true) {
@@ -1221,7 +1303,13 @@ guiTideHeight = guiData->tideHeight;
             //Convert TCPA from decimal minutes into minutes and seconds.
             //TODO: Filter list based on risk?
 
-
+            // If stationary, show placeholder only
+            if (arpaContactStates.at(i).stationary) {
+                displayText = language->translate("untracked");
+                arpaList->addItem(displayText.c_str());
+                arpaList2->addItem(displayText.c_str());
+                continue;
+            }
 
             displayText = L"";
 
@@ -1247,7 +1335,11 @@ guiTideHeight = guiData->tideHeight;
                 tcpaDisplaySecs = zeroPadded;
             }
 
-            displayText.append(language->translate("arpaContact"));
+            if (arpaContactStates.at(i).contactType == CONTACT_MANUAL) {
+                displayText.append(language->translate("manualContact"));
+            } else {
+                displayText.append(language->translate("arpaContact"));
+            }
             displayText.append(L" ");
             displayText.append(irr::core::stringw(i+1)); //Contact ID (1,2,...)
             displayText.append(L":");
@@ -1258,64 +1350,75 @@ guiTideHeight = guiData->tideHeight;
             if ( i==selectedItem || i==selectedItem2 ) {
                 //Show arpa details
 
-                //CPA
-                displayText = L"";
-                displayText.append(language->translate("cpa"));
-                displayText.append(L":");
-                displayText.append(f32To2dp(cpa).c_str());
-                displayText.append(language->translate("nm"));
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
-
-                //TCPA
-                displayText = L"";
-                displayText.append(language->translate("tcpa"));
-                displayText.append(L":");
-                if (tcpa >= 0) {
-                    displayText.append(tcpaDisplayMins);
-                    displayText.append(L":");
-                    displayText.append(tcpaDisplaySecs);
+                if (arpaContactStates.at(i).range == 0) {
+                    // Exactly 0 means untracked
+                    displayText = language->translate("untracked");
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 } else {
-                    displayText.append(L" ");
-                    displayText.append(language->translate("past"));
-                }
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
-                }
+                    //CPA
+                    displayText = L"";
+                    displayText.append(language->translate("cpa"));
+                    displayText.append(L":");
+                    displayText.append(f32To2dp(cpa).c_str());
+                    displayText.append(language->translate("nm"));
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
 
-                //Heading and speed
-                //Pad heading to three decimals
-                irr::core::stringw headingText = irr::core::stringw(arpahdg);
-                if (headingText.size() == 1) {
-                    irr::core::stringw zeroPadded = L"00";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                else if (headingText.size() == 2) {
-                    irr::core::stringw zeroPadded = L"0";
-                    zeroPadded.append(headingText);
-                    headingText = zeroPadded;
-                }
-                displayText = L"";
-                displayText.append(headingText);
-                displayText.append(L"° ");
-                displayText.append(irr::core::stringw(arpaspd));
-                displayText.append(L" kts");
-                //Add to the correct box
-                if (i==selectedItem) {
-                    arpaText->addItem(displayText.c_str());
-                }
-                if (i==selectedItem2) {
-                    arpaText2->addItem(displayText.c_str());
+                    //TCPA
+                    displayText = L"";
+                    displayText.append(language->translate("tcpa"));
+                    displayText.append(L":");
+                    if (tcpa >= 0) {
+                        displayText.append(tcpaDisplayMins);
+                        displayText.append(L":");
+                        displayText.append(tcpaDisplaySecs);
+                    } else {
+                        displayText.append(L" ");
+                        displayText.append(language->translate("past"));
+                    }
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
+
+                    //Heading and speed
+                    //Pad heading to three decimals
+                    irr::core::stringw headingText = irr::core::stringw(arpahdg);
+                    if (headingText.size() == 1) {
+                        irr::core::stringw zeroPadded = L"00";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    else if (headingText.size() == 2) {
+                        irr::core::stringw zeroPadded = L"0";
+                        zeroPadded.append(headingText);
+                        headingText = zeroPadded;
+                    }
+                    displayText = L"";
+                    displayText.append(headingText);
+                    displayText.append(L"° ");
+                    displayText.append(irr::core::stringw(arpaspd));
+                    displayText.append(L" kts");
+                    //Add to the correct box
+                    if (i==selectedItem) {
+                        arpaText->addItem(displayText.c_str());
+                    }
+                    if (i==selectedItem2) {
+                        arpaText2->addItem(displayText.c_str());
+                    }
                 }
 
             }
@@ -1352,6 +1455,16 @@ guiTideHeight = guiData->tideHeight;
         if (eblLeftButton2->isPressed()) {manuallyTriggerClick(eblLeftButton2);}
         if (eblRightButton2->isPressed()) {manuallyTriggerClick(eblRightButton2);}
 
+        if (radarCursorLeftButton->isPressed()) {manuallyTriggerClick(radarCursorLeftButton);}
+        if (radarCursorRightButton->isPressed()) {manuallyTriggerClick(radarCursorRightButton);}
+        if (radarCursorUpButton->isPressed()) {manuallyTriggerClick(radarCursorUpButton);}
+        if (radarCursorDownButton->isPressed()) {manuallyTriggerClick(radarCursorDownButton);}
+
+        if (radarCursorLeftButton2->isPressed()) {manuallyTriggerClick(radarCursorLeftButton2);}
+        if (radarCursorRightButton2->isPressed()) {manuallyTriggerClick(radarCursorRightButton2);}
+        if (radarCursorUpButton2->isPressed()) {manuallyTriggerClick(radarCursorUpButton2);}
+        if (radarCursorDownButton2->isPressed()) {manuallyTriggerClick(radarCursorDownButton2);}
+
         if (nonFollowUpPortButton && wheelScrollbar ) {
             //Handle port NFU rudder button
             if (nonFollowUpPortButton->isPressed() && !nfuPortDown) {
@@ -1378,6 +1491,33 @@ guiTideHeight = guiData->tideHeight;
                 manuallyTriggerScroll(wheelScrollbar);
                 nfuStbdDown = false; //Set this after we trigger the event, as this will be checked for override
             }
+        }
+
+        // Update lines display
+        if (model && model->getLines()) {
+            std::vector<std::string> linesNames = model->getLines()->getLineNames();
+            
+            irr::s32 previousSelection = linesList->getSelected();
+            linesList->clear();
+
+            for (unsigned int i = 0; i < linesNames.size(); i++) {
+                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
+            }
+
+            if (linesList->getItemCount() > previousSelection) {
+                linesList->setSelected(previousSelection);
+            }
+
+            // Get 'keepSlack' & 'heaveIn' status of current line
+            if (linesList->getSelected() > -1) {
+                keepLineSlack->setChecked(model->getLines()->getKeepSlack(linesList->getSelected()));
+                heaveLineIn->setChecked(model->getLines()->getHeaveIn(linesList->getSelected()));
+            } else {
+                keepLineSlack->setChecked(false);
+                heaveLineIn->setChecked(false);
+            }
+
+
         }
 
         guienv->drawAll();
@@ -1568,4 +1708,17 @@ guiTideHeight = guiData->tideHeight;
         if (windowVisible) {
             guienv->setFocus(extraControlsWindow);
         }
+    }
+
+    void GUIMain::setLinesControlsWindowVisible(bool windowVisible)
+    {
+        linesControlsWindow->setVisible(windowVisible);
+        if (windowVisible) {
+            guienv->setFocus(linesControlsWindow);
+        }
+    }
+
+    void GUIMain::setLinesControlsText(std::string textToShow)
+    {
+        linesText->setText(irr::core::stringw(textToShow.c_str()).c_str());
     }

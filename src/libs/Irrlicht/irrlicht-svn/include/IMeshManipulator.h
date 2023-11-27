@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_MESH_MANIPULATOR_H_INCLUDED__
-#define __I_MESH_MANIPULATOR_H_INCLUDED__
+#ifndef IRR_I_MESH_MANIPULATOR_H_INCLUDED
+#define IRR_I_MESH_MANIPULATOR_H_INCLUDED
 
 #include "IReferenceCounted.h"
 #include "vector3d.h"
@@ -103,7 +103,9 @@ namespace scene
 				bool angleWeighted=false) const=0;
 
 		//! Scales the actual mesh, not a scene node.
-		/** \param mesh Mesh on which the operation is performed.
+		/** Note: When your scale are not uniform then
+		prefer the transform function to have correct normals.
+		\param mesh Mesh on which the operation is performed.
 		\param factor Scale factor for each axis. */
 		void scale(IMesh* mesh, const core::vector3df& factor) const
 		{
@@ -111,7 +113,9 @@ namespace scene
 		}
 
 		//! Scales the actual meshbuffer, not a scene node.
-		/** \param buffer Meshbuffer on which the operation is performed.
+		/** Note: When your scale are not uniform then
+		prefer the transform function to have correct normals.
+		\param buffer Meshbuffer on which the operation is performed.
 		\param factor Scale factor for each axis. */
 		void scale(IMeshBuffer* buffer, const core::vector3df& factor) const
 		{
@@ -122,7 +126,7 @@ namespace scene
 		/** \deprecated Use scale() instead. This method may be removed by Irrlicht 1.9
 		\param mesh Mesh on which the operation is performed.
 		\param factor Scale factor for each axis. */
-		_IRR_DEPRECATED_ void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
+		IRR_DEPRECATED void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
 
 		//! Scale the texture coords of a mesh.
 		/** \param mesh Mesh on which the operation is performed.
@@ -146,9 +150,12 @@ namespace scene
 		/** \param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. 
 		\param normalsUpdate When 0 - don't update normals. 
-		                     When 1 - update normals with inverse transposed of the transformation matrix
+		                     When 1 - update normals with inner 3x3 matrix of the inverse transposed of the transformation matrix
+							          should be set when the matrix has rotation or non-uniform scaling
+		\param normalizeNormals When true it normalizes all normals again. 
+		                        Recommended to set this when normalsUpdate is 1 and there is any scaling
 		*/
-		void transform(IMesh* mesh, const core::matrix4& m, u32 normalsUpdate = 0) const
+		void transform(IMesh* mesh, const core::matrix4& m, u32 normalsUpdate = 0, bool normalizeNormals=false) const
 		{
 			apply(SVertexPositionTransformManipulator(m), mesh, true);
 
@@ -158,8 +165,12 @@ namespace scene
 				if ( m.getInverse(invT) )
 				{
 					invT = invT.getTransposed();
-					apply(SVertexNormalTransformManipulator(invT), mesh, false);
+					apply(SVertexNormalRotateScaleManipulator(invT), mesh, false);
 				}
+			}
+			if ( normalizeNormals )
+			{
+				apply(SVertexNormalizeNormalManipulator(), mesh, false);
 			}
 		}
 
@@ -167,9 +178,12 @@ namespace scene
 		/** \param buffer Meshbuffer on which the operation is performed.
 		\param m transformation matrix. 
 		\param normalsUpdate When 0 - don't update normals. 
-		                     When 1 - update normals with inverse transposed of the transformation matrix
+		                     When 1 - update normals with inner 3x3 matrix of the inverse transposed of the transformation matrix
+							          should be set when the matrix has rotation or non-uniform scaling
+		\param normalizeNormals When true it normalizes all normals again. 
+		                        Recommended to set this when normalsUpdate is 1 and there is any scaling
 		*/
-		void transform(IMeshBuffer* buffer, const core::matrix4& m, u32 normalsUpdate = 0) const
+		void transform(IMeshBuffer* buffer, const core::matrix4& m, u32 normalsUpdate = 0, bool normalizeNormals=false) const
 		{
 			apply(SVertexPositionTransformManipulator(m), buffer, true);
 
@@ -179,8 +193,12 @@ namespace scene
 				if ( m.getInverse(invT) )
 				{
 					invT = invT.getTransposed();
-					apply(SVertexNormalTransformManipulator(invT), buffer, false);
+					apply(SVertexNormalRotateScaleManipulator(invT), buffer, false);
 				}
+			}
+			if ( normalizeNormals )
+			{
+				apply(SVertexNormalizeNormalManipulator(), buffer, false);
 			}
 		}
 
@@ -188,7 +206,7 @@ namespace scene
 		/** \deprecated Use transform() instead. This method may be removed by Irrlicht 1.9
 		\param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. */
-		_IRR_DEPRECATED_ virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
+		IRR_DEPRECATED virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
 
 		//! Creates a planar texture mapping on the mesh
 		/** \param mesh: Mesh on which the operation is performed.
@@ -229,9 +247,7 @@ namespace scene
 				u8 axis, const core::vector3df& offset) const=0;
 
 		//! Clones a static IMesh into a modifiable SMesh.
-		/** All meshbuffers in the returned SMesh
-		are of type SMeshBuffer or SMeshBufferLightMap.
-		\param mesh Mesh to copy.
+		/** \param mesh Mesh to copy.
 		\return Cloned mesh. If you no longer need the
 		cloned mesh, you should call SMesh::drop(). See
 		IReferenceCounted::drop() for more information. */
@@ -241,6 +257,7 @@ namespace scene
 		/** This is useful if you want to draw tangent space normal
 		mapped geometry because it calculates the tangent and binormal
 		data which is needed there.
+		Note: Only 16-bit meshbuffers supported so far
 		\param mesh Input mesh
 		\param recalculateNormals The normals are recalculated if set,
 		otherwise the original ones are kept. Note that keeping the
@@ -259,7 +276,8 @@ namespace scene
 				bool angleWeighted=false, bool recalculateTangents=true) const=0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertex2TCoord vertices.
-		/** \param mesh Input mesh
+		/** Note: Only 16-bit meshbuffers supported so far
+		\param mesh Input mesh
 		\return Mesh consisting only of S3DVertex2TCoord vertices. If
 		you no longer need the cloned mesh, you should call
 		IMesh::drop(). See IReferenceCounted::drop() for more
@@ -267,7 +285,8 @@ namespace scene
 		virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const = 0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
-		/** \param mesh Input mesh
+		/** Note: Only 16-bit meshbuffers supported so far
+		\param mesh Input mesh
 		\return Mesh consisting only of S3DVertex vertices. If
 		you no longer need the cloned mesh, you should call
 		IMesh::drop(). See IReferenceCounted::drop() for more
@@ -275,15 +294,17 @@ namespace scene
 		virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const = 0;
 
 		//! Creates a copy of a mesh with all vertices unwelded
-		/** \param mesh Input mesh
+		/** Note: Only 16-bit meshbuffers supported so far
+		\param mesh Input mesh
 		\return Mesh consisting only of unique faces. All vertices
 		which were previously shared are now duplicated. If you no
 		longer need the cloned mesh, you should call IMesh::drop(). See
 		IReferenceCounted::drop() for more information. */
 		virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const = 0;
 
-		//! Creates a copy of a mesh with vertices welded
-		/** \param mesh Input mesh
+		//! Creates a copy of a mesh with vertices welded 
+		/** Note: Only 16-bit meshbuffers supported so far, 32-bit buffer are cloned
+		\param mesh Input mesh
 		\param tolerance The threshold for vertex comparisons.
 		\return Mesh without redundant vertices. If you no longer need
 		the cloned mesh, you should call IMesh::drop(). See
@@ -440,6 +461,5 @@ protected:
 
 } // end namespace scene
 } // end namespace irr
-
 
 #endif
