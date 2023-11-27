@@ -1062,20 +1062,17 @@ int main(int argc, char ** argv)
                 }
             }
 
-            irr::s32 vrInwardsShift = 0.1*graphicsWidth;
-            irr::s32 vrLeftStart = vrInwardsShift;
-            irr::s32 vrRightEnd = graphicsWidth - vrInwardsShift;
-            irr::s32 vrWidth = graphicsWidth/2 - vrInwardsShift;
+            irr::s32 vrWidth = graphicsWidth/2;
 
             aspectvr = (irr::f32)(vrWidth) / (irr::f32)graphicsHeight;
 
             // Left viewport
-            driver->setViewPort(irr::core::rect<irr::s32>(vrLeftStart,0,graphicsWidth/2,graphicsHeight));
+            driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth/2,graphicsHeight));
             model.updateViewport(aspectvr);
             model.updateCameraVRPos(true, quat);
             smgr->drawAll();
             // Right viewport
-            driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,vrRightEnd,graphicsHeight));
+            driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,graphicsWidth,graphicsHeight));
             model.updateCameraVRPos(false, quat);
             smgr->drawAll();
 

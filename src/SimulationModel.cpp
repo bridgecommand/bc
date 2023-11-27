@@ -1435,7 +1435,7 @@ SimulationModel::~SimulationModel()
     }
 
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
-        
+
         // Temporarily enable all required triangle selectors
         if (linesMode == 1) {
             // Start - on own ship
@@ -1451,7 +1451,7 @@ SimulationModel::~SimulationModel()
             // Not start or end, return null;
             return 0;
         }
-        
+
         irr::core::vector3df intersection;
         irr::core::triangle3df hitTriangle;
 
@@ -1462,10 +1462,10 @@ SimulationModel::~SimulationModel()
             hitTriangle, // This will be the triangle hit in the collision
             0, // (bitmask), 0 for all
             0); // Check all nodes
-        
+
         irr::scene::ISceneNode* contactPointNode = 0;
 
-        if (selectedSceneNode && 
+        if (selectedSceneNode &&
             (
                 ((linesMode == 1) && (selectedSceneNode == ownShip.getSceneNode())) || // Valid start node
                 ((linesMode == 2) && (selectedSceneNode != ownShip.getSceneNode()))    // Valid end node
@@ -1481,8 +1481,8 @@ SimulationModel::~SimulationModel()
 
             irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
             if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
-                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X, 
-                                                   1.0f/selectedSceneNode->getScale().X, 
+                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X,
+                                                   1.0f/selectedSceneNode->getScale().X,
                                                    1.0f/selectedSceneNode->getScale().X);
             }
 
@@ -1490,10 +1490,10 @@ SimulationModel::~SimulationModel()
                                                         localPosition,
                                                         irr::core::vector3df(0, 0, 0),
                                                         sphereScale);
-            
+
             // Set name to match parent for convenience
             contactPointNode->setName(selectedSceneNode->getName());
-        } 
+        }
 
         // Reset triangle selectors
         ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
@@ -1534,7 +1534,15 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::updateCameraVRPos(bool leftView, irr::core::quaternion quat)
     {
-        camera.update(0, leftView, quat);
+        irr::core::vector2df lensShift;
+        lensShift.Y = 0;
+        if (leftView) {
+            lensShift.X = 0.05;
+        } else {
+            lensShift.X = -0.05;
+        }
+
+        camera.update(0, leftView, quat, lensShift);
     }
 
     void SimulationModel::update()

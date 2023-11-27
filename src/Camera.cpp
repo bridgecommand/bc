@@ -334,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::quaternion quat)
+void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::quaternion quat, irr::core::vector2df lensShift)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -386,6 +386,10 @@ void Camera::update(irr::f32 deltaTime, bool leftView, irr::core::quaternion qua
         if (leftView) {
             irr::f32 ipd = 0.065;
             offsetTransformed = offsetTransformed - ipd * sideViewVector;
+        }
+
+        if (lensShift.X != 0 || lensShift.Y != 0) {
+            camera->setLensShift(lensShift);
         }
 
         //move camera and angle
