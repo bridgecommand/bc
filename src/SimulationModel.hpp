@@ -71,6 +71,7 @@ public:
                     irr::f32 frictionCoefficient,
                     irr::f32 tanhFrictionFactor,
                     irr::u32 limitTerrainResolution,
+                    irr::f32 vrLensShift,
                     bool debugMode);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
@@ -262,6 +263,7 @@ public:
     void updateViewport(irr::f32 aspect);
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
+    void changeVRLensShift(irr::f32 deltaShift);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
@@ -324,6 +326,7 @@ private:
     irr::f32 visibilityRange; //Nm
     irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     irr::f32 zoom;
+    irr::f32 vrLensShift; // 0-1
     Terrain terrain;
     Light light;
     OwnShip ownShip;

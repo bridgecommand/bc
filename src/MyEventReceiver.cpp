@@ -983,6 +983,12 @@
                         case irr::KEY_KEY_H:
                             model->startHorn();
                             break;
+                        case irr::KEY_KEY_O:
+                            model->changeVRLensShift(-0.001);
+                            break;
+                        case irr::KEY_KEY_P:
+                            model->changeVRLensShift(0.001);
+                            break;
 
 // DEE_NOV22 vvvvv
 

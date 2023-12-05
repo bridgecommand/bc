@@ -891,9 +891,10 @@ int main(int argc, char ** argv)
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
+    irr::f32 vrLensShift = IniFile::iniFileTof32(iniFilename, "vr_lens_shift");
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, vrLensShift, debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
