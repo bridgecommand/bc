@@ -1,0 +1,24 @@
+Create a working folder called 'OpenHMD', in the same folder as the Bridge Command checkout 'bc'.
+In this working folder, checkout OpenHMD (currently e64708b8213c52a6b0bbd7ad77e0ab910b5af6b8) from https://github.com/OpenHMD/OpenHMD.git
+
+Download https://github.com/libusb/hidapi/releases/download/hidapi-0.13.1/hidapi-win.zip, and uncompress to create a folder 'hidapi-win' within the working folder. This should contain 'include', 'x86' and 'x64'.
+
+So the overall hierachy should be
+
+Parent folder
+  -bc
+  -OpenHMD
+    -OpenHMD (the git checkout)
+      -build (manually created within the checkout, see next step)
+    -hidapi-win
+      -include
+      -x86
+      -x64
+
+Create a new folder 'build' within the OpenHMD checkout. In this folder, run:
+
+cmake .. -DHIDAPI_LIBRARY="../../hidapi-win/x86/hidapi.lib" -DHIDAPI_INCLUDE_DIR="../../hidapi-win/include" -DOPENHMD_EXAMPLE_SIMPLE="OFF" -DBUILD_BOTH_STATIC_SHARED_LIBS="OFF" -G "MinGW Makefiles"
+mingw32-make.exe
+
+Will need dll from hidapi in bc/bin folder. There is no OpenHMD dll used, it is linked into Bridge Command.
+
