@@ -32,6 +32,12 @@
 #include <cstdlib> //For rand()
 #include <algorithm> //For sort()
 
+#ifdef WITH_PROFILING
+#include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
+
 ////using namespace irr;
 
 RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(360)
@@ -631,7 +637,11 @@ void RadarCalculation::changeRadarColourChoice()
 void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
-    //IPROF_FUNC;
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
+    { IPROF("Set up");
 
     //Reset screen if needed
     if(radarScreenStale) {
@@ -645,6 +655,8 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
         }
         radarScreenStale = false;
     }
+
+    } { IPROF("Mouse cursor");
 
     //Find position of mouse cursor for radar cursor
     if (isMouseDown) {
@@ -669,9 +681,13 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     CursorBrg = Angles::normaliseAngle(CursorBrg);
     CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
 
+    } { IPROF("Scan");
     scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    } { IPROF("Update ARPA");
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
+	} { IPROF("Render");
 	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+	}
 
 }
 
