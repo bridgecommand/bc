@@ -128,6 +128,7 @@ else (APPLE)
         bc-irrlicht
         Threads::Threads
         sndfile
+        openhmd
         portaudio
         asound
     )
