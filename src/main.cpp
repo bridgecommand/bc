@@ -57,7 +57,11 @@
 #include "profile.hpp"
 
 // OpenHMD
+#ifdef _WIN32
+#include "openhmd.h"
+#else
 #include <openhmd/openhmd.h>
+#endif // _WIN32
 
 //Mac OS:
 #ifdef __APPLE__
