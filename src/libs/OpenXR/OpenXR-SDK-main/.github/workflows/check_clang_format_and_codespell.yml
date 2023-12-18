@@ -1,0 +1,38 @@
+# Copyright (c) 2019-2023, The Khronos Group Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Check code formatting and spelling
+
+on:
+  workflow_call:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    container:
+      # 20230614
+      image: khronosgroup/docker-images:openxr-sdk@sha256:fbc5fe29a0787cccc8f66bd9bd03c9dbddf591c7d1aea673108c38c908b280f5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - run: ./runClangFormat.sh
+        name: Run clang-format
+
+      - run: git diff --patch --exit-code > clang-format.patch
+        name: Save changes as diff
+
+      # In case of failure (clang-format changes needed) do these two things
+      - run: echo "The following files need clang-formatting:"; sed -n -e "s/^diff.* b\///p" ${{ runner.temp }}/clang-format.patch
+        if: ${{ failure() }}
+      - name: Publish diff
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ runner.temp }}/clang-format.patch
+          name: clang-format-changes
+
+      - name: Run Codespell script
+        run: ./checkCodespell

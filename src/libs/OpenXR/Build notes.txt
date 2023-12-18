@@ -1,0 +1,5 @@
+mkdir build\win64
+cd build\win64
+cmake -A x64 -G "Visual Studio 16" ..\..
+
+Then open the generated .sln file
