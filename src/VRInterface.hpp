@@ -52,6 +52,7 @@ private:
     static void print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views);
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
+    XrPosef identity_pose;
 };
 
 #endif

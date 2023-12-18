@@ -14,6 +14,8 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+// This file is mostly derived from https://gitlab.freedesktop.org/monado/demos/openxr-simple-example/ at 94f1a764dd736b23657ff01464ec1518771e8cdc
+
 #define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include "VRInterface.hpp"
@@ -23,6 +25,13 @@
 VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
     this->smgr = smgr;
     this->driver = driver;
+	identity_pose.orientation.x = 0;
+	identity_pose.orientation.y = 0;
+	identity_pose.orientation.z = 0;
+	identity_pose.orientation.w = 1.0;
+	identity_pose.position.x = 0;
+	identity_pose.position.y = 0;
+	identity_pose.position.z = 0;
 }
 
 // Destructor
@@ -281,6 +290,33 @@ int VRInterface::load() {
 		return 1;
 
 	printf("Successfully created a session with OpenGL!\n");
+
+	/* Many runtimes support at least STAGE and LOCAL but not all do.
+	 * Sophisticated apps might check with xrEnumerateReferenceSpaces() if the
+	 * chosen one is supported and try another one if not.
+	 * Here we will get an error from xrCreateReferenceSpace() and exit. */
+	XrReferenceSpaceCreateInfo play_space_create_info; 
+	play_space_create_info.type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO; 
+	play_space_create_info.next = NULL; 
+	play_space_create_info.referenceSpaceType = play_space_type;
+	play_space_create_info.poseInReferenceSpace = identity_pose;
+
+	result = xrCreateReferenceSpace(session, &play_space_create_info, &play_space);
+	if (!xr_check(instance, result, "Failed to create play space!"))
+		return 1;
+
+	// --- Create Swapchains
+	uint32_t swapchain_format_count;
+	result = xrEnumerateSwapchainFormats(session, 0, &swapchain_format_count, NULL);
+	if (!xr_check(instance, result, "Failed to get number of supported swapchain formats"))
+		return 1;
+
+	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
+	int64_t* swapchain_formats = new int64_t[swapchain_format_count]; // TODO: Remember to delete[] this later
+	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
+		swapchain_formats);
+	if (!xr_check(instance, result, "Failed to enumerate swapchain formats"))
+		return 1;
 
 	// If successfull, return 0
 	return 0;
