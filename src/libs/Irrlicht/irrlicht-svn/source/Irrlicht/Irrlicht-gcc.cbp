@@ -151,6 +151,56 @@
 					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
+			<Target title="Win64 - Release - fast math - dll">
+				<Option platforms="Windows;" />
+				<Option output="../../lib/Win64-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/win64-gcc-release-fast-dll" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-m64" />
+					<Add option="-W" />
+					<Add option="-ffast-math" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_USRDLL" />
+					<Add option="-DIRRLICHT_EXPORTS" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DIRR_COMPILE_WITH_DX9_DEV_PACK" />
+					<Add directory="../../include" />
+					<Add directory="zlib" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
+				</Compiler>
+				<Linker>
+					<Add option="-m64" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+					<Add library="d3dx9" />
+					<Add library="dinput8" />
+					<Add library="dxguid" />
+					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="cmd /c del ..\..\bin\Win32-gcc\Irrlicht.dll" />
+					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
+				</ExtraCommands>
+			</Target>
 			<Target title="Win32 - Debug - static">
 				<Option platforms="Windows;" />
 				<Option output="../../lib/Win32-gcc/Irrlicht" prefix_auto="1" extension_auto="1" />
@@ -865,7 +915,6 @@
 		<Unit filename="COpenGLCoreFeature.h" />
 		<Unit filename="COpenGLCoreRenderTarget.h" />
 		<Unit filename="COpenGLCoreTexture.h" />
-		<Unit filename="COpenGLCommon.h" />
 		<Unit filename="COpenGLDriver.cpp" />
 		<Unit filename="COpenGLDriver.h" />
 		<Unit filename="COpenGLExtensionHandler.cpp" />

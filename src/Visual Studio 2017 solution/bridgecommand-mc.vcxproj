@@ -78,6 +78,11 @@
     <OutDir>..\..\bin</OutDir>
     <IntDir>$(Configuration)\mc\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\bin</OutDir>
+    <IntDir>$(Configuration)\mc\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\Irrlicht\irrlicht-svn\include;..\libs\asio\include;..\libs\enet-1.3.14\include</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -119,7 +124,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win32-visualstudio;..\libs\enet-1.3.14</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;enet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -134,10 +139,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win64-visualstudio;..\libs\enet-1.3.14</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;winmm.lib;ws2_32.lib;Irrlicht.lib;enet64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,10 +165,10 @@
     <ClCompile Include="..\controller\AISOverUDP.cpp" />
     <ClCompile Include="..\controller\libs\aisparser\c\src\access.c" />
     <ClCompile Include="..\controller\libs\aisparser\c\src\imo.c" />
-		<ClCompile Include="..\controller\libs\aisparser\c\src\nmea.c" />
-		<ClCompile Include="..\controller\libs\aisparser\c\src\seaway.c" />
-		<ClCompile Include="..\controller\libs\aisparser\c\src\sixbit.c" />
-		<ClCompile Include="..\controller\libs\aisparser\c\src\vdm_parse.c" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\nmea.c" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\seaway.c" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\sixbit.c" />
+    <ClCompile Include="..\controller\libs\aisparser\c\src\vdm_parse.c" />
     <ClCompile Include="..\controller\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,11 +187,11 @@
     <ClInclude Include="..\controller\ShipDataStruct.hpp" />
     <ClInclude Include="..\controller\libs\aisparser\c\src\access.h" />
     <ClInclude Include="..\controller\libs\aisparser\c\src\imo.h" />
-		<ClInclude Include="..\controller\libs\aisparser\c\src\nmea.h" />
-		<ClInclude Include="..\controller\libs\aisparser\c\src\portable.h" />
-		<ClInclude Include="..\controller\libs\aisparser\c\src\seaway.h" />
-		<ClInclude Include="..\controller\libs\aisparser\c\src\sixbit.h" />
-		<ClInclude Include="..\controller\libs\aisparser\c\src\vdm_parse.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\nmea.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\portable.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\seaway.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\sixbit.h" />
+    <ClInclude Include="..\controller\libs\aisparser\c\src\vdm_parse.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />

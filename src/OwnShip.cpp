@@ -684,7 +684,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     triangleSelectorEnabled = false;
 
     device->getLogger()->log("Own ship points found: ");
-    device->getLogger()->log(irr::core::stringw(contactPoints.size()).c_str());
+    device->getLogger()->log(irr::core::stringw((int)contactPoints.size()).c_str());
 }
 
 void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 contactArea)
