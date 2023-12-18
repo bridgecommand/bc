@@ -54,6 +54,8 @@
 #include <sys/stat.h>
 #endif // _WIN32
 
+#include "VRInterface.hpp"
+
 #include "profile.hpp"
 
 //Mac OS:
@@ -61,9 +63,9 @@
 #include <mach-o/dyld.h>
 #endif
 
-
+// This disables to console window showing, disable for debugging
 #ifdef _MSC_VER
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 #ifdef _WIN32
@@ -931,6 +933,9 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterface();
     }
 
+    // Set up the VR interface
+    // (TODO: Make this optional)
+    VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
