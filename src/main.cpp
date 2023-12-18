@@ -56,13 +56,6 @@
 
 #include "profile.hpp"
 
-// OpenHMD
-#ifdef _WIN32
-#include "openhmd.h"
-#else
-#include <openhmd/openhmd.h>
-#endif // _WIN32
-
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
@@ -661,27 +654,6 @@ int main(int argc, char ** argv)
     }
     #endif
 
-    int ohmd_device_idx = 0; // Default to 0, in future make configurable?
-    ohmd_context* ohmd_ctx = ohmd_ctx_create();
-    bool ohmd_available;
-    // Probe for devices
-    int ohmd_num_devices = ohmd_ctx_probe(ohmd_ctx);
-    std::cout << "OpenHMD Devices: " << ohmd_num_devices << std::endl;
-    if (ohmd_num_devices < 0) {
-        ohmd_available = false;
-    } else {
-        ohmd_available = true;
-    }
-
-    ohmd_device* hmd;
-    if (ohmd_available) {
-        hmd = ohmd_list_open_device(ohmd_ctx, ohmd_device_idx);
-        if(!hmd){
-            ohmd_available = false;
-            std::cout << "OpenHMD failed to open device: " << ohmd_ctx_get_error(ohmd_ctx) << std::endl;
-        }
-    }
-
     //create device
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
 	//Allow optional directX if available
@@ -1052,20 +1024,8 @@ int main(int argc, char ** argv)
 
         if (vr3dMode) {
             irr::core::quaternion quat=irr::core::quaternion(0,0,0,1);
-            if(ohmd_available) {
-                ohmd_ctx_update(ohmd_ctx);
-                float quaternion[4];
-                if (ohmd_device_getf(hmd, OHMD_ROTATION_QUAT, quaternion) == 0 ) {
-
-                    irr::f32 qX = quaternion[0];
-                    irr::f32 qY = quaternion[1];
-                    irr::f32 qZ = quaternion[2];
-                    irr::f32 qW = quaternion[3];
-
-                    quat = irr::core::quaternion(1.0*qX,1.0*qY,-1.0*qZ,-1.0*qW); // Set signs to match our coordinate system
-
-                }
-            }
+            
+            // TODO: Get view direction or camera matrix from VR headset here
 
             irr::s32 vrWidth = graphicsWidth/2;
 
