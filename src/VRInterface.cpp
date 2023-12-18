@@ -17,6 +17,7 @@
 #define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include "VRInterface.hpp"
+#include <iostream>
 
 // Constructor
 VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
@@ -50,10 +51,15 @@ int VRInterface::load() {
 	// each graphics API requires the use of a specialized struct
 #ifdef _WIN32
 	//XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl = { 0 };
-	XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl = { XR_TYPE_UNKNOWN };
+	XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl;
+	graphics_binding_gl.type = XR_TYPE_UNKNOWN;
+	graphics_binding_gl.next = NULL;
+	graphics_binding_gl.hDC = NULL;
+	graphics_binding_gl.hGLRC = NULL;
 #else
 	// The runtime interacts with the OpenGL images (textures) via a Swapchain.
-	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl = { 0 };
+	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl = { XR_TYPE_UNKNOWN };
+	// TODO: Equivalents for linux
 #endif
 
 	// each physical Display/Eye is described by a view.
@@ -207,6 +213,75 @@ int VRInterface::load() {
 
 	printf("Successfully got XrSystem with id %lu for HMD form factor\n", system_id);
 
+	XrSystemProperties system_props; 
+	system_props.type = XR_TYPE_SYSTEM_PROPERTIES;
+	system_props.next = NULL;
+
+	result = xrGetSystemProperties(instance, system_id, &system_props);
+	if (!xr_check(instance, result, "Failed to get System properties"))
+		return 1;
+
+	print_system_properties(&system_props);
+
+	result = xrEnumerateViewConfigurationViews(instance, system_id, view_type, 0, &view_count, NULL);
+	if (!xr_check(instance, result, "Failed to get view configuration view count!"))
+		return 1;
+
+	//viewconfig_views = malloc(sizeof(XrViewConfigurationView) * view_count);
+	viewconfig_views = new XrViewConfigurationView[view_count]; // TODO: Remember to delete[] viewconfig_views later
+
+	for (uint32_t i = 0; i < view_count; i++) {
+		viewconfig_views[i].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
+		viewconfig_views[i].next = NULL;
+	}
+
+	result = xrEnumerateViewConfigurationViews(instance, system_id, view_type, view_count,
+		&view_count, viewconfig_views);
+	if (!xr_check(instance, result, "Failed to enumerate view configuration views!"))
+		return 1;
+	print_viewconfig_view_info(view_count, viewconfig_views);
+
+	// OpenXR requires checking graphics requirements before creating a session.
+	XrGraphicsRequirementsOpenGLKHR opengl_reqs;
+	opengl_reqs.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+	opengl_reqs.next;
+
+	// this function pointer was loaded with xrGetInstanceProcAddr
+	result = pfnGetOpenGLGraphicsRequirementsKHR(instance, system_id, &opengl_reqs);
+	if (!xr_check(instance, result, "Failed to get OpenGL graphics requirements!"))
+		return 1;
+
+	/* Checking opengl_reqs.minApiVersionSupported and opengl_reqs.maxApiVersionSupported
+	 * is not very useful, compatibility will depend on the OpenGL implementation and the
+	 * OpenXR runtime much more than the OpenGL version.
+	 * Other APIs have more useful verifiable requirements. */
+
+	 // --- Create session
+#ifdef _WIN32
+	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
+	graphics_binding_gl.hDC = (HDC)(driver->getExposedVideoData().OpenGLWin32.HDc);
+	graphics_binding_gl.hGLRC = (HGLRC)(driver->getExposedVideoData().OpenGLWin32.HRc);
+	std::cout << "graphics_binding_gl.hDC:" << graphics_binding_gl.hDC << std::endl;
+	std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
+#else
+	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
+#endif
+
+	//printf("Using OpenGL version: %s\n", glGetString(GL_VERSION));
+	//printf("Using OpenGL Renderer: %s\n", glGetString(GL_RENDERER));
+
+	XrSessionCreateInfo session_create_info;
+	session_create_info.type = XR_TYPE_SESSION_CREATE_INFO;
+	session_create_info.next = &graphics_binding_gl;
+	session_create_info.systemId = system_id;
+
+	result = xrCreateSession(instance, &session_create_info, &session);
+	if (!xr_check(instance, result, "Failed to create session"))
+		return 1;
+
+	printf("Successfully created a session with OpenGL!\n");
+
 	// If successfull, return 0
 	return 0;
 }
@@ -277,4 +352,31 @@ void VRInterface::print_instance_properties(XrInstance instance)
 	printf("Runtime Version: %d.%d.%d\n", XR_VERSION_MAJOR(instance_props.runtimeVersion),
 		XR_VERSION_MINOR(instance_props.runtimeVersion),
 		XR_VERSION_PATCH(instance_props.runtimeVersion));
+}
+
+void VRInterface::print_system_properties(XrSystemProperties* system_properties)
+{
+	printf("System properties for system %lu: \"%s\", vendor ID %d\n", system_properties->systemId,
+		system_properties->systemName, system_properties->vendorId);
+	printf("\tMax layers          : %d\n", system_properties->graphicsProperties.maxLayerCount);
+	printf("\tMax swapchain height: %d\n",
+		system_properties->graphicsProperties.maxSwapchainImageHeight);
+	printf("\tMax swapchain width : %d\n",
+		system_properties->graphicsProperties.maxSwapchainImageWidth);
+	printf("\tOrientation Tracking: %d\n", system_properties->trackingProperties.orientationTracking);
+	printf("\tPosition Tracking   : %d\n", system_properties->trackingProperties.positionTracking);
+}
+
+void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views)
+{
+	for (uint32_t i = 0; i < view_count; i++) {
+		printf("View Configuration View %d:\n", i);
+		printf("\tResolution       : Recommended %dx%d, Max: %dx%d\n",
+			viewconfig_views[0].recommendedImageRectWidth,
+			viewconfig_views[0].recommendedImageRectHeight, viewconfig_views[0].maxImageRectWidth,
+			viewconfig_views[0].maxImageRectHeight);
+		printf("\tSwapchain Samples: Recommended: %d, Max: %d)\n",
+			viewconfig_views[0].recommendedSwapchainSampleCount,
+			viewconfig_views[0].maxSwapchainSampleCount);
+	}
 }

@@ -48,6 +48,8 @@ private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
     static void print_api_layers();
     static void print_instance_properties(XrInstance instance);
+    static void print_system_properties(XrSystemProperties* system_properties);
+    static void print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views);
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
 };
