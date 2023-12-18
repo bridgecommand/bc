@@ -936,6 +936,8 @@ int main(int argc, char ** argv)
     // Set up the VR interface
     // (TODO: Make this optional)
     VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
+    int vrSuccess = vrInterface.load();
+    std::cout << "vrSuccess=" << vrSuccess << std::endl;
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {

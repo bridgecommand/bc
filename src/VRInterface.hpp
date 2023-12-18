@@ -42,10 +42,12 @@ class VRInterface {
 public:
     VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
     ~VRInterface();
+    int load();
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
     static void print_api_layers();
+    static void print_instance_properties(XrInstance instance);
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
 };

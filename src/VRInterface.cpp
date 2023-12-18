@@ -14,13 +14,22 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
+
 #include "VRInterface.hpp"
 
 // Constructor
 VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
     this->smgr = smgr;
     this->driver = driver;
+}
 
+// Destructor
+VRInterface::~VRInterface() {
+}
+
+int VRInterface::load() {
+	
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 
@@ -112,13 +121,13 @@ VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriv
 	result = xrEnumerateInstanceExtensionProperties(NULL, 0, &ext_count, NULL);
 
 	/* TODO: instance null will not be able to convert XrResult to string */
-	if (!xr_check(NULL, result, "Failed to enumerate number of extension properties"))
-		{/*return 1;*/}
-
+	if (!xr_check(NULL, result, "Failed to enumerate number of extension properties")) {
+		return 1;
+	}
 
 	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
 	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
-	
+
 	for (uint16_t i = 0; i < ext_count; i++) {
 		// we usually have to fill in the type (for validation) and set
 		// next to NULL (or a pointer to an extension specific struct)
@@ -127,8 +136,9 @@ VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriv
 	}
 
 	result = xrEnumerateInstanceExtensionProperties(NULL, ext_count, &ext_count, ext_props);
-	if (!xr_check(NULL, result, "Failed to enumerate extension properties"))
-		{/*return 1;*/}
+	if (!xr_check(NULL, result, "Failed to enumerate extension properties")) {
+		return 1;
+	}
 
 	bool opengl_supported = false;
 
@@ -146,10 +156,59 @@ VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriv
 	//free(ext_props);
 	delete[] ext_props;
 
-}
+	// A graphics extension like OpenGL is required to draw anything in VR
+	if (!opengl_supported) {
+		printf("Runtime does not support OpenGL extension!\n");
+		return 1;
+	}
 
-// Destructor
-VRInterface::~VRInterface() {
+	// --- Create XrInstance
+	int enabled_ext_count = 1;
+	const char* enabled_exts[1] = { XR_KHR_OPENGL_ENABLE_EXTENSION_NAME };
+	// same can be done for API layers, but API layers can also be enabled by env var
+
+	XrInstanceCreateInfo instance_create_info;
+	instance_create_info.type = XR_TYPE_INSTANCE_CREATE_INFO;
+	instance_create_info.next = NULL;
+	instance_create_info.createFlags = 0;
+	instance_create_info.enabledExtensionCount = enabled_ext_count;
+	instance_create_info.enabledExtensionNames = enabled_exts;
+	instance_create_info.enabledApiLayerCount = 0;
+	instance_create_info.enabledApiLayerNames = NULL;
+	instance_create_info.applicationInfo.applicationVersion = 1;
+	instance_create_info.applicationInfo.engineVersion = 0;
+	instance_create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
+	strncpy(instance_create_info.applicationInfo.applicationName, "Bridge Command",
+		XR_MAX_APPLICATION_NAME_SIZE);
+	strncpy(instance_create_info.applicationInfo.engineName, "Irrlicht Custom", XR_MAX_ENGINE_NAME_SIZE);
+
+	result = xrCreateInstance(&instance_create_info, &instance);
+	if (!xr_check(NULL, result, "Failed to create XR instance."))
+		return 1;
+
+	static PFN_xrGetOpenGLGraphicsRequirementsKHR pfnGetOpenGLGraphicsRequirementsKHR = NULL;
+	result = xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR",
+			(PFN_xrVoidFunction*)&pfnGetOpenGLGraphicsRequirementsKHR);
+	if (!xr_check(instance, result, "Failed to get OpenGL graphics requirements function!"))
+		return 1;
+
+	// Optionally get runtime name and version
+	print_instance_properties(instance);
+
+	// --- Get XrSystemId
+	XrSystemGetInfo system_get_info; 
+	system_get_info.type = XR_TYPE_SYSTEM_GET_INFO;
+	system_get_info.formFactor = form_factor;
+	system_get_info.next = NULL;
+
+	result = xrGetSystem(instance, &system_get_info, &system_id);
+	if (!xr_check(instance, result, "Failed to get system for HMD form factor."))
+		return 1;
+
+	printf("Successfully got XrSystem with id %lu for HMD form factor\n", system_id);
+
+	// If successfull, return 0
+	return 0;
 }
 
 // true if XrResult is a success code, else print error message and return false
@@ -201,4 +260,21 @@ void VRInterface::print_api_layers()
 
 	//free(props)
 	delete[] props;
+}
+
+void VRInterface::print_instance_properties(XrInstance instance)
+{
+	XrResult result;
+	XrInstanceProperties instance_props;
+	instance_props.type = XR_TYPE_INSTANCE_PROPERTIES;
+	instance_props.next = NULL;
+
+	result = xrGetInstanceProperties(instance, &instance_props);
+	if (!xr_check(NULL, result, "Failed to get instance info"))
+		return;
+
+	printf("Runtime Name: %s\n", instance_props.runtimeName);
+	printf("Runtime Version: %d.%d.%d\n", XR_VERSION_MAJOR(instance_props.runtimeVersion),
+		XR_VERSION_MINOR(instance_props.runtimeVersion),
+		XR_VERSION_PATCH(instance_props.runtimeVersion));
 }
