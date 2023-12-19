@@ -50,6 +50,10 @@ private:
     static void print_instance_properties(XrInstance instance);
     static void print_system_properties(XrSystemProperties* system_properties);
     static void print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views);
+    static int64_t get_swapchain_format(XrInstance instance,
+        XrSession session,
+        int64_t preferred_format,
+        bool fallback);
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
     XrPosef identity_pose;

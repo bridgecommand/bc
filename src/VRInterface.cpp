@@ -318,6 +318,85 @@ int VRInterface::load() {
 	if (!xr_check(instance, result, "Failed to enumerate swapchain formats"))
 		return 1;
 
+	// SRGB is usually a better choice than linear
+	// a more sophisticated approach would iterate supported swapchain formats and choose from them
+	int64_t color_format = get_swapchain_format(instance, session, GL_SRGB8_ALPHA8_EXT, true);
+
+	// --- Create swapchain for main VR rendering
+
+	// In the frame loop we render into OpenGL textures we receive from the runtime here.
+	//swapchains = malloc(sizeof(XrSwapchain) * view_count);
+	swapchains = new XrSwapchain[view_count]; // TODO: Remember to delete[] later
+	//swapchain_lengths = malloc(sizeof(uint32_t) * view_count);
+	swapchain_lengths = new uint32_t[view_count]; // TODO: Remember to delete[] later
+	//images = malloc(sizeof(XrSwapchainImageOpenGLKHR*) * view_count);
+	images = new XrSwapchainImageOpenGLKHR*[view_count]; // TODO: Remember to delete[] later
+	for (uint32_t i = 0; i < view_count; i++) {
+		XrSwapchainCreateInfo swapchain_create_info;
+		swapchain_create_info.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
+		swapchain_create_info.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+		swapchain_create_info.createFlags = 0;
+		swapchain_create_info.format = color_format;
+		swapchain_create_info.sampleCount = viewconfig_views[i].recommendedSwapchainSampleCount;
+		swapchain_create_info.width = viewconfig_views[i].recommendedImageRectWidth;
+		swapchain_create_info.height = viewconfig_views[i].recommendedImageRectHeight;
+		swapchain_create_info.faceCount = 1;
+		swapchain_create_info.arraySize = 1;
+		swapchain_create_info.mipCount = 1;
+		swapchain_create_info.next = NULL;
+
+		result = xrCreateSwapchain(session, &swapchain_create_info, &swapchains[i]);
+		if (!xr_check(instance, result, "Failed to create swapchain %d!", i))
+			return 1;
+
+		// The runtime controls how many textures we have to be able to render to
+		// (e.g. "triple buffering")
+		result = xrEnumerateSwapchainImages(swapchains[i], 0, &swapchain_lengths[i], NULL);
+		if (!xr_check(instance, result, "Failed to enumerate swapchains"))
+			return 1;
+
+		//images[i] = malloc(sizeof(XrSwapchainImageOpenGLKHR) * swapchain_lengths[i]);
+		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]]; // TODO: Remember to delete[] later
+		for (uint32_t j = 0; j < swapchain_lengths[i]; j++) {
+			images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+			images[i][j].next = NULL;
+		}
+		result =
+			xrEnumerateSwapchainImages(swapchains[i], swapchain_lengths[i], &swapchain_lengths[i],
+				(XrSwapchainImageBaseHeader*)images[i]);
+		if (!xr_check(instance, result, "Failed to enumerate swapchain images"))
+			return 1;
+	}
+
+	// Do not allocate these every frame to save some resources
+	//views = (XrView*)malloc(sizeof(XrView) * view_count);
+	views = new XrView[view_count]; // TODO: Remember to delete[]
+	for (uint32_t i = 0; i < view_count; i++) {
+		views[i].type = XR_TYPE_VIEW;
+		views[i].next = NULL;
+	}
+
+	//projection_views = (XrCompositionLayerProjectionView*)malloc(
+	//	sizeof(XrCompositionLayerProjectionView) * view_count);
+	projection_views = new XrCompositionLayerProjectionView[view_count]; // TODO: Remember to delete[] later
+	for (uint32_t i = 0; i < view_count; i++) {
+		projection_views[i].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+		projection_views[i].next = NULL;
+
+		projection_views[i].subImage.swapchain = swapchains[i];
+		projection_views[i].subImage.imageArrayIndex = 0;
+		projection_views[i].subImage.imageRect.offset.x = 0;
+		projection_views[i].subImage.imageRect.offset.y = 0;
+		projection_views[i].subImage.imageRect.extent.width =
+			viewconfig_views[i].recommendedImageRectWidth;
+		projection_views[i].subImage.imageRect.extent.height =
+			viewconfig_views[i].recommendedImageRectHeight;
+
+		// projection_views[i].{pose, fov} have to be filled every frame in frame loop
+	};
+
+	XrSessionState state = XR_SESSION_STATE_UNKNOWN;
+
 	// If successfull, return 0
 	return 0;
 }
@@ -415,4 +494,48 @@ void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigur
 			viewconfig_views[0].recommendedSwapchainSampleCount,
 			viewconfig_views[0].maxSwapchainSampleCount);
 	}
+}
+
+// returns the preferred swapchain format if it is supported
+// else:
+// - if fallback is true, return the first supported format
+// - if fallback is false, return -1
+int64_t VRInterface::get_swapchain_format(XrInstance instance,
+	XrSession session,
+	int64_t preferred_format,
+	bool fallback)
+{
+	XrResult result;
+
+	uint32_t swapchain_format_count;
+	result = xrEnumerateSwapchainFormats(session, 0, &swapchain_format_count, NULL);
+	if (!xr_check(instance, result, "Failed to get number of supported swapchain formats"))
+		return -1;
+
+	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
+	//int64_t* swapchain_formats = malloc(sizeof(int64_t) * swapchain_format_count);
+	int64_t* swapchain_formats = new int64_t[swapchain_format_count];
+	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
+		swapchain_formats);
+	if (!xr_check(instance, result, "Failed to enumerate swapchain formats"))
+		return -1;
+
+	int64_t chosen_format = fallback ? swapchain_formats[0] : -1;
+
+	for (uint32_t i = 0; i < swapchain_format_count; i++) {
+		printf("Supported GL format: %#lx\n", swapchain_formats[i]);
+		if (swapchain_formats[i] == preferred_format) {
+			chosen_format = swapchain_formats[i];
+			printf("Using preferred swapchain format %#lx\n", chosen_format);
+			break;
+		}
+	}
+	if (fallback && chosen_format != preferred_format) {
+		printf("Falling back to non preferred swapchain format %#lx\n", chosen_format);
+	}
+
+	//free(swapchain_formats);
+	delete[] swapchain_formats;
+
+	return chosen_format;
 }
