@@ -539,6 +539,8 @@ int VRInterface::render(SimulationModel* model) {
 		return 0;
 	}
 
+	irr::core::quaternion quat = irr::core::quaternion(0, 0, 0, 1);
+
 	// --- Wait for our turn to do head-pose dependent computation and render a frame
 	XrFrameState frame_state;
 	frame_state.type = XR_TYPE_FRAME_STATE;
@@ -568,6 +570,12 @@ int VRInterface::render(SimulationModel* model) {
 
 	// I think we should now have views[i].pose.orientation
 	std::cout << "views[0].pose.orientation.x: " << views[0].pose.orientation.x << " views[0].pose.orientation.y: " << views[0].pose.orientation.y << " views[0].pose.orientation.z: " << views[0].pose.orientation.z << " views[0].pose.orientation.w: " << views[0].pose.orientation.w << std::endl;
+
+	// Temporary binding to Irrlicht views - TODO: Should be done per eye, and with proper matrix set up
+	quat.X = views[0].pose.orientation.x;
+	quat.Y = views[0].pose.orientation.y;
+	quat.Z = -1.0 * views[0].pose.orientation.z;
+	quat.W = -1.0 * views[0].pose.orientation.w;
 
 	// TODO: Controller/hand actions would go here
 
@@ -612,8 +620,19 @@ int VRInterface::render(SimulationModel* model) {
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
 
-		// TODO: Render into swapchain images here (for left or right eye)
-
+		// TODO: Render into swapchain images here (for left or right eye), I think into images[i][acquired_index].image
+		//irr::video::ITexture* irrlichtTexture = (irr::video::ITexture*)images[i][acquired_index].image;
+		//driver->setRenderTarget(irrlichtTexture, true, true, irr::video::SColor(0, 0, 0, 255));
+		
+		if (i == 0) {
+			model->updateCameraVRPos(true, quat); // TODO: We should use the position and pose correctly
+			smgr->drawAll();
+		}
+		else {
+			model->updateCameraVRPos(false, quat); // TODO: We should use the position and pose correctly
+			//smgr->drawAll();
+		}
+		
 		XrSwapchainImageReleaseInfo release_info;
 		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
 		release_info.next = NULL;
@@ -655,16 +674,7 @@ int VRInterface::render(SimulationModel* model) {
 	if (!xr_check(instance, result, "failed to end frame!"))
 		return 1;
 
-	irr::core::quaternion quat = irr::core::quaternion(0, 0, 0, 1);
-	
-	// Left viewport
-	//model->updateViewport(aspectvr);
-	model->updateCameraVRPos(true, quat);
-	smgr->drawAll();
-	// Right viewport
-	model->updateCameraVRPos(false, quat);
-	smgr->drawAll();
-
+	// Return 0 on success
 	return 0;
 }
 
