@@ -44,18 +44,18 @@ int VRInterface::load() {
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 
 	// Changing the form_factor may require changing the view_type too.
-	XrViewConfigurationType view_type = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+	view_type = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
 	// Typically STAGE for room scale/standing, LOCAL for seated
 	XrReferenceSpaceType play_space_type = XR_REFERENCE_SPACE_TYPE_LOCAL;
-	XrSpace play_space = XR_NULL_HANDLE;
+	play_space = XR_NULL_HANDLE;
 
 	// the instance handle can be thought of as the basic connection to the OpenXR runtime
-	XrInstance instance = XR_NULL_HANDLE;
+	instance = XR_NULL_HANDLE;
 	// the system represents an (opaque) set of XR devices in use, managed by the runtime
 	XrSystemId system_id = XR_NULL_SYSTEM_ID;
 	// the session deals with the renderloop submitting frames to the runtime
-	XrSession session = XR_NULL_HANDLE;
+	session = XR_NULL_HANDLE;
 
 	// each graphics API requires the use of a specialized struct
 #ifdef _WIN32
@@ -75,24 +75,24 @@ int VRInterface::load() {
 	// view_count usually depends on the form_factor / view_type.
 	// dynamically allocating all view related structs instead of assuming 2
 	// hopefully allows this app to scale easily to different view_counts.
-	uint32_t view_count = 0;
+	view_count = 0;
 	// the viewconfiguration views contain information like resolution about each view
-	XrViewConfigurationView* viewconfig_views = NULL;
+	viewconfig_views = NULL;
 
 	// array of view_count containers for submitting swapchains with rendered VR frames
-	XrCompositionLayerProjectionView* projection_views = NULL;
+	projection_views = NULL;
 	// array of view_count views, filled by the runtime with current HMD display pose
-	XrView* views = NULL;
+	views = NULL;
 
 	// array of view_count handles for swapchains.
 	// it is possible to use imageRect to render all views to different areas of the
 	// same texture, but in this example we use one swapchain per view
-	XrSwapchain* swapchains = NULL;
+	swapchains = NULL;
 	// array of view_count ints, storing the length of swapchains
-	uint32_t* swapchain_lengths = NULL;
+	swapchain_lengths = NULL;
 	// array of view_count array of swapchain_length containers holding an OpenGL texture
 	// that is allocated by the runtime
-	XrSwapchainImageOpenGLKHR** images = NULL;
+	images = NULL;
 
 	// depth swapchain equivalent to the VR color swapchains
 	XrSwapchain* depth_swapchains = NULL;
@@ -124,7 +124,7 @@ int VRInterface::load() {
 
 
 	// reuse this variable for all our OpenXR return codes
-	XrResult result = XR_SUCCESS;
+	result = XR_SUCCESS;
 
 	print_api_layers();
 
@@ -395,7 +395,10 @@ int VRInterface::load() {
 		// projection_views[i].{pose, fov} have to be filled every frame in frame loop
 	};
 
-	XrSessionState state = XR_SESSION_STATE_UNKNOWN;
+	state = XR_SESSION_STATE_UNKNOWN;
+	quit_mainloop = false;
+	session_running = false; // to avoid beginning an already running session
+	run_framecycle = false;  // for some session states skip the frame cycle
 
 	// If successfull, return 0
 	return 0;

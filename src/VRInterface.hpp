@@ -57,6 +57,23 @@ private:
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
     XrPosef identity_pose;
+    XrSessionState state;
+    XrSession session;
+    XrInstance instance;
+    XrViewConfigurationType view_type;
+    XrSpace play_space;
+    uint32_t view_count;
+    XrViewConfigurationView* viewconfig_views;
+    XrView* views;
+    XrSwapchain* swapchains;
+    uint32_t* swapchain_lengths;
+    XrSwapchainImageOpenGLKHR** images;
+    XrCompositionLayerProjectionView* projection_views;
+    XrResult result;
+
+    bool quit_mainloop;
+    bool session_running; // to avoid beginning an already running session
+    bool run_framecycle;  // for some session states skip the frame cycle
 };
 
 #endif
