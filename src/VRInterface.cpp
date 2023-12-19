@@ -404,6 +404,270 @@ int VRInterface::load() {
 	return 0;
 }
 
+int VRInterface::runtimeEvents() {
+	if (quit_mainloop) {
+		return 1;
+	}
+
+	// TODO, shutdown gracefully using xrRequestExitSession(session);
+
+	// --- Handle runtime Events
+		// we do this before xrWaitFrame() so we can go idle or
+		// break out of the main render loop as early as possible and don't have to
+		// uselessly render or submit one. Calling xrWaitFrame commits you to
+		// calling xrBeginFrame eventually.
+	XrEventDataBuffer runtime_event;
+	runtime_event.type = XR_TYPE_EVENT_DATA_BUFFER;
+	runtime_event.next = NULL;
+	XrResult poll_result = xrPollEvent(instance, &runtime_event);
+	while (poll_result == XR_SUCCESS) {
+		switch (runtime_event.type) {
+		case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
+			XrEventDataInstanceLossPending* event = (XrEventDataInstanceLossPending*)&runtime_event;
+			printf("EVENT: instance loss pending at %lu! Destroying instance.\n", event->lossTime);
+			quit_mainloop = true;
+			continue;
+		}
+		case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
+			XrEventDataSessionStateChanged* event = (XrEventDataSessionStateChanged*)&runtime_event;
+			printf("EVENT: session state changed from %d to %d\n", state, event->state);
+			state = event->state;
+
+			/*
+			 * react to session state changes, see OpenXR spec 9.3 diagram. What we need to react to:
+			 *
+			 * * READY -> xrBeginSession STOPPING -> xrEndSession (note that the same session can be
+			 * restarted)
+			 * * EXITING -> xrDestroySession (EXITING only happens after we went through STOPPING and
+			 * called xrEndSession)
+			 *
+			 * After exiting it is still possible to create a new session but we don't do that here.
+			 *
+			 * * IDLE -> don't run render loop, but keep polling for events
+			 * * SYNCHRONIZED, VISIBLE, FOCUSED -> run render loop
+			 */
+			switch (state) {
+				// skip render loop, keep polling
+			case XR_SESSION_STATE_MAX_ENUM: // must be a bug
+			case XR_SESSION_STATE_IDLE:
+			case XR_SESSION_STATE_UNKNOWN: {
+				run_framecycle = false;
+
+				break; // state handling switch
+			}
+
+										 // do nothing, run render loop normally
+			case XR_SESSION_STATE_FOCUSED:
+			case XR_SESSION_STATE_SYNCHRONIZED:
+			case XR_SESSION_STATE_VISIBLE: {
+				run_framecycle = true;
+
+				break; // state handling switch
+			}
+
+										 // begin session and then run render loop
+			case XR_SESSION_STATE_READY: {
+				// start session only if it is not running, i.e. not when we already called xrBeginSession
+				// but the runtime did not switch to the next state yet
+				if (!session_running) {
+					XrSessionBeginInfo session_begin_info;
+					session_begin_info.type = XR_TYPE_SESSION_BEGIN_INFO;
+					session_begin_info.next = NULL;
+					session_begin_info.primaryViewConfigurationType = view_type;
+					result = xrBeginSession(session, &session_begin_info);
+					if (!xr_check(instance, result, "Failed to begin session!"))
+						return 1;
+					printf("Session started!\n");
+					session_running = true;
+				}
+				// after beginning the session, run render loop
+				run_framecycle = true;
+
+				break; // state handling switch
+			}
+
+									   // end session, skip render loop, keep polling for next state change
+			case XR_SESSION_STATE_STOPPING: {
+				// end session only if it is running, i.e. not when we already called xrEndSession but the
+				// runtime did not switch to the next state yet
+				if (session_running) {
+					result = xrEndSession(session);
+					if (!xr_check(instance, result, "Failed to end session!"))
+						return 1;
+					session_running = false;
+				}
+				// after ending the session, don't run render loop
+				run_framecycle = false;
+
+				break; // state handling switch
+			}
+
+										  // destroy session, skip render loop, exit render loop and quit
+			case XR_SESSION_STATE_LOSS_PENDING:
+			case XR_SESSION_STATE_EXITING:
+				result = xrDestroySession(session);
+				if (!xr_check(instance, result, "Failed to destroy session!"))
+					return 1;
+				quit_mainloop = true;
+				run_framecycle = false;
+
+				break; // state handling switch
+			}
+			break; // session event handling switch
+		}
+		// TODO: Controller handling removed here, could be re-added
+		default: printf("Unhandled event (type %d)\n", runtime_event.type);
+		}
+
+		runtime_event.type = XR_TYPE_EVENT_DATA_BUFFER;
+		poll_result = xrPollEvent(instance, &runtime_event);
+	}
+	if (poll_result == XR_EVENT_UNAVAILABLE) {
+		// processed all events in the queue
+	}
+	else {
+		printf("Failed to poll events!\n");
+		return 1; // TODO: Different codes?
+	}
+
+	return 0;
+}
+
+int VRInterface::render(SimulationModel* model) {
+
+	if (!run_framecycle) {
+		return 0;
+	}
+
+	// --- Wait for our turn to do head-pose dependent computation and render a frame
+	XrFrameState frame_state;
+	frame_state.type = XR_TYPE_FRAME_STATE;
+	frame_state.next = NULL;
+	XrFrameWaitInfo frame_wait_info;
+	frame_wait_info.type = XR_TYPE_FRAME_WAIT_INFO;
+	frame_wait_info.next = NULL;
+	result = xrWaitFrame(session, &frame_wait_info, &frame_state);
+	if (!xr_check(instance, result, "xrWaitFrame() was not successful, exiting..."))
+		return 1;
+
+	// --- Create projection matrices and view matrices for each eye
+	XrViewLocateInfo view_locate_info;
+	view_locate_info.type = XR_TYPE_VIEW_LOCATE_INFO;
+	view_locate_info.next = NULL;
+	view_locate_info.viewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+	view_locate_info.displayTime = frame_state.predictedDisplayTime;
+	view_locate_info.space = play_space;
+
+	XrViewState view_state;
+	view_state.type = XR_TYPE_VIEW_STATE;
+	view_state.next = NULL;
+
+	result = xrLocateViews(session, &view_locate_info, &view_state, view_count, &view_count, views);
+	if (!xr_check(instance, result, "Could not locate views"))
+		return 1;
+
+	// I think we should now have views[i].pose.orientation
+	std::cout << "views[0].pose.orientation.x: " << views[0].pose.orientation.x << " views[0].pose.orientation.y: " << views[0].pose.orientation.y << " views[0].pose.orientation.z: " << views[0].pose.orientation.z << " views[0].pose.orientation.w: " << views[0].pose.orientation.w << std::endl;
+
+	// TODO: Controller/hand actions would go here
+
+	// --- Begin frame
+	XrFrameBeginInfo frame_begin_info;
+	frame_begin_info.type = XR_TYPE_FRAME_BEGIN_INFO;
+	frame_begin_info.next = NULL;
+
+	result = xrBeginFrame(session, &frame_begin_info);
+	if (!xr_check(instance, result, "failed to begin frame!"))
+		return 1;
+
+	// render each eye and fill projection_views with the result
+	for (uint32_t i = 0; i < view_count; i++) {
+
+		if (!frame_state.shouldRender) {
+			printf("shouldRender = false, Skipping rendering work\n");
+			continue;
+		}
+
+		XrSwapchainImageAcquireInfo acquire_info;
+		acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+		acquire_info.next = NULL;
+
+		uint32_t acquired_index;
+		result = xrAcquireSwapchainImage(swapchains[i], &acquire_info, &acquired_index);
+		if (!xr_check(instance, result, "failed to acquire swapchain image!"))
+			break;
+
+		XrSwapchainImageWaitInfo wait_info;
+		wait_info.type = XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO;
+		wait_info.next = NULL;
+		wait_info.timeout = 1000;
+
+		result = xrWaitSwapchainImage(swapchains[i], &wait_info);
+		if (!xr_check(instance, result, "failed to wait for swapchain image!"))
+			break;
+
+		projection_views[i].pose = views[i].pose;
+		projection_views[i].fov = views[i].fov;
+
+		int w = viewconfig_views[i].recommendedImageRectWidth;
+		int h = viewconfig_views[i].recommendedImageRectHeight;
+
+		// TODO: Render into swapchain images here (for left or right eye)
+
+		XrSwapchainImageReleaseInfo release_info;
+		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
+		release_info.next = NULL;
+		result = xrReleaseSwapchainImage(swapchains[i], &release_info);
+		if (!xr_check(instance, result, "failed to release swapchain image!"))
+			break;
+	}
+
+	XrCompositionLayerProjection projection_layer;
+	projection_layer.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
+	projection_layer.next = NULL;
+	projection_layer.layerFlags = 0;
+	projection_layer.space = play_space;
+	projection_layer.viewCount = view_count;
+	projection_layer.views = projection_views;
+
+	int submitted_layer_count = 1;
+	const XrCompositionLayerBaseHeader* submitted_layers[1] = {
+		(const XrCompositionLayerBaseHeader* const)&projection_layer };
+
+	if ((view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT) == 0) {
+		printf("submitting 0 layers because orientation is invalid\n");
+		submitted_layer_count = 0;
+	}
+
+	if (!frame_state.shouldRender) {
+		printf("submitting 0 layers because shouldRender = false\n");
+		submitted_layer_count = 0;
+	}
+
+	XrFrameEndInfo frameEndInfo;
+	frameEndInfo.type = XR_TYPE_FRAME_END_INFO;
+	frameEndInfo.displayTime = frame_state.predictedDisplayTime;
+	frameEndInfo.layerCount = submitted_layer_count;
+	frameEndInfo.layers = submitted_layers;
+	frameEndInfo.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+	frameEndInfo.next = NULL;
+	result = xrEndFrame(session, &frameEndInfo);
+	if (!xr_check(instance, result, "failed to end frame!"))
+		return 1;
+
+	irr::core::quaternion quat = irr::core::quaternion(0, 0, 0, 1);
+	
+	// Left viewport
+	//model->updateViewport(aspectvr);
+	model->updateCameraVRPos(true, quat);
+	smgr->drawAll();
+	// Right viewport
+	model->updateCameraVRPos(false, quat);
+	smgr->drawAll();
+
+	return 0;
+}
+
 // true if XrResult is a success code, else print error message and return false
 bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* format, ...)
 {

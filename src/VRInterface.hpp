@@ -18,6 +18,7 @@
 #define __VRINTERFACE_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "SimulationModel.hpp"
 
 #ifdef _WIN32
 #include <Unknwn.h>
@@ -43,6 +44,8 @@ public:
     VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
     ~VRInterface();
     int load();
+    int runtimeEvents();
+    int render(SimulationModel* model);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);

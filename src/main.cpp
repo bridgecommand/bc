@@ -934,10 +934,12 @@ int main(int argc, char ** argv)
     }
 
     // Set up the VR interface
-    // (TODO: Make this optional)
     VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
-    int vrSuccess = vrInterface.load();
-    std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    int vrSuccess = -1;
+    if (vr3dMode) {
+        vrSuccess = vrInterface.load();
+        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    }
 
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
@@ -1029,25 +1031,15 @@ int main(int argc, char ** argv)
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
-        if (vr3dMode) {
-            irr::core::quaternion quat=irr::core::quaternion(0,0,0,1);
+        if (vr3dMode && vrSuccess == 0) {
             
-            // TODO: Get view direction or camera matrix from VR headset here
-
-            irr::s32 vrWidth = graphicsWidth/2;
-
-            aspectvr = (irr::f32)(vrWidth) / (irr::f32)graphicsHeight;
-
-            // Left viewport
-            driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth/2,graphicsHeight));
-            model.updateViewport(aspectvr);
-            model.updateCameraVRPos(true, quat);
-            smgr->drawAll();
-            // Right viewport
-            driver->setViewPort(irr::core::rect<irr::s32>(graphicsWidth/2,0,graphicsWidth,graphicsHeight));
-            model.updateCameraVRPos(false, quat);
-            smgr->drawAll();
-
+            // Process events
+            int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
+            
+            // Render
+            if (runtimeEventSuccess == 0) {
+                vrInterface.render(&model);
+            }
         } else if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
                 driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth3d,graphicsHeight3d));
