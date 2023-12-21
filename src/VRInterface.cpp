@@ -270,8 +270,8 @@ int VRInterface::load() {
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
 	graphics_binding_gl.hDC = (HDC)(driver->getExposedVideoData().OpenGLWin32.HDc);
 	graphics_binding_gl.hGLRC = (HGLRC)(driver->getExposedVideoData().OpenGLWin32.HRc);
-	std::cout << "graphics_binding_gl.hDC:" << graphics_binding_gl.hDC << std::endl;
-	std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
+	//std::cout << "graphics_binding_gl.hDC:" << graphics_binding_gl.hDC << std::endl;
+	//std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
 #else
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
 	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
@@ -569,7 +569,7 @@ int VRInterface::render(SimulationModel* model) {
 		return 1;
 
 	// I think we should now have views[i].pose.orientation
-	std::cout << "views[0].pose.orientation.x: " << views[0].pose.orientation.x << " views[0].pose.orientation.y: " << views[0].pose.orientation.y << " views[0].pose.orientation.z: " << views[0].pose.orientation.z << " views[0].pose.orientation.w: " << views[0].pose.orientation.w << std::endl;
+	//std::cout << "views[0].pose.orientation.x: " << views[0].pose.orientation.x << " views[0].pose.orientation.y: " << views[0].pose.orientation.y << " views[0].pose.orientation.z: " << views[0].pose.orientation.z << " views[0].pose.orientation.w: " << views[0].pose.orientation.w << std::endl;
 
 	// Temporary binding to Irrlicht views - TODO: Should be done per eye, and with proper matrix set up
 	quat.X = views[0].pose.orientation.x;
