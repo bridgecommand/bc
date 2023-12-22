@@ -424,11 +424,6 @@ int VRInterface::load() {
 	session_running = false; // to avoid beginning an already running session
 	run_framecycle = false;  // for some session states skip the frame cycle
 
-	// Set up Irrlicht render target(s) TODO: Initially just one
-	irrlichtRenderTarget = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(viewconfig_views[0].recommendedImageRectWidth, viewconfig_views[0].recommendedImageRectHeight));
-
-	std::cout << "Irrlicht render target: " << irrlichtRenderTarget << std::endl;
-
 	// If successfull, return 0
 	return 0;
 }
@@ -657,24 +652,17 @@ int VRInterface::render(SimulationModel* model) {
 		int h = viewconfig_views[i].recommendedImageRectHeight;
 
 		// TODO: Render into swapchain images here (for left or right eye), I think into images[i][acquired_index].image
-		//irr::video::ITexture* irrlichtTexture = (irr::video::ITexture*)images[i][acquired_index].image;
-		//driver->setRenderTarget(irrlichtTexture, true, true, irr::video::SColor(0, 0, 0, 255));
-		bool setRenderTargetSuccess = driver->setRenderTarget(irrlichtRenderTarget, irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH); // TODO: Testing: Render to irrlicht render target first, then copy to the swapchain?
 
-		if (!setRenderTargetSuccess) {
-			std::cout << "setRenderTarget failed." << std::endl;
-		}
-
-		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
-		//glViewport(0, 0, w, h);
-		//glScissor(0, 0, w, h);
-		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
-		//glClearColor(.0f, 0.0f, 0.2f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
+		glViewport(0, 0, w, h);
+		glScissor(0, 0, w, h);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
+		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render
 		smgr->drawAll();
-		
+
 		XrSwapchainImageReleaseInfo release_info;
 		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
 		release_info.next = NULL;

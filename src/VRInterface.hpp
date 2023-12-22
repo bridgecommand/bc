@@ -78,8 +78,6 @@ private:
     PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
     PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
 
-    irr::video::ITexture* irrlichtRenderTarget;
-
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session
     bool run_framecycle;  // for some session states skip the frame cycle
