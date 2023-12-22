@@ -32,12 +32,11 @@
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_reflection.h"
 #endif
+// TODO: Equivalent block for linux etc
 
 #define HAND_LEFT_INDEX 0
 #define HAND_RIGHT_INDEX 1
 #define HAND_COUNT 2
-
-// TODO: Equivalent block for linux etc
 
 class VRInterface {
 public:
@@ -72,7 +71,14 @@ private:
     uint32_t* swapchain_lengths;
     XrSwapchainImageOpenGLKHR** images;
     XrCompositionLayerProjectionView* projection_views;
+    GLuint** framebuffers;
     XrResult result;
+
+    PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+    PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
+    PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
+
+    irr::video::ITexture* irrlichtRenderTarget;
 
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session

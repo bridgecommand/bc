@@ -40,6 +40,23 @@ VRInterface::~VRInterface() {
 
 int VRInterface::load() {
 	
+	// Load required OpenGL extensions
+	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
+	if (glGenFramebuffers == 0) {
+		std::cout << "glGenFramebuffers not available" << std::endl;
+		return 1;
+	}
+	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
+	if (glBindFramebuffer == 0) {
+		std::cout << "glBindFramebuffer not available" << std::endl;
+		return 1;
+	}
+	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
+	if (glFramebufferTexture2D == 0) {
+		std::cout << "glFramebufferTexture2D not available" << std::endl;
+		return 1;
+	}
+	
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 
@@ -395,10 +412,22 @@ int VRInterface::load() {
 		// projection_views[i].{pose, fov} have to be filled every frame in frame loop
 	};
 
+	// Create framebuffers
+	framebuffers = new GLuint* [view_count];
+	for (uint32_t i = 0; i < view_count; i++) {
+		framebuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and glDeleteFramebuffers
+		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
+	}
+
 	state = XR_SESSION_STATE_UNKNOWN;
 	quit_mainloop = false;
 	session_running = false; // to avoid beginning an already running session
 	run_framecycle = false;  // for some session states skip the frame cycle
+
+	// Set up Irrlicht render target(s) TODO: Initially just one
+	irrlichtRenderTarget = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(viewconfig_views[0].recommendedImageRectWidth, viewconfig_views[0].recommendedImageRectHeight));
+
+	std::cout << "Irrlicht render target: " << irrlichtRenderTarget << std::endl;
 
 	// If successfull, return 0
 	return 0;
@@ -617,21 +646,34 @@ int VRInterface::render(SimulationModel* model) {
 		projection_views[i].pose = views[i].pose;
 		projection_views[i].fov = views[i].fov;
 
+		if (i == 0) {
+			model->updateCameraVRPos(true, quat); // TODO: We should use the position and pose correctly
+		}
+		else if (i == 1) {
+			model->updateCameraVRPos(false, quat); // TODO: We should use the position and pose correctly
+		}
+
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
 
 		// TODO: Render into swapchain images here (for left or right eye), I think into images[i][acquired_index].image
 		//irr::video::ITexture* irrlichtTexture = (irr::video::ITexture*)images[i][acquired_index].image;
 		//driver->setRenderTarget(irrlichtTexture, true, true, irr::video::SColor(0, 0, 0, 255));
-		
-		if (i == 0) {
-			model->updateCameraVRPos(true, quat); // TODO: We should use the position and pose correctly
-			smgr->drawAll();
+		bool setRenderTargetSuccess = driver->setRenderTarget(irrlichtRenderTarget, irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH); // TODO: Testing: Render to irrlicht render target first, then copy to the swapchain?
+
+		if (!setRenderTargetSuccess) {
+			std::cout << "setRenderTarget failed." << std::endl;
 		}
-		else {
-			model->updateCameraVRPos(false, quat); // TODO: We should use the position and pose correctly
-			//smgr->drawAll();
-		}
+
+		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
+		//glViewport(0, 0, w, h);
+		//glScissor(0, 0, w, h);
+		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
+		//glClearColor(.0f, 0.0f, 0.2f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Render
+		smgr->drawAll();
 		
 		XrSwapchainImageReleaseInfo release_info;
 		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
