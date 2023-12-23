@@ -72,11 +72,17 @@ private:
     XrSwapchainImageOpenGLKHR** images;
     XrCompositionLayerProjectionView* projection_views;
     GLuint** framebuffers;
+    GLuint** depthbuffers;
     XrResult result;
 
     PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
     PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
     PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
+    PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+    PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+    PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+    PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+    PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session

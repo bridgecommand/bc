@@ -46,9 +46,19 @@ int VRInterface::load() {
 		std::cout << "glGenFramebuffers not available" << std::endl;
 		return 1;
 	}
+	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress("glGenRenderbuffers");
+	if (glGenRenderbuffers == 0) {
+		std::cout << "glGenRenderbuffers not available" << std::endl;
+		return 1;
+	}
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
 	if (glBindFramebuffer == 0) {
 		std::cout << "glBindFramebuffer not available" << std::endl;
+		return 1;
+	}
+	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress("glBindRenderbuffer");
+	if (glBindRenderbuffer == 0) {
+		std::cout << "glBindRenderbuffer not available" << std::endl;
 		return 1;
 	}
 	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
@@ -56,7 +66,22 @@ int VRInterface::load() {
 		std::cout << "glFramebufferTexture2D not available" << std::endl;
 		return 1;
 	}
-	
+	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
+	if (glCheckFramebufferStatus == 0) {
+		std::cout << "glCheckFramebufferStatus not available" << std::endl;
+		return 1;
+	}
+	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress("glRenderbufferStorage");
+	if (glRenderbufferStorage == 0) {
+		std::cout << "glRenderbufferStorage not available" << std::endl;
+		return 1;
+	}
+	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress("glFramebufferRenderbuffer");
+	if (glFramebufferRenderbuffer == 0) {
+		std::cout << "glFramebufferRenderbuffer not available" << std::endl;
+		return 1;
+	}
+
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 
@@ -414,9 +439,12 @@ int VRInterface::load() {
 
 	// Create framebuffers
 	framebuffers = new GLuint* [view_count];
+	depthbuffers = new GLuint * [view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		framebuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and glDeleteFramebuffers
+		depthbuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and whatever is needed to remove for gl
 		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
+		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
 
 	state = XR_SESSION_STATE_UNKNOWN;
@@ -651,15 +679,25 @@ int VRInterface::render(SimulationModel* model) {
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
 
-		// TODO: Render into swapchain images here (for left or right eye), I think into images[i][acquired_index].image
+		// Render into swapchain images here (for left or right eye), into images[i][acquired_index].image
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
+		
+		//glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
+		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
+		
 		glViewport(0, 0, w, h);
 		glScissor(0, 0, w, h);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
 		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Check
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "glCheckFramebufferStatus: " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
+		}
+		
 		// Render
 		smgr->drawAll();
 
