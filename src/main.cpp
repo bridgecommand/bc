@@ -1033,6 +1033,9 @@ int main(int argc, char ** argv)
 
         if (vr3dMode && vrSuccess == 0) {
             
+            // TODO: Hardcoded 1:1 aspect ratio for VR rendering, may not always be true
+            model.updateViewport(1.0);
+
             // Process events
             int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
             

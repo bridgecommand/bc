@@ -263,6 +263,7 @@ public:
     void updateViewport(irr::f32 aspect);
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
+    void setViewAngle(irr::f32 viewAngle);
     void changeVRLensShift(irr::f32 deltaShift);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;

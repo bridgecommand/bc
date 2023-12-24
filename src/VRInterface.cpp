@@ -669,6 +669,9 @@ int VRInterface::render(SimulationModel* model) {
 		projection_views[i].pose = views[i].pose;
 		projection_views[i].fov = views[i].fov;
 
+		// TODO: Shouldn't need to do this every loop!
+		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
+
 		if (i == 0) {
 			model->updateCameraVRPos(true, quat); // TODO: We should use the position and pose correctly
 		}
@@ -682,14 +685,17 @@ int VRInterface::render(SimulationModel* model) {
 		// Render into swapchain images here (for left or right eye), into images[i][acquired_index].image
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
-		
 		//glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
+		//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
+		//glBindRenderbuffer(GL_RENDERBUFFER, 0);
 		
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
+		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		//glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
 		glViewport(0, 0, w, h);
 		glScissor(0, 0, w, h);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
 		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

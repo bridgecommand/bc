@@ -1286,6 +1286,12 @@ SimulationModel::~SimulationModel()
         camera.setHFOV(irr::core::degToRad(viewAngle)/zoom);
     }
 
+    void SimulationModel::setViewAngle(irr::f32 viewAngle)
+    {
+        this->viewAngle = viewAngle;
+        camera.setHFOV(irr::core::degToRad(viewAngle) / zoom);
+    }
+
     void SimulationModel::changeVRLensShift(irr::f32 deltaShift)
     {
         vrLensShift += deltaShift;
