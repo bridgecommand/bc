@@ -672,12 +672,9 @@ int VRInterface::render(SimulationModel* model) {
 		// TODO: Shouldn't need to do this every loop!
 		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
 
-		if (i == 0) {
-			model->updateCameraVRPos(true, quat); // TODO: We should use the position and pose correctly
-		}
-		else if (i == 1) {
-			model->updateCameraVRPos(false, quat); // TODO: We should use the position and pose correctly
-		}
+		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0*projection_views[i].pose.position.z);
+
+		model->updateCameraVRPos(quat, eyePos); // TODO: Check if this is relative to the correct origin
 
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;

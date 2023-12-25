@@ -1554,17 +1554,9 @@ SimulationModel::~SimulationModel()
         return &lines;
     }
 
-    void SimulationModel::updateCameraVRPos(bool leftView, irr::core::quaternion quat)
+    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos)
     {
-        irr::core::vector2df lensShift;
-        lensShift.Y = 0;
-        if (leftView) {
-            lensShift.X = vrLensShift;
-        } else {
-            lensShift.X = -1.0 * vrLensShift;
-        }
-
-        camera.update(0, leftView, quat, lensShift);
+        camera.update(0, quat, pos);
     }
 
     void SimulationModel::update()

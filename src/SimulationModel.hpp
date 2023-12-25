@@ -304,7 +304,7 @@ public:
     
     Lines* getLines(); // Get pointer to lines object
 
-    void updateCameraVRPos(bool leftView, irr::core::quaternion quat);
+    void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos);
 
     void update();
 
