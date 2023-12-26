@@ -59,7 +59,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  irr::f32 frictionCoefficient,
                                  irr::f32 tanhFrictionFactor,
                                  irr::u32 limitTerrainResolution,
-                                 irr::f32 vrLensShift,
                                  bool debugMode):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
@@ -171,9 +170,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //set camera zoom to 1
         zoom = 1.0;
-
-        // Set VR lens shift
-        this->vrLensShift = vrLensShift;
 
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
@@ -1290,18 +1286,6 @@ SimulationModel::~SimulationModel()
     {
         this->viewAngle = viewAngle;
         camera.setHFOV(irr::core::degToRad(viewAngle) / zoom);
-    }
-
-    void SimulationModel::changeVRLensShift(irr::f32 deltaShift)
-    {
-        vrLensShift += deltaShift;
-        if (vrLensShift > 1.0) {
-            vrLensShift = 1.0;
-        }
-        if (vrLensShift < -1.0) {
-            vrLensShift = -1.0;
-        }
-        std::cout << "VR Lens Shift: " << vrLensShift << std::endl;
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)

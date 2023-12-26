@@ -736,7 +736,6 @@ int main(int argc, char ** argv)
 	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
 	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
-    irr::f32 aspectvr = aspect / 2;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -869,10 +868,8 @@ int main(int argc, char ** argv)
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
 
-    irr::f32 vrLensShift = IniFile::iniFileTof32(iniFilename, "vr_lens_shift");
-
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, vrLensShift, debugMode);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
@@ -930,7 +927,6 @@ int main(int argc, char ** argv)
     bool vr3dMode = false;
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
-        guiMain.hide2dInterface();
     }
 
     // Set up the VR interface
@@ -1031,6 +1027,21 @@ int main(int argc, char ** argv)
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
+        // Normal rendering
+        if (!fullScreenRadar) {
+            if (guiMain.getShowInterface()) {
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
+                model.updateViewport(aspect3d);
+            }
+            else {
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
+                model.updateViewport(aspect);
+            }
+            //drawAll3dProfile.tic();
+            smgr->drawAll();
+            //drawAll3dProfile.toc();
+        }
+
         if (vr3dMode && vrSuccess == 0) {
             
             // TODO: Hardcoded 1:1 aspect ratio for VR rendering, may not always be true
@@ -1043,17 +1054,6 @@ int main(int argc, char ** argv)
             if (runtimeEventSuccess == 0) {
                 vrInterface.render(&model);
             }
-        } else if (!fullScreenRadar) {
-            if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth3d,graphicsHeight3d));
-                model.updateViewport(aspect3d);
-            } else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight));
-                model.updateViewport(aspect);
-            }
-            //drawAll3dProfile.tic();
-            smgr->drawAll();
-            //drawAll3dProfile.toc();
         }
 
  //       renderProfile.toc();
@@ -1069,6 +1069,7 @@ int main(int argc, char ** argv)
 //        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
+        driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
  //       guiProfile.toc();

@@ -700,6 +700,9 @@ int VRInterface::render(SimulationModel* model) {
 		// Render
 		smgr->drawAll();
 
+		// Return to framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		XrSwapchainImageReleaseInfo release_info;
 		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
 		release_info.next = NULL;
