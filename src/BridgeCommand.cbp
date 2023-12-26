@@ -22,7 +22,6 @@
 					<Add option="-L ./libs/Irrlicht/irrlicht-svn/lib/Win32-gcc" />
 					<Add option="-L./libs/libsndfile/lib" />
 					<Add option="-L./libs/portaudio/lib" />
-					<Add option="-L../../OpenHMD/OpenHMD/build" />
 					<Add library="ws2_32" />
 					<Add library="Winmm" />
 					<Add library="portaudio_x86" />
@@ -30,8 +29,6 @@
 					<Add library="enet" />
 					<Add library="irrlicht" />
 					<Add directory="libs/enet-1.3.14/bin/Release/win32" />
-					<Add library="../../OpenHMD/OpenHMD/build/libopenhmd.a" />
-					<Add library="../../OpenHMD/hidapi-win/x86/hidapi.lib" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="cmd /c cd ../bin &amp; useMinGWdll.bat" />
@@ -120,13 +117,11 @@
 			<Add option="-std=c++11" />
 			<Add option="-DASIO_STANDALONE" />
 			<Add option="-DASIO_HAS_STD_THREAD" />
-			<Add option="-DOHMD_STATIC" />
 			<Add directory="./libs/Irrlicht/irrlicht-svn/include" />
 			<Add directory="./libs/asio/include" />
 			<Add directory="./libs/portaudio/include" />
 			<Add directory="./libs/libsndfile/include" />
 			<Add directory="libs/enet-1.3.14/include" />
-			<Add directory="../../OpenHMD/OpenHMD/include" />
 		</Compiler>
 		<Unit filename="AIS.cpp" />
 		<Unit filename="AIS.hpp" />
