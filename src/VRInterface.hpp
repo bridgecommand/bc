@@ -83,6 +83,8 @@ private:
     PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
     PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
     PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+    PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
+    PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session

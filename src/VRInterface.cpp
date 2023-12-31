@@ -81,6 +81,16 @@ int VRInterface::load() {
 		std::cout << "glFramebufferRenderbuffer not available" << std::endl;
 		return 1;
 	}
+	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress("glDeleteFramebuffers");
+	if (glDeleteFramebuffers == 0) {
+		std::cout << "glDeleteFramebuffers not available" << std::endl;
+		return 1;
+	}
+	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress("glDeleteRenderbuffers");
+	if (glDeleteRenderbuffers == 0) {
+		std::cout << "glDeleteRenderbuffers not available" << std::endl;
+		return 1;
+	}
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
