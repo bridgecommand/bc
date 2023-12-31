@@ -630,15 +630,6 @@ int VRInterface::render(SimulationModel* model) {
 	if (!xr_check(instance, result, "Could not locate views"))
 		return 1;
 
-	// I think we should now have views[i].pose.orientation
-	//std::cout << "views[0].pose.orientation.x: " << views[0].pose.orientation.x << " views[0].pose.orientation.y: " << views[0].pose.orientation.y << " views[0].pose.orientation.z: " << views[0].pose.orientation.z << " views[0].pose.orientation.w: " << views[0].pose.orientation.w << std::endl;
-
-	// Temporary binding to Irrlicht views - TODO: Should be done per eye, and with proper matrix set up
-	quat.X = views[0].pose.orientation.x;
-	quat.Y = views[0].pose.orientation.y;
-	quat.Z = -1.0 * views[0].pose.orientation.z;
-	quat.W = -1.0 * views[0].pose.orientation.w;
-
 	// TODO: Controller/hand actions would go here
 
 	// --- Begin frame
@@ -682,8 +673,12 @@ int VRInterface::render(SimulationModel* model) {
 		// TODO: Shouldn't need to do this every loop!
 		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
 
-		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0*projection_views[i].pose.position.z);
-
+		// Binding to Irrlicht views
+		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0 * projection_views[i].pose.position.z);
+		quat.X = views[i].pose.orientation.x;
+		quat.Y = views[i].pose.orientation.y;
+		quat.Z = -1.0 * views[i].pose.orientation.z;
+		quat.W = -1.0 * views[i].pose.orientation.w;
 		model->updateCameraVRPos(quat, eyePos); // TODO: Check if this is relative to the correct origin
 
 		int w = viewconfig_views[i].recommendedImageRectWidth;
