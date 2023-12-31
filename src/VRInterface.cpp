@@ -183,7 +183,7 @@ int VRInterface::load() {
 	}
 
 	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
-	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
+	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count]; // TODO: Remember to delete[]
 
 	for (uint16_t i = 0; i < ext_count; i++) {
 		// we usually have to fill in the type (for validation) and set
@@ -438,11 +438,11 @@ int VRInterface::load() {
 	};
 
 	// Create framebuffers
-	framebuffers = new GLuint* [view_count];
-	depthbuffers = new GLuint * [view_count];
+	framebuffers = new GLuint* [view_count]; // Todo: Remember to delete[] later
+	depthbuffers = new GLuint * [view_count]; // Todo: Remember to delete[] later
 	for (uint32_t i = 0; i < view_count; i++) {
 		framebuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and glDeleteFramebuffers
-		depthbuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and whatever is needed to remove for gl
+		depthbuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and whatever is needed to remove for gl (glDeleteRenderbuffers)
 		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
 		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
