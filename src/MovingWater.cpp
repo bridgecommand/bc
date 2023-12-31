@@ -118,12 +118,10 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 
     //Create local camera for reflections
 	if (!disableShaders) {
-		_camera = mgr->addCameraSceneNode(0, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, 0), -1, false);
+		//_camera = mgr->addCameraSceneNode(0, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, 0), -1, false);
 		irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
 
-		//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
-		_reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
-
+		//_reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
 
 		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
@@ -131,7 +129,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 			if (mb)
 			{
 				mb->getMaterial().setTexture(0, bumpTexture);
-				mb->getMaterial().setTexture(1, _reflectionMap);
+				//mb->getMaterial().setTexture(1, _reflectionMap);
 				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
 				mb->getMaterial().FogEnable = true;
 			}
@@ -144,15 +142,15 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 			if (mb)
 			{
 				mb->getMaterial().setTexture(0, bumpTexture);
-				mb->getMaterial().setTexture(1, _reflectionMap);
+				//mb->getMaterial().setTexture(1, _reflectionMap);
 				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
 				mb->getMaterial().FogEnable = true;
 
 			}
 		}
 	} else {
-		_camera = 0;
-		_reflectionMap = 0;
+		//_camera = 0;
+		//_reflectionMap = 0;
 	}
 
 
@@ -190,6 +188,7 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 	// Mesh is dropped in IMeshSceneNode destructor (??? FIXME: Probably not true!)
     delete ocean;
 
+	/*
     if (_camera)
 	{
 		_camera->drop();
@@ -201,6 +200,7 @@ MovingWaterSceneNode::~MovingWaterSceneNode()
 		_reflectionMap->drop();
 		_reflectionMap = NULL;
 	}
+	*/
 
 }
 
@@ -239,14 +239,14 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
 			driver = services->getVideoDriver();
 			//Looking for our constants IDs...
 			matViewInverse = services->getVertexShaderConstantID("matViewInverse");
-			matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+			//matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
 			idLightLevel = services->getVertexShaderConstantID("lightLevel");
 			idSeaState = services->getVertexShaderConstantID("seaState");
 
 			if (IsOpenGL)
 			{
-				baseMap = services->getPixelShaderConstantID("baseMap");
-				reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+				//baseMap = services->getPixelShaderConstantID("baseMap");
+				//reflectionMap = services->getPixelShaderConstantID("reflectionMap");
 			}
 			else
 			{
@@ -262,17 +262,17 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
 		mat.makeInverse();
 		services->setVertexShaderConstant(matViewInverse, mat.pointer(), 16);
 
-		irr::core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
-		worldReflectionViewProj *= _camera->getViewMatrix();;
-		worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
-		services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+		//irr::core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
+		//worldReflectionViewProj *= _camera->getViewMatrix();;
+		//worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
+		//services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
 
 		if (IsOpenGL)
 		{
 			int sampler = 0;
-			services->setPixelShaderConstant(baseMap, &sampler, 1);
+			//services->setPixelShaderConstant(baseMap, &sampler, 1);
 			sampler = 1;
-			services->setPixelShaderConstant(reflectionMap, &sampler, 1);
+			//services->setPixelShaderConstant(reflectionMap, &sampler, 1);
 			services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
 			services->setPixelShaderConstant(idSeaState, &seaState, 1);
 		}
@@ -355,6 +355,8 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 	//Render reflection to texture
 	if (IsVisible && !disableShaders)
 	{
+		
+		/*
 		//fixes glitches with incomplete refraction
         const irr::f32 CLIP_PLANE_OFFSET_Y = 0.0f;
 
@@ -423,7 +425,7 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(currentViewPort);
         currentCamera->setAspectRatio(currentAspect);
-
+		*/
 	}
 }
 

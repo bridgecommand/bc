@@ -86,10 +86,10 @@ namespace scene
         //Shader related
         int matWorldViewProjection;//Identifiers, much faster than string matching...
         int matViewInverse;
-        int matWorldReflectionViewProj;
+        //int matWorldReflectionViewProj;
         int matWorld;
-        int baseMap;
-        int reflectionMap;
+        //int baseMap;
+        //int reflectionMap;
         int idLightLevel;
         int idSeaState;
         bool firstRun;
@@ -97,8 +97,8 @@ namespace scene
 		irr::u32 disableShaders;
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
-        irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
-        irr::video::ITexture* _reflectionMap;
+        //irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
+        //irr::video::ITexture* _reflectionMap;
 
         irr::u32 segments;
 

@@ -24,14 +24,14 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     */
 
-    uniform sampler2D	reflectionMap; //Reflection texture
+    //uniform sampler2D	reflectionMap; //Reflection texture
 
     uniform float lightLevel;
     uniform float seaState;
 
     varying vec3 Normal;
     varying vec3 ViewDirection;
-    varying vec3 reflectionMapTexCoord;
+    //varying vec3 reflectionMapTexCoord;
 
     void main()
     {
@@ -54,17 +54,18 @@
 
         //Reflections
         vec2 perturbation = Normal.xz*distanceSmoothing;
-        vec2 ProjectedReflectionTexCoords = reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation;
+        //vec2 ProjectedReflectionTexCoords = reflectionMapTexCoord.xy / reflectionMapTexCoord.z + perturbation;
 
-        ProjectedReflectionTexCoords = ProjectedReflectionTexCoords;
-        ProjectedReflectionTexCoords = clamp(ProjectedReflectionTexCoords,0.0,1.0);
-        vec4 reflectionColour = texture2D(reflectionMap, ProjectedReflectionTexCoords );
+        //ProjectedReflectionTexCoords = ProjectedReflectionTexCoords;
+        //ProjectedReflectionTexCoords = clamp(ProjectedReflectionTexCoords,0.0,1.0);
+        //vec4 reflectionColour = texture2D(reflectionMap, ProjectedReflectionTexCoords );
 
         //Fade out reflection at high sea state:
-        reflectionColour = mix(reflectionColour,vec4(0.0,0.0,0.0,1.0),seaState/12.0);
+        //reflectionColour = mix(reflectionColour,vec4(0.0,0.0,0.0,1.0),seaState/12.0);
 
         //Mix the two, more reflection at night so lights show up
-        vec4 outputColour = mix(reflectionColour, simpleShading,0.8+lightLevel/6.0);
+        //vec4 outputColour = mix(reflectionColour, simpleShading,0.8+lightLevel/6.0);
+		vec4 outputColour = simpleShading;
 
         //Todo: Think about white shading if normal is near upwards, and height is high (i.e. at a crest)
 
