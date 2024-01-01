@@ -418,6 +418,11 @@ int VRInterface::load() {
 				(XrSwapchainImageBaseHeader*)images[i]);
 		if (!xr_check(instance, result, "Failed to enumerate swapchain images"))
 			return 1;
+
+		// Store image width and height, assumed to be same for both views
+		swapchainImageWidth = swapchain_create_info.width;
+		swapchainImageHeight = swapchain_create_info.height;
+
 	}
 
 	// Do not allocate these every frame to save some resources
@@ -464,6 +469,15 @@ int VRInterface::load() {
 
 	// If successfull, return 0
 	return 0;
+}
+
+float VRInterface::getAspectRatio() {
+	if (swapchainImageHeight > 0) {
+		return (float)swapchainImageWidth / (float)swapchainImageHeight;
+	}
+	else {
+		return 1.0;
+	}
 }
 
 int VRInterface::runtimeEvents() {

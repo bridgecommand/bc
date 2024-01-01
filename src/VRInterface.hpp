@@ -43,6 +43,7 @@ public:
     VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
     ~VRInterface();
     int load();
+    float getAspectRatio();
     int runtimeEvents();
     int render(SimulationModel* model);
 
@@ -74,6 +75,9 @@ private:
     GLuint** framebuffers;
     GLuint** depthbuffers;
     XrResult result;
+
+    int swapchainImageWidth;
+    int swapchainImageHeight;
 
     PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
     PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
