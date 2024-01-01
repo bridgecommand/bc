@@ -695,14 +695,17 @@ int VRInterface::render(SimulationModel* model) {
 		quat.W = -1.0 * projection_views[i].pose.orientation.w;
 		
 		// Find lens shift, as left and right FOV may not be symmetrical
-		float horizontalShift = -1.0*(views[i].fov.angleRight + views[i].fov.angleLeft) / (views[i].fov.angleRight - views[i].fov.angleLeft);
-		irr::core::vector2df lensShift = irr::core::vector2df(horizontalShift, 0);
+		// TODO: Probably doesn't need calculating each frame
+		float tanLeft = tan(views[i].fov.angleLeft);
+		float tanRight = tan(views[i].fov.angleRight);
+		float tanUp = tan(views[i].fov.angleUp);
+		float tanDown = tan(views[i].fov.angleDown);
+		float horizontalShift = -1.0*(tanRight + tanLeft) / (tanRight - tanLeft);
+		float verticalShift = -1.0 * (tanUp + tanDown) / (tanUp - tanDown);
+		irr::core::vector2df lensShift = irr::core::vector2df(horizontalShift, verticalShift);
 
+		// Send this to the camera
 		model->updateCameraVRPos(quat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
-
-		//std::cout << "Quat for view: " << i << " is " << quat.X << ", " << quat.Y << ", " << quat.Z << ", " << quat.W << std::endl;
-		//std::cout << "FOV for view " << i << " is left:" << views[i].fov.angleLeft << ", right: " << views[i].fov.angleRight << ", up: " << views[i].fov.angleUp << ", down: " << views[i].fov.angleDown << std::endl;
-		//std::cout << "Lens shift " << i << " is:" << lensShift.X << ", " << lensShift.Y << std::endl;
 
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
