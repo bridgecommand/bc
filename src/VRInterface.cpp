@@ -305,7 +305,7 @@ int VRInterface::load() {
 	// OpenXR requires checking graphics requirements before creating a session.
 	XrGraphicsRequirementsOpenGLKHR opengl_reqs;
 	opengl_reqs.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-	opengl_reqs.next;
+	opengl_reqs.next = NULL;
 
 	// this function pointer was loaded with xrGetInstanceProcAddr
 	result = pfnGetOpenGLGraphicsRequirementsKHR(instance, system_id, &opengl_reqs);
