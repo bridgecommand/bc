@@ -334,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos)
+void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -382,6 +382,9 @@ void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::v
         //'offsetTransformed' is transformed into the global coordinates
         irr::core::vector3df offsetTransformed;
         parentAngles.transformVect(offsetTransformed,views[currentView] + pos);
+
+        // Set lens shift (TODO: avoid recalculation)
+        camera->setLensShift(lensShift);
 
         //move camera and angle
         irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;

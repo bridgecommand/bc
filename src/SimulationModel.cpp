@@ -1538,9 +1538,9 @@ SimulationModel::~SimulationModel()
         return &lines;
     }
 
-    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos)
+    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
     {
-        camera.update(0, quat, pos);
+        camera.update(0, quat, pos, lensShift);
     }
 
     void SimulationModel::update()
