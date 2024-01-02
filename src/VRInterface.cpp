@@ -134,8 +134,15 @@ int VRInterface::load() {
 	graphics_binding_gl.hGLRC = NULL;
 #else
 	// The runtime interacts with the OpenGL images (textures) via a Swapchain.
-	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl = { XR_TYPE_UNKNOWN };
-	// TODO: Equivalents for linux
+	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl;
+	graphics_binding_gl.type = XR_TYPE_UNKNOWN;
+	graphics_binding_gl.next = NULL;
+	graphics_binding_gl.xDisplay = NULL;
+	graphics_binding_gl.visualid = 0;
+	graphics_binding_gl.glxFBConfig = 0;
+	graphics_binding_gl.glxDrawable = 0;
+	graphics_binding_gl.glxContext = 0;
+	// TODO: Test on linux
 #endif
 
 	// each physical Display/Eye is described by a view.
@@ -341,6 +348,13 @@ int VRInterface::load() {
 	//std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
 #else
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+
+	graphics_binding_gl.xDisplay = (Display*)(driver->getExposedVideoData().OpenGLLinux.X11Display);
+	graphics_binding_gl.visualid = 0; // TODO: I don't think this is used?
+	graphics_binding_gl.glxFBConfig = 0; // This is stored as glxFBConfig in CGLXManager, 
+	graphics_binding_gl.glxDrawable = glXGetCurrentDrawable(); // TODO: Test this!
+	graphics_binding_gl.glxContext = (GLXContext)(driver->getExposedVideoData().OpenGLLinux.X11Context);
+
 	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
 #endif
 
