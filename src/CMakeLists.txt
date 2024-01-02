@@ -85,6 +85,7 @@ set(BC_SOURCES
     Terrain.cpp
     Tide.cpp
     Utilities.cpp
+    VRInterface.cpp
 	ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp
@@ -130,5 +131,6 @@ else (APPLE)
         sndfile
         portaudio
         asound
+        GL
     )
 endif (APPLE)

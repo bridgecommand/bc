@@ -39,8 +39,10 @@ VRInterface::~VRInterface() {
 }
 
 int VRInterface::load() {
+#if defined _WIN32 || defined __linux__
 	
 	// Load required OpenGL extensions
+	#if defined _WIN32
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
 	if (glGenFramebuffers == 0) {
 		std::cout << "glGenFramebuffers not available" << std::endl;
@@ -91,6 +93,19 @@ int VRInterface::load() {
 		std::cout << "glDeleteRenderbuffers not available" << std::endl;
 		return 1;
 	}
+	#elif defined __linux__
+	// glXGetProcAddress never returns Null, so no point in checking
+	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress("glGenFramebuffers");
+	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)glXGetProcAddress("glGenRenderbuffers");
+	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glXGetProcAddress("glBindFramebuffer");
+	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glXGetProcAddress("glBindRenderbuffer");
+	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glXGetProcAddress("glFramebufferTexture2D");
+	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glXGetProcAddress("glCheckFramebufferStatus");
+	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glXGetProcAddress("glRenderbufferStorage");
+	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress("glFramebufferRenderbuffer");
+	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress("glDeleteFramebuffers");
+	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress("glDeleteRenderbuffers");
+	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -469,6 +484,10 @@ int VRInterface::load() {
 
 	// If successfull, return 0
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
 
 float VRInterface::getAspectRatio() {
@@ -481,6 +500,7 @@ float VRInterface::getAspectRatio() {
 }
 
 int VRInterface::runtimeEvents() {
+#if defined _WIN32 || defined __linux__
 	if (quit_mainloop) {
 		return 1;
 	}
@@ -607,10 +627,14 @@ int VRInterface::runtimeEvents() {
 	}
 
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
 
 int VRInterface::render(SimulationModel* model) {
-
+#if defined _WIN32 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
 	}
@@ -777,11 +801,16 @@ int VRInterface::render(SimulationModel* model) {
 
 	// Return 0 on success
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
 
 // true if XrResult is a success code, else print error message and return false
 bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* format, ...)
 {
+#if defined _WIN32 || defined __linux__
 	if (XR_SUCCEEDED(result))
 		return true;
 
@@ -798,10 +827,15 @@ bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* for
 	va_end(args);
 
 	return false;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return false;
+#endif
 }
 
 void VRInterface::print_api_layers()
 {
+#if defined _WIN32 || defined __linux__
 	uint32_t count = 0;
 	XrResult result = xrEnumerateApiLayerProperties(0, &count, NULL);
 	if (!xr_check(NULL, result, "Failed to enumerate api layer count"))
@@ -828,10 +862,14 @@ void VRInterface::print_api_layers()
 
 	//free(props)
 	delete[] props;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_instance_properties(XrInstance instance)
 {
+#if defined _WIN32 || defined __linux__
 	XrResult result;
 	XrInstanceProperties instance_props;
 	instance_props.type = XR_TYPE_INSTANCE_PROPERTIES;
@@ -845,10 +883,14 @@ void VRInterface::print_instance_properties(XrInstance instance)
 	printf("Runtime Version: %d.%d.%d\n", XR_VERSION_MAJOR(instance_props.runtimeVersion),
 		XR_VERSION_MINOR(instance_props.runtimeVersion),
 		XR_VERSION_PATCH(instance_props.runtimeVersion));
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 {
+#if defined _WIN32 || defined __linux__
 	printf("System properties for system %lu: \"%s\", vendor ID %d\n", system_properties->systemId,
 		system_properties->systemName, system_properties->vendorId);
 	printf("\tMax layers          : %d\n", system_properties->graphicsProperties.maxLayerCount);
@@ -858,10 +900,14 @@ void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 		system_properties->graphicsProperties.maxSwapchainImageWidth);
 	printf("\tOrientation Tracking: %d\n", system_properties->trackingProperties.orientationTracking);
 	printf("\tPosition Tracking   : %d\n", system_properties->trackingProperties.positionTracking);
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views)
 {
+#if defined _WIN32 || defined __linux__
 	for (uint32_t i = 0; i < view_count; i++) {
 		printf("View Configuration View %d:\n", i);
 		printf("\tResolution       : Recommended %dx%d, Max: %dx%d\n",
@@ -872,6 +918,9 @@ void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigur
 			viewconfig_views[0].recommendedSwapchainSampleCount,
 			viewconfig_views[0].maxSwapchainSampleCount);
 	}
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 // returns the preferred swapchain format if it is supported
@@ -883,6 +932,7 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	int64_t preferred_format,
 	bool fallback)
 {
+#if defined _WIN32 || defined __linux__
 	XrResult result;
 
 	uint32_t swapchain_format_count;
@@ -916,4 +966,7 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	delete[] swapchain_formats;
 
 	return chosen_format;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
