@@ -19,6 +19,7 @@
 
 #include "irrlicht.h"
 #include "SimulationModel.hpp"
+#include <cstdint> // For int64_t
 
 #if defined _WIN32
 #include <Unknwn.h>
