@@ -23,6 +23,7 @@
 //#include "Utilities.hpp"
 
 #include <iostream>
+#include <cstdint>
 //#include <cmath>
 
 namespace irr
