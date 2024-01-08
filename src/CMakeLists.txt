@@ -34,6 +34,7 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
+find_package(OpenXR REQUIRED)
 
 set(BC_SOURCES
     iprof.cpp
@@ -132,5 +133,6 @@ else (APPLE)
         portaudio
         asound
         GL
+        OpenXR::openxr_loader
     )
 endif (APPLE)
