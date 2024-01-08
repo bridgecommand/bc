@@ -20,6 +20,7 @@
 
 #include "VRInterface.hpp"
 #include <iostream>
+#include <cstdarg>
 
 // Constructor
 VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
@@ -95,16 +96,16 @@ int VRInterface::load() {
 	}
 	#elif defined __linux__
 	// glXGetProcAddress never returns Null, so no point in checking
-	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress("glGenFramebuffers");
-	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)glXGetProcAddress("glGenRenderbuffers");
-	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glXGetProcAddress("glBindFramebuffer");
-	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glXGetProcAddress("glBindRenderbuffer");
-	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glXGetProcAddress("glFramebufferTexture2D");
-	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glXGetProcAddress("glCheckFramebufferStatus");
-	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glXGetProcAddress("glRenderbufferStorage");
-	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress("glFramebufferRenderbuffer");
-	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress("glDeleteFramebuffers");
-	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress("glDeleteRenderbuffers");
+	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffers");
+	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenRenderbuffers");
+	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glXGetProcAddress((const GLubyte *)"glBindFramebuffer");
+	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glBindRenderbuffer");
+	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glXGetProcAddress((const GLubyte *)"glFramebufferTexture2D");
+	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glXGetProcAddress((const GLubyte *)"glCheckFramebufferStatus");
+	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glXGetProcAddress((const GLubyte *)"glRenderbufferStorage");
+	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbuffer");
+	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffers");
+	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffers");
 	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
