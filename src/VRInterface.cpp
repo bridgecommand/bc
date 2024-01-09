@@ -1022,5 +1022,6 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	return chosen_format;
 #else
 	std::cout << "VR interface not implemented" << std::endl;
+	return -1;
 #endif
 }

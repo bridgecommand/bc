@@ -34,7 +34,9 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
+if (NOT APPLE)
 find_package(OpenXR REQUIRED)
+endif(NOT APPLE)
 
 set(BC_SOURCES
     iprof.cpp
