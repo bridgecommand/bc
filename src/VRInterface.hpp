@@ -75,6 +75,13 @@ private:
         XrSession session,
         int64_t preferred_format,
         bool fallback);
+#ifdef __linux__
+    void getContextInformation(Display** xDisplay,
+                uint32_t* visualid,
+                GLXFBConfig* glxFBConfig,
+                GLXDrawable* glxDrawable,
+                GLXContext* glxContext);
+#endif
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
     XrPosef identity_pose;

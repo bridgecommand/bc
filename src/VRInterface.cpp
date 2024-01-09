@@ -345,18 +345,15 @@ int VRInterface::load() {
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
 	graphics_binding_gl.hDC = (HDC)(driver->getExposedVideoData().OpenGLWin32.HDc);
 	graphics_binding_gl.hGLRC = (HGLRC)(driver->getExposedVideoData().OpenGLWin32.HRc);
-	//std::cout << "graphics_binding_gl.hDC:" << graphics_binding_gl.hDC << std::endl;
-	//std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
 #else
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
-
-	graphics_binding_gl.xDisplay = XOpenDisplay(NULL);
-	graphics_binding_gl.visualid = 0; // TODO: I don't think this is used?
-	graphics_binding_gl.glxFBConfig = 0; // This is stored as glxFBConfig in CGLXManager, 
-	graphics_binding_gl.glxDrawable = glXGetCurrentDrawable(); // TODO: Test this!
-	graphics_binding_gl.glxContext = glXGetCurrentContext();
-
-	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
+	#ifdef __linux__
+	// Get equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
+	// TODO: Note that visualid and glxFBConfig are not set, but this does not seem to matter?
+	getContextInformation(&graphics_binding_gl.xDisplay, &graphics_binding_gl.visualid,
+	                     &graphics_binding_gl.glxFBConfig, &graphics_binding_gl.glxDrawable,
+	                     &graphics_binding_gl.glxContext);
+	#endif
 #endif
 
 	//printf("Using OpenGL version: %s\n", glGetString(GL_VERSION));
@@ -366,6 +363,7 @@ int VRInterface::load() {
 	session_create_info.type = XR_TYPE_SESSION_CREATE_INFO;
 	session_create_info.next = &graphics_binding_gl;
 	session_create_info.systemId = system_id;
+	session_create_info.createFlags = 0;
 
 	result = xrCreateSession(instance, &session_create_info, &session);
 	if (!xr_check(instance, result, "Failed to create session"))
@@ -507,6 +505,19 @@ int VRInterface::load() {
 	return 1;
 #endif
 }
+
+#ifdef __linux__
+void VRInterface::getContextInformation(Display** xDisplay,
+                uint32_t* visualid,
+                GLXFBConfig* glxFBConfig,
+                GLXDrawable* glxDrawable,
+                GLXContext* glxContext)
+{
+    *xDisplay = XOpenDisplay(NULL);
+    *glxContext = glXGetCurrentContext();
+    *glxDrawable = glXGetCurrentDrawable();
+}
+#endif
 
 float VRInterface::getAspectRatio() {
 	if (swapchainImageHeight > 0) {
