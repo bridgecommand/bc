@@ -1098,6 +1098,12 @@ int main(int argc, char ** argv)
         delete extraNetwork;
     }
 
+    // Close down OpenXR and clean up
+    if (vr3dMode && vrSuccess == 0) {
+        vrInterface.unload();
+        std::cout << "Unloaded OpenXR" << std::endl;
+    }
+
     device->drop();
 
     //Save log messages out

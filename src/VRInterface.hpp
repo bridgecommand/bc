@@ -60,6 +60,7 @@ public:
     VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
     ~VRInterface();
     int load();
+    void unload();
     float getAspectRatio();
     int runtimeEvents();
     int render(SimulationModel* model);

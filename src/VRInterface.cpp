@@ -216,7 +216,7 @@ int VRInterface::load() {
 	}
 
 	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
-	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count]; // TODO: Remember to delete[]
+	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
 
 	for (uint16_t i = 0; i < ext_count; i++) {
 		// we usually have to fill in the type (for validation) and set
@@ -312,7 +312,7 @@ int VRInterface::load() {
 		return 1;
 
 	//viewconfig_views = malloc(sizeof(XrViewConfigurationView) * view_count);
-	viewconfig_views = new XrViewConfigurationView[view_count]; // TODO: Remember to delete[] viewconfig_views later
+	viewconfig_views = new XrViewConfigurationView[view_count];
 
 	for (uint32_t i = 0; i < view_count; i++) {
 		viewconfig_views[i].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
@@ -394,7 +394,7 @@ int VRInterface::load() {
 		return 1;
 
 	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
-	int64_t* swapchain_formats = new int64_t[swapchain_format_count]; // TODO: Remember to delete[] this later
+	int64_t* swapchain_formats = new int64_t[swapchain_format_count];
 	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
 		swapchain_formats);
 	if (!xr_check(instance, result, "Failed to enumerate swapchain formats"))
@@ -408,11 +408,11 @@ int VRInterface::load() {
 
 	// In the frame loop we render into OpenGL textures we receive from the runtime here.
 	//swapchains = malloc(sizeof(XrSwapchain) * view_count);
-	swapchains = new XrSwapchain[view_count]; // TODO: Remember to delete[] later
+	swapchains = new XrSwapchain[view_count];
 	//swapchain_lengths = malloc(sizeof(uint32_t) * view_count);
-	swapchain_lengths = new uint32_t[view_count]; // TODO: Remember to delete[] later
+	swapchain_lengths = new uint32_t[view_count];
 	//images = malloc(sizeof(XrSwapchainImageOpenGLKHR*) * view_count);
-	images = new XrSwapchainImageOpenGLKHR*[view_count]; // TODO: Remember to delete[] later
+	images = new XrSwapchainImageOpenGLKHR*[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		XrSwapchainCreateInfo swapchain_create_info;
 		swapchain_create_info.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
@@ -438,7 +438,7 @@ int VRInterface::load() {
 			return 1;
 
 		//images[i] = malloc(sizeof(XrSwapchainImageOpenGLKHR) * swapchain_lengths[i]);
-		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]]; // TODO: Remember to delete[] later
+		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]];
 		for (uint32_t j = 0; j < swapchain_lengths[i]; j++) {
 			images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
 			images[i][j].next = NULL;
@@ -457,7 +457,7 @@ int VRInterface::load() {
 
 	// Do not allocate these every frame to save some resources
 	//views = (XrView*)malloc(sizeof(XrView) * view_count);
-	views = new XrView[view_count]; // TODO: Remember to delete[]
+	views = new XrView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		views[i].type = XR_TYPE_VIEW;
 		views[i].next = NULL;
@@ -465,7 +465,7 @@ int VRInterface::load() {
 
 	//projection_views = (XrCompositionLayerProjectionView*)malloc(
 	//	sizeof(XrCompositionLayerProjectionView) * view_count);
-	projection_views = new XrCompositionLayerProjectionView[view_count]; // TODO: Remember to delete[] later
+	projection_views = new XrCompositionLayerProjectionView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		projection_views[i].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
 		projection_views[i].next = NULL;
@@ -483,11 +483,11 @@ int VRInterface::load() {
 	};
 
 	// Create framebuffers
-	framebuffers = new GLuint* [view_count]; // Todo: Remember to delete[] later
-	depthbuffers = new GLuint * [view_count]; // Todo: Remember to delete[] later
+	framebuffers = new GLuint* [view_count];
+	depthbuffers = new GLuint * [view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
-		framebuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and glDeleteFramebuffers
-		depthbuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and whatever is needed to remove for gl (glDeleteRenderbuffers)
+		framebuffers[i] = new GLuint[swapchain_lengths[i]];
+		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
 		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
 		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
@@ -496,6 +496,9 @@ int VRInterface::load() {
 	quit_mainloop = false;
 	session_running = false; // to avoid beginning an already running session
 	run_framecycle = false;  // for some session states skip the frame cycle
+
+	// swapchain_formats was allocated locally with new, so delete here
+	delete[] swapchain_formats;
 
 	// If successfull, return 0
 	return 0;
@@ -512,6 +515,31 @@ float VRInterface::getAspectRatio() {
 	else {
 		return 1.0;
 	}
+}
+
+void VRInterface::unload() {
+#if defined _WIN32 || defined __linux__
+	for (uint32_t i = 0; i < view_count; i++) {
+		delete[] images[i];
+
+		glDeleteFramebuffers(swapchain_lengths[i], framebuffers[i]);
+		delete[] framebuffers[i];
+
+		glDeleteRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
+		delete[] depthbuffers[i];
+	}
+
+	xrDestroyInstance(instance);
+
+	delete[] viewconfig_views;
+	delete[] projection_views;
+	delete[] views;
+	delete[] swapchains;
+	delete[] images;
+	delete[] framebuffers;
+	delete[] depthbuffers;
+	delete[] swapchain_lengths;
+#endif
 }
 
 int VRInterface::runtimeEvents() {
