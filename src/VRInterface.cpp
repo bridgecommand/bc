@@ -350,11 +350,11 @@ int VRInterface::load() {
 #else
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
 
-	graphics_binding_gl.xDisplay = (Display*)(driver->getExposedVideoData().OpenGLLinux.X11Display);
+	graphics_binding_gl.xDisplay = XOpenDisplay(NULL);
 	graphics_binding_gl.visualid = 0; // TODO: I don't think this is used?
 	graphics_binding_gl.glxFBConfig = 0; // This is stored as glxFBConfig in CGLXManager, 
 	graphics_binding_gl.glxDrawable = glXGetCurrentDrawable(); // TODO: Test this!
-	graphics_binding_gl.glxContext = (GLXContext)(driver->getExposedVideoData().OpenGLLinux.X11Context);
+	graphics_binding_gl.glxContext = glXGetCurrentContext();
 
 	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
 #endif
