@@ -33,7 +33,6 @@
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_reflection.h"
 #elif defined __linux__
-// TODO: Test!
 #include <GL/gl.h>
 #include "libs/Irrlicht/irrlicht-svn/source/Irrlicht/glext.h"
 #include <X11/Xlib.h>

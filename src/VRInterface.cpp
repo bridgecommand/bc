@@ -143,7 +143,6 @@ int VRInterface::load() {
 	graphics_binding_gl.glxFBConfig = 0;
 	graphics_binding_gl.glxDrawable = 0;
 	graphics_binding_gl.glxContext = 0;
-	// TODO: Test on linux
 #endif
 
 	// each physical Display/Eye is described by a view.
