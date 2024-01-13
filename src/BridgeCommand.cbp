@@ -229,6 +229,8 @@
 		<Unit filename="Tide.hpp" />
 		<Unit filename="Utilities.cpp" />
 		<Unit filename="Utilities.hpp" />
+		<Unit filename="VRInterface.cpp" />
+		<Unit filename="VRInterface.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="hitime.hpp" />
