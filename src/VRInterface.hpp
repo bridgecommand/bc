@@ -21,7 +21,7 @@
 #include "SimulationModel.hpp"
 #include <cstdint> // For int64_t
 
-#if defined _WIN32
+#if defined _WIN64
 #include <Unknwn.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -42,7 +42,7 @@
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #else
-// Not windows or linux, just include required headers for interface, functionality will not be used
+// Not windows 64 bit or linux, just include required headers for interface, functionality will not be used
 #include <OpenGL/gl.h>
 #define XR_USE_GRAPHICS_API_OPENGL
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
@@ -102,7 +102,7 @@ private:
     int swapchainImageWidth;
     int swapchainImageHeight;
 
-    #if defined _WIN32 || defined __linux__
+    #if defined _WIN64 || defined __linux__
     PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
     PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
     PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;

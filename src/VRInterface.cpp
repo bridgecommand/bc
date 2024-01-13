@@ -40,7 +40,7 @@ VRInterface::~VRInterface() {
 }
 
 int VRInterface::load() {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	
 	// Load required OpenGL extensions
 	#if defined _WIN32
@@ -528,7 +528,7 @@ float VRInterface::getAspectRatio() {
 }
 
 void VRInterface::unload() {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	for (uint32_t i = 0; i < view_count; i++) {
 		delete[] images[i];
 
@@ -553,7 +553,7 @@ void VRInterface::unload() {
 }
 
 int VRInterface::runtimeEvents() {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	if (quit_mainloop) {
 		return 1;
 	}
@@ -687,7 +687,7 @@ int VRInterface::runtimeEvents() {
 }
 
 int VRInterface::render(SimulationModel* model) {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
 	}
@@ -863,7 +863,7 @@ int VRInterface::render(SimulationModel* model) {
 // true if XrResult is a success code, else print error message and return false
 bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* format, ...)
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	if (XR_SUCCEEDED(result))
 		return true;
 
@@ -888,7 +888,7 @@ bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* for
 
 void VRInterface::print_api_layers()
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	uint32_t count = 0;
 	XrResult result = xrEnumerateApiLayerProperties(0, &count, NULL);
 	if (!xr_check(NULL, result, "Failed to enumerate api layer count"))
@@ -922,7 +922,7 @@ void VRInterface::print_api_layers()
 
 void VRInterface::print_instance_properties(XrInstance instance)
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	XrResult result;
 	XrInstanceProperties instance_props;
 	instance_props.type = XR_TYPE_INSTANCE_PROPERTIES;
@@ -943,7 +943,7 @@ void VRInterface::print_instance_properties(XrInstance instance)
 
 void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	printf("System properties for system %lu: \"%s\", vendor ID %d\n", system_properties->systemId,
 		system_properties->systemName, system_properties->vendorId);
 	printf("\tMax layers          : %d\n", system_properties->graphicsProperties.maxLayerCount);
@@ -960,7 +960,7 @@ void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 
 void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views)
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	for (uint32_t i = 0; i < view_count; i++) {
 		printf("View Configuration View %d:\n", i);
 		printf("\tResolution       : Recommended %dx%d, Max: %dx%d\n",
@@ -985,7 +985,7 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	int64_t preferred_format,
 	bool fallback)
 {
-#if defined _WIN32 || defined __linux__
+#if defined _WIN64 || defined __linux__
 	XrResult result;
 
 	uint32_t swapchain_format_count;
