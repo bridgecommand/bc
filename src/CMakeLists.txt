@@ -34,6 +34,9 @@ add_subdirectory(repeater)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
+if (NOT APPLE)
+find_package(OpenXR REQUIRED)
+endif(NOT APPLE)
 
 set(BC_SOURCES
     iprof.cpp
@@ -85,6 +88,7 @@ set(BC_SOURCES
     Terrain.cpp
     Tide.cpp
     Utilities.cpp
+    VRInterface.cpp
 	ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp
@@ -130,5 +134,7 @@ else (APPLE)
         sndfile
         portaudio
         asound
+        GL
+        OpenXR::openxr_loader
     )
 endif (APPLE)

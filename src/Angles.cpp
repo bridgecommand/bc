@@ -17,6 +17,7 @@
 #include "Angles.hpp"
 #include <algorithm>
 #include <iostream>
+#include <cstdint>
 
 //From OpenCV via http://stackoverflow.com/a/20723890
 int Angles::localisinf(double x)

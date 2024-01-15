@@ -20,6 +20,7 @@
 
 #include "VRInterface.hpp"
 #include <iostream>
+#include <cstdarg>
 
 // Constructor
 VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
@@ -39,8 +40,10 @@ VRInterface::~VRInterface() {
 }
 
 int VRInterface::load() {
+#if defined _WIN64 || defined __linux__
 	
 	// Load required OpenGL extensions
+	#if defined _WIN32
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
 	if (glGenFramebuffers == 0) {
 		std::cout << "glGenFramebuffers not available" << std::endl;
@@ -91,6 +94,19 @@ int VRInterface::load() {
 		std::cout << "glDeleteRenderbuffers not available" << std::endl;
 		return 1;
 	}
+	#elif defined __linux__
+	// glXGetProcAddress never returns Null, so no point in checking
+	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffers");
+	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenRenderbuffers");
+	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)glXGetProcAddress((const GLubyte *)"glBindFramebuffer");
+	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glBindRenderbuffer");
+	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glXGetProcAddress((const GLubyte *)"glFramebufferTexture2D");
+	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)glXGetProcAddress((const GLubyte *)"glCheckFramebufferStatus");
+	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glXGetProcAddress((const GLubyte *)"glRenderbufferStorage");
+	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbuffer");
+	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffers");
+	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffers");
+	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
 	XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -119,8 +135,14 @@ int VRInterface::load() {
 	graphics_binding_gl.hGLRC = NULL;
 #else
 	// The runtime interacts with the OpenGL images (textures) via a Swapchain.
-	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl = { XR_TYPE_UNKNOWN };
-	// TODO: Equivalents for linux
+	XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl;
+	graphics_binding_gl.type = XR_TYPE_UNKNOWN;
+	graphics_binding_gl.next = NULL;
+	graphics_binding_gl.xDisplay = NULL;
+	graphics_binding_gl.visualid = 0;
+	graphics_binding_gl.glxFBConfig = 0;
+	graphics_binding_gl.glxDrawable = 0;
+	graphics_binding_gl.glxContext = 0;
 #endif
 
 	// each physical Display/Eye is described by a view.
@@ -193,7 +215,7 @@ int VRInterface::load() {
 	}
 
 	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
-	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count]; // TODO: Remember to delete[]
+	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
 
 	for (uint16_t i = 0; i < ext_count; i++) {
 		// we usually have to fill in the type (for validation) and set
@@ -289,7 +311,7 @@ int VRInterface::load() {
 		return 1;
 
 	//viewconfig_views = malloc(sizeof(XrViewConfigurationView) * view_count);
-	viewconfig_views = new XrViewConfigurationView[view_count]; // TODO: Remember to delete[] viewconfig_views later
+	viewconfig_views = new XrViewConfigurationView[view_count];
 
 	for (uint32_t i = 0; i < view_count; i++) {
 		viewconfig_views[i].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
@@ -322,11 +344,15 @@ int VRInterface::load() {
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
 	graphics_binding_gl.hDC = (HDC)(driver->getExposedVideoData().OpenGLWin32.HDc);
 	graphics_binding_gl.hGLRC = (HGLRC)(driver->getExposedVideoData().OpenGLWin32.HRc);
-	//std::cout << "graphics_binding_gl.hDC:" << graphics_binding_gl.hDC << std::endl;
-	//std::cout << "graphics_binding_gl.hGLRC:" << graphics_binding_gl.hGLRC << std::endl;
 #else
 	graphics_binding_gl.type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
-	// TODO: Equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
+	#ifdef __linux__
+	// Get equivalents for Linux, instead uses xDisplay, visualid, glxFBConfig, glxDrawable, glxContext
+	// TODO: Note that visualid and glxFBConfig are not set, but this does not seem to matter?
+	getContextInformation(&graphics_binding_gl.xDisplay, &graphics_binding_gl.visualid,
+	                     &graphics_binding_gl.glxFBConfig, &graphics_binding_gl.glxDrawable,
+	                     &graphics_binding_gl.glxContext);
+	#endif
 #endif
 
 	//printf("Using OpenGL version: %s\n", glGetString(GL_VERSION));
@@ -336,6 +362,7 @@ int VRInterface::load() {
 	session_create_info.type = XR_TYPE_SESSION_CREATE_INFO;
 	session_create_info.next = &graphics_binding_gl;
 	session_create_info.systemId = system_id;
+	session_create_info.createFlags = 0;
 
 	result = xrCreateSession(instance, &session_create_info, &session);
 	if (!xr_check(instance, result, "Failed to create session"))
@@ -364,7 +391,7 @@ int VRInterface::load() {
 		return 1;
 
 	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
-	int64_t* swapchain_formats = new int64_t[swapchain_format_count]; // TODO: Remember to delete[] this later
+	int64_t* swapchain_formats = new int64_t[swapchain_format_count];
 	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
 		swapchain_formats);
 	if (!xr_check(instance, result, "Failed to enumerate swapchain formats"))
@@ -378,11 +405,11 @@ int VRInterface::load() {
 
 	// In the frame loop we render into OpenGL textures we receive from the runtime here.
 	//swapchains = malloc(sizeof(XrSwapchain) * view_count);
-	swapchains = new XrSwapchain[view_count]; // TODO: Remember to delete[] later
+	swapchains = new XrSwapchain[view_count];
 	//swapchain_lengths = malloc(sizeof(uint32_t) * view_count);
-	swapchain_lengths = new uint32_t[view_count]; // TODO: Remember to delete[] later
+	swapchain_lengths = new uint32_t[view_count];
 	//images = malloc(sizeof(XrSwapchainImageOpenGLKHR*) * view_count);
-	images = new XrSwapchainImageOpenGLKHR*[view_count]; // TODO: Remember to delete[] later
+	images = new XrSwapchainImageOpenGLKHR*[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		XrSwapchainCreateInfo swapchain_create_info;
 		swapchain_create_info.type = XR_TYPE_SWAPCHAIN_CREATE_INFO;
@@ -408,7 +435,7 @@ int VRInterface::load() {
 			return 1;
 
 		//images[i] = malloc(sizeof(XrSwapchainImageOpenGLKHR) * swapchain_lengths[i]);
-		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]]; // TODO: Remember to delete[] later
+		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]];
 		for (uint32_t j = 0; j < swapchain_lengths[i]; j++) {
 			images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
 			images[i][j].next = NULL;
@@ -427,7 +454,7 @@ int VRInterface::load() {
 
 	// Do not allocate these every frame to save some resources
 	//views = (XrView*)malloc(sizeof(XrView) * view_count);
-	views = new XrView[view_count]; // TODO: Remember to delete[]
+	views = new XrView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		views[i].type = XR_TYPE_VIEW;
 		views[i].next = NULL;
@@ -435,7 +462,7 @@ int VRInterface::load() {
 
 	//projection_views = (XrCompositionLayerProjectionView*)malloc(
 	//	sizeof(XrCompositionLayerProjectionView) * view_count);
-	projection_views = new XrCompositionLayerProjectionView[view_count]; // TODO: Remember to delete[] later
+	projection_views = new XrCompositionLayerProjectionView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		projection_views[i].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
 		projection_views[i].next = NULL;
@@ -453,11 +480,11 @@ int VRInterface::load() {
 	};
 
 	// Create framebuffers
-	framebuffers = new GLuint* [view_count]; // Todo: Remember to delete[] later
-	depthbuffers = new GLuint * [view_count]; // Todo: Remember to delete[] later
+	framebuffers = new GLuint* [view_count];
+	depthbuffers = new GLuint * [view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
-		framebuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and glDeleteFramebuffers
-		depthbuffers[i] = new GLuint[swapchain_lengths[i]]; // Todo: Remember to delete[] later, and whatever is needed to remove for gl (glDeleteRenderbuffers)
+		framebuffers[i] = new GLuint[swapchain_lengths[i]];
+		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
 		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
 		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
@@ -467,9 +494,29 @@ int VRInterface::load() {
 	session_running = false; // to avoid beginning an already running session
 	run_framecycle = false;  // for some session states skip the frame cycle
 
+	// swapchain_formats was allocated locally with new, so delete here
+	delete[] swapchain_formats;
+
 	// If successfull, return 0
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
+
+#ifdef __linux__
+void VRInterface::getContextInformation(Display** xDisplay,
+                uint32_t* visualid,
+                GLXFBConfig* glxFBConfig,
+                GLXDrawable* glxDrawable,
+                GLXContext* glxContext)
+{
+    *xDisplay = XOpenDisplay(NULL);
+    *glxContext = glXGetCurrentContext();
+    *glxDrawable = glXGetCurrentDrawable();
+}
+#endif
 
 float VRInterface::getAspectRatio() {
 	if (swapchainImageHeight > 0) {
@@ -480,7 +527,33 @@ float VRInterface::getAspectRatio() {
 	}
 }
 
+void VRInterface::unload() {
+#if defined _WIN64 || defined __linux__
+	for (uint32_t i = 0; i < view_count; i++) {
+		delete[] images[i];
+
+		glDeleteFramebuffers(swapchain_lengths[i], framebuffers[i]);
+		delete[] framebuffers[i];
+
+		glDeleteRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
+		delete[] depthbuffers[i];
+	}
+
+	xrDestroyInstance(instance);
+
+	delete[] viewconfig_views;
+	delete[] projection_views;
+	delete[] views;
+	delete[] swapchains;
+	delete[] images;
+	delete[] framebuffers;
+	delete[] depthbuffers;
+	delete[] swapchain_lengths;
+#endif
+}
+
 int VRInterface::runtimeEvents() {
+#if defined _WIN64 || defined __linux__
 	if (quit_mainloop) {
 		return 1;
 	}
@@ -607,10 +680,14 @@ int VRInterface::runtimeEvents() {
 	}
 
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
 
 int VRInterface::render(SimulationModel* model) {
-
+#if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
 	}
@@ -777,11 +854,16 @@ int VRInterface::render(SimulationModel* model) {
 
 	// Return 0 on success
 	return 0;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return 1;
+#endif
 }
 
 // true if XrResult is a success code, else print error message and return false
 bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* format, ...)
 {
+#if defined _WIN64 || defined __linux__
 	if (XR_SUCCEEDED(result))
 		return true;
 
@@ -798,10 +880,15 @@ bool VRInterface::xr_check(XrInstance instance, XrResult result, const char* for
 	va_end(args);
 
 	return false;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return false;
+#endif
 }
 
 void VRInterface::print_api_layers()
 {
+#if defined _WIN64 || defined __linux__
 	uint32_t count = 0;
 	XrResult result = xrEnumerateApiLayerProperties(0, &count, NULL);
 	if (!xr_check(NULL, result, "Failed to enumerate api layer count"))
@@ -828,10 +915,14 @@ void VRInterface::print_api_layers()
 
 	//free(props)
 	delete[] props;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_instance_properties(XrInstance instance)
 {
+#if defined _WIN64 || defined __linux__
 	XrResult result;
 	XrInstanceProperties instance_props;
 	instance_props.type = XR_TYPE_INSTANCE_PROPERTIES;
@@ -845,10 +936,14 @@ void VRInterface::print_instance_properties(XrInstance instance)
 	printf("Runtime Version: %d.%d.%d\n", XR_VERSION_MAJOR(instance_props.runtimeVersion),
 		XR_VERSION_MINOR(instance_props.runtimeVersion),
 		XR_VERSION_PATCH(instance_props.runtimeVersion));
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 {
+#if defined _WIN64 || defined __linux__
 	printf("System properties for system %lu: \"%s\", vendor ID %d\n", system_properties->systemId,
 		system_properties->systemName, system_properties->vendorId);
 	printf("\tMax layers          : %d\n", system_properties->graphicsProperties.maxLayerCount);
@@ -858,10 +953,14 @@ void VRInterface::print_system_properties(XrSystemProperties* system_properties)
 		system_properties->graphicsProperties.maxSwapchainImageWidth);
 	printf("\tOrientation Tracking: %d\n", system_properties->trackingProperties.orientationTracking);
 	printf("\tPosition Tracking   : %d\n", system_properties->trackingProperties.positionTracking);
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigurationView* viewconfig_views)
 {
+#if defined _WIN64 || defined __linux__
 	for (uint32_t i = 0; i < view_count; i++) {
 		printf("View Configuration View %d:\n", i);
 		printf("\tResolution       : Recommended %dx%d, Max: %dx%d\n",
@@ -872,6 +971,9 @@ void VRInterface::print_viewconfig_view_info(uint32_t view_count, XrViewConfigur
 			viewconfig_views[0].recommendedSwapchainSampleCount,
 			viewconfig_views[0].maxSwapchainSampleCount);
 	}
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+#endif
 }
 
 // returns the preferred swapchain format if it is supported
@@ -883,6 +985,7 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	int64_t preferred_format,
 	bool fallback)
 {
+#if defined _WIN64 || defined __linux__
 	XrResult result;
 
 	uint32_t swapchain_format_count;
@@ -916,4 +1019,8 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 	delete[] swapchain_formats;
 
 	return chosen_format;
+#else
+	std::cout << "VR interface not implemented" << std::endl;
+	return -1;
+#endif
 }
