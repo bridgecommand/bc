@@ -1,0 +1,2 @@
+https://github.com/KhronosGroup/OpenXR-SDK
+49e81bbd919af7c0cf513517a730d12253c28902 (release-1.0.32.1)

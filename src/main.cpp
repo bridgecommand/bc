@@ -54,6 +54,8 @@
 #include <sys/stat.h>
 #endif // _WIN32
 
+#include "VRInterface.hpp"
+
 #include "profile.hpp"
 
 //Mac OS:
@@ -61,9 +63,9 @@
 #include <mach-o/dyld.h>
 #endif
 
-
+// This disables to console window showing, disable for debugging
 #ifdef _MSC_VER
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 #ifdef _WIN32
@@ -865,10 +867,23 @@ int main(int argc, char ** argv)
     loadingMessage->remove(); loadingMessage = 0;
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
+    
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+    }
 
+    // Set up the VR interface
+    VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
+    int vrSuccess = -1;
+    if (vr3dMode) {
+        vrSuccess = vrInterface.load();
+        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    }
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, vr3dMode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
@@ -1011,17 +1026,35 @@ int main(int argc, char ** argv)
 
         //3d view portion
         model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
+
+        // Normal rendering
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth3d,graphicsHeight3d));
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
                 model.updateViewport(aspect3d);
-            } else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight));
+            }
+            else {
+                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
                 model.updateViewport(aspect);
             }
             //drawAll3dProfile.tic();
             smgr->drawAll();
             //drawAll3dProfile.toc();
+        }
+
+        if (vr3dMode && vrSuccess == 0) {
+            
+            // Set aspect ratio
+            irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
+            model.updateViewport(aspectRatioVR);
+
+            // Process events
+            int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
+            
+            // Render
+            if (runtimeEventSuccess == 0) {
+                vrInterface.render(&model);
+            }
         }
 
  //       renderProfile.toc();
@@ -1037,6 +1070,7 @@ int main(int argc, char ** argv)
 //        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
+        driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
  //       guiProfile.toc();
@@ -1062,6 +1096,12 @@ int main(int argc, char ** argv)
     delete network;
     if (extraNetwork) {
         delete extraNetwork;
+    }
+
+    // Close down OpenXR and clean up
+    if (vr3dMode && vrSuccess == 0) {
+        vrInterface.unload();
+        std::cout << "Unloaded OpenXR" << std::endl;
     }
 
     device->drop();

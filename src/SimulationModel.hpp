@@ -58,6 +58,7 @@ public:
                     Sound* sound,
                     ScenarioData scenarioData,
                     OperatingMode::Mode mode,
+                    bool vrMode,
                     irr::f32 viewAngle,
                     irr::f32 lookAngle,
                     irr::f32 cameraMinDistance,
@@ -262,6 +263,7 @@ public:
     void updateViewport(irr::f32 aspect);
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
+    void setViewAngle(irr::f32 viewAngle);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
     std::string getScenarioName() const;
@@ -301,6 +303,8 @@ public:
     
     Lines* getLines(); // Get pointer to lines object
 
+    void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
+
     void update();
 
 private:
@@ -308,6 +312,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     OperatingMode::Mode mode; //What mode are we in
+    bool vrMode;
     irr::f32 viewAngle;
     irr::video::IImage* radarImage; //Basic radar image
     irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay

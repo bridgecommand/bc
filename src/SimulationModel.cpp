@@ -46,6 +46,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  Sound* sound,
                                  ScenarioData scenarioData,
                                  OperatingMode::Mode mode,
+                                 bool vrMode,
                                  irr::f32 viewAngle,
                                  irr::f32 lookAngle,
                                  irr::f32 cameraMinDistance,
@@ -78,6 +79,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //store what mode we're in
         this->mode = mode;
+        this->vrMode = vrMode;
 
         //Store if we should show debug details
         this->debugMode = debugMode;
@@ -146,7 +148,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         }
 
         //add water
-        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterSegments);
+        bool waterReflection = true;
+        if (vrMode == true) {
+            waterReflection = false;
+        }
+        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterReflection,waterSegments);
 
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
@@ -1170,7 +1176,7 @@ SimulationModel::~SimulationModel()
     void SimulationModel::decreaseRadarEBLRange() {radarCalculation.decreaseEBLRange();}
     void SimulationModel::increaseRadarEBLBrg() {radarCalculation.increaseEBLBrg();}
     void SimulationModel::decreaseRadarEBLBrg() {radarCalculation.decreaseEBLBrg();}
-    
+
     void SimulationModel::increaseRadarXCursor() {radarCalculation.increaseCursorRangeXNm();}
     void SimulationModel::decreaseRadarXCursor() {radarCalculation.decreaseCursorRangeXNm();}
     void SimulationModel::increaseRadarYCursor() {radarCalculation.increaseCursorRangeYNm();}
@@ -1200,7 +1206,7 @@ SimulationModel::~SimulationModel()
     {
         return radarCalculation.getArpaMode();
     }
-    
+
     void SimulationModel::setArpaMode(int mode)
     {
         radarCalculation.setArpaMode(mode);
@@ -1280,6 +1286,12 @@ SimulationModel::~SimulationModel()
             zoom = 1.0;
         }
         camera.setHFOV(irr::core::degToRad(viewAngle)/zoom);
+    }
+
+    void SimulationModel::setViewAngle(irr::f32 viewAngle)
+    {
+        this->viewAngle = viewAngle;
+        camera.setHFOV(irr::core::degToRad(viewAngle) / zoom);
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)
@@ -1435,7 +1447,7 @@ SimulationModel::~SimulationModel()
     }
 
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
-        
+
         // Temporarily enable all required triangle selectors
         if (linesMode == 1) {
             // Start - on own ship
@@ -1451,7 +1463,7 @@ SimulationModel::~SimulationModel()
             // Not start or end, return null;
             return 0;
         }
-        
+
         irr::core::vector3df intersection;
         irr::core::triangle3df hitTriangle;
 
@@ -1462,10 +1474,10 @@ SimulationModel::~SimulationModel()
             hitTriangle, // This will be the triangle hit in the collision
             0, // (bitmask), 0 for all
             0); // Check all nodes
-        
+
         irr::scene::ISceneNode* contactPointNode = 0;
 
-        if (selectedSceneNode && 
+        if (selectedSceneNode &&
             (
                 ((linesMode == 1) && (selectedSceneNode == ownShip.getSceneNode())) || // Valid start node
                 ((linesMode == 2) && (selectedSceneNode != ownShip.getSceneNode()))    // Valid end node
@@ -1481,8 +1493,8 @@ SimulationModel::~SimulationModel()
 
             irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
             if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
-                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X, 
-                                                   1.0f/selectedSceneNode->getScale().X, 
+                sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X,
+                                                   1.0f/selectedSceneNode->getScale().X,
                                                    1.0f/selectedSceneNode->getScale().X);
             }
 
@@ -1490,10 +1502,10 @@ SimulationModel::~SimulationModel()
                                                         localPosition,
                                                         irr::core::vector3df(0, 0, 0),
                                                         sphereScale);
-            
+
             // Set name to match parent for convenience
             contactPointNode->setName(selectedSceneNode->getName());
-        } 
+        }
 
         // Reset triangle selectors
         ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
@@ -1530,6 +1542,11 @@ SimulationModel::~SimulationModel()
     Lines* SimulationModel::getLines() // Get pointer to lines object
     {
         return &lines;
+    }
+
+    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
+    {
+        camera.update(0, quat, pos, lensShift);
     }
 
     void SimulationModel::update()
@@ -1609,7 +1626,7 @@ SimulationModel::~SimulationModel()
         } { IPROF("Update lines");
         //update all lines, ready to be used for own ship force
         lines.update(deltaTime);
-        } { IPROF("Update own ship");
+        }{ IPROF("Update own ship");
         //update own ship
         ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 

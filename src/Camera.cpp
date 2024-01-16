@@ -58,6 +58,8 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
     previousLookUpAngle = lookUpAngle;
 
     frozen = false;
+
+    sideViewVector = irr::core::vector3df(1,0,0);
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -194,11 +196,11 @@ irr::f32 Camera::getLookUp() const
     return lookUpAngle;
 }
 
-void Camera::moveForwards() 
+void Camera::moveForwards()
 {
     irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
     views[currentView] += 0.05 * frv;
-    
+
     //For displaying position
     std::string cameraPositionText = "Camera: (";
     cameraPositionText.append(irr::core::stringc(views[currentView].X).c_str());
@@ -210,7 +212,7 @@ void Camera::moveForwards()
     logger->log(cameraPositionText.c_str());
 }
 
-void Camera::moveBackwards() 
+void Camera::moveBackwards()
 {
     irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
     views[currentView] -= 0.05 * frv;
@@ -249,7 +251,7 @@ void Camera::changeView()
     if (currentView==views.size()) {
         currentView = 0;
     }
-    
+
     if (currentView<isHighView.size()) {
         if (isHighView[currentView]) {
             highView(true);
@@ -324,7 +326,7 @@ void Camera::toggleFrozen()
 void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 {
     if (frozen) {
-        // Only applicable in frozen mode, otherwise update will be 
+        // Only applicable in frozen mode, otherwise update will be
         // handled when own ship position offset is applied
         parentPosition.X += deltaX;
         parentPosition.Y += deltaY;
@@ -332,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime)
+void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -343,7 +345,7 @@ void Camera::update(irr::f32 deltaTime)
         while (lookAngle<0) {
             lookAngle += 360;
         }
-        
+
         lookUpAngle += verticalPanSpeed * deltaTime;
         if (lookUpAngle > maxLookUpAngle) {
             lookUpAngle = maxLookUpAngle;
@@ -358,18 +360,31 @@ void Camera::update(irr::f32 deltaTime)
             parentPosition = parent->getPosition();
         }
 
+        // Quaternion for the view angles
+        irr::core::quaternion viewQuat = irr::core::quaternion(irr::core::DEGTORAD*(-1*lookUpAngle),irr::core::DEGTORAD*(lookAngle-angleCorrection),0);
+
         // transform forward vector of camera
-        irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
+        irr::core::vector3df frv(0.0f,0.0f,1.0f);
+        frv=quat*frv;
+        frv=viewQuat*frv;
         parentAngles.transformVect(frv);
 
         // transform upvector of camera
         irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
+        upv = quat*upv;
+        upv = viewQuat*upv;
         parentAngles.transformVect(upv);
+
+        // Update side view vector (must be perpendicular to upv and frv)
+        sideViewVector = upv.crossProduct(frv);
 
         // transform camera offset ('offset' is relative to the local ship coordinates, and stays the same.)
         //'offsetTransformed' is transformed into the global coordinates
         irr::core::vector3df offsetTransformed;
-        parentAngles.transformVect(offsetTransformed,views[currentView]);
+        parentAngles.transformVect(offsetTransformed,views[currentView] + pos);
+
+        // Set lens shift (TODO: avoid recalculation)
+        camera->setLensShift(lensShift);
 
         //move camera and angle
         irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;

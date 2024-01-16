@@ -1,0 +1,25 @@
+General note: Remember that user may need to enable high performance graphics for the exe (e.g. if on dual video card systems like a gaming laptop)
+
+
+---------------------------------
+Notes for Visual Studio
+
+mkdir build\win64
+cd build\win64
+cmake -A x64 -G "Visual Studio 16" ..\..
+
+Then open the generated .sln file
+Change from /MD to /MT (C/C++ --> Code Generation --> Runtime Library)
+
+---------------------------------
+Notes for mingw
+
+Make sure mingw-w64 bin folder is on path
+
+mkdir build\mingw_win64
+cd build\mingw_win64
+set CC="cpp.exe"
+set CXX="g++.exe"
+
+cmake -G "MinGW Makefiles" ..\..
+mingw32-make.exe

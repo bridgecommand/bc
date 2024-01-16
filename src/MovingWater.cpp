@@ -32,10 +32,10 @@ namespace scene
 {
 
 //! constructor
-MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, irr::s32 id, irr::u32 disableShaders, irr::u32 segments,
+MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, irr::s32 id, irr::u32 disableShaders, bool withReflection, irr::u32 segments,
 		const irr::core::vector3df& position, const irr::core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), segments(segments)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), withReflection(withReflection), segments(segments)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -58,28 +58,34 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
     irr::s32 shader=0;
 
 	if (!disableShaders) {
-		if (driverType == irr::video::EDT_DIRECT3D9)
-			shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
-				"shaders/Water_vs.hlsl",
+		irr::io::path vertexShader;
+		irr::io::path pixelShader;
+		if (driverType == irr::video::EDT_DIRECT3D9) {
+            //DirectX, not currently used
+            vertexShader = "shaders/Water_vs.hlsl";
+            pixelShader = "shaders/Water_ps.hlsl";
+		} else {
+            //OpenGL
+            if (withReflection) {
+                vertexShader = "shaders/Water_vs.glsl";
+                pixelShader = "shaders/Water_ps.glsl";
+            } else {
+                vertexShader = "shaders/Water_vs_noReflection.glsl";
+                pixelShader = "shaders/Water_ps_noReflection.glsl";
+            }
+            
+		}
+		
+		shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
+				vertexShader,
 				"main",
 				irr::video::EVST_VS_2_0,
-				"shaders/Water_ps.hlsl",
+				pixelShader,
 				"main",
 				irr::video::EPST_PS_2_0,
 				this, //For callbacks
 				irr::video::EMT_SOLID
-			);
-		else //OpenGL
-			shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
-				"shaders/Water_vs.glsl",
-				"main",
-				irr::video::EVST_VS_2_0,
-				"shaders/Water_ps.glsl",
-				"main",
-				irr::video::EPST_PS_2_0,
-				this, //For callbacks
-				irr::video::EMT_SOLID
-			);
+        );
 	}
     shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
 
@@ -118,13 +124,16 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
     */
 
     //Create local camera for reflections
+    _camera = 0;
+    _reflectionMap = 0;
+    
 	if (!disableShaders) {
-		_camera = mgr->addCameraSceneNode(0, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, 0), -1, false);
+		if (withReflection) {
+            _camera = mgr->addCameraSceneNode(0, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, 0), -1, false);
+            _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
+		}
+		
 		irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
-
-		//_refractionMap = _videoDriver->addRenderTargetTexture(renderTargetSize);
-		_reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
-
 
 		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
@@ -132,7 +141,9 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 			if (mb)
 			{
 				mb->getMaterial().setTexture(0, bumpTexture);
-				mb->getMaterial().setTexture(1, _reflectionMap);
+				if (withReflection) {
+                    mb->getMaterial().setTexture(1, _reflectionMap);
+				}
 				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
 				mb->getMaterial().FogEnable = true;
 			}
@@ -145,15 +156,14 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 			if (mb)
 			{
 				mb->getMaterial().setTexture(0, bumpTexture);
-				mb->getMaterial().setTexture(1, _reflectionMap);
+				if (withReflection) {
+                    mb->getMaterial().setTexture(1, _reflectionMap);
+                }
 				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
 				mb->getMaterial().FogEnable = true;
 
 			}
 		}
-	} else {
-		_camera = 0;
-		_reflectionMap = 0;
 	}
 
 
@@ -240,14 +250,18 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
 			driver = services->getVideoDriver();
 			//Looking for our constants IDs...
 			matViewInverse = services->getVertexShaderConstantID("matViewInverse");
-			matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+			if (withReflection) {
+                matWorldReflectionViewProj = services->getVertexShaderConstantID("WorldReflectionViewProj");
+			}
 			idLightLevel = services->getVertexShaderConstantID("lightLevel");
 			idSeaState = services->getVertexShaderConstantID("seaState");
 
 			if (IsOpenGL)
 			{
-				baseMap = services->getPixelShaderConstantID("baseMap");
-				reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+				if (withReflection) {
+                    baseMap = services->getPixelShaderConstantID("baseMap");
+                    reflectionMap = services->getPixelShaderConstantID("reflectionMap");
+				}
 			}
 			else
 			{
@@ -263,17 +277,23 @@ void MovingWaterSceneNode::OnSetConstants(video::IMaterialRendererServices* serv
 		mat.makeInverse();
 		services->setVertexShaderConstant(matViewInverse, mat.pointer(), 16);
 
-		irr::core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
-		worldReflectionViewProj *= _camera->getViewMatrix();;
-		worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
-		services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+		if (withReflection) {
+            irr::core::matrix4 worldReflectionViewProj = driver->getTransform(video::ETS_PROJECTION);
+            worldReflectionViewProj *= _camera->getViewMatrix();;
+            worldReflectionViewProj *= driver->getTransform(video::ETS_WORLD);
+            services->setVertexShaderConstant(matWorldReflectionViewProj, worldReflectionViewProj.pointer(), 16);
+		}
 
 		if (IsOpenGL)
 		{
 			int sampler = 0;
-			services->setPixelShaderConstant(baseMap, &sampler, 1);
+			if (withReflection) {
+                services->setPixelShaderConstant(baseMap, &sampler, 1);
+			}
 			sampler = 1;
-			services->setPixelShaderConstant(reflectionMap, &sampler, 1);
+			if (withReflection) {
+                services->setPixelShaderConstant(reflectionMap, &sampler, 1);
+			}
 			services->setPixelShaderConstant(idLightLevel, &lightLevel, 1);
 			services->setPixelShaderConstant(idSeaState, &seaState, 1);
 		}
@@ -356,75 +376,77 @@ void MovingWaterSceneNode::OnAnimate(irr::u32 timeMs)
 	//Render reflection to texture
 	if (IsVisible && !disableShaders)
 	{
-		//fixes glitches with incomplete refraction
-        const irr::f32 CLIP_PLANE_OFFSET_Y = 0.0f;
+		
+		if (withReflection) {
+            //fixes glitches with incomplete refraction
+            const irr::f32 CLIP_PLANE_OFFSET_Y = 0.0f;
 
-		irr::core::rect<irr::s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
+            irr::core::rect<irr::s32> currentViewPort = driver->getViewPort(); //Get the previous viewPort
 
-		setVisible(false); //hide the water
+            setVisible(false); //hide the water
 
-		bool reShowOwnShip = false;
+            bool reShowOwnShip = false;
 
-		if (ownShipSceneNode->isVisible()) {
-			ownShipSceneNode->setVisible(false);
-			reShowOwnShip = true;
+            if (ownShipSceneNode->isVisible()) {
+                ownShipSceneNode->setVisible(false);
+                reShowOwnShip = true;
+            }
+
+            //reflection
+            driver->setRenderTarget(_reflectionMap, irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH); //render to reflection
+
+            //get current camera
+            scene::ICameraSceneNode* currentCamera = SceneManager->getActiveCamera();
+            irr::f32 currentAspect = currentCamera->getAspectRatio();
+
+            //use this aspect ratio
+            _camera->setAspectRatio(currentAspect);
+
+            //set FOV and far value from current camera
+            _camera->setFarValue(currentCamera->getFarValue());
+            irr::f32 renderScale = 1.5; //This matches the scaling in the shader, to avoid artefacts near the edge of the screen
+            irr::f32 renderFOV = 2*atan(renderScale * tan(currentCamera->getFOV()/2));
+            _camera->setFOV(renderFOV);
+
+            irr::core::vector3df position = currentCamera->getAbsolutePosition();
+            position.Y = -position.Y + 2 * RelativeTranslation.Y; //position of the water
+            _camera->setPosition(position);
+
+            irr::core::vector3df target = currentCamera->getTarget();
+
+            //invert Y position of current camera
+            target.Y = -target.Y + 2 * RelativeTranslation.Y;
+            _camera->setTarget(target);
+
+            //set the reflection camera
+            SceneManager->setActiveCamera(_camera);
+
+            //reflection clipping plane
+            irr::core::plane3d<irr::f32> reflectionClipPlane(0, RelativeTranslation.Y - CLIP_PLANE_OFFSET_Y, 0, 0, 1, 0);
+            driver->setClipPlane(0, reflectionClipPlane, true);
+
+            SceneManager->drawAll(); //draw the scene
+
+            //disable clip plane
+            driver->enableClipPlane(0, false);
+
+            //set back old render target
+            driver->setRenderTarget(0, 0);
+
+            //set back the active camera
+            SceneManager->setActiveCamera(currentCamera);
+
+            setVisible(true); //show it again
+
+            if (reShowOwnShip) {
+                ownShipSceneNode->setVisible(true);
+            }
+
+            //Reset :: Fixme: Doesn't seem to be working on old PC
+            driver->setViewPort(irr::core::rect<irr::s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
+            driver->setViewPort(currentViewPort);
+            currentCamera->setAspectRatio(currentAspect);
 		}
-
-		//reflection
-		driver->setRenderTarget(_reflectionMap, irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH); //render to reflection
-
-		//get current camera
-		scene::ICameraSceneNode* currentCamera = SceneManager->getActiveCamera();
-		irr::f32 currentAspect = currentCamera->getAspectRatio();
-
-		//use this aspect ratio
-		_camera->setAspectRatio(currentAspect);
-
-		//set FOV and far value from current camera
-		_camera->setFarValue(currentCamera->getFarValue());
-		irr::f32 renderScale = 1.5; //This matches the scaling in the shader, to avoid artefacts near the edge of the screen
-		irr::f32 renderFOV = 2*atan(renderScale * tan(currentCamera->getFOV()/2));
-		_camera->setFOV(renderFOV);
-
-		irr::core::vector3df position = currentCamera->getAbsolutePosition();
-		position.Y = -position.Y + 2 * RelativeTranslation.Y; //position of the water
-		_camera->setPosition(position);
-
-		irr::core::vector3df target = currentCamera->getTarget();
-
-		//invert Y position of current camera
-		target.Y = -target.Y + 2 * RelativeTranslation.Y;
-		_camera->setTarget(target);
-
-		//set the reflection camera
-		SceneManager->setActiveCamera(_camera);
-
-		//reflection clipping plane
-		irr::core::plane3d<irr::f32> reflectionClipPlane(0, RelativeTranslation.Y - CLIP_PLANE_OFFSET_Y, 0, 0, 1, 0);
-		driver->setClipPlane(0, reflectionClipPlane, true);
-
-		SceneManager->drawAll(); //draw the scene
-
-		//disable clip plane
-		driver->enableClipPlane(0, false);
-
-		//set back old render target
-		driver->setRenderTarget(0, 0);
-
-		//set back the active camera
-		SceneManager->setActiveCamera(currentCamera);
-
-		setVisible(true); //show it again
-
-		if (reShowOwnShip) {
-			ownShipSceneNode->setVisible(true);
-		}
-
-        //Reset :: Fixme: Doesn't seem to be working on old PC
-        driver->setViewPort(irr::core::rect<irr::s32>(0,0,10,10));//Set to a dummy value first to force the next call to make the change
-        driver->setViewPort(currentViewPort);
-        currentCamera->setAspectRatio(currentAspect);
-
 	}
 }
 

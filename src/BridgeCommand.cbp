@@ -59,6 +59,8 @@
 					<Add library="libs/libsndfile/lib/sndfile.lib" />
 					<Add library="enet" />
 					<Add library="irrlicht" />
+					<Add library="libs/OpenXR/OpenXR-SDK-main/build/mingw_win64/src/loader/libopenxr_loader.a" />
+					<Add library="opengl32" />
 					<Add directory="libs/enet-1.3.14/bin/Release/win64" />
 				</Linker>
 				<ExtraCommands>
@@ -229,6 +231,8 @@
 		<Unit filename="Tide.hpp" />
 		<Unit filename="Utilities.cpp" />
 		<Unit filename="Utilities.hpp" />
+		<Unit filename="VRInterface.cpp" />
+		<Unit filename="VRInterface.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="hitime.hpp" />
@@ -251,10 +255,12 @@
 		<Unit filename="libs/serial/v8stdint.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="profile.hpp" />
-		<Unit filename="shaders/NavLight_ps.glsl" />
-		<Unit filename="shaders/NavLight_vs.glsl" />
-		<Unit filename="shaders/Water_ps.glsl" />
-		<Unit filename="shaders/Water_vs.glsl" />
+		<Unit filename="../bin/shaders/NavLight_ps.glsl" />
+		<Unit filename="../bin/shaders/NavLight_vs.glsl" />
+		<Unit filename="../bin/shaders/Water_ps.glsl" />
+		<Unit filename="../bin/shaders/Water_vs.glsl" />
+		<Unit filename="../bin/shaders/Water_ps_noReflection.glsl" />
+		<Unit filename="../bin/shaders/Water_vs_noReflection.glsl" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
