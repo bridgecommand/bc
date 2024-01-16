@@ -255,10 +255,12 @@
 		<Unit filename="libs/serial/v8stdint.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="profile.hpp" />
-		<Unit filename="shaders/NavLight_ps.glsl" />
-		<Unit filename="shaders/NavLight_vs.glsl" />
-		<Unit filename="shaders/Water_ps.glsl" />
-		<Unit filename="shaders/Water_vs.glsl" />
+		<Unit filename="../bin/shaders/NavLight_ps.glsl" />
+		<Unit filename="../bin/shaders/NavLight_vs.glsl" />
+		<Unit filename="../bin/shaders/Water_ps.glsl" />
+		<Unit filename="../bin/shaders/Water_vs.glsl" />
+		<Unit filename="../bin/shaders/Water_ps_noReflection.glsl" />
+		<Unit filename="../bin/shaders/Water_vs_noReflection.glsl" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

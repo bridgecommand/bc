@@ -38,6 +38,7 @@ namespace scene
 		//! constructor
 		MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip,	s32 id,
 			irr::u32 disableShaders,
+			bool withReflection,
 			irr::u32 segments = 32,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0)
@@ -86,19 +87,20 @@ namespace scene
         //Shader related
         int matWorldViewProjection;//Identifiers, much faster than string matching...
         int matViewInverse;
-        //int matWorldReflectionViewProj;
+        int matWorldReflectionViewProj;
         int matWorld;
-        //int baseMap;
-        //int reflectionMap;
+        int baseMap;
+        int reflectionMap;
         int idLightLevel;
         int idSeaState;
         bool firstRun;
         bool IsOpenGL;//Our constants set callback isn't limited to D3D9
 		irr::u32 disableShaders;
+		bool withReflection;
         irr::video::IVideoDriver* driver; //Here so we can save a call during the execution
 
-        //irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
-        //irr::video::ITexture* _reflectionMap;
+        irr::scene::ICameraSceneNode* _camera; //Local camera for reflections
+        irr::video::ITexture* _reflectionMap;
 
         irr::u32 segments;
 

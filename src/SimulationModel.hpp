@@ -58,6 +58,7 @@ public:
                     Sound* sound,
                     ScenarioData scenarioData,
                     OperatingMode::Mode mode,
+                    bool vrMode,
                     irr::f32 viewAngle,
                     irr::f32 lookAngle,
                     irr::f32 cameraMinDistance,
@@ -311,6 +312,7 @@ private:
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
     OperatingMode::Mode mode; //What mode are we in
+    bool vrMode;
     irr::f32 viewAngle;
     irr::video::IImage* radarImage; //Basic radar image
     irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay

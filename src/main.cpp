@@ -867,9 +867,23 @@ int main(int argc, char ** argv)
     loadingMessage->remove(); loadingMessage = 0;
 
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
+    
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+    }
+
+    // Set up the VR interface
+    VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
+    int vrSuccess = -1;
+    if (vr3dMode) {
+        vrSuccess = vrInterface.load();
+        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    }
 
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
+    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, vr3dMode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
@@ -921,20 +935,6 @@ int main(int argc, char ** argv)
     }
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
-    }
-
-    // Check VR mode
-    bool vr3dMode = false;
-    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
-        vr3dMode=true;
-    }
-
-    // Set up the VR interface
-    VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
-    int vrSuccess = -1;
-    if (vr3dMode) {
-        vrSuccess = vrInterface.load();
-        std::cout << "vrSuccess=" << vrSuccess << std::endl;
     }
 
     //check enough time has elapsed to show the credits screen (5s)

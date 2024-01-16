@@ -30,6 +30,8 @@ cp -a Sounds BridgeCommand.app/Contents/Resources/Sounds
 mkdir BridgeCommand.app/Contents/Resources/shaders
 cat shaders/Water_ps.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps.glsl
 cat shaders/Water_vs.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs.glsl
+cat shaders/Water_ps_noReflection.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_ps_noReflection.glsl
+cat shaders/Water_vs_noReflection.glsl | sed -E 's/#version 130/#version 120/' > BridgeCommand.app/Contents/Resources/shaders/Water_vs_noReflection.glsl
 cp -a World BridgeCommand.app/Contents/Resources/World
 cp -a bc5.ini BridgeCommand.app/Contents/Resources/bc5.ini
 cp -a map.ini BridgeCommand.app/Contents/Resources/map.ini

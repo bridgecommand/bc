@@ -46,6 +46,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  Sound* sound,
                                  ScenarioData scenarioData,
                                  OperatingMode::Mode mode,
+                                 bool vrMode,
                                  irr::f32 viewAngle,
                                  irr::f32 lookAngle,
                                  irr::f32 cameraMinDistance,
@@ -78,6 +79,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //store what mode we're in
         this->mode = mode;
+        this->vrMode = vrMode;
 
         //Store if we should show debug details
         this->debugMode = debugMode;
@@ -146,7 +148,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         }
 
         //add water
-        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterSegments);
+        bool waterReflection = true;
+        if (vrMode == true) {
+            waterReflection = false;
+        }
+        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterReflection,waterSegments);
 
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
