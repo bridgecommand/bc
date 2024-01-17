@@ -63,7 +63,7 @@ echo "Version: $versionNo" >> $file
 echo "Maintainer: James Packer <james@bridgecommand.co.uk>" >> $file
 echo "Priority: optional" >> $file
 echo "Architecture: $arch" >> $file
-echo "Depends: libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgl1, libportaudio2 (>= 19+svn20101113), libsndfile1 (>= 1.0.20), libstdc++6 (>= 11), libx11-6, libxxf86vm1" >> $file
+echo "Depends: libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgl1, libportaudio2 (>= 19+svn20101113), libsndfile1 (>= 1.0.20), libstdc++6 (>= 11), libx11-6, libxxf86vm1, libopenxr-loader1" >> $file
 echo "Description: A ship simulation program" >> $file
 echo " For use in navigation and bridge training" >> $file
 
