@@ -43,7 +43,11 @@
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #else
 // Not windows 64 bit or linux, just include required headers for interface, functionality will not be used
+#ifdef _WIN32
+#include <GL/GL.h>
+#else
 #include <OpenGL/gl.h>
+#endif
 #define XR_USE_GRAPHICS_API_OPENGL
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
