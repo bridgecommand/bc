@@ -882,14 +882,58 @@ int main(int argc, char ** argv)
         std::cout << "vrSuccess=" << vrSuccess << std::endl;
     }
 
+    bool secondaryControlWheel = false;
+    bool secondaryControlPortEngine = false;
+    bool secondaryControlStbdEngine = false;
+    if (mode==OperatingMode::Secondary) {
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
+            secondaryControlWheel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_engine") == 1) {
+            secondaryControlPortEngine = true;
+        } 
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
+            secondaryControlStbdEngine = true;
+        }  
+    }
+
     //Create simulation model
-    SimulationModel model(device, smgr, &guiMain, &sound, scenarioData, mode, vr3dMode, viewAngle, lookAngle, cameraMinDistance, cameraMaxDistance, disableShaders, waterSegments, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, limitTerrainResolution, debugMode);
+    SimulationModel model(device, 
+                          smgr, 
+                          &guiMain, 
+                          &sound, 
+                          scenarioData, 
+                          mode, 
+                          vr3dMode, 
+                          viewAngle, 
+                          lookAngle, 
+                          cameraMinDistance, 
+                          cameraMaxDistance, 
+                          disableShaders, 
+                          waterSegments, 
+                          numberOfContactPoints, 
+                          minContactPointSpacing, 
+                          contactStiffnessFactor, 
+                          contactDampingFactor, 
+                          frictionCoefficient, 
+                          tanhFrictionFactor, 
+                          limitTerrainResolution, 
+                          secondaryControlWheel,
+                          secondaryControlPortEngine,
+                          secondaryControlStbdEngine,
+                          debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
+    // Hide engine/wheel inputs if not used (todo: control individually?)
     if (mode==OperatingMode::Secondary) {
-        hideEngineAndRudder=true;
+        if (secondaryControlWheel || secondaryControlPortEngine || secondaryControlStbdEngine) {
+            hideEngineAndRudder=false;
+        } else {
+            hideEngineAndRudder=true;
+        }
     }
+
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
 
     //Give the network class a pointer to the model

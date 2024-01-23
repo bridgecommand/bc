@@ -60,6 +60,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  irr::f32 frictionCoefficient,
                                  irr::f32 tanhFrictionFactor,
                                  irr::u32 limitTerrainResolution,
+                                 bool secondaryControlWheel,
+                                 bool secondaryControlPortEngine,
+                                 bool secondaryControlStbdEngine,
                                  bool debugMode):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
@@ -80,6 +83,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         //store what mode we're in
         this->mode = mode;
         this->vrMode = vrMode;
+
+        //store if we're overriding controls in secondary mode
+        this->secondaryControlWheel = secondaryControlWheel;
+        this->secondaryControlPortEngine = secondaryControlPortEngine;
+        this->secondaryControlStbdEngine = secondaryControlStbdEngine;
 
         //Store if we should show debug details
         this->debugMode = debugMode;
@@ -1444,6 +1452,18 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::setMoveViewWithPrimary(bool moveView) {
         moveViewWithPrimary = moveView;
+    }
+
+    bool SimulationModel::getIsSecondaryControlWheel() const {
+        return secondaryControlWheel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortEngine() const {
+        return secondaryControlPortEngine;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdEngine() const {
+        return secondaryControlStbdEngine;
     }
 
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {

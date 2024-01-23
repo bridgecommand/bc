@@ -1056,7 +1056,6 @@ void OwnShip::setPortEngine(irr::f32 port)
 	}
     } // end if this is not an azimuth drive
 
-    portEngine = port;
 }  // end setPortEngine
 
 
@@ -1097,12 +1096,7 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
 	}
     } // end if this is not an azimuth drive
 
-    stbdEngine = stbd;
-
-
 // DEE_NOV22 ^^^^
-
-
 
     if (azimuthDrive && azimuth2Master) {  // DEE_NOV22 comment azimuth2 being the stbd azimuth drive
         // If azimuth controls linked

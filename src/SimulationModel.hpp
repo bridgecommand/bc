@@ -72,6 +72,9 @@ public:
                     irr::f32 frictionCoefficient,
                     irr::f32 tanhFrictionFactor,
                     irr::u32 limitTerrainResolution,
+                    bool secondaryControlWheel,
+                    bool secondaryControlPortEngine,
+                    bool secondaryControlStbdEngine,
                     bool debugMode);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
@@ -289,6 +292,10 @@ public:
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
 
+    bool getIsSecondaryControlWheel() const;
+    bool getIsSecondaryControlPortEngine() const;
+    bool getIsSecondaryControlStbdEngine() const;
+
 	void startHorn();
 	void endHorn();
 
@@ -356,6 +363,11 @@ private:
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
+
+    // If secondary mode should try to override controls
+    bool secondaryControlWheel;
+    bool secondaryControlPortEngine;
+    bool secondaryControlStbdEngine;
 
     //utility function to check for collision
     bool checkOwnShipCollision();

@@ -343,6 +343,23 @@ void NetworkPrimary::receiveNetwork()
                                                 model->setFollowUpRudderWorking(false);
                                             }
                                         }
+                                    } else if (thisCommand.substr(0,2).compare("CO") == 0) {
+                                        //'CO', controls override
+                                        std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
+                                        if (parts.size()==3) {
+                                            irr::u32 overrideMode = Utilities::lexical_cast<irr::u32>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
+                                            irr::f32 overrideData = Utilities::lexical_cast<irr::f32>(parts.at(2)); // angle for wheel, -1->+1 for engines
+                                            if (overrideMode == 0) {
+                                                // Wheel
+                                                model->setWheel(overrideData); 
+                                            } else if (overrideMode == 1) {
+                                                // Port engine
+                                                model->setPortEngine(overrideData);
+                                            } else if (overrideMode == 2) {
+                                                // Starboard engine
+                                                model->setStbdEngine(overrideData);
+                                            }
+                                        }
                                     }
 
 

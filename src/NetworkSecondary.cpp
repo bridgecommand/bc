@@ -472,6 +472,35 @@ void NetworkSecondary::receiveMessage()
                     }
                 }
 
+                // If overriding control input to the primary, send back a message with the thrust lever and wheel controls
+                // TODO: Think about azimuth drive options, and bow/stern thruster
+                if (model->getIsSecondaryControlWheel() || 
+                    model->getIsSecondaryControlPortEngine() ||
+                    model->getIsSecondaryControlStbdEngine()) {
+                    std::string controlOverride = "";
+                    if (model->getIsSecondaryControlWheel()) {
+                        controlOverride.append("MCCO,0,");
+                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+                        controlOverride.append("|");
+                    }
+                    if (model->getIsSecondaryControlPortEngine()) {
+                        controlOverride.append("MCCO,1,");
+                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
+                        controlOverride.append("|");
+                    }
+                    if (model->getIsSecondaryControlStbdEngine()) {
+                        controlOverride.append("MCCO,2,");
+                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
+                        controlOverride.append("|");
+                    }
+                    //Send back to event.peer
+                    ENetPacket* packet = enet_packet_create (controlOverride.c_str(), strlen (controlOverride.c_str()) + 1,0/*reliable flag*/);
+                    if (packet!=0) {
+                        enet_peer_send (event.peer, 0, packet);
+                        enet_host_flush (server);
+                    }
+                }
+
             } //Check for right number of elements in received data
         } //Check received message starts with BC
         else if (receivedString.substr(0,2).compare("OS") == 0 ) { //Check if it starts with OS (Update about ownship only)
