@@ -177,7 +177,7 @@ void NetworkSecondary::receiveMessage()
             std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
             //Check number of elements
-            if (receivedData.size() == 12) { //12 basic records in data sent
+            if (receivedData.size() == 13) { //13 basic records in data sent
 
                 irr::f32 timeError;
 
@@ -439,6 +439,24 @@ void NetworkSecondary::receiveMessage()
                 if (viewData.size() == 1) {
                     if (model->getMoveViewWithPrimary()) {
                         model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                    }
+                }
+
+                // Get engine control information from record 12, only used for display 
+                std::vector<std::string> controlsData = Utilities::split(receivedData.at(12),',');
+                // TODO: Check length here
+                if (controlsData.size() >= 4) {
+                    // Only set display values if we are not already controlling it
+                    if (!model->getIsSecondaryControlWheel()) {
+                        model->setWheel(Utilities::lexical_cast<irr::f32>(controlsData.at(0)));
+                    }
+                    // Rudder can always be set, as rudder motion is always set by primary
+                    model->setRudder(Utilities::lexical_cast<irr::f32>(controlsData.at(1)));
+                    if (!model->getIsSecondaryControlPortEngine()) {
+                        model->setPortEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(2)));
+                    }
+                    if (!model->getIsSecondaryControlStbdEngine()) {
+                        model->setStbdEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(3)));
                     }
                 }
 

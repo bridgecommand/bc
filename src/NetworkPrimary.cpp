@@ -572,6 +572,16 @@ std::string NetworkPrimary::generateSendString()
 
     //11 Lines (mooring/towing)
     stringToSend.append(makeNetworkLinesString(model));
+    stringToSend.append("#");
+    
+    //12 Controls state (wheel, port engine, stbd engine etc (todo: Add azimuth controls, thrusters))
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getRudder()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
 
     return stringToSend;
 }
