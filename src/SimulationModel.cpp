@@ -63,6 +63,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  bool secondaryControlWheel,
                                  bool secondaryControlPortEngine,
                                  bool secondaryControlStbdEngine,
+                                 bool secondaryControlPortSchottel,
+                                 bool secondaryControlStbdSchottel,
+                                 bool secondaryControlPortThrustLever,
+                                 bool secondaryControlStbdThrustLever,
+                                 bool secondaryControlBowThruster,
+                                 bool secondaryControlSternThruster,
                                  bool debugMode):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
@@ -88,6 +94,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         this->secondaryControlWheel = secondaryControlWheel;
         this->secondaryControlPortEngine = secondaryControlPortEngine;
         this->secondaryControlStbdEngine = secondaryControlStbdEngine;
+        this->secondaryControlPortSchottel = secondaryControlPortSchottel;
+        this->secondaryControlStbdSchottel = secondaryControlStbdSchottel;
+        this->secondaryControlPortThrustLever = secondaryControlPortThrustLever;
+        this->secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
+        this->secondaryControlBowThruster = secondaryControlBowThruster;
+        this->secondaryControlSternThruster = secondaryControlSternThruster;
 
         //Store if we should show debug details
         this->debugMode = debugMode;
@@ -1464,6 +1476,30 @@ SimulationModel::~SimulationModel()
 
     bool SimulationModel::getIsSecondaryControlStbdEngine() const {
         return secondaryControlStbdEngine;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortSchottel() const {
+        return secondaryControlPortSchottel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdSchottel() const {
+        return secondaryControlStbdSchottel;
+    }
+
+    bool SimulationModel::getIsSecondaryControlPortThrustLever() const {
+        return secondaryControlPortThrustLever;
+    }
+
+    bool SimulationModel::getIsSecondaryControlStbdThrustLever() const {
+        return secondaryControlStbdThrustLever;
+    }
+
+    bool SimulationModel::getIsSecondaryControlBowThruster() const {
+        return secondaryControlBowThruster;
+    }
+
+    bool SimulationModel::getIsSecondaryControlSternThruster() const {
+        return secondaryControlSternThruster;
     }
 
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {

@@ -444,8 +444,7 @@ void NetworkSecondary::receiveMessage()
 
                 // Get engine control information from record 12, only used for display 
                 std::vector<std::string> controlsData = Utilities::split(receivedData.at(12),',');
-                // TODO: Check length here
-                if (controlsData.size() >= 4) {
+                if (controlsData.size() == 10) {
                     // Only set display values if we are not already controlling it
                     if (!model->getIsSecondaryControlWheel()) {
                         model->setWheel(Utilities::lexical_cast<irr::f32>(controlsData.at(0)));
@@ -457,6 +456,24 @@ void NetworkSecondary::receiveMessage()
                     }
                     if (!model->getIsSecondaryControlStbdEngine()) {
                         model->setStbdEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(3)));
+                    }
+                    if (!model->getIsSecondaryControlPortSchottel()) {
+                        model->setPortSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(4)));
+                    }
+                    if (!model->getIsSecondaryControlStbdSchottel()) {
+                        model->setStbdSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(5)));
+                    }
+                    if (!model->getIsSecondaryControlPortThrustLever()) {
+                        model->setPortThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(6)));
+                    }
+                    if (!model->getIsSecondaryControlStbdThrustLever()) {
+                        model->setStbdThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(7)));
+                    }
+                    if (!model->getIsSecondaryControlBowThruster()) {
+                        model->setBowThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(8)));
+                    }
+                    if (!model->getIsSecondaryControlSternThruster()) {
+                        model->setSternThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(9)));
                     }
                 }
 
@@ -490,27 +507,54 @@ void NetworkSecondary::receiveMessage()
                     }
                 }
 
-                // If overriding control input to the primary, send back a message with the thrust lever and wheel controls
-                // TODO: Think about azimuth drive options, and bow/stern thruster
-                if (model->getIsSecondaryControlWheel() || 
-                    model->getIsSecondaryControlPortEngine() ||
-                    model->getIsSecondaryControlStbdEngine()) {
-                    std::string controlOverride = "";
-                    if (model->getIsSecondaryControlWheel()) {
-                        controlOverride.append("MCCO,0,");
-                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getWheel()));
-                        controlOverride.append("|");
-                    }
-                    if (model->getIsSecondaryControlPortEngine()) {
-                        controlOverride.append("MCCO,1,");
-                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
-                        controlOverride.append("|");
-                    }
-                    if (model->getIsSecondaryControlStbdEngine()) {
-                        controlOverride.append("MCCO,2,");
-                        controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
-                        controlOverride.append("|");
-                    }
+                // If overriding control input to the primary, send back a message with the thrust lever and wheel controls etc
+                std::string controlOverride = "";
+                if (model->getIsSecondaryControlWheel()) {
+                    controlOverride.append("MCCO,0,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getWheel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortEngine()) {
+                    controlOverride.append("MCCO,1,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdEngine()) {
+                    controlOverride.append("MCCO,2,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortSchottel()) {
+                    controlOverride.append("MCCO,3,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortSchottel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdSchottel()) {
+                    controlOverride.append("MCCO,4,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdSchottel()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlPortThrustLever()) {
+                    controlOverride.append("MCCO,5,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortThrustLever()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlStbdThrustLever()) {
+                    controlOverride.append("MCCO,6,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdThrustLever()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlBowThruster()) {
+                    controlOverride.append("MCCO,7,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getBowThruster()));
+                    controlOverride.append("|");
+                }
+                if (model->getIsSecondaryControlSternThruster()) {
+                    controlOverride.append("MCCO,8,");
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getSternThruster()));
+                    controlOverride.append("|");
+                }
+                if (controlOverride != "") {
                     //Send back to event.peer
                     ENetPacket* packet = enet_packet_create (controlOverride.c_str(), strlen (controlOverride.c_str()) + 1,0/*reliable flag*/);
                     if (packet!=0) {
@@ -518,6 +562,7 @@ void NetworkSecondary::receiveMessage()
                         enet_host_flush (server);
                     }
                 }
+                
 
             } //Check for right number of elements in received data
         } //Check received message starts with BC

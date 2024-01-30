@@ -885,6 +885,12 @@ int main(int argc, char ** argv)
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
+    bool secondaryControlPortSchottel = false;
+    bool secondaryControlStbdSchottel = false;
+    bool secondaryControlPortThrustLever = false;
+    bool secondaryControlStbdThrustLever = false;
+    bool secondaryControlBowThruster = false;
+    bool secondaryControlSternThruster = false;
     if (mode==OperatingMode::Secondary) {
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
             secondaryControlWheel = true;
@@ -894,7 +900,26 @@ int main(int argc, char ** argv)
         } 
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
             secondaryControlStbdEngine = true;
-        }  
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_schottel") == 1) {
+            secondaryControlPortSchottel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_schottel") == 1) {
+            secondaryControlStbdSchottel = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_thrust") == 1) {
+            secondaryControlPortThrustLever = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_thrust") == 1) {
+            secondaryControlStbdThrustLever = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
+            secondaryControlBowThruster = true;
+        }
+        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stern_thruster") == 1) {
+            secondaryControlSternThruster = true;
+        }
+
     }
 
     //Create simulation model
@@ -921,13 +946,27 @@ int main(int argc, char ** argv)
                           secondaryControlWheel,
                           secondaryControlPortEngine,
                           secondaryControlStbdEngine,
+                          secondaryControlPortSchottel,
+                          secondaryControlStbdSchottel,
+                          secondaryControlPortThrustLever,
+                          secondaryControlStbdThrustLever,
+                          secondaryControlBowThruster,
+                          secondaryControlSternThruster,
                           debugMode);
 
     //Load the gui
     bool hideEngineAndRudder=false;
     // Hide engine/wheel inputs if not used (todo: control individually?)
     if (mode==OperatingMode::Secondary) {
-        if (secondaryControlWheel || secondaryControlPortEngine || secondaryControlStbdEngine) {
+        if (secondaryControlWheel || 
+            secondaryControlPortEngine || 
+            secondaryControlStbdEngine || 
+            secondaryControlPortSchottel ||
+            secondaryControlStbdSchottel ||
+            secondaryControlPortThrustLever ||
+            secondaryControlStbdThrustLever ||
+            secondaryControlBowThruster ||
+            secondaryControlSternThruster) {
             hideEngineAndRudder=false;
         } else {
             hideEngineAndRudder=true;

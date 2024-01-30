@@ -358,6 +358,18 @@ void NetworkPrimary::receiveNetwork()
                                             } else if (overrideMode == 2) {
                                                 // Starboard engine
                                                 model->setStbdEngine(overrideData);
+                                            } else if (overrideMode == 3) {
+                                                model->setPortSchottel(overrideData);
+                                            } else if (overrideMode == 4) {
+                                                model->setStbdSchottel(overrideData);
+                                            } else if (overrideMode == 5) {
+                                                model->setPortThrustLever(overrideData);
+                                            } else if (overrideMode == 6) {
+                                                model->setStbdThrustLever(overrideData);
+                                            } else if (overrideMode == 7) {
+                                                model->setBowThruster(overrideData);
+                                            } else if (overrideMode == 8) {
+                                                model->setSternThruster(overrideData);
                                             }
                                         }
                                     }
@@ -574,7 +586,7 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(makeNetworkLinesString(model));
     stringToSend.append("#");
     
-    //12 Controls state (wheel, port engine, stbd engine etc (todo: Add azimuth controls, thrusters))
+    //12 Controls state (wheel, rudder, port/stbd engine, port/stbd schottel, port/stbd thrust lever, bow/stern thruster)
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWheel()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getRudder()));
@@ -582,6 +594,18 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortEngine()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdEngine()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortSchottel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdSchottel()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortThrustLever()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdThrustLever()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getBowThruster()));
+    stringToSend.append(",");
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getSternThruster()));
 
     return stringToSend;
 }

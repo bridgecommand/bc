@@ -75,6 +75,12 @@ public:
                     bool secondaryControlWheel,
                     bool secondaryControlPortEngine,
                     bool secondaryControlStbdEngine,
+                    bool secondaryControlPortSchottel,
+                    bool secondaryControlStbdSchottel,
+                    bool secondaryControlPortThrustLever,
+                    bool secondaryControlStbdThrustLever,
+                    bool secondaryControlBowThruster,
+                    bool secondaryControlSternThruster,
                     bool debugMode);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
@@ -295,6 +301,12 @@ public:
     bool getIsSecondaryControlWheel() const;
     bool getIsSecondaryControlPortEngine() const;
     bool getIsSecondaryControlStbdEngine() const;
+    bool getIsSecondaryControlPortSchottel() const;
+    bool getIsSecondaryControlStbdSchottel() const;
+    bool getIsSecondaryControlPortThrustLever() const;
+    bool getIsSecondaryControlStbdThrustLever() const;
+    bool getIsSecondaryControlBowThruster() const;
+    bool getIsSecondaryControlSternThruster() const;
 
 	void startHorn();
 	void endHorn();
@@ -368,6 +380,12 @@ private:
     bool secondaryControlWheel;
     bool secondaryControlPortEngine;
     bool secondaryControlStbdEngine;
+    bool secondaryControlPortSchottel;
+    bool secondaryControlStbdSchottel;
+    bool secondaryControlPortThrustLever;
+    bool secondaryControlStbdThrustLever;
+    bool secondaryControlBowThruster;
+    bool secondaryControlSternThruster;
 
     //utility function to check for collision
     bool checkOwnShipCollision();
