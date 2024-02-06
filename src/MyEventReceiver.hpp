@@ -42,6 +42,7 @@ public:
     std::vector<irr::f32> inputPoints;
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
+    bool updateAllAxes;
     
     
 // DEE 10JAN23 Azimuth Drive Specific vvvv
