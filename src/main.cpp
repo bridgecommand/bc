@@ -331,6 +331,14 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
 
 // DEE 10JAN22 ^^^^
 
+    // Check if user wants to update all joystick axes when one changes
+    if (IniFile::iniFileTou32(iniFilename, "update_changed_axes_only")==1) {
+        joystickSetup.updateAllAxes = false;
+    } else {
+        joystickSetup.updateAllAxes = true;
+    }
+
+
     return joystickSetup;
 }
 

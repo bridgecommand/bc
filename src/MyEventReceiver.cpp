@@ -1528,7 +1528,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         if (joystickChanged)
         {
 
-            if (newJoystickPort < INFINITY)
+            if (newJoystickPort < INFINITY && (joystickSetup.updateAllAxes || portChanged))
             { // refers to the port engine control
                 irr::f32 mappedValue = lookup1D(newJoystickPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
                 // DEE 10JAN23 vvvv
@@ -1542,7 +1542,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 previousJoystickPort = newJoystickPort;
             }
 
-            if (newJoystickStbd < INFINITY)
+            if (newJoystickStbd < INFINITY && (joystickSetup.updateAllAxes || stbdChanged))
             { // refers to the starboard engine control
                 irr::f32 mappedValue = lookup1D(newJoystickStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
                 if (!(model->isAzimuthDrive()))
@@ -1559,7 +1559,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
 
                 // Port Thrust Lever
-                if (newJoystickThrustLeverPort < INFINITY)
+                if (newJoystickThrustLeverPort < INFINITY && (joystickSetup.updateAllAxes || thrustLeverPortChanged))
                 {
 
                     irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
@@ -1572,7 +1572,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
 
                 // Stbd Thrust Lever
-                if (newJoystickThrustLeverStbd < INFINITY)
+                if (newJoystickThrustLeverStbd < INFINITY && (joystickSetup.updateAllAxes || thrustLeverStbdChanged))
                 {
                     irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
                     model->setStbdThrustLever(0.5 + newJoystickThrustLeverStbd * 0.5);
@@ -1582,7 +1582,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
                 // Port Schottel
                 // mapping is completely inappropriate for schottel controls
-                if (newJoystickSchottelPort < INFINITY)
+                if (newJoystickSchottelPort < INFINITY && (joystickSetup.updateAllAxes || schottelPortChanged))
                 {
                     // irr::f32 mappedValue = lookup1D(newJoystickSchottelPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
                     // model->setPortSchottel(mappedValue);
@@ -1592,7 +1592,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
                 // Stbd Schottel
                 // mapping is completely inappropriate for schottel controls
-                if (newJoystickSchottelStbd < INFINITY)
+                if (newJoystickSchottelStbd < INFINITY && (joystickSetup.updateAllAxes || schottelStbdChanged))
                 {
                     // irr::f32 mappedValue = lookup1D(newJoystickSchottelStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
                     // model->setStbdSchottel(mappedValue);
@@ -1606,7 +1606,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             // DEE 10JAN23 ^^^^ end of joystick engine controls
 
-            if (newJoystickRudder < INFINITY)
+            if (newJoystickRudder < INFINITY && (joystickSetup.updateAllAxes || wheelChanged))
             {
                 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
                 model->setWheel(newJoystickRudder * joystickSetup.rudderDirection);
@@ -1614,13 +1614,13 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 previousJoystickRudder = newJoystickRudder;
             }
 
-            if (newJoystickBowThruster < INFINITY)
+            if (newJoystickBowThruster < INFINITY && (joystickSetup.updateAllAxes || bowThrusterChanged))
             {
                 model->setBowThruster(newJoystickBowThruster);
                 previousJoystickBowThruster = newJoystickBowThruster;
             }
 
-            if (newJoystickSternThruster < INFINITY)
+            if (newJoystickSternThruster < INFINITY && (joystickSetup.updateAllAxes || sternThrusterChanged))
             {
                 model->setSternThruster(newJoystickSternThruster);
                 previousJoystickSternThruster = newJoystickSternThruster;
