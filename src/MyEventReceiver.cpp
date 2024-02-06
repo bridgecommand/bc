@@ -1497,28 +1497,29 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         // check if any have changed
         bool joystickChanged = false;
-        irr::f32 portChange = fabs(newJoystickPort - previousJoystickPort);
-        irr::f32 stbdChange = fabs(newJoystickStbd - previousJoystickStbd);
-        irr::f32 wheelChange = fabs(newJoystickRudder - previousJoystickRudder);
+        bool portChanged = fabs(newJoystickPort - previousJoystickPort) > 0.01;
+        bool stbdChanged = fabs(newJoystickStbd - previousJoystickStbd) > 0.01;
+        bool wheelChanged = fabs(newJoystickRudder - previousJoystickRudder) > 0.01;
         // DEE 10JAN23 vvvv
         //	    irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
         //          irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
 
-        irr::f32 thrustLeverPortChange = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort);
-        irr::f32 thrustLeverStbdChange = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd);
-        irr::f32 schottelPortChange = fabs(newJoystickSchottelPort - previousJoystickSchottelPort);
-        irr::f32 schottelStbdChange = fabs(newJoystickSchottelStbd - previousJoystickSchottelStbd);
+        bool thrustLeverPortChanged = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort) > 0.01;
+        bool thrustLeverStbdChanged = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd) > 0.01;
+        bool schottelPortChanged = fabs(newJoystickSchottelPort - previousJoystickSchottelPort) > 0.01;
+        bool schottelStbdChanged = fabs(newJoystickSchottelStbd - previousJoystickSchottelStbd) > 0.01;
         // DEE 10JAN23 ^^^^
 
         // DEE
         //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
-        irr::f32 bowThrusterChange = fabs(newJoystickBowThruster - previousJoystickBowThruster);
-        irr::f32 sternThrusterChange = fabs(newJoystickSternThruster - previousJoystickSternThruster);
+        bool bowThrusterChanged = fabs(newJoystickBowThruster - previousJoystickBowThruster) > 0.01;
+        bool sternThrusterChanged = fabs(newJoystickSternThruster - previousJoystickSternThruster) > 0.01;
         // DEE
         //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
-        if (portChange > 0.01 || stbdChange > 0.01 || wheelChange > 0.01 ||
-            bowThrusterChange > 0.01 || sternThrusterChange > 0.01 ||
-            schottelPortChange > 0.01 || schottelStbdChange > 0.01 || thrustLeverPortChange > 0.01 || thrustLeverStbdChange > 0.01)
+        if (portChanged || stbdChanged || wheelChanged ||
+            bowThrusterChanged || sternThrusterChanged ||
+            schottelPortChanged || schottelStbdChanged || 
+            thrustLeverPortChanged || thrustLeverStbdChanged)
         {
             joystickChanged = true;
         }
