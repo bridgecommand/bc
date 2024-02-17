@@ -1,12 +1,5 @@
 xof 0303txt 0064
 #Exported from Wings 3D 2.2.5
-		Material Cylinder1_auv {
-			1.0; 1.0; 1.0; 1.0;;
-		0.19999999999999996;
-			0.19; 0.19; 0.19;;
-			0.0; 0.0; 0.0;;
-			TextureFilename { "/Users/james/Documents/BridgeCommand/bc/bin/media/auvBG.png"; }
-		}
 		Material default {
 			0.7898538076923077; 0.8133333333333334; 0.6940444444444445; 1.0;;
 		0.19999999999999996;
@@ -378,7 +371,7 @@ Frame Cylinder1 {
 		0.6788225099390857, 0.5;;
 		}
 		MeshMaterialList {
-			2;
+			1;
 			32;
 			0;
 			0;
@@ -413,7 +406,6 @@ Frame Cylinder1 {
 			0;
 			0;
 			;
-			{Cylinder1_auv}
 			{default}
 		}
 	}}
