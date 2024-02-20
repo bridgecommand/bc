@@ -364,6 +364,7 @@ private:
     RadarScreen radarScreen;
     ControlVisualiser portEngineVisual;
     ControlVisualiser stbdEngineVisual;
+    ControlVisualiser wheelVisual;
     GUIMain* guiMain;
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar

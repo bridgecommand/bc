@@ -218,9 +218,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     stbdThrottlePosition.X = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleX", -999);
     stbdThrottlePosition.Y = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleY", -999);
     stbdThrottlePosition.Z = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleZ", -999);
+    wheelControlPosition.X = IniFile::iniFileTof32(shipIniFilename, "WheelX", -999);
+    wheelControlPosition.Y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
+    wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
 
     portThrottlePosition = scaleFactor * portThrottlePosition;
     stbdThrottlePosition = scaleFactor * stbdThrottlePosition;
+    wheelControlPosition = scaleFactor * wheelControlPosition;
 
     // Load the model
     irr::scene::IAnimatedMesh *shipMesh;
@@ -1358,6 +1362,11 @@ irr::core::vector3df OwnShip:: getPortEngineControlPosition() const
 irr::core::vector3df OwnShip::getStbdEngineControlPosition() const
 {
     return stbdThrottlePosition;
+}
+
+irr::core::vector3df OwnShip::getWheelControlPosition() const
+{
+    return wheelControlPosition;
 }
 
 bool OwnShip::isSingleEngine() const
