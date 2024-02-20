@@ -334,7 +334,7 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
+void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -360,8 +360,17 @@ void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::v
             parentPosition = parent->getPosition();
         }
 
-        // Quaternion for the view angles
-        irr::core::quaternion viewQuat = irr::core::quaternion(irr::core::DEGTORAD*(-1*lookUpAngle),irr::core::DEGTORAD*(lookAngle-angleCorrection),0);
+        // Quaternion for the view angles, ignoring the lookUpAngle if in VR Mode
+        irr::core::quaternion viewQuat;
+        if (vrMode) {
+            viewQuat = irr::core::quaternion(0,
+                                             irr::core::DEGTORAD*(lookAngle-angleCorrection),
+                                             0);
+        } else {
+            viewQuat = irr::core::quaternion(irr::core::DEGTORAD*(-1*lookUpAngle),
+                                             irr::core::DEGTORAD*(lookAngle-angleCorrection),
+                                             0);
+        }
 
         // transform forward vector of camera
         irr::core::vector3df frv(0.0f,0.0f,1.0f);
