@@ -228,9 +228,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         rain.load(smgr, camera.getSceneNode(), device);
 
         //Set up 3d engine/wheel controls/visualisation
-        portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0, 0, 0);
-        stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0, 0, 0);
-        wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), 1.0, 2, 1);
+        portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0/ownShip.getScaleFactor(), 0, 0);
+        stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0/ownShip.getScaleFactor(), 0, 0);
+        wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), 1.0/ownShip.getScaleFactor(), 2, 1);
 
         //make a radar screen, setting parent and offset from own ship
         radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
@@ -1747,7 +1747,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Update controls visualisation");
             portEngineVisual.update(45.0*ownShip.getPortEngine());
             stbdEngineVisual.update(45.0*ownShip.getStbdEngine());
-            wheelVisual.update(ownShip.getWheel());
+            wheelVisual.update(-1.0 * ownShip.getWheel());
         }
         if (radarCalculation.isRadarOn()) {
             { IPROF("Update radar cursor position");

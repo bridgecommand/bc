@@ -30,9 +30,7 @@ class ControlVisualiser
 
     private:
         irr::scene::IMeshSceneNode* controlNode;
-        irr::scene::ISceneNode* parent;
-        irr::core::vector3df offset;
-		irr::f32 displayValue;
+        irr::f32 displayValue;
         irr::u32 rotationAxis;
 };
 

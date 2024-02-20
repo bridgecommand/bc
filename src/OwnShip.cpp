@@ -163,7 +163,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     maxSpeed_mps = maxSpeed * 0.514444;                                            // expressed in metres per second
     // DEE_DEC22 ^^^^
     // Scale
-    irr::f32 scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
+    scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
     irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename, "YCorrection");
     angleCorrection = IniFile::iniFileTof32(shipIniFilename, "AngleCorrection");
     // DEE_DEC22 vvvv
@@ -222,10 +222,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     wheelControlPosition.Y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
     wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
 
-    portThrottlePosition = scaleFactor * portThrottlePosition;
-    stbdThrottlePosition = scaleFactor * stbdThrottlePosition;
-    wheelControlPosition = scaleFactor * wheelControlPosition;
-
+    // Do not scale portThrottlePosition, stbd... and wheelControlPosition, as these are implicitly scaled as position used relative to parent
+    
     // Load the model
     irr::scene::IAnimatedMesh *shipMesh;
 
@@ -1627,6 +1625,11 @@ void OwnShip::enableTriangleSelector(bool selectorEnabled)
 irr::f32 OwnShip::getShipMass() const
 {
     return shipMass;
+}
+
+irr::f32 OwnShip::getScaleFactor() const
+{
+    return scaleFactor;
 }
 
 irr::f32 OwnShip::requiredEngineProportion(irr::f32 speed)

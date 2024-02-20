@@ -32,8 +32,6 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
     controlNode = 0;
     
     this->displayValue = 0;
-    this->parent = parent;
-    this->offset = offset;
     this->rotationAxis = rotationAxis;
     
     // Load unless 'no data' marker for position is set
@@ -52,8 +50,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         }
         if (controlMesh != 0) 
         {
-            controlNode = smgr->addMeshSceneNode(controlMesh);
-            controlNode->setScale(irr::core::vector3df(scale,scale,scale));
+            controlNode = smgr->addMeshSceneNode(controlMesh, parent, -1, offset, irr::core::vector3df(0.0, 0.0, 0.0), irr::core::vector3df(scale,scale,scale));
         }
     }
 }
@@ -65,33 +62,18 @@ void ControlVisualiser::update(irr::f32 displayValue)
 
     if (controlNode != 0) 
     {
-        irr::core::matrix4 m;
-        irr::core::vector3df offsetTransformed;
-
-        //link camera rotation to shipNode
-        // get transformation matrix of node
-        m.setRotationDegrees(parent->getRotation());
-
-        // transform offset('offset' is relative to the local ship coordinates, and stays the same.)
-        //'offsetTransformed' is transformed into the global coordinates
-
-        m.transformVect(offsetTransformed,offset);
-
-        // Set display position
-        controlNode->setPosition(parent->getPosition() + offsetTransformed);
-        
         // Set position, choosing which axis to use
         if (rotationAxis == 0) 
         {
-            controlNode->setRotation(parent->getRotation()+irr::core::vector3df(displayValue,0,0));
+            controlNode->setRotation(irr::core::vector3df(displayValue,0,0));
         } 
         else if (rotationAxis == 1) 
         {
-            controlNode->setRotation(parent->getRotation()+irr::core::vector3df(0,displayValue,0));
+            controlNode->setRotation(irr::core::vector3df(0,displayValue,0));
         }
         else 
         {
-            controlNode->setRotation(parent->getRotation()+irr::core::vector3df(0,0,displayValue));
+            controlNode->setRotation(irr::core::vector3df(0,0,displayValue));
         }
     }
 

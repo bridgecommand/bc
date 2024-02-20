@@ -148,6 +148,7 @@ public:
         bool isBuoyCollision() const;
         bool isOtherShipCollision() const;
         irr::f32 getShipMass() const;
+        irr::f32 getScaleFactor() const;
 
         void enableTriangleSelector(bool selectorEnabled);
 
@@ -168,6 +169,7 @@ private:
         SimulationModel *model;
         bool is360textureShip;
         bool showDebugData;
+        irr::f32 scaleFactor;
         irr::f32 rollPeriod;       // Roll period (s)  DEE this should be dynamically loaded
         irr::f32 rollAngle;        // Roll Angle (deg)
         irr::f32 pitchPeriod;      // Roll period (s)
