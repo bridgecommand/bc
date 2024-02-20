@@ -146,6 +146,8 @@
 		<Unit filename="Camera.cpp" />
 		<Unit filename="Camera.hpp" />
 		<Unit filename="Constants.hpp" />
+		<Unit filename="ControlVisualiser.cpp" />
+		<Unit filename="ControlVisualiser.hpp" />
 		<Unit filename="DefaultEventReceiver.cpp" />
 		<Unit filename="DefaultEventReceiver.hpp" />
 		<Unit filename="ExitMessage.cpp" />

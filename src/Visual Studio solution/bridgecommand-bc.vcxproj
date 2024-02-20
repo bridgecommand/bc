@@ -177,6 +177,7 @@
     <ClCompile Include="..\Buoy.cpp" />
     <ClCompile Include="..\Buoys.cpp" />
     <ClCompile Include="..\Camera.cpp" />
+    <ClCompile Include="..\ControlVisualiser.cpp" />
     <ClCompile Include="..\DefaultEventReceiver.cpp" />
     <ClCompile Include="..\FFTWave.cpp" />
     <ClCompile Include="..\GUIMain.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="..\Buoys.hpp" />
     <ClInclude Include="..\Camera.hpp" />
     <ClInclude Include="..\Constants.hpp" />
+    <ClInclude Include="..\ControlVisualiser.hpp" />
     <ClInclude Include="..\DefaultEventReceiver.hpp" />
     <ClInclude Include="..\FFTWave.hpp" />
     <ClInclude Include="..\GUIMain.hpp" />

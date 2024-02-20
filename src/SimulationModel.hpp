@@ -44,6 +44,7 @@ class Sound;
 #include "Camera.hpp"
 #include "RadarCalculation.hpp"
 #include "RadarScreen.hpp"
+#include "ControlVisualiser.hpp"
 #include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
 
@@ -361,6 +362,8 @@ private:
     Lines lines;
     RadarCalculation radarCalculation;
     RadarScreen radarScreen;
+    ControlVisualiser portEngineVisual;
+    ControlVisualiser stbdEngineVisual;
     GUIMain* guiMain;
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar

@@ -97,6 +97,8 @@ public:
         irr::core::vector3df getScreenDisplayPosition() const;
         irr::f32 getScreenDisplaySize() const;
         irr::f32 getScreenDisplayTilt() const;
+        irr::core::vector3df getPortEngineControlPosition() const;
+        irr::core::vector3df getStbdEngineControlPosition() const;
         bool isSingleEngine() const;
         bool isAzimuthDrive() const;
         bool isAzimuth1Master() const;
@@ -311,6 +313,9 @@ private:
         irr::core::vector3df screenDisplayPosition;
         irr::f32 screenDisplaySize;
         irr::f32 screenDisplayTilt;
+
+        irr::core::vector3df portThrottlePosition;
+        irr::core::vector3df stbdThrottlePosition;
 
         bool buoyCollision;
         bool otherShipCollision;

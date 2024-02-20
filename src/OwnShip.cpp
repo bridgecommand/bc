@@ -75,6 +75,17 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename, "FileName");
     std::string ownShipFullPath = basePath + ownShipFileName;
 
+    // set if Azimuth drive
+    if (IniFile::iniFileTou32(shipIniFilename, "AzimuthDrive") == 1)
+    {
+        azimuthDrive = true;
+    }
+    else
+    {
+        azimuthDrive = false;
+        aziToLengthRatio = 0;
+    }
+
     // Load dynamics settings
     //  DEE_DEC22 ship parameters directly from ini file
 
@@ -178,15 +189,17 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         isHighView.push_back(highView);
     }
 
-    // Radar Screen Resolutions
-    screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX");
-    screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY");
-    screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ");
+    // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
+    screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
+    screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
+    screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
     screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
     screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
     // Default position out of view if not set
-    if (screenDisplayPosition.X == 0 && screenDisplayPosition.Y == 0 && screenDisplayPosition.Z == 0)
+    if (screenDisplayPosition.X == -999.0 && screenDisplayPosition.Y == -999.0 && screenDisplayPosition.Z == -999.0)
     {
+        screenDisplayPosition.X = 0;
+        screenDisplayPosition.Y = 0;
         screenDisplayPosition.Y = 500;
     }
 
@@ -194,13 +207,22 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     {
         screenDisplaySize = 1;
     }
-    screenDisplayPosition.X *= scaleFactor;
-    screenDisplayPosition.Y *= scaleFactor;
-    screenDisplayPosition.Z *= scaleFactor;
-    screenDisplaySize *= scaleFactor;
+    screenDisplayPosition = scaleFactor * screenDisplayPosition;
+    screenDisplaySize = scaleFactor * screenDisplaySize;
+
+    // Positions for engine controls (if present)
+    // If not set in file, set value to -999 as 'no data' marker
+    portThrottlePosition.X = IniFile::iniFileTof32(shipIniFilename, "PortThrottleX", -999);
+    portThrottlePosition.Y = IniFile::iniFileTof32(shipIniFilename, "PortThrottleY", -999);
+    portThrottlePosition.Z = IniFile::iniFileTof32(shipIniFilename, "PortThrottleZ", -999);
+    stbdThrottlePosition.X = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleX", -999);
+    stbdThrottlePosition.Y = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleY", -999);
+    stbdThrottlePosition.Z = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleZ", -999);
+
+    portThrottlePosition = scaleFactor * portThrottlePosition;
+    stbdThrottlePosition = scaleFactor * stbdThrottlePosition;
 
     // Load the model
-
     irr::scene::IAnimatedMesh *shipMesh;
 
     // Check if the 'model' is actualy the string "360". If so, treat it as a 360 equirectangular panoramic image with transparency.
@@ -350,17 +372,6 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     }
     rudderMinAngle = -30;
     rudderMaxAngle = 30;
-
-    // set if Azimuth drive
-    if (IniFile::iniFileTou32(shipIniFilename, "AzimuthDrive") == 1)
-    {
-        azimuthDrive = true;
-    }
-    else
-    {
-        azimuthDrive = false;
-        aziToLengthRatio = 0;
-    }
 
     // Set azimuth drives independent
     azimuth1Master = false;
@@ -1337,6 +1348,16 @@ irr::f32 OwnShip::getScreenDisplaySize() const
 irr::f32 OwnShip::getScreenDisplayTilt() const
 {
     return screenDisplayTilt;
+}
+
+irr::core::vector3df OwnShip:: getPortEngineControlPosition() const
+{
+    return portThrottlePosition;
+}
+
+irr::core::vector3df OwnShip::getStbdEngineControlPosition() const
+{
+    return stbdThrottlePosition;
 }
 
 bool OwnShip::isSingleEngine() const
