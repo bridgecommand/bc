@@ -1747,7 +1747,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Update controls visualisation");
             portEngineVisual.update(45.0*ownShip.getPortEngine());
             stbdEngineVisual.update(45.0*ownShip.getStbdEngine());
-            wheelVisual.update(-1.0 * ownShip.getWheel());
+            wheelVisual.update(-6.0 * ownShip.getWheel());
         }
         if (radarCalculation.isRadarOn()) {
             { IPROF("Update radar cursor position");
