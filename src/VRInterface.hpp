@@ -101,6 +101,12 @@ private:
     XrCompositionLayerProjectionView* projection_views;
     GLuint** framebuffers;
     GLuint** depthbuffers;
+    XrPath hand_paths[HAND_COUNT];
+    XrActionSet gameplay_actionset;
+    XrAction hand_pose_action;
+    XrSpace hand_pose_spaces[HAND_COUNT];
+    XrAction grab_action_float;
+    XrAction haptic_action;
     XrResult result;
 
     int swapchainImageWidth;
