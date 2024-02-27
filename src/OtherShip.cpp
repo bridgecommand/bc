@@ -127,7 +127,11 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
         for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            if (ship->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
+                ship->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
+                // Only allow rendering with transparency if required to avoid Z order problems
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+            }
             ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
