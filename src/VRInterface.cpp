@@ -1012,9 +1012,6 @@ int VRInterface::render(SimulationModel* model) {
 		projection_views[i].pose = views[i].pose;
 		projection_views[i].fov = views[i].fov;
 
-		// TODO: Shouldn't need to do this every loop!
-		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
-
 		// Binding to Irrlicht views
 		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0 * projection_views[i].pose.position.z);
 		quat.X = projection_views[i].pose.orientation.x;
@@ -1024,6 +1021,7 @@ int VRInterface::render(SimulationModel* model) {
 		
 		// Find lens shift, as left and right FOV may not be symmetrical
 		// TODO: Probably doesn't need calculating each frame
+		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
 		float tanLeft = tan(views[i].fov.angleLeft);
 		float tanRight = tan(views[i].fov.angleRight);
 		float tanUp = tan(views[i].fov.angleUp);
@@ -1031,7 +1029,7 @@ int VRInterface::render(SimulationModel* model) {
 		float horizontalShift = -1.0*(tanRight + tanLeft) / (tanRight - tanLeft);
 		float verticalShift = -1.0 * (tanUp + tanDown) / (tanUp - tanDown);
 		irr::core::vector2df lensShift = irr::core::vector2df(horizontalShift, verticalShift);
-
+		
 		// Send this to the camera
 		model->updateCameraVRPos(quat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
 
