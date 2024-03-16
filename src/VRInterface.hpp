@@ -44,6 +44,8 @@
 #else
 // Not windows 64 bit or linux, just include required headers for interface, functionality will not be used
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // This needs to be included before GL.h
 #include <GL/GL.h>
 #else
 #include <OpenGL/gl.h>
