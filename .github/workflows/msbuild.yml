@@ -24,10 +24,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v2
 
     #- name: Restore NuGet packages
     #  working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -44,7 +44,7 @@ jobs:
       run: "makensis.exe /DOUTPUTFILE=../installer_autoBuild.exe bin/installNoSource.nsi"
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: BC_windows
         path: installer_autoBuild.exe
