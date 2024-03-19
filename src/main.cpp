@@ -902,8 +902,10 @@ int main(int argc, char ** argv)
     
     // Check VR mode
     bool vr3dMode = false;
+    bool showHUD = false;
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
+        showHUD = true;
     }
 
     // Set up the VR interface
@@ -1190,7 +1192,7 @@ int main(int argc, char ** argv)
         guiMain.drawGUI();
 
         // If HUD is being shown, render to this texture
-        if(true) { // TODO: Implement logic here to turn on/off as needed
+        if(showHUD) {
             hudScreen->setVisible(true);
             if (hudTexture) {
                 driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
