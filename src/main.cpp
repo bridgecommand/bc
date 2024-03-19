@@ -820,8 +820,13 @@ int main(int argc, char ** argv)
     }
     //irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(1.0, hudRatio));
     irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createCubeMesh(irr::core::vector3df(1.0, hudRatio, 1.0));
+    smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 128); // Set to be 50% transparent
     irr::scene::ISceneNode* hudScreen = smgr->addMeshSceneNode(hudPlane);
+
     hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    
     irr::video::ITexture* hudTexture = 0;
     if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
         hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
@@ -1183,7 +1188,7 @@ int main(int argc, char ** argv)
         if(true) { // TODO: Implement logic here to turn on/off as needed
             hudScreen->setVisible(true);
             if (hudTexture) {
-                driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0,0,0,255));
+                driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
                 // Draw GUI, this should have been updated in guiMain.drawGUI() above
                 device->getGUIEnvironment()->drawAll();
                 //set back usual render target
