@@ -813,8 +813,22 @@ int main(int argc, char ** argv)
         }
     }
 
-	//Show loading message
+    // Create mesh and scene node for HUD
+    irr::f32 hudRatio = 0.75;
+    if (su > 0 && sh > 0) {
+        hudRatio = (irr::f32)sh / (irr::f32)su;
+    }
+    //irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(1.0, hudRatio));
+    irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createCubeMesh(irr::core::vector3df(1.0, hudRatio, 1.0));
+    irr::scene::ISceneNode* hudScreen = smgr->addMeshSceneNode(hudPlane);
+    hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    irr::video::ITexture* hudTexture = 0;
+    if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
+        hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
+        hudScreen->setMaterialTexture(0, hudTexture); // set material of cube to render target
+    }
 
+	//Show loading message
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
     creditsText.append(L"\n\n");
@@ -1164,6 +1178,23 @@ int main(int argc, char ** argv)
         driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
+
+        // If HUD is being shown, render to this texture
+        if(true) { // TODO: Implement logic here to turn on/off as needed
+            hudScreen->setVisible(true);
+            if (hudTexture) {
+                driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0,0,0,255));
+                // Draw GUI, this should have been updated in guiMain.drawGUI() above
+                device->getGUIEnvironment()->drawAll();
+                //set back usual render target
+                driver->setRenderTarget(0, 0);
+                // Put hudScreen somewhere visible
+                hudScreen->setPosition(model.getCameraPosition() + irr::core::vector3df(0.0, 0.0, 2.0));
+            }
+        } else {
+            hudScreen->setVisible(false);
+        }
+
  //       guiProfile.toc();
         }{ IPROF("End scene");
  //       renderFinishProfile.tic();
