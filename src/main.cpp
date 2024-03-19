@@ -1154,9 +1154,17 @@ int main(int argc, char ** argv)
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
                 model.updateViewport(aspect);
             }
-            //drawAll3dProfile.tic();
+            
+            // Always hide HUD in normal 3d view
+            hudScreen->setVisible(false);
+            
             smgr->drawAll();
-            //drawAll3dProfile.toc();
+            
+            // Re-show HUD ready for VR view if required
+            if (showHUD) {
+                hudScreen->setVisible(true);    
+            }
+            
         }
 
         if (vr3dMode && vrSuccess == 0) {
