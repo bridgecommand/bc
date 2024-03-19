@@ -1170,7 +1170,7 @@ int main(int argc, char ** argv)
             
             // Render
             if (runtimeEventSuccess == 0) {
-                vrInterface.render(&model);
+                vrInterface.update(&model, &showHUD);
             }
         }
 

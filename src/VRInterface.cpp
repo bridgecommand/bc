@@ -499,17 +499,19 @@ int VRInterface::load() {
 	xrStringToPath(instance, "/user/hand/right/input/select/click",
 		&select_click_path[HAND_RIGHT_INDEX]);
 
-	XrPath trigger_value_path[HAND_COUNT];
-	xrStringToPath(instance, "/user/hand/left/input/trigger/value",
-		&trigger_value_path[HAND_LEFT_INDEX]);
-	xrStringToPath(instance, "/user/hand/right/input/trigger/value",
-		&trigger_value_path[HAND_RIGHT_INDEX]);
+	XrPath menu_click_path[HAND_COUNT];
+	xrStringToPath(instance, "/user/hand/left/input/menu/click",
+		&menu_click_path[HAND_LEFT_INDEX]);
+	xrStringToPath(instance, "/user/hand/right/input/menu/click",
+		&menu_click_path[HAND_RIGHT_INDEX]);
 
+	/*
 	XrPath thumbstick_y_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/thumbstick/y",
 		&thumbstick_y_path[HAND_LEFT_INDEX]);
 	xrStringToPath(instance, "/user/hand/right/input/thumbstick/y",
 		&thumbstick_y_path[HAND_RIGHT_INDEX]);
+	*/
 
 	XrPath grip_pose_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/grip/pose", &grip_pose_path[HAND_LEFT_INDEX]);
@@ -573,6 +575,22 @@ int VRInterface::load() {
 			return 1;
 	}
 
+	// Menu action:
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "menu");
+		strcpy(action_info.localizedActionName, "Menu");
+
+		result = xrCreateAction(gameplay_actionset, &action_info, &menu_action);
+		if (!xr_check(instance, result, "failed to create menu action"))
+			return 1;
+	}
+
 	{
 		XrActionCreateInfo action_info;
 		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
@@ -602,6 +620,8 @@ int VRInterface::load() {
 			// boolean input select/click will be converted to float that is either 0 or 1
 			{grab_action_float, select_click_path[HAND_LEFT_INDEX]},
 			{grab_action_float, select_click_path[HAND_RIGHT_INDEX]},
+			{menu_action, menu_click_path[HAND_LEFT_INDEX]},
+			{menu_action, menu_click_path[HAND_RIGHT_INDEX]},
 			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
 			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
 		};
@@ -852,7 +872,7 @@ int VRInterface::runtimeEvents() {
 #endif
 }
 
-int VRInterface::render(SimulationModel* model) {
+int VRInterface::update(SimulationModel* model, bool* showHUD) {
 #if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
@@ -903,6 +923,7 @@ int VRInterface::render(SimulationModel* model) {
 	// query each value / location with a subaction path != XR_NULL_PATH
 	// resulting in individual values per hand/.
 	XrActionStateFloat grab_value[HAND_COUNT];
+	XrActionStateBoolean menu_value[HAND_COUNT];
 	XrSpaceLocation hand_locations[HAND_COUNT];
 
 	for (int i = 0; i < HAND_COUNT; i++) {
@@ -949,6 +970,19 @@ int VRInterface::render(SimulationModel* model) {
 			xr_check(instance, result, "failed to get grab value!");
 		}
 
+		menu_value[i].type = XR_TYPE_ACTION_STATE_BOOLEAN;
+		menu_value[i].next = NULL;
+		{
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = menu_action;
+			get_info.subactionPath = hand_paths[i];
+
+			result = xrGetActionStateBoolean(session, &get_info, &menu_value[i]);
+			xr_check(instance, result, "failed to get menu value!");	
+		}
+
 		// printf("Grab %d active %d, current %f, changed %d\n", i,
 		// grabValue[i].isActive, grabValue[i].currentState,
 		// grabValue[i].changedSinceLastSync);
@@ -971,6 +1005,10 @@ int VRInterface::render(SimulationModel* model) {
 				(const XrHapticBaseHeader*)&vibration);
 			xr_check(instance, result, "failed to apply haptic feedback!");
 			// printf("Sent haptic output to hand %d\n", i);
+		}
+
+		if (menu_value[i].currentState) {
+			*showHUD = !*showHUD;
 		}
 	};
 

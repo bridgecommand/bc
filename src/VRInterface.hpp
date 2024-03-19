@@ -67,7 +67,7 @@ public:
     void unload();
     float getAspectRatio();
     int runtimeEvents();
-    int render(SimulationModel* model);
+    int update(SimulationModel* model, bool* showHUD);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
@@ -108,6 +108,7 @@ private:
     XrAction hand_pose_action;
     XrSpace hand_pose_spaces[HAND_COUNT];
     XrAction grab_action_float;
+    XrAction menu_action;
     XrAction haptic_action;
     XrResult result;
 
