@@ -813,31 +813,6 @@ int main(int argc, char ** argv)
         }
     }
 
-    // Create mesh and scene node for HUD
-    irr::f32 hudRatio = 0.75;
-    if (su > 0 && sh > 0) {
-        hudRatio = (irr::f32)sh / (irr::f32)su;
-    }
-    
-    irr::scene::ISceneNode* hudScreen = smgr->addBillboardSceneNode(
-        0, // Parent
-        irr::core::dimension2d<irr::f32> (1.0, hudRatio), // Size
-        irr::core::vector3df(0, 0, 0), // Position
-        -1, // ID
-        irr::video::SColor(128, 255, 255, 255), // Top colour, 50% transparent
-        irr::video::SColor(128, 255, 255, 255)); // Bottom colour, 50% transparent
-    
-
-    hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
-	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-    
-    irr::video::ITexture* hudTexture = 0;
-    if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
-        hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
-        hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
-    }
-
 	//Show loading message
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
@@ -1013,6 +988,30 @@ int main(int argc, char ** argv)
     network->setModel(&model);
     if (extraNetwork) {
         extraNetwork->setModel(&model);
+    }
+
+    // Create mesh and scene node for HUD
+    irr::f32 hudRatio = 0.75;
+    if (su > 0 && sh > 0) {
+        hudRatio = (irr::f32)sh / (irr::f32)su;
+    }
+    
+    irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(1.0, hudRatio));
+    smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 128); // Set to be 50% transparent
+    irr::scene::ISceneNode* hudScreen = smgr->addMeshSceneNode(hudPlane, 
+                                                               model.getMainCameraSceneNode(), 
+                                                               -1, 
+                                                               irr::core::vector3df(0.0, 0.0, 2.0),
+                                                               irr::core::vector3df(-90.0, 0.0, 0.0));
+
+    hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    
+    irr::video::ITexture* hudTexture = 0;
+    if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
+        hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
+        hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
     }
 
     //load realistic water
@@ -1208,8 +1207,6 @@ int main(int argc, char ** argv)
                 device->getGUIEnvironment()->drawAll();
                 //set back usual render target
                 driver->setRenderTarget(0, 0);
-                // Put hudScreen somewhere visible
-                hudScreen->setPosition(model.getCameraPosition() + 2.0 * irr::core::vector3df(sin(irr::core::degToRad(model.getHeading())), 0.0, cos(irr::core::degToRad(model.getHeading()))));
             }
         } else {
             hudScreen->setVisible(false);

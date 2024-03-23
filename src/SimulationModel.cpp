@@ -1133,6 +1133,11 @@ SimulationModel::~SimulationModel()
         return camera.getPosition();
     }
 
+    irr::scene::ISceneNode* SimulationModel::getMainCameraSceneNode() const
+    {
+        return camera.getSceneNode();
+    }
+
     void SimulationModel::setFrozenCamera(bool frozen)
     {
         camera.setFrozen(frozen);

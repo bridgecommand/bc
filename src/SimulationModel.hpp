@@ -231,6 +231,7 @@ public:
     void setView(irr::u32 view);
     irr::u32 getCameraView() const;
     irr::core::vector3df getCameraPosition() const;
+    irr::scene::ISceneNode* getMainCameraSceneNode() const;
     void setFrozenCamera(bool frozen);
     void toggleFrozenCamera();
 	void setAlarm(bool alarmState);
