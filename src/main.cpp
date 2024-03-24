@@ -996,7 +996,7 @@ int main(int argc, char ** argv)
         hudRatio = (irr::f32)sh / (irr::f32)su;
     }
     
-    irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(1.0, hudRatio));
+    irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(3.0, 3.0 * hudRatio));
     smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 128); // Set to be 50% transparent
     irr::scene::ISceneNode* hudScreen = smgr->addMeshSceneNode(hudPlane, 
                                                                model.getMainCameraSceneNode(), 
@@ -1005,6 +1005,7 @@ int main(int argc, char ** argv)
                                                                irr::core::vector3df(-90.0, 0.0, 0.0));
 
     hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+    hudScreen->setMaterialFlag(irr::video::EMF_ZBUFFER, false);
     hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
 	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     
@@ -1161,7 +1162,7 @@ int main(int argc, char ** argv)
             
             // Re-show HUD ready for VR view if required
             if (showHUD) {
-                hudScreen->setVisible(true);    
+                hudScreen->setVisible(true);
             }
             
         }
