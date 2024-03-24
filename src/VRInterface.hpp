@@ -112,6 +112,8 @@ private:
     XrAction haptic_action;
     XrResult result;
 
+    int menuPressedRepeats;
+
     int swapchainImageWidth;
     int swapchainImageHeight;
 

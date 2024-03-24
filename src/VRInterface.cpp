@@ -33,6 +33,8 @@ VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriv
 	identity_pose.position.x = 0;
 	identity_pose.position.y = 0;
 	identity_pose.position.z = 0;
+
+	menuPressedRepeats = 0;
 }
 
 // Destructor
@@ -1006,11 +1008,27 @@ int VRInterface::update(SimulationModel* model, bool* showHUD) {
 			xr_check(instance, result, "failed to apply haptic feedback!");
 			// printf("Sent haptic output to hand %d\n", i);
 		}
-
-		if (menu_value[i].currentState) {
-			*showHUD = !*showHUD;
-		}
 	};
+
+	// Check if menu button pressed on either controller
+	bool menuPressed = false;
+	for (int i = 0; i < HAND_COUNT; i++) {
+		if (menu_value[i].currentState) {
+			menuPressed = true;
+		}
+	}
+	// Check how many loops it has been pressed for (or reset to 0)
+	if (menuPressed) {
+		menuPressedRepeats++;
+	} else {
+		menuPressedRepeats = 0;
+	}
+	// Take action if pressed for more than 5 periods
+	if (menuPressedRepeats > 5) {
+		*showHUD = !*showHUD;
+		menuPressedRepeats = 0;
+	}
+
 
 	// --- Begin frame
 	XrFrameBeginInfo frame_begin_info;
