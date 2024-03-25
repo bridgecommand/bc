@@ -227,6 +227,7 @@
     <ClCompile Include="..\Utilities.cpp" />
     <ClCompile Include="..\ExitMessage.cpp" />
     <ClCompile Include="..\VRInterface.cpp" />
+	<ClCompile Include="..\VR3dComponents.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
   </ItemGroup>
@@ -291,6 +292,7 @@
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\ExitMessage.hpp" />
     <ClInclude Include="..\VRInterface.hpp" />
+	<ClInclude Include="..\VR3dComponents.hpp" />
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />

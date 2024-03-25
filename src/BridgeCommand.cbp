@@ -235,6 +235,8 @@
 		<Unit filename="Utilities.hpp" />
 		<Unit filename="VRInterface.cpp" />
 		<Unit filename="VRInterface.hpp" />
+		<Unit filename="VR3dComponents.cpp" />
+		<Unit filename="VR3dComponents.hpp" />
 		<Unit filename="Water.cpp" />
 		<Unit filename="Water.hpp" />
 		<Unit filename="hitime.hpp" />

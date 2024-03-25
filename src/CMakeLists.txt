@@ -90,6 +90,7 @@ set(BC_SOURCES
     Tide.cpp
     Utilities.cpp
     VRInterface.cpp
+	VR3dComponents.cpp
 	ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp

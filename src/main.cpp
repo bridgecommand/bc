@@ -55,6 +55,7 @@
 #endif // _WIN32
 
 #include "VRInterface.hpp"
+#include "VR3dComponents.hpp"
 
 #include "profile.hpp"
 
@@ -990,30 +991,8 @@ int main(int argc, char ** argv)
         extraNetwork->setModel(&model);
     }
 
-    // Create mesh and scene node for HUD
-    irr::f32 hudRatio = 0.75;
-    if (su > 0 && sh > 0) {
-        hudRatio = (irr::f32)sh / (irr::f32)su;
-    }
-    
-    irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(3.0, 3.0 * hudRatio));
-    smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 128); // Set to be 50% transparent
-    irr::scene::ISceneNode* hudScreen = smgr->addMeshSceneNode(hudPlane, 
-                                                               model.getMainCameraSceneNode(), 
-                                                               -1, 
-                                                               irr::core::vector3df(0.0, 0.0, 2.0),
-                                                               irr::core::vector3df(-90.0, 0.0, 0.0));
-
-    hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-    hudScreen->setMaterialFlag(irr::video::EMF_ZBUFFER, false);
-    hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
-	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-    
-    irr::video::ITexture* hudTexture = 0;
-    if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
-        hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
-        hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
-    }
+    // Set up HUD and 3d Irrlicht components for VR here
+    VR3dComponents VR3d(smgr, driver, model.getMainCameraSceneNode(), su, sh);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -1156,13 +1135,13 @@ int main(int argc, char ** argv)
             }
             
             // Always hide HUD in normal 3d view
-            hudScreen->setVisible(false);
+            VR3d.showHUDScreen(false);
             
             smgr->drawAll();
             
             // Re-show HUD ready for VR view if required
             if (showHUD) {
-                hudScreen->setVisible(true);
+                VR3d.showHUDScreen(true);
             }
             
         }
@@ -1201,16 +1180,8 @@ int main(int argc, char ** argv)
 
         // If HUD is being shown, render to this texture
         if(showHUD) {
-            hudScreen->setVisible(true);
-            if (hudTexture) {
-                driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
-                // Draw GUI, this should have been updated in guiMain.drawGUI() above
-                device->getGUIEnvironment()->drawAll();
-                //set back usual render target
-                driver->setRenderTarget(0, 0);
-            }
-        } else {
-            hudScreen->setVisible(false);
+            VR3d.showHUDScreen(true);
+            VR3d.updateHUDTexture();
         }
 
  //       guiProfile.toc();
