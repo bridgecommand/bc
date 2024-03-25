@@ -879,6 +879,10 @@ int main(int argc, char ** argv)
     // Check VR mode
     bool vr3dMode = false;
     bool showHUD = false;
+    irr::core::vector3df vrLeftPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrRightPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::quaternion vrLeftOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrRightOrientation = irr::core::quaternion(0, 0, 0, 1);
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
         showHUD = true;
@@ -1134,15 +1138,8 @@ int main(int argc, char ** argv)
                 model.updateViewport(aspect);
             }
             
-            // Always hide HUD in normal 3d view
-            VR3d.showHUDScreen(false);
-            
             smgr->drawAll();
             
-            // Re-show HUD ready for VR view if required
-            if (showHUD) {
-                VR3d.showHUDScreen(true);
-            }
             
         }
 
@@ -1155,10 +1152,15 @@ int main(int argc, char ** argv)
             // Process events
             int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
             
-            // Render
+            // Render and get inputs from VR
             if (runtimeEventSuccess == 0) {
-                vrInterface.update(&model, &showHUD);
-            }
+                if (showHUD) {
+                    VR3d.showHUDScreen(true);
+                }
+                vrInterface.update(&model, &showHUD, vrLeftPosition, vrRightPosition, vrLeftOrientation, vrRightOrientation);
+                // HUD is only shown in VR rendering, so hide for the rest of the time
+                VR3d.showHUDScreen(false);
+             }
         }
 
  //       renderProfile.toc();
@@ -1180,7 +1182,6 @@ int main(int argc, char ** argv)
 
         // If HUD is being shown, render to this texture
         if(showHUD) {
-            VR3d.showHUDScreen(true);
             VR3d.updateHUDTexture();
         }
 

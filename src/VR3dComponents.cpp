@@ -50,6 +50,9 @@ VR3dComponents::VR3dComponents(irr::scene::ISceneManager* smgr,
         hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(su, sh), "HUD");
         hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
     }
+
+    // Hide by default
+    hudScreen->setVisible(false);
 }
 
 void VR3dComponents::showHUDScreen(bool shown) {

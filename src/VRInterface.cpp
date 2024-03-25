@@ -874,13 +874,16 @@ int VRInterface::runtimeEvents() {
 #endif
 }
 
-int VRInterface::update(SimulationModel* model, bool* showHUD) {
+int VRInterface::update(SimulationModel* model, 
+	bool* showHUD,
+	irr::core::vector3df& vrLeftPosition,
+	irr::core::vector3df& vrRightPosition,
+	irr::core::quaternion& vrLeftOrientation,
+	irr::core::quaternion& vrRightOrientation) {
 #if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
 	}
-
-	irr::core::quaternion quat = irr::core::quaternion(0, 0, 0, 1);
 
 	// --- Wait for our turn to do head-pose dependent computation and render a frame
 	XrFrameState frame_state;
@@ -948,7 +951,27 @@ int VRInterface::update(SimulationModel* model, bool* showHUD) {
 
 		result = xrLocateSpace(hand_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
 			&hand_locations[i]);
-		xr_check(instance, result, "failed to locate space %d!", i);
+		// Set hand location and orientation if successful.
+		// TODO: Also get aim pose
+		if (xr_check(instance, result, "failed to locate space %d!", i)) {
+			if (i == HAND_LEFT_INDEX) {
+				vrLeftPosition.X = hand_locations[i].pose.position.x;
+				vrLeftPosition.Y = hand_locations[i].pose.position.y;
+				vrLeftPosition.Z = -1.0 * hand_locations[i].pose.position.z;
+				vrLeftOrientation.X = hand_locations[i].pose.orientation.x;
+				vrLeftOrientation.Y = hand_locations[i].pose.orientation.y;
+				vrLeftOrientation.Z = -1.0 * hand_locations[i].pose.orientation.z;
+				vrLeftOrientation.W = -1.0 * hand_locations[i].pose.orientation.w;
+			} else if (i == HAND_RIGHT_INDEX) {
+				vrRightPosition.X = hand_locations[i].pose.position.x;
+				vrRightPosition.Y = hand_locations[i].pose.position.y;
+				vrRightPosition.Z = -1.0 * hand_locations[i].pose.position.z;
+				vrRightOrientation.X = hand_locations[i].pose.orientation.x;
+				vrRightOrientation.Y = hand_locations[i].pose.orientation.y;
+				vrRightOrientation.Z = -1.0 * hand_locations[i].pose.orientation.z;
+				vrRightOrientation.W = -1.0 * hand_locations[i].pose.orientation.w;
+			}
+		}
 
 		/*
 		printf("Pose %d valid %d: %f %f %f %f, %f %f %f\n", i,
@@ -1069,7 +1092,11 @@ int VRInterface::update(SimulationModel* model, bool* showHUD) {
 		projection_views[i].fov = views[i].fov;
 
 		// Binding to Irrlicht views
-		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0 * projection_views[i].pose.position.z);
+		irr::core::vector3df eyePos;
+		eyePos.X = projection_views[i].pose.position.x;
+		eyePos.Y = projection_views[i].pose.position.y;
+		eyePos.Z = -1.0 * projection_views[i].pose.position.z;
+		irr::core::quaternion quat;
 		quat.X = projection_views[i].pose.orientation.x;
 		quat.Y = projection_views[i].pose.orientation.y;
 		quat.Z = -1.0 * projection_views[i].pose.orientation.z;

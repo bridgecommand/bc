@@ -67,7 +67,12 @@ public:
     void unload();
     float getAspectRatio();
     int runtimeEvents();
-    int update(SimulationModel* model, bool* showHUD);
+    int update(SimulationModel* model, 
+        bool* showHUD, 
+        irr::core::vector3df& vrLeftPosition, 
+        irr::core::vector3df& vrRightPosition,
+        irr::core::quaternion& vrLeftOrientation,
+        irr::core::quaternion& vrRightOrientation);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
