@@ -908,12 +908,16 @@ int VRInterface::runtimeEvents() {
 #endif
 }
 
-int VRInterface::update(SimulationModel* model, 
+int VRInterface::update(SimulationModel* model,
 	bool* showHUD,
-	irr::core::vector3df& vrLeftPosition,
-	irr::core::vector3df& vrRightPosition,
-	irr::core::quaternion& vrLeftOrientation,
-	irr::core::quaternion& vrRightOrientation) {
+	irr::core::vector3df& vrLeftGripPosition,
+	irr::core::vector3df& vrRightGripPosition,
+	irr::core::vector3df& vrLeftAimPosition,
+	irr::core::vector3df& vrRightAimPosition,
+	irr::core::quaternion& vrLeftGripOrientation,
+	irr::core::quaternion& vrRightGripOrientation,
+	irr::core::quaternion& vrLeftAimOrientation,
+	irr::core::quaternion& vrRightAimOrientation) {
 #if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
@@ -989,21 +993,21 @@ int VRInterface::update(SimulationModel* model,
 		// Set hand grip location and orientation if successful.
 		if (xr_check(instance, result, "failed to locate space %d!", i)) {
 			if (i == HAND_LEFT_INDEX) {
-				vrLeftPosition.X = grip_locations[i].pose.position.x;
-				vrLeftPosition.Y = grip_locations[i].pose.position.y;
-				vrLeftPosition.Z = -1.0 * grip_locations[i].pose.position.z;
-				vrLeftOrientation.X = grip_locations[i].pose.orientation.x;
-				vrLeftOrientation.Y = grip_locations[i].pose.orientation.y;
-				vrLeftOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
-				vrLeftOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+				vrLeftGripPosition.X = grip_locations[i].pose.position.x;
+				vrLeftGripPosition.Y = grip_locations[i].pose.position.y;
+				vrLeftGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrLeftGripOrientation.X = grip_locations[i].pose.orientation.x;
+				vrLeftGripOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrLeftGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrLeftGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
 			} else if (i == HAND_RIGHT_INDEX) {
-				vrRightPosition.X = grip_locations[i].pose.position.x;
-				vrRightPosition.Y = grip_locations[i].pose.position.y;
-				vrRightPosition.Z = -1.0 * grip_locations[i].pose.position.z;
-				vrRightOrientation.X = grip_locations[i].pose.orientation.x;
-				vrRightOrientation.Y = grip_locations[i].pose.orientation.y;
-				vrRightOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
-				vrRightOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+				vrRightGripPosition.X = grip_locations[i].pose.position.x;
+				vrRightGripPosition.Y = grip_locations[i].pose.position.y;
+				vrRightGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrRightGripOrientation.X = grip_locations[i].pose.orientation.x;
+				vrRightGripOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrRightGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrRightGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
 			}
 		}
 
@@ -1025,26 +1029,25 @@ int VRInterface::update(SimulationModel* model,
 		aim_locations[i].next = NULL;
 
 		result = xrLocateSpace(aim_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
-			&aim_pose_path[i]);
+			&aim_locations[i]);
 		// Set hand aim location and orientation if successful.
 		if (xr_check(instance, result, "failed to locate space %d!", i)) {
-			// TODO: Pass results back out
 			if (i == HAND_LEFT_INDEX) {
-				//vrLeftPosition.X = aim_locations[i].pose.position.x;
-				//vrLeftPosition.Y = aim_locations[i].pose.position.y;
-				//vrLeftPosition.Z = -1.0 * aim_locations[i].pose.position.z;
-				//vrLeftOrientation.X = aim_locations[i].pose.orientation.x;
-				//vrLeftOrientation.Y = aim_locations[i].pose.orientation.y;
-				//vrLeftOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
-				//vrLeftOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
+				vrLeftAimPosition.X = aim_locations[i].pose.position.x;
+				vrLeftAimPosition.Y = aim_locations[i].pose.position.y;
+				vrLeftAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				vrLeftAimOrientation.X = aim_locations[i].pose.orientation.x;
+				vrLeftAimOrientation.Y = aim_locations[i].pose.orientation.y;
+				vrLeftAimOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
+				vrLeftAimOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
 			} else if (i == HAND_RIGHT_INDEX) {
-				//vrRightPosition.X = aim_locations[i].pose.position.x;
-				//vrRightPosition.Y = aim_locations[i].pose.position.y;
-				//vrRightPosition.Z = -1.0 * aim_locations[i].pose.position.z;
-				//vrRightOrientation.X = aim_locations[i].pose.orientation.x;
-				//vrRightOrientation.Y = aim_locations[i].pose.orientation.y;
-				//vrRightOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
-				//vrRightOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
+				vrRightAimPosition.X = aim_locations[i].pose.position.x;
+				vrRightAimPosition.Y = aim_locations[i].pose.position.y;
+				vrRightAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				vrRightAimOrientation.X = aim_locations[i].pose.orientation.x;
+				vrRightAimOrientation.Y = aim_locations[i].pose.orientation.y;
+				vrRightAimOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
+				vrRightAimOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
 			}
 		}
 

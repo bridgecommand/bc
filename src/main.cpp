@@ -879,10 +879,14 @@ int main(int argc, char ** argv)
     // Check VR mode
     bool vr3dMode = false;
     bool showHUD = false;
-    irr::core::vector3df vrLeftPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::vector3df vrRightPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::quaternion vrLeftOrientation = irr::core::quaternion(0, 0, 0, 1);
-    irr::core::quaternion vrRightOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::vector3df vrLeftGripPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrRightGripPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrLeftAimPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrRightAimPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::quaternion vrLeftGripOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrRightGripOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrLeftAimOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrRightAimOrientation = irr::core::quaternion(0, 0, 0, 1);
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
         showHUD = true;
@@ -1157,7 +1161,16 @@ int main(int argc, char ** argv)
                 if (showHUD) {
                     VR3d.showHUDScreen(true);
                 }
-                vrInterface.update(&model, &showHUD, vrLeftPosition, vrRightPosition, vrLeftOrientation, vrRightOrientation);
+                vrInterface.update(&model, 
+                    &showHUD, 
+                    vrLeftGripPosition, 
+                    vrRightGripPosition, 
+                    vrLeftAimPosition, 
+                    vrRightAimPosition, 
+                    vrLeftGripOrientation, 
+                    vrRightGripOrientation,
+                    vrLeftAimOrientation,
+                    vrRightAimOrientation);
                 // HUD is only shown in VR rendering, so hide for the rest of the time
                 VR3d.showHUDScreen(false);
              }
