@@ -519,6 +519,10 @@ int VRInterface::load() {
 	xrStringToPath(instance, "/user/hand/left/input/grip/pose", &grip_pose_path[HAND_LEFT_INDEX]);
 	xrStringToPath(instance, "/user/hand/right/input/grip/pose", &grip_pose_path[HAND_RIGHT_INDEX]);
 
+	XrPath aim_pose_path[HAND_COUNT];
+	xrStringToPath(instance, "/user/hand/left/input/aim/pose", &aim_pose_path[HAND_LEFT_INDEX]);
+	xrStringToPath(instance, "/user/hand/right/input/aim/pose", &aim_pose_path[HAND_RIGHT_INDEX]);
+
 	XrPath haptic_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/output/haptic", &haptic_path[HAND_LEFT_INDEX]);
 	xrStringToPath(instance, "/user/hand/right/output/haptic", &haptic_path[HAND_RIGHT_INDEX]);
@@ -541,10 +545,24 @@ int VRInterface::load() {
 		action_info.actionType = XR_ACTION_TYPE_POSE_INPUT;
 		action_info.countSubactionPaths = HAND_COUNT;
 		action_info.subactionPaths = hand_paths;
-		strcpy(action_info.actionName, "handpose");
-		strcpy(action_info.localizedActionName, "Hand Pose");
-		result = xrCreateAction(gameplay_actionset, &action_info, &hand_pose_action);
-		if (!xr_check(instance, result, "failed to create hand pose action"))
+		strcpy(action_info.actionName, "grippose");
+		strcpy(action_info.localizedActionName, "Grip Pose");
+		result = xrCreateAction(gameplay_actionset, &action_info, &grip_pose_action);
+		if (!xr_check(instance, result, "failed to create grip pose action"))
+			return 1;
+	}
+
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_POSE_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "aimpose");
+		strcpy(action_info.localizedActionName, "Aim Pose");
+		result = xrCreateAction(gameplay_actionset, &action_info, &aim_pose_action);
+		if (!xr_check(instance, result, "failed to create aim pose action"))
 			return 1;
 	}
 
@@ -552,12 +570,25 @@ int VRInterface::load() {
 		XrActionSpaceCreateInfo action_space_info;
 		action_space_info.type = XR_TYPE_ACTION_SPACE_CREATE_INFO;
 		action_space_info.next = NULL;
-		action_space_info.action = hand_pose_action;
+		action_space_info.action = grip_pose_action;
 		action_space_info.poseInActionSpace = identity_pose;
 		action_space_info.subactionPath = hand_paths[hand];
 
-		result = xrCreateActionSpace(session, &action_space_info, &hand_pose_spaces[hand]);
-		if (!xr_check(instance, result, "failed to create hand %d pose space", hand))
+		result = xrCreateActionSpace(session, &action_space_info, &grip_pose_spaces[hand]);
+		if (!xr_check(instance, result, "failed to create grip %d pose space", hand))
+			return 1;
+	}
+
+	for (int hand = 0; hand < HAND_COUNT; hand++) {
+		XrActionSpaceCreateInfo action_space_info;
+		action_space_info.type = XR_TYPE_ACTION_SPACE_CREATE_INFO;
+		action_space_info.next = NULL;
+		action_space_info.action = aim_pose_action;
+		action_space_info.poseInActionSpace = identity_pose;
+		action_space_info.subactionPath = hand_paths[hand];
+
+		result = xrCreateActionSpace(session, &action_space_info, &aim_pose_spaces[hand]);
+		if (!xr_check(instance, result, "failed to create aim %d pose space", hand))
 			return 1;
 	}
 
@@ -593,6 +624,7 @@ int VRInterface::load() {
 			return 1;
 	}
 
+	// Haptic feedback action:
 	{
 		XrActionCreateInfo action_info;
 		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
@@ -617,8 +649,10 @@ int VRInterface::load() {
 			return 1;
 
 		const XrActionSuggestedBinding bindings[] = {
-			{hand_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
-			{hand_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_LEFT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_RIGHT_INDEX]},
 			// boolean input select/click will be converted to float that is either 0 or 1
 			{grab_action_float, select_click_path[HAND_LEFT_INDEX]},
 			{grab_action_float, select_click_path[HAND_RIGHT_INDEX]},
@@ -929,47 +963,88 @@ int VRInterface::update(SimulationModel* model,
 	// resulting in individual values per hand/.
 	XrActionStateFloat grab_value[HAND_COUNT];
 	XrActionStateBoolean menu_value[HAND_COUNT];
-	XrSpaceLocation hand_locations[HAND_COUNT];
+	XrSpaceLocation grip_locations[HAND_COUNT];
+	XrSpaceLocation aim_locations[HAND_COUNT];
 
 	for (int i = 0; i < HAND_COUNT; i++) {
-		XrActionStatePose hand_pose_state;
-		hand_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
-		hand_pose_state.next = NULL;
+		XrActionStatePose grip_pose_state;
+		grip_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
+		grip_pose_state.next = NULL;
 		{
 			XrActionStateGetInfo get_info;
 			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
 			get_info.next = NULL;
-			get_info.action = hand_pose_action;
+			get_info.action = grip_pose_action;
 			get_info.subactionPath = hand_paths[i];
-			result = xrGetActionStatePose(session, &get_info, &hand_pose_state);
-			xr_check(instance, result, "failed to get pose value!");
+			result = xrGetActionStatePose(session, &get_info, &grip_pose_state);
+			xr_check(instance, result, "failed to get grip pose value!");
 		}
 		// printf("Hand pose %d active: %d\n", i, poseState.isActive);
 
-		hand_locations[i].type = XR_TYPE_SPACE_LOCATION;
-		hand_locations[i].next = NULL;
+		grip_locations[i].type = XR_TYPE_SPACE_LOCATION;
+		grip_locations[i].next = NULL;
 
-		result = xrLocateSpace(hand_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
-			&hand_locations[i]);
-		// Set hand location and orientation if successful.
-		// TODO: Also get aim pose
+		result = xrLocateSpace(grip_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
+			&grip_locations[i]);
+		// Set hand grip location and orientation if successful.
 		if (xr_check(instance, result, "failed to locate space %d!", i)) {
 			if (i == HAND_LEFT_INDEX) {
-				vrLeftPosition.X = hand_locations[i].pose.position.x;
-				vrLeftPosition.Y = hand_locations[i].pose.position.y;
-				vrLeftPosition.Z = -1.0 * hand_locations[i].pose.position.z;
-				vrLeftOrientation.X = hand_locations[i].pose.orientation.x;
-				vrLeftOrientation.Y = hand_locations[i].pose.orientation.y;
-				vrLeftOrientation.Z = -1.0 * hand_locations[i].pose.orientation.z;
-				vrLeftOrientation.W = -1.0 * hand_locations[i].pose.orientation.w;
+				vrLeftPosition.X = grip_locations[i].pose.position.x;
+				vrLeftPosition.Y = grip_locations[i].pose.position.y;
+				vrLeftPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrLeftOrientation.X = grip_locations[i].pose.orientation.x;
+				vrLeftOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrLeftOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrLeftOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
 			} else if (i == HAND_RIGHT_INDEX) {
-				vrRightPosition.X = hand_locations[i].pose.position.x;
-				vrRightPosition.Y = hand_locations[i].pose.position.y;
-				vrRightPosition.Z = -1.0 * hand_locations[i].pose.position.z;
-				vrRightOrientation.X = hand_locations[i].pose.orientation.x;
-				vrRightOrientation.Y = hand_locations[i].pose.orientation.y;
-				vrRightOrientation.Z = -1.0 * hand_locations[i].pose.orientation.z;
-				vrRightOrientation.W = -1.0 * hand_locations[i].pose.orientation.w;
+				vrRightPosition.X = grip_locations[i].pose.position.x;
+				vrRightPosition.Y = grip_locations[i].pose.position.y;
+				vrRightPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrRightOrientation.X = grip_locations[i].pose.orientation.x;
+				vrRightOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrRightOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrRightOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+			}
+		}
+
+		XrActionStatePose aim_pose_state;
+		aim_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
+		aim_pose_state.next = NULL;
+		{
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = aim_pose_action;
+			get_info.subactionPath = hand_paths[i];
+			result = xrGetActionStatePose(session, &get_info, &aim_pose_state);
+			xr_check(instance, result, "failed to get aim pose value!");
+		}
+		// printf("Hand pose %d active: %d\n", i, poseState.isActive);
+
+		aim_locations[i].type = XR_TYPE_SPACE_LOCATION;
+		aim_locations[i].next = NULL;
+
+		result = xrLocateSpace(aim_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
+			&aim_pose_path[i]);
+		// Set hand aim location and orientation if successful.
+		if (xr_check(instance, result, "failed to locate space %d!", i)) {
+			// TODO: Pass results back out
+			if (i == HAND_LEFT_INDEX) {
+				//vrLeftPosition.X = aim_locations[i].pose.position.x;
+				//vrLeftPosition.Y = aim_locations[i].pose.position.y;
+				//vrLeftPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				//vrLeftOrientation.X = aim_locations[i].pose.orientation.x;
+				//vrLeftOrientation.Y = aim_locations[i].pose.orientation.y;
+				//vrLeftOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
+				//vrLeftOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
+			} else if (i == HAND_RIGHT_INDEX) {
+				//vrRightPosition.X = aim_locations[i].pose.position.x;
+				//vrRightPosition.Y = aim_locations[i].pose.position.y;
+				//vrRightPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				//vrRightOrientation.X = aim_locations[i].pose.orientation.x;
+				//vrRightOrientation.Y = aim_locations[i].pose.orientation.y;
+				//vrRightOrientation.Z = -1.0 * aim_locations[i].pose.orientation.z;
+				//vrRightOrientation.W = -1.0 * aim_locations[i].pose.orientation.w;
 			}
 		}
 
