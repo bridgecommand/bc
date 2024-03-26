@@ -1161,7 +1161,8 @@ int main(int argc, char ** argv)
                 if (showHUD) {
                     VR3d.showHUDScreen(true);
                 }
-                vrInterface.update(&model, 
+                vrInterface.update(
+                    &model, 
                     &showHUD, 
                     vrLeftGripPosition, 
                     vrRightGripPosition, 
@@ -1173,6 +1174,17 @@ int main(int argc, char ** argv)
                     vrRightAimOrientation);
                 // HUD is only shown in VR rendering, so hide for the rest of the time
                 VR3d.showHUDScreen(false);
+
+                // Update VR controller positions etc: (this will have one frame lag)
+                VR3d.updateControllerPositions(
+                    vrLeftGripPosition, 
+                    vrRightGripPosition, 
+                    vrLeftAimPosition, 
+                    vrRightAimPosition, 
+                    vrLeftGripOrientation, 
+                    vrRightGripOrientation,
+                    vrLeftAimOrientation,
+                    vrRightAimOrientation);
              }
         }
 

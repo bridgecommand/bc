@@ -51,8 +51,23 @@ VR3dComponents::VR3dComponents(irr::scene::ISceneManager* smgr,
         hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
     }
 
-    // Hide by default
+    // Hide HUD by default
     hudScreen->setVisible(false);
+
+    // Create simple model for the controllers
+    leftController = smgr->addCubeSceneNode(1.0, 
+        0, 
+        -1, 
+        irr::core::vector3df(0, 0, 0),
+        irr::core::vector3df(0, 0, 0),
+	    irr::core::vector3df(0.05f, 0.10f, 0.05f));
+    
+    rightController = smgr->addCubeSceneNode(1.0, 
+        0, 
+        -1, 
+        irr::core::vector3df(0, 0, 0),
+        irr::core::vector3df(0, 0, 0),
+	    irr::core::vector3df(0.05f, 0.10f, 0.05f));
 }
 
 void VR3dComponents::showHUDScreen(bool shown) {
@@ -69,4 +84,19 @@ void VR3dComponents::updateHUDTexture() {
         //set back usual render target
         driver->setRenderTarget(0, 0);
     }
+}
+
+void VR3dComponents::updateControllerPositions(
+    irr::core::vector3df vrLeftGripPosition,
+    irr::core::vector3df vrRightGripPosition,
+    irr::core::vector3df vrLeftAimPosition,
+    irr::core::vector3df vrRightAimPosition,
+    irr::core::quaternion vrLeftGripOrientation,
+    irr::core::quaternion vrRightGripOrientation,
+    irr::core::quaternion vrLeftAimOrientation,
+    irr::core::quaternion vrRightAimOrientation
+) {
+
+    // Find parent position (and orientation?)
+
 }

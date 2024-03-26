@@ -29,12 +29,25 @@ public:
         irr::u32 sh);
     void showHUDScreen(bool shown);
     void updateHUDTexture();
+    void updateControllerPositions(
+        irr::core::vector3df vrLeftGripPosition,
+        irr::core::vector3df vrRightGripPosition,
+        irr::core::vector3df vrLeftAimPosition,
+        irr::core::vector3df vrRightAimPosition,
+        irr::core::quaternion vrLeftGripOrientation,
+        irr::core::quaternion vrRightGripOrientation,
+        irr::core::quaternion vrLeftAimOrientation,
+        irr::core::quaternion vrRightAimOrientation
+    );
 
 private:
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneNode* hudScreen;
     irr::video::ITexture* hudTexture;
+
+    irr::scene::ISceneNode* leftController;
+    irr::scene::ISceneNode* rightController;
 };
 
 #endif
