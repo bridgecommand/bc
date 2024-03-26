@@ -102,12 +102,14 @@ void VR3dComponents::updateControllerPositions(
     // Transform left grip position based on orientation of the camera's parent
     baseViewRotation.transformVect(vrLeftGripPosition);
     baseViewRotation.transformVect(vrRightGripPosition);
+    baseViewRotation.transformVect(vrLeftAimPosition);
+    baseViewRotation.transformVect(vrRightAimPosition);
 
     // TODO: Transform orientation based on parent
     
     // Set these positions
-    leftController->setPosition(baseViewPosition + vrLeftGripPosition);
-    rightController->setPosition(baseViewPosition + vrRightGripPosition);
+    leftController->setPosition(baseViewPosition + vrLeftAimPosition);
+    rightController->setPosition(baseViewPosition + vrRightAimPosition);
 
     // TODO: Set the orientation
 
