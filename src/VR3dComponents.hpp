@@ -30,6 +30,8 @@ public:
     void showHUDScreen(bool shown);
     void updateHUDTexture();
     void updateControllerPositions(
+        irr::core::vector3df baseViewPosition,
+        irr::core::matrix4 baseViewRotation,
         irr::core::vector3df vrLeftGripPosition,
         irr::core::vector3df vrRightGripPosition,
         irr::core::vector3df vrLeftAimPosition,

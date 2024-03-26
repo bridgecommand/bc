@@ -1177,6 +1177,8 @@ int main(int argc, char ** argv)
 
                 // Update VR controller positions etc: (this will have one frame lag)
                 VR3d.updateControllerPositions(
+                    model.getCameraBasePosition(),
+                    model.getCameraBaseRotation(),
                     vrLeftGripPosition, 
                     vrRightGripPosition, 
                     vrLeftAimPosition, 

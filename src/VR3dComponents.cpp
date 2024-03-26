@@ -87,6 +87,8 @@ void VR3dComponents::updateHUDTexture() {
 }
 
 void VR3dComponents::updateControllerPositions(
+    irr::core::vector3df baseViewPosition,
+    irr::core::matrix4 baseViewRotation,
     irr::core::vector3df vrLeftGripPosition,
     irr::core::vector3df vrRightGripPosition,
     irr::core::vector3df vrLeftAimPosition,
@@ -96,7 +98,18 @@ void VR3dComponents::updateControllerPositions(
     irr::core::quaternion vrLeftAimOrientation,
     irr::core::quaternion vrRightAimOrientation
 ) {
+    
+    // Transform left grip position based on orientation of the camera's parent
+    baseViewRotation.transformVect(vrLeftGripPosition);
+    baseViewRotation.transformVect(vrRightGripPosition);
 
-    // Find parent position (and orientation?)
+    // TODO: Transform orientation based on parent
+    
+    // Set these positions
+    leftController->setPosition(baseViewPosition + vrLeftGripPosition);
+    rightController->setPosition(baseViewPosition + vrRightGripPosition);
+
+    // TODO: Set the orientation
+
 
 }
