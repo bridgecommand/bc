@@ -396,43 +396,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
-                // TODO: change gui control mapping so we don't need scaling here
-                irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
 
-                if ((angle >= 0) && (angle < 135))
-                {
-                    tempEngLevel = (0.5 + angle / 270);
-                }
-                if ((angle >= 135) && (angle < 180))
-                {
-                    tempEngLevel = 1;
-                }
-                if ((angle >= 180) && (angle < 180))
-                {
-                    tempEngLevel = 0;
-                }
-                if ((angle >= 225) && (angle < 360))
-                {
-                    tempEngLevel = ((angle - 225) / 270);
-                }
-                // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
-
-                // limit the output to 0..1 only leaving this in for future elegant solution
-                if (tempEngLevel < 0)
-                {
-                    tempEngLevel = 0;
-                }
-                if (tempEngLevel > 1)
-                {
-                    tempEngLevel = 1;
-                }
-
-                model->setPortThrustLever(tempEngLevel);
-
-                // DEBUG
-                // device->getLogger()->log(f32To3dp(angle).c_str());
-                // device->getLogger()->log(f32To3dp(tempEngLevel).c_str());
-                //  DEBUG END
+                model->setPortThrustLever(model->inputToAzimuthEngineMapping(angle));
                 //  DEE_Boxing_Day_2022 ^^^^
             } // end if engine port
 
@@ -442,42 +407,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
-                // TODO: change gui control mapping so we don't need scaling here
-                irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
-
-                if ((angle >= 0) && (angle < 135))
-                {
-                    tempEngLevel = (0.5 + angle / 270);
-                }
-                if ((angle >= 135) && (angle < 180))
-                {
-                    tempEngLevel = 1;
-                }
-                if ((angle >= 180) && (angle < 180))
-                {
-                    tempEngLevel = 0;
-                }
-                if ((angle >= 225) && (angle < 360))
-                {
-                    tempEngLevel = ((angle - 225) / 270);
-                }
-                // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
-
-                // limit the output to 0..1 only leaving this in for future elegant solution
-                if (tempEngLevel < 0)
-                {
-                    tempEngLevel = 0;
-                }
-                if (tempEngLevel > 1)
-                {
-                    tempEngLevel = 1;
-                }
-
-                model->setStbdThrustLever(tempEngLevel);
-
-                //		model->setStbdEngine((angle/360));
+                model->setStbdThrustLever(model->inputToAzimuthEngineMapping(angle));
                 // DEE_Boxing_Day_2022 ^^^^
-
             } // end if engine port
 
             // DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK

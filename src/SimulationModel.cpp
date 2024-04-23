@@ -1420,6 +1420,45 @@ SimulationModel::~SimulationModel()
         return ownShip.isAzimuthDrive();
     }
 
+    irr::f32 SimulationModel::inputToAzimuthEngineMapping(irr::f32 inputAngle) const
+    {
+        irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
+
+        if ((inputAngle >= 0) && (inputAngle < 135))
+        {
+            tempEngLevel = (0.5 + inputAngle / 270); // Gives range 0.5->1 for inputs between 0->135deg
+        }
+        if ((inputAngle >= 135) && (inputAngle < 180)) // Gives 1 for inputs between 135 and 180
+        {
+            tempEngLevel = 1;
+        }
+        if ((inputAngle >= 180) && (inputAngle < 180)) // Not reachable
+        {
+            tempEngLevel = 0;
+        }
+        if ((inputAngle >= 225) && (inputAngle < 360)) // Gives range 0->0.5 for inputs between 225->360
+        {
+            tempEngLevel = ((inputAngle - 225) / 270);
+        }
+        // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
+
+        // limit the output to 0..1 only leaving this in for future elegant solution
+        if (tempEngLevel < 0)
+        {
+            tempEngLevel = 0;
+        }
+        if (tempEngLevel > 1)
+        {
+            tempEngLevel = 1;
+        }
+        return tempEngLevel;
+    }
+
+    irr::f32 SimulationModel::azimuthToInputEngineMapping(irr::f32 inputEngine) const
+    {
+        return (inputEngine*270)-135;
+    }
+
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
@@ -1834,10 +1873,8 @@ SimulationModel::~SimulationModel()
 	guiData->schottelPort = ownShip.getPortSchottel();
 	guiData->schottelStbd = ownShip.getStbdSchottel();
 
-	guiData->enginePort = (ownShip.getPortEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
-	guiData->engineStbd = (ownShip.getStbdEngine()*270)-135; //TODO: change gui control mapping so we don't need scaling here
-
-
+	guiData->enginePort = azimuthToInputEngineMapping(ownShip.getPortEngine());
+	guiData->engineStbd = azimuthToInputEngineMapping(ownShip.getStbdEngine());
 
 	guiData->clutchPort = ownShip.getPortClutch();
 	guiData->clutchStbd = ownShip.getStbdClutch();

@@ -288,6 +288,8 @@ public:
     bool hasGPS() const;
     bool isSingleEngine() const;
     bool isAzimuthDrive() const;
+    irr::f32 inputToAzimuthEngineMapping(irr::f32 inputAngle) const;
+    irr::f32 azimuthToInputEngineMapping(irr::f32 inputEngine) const;
     bool hasDepthSounder() const;
     irr::f32 getMaxSounderDepth() const;
     bool hasBowThruster() const;
