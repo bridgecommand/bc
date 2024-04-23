@@ -391,7 +391,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 model->setStbdSchottel(angle);
             } // end if schottel stbd
 
-            if (id == GUIMain::GUI_ID_ENGINE_PORT)
+            if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_PORT)
             {
                 irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
@@ -401,7 +401,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 //  DEE_Boxing_Day_2022 ^^^^
             } // end if engine port
 
-            if (id == GUIMain::GUI_ID_ENGINE_STBD)
+            if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_STBD)
             {
                 // DEE_Boxing_Day_2022 vvvv
                 irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360

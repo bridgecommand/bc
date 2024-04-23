@@ -1873,11 +1873,11 @@ SimulationModel::~SimulationModel()
 	guiData->schottelPort = ownShip.getPortSchottel();
 	guiData->schottelStbd = ownShip.getStbdSchottel();
 
-	guiData->enginePort = azimuthToInputEngineMapping(ownShip.getPortEngine());
-	guiData->engineStbd = azimuthToInputEngineMapping(ownShip.getStbdEngine());
+	guiData->azimuthEnginePort = azimuthToInputEngineMapping(ownShip.getPortEngine());
+	guiData->azimuthEngineStbd = azimuthToInputEngineMapping(ownShip.getStbdEngine());
 
-	guiData->clutchPort = ownShip.getPortClutch();
-	guiData->clutchStbd = ownShip.getStbdClutch();
+	guiData->azimuthClutchPort = ownShip.getPortClutch();
+	guiData->azimuthClutchStbd = ownShip.getStbdClutch();
 
 	guiData->emergencySteering = !(ownShip.getFollowUpRudderWorking());
 
