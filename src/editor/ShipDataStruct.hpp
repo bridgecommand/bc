@@ -26,7 +26,7 @@ struct ShipData : public PositionData //To hold information about a ship's posit
 {
     irr::f32 heading;
     std::string name;
-    ShipData():heading(0){}
+    ShipData(): heading(0), name(""){}
 };
 
 #endif // __SHIPDATASTRUCT_HPP_INCLUDED__

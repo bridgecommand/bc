@@ -23,6 +23,7 @@
 struct OwnShipEditorData : public ShipData //To hold information about a ship's position and heading
 {
     irr::f32 initialSpeed;
+    OwnShipEditorData(): initialSpeed(0) {}
 };
 
 #endif // __OWNSHIPDATASTRUCT_HPP_INCLUDED__
