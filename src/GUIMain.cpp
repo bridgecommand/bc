@@ -238,18 +238,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
 	    // DEE_NOV22 the engine rpm indicators (0..1) the top most pair
 
-            enginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	    enginePort->setToolTipText(language->translate("Engine Port").c_str());
-            enginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
+            azimuthEnginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	        azimuthEnginePort->setToolTipText(language->translate("Engine Port").c_str());
+            azimuthEnginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
 
-            engineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	    engineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
-            engineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
+            azimuthEngineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
+	        azimuthEngineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
+            azimuthEngineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
 
-            clutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_CLUTCH_PORT);
-            clutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_CLUTCH_STBD);
-            clutchPort->setToolTipText(language->translate("Port Clutch").c_str());
-            clutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
+            azimuthClutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_PORT);
+            azimuthClutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_STBD);
+            azimuthClutchPort->setToolTipText(language->translate("Port Clutch").c_str());
+            azimuthClutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
 
 
 
@@ -263,10 +263,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 	    // DEE_NOV22 vvvv hide the azimuth drive controls
 	    schottelPort = 0; 
 	    schottelStbd = 0;
-	    clutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
-	    clutchStbd = 0; // DEE_NOV22 as above
-	    enginePort = 0; 
-	    engineStbd = 0;
+	    azimuthClutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
+	    azimuthClutchStbd = 0; // DEE_NOV22 as above
+	    azimuthEnginePort = 0; 
+	    azimuthEngineStbd = 0;
 	    emergencySteering = 0; // though perhaps this would be useful for conventional ships too
             // DEE_NOV22 ^^^^
 
@@ -667,8 +667,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 	// DEE_NOV22 vvvv
 	if (schottelPort) {schottelPort->drop();}
 	if (schottelStbd) {schottelStbd->drop();}
-	if (enginePort) {enginePort->drop();}
-	if (engineStbd) {engineStbd->drop();}
+	if (azimuthEnginePort) {azimuthEnginePort->drop();}
+	if (azimuthEngineStbd) {azimuthEngineStbd->drop();}
 	// DEE_NOV22 ^^^^
 
         weatherScrollbar->drop();
@@ -907,12 +907,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (showExtraControlsButton) {showExtraControlsButton->setVisible(false);}
 
 	// DEE_NOV22 vvvv hide these in secondary displays
-        if (enginePort) {enginePort->setVisible(false);}
-        if (engineStbd) {engineStbd->setVisible(false);}
+        if (azimuthEnginePort) {azimuthEnginePort->setVisible(false);}
+        if (azimuthEngineStbd) {azimuthEngineStbd->setVisible(false);}
         if (schottelPort) {schottelPort->setVisible(false);}
         if (schottelStbd) {schottelStbd->setVisible(false);}
-        if (clutchPort) {clutchPort->setVisible(false);}
-        if (clutchStbd) {clutchStbd->setVisible(false);}
+        if (azimuthClutchPort) {azimuthClutchPort->setVisible(false);}
+        if (azimuthClutchStbd) {azimuthClutchStbd->setVisible(false);}
         if (emergencySteering) {emergencySteering->setVisible(false);}
 
 	// DEE_NOV22 ^^^^
@@ -1016,29 +1016,29 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 		schottelStbd->setPos(Utilities::round(guiData->schottelStbd));
 	} // end if schottelStbd
 
-	if (enginePort)
+	if (azimuthEnginePort)
 	{ // refers to the GUI object that represents the engine rpm
-		enginePort->setMag(Utilities::round(90)); // fixed length needle
-		enginePort->setPos(Utilities::round(guiData->enginePort));  // i think this has already been adjusted to be
+		azimuthEnginePort->setMag(Utilities::round(90)); // fixed length needle
+		azimuthEnginePort->setPos(Utilities::round(guiData->azimuthEnginePort));  // i think this has already been adjusted to be
 									   // * 360, the engine proportion 0..1 
 	}
 
-	if (engineStbd)
+	if (azimuthEngineStbd)
 	{ // refers to the GUI object that represents the engine rpm
-		engineStbd->setMag(Utilities::round(90)); // fixed length needle
-		engineStbd->setPos(Utilities::round(guiData->engineStbd));  // i think this has already been adjusted to be
+		azimuthEngineStbd->setMag(Utilities::round(90)); // fixed length needle
+		azimuthEngineStbd->setPos(Utilities::round(guiData->azimuthEngineStbd));  // i think this has already been adjusted to be
 									   // * 360, the engine proportion 0..1 
 	}
 
 
-	if(clutchPort) 
+	if(azimuthClutchPort) 
 	{
-		clutchPort->setChecked(guiData->clutchPort);
+		azimuthClutchPort->setChecked(guiData->azimuthClutchPort);
 	}
 
-	if(clutchStbd) 
+	if(azimuthClutchStbd) 
 	{
-		clutchStbd->setChecked(guiData->clutchStbd);
+		azimuthClutchStbd->setChecked(guiData->azimuthClutchStbd);
 	}
 
 	// DEE_NOV22 ^^^^

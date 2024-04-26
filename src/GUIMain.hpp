@@ -76,11 +76,11 @@ struct GUIData {
     irr::f32 schottelStbd;
     irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
     irr::f32 thrustLeverStbd;
-    irr::f32 enginePort;
-    irr::f32 engineStbd;
+    irr::f32 azimuthEnginePort;
+    irr::f32 azimuthEngineStbd;
     irr::f32 emergencySteering;
-    bool clutchPort;  // Clutches true for engaged false for disengaged
-    bool clutchStbd;
+    bool azimuthClutchPort;  // Clutches true for engaged false for disengaged
+    bool azimuthClutchStbd;
 
     // the angle of each azimuth drive and each engine level is defined elsewhere
     // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
@@ -108,10 +108,10 @@ public:
 // DEE_NOV22 vvvv
 	GUI_ID_SCHOTTEL_PORT,
 	GUI_ID_SCHOTTEL_STBD,
-	GUI_ID_ENGINE_PORT,
-	GUI_ID_ENGINE_STBD,
-	GUI_ID_CLUTCH_PORT,
-	GUI_ID_CLUTCH_STBD,
+	GUI_ID_AZIMUTH_ENGINE_PORT,
+	GUI_ID_AZIMUTH_ENGINE_STBD,
+	GUI_ID_AZIMUTH_CLUTCH_PORT,
+	GUI_ID_AZIMUTH_CLUTCH_STBD,
 	GUI_ID_EMERGENCY_STEERING,
 // DEE_NOV22 ^^^^
         GUI_ID_RUDDER_SCROLL_BAR,
@@ -243,12 +243,12 @@ private:
     irr::gui::IGUICheckBox* azimuth2Master;
 
     // DEE_NOV22 vvvv
-    irr::gui::AzimuthDial* enginePort;
-    irr::gui::AzimuthDial* engineStbd;
+    irr::gui::AzimuthDial* azimuthEnginePort;
+    irr::gui::AzimuthDial* azimuthEngineStbd;
     irr::gui::AzimuthDial* schottelPort;
     irr::gui::AzimuthDial* schottelStbd;
-    irr::gui::IGUICheckBox* clutchPort;
-    irr::gui::IGUICheckBox* clutchStbd;
+    irr::gui::IGUICheckBox* azimuthClutchPort;
+    irr::gui::IGUICheckBox* azimuthClutchStbd;
     irr::gui::IGUICheckBox* emergencySteering;
 
 
