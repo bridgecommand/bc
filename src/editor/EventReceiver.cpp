@@ -41,7 +41,18 @@
 		{
 			irr::s32 id = event.GUIEvent.Caller->getID();
 
-
+            
+            if (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED) {
+                // If user changes own ship settings, don't require them to click 'update leg'
+                if (id == GUIMain::GUI_ID_COURSE_EDITBOX || 
+                    id == GUIMain::GUI_ID_SPEED_EDITBOX) {
+                    if (gui->getSelectedShip() == 0) {
+                        // Own ship so ship id = 0, and leg and distance not relevant
+                        model->changeLeg(0,0,gui->getEditBoxCourse(),gui->getEditBoxSpeed(),0);    
+                    }
+                }
+            }
+            
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
 
                 if (id == GUIMain::GUI_ID_ZOOMIN_BUTTON) {
