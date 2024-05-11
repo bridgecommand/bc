@@ -67,10 +67,26 @@ irr::scene::ISceneNode* Camera::getSceneNode() const
     return camera;
 }
 
+//Return the position of the camera, including any active VR camera offset
 irr::core::vector3df Camera::getPosition() const
 {
     camera->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
     return camera->getAbsolutePosition();
+}
+
+// Return the position of the base camera, without any VR camera offset
+irr::core::vector3df Camera::getBasePosition() const
+{
+    // Uses current parentPosition and parentAngles
+    irr::core::vector3df offsetTransformed;
+    parentAngles.transformVect(offsetTransformed,views[currentView]);
+    irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;
+    return cameraPosition;
+}
+
+irr::core::matrix4 Camera::getBaseRotation() const
+{
+    return parentAngles;
 }
 
 void Camera::lookUp()

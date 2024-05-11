@@ -61,13 +61,21 @@
 
 class VRInterface {
 public:
-    VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver);
+    VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI);
     ~VRInterface();
-    int load();
+    int load(SimulationModel* model);
     void unload();
     float getAspectRatio();
     int runtimeEvents();
-    int render(SimulationModel* model);
+    int update(
+        irr::core::vector3df& vrLeftGripPosition, 
+        irr::core::vector3df& vrRightGripPosition,
+        irr::core::vector3df& vrLeftAimPosition,
+        irr::core::vector3df& vrRightAimPosition,
+        irr::core::quaternion& vrLeftGripOrientation,
+        irr::core::quaternion& vrRightGripOrientation,
+        irr::core::quaternion& vrLeftAimOrientation,
+        irr::core::quaternion& vrRightAimOrientation);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);
@@ -88,6 +96,7 @@ private:
 #endif
     irr::scene::ISceneManager* smgr;
     irr::video::IVideoDriver* driver;
+    irr::IrrlichtDevice* dev;
     XrPosef identity_pose;
     XrSessionState state;
     XrSession session;
@@ -105,11 +114,16 @@ private:
     GLuint** depthbuffers;
     XrPath hand_paths[HAND_COUNT];
     XrActionSet gameplay_actionset;
-    XrAction hand_pose_action;
-    XrSpace hand_pose_spaces[HAND_COUNT];
-    XrAction grab_action_float;
+    XrAction grip_pose_action;
+    XrAction aim_pose_action;
+    XrSpace grip_pose_spaces[HAND_COUNT];
+    XrSpace aim_pose_spaces[HAND_COUNT];
+    XrAction select_action_float;
+    XrAction menu_action;
     XrAction haptic_action;
     XrResult result;
+
+    int menuPressedRepeats;
 
     int swapchainImageWidth;
     int swapchainImageHeight;
@@ -130,6 +144,24 @@ private:
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session
     bool run_framecycle;  // for some session states skip the frame cycle
+
+    SimulationModel* model; // Store pointer to model
+
+    irr::scene::ISceneNode* leftController;
+    irr::scene::ISceneNode* rightController;
+    irr::scene::ISceneNode* leftRayNode;
+    irr::scene::ISceneNode* rightRayNode;
+    irr::scene::ISceneNode* hudScreen;
+    irr::scene::ISceneNode* hudScreenTopLeft;
+    irr::scene::ISceneNode* hudScreenBottomRight;
+    irr::video::ITexture* hudTexture;
+    irr::u32 suGUI;
+    irr::u32 shGUI;
+    bool showHUD;
+    bool selectState[HAND_COUNT];
+    bool previousSelectState[HAND_COUNT];
+    irr::s32 raySelectScreenX;
+    irr::s32 raySelectScreenY;
 };
 
 #endif

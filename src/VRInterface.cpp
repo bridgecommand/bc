@@ -19,13 +19,17 @@
 #define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include "VRInterface.hpp"
+#include "Constants.hpp"
 #include <iostream>
 #include <cstdarg>
 
 // Constructor
-VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver) {
-    this->smgr = smgr;
+VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI) {
+	this->dev = dev;
+	this->smgr = smgr;
     this->driver = driver;
+	this->suGUI = suGUI;
+	this->shGUI = shGUI;
 	identity_pose.orientation.x = 0;
 	identity_pose.orientation.y = 0;
 	identity_pose.orientation.z = 0;
@@ -33,15 +37,113 @@ VRInterface::VRInterface(irr::scene::ISceneManager* smgr, irr::video::IVideoDriv
 	identity_pose.position.x = 0;
 	identity_pose.position.y = 0;
 	identity_pose.position.z = 0;
+
+	menuPressedRepeats = 0;
+	showHUD = true;
+
+	raySelectScreenX = 0;
+	raySelectScreenY = 0;
+
+	for (int hand = 0; hand < HAND_COUNT; hand++) {
+		selectState[hand] = false;
+		previousSelectState[hand] = false;
+	}
+
+	// Create simple model for the controllers
+	leftController = smgr->addCubeSceneNode(1.0,
+		0,
+		-1,
+		irr::core::vector3df(0, 0, 0),
+		irr::core::vector3df(0, 0, 0),
+		irr::core::vector3df(0.05f, 0.05f, 0.10f));
+
+	rightController = smgr->addCubeSceneNode(1.0,
+		0,
+		-1,
+		irr::core::vector3df(0, 0, 0),
+		irr::core::vector3df(0, 0, 0),
+		irr::core::vector3df(0.05f, 0.05f, 0.10f));
+
+	// Add 'rays' for the controller selection
+	irr::scene::IMesh* leftRayMesh = smgr->getGeometryCreator()->createCylinderMesh(0.01, 10.0, 6);
+	irr::scene::IMesh* rightRayMesh = smgr->getGeometryCreator()->createCylinderMesh(0.01, 10.0, 6);
+	// Note: We are manipulating the mesh here, might be better to change the rotation quaternion definition
+	irr::core::matrix4 meshRotationMatrix;
+	meshRotationMatrix.setRotationDegrees(irr::core::vector3df(90, 0, 0));
+	smgr->getMeshManipulator()->transform(leftRayMesh, meshRotationMatrix);
+	smgr->getMeshManipulator()->transform(rightRayMesh, meshRotationMatrix);
+	// Make into scene nodes
+	leftRayNode = smgr->addMeshSceneNode(leftRayMesh);
+	rightRayNode = smgr->addMeshSceneNode(rightRayMesh);
+	leftRayMesh->drop();
+	rightRayMesh->drop();
+
+	// Hide the controllers normally
+	leftController->setVisible(false);
+	rightController->setVisible(false);
+	leftRayNode->setVisible(false);
+	rightRayNode->setVisible(false);
+
+	// Add 2d interface rendering option
+	// Create mesh and scene node for HUD
+	irr::f32 hudRatio = 0.75;
+	if (suGUI > 0 && shGUI > 0) {
+		hudRatio = (irr::f32)shGUI / (irr::f32)suGUI;
+	}
+
+	irr::f32 hudWidth = 1.5;
+	irr::f32 hudHeight = hudWidth * hudRatio;
+	irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(hudWidth, hudHeight));
+	smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 192); // Set to be 25% transparent
+	// Make HUD mesh vertical so we don't need to worry about rotation later
+	meshRotationMatrix.setRotationDegrees(irr::core::vector3df(-90, 0, 0));
+	smgr->getMeshManipulator()->transform(hudPlane, meshRotationMatrix);
+	hudScreen = smgr->addMeshSceneNode(hudPlane,
+		0, // No parent
+		IDFlag_IsPickable // ID to mark that it is pickable
+		);
+
+	hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+	hudScreen->setMaterialFlag(irr::video::EMF_ZBUFFER, true);
+	hudScreen->setMaterialType(irr::video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	hudScreen->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+
+	// Invisible markers for top left and bottom right, just to make maths easier
+	hudScreenTopLeft = smgr->addEmptySceneNode(hudScreen);
+	hudScreenBottomRight = smgr->addEmptySceneNode(hudScreen);
+	hudScreenTopLeft->setPosition(irr::core::vector3df(-0.5*hudWidth, 0.5*hudHeight, 0));
+	hudScreenBottomRight->setPosition(irr::core::vector3df(0.5*hudWidth, -0.5*hudHeight, 0));
+
+
+	// Make triangle selector for HUD 
+	irr::scene::ITriangleSelector* selector = 0;
+	selector = smgr->createTriangleSelector(hudPlane, hudScreen);
+	if (selector) {
+		hudScreen->setTriangleSelector(selector);
+		selector->drop(); // We're done with this selector, so drop it now.
+	}
+
+	hudTexture = 0;
+	if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
+		hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(suGUI, shGUI), "HUD");
+		hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
+	}
+
+	// Hide HUD by default
+	hudScreen->setVisible(false);
+
 }
 
 // Destructor
 VRInterface::~VRInterface() {
 }
 
-int VRInterface::load() {
+int VRInterface::load(SimulationModel* model) {
 #if defined _WIN64 || defined __linux__
 	
+	// Store simulation model pointer
+	this->model = model;
+
 	// Load required OpenGL extensions
 	#if defined _WIN32
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
@@ -499,21 +601,27 @@ int VRInterface::load() {
 	xrStringToPath(instance, "/user/hand/right/input/select/click",
 		&select_click_path[HAND_RIGHT_INDEX]);
 
-	XrPath trigger_value_path[HAND_COUNT];
-	xrStringToPath(instance, "/user/hand/left/input/trigger/value",
-		&trigger_value_path[HAND_LEFT_INDEX]);
-	xrStringToPath(instance, "/user/hand/right/input/trigger/value",
-		&trigger_value_path[HAND_RIGHT_INDEX]);
+	XrPath menu_click_path[HAND_COUNT];
+	xrStringToPath(instance, "/user/hand/left/input/menu/click",
+		&menu_click_path[HAND_LEFT_INDEX]);
+	xrStringToPath(instance, "/user/hand/right/input/menu/click",
+		&menu_click_path[HAND_RIGHT_INDEX]);
 
+	/*
 	XrPath thumbstick_y_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/thumbstick/y",
 		&thumbstick_y_path[HAND_LEFT_INDEX]);
 	xrStringToPath(instance, "/user/hand/right/input/thumbstick/y",
 		&thumbstick_y_path[HAND_RIGHT_INDEX]);
+	*/
 
 	XrPath grip_pose_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/grip/pose", &grip_pose_path[HAND_LEFT_INDEX]);
 	xrStringToPath(instance, "/user/hand/right/input/grip/pose", &grip_pose_path[HAND_RIGHT_INDEX]);
+
+	XrPath aim_pose_path[HAND_COUNT];
+	xrStringToPath(instance, "/user/hand/left/input/aim/pose", &aim_pose_path[HAND_LEFT_INDEX]);
+	xrStringToPath(instance, "/user/hand/right/input/aim/pose", &aim_pose_path[HAND_RIGHT_INDEX]);
 
 	XrPath haptic_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/output/haptic", &haptic_path[HAND_LEFT_INDEX]);
@@ -537,10 +645,24 @@ int VRInterface::load() {
 		action_info.actionType = XR_ACTION_TYPE_POSE_INPUT;
 		action_info.countSubactionPaths = HAND_COUNT;
 		action_info.subactionPaths = hand_paths;
-		strcpy(action_info.actionName, "handpose");
-		strcpy(action_info.localizedActionName, "Hand Pose");
-		result = xrCreateAction(gameplay_actionset, &action_info, &hand_pose_action);
-		if (!xr_check(instance, result, "failed to create hand pose action"))
+		strcpy(action_info.actionName, "grippose");
+		strcpy(action_info.localizedActionName, "Grip Pose");
+		result = xrCreateAction(gameplay_actionset, &action_info, &grip_pose_action);
+		if (!xr_check(instance, result, "failed to create grip pose action"))
+			return 1;
+	}
+
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_POSE_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "aimpose");
+		strcpy(action_info.localizedActionName, "Aim Pose");
+		result = xrCreateAction(gameplay_actionset, &action_info, &aim_pose_action);
+		if (!xr_check(instance, result, "failed to create aim pose action"))
 			return 1;
 	}
 
@@ -548,16 +670,29 @@ int VRInterface::load() {
 		XrActionSpaceCreateInfo action_space_info;
 		action_space_info.type = XR_TYPE_ACTION_SPACE_CREATE_INFO;
 		action_space_info.next = NULL;
-		action_space_info.action = hand_pose_action;
+		action_space_info.action = grip_pose_action;
 		action_space_info.poseInActionSpace = identity_pose;
 		action_space_info.subactionPath = hand_paths[hand];
 
-		result = xrCreateActionSpace(session, &action_space_info, &hand_pose_spaces[hand]);
-		if (!xr_check(instance, result, "failed to create hand %d pose space", hand))
+		result = xrCreateActionSpace(session, &action_space_info, &grip_pose_spaces[hand]);
+		if (!xr_check(instance, result, "failed to create grip %d pose space", hand))
 			return 1;
 	}
 
-	// Grab action: Currently only gives some  haptic feebdack.
+	for (int hand = 0; hand < HAND_COUNT; hand++) {
+		XrActionSpaceCreateInfo action_space_info;
+		action_space_info.type = XR_TYPE_ACTION_SPACE_CREATE_INFO;
+		action_space_info.next = NULL;
+		action_space_info.action = aim_pose_action;
+		action_space_info.poseInActionSpace = identity_pose;
+		action_space_info.subactionPath = hand_paths[hand];
+
+		result = xrCreateActionSpace(session, &action_space_info, &aim_pose_spaces[hand]);
+		if (!xr_check(instance, result, "failed to create aim %d pose space", hand))
+			return 1;
+	}
+
+	// Select action:
 	{
 		XrActionCreateInfo action_info;
 		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
@@ -565,14 +700,31 @@ int VRInterface::load() {
 		action_info.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
 		action_info.countSubactionPaths = HAND_COUNT;
 		action_info.subactionPaths = hand_paths;
-		strcpy(action_info.actionName, "grabobjectfloat");
-		strcpy(action_info.localizedActionName, "Grab Object");
+		strcpy(action_info.actionName, "selectobjectfloat");
+		strcpy(action_info.localizedActionName, "Select Object");
 
-		result = xrCreateAction(gameplay_actionset, &action_info, &grab_action_float);
-		if (!xr_check(instance, result, "failed to create grab action"))
+		result = xrCreateAction(gameplay_actionset, &action_info, &select_action_float);
+		if (!xr_check(instance, result, "failed to create select action"))
 			return 1;
 	}
 
+	// Menu action:
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "menu");
+		strcpy(action_info.localizedActionName, "Menu");
+
+		result = xrCreateAction(gameplay_actionset, &action_info, &menu_action);
+		if (!xr_check(instance, result, "failed to create menu action"))
+			return 1;
+	}
+
+	// Haptic feedback action:
 	{
 		XrActionCreateInfo action_info;
 		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
@@ -597,11 +749,15 @@ int VRInterface::load() {
 			return 1;
 
 		const XrActionSuggestedBinding bindings[] = {
-			{hand_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
-			{hand_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
+			{grip_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_LEFT_INDEX]},
+			{aim_pose_action, aim_pose_path[HAND_RIGHT_INDEX]},
 			// boolean input select/click will be converted to float that is either 0 or 1
-			{grab_action_float, select_click_path[HAND_LEFT_INDEX]},
-			{grab_action_float, select_click_path[HAND_RIGHT_INDEX]},
+			{select_action_float, select_click_path[HAND_LEFT_INDEX]},
+			{select_action_float, select_click_path[HAND_RIGHT_INDEX]},
+			{menu_action, menu_click_path[HAND_LEFT_INDEX]},
+			{menu_action, menu_click_path[HAND_RIGHT_INDEX]},
 			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
 			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
 		};
@@ -852,13 +1008,19 @@ int VRInterface::runtimeEvents() {
 #endif
 }
 
-int VRInterface::render(SimulationModel* model) {
+int VRInterface::update(
+	irr::core::vector3df& vrLeftGripPosition,
+	irr::core::vector3df& vrRightGripPosition,
+	irr::core::vector3df& vrLeftAimPosition,
+	irr::core::vector3df& vrRightAimPosition,
+	irr::core::quaternion& vrLeftGripOrientation,
+	irr::core::quaternion& vrRightGripOrientation,
+	irr::core::quaternion& vrLeftAimOrientation,
+	irr::core::quaternion& vrRightAimOrientation) {
 #if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
 	}
-
-	irr::core::quaternion quat = irr::core::quaternion(0, 0, 0, 1);
 
 	// --- Wait for our turn to do head-pose dependent computation and render a frame
 	XrFrameState frame_state;
@@ -902,30 +1064,91 @@ int VRInterface::render(SimulationModel* model) {
 
 	// query each value / location with a subaction path != XR_NULL_PATH
 	// resulting in individual values per hand/.
-	XrActionStateFloat grab_value[HAND_COUNT];
-	XrSpaceLocation hand_locations[HAND_COUNT];
+	XrActionStateFloat select_value[HAND_COUNT];
+	XrActionStateBoolean menu_value[HAND_COUNT];
+	XrSpaceLocation grip_locations[HAND_COUNT];
+	XrSpaceLocation aim_locations[HAND_COUNT];
 
 	for (int i = 0; i < HAND_COUNT; i++) {
-		XrActionStatePose hand_pose_state;
-		hand_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
-		hand_pose_state.next = NULL;
+		XrActionStatePose grip_pose_state;
+		grip_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
+		grip_pose_state.next = NULL;
 		{
 			XrActionStateGetInfo get_info;
 			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
 			get_info.next = NULL;
-			get_info.action = hand_pose_action;
+			get_info.action = grip_pose_action;
 			get_info.subactionPath = hand_paths[i];
-			result = xrGetActionStatePose(session, &get_info, &hand_pose_state);
-			xr_check(instance, result, "failed to get pose value!");
+			result = xrGetActionStatePose(session, &get_info, &grip_pose_state);
+			xr_check(instance, result, "failed to get grip pose value!");
 		}
 		// printf("Hand pose %d active: %d\n", i, poseState.isActive);
 
-		hand_locations[i].type = XR_TYPE_SPACE_LOCATION;
-		hand_locations[i].next = NULL;
+		grip_locations[i].type = XR_TYPE_SPACE_LOCATION;
+		grip_locations[i].next = NULL;
 
-		result = xrLocateSpace(hand_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
-			&hand_locations[i]);
-		xr_check(instance, result, "failed to locate space %d!", i);
+		result = xrLocateSpace(grip_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
+			&grip_locations[i]);
+		// Set hand grip location and orientation if successful.
+		if (xr_check(instance, result, "failed to locate space %d!", i)) {
+			if (i == HAND_LEFT_INDEX) {
+				vrLeftGripPosition.X = grip_locations[i].pose.position.x;
+				vrLeftGripPosition.Y = grip_locations[i].pose.position.y;
+				vrLeftGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrLeftGripOrientation.X = grip_locations[i].pose.orientation.x;
+				vrLeftGripOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrLeftGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrLeftGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+			} else if (i == HAND_RIGHT_INDEX) {
+				vrRightGripPosition.X = grip_locations[i].pose.position.x;
+				vrRightGripPosition.Y = grip_locations[i].pose.position.y;
+				vrRightGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
+				vrRightGripOrientation.X = grip_locations[i].pose.orientation.x;
+				vrRightGripOrientation.Y = grip_locations[i].pose.orientation.y;
+				vrRightGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrRightGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+			}
+		}
+
+		XrActionStatePose aim_pose_state;
+		aim_pose_state.type = XR_TYPE_ACTION_STATE_POSE;
+		aim_pose_state.next = NULL;
+		{
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = aim_pose_action;
+			get_info.subactionPath = hand_paths[i];
+			result = xrGetActionStatePose(session, &get_info, &aim_pose_state);
+			xr_check(instance, result, "failed to get aim pose value!");
+		}
+		// printf("Hand pose %d active: %d\n", i, poseState.isActive);
+
+		aim_locations[i].type = XR_TYPE_SPACE_LOCATION;
+		aim_locations[i].next = NULL;
+
+		result = xrLocateSpace(aim_pose_spaces[i], play_space, frame_state.predictedDisplayTime,
+			&aim_locations[i]);
+		// Set hand aim location and orientation if successful.
+		if (xr_check(instance, result, "failed to locate space %d!", i)) {
+			if (i == HAND_LEFT_INDEX) {
+				vrLeftAimPosition.X = aim_locations[i].pose.position.x;
+				vrLeftAimPosition.Y = aim_locations[i].pose.position.y;
+				vrLeftAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				vrLeftAimOrientation.X = aim_locations[i].pose.orientation.x;
+				vrLeftAimOrientation.Y = aim_locations[i].pose.orientation.y;
+				vrLeftAimOrientation.Z = -aim_locations[i].pose.orientation.z;
+				vrLeftAimOrientation.W = -aim_locations[i].pose.orientation.w;
+			} else if (i == HAND_RIGHT_INDEX) {
+				vrRightAimPosition.X = aim_locations[i].pose.position.x;
+				vrRightAimPosition.Y = aim_locations[i].pose.position.y;
+				vrRightAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
+				vrRightAimOrientation.X = aim_locations[i].pose.orientation.x;
+				vrRightAimOrientation.Y = aim_locations[i].pose.orientation.y;
+				vrRightAimOrientation.Z = -aim_locations[i].pose.orientation.z;
+				vrRightAimOrientation.W = -aim_locations[i].pose.orientation.w;
+			}
+		}
 
 		/*
 		printf("Pose %d valid %d: %f %f %f %f, %f %f %f\n", i,
@@ -936,29 +1159,48 @@ int VRInterface::render(SimulationModel* model) {
 		);
 		*/
 
-		grab_value[i].type = XR_TYPE_ACTION_STATE_FLOAT;
-		grab_value[i].next = NULL;
+		select_value[i].type = XR_TYPE_ACTION_STATE_FLOAT;
+		select_value[i].next = NULL;
 		{
 			XrActionStateGetInfo get_info;
 			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
 			get_info.next = NULL;
-			get_info.action = grab_action_float;
+			get_info.action = select_action_float;
 			get_info.subactionPath = hand_paths[i];
 
-			result = xrGetActionStateFloat(session, &get_info, &grab_value[i]);
-			xr_check(instance, result, "failed to get grab value!");
+			result = xrGetActionStateFloat(session, &get_info, &select_value[i]);
+			xr_check(instance, result, "failed to get select value!");
 		}
 
-		// printf("Grab %d active %d, current %f, changed %d\n", i,
-		// grabValue[i].isActive, grabValue[i].currentState,
-		// grabValue[i].changedSinceLastSync);
+		menu_value[i].type = XR_TYPE_ACTION_STATE_BOOLEAN;
+		menu_value[i].next = NULL;
+		{
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = menu_action;
+			get_info.subactionPath = hand_paths[i];
 
-		if (grab_value[i].isActive && grab_value[i].currentState > 0.75) {
+			result = xrGetActionStateBoolean(session, &get_info, &menu_value[i]);
+			xr_check(instance, result, "failed to get menu value!");	
+		}
+
+		previousSelectState[i] = selectState[i];
+		if (select_value[i].isActive && select_value[i].currentState > 0.75) {
+			selectState[i] = true;
+		}
+		else {
+			selectState[i] = false;
+		}
+		
+		// Haptic feedback if selection changed
+		if ((selectState[i] && !previousSelectState[i]) ||
+			(!selectState[i] && previousSelectState[i])) {
 			XrHapticVibration vibration;
 			vibration.type = XR_TYPE_HAPTIC_VIBRATION;
 			vibration.next = NULL;
 			vibration.amplitude = 0.5;
-			vibration.duration = XR_MIN_HAPTIC_DURATION;
+			vibration.duration = 100000000; // Time in ns
 			vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
 
 			XrHapticActionInfo haptic_action_info;
@@ -970,9 +1212,75 @@ int VRInterface::render(SimulationModel* model) {
 			result = xrApplyHapticFeedback(session, &haptic_action_info,
 				(const XrHapticBaseHeader*)&vibration);
 			xr_check(instance, result, "failed to apply haptic feedback!");
-			// printf("Sent haptic output to hand %d\n", i);
 		}
 	};
+
+	// Check if menu button pressed on either controller
+	bool menuPressed = false;
+	for (int i = 0; i < HAND_COUNT; i++) {
+		if (menu_value[i].currentState) {
+			menuPressed = true;
+		}
+	}
+	// Check how many loops it has been pressed for (or reset to 0)
+	if (menuPressed) {
+		menuPressedRepeats++;
+	} else {
+		menuPressedRepeats = 0;
+	}
+
+	bool previousShowHUD = showHUD;
+	// Take action if pressed for more than 5 periods
+	if (menuPressedRepeats > 5) {
+		showHUD = !showHUD;
+		menuPressedRepeats = 0;
+	}
+	// Reset time compression to real time if paused, and HUD has been turned off
+	if (previousShowHUD && !showHUD) {
+		if (model->getAccelerator() == 0) {
+			model->setAccelerator(1.0);
+		}
+	}
+
+	// Set controller positions
+	irr::core::vector3df baseViewPosition = model->getCameraBasePosition();
+	irr::core::matrix4 baseViewRotation = model->getCameraBaseRotation();
+	// Transform positions based on orientation of the camera's parent
+	irr::core::vector3df transformedVrLeftGripPosition = vrLeftGripPosition;
+	irr::core::vector3df transformedVrRightGripPosition = vrRightGripPosition;
+	irr::core::vector3df transformedVrLeftAimPosition = vrLeftAimPosition;
+	irr::core::vector3df transformedVrRightAimPosition = vrRightAimPosition;
+	irr::core::vector3df transformedHUDScreenPosition = irr::core::vector3df(0.0, 0.0, 1.0);
+	baseViewRotation.transformVect(transformedVrLeftGripPosition);
+	baseViewRotation.transformVect(transformedVrRightGripPosition);
+	baseViewRotation.transformVect(transformedVrLeftAimPosition);
+	baseViewRotation.transformVect(transformedVrRightAimPosition);
+	baseViewRotation.transformVect(transformedHUDScreenPosition);
+	// Transform orientations based on parent
+	irr::core::matrix4 transformedVrLeftGripOrientation = baseViewRotation * vrLeftGripOrientation.getMatrix();
+	irr::core::matrix4 transformedVrRightGripOrientation = baseViewRotation * vrRightGripOrientation.getMatrix();
+	irr::core::matrix4 transformedVrLeftAimOrientation = baseViewRotation * vrLeftAimOrientation.getMatrix();
+	irr::core::matrix4 transformedVrRightAimOrientation = baseViewRotation * vrRightAimOrientation.getMatrix();
+	// Set these positions
+	leftController->setPosition(baseViewPosition + transformedVrLeftGripPosition);
+	rightController->setPosition(baseViewPosition + transformedVrRightGripPosition);
+	leftRayNode->setPosition(baseViewPosition + transformedVrLeftAimPosition);
+	rightRayNode->setPosition(baseViewPosition + transformedVrRightAimPosition);
+	hudScreen->setPosition(baseViewPosition + transformedHUDScreenPosition);
+	// Set the orientation
+	leftController->setRotation(transformedVrLeftGripOrientation.getRotationDegrees());
+	rightController->setRotation(transformedVrRightGripOrientation.getRotationDegrees());
+	leftRayNode->setRotation(transformedVrLeftAimOrientation.getRotationDegrees());
+	rightRayNode->setRotation(transformedVrRightAimOrientation.getRotationDegrees());
+	hudScreen->setRotation(baseViewRotation.getRotationDegrees());
+	// Make controllers visible
+	leftController->setVisible(true);
+	rightController->setVisible(true);
+	if (showHUD) {
+		leftRayNode->setVisible(true);
+		rightRayNode->setVisible(true);
+		hudScreen->setVisible(true);
+	}
 
 	// --- Begin frame
 	XrFrameBeginInfo frame_begin_info;
@@ -1013,7 +1321,11 @@ int VRInterface::render(SimulationModel* model) {
 		projection_views[i].fov = views[i].fov;
 
 		// Binding to Irrlicht views
-		irr::core::vector3df eyePos = irr::core::vector3df(projection_views[i].pose.position.x, projection_views[i].pose.position.y, -1.0 * projection_views[i].pose.position.z);
+		irr::core::vector3df eyePos;
+		eyePos.X = projection_views[i].pose.position.x;
+		eyePos.Y = projection_views[i].pose.position.y;
+		eyePos.Z = -1.0 * projection_views[i].pose.position.z;
+		irr::core::quaternion quat;
 		quat.X = projection_views[i].pose.orientation.x;
 		quat.Y = projection_views[i].pose.orientation.y;
 		quat.Z = -1.0 * projection_views[i].pose.orientation.z;
@@ -1039,9 +1351,9 @@ int VRInterface::render(SimulationModel* model) {
 		// Render into swapchain images here (for left or right eye), into images[i][acquired_index].image
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
 		
-		glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[0][acquired_index]); // TODO: Why does it only work with [0], not [i]
+		glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[0][acquired_index]); // TODO: Why does it only work with [0], not [i]
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[1][acquired_index]);
 
 		glViewport(0, 0, w, h);
 		glScissor(0, 0, w, h);
@@ -1100,6 +1412,130 @@ int VRInterface::render(SimulationModel* model) {
 	result = xrEndFrame(session, &frameEndInfo);
 	if (!xr_check(instance, result, "failed to end frame!"))
 		return 1;
+
+	// Do ray/mesh intersection here if 'select' is active and HUD is shown
+	if (showHUD) {
+		if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
+
+			// If both are selected, prioritise right hand
+			int selectHandActive = HAND_LEFT_INDEX;
+			if (selectState[HAND_RIGHT_INDEX]) {
+				selectHandActive = HAND_RIGHT_INDEX;
+			}
+
+			// Find the 'ray' scene node that we want to match
+			irr::scene::ISceneNode* usedRayNode;
+			if (selectHandActive == HAND_LEFT_INDEX) {
+				usedRayNode = leftRayNode;
+			}
+			else {
+				usedRayNode = rightRayNode;
+			}
+
+			// Construct an actual ray from this. Start is node start point, end from start and angles
+			irr::core::line3d<irr::f32> selectRay;
+			selectRay.start = usedRayNode->getPosition(); // No parent, so position is same as absolute position
+			irr::core::vector3df rayForwardVector = usedRayNode->getRotation().rotationToDirection(irr::core::vector3df(0, 0, 1));
+			irr::f32 rayLength = 10.0; // Ray length in metres
+			selectRay.end = selectRay.start + rayLength * rayForwardVector;
+
+			// Tracks the current intersection point with the level or a mesh
+			irr::core::vector3df intersection;
+			// Used to show with triangle has been hit
+			irr::core::triangle3df hitTriangle;
+
+			irr::scene::ISceneNode* selectedSceneNode =
+				smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+					selectRay,
+					intersection,			// This will be the position of the collision
+					hitTriangle,			// This will be the triangle hit in the collision
+					IDFlag_IsPickable,		// This ensures that only nodes that we have set up to be pickable are considered
+					hudScreen->getParent());// Check only the HUD screen (or actually things below its parent) (0 for whole scene)
+
+			if (selectedSceneNode) {
+				// Find location interpolated between corner points.
+
+				// Get corner positions, using helper nodes
+				hudScreenTopLeft->updateAbsolutePosition();
+				hudScreenBottomRight->updateAbsolutePosition();
+				irr::core::vector3df hudScreenTopLeftPos = hudScreenTopLeft->getAbsolutePosition();
+				irr::core::vector3df hudScreenBottomRightPos = hudScreenBottomRight->getAbsolutePosition();
+
+				irr::f32 interpY = 0;
+				irr::f32 interpX = 0;
+				// Get screen Y from Y
+				if ((hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y) != 0) {
+					interpY = (intersection.Y - hudScreenBottomRightPos.Y) / (hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y);
+				}
+				// Get screen X from X or Z, depending on which has the bigger range
+				if (abs(hudScreenTopLeftPos.X - hudScreenBottomRightPos.X) > abs(hudScreenTopLeftPos.Z - hudScreenBottomRightPos.Z)) {
+					if ((hudScreenBottomRightPos.X - hudScreenTopLeftPos.X) != 0) {
+						interpX = (intersection.X - hudScreenTopLeftPos.X) / (hudScreenBottomRightPos.X - hudScreenTopLeftPos.X);
+					}
+				}
+				else {
+					if ((hudScreenBottomRightPos.Z - hudScreenTopLeftPos.Z) != 0) {
+						interpX = (intersection.Z - hudScreenTopLeftPos.Z) / (hudScreenBottomRightPos.Z - hudScreenTopLeftPos.Z);
+					}
+				}
+				raySelectScreenX = suGUI * interpX;
+				raySelectScreenY = shGUI - (shGUI * interpY);
+
+				// Set cursor position for visual feedback
+				dev->getCursorControl()->setPosition(raySelectScreenX, raySelectScreenY);
+
+				irr::SEvent mouseEventFromVR;
+				mouseEventFromVR.EventType = irr::EEVENT_TYPE::EET_MOUSE_INPUT_EVENT;
+				mouseEventFromVR.MouseInput.X = raySelectScreenX;
+				mouseEventFromVR.MouseInput.Y = raySelectScreenY;
+				mouseEventFromVR.MouseInput.Wheel = 0;
+				mouseEventFromVR.MouseInput.Shift = false;
+				mouseEventFromVR.MouseInput.Control = false;
+				mouseEventFromVR.MouseInput.ButtonStates = irr::E_MOUSE_BUTTON_STATE_MASK::EMBSM_LEFT;
+				if (previousSelectState[HAND_LEFT_INDEX] || previousSelectState[HAND_RIGHT_INDEX]) {
+					mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_LMOUSE_PRESSED_DOWN;
+					dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
+				}
+				mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_MOUSE_MOVED;
+				dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
+
+			}
+
+		}
+		else if (previousSelectState[HAND_LEFT_INDEX] || previousSelectState[HAND_RIGHT_INDEX]) {
+			// Also send EMIE_LMOUSE_LEFT_UP and equivalents if nothing selected, but was previously
+			irr::SEvent mouseEventFromVR;
+			mouseEventFromVR.EventType = irr::EEVENT_TYPE::EET_MOUSE_INPUT_EVENT;
+			mouseEventFromVR.MouseInput.X = raySelectScreenX; // The last location of the 'cursor'
+			mouseEventFromVR.MouseInput.Y = raySelectScreenY;
+			mouseEventFromVR.MouseInput.Wheel = 0;
+			mouseEventFromVR.MouseInput.Shift = false;
+			mouseEventFromVR.MouseInput.Control = false;
+			mouseEventFromVR.MouseInput.ButtonStates = 0;
+			mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_LMOUSE_LEFT_UP;
+			dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
+		}
+	}
+
+	// Update HUD if shown (ready for next loop, as after we have rendered, avoids messing up depth/renderbuffers this loop)
+	if (showHUD) {
+		if (hudTexture) {
+			driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
+			// Draw GUI, this should have been updated in guiMain.drawGUI() above
+			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
+			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, suGUI, shGUI));
+			smgr->getGUIEnvironment()->drawAll();
+			//set back usual render target
+			driver->setRenderTarget(0, 0); // TODO: Maybe not needed here
+		}
+	}
+
+	// Hide controllers
+	leftController->setVisible(false);
+	rightController->setVisible(false);
+	leftRayNode->setVisible(false);
+	rightRayNode->setVisible(false);
+	hudScreen->setVisible(false);
 
 	// Return 0 on success
 	return 0;

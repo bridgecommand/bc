@@ -1128,6 +1128,16 @@ SimulationModel::~SimulationModel()
         return camera.getView();
     }
 
+    irr::core::vector3df SimulationModel::getCameraBasePosition() const
+    {
+        return camera.getBasePosition();
+    }
+
+    irr::core::matrix4 SimulationModel::getCameraBaseRotation() const
+    {
+        return camera.getBaseRotation();
+    }
+
     void SimulationModel::setFrozenCamera(bool frozen)
     {
         camera.setFrozen(frozen);

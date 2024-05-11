@@ -814,7 +814,6 @@ int main(int argc, char ** argv)
     }
 
 	//Show loading message
-
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
     creditsText.append(L"\n\n");
@@ -878,17 +877,20 @@ int main(int argc, char ** argv)
     
     // Check VR mode
     bool vr3dMode = false;
+    irr::core::vector3df vrLeftGripPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrRightGripPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrLeftAimPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::vector3df vrRightAimPosition = irr::core::vector3df(0, 0, 0);
+    irr::core::quaternion vrLeftGripOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrRightGripOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrLeftAimOrientation = irr::core::quaternion(0, 0, 0, 1);
+    irr::core::quaternion vrRightAimOrientation = irr::core::quaternion(0, 0, 0, 1);
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
     }
 
     // Set up the VR interface
-    VRInterface vrInterface(device->getSceneManager(), device->getVideoDriver());
-    int vrSuccess = -1;
-    if (vr3dMode) {
-        vrSuccess = vrInterface.load();
-        std::cout << "vrSuccess=" << vrSuccess << std::endl;
-    }
+    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
 
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
@@ -962,6 +964,13 @@ int main(int argc, char ** argv)
                           secondaryControlSternThruster,
                           debugMode);
 
+    // Load the VR interface, allowing link to model
+    int vrSuccess = -1;
+    if (vr3dMode) {
+        vrSuccess = vrInterface.load(&model);
+        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+    }
+
     //Load the gui
     bool hideEngineAndRudder=false;
     // Hide engine/wheel inputs if not used (todo: control individually?)
@@ -981,7 +990,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided);
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
     //Give the network class a pointer to the model
     network->setModel(&model);
@@ -1128,9 +1137,10 @@ int main(int argc, char ** argv)
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
                 model.updateViewport(aspect);
             }
-            //drawAll3dProfile.tic();
+            
             smgr->drawAll();
-            //drawAll3dProfile.toc();
+            
+            
         }
 
         if (vr3dMode && vrSuccess == 0) {
@@ -1142,10 +1152,18 @@ int main(int argc, char ** argv)
             // Process events
             int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
             
-            // Render
+            // Render and get inputs from VR
             if (runtimeEventSuccess == 0) {
-                vrInterface.render(&model);
-            }
+                vrInterface.update(
+                    vrLeftGripPosition, 
+                    vrRightGripPosition, 
+                    vrLeftAimPosition, 
+                    vrRightAimPosition, 
+                    vrLeftGripOrientation, 
+                    vrRightGripOrientation,
+                    vrLeftAimOrientation,
+                    vrRightAimOrientation);
+             }
         }
 
  //       renderProfile.toc();
@@ -1164,6 +1182,7 @@ int main(int argc, char ** argv)
         driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
+
  //       guiProfile.toc();
         }{ IPROF("End scene");
  //       renderFinishProfile.tic();
