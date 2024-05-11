@@ -1008,15 +1008,7 @@ int VRInterface::runtimeEvents() {
 #endif
 }
 
-int VRInterface::update(
-	irr::core::vector3df& vrLeftGripPosition,
-	irr::core::vector3df& vrRightGripPosition,
-	irr::core::vector3df& vrLeftAimPosition,
-	irr::core::vector3df& vrRightAimPosition,
-	irr::core::quaternion& vrLeftGripOrientation,
-	irr::core::quaternion& vrRightGripOrientation,
-	irr::core::quaternion& vrLeftAimOrientation,
-	irr::core::quaternion& vrRightAimOrientation) {
+int VRInterface::update() {
 #if defined _WIN64 || defined __linux__
 	if (!run_framecycle) {
 		return 0;
@@ -1068,6 +1060,16 @@ int VRInterface::update(
 	XrActionStateBoolean menu_value[HAND_COUNT];
 	XrSpaceLocation grip_locations[HAND_COUNT];
 	XrSpaceLocation aim_locations[HAND_COUNT];
+
+	// Local vars to track position and orientation of controllers
+	irr::core::vector3df vrLeftGripPosition;
+	irr::core::vector3df vrRightGripPosition;
+	irr::core::vector3df vrLeftAimPosition;
+	irr::core::vector3df vrRightAimPosition;
+	irr::core::quaternion vrLeftGripOrientation;
+	irr::core::quaternion vrRightGripOrientation;
+	irr::core::quaternion vrLeftAimOrientation;
+	irr::core::quaternion vrRightAimOrientation;
 
 	for (int i = 0; i < HAND_COUNT; i++) {
 		XrActionStatePose grip_pose_state;

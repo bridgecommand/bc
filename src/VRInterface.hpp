@@ -67,15 +67,7 @@ public:
     void unload();
     float getAspectRatio();
     int runtimeEvents();
-    int update(
-        irr::core::vector3df& vrLeftGripPosition, 
-        irr::core::vector3df& vrRightGripPosition,
-        irr::core::vector3df& vrLeftAimPosition,
-        irr::core::vector3df& vrRightAimPosition,
-        irr::core::quaternion& vrLeftGripOrientation,
-        irr::core::quaternion& vrRightGripOrientation,
-        irr::core::quaternion& vrLeftAimOrientation,
-        irr::core::quaternion& vrRightAimOrientation);
+    int update();
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);

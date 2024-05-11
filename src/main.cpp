@@ -877,14 +877,6 @@ int main(int argc, char ** argv)
     
     // Check VR mode
     bool vr3dMode = false;
-    irr::core::vector3df vrLeftGripPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::vector3df vrRightGripPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::vector3df vrLeftAimPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::vector3df vrRightAimPosition = irr::core::vector3df(0, 0, 0);
-    irr::core::quaternion vrLeftGripOrientation = irr::core::quaternion(0, 0, 0, 1);
-    irr::core::quaternion vrRightGripOrientation = irr::core::quaternion(0, 0, 0, 1);
-    irr::core::quaternion vrLeftAimOrientation = irr::core::quaternion(0, 0, 0, 1);
-    irr::core::quaternion vrRightAimOrientation = irr::core::quaternion(0, 0, 0, 1);
     if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
         vr3dMode=true;
     }
@@ -1154,15 +1146,7 @@ int main(int argc, char ** argv)
             
             // Render and get inputs from VR
             if (runtimeEventSuccess == 0) {
-                vrInterface.update(
-                    vrLeftGripPosition, 
-                    vrRightGripPosition, 
-                    vrLeftAimPosition, 
-                    vrRightAimPosition, 
-                    vrLeftGripOrientation, 
-                    vrRightGripOrientation,
-                    vrLeftAimOrientation,
-                    vrRightAimOrientation);
+                vrInterface.update();
              }
         }
 
