@@ -109,6 +109,7 @@ DynamicsSpeedB=100
 
 PropSpace=2.0
 AzimuthDrive=0
+AzimuthDriveAstern=0
 
 BlockCoefficient=0.87
 MaxSpeed=6
@@ -184,7 +185,11 @@ DeviationMaximumHeading=10
 
 <li>MaxSpeedAhead (Optional): The speed ahead of the vessel at maximum power ahead in knots.  If this is defined then it is not necessary to define maxForce, DynamicsSpeedA, DynamicsSpeedB, </li>
 
+<li>AzimuthDrive (Optional): Set to 1 if the ship has azimuth drives, or 0 for conventional engine and rudder</li>
+
 <li>aziToLengthRatio (needed for Azimuth Drive models):  the distance along the axis of the vessel of the azimuth drives expressed as a proportion of the vessels length.  Valid values lie between (0 and 1).  Typical values 0.2 for an azimuth stern drive tug, 0.1 for an azimuth driven coaster, 0.75 for a tractor tug</li>
+
+<li>AzimuthDriveAstern (optional): Set to 1 if the azimuth drives can be engaged astern (for example for an outboard motor)</li>
 
 <li>azimuthDriveEngineIdleRPM (needed for Azimuth Drive models): The engine RPM at which an engine idles with the thrust lever all the way back , engine declutched. It must be less than the azimuthDriveClutchDisengageRPM (a typical value for azimuthDriveEngineIdleRPM is 700)</li>
 
@@ -200,12 +205,7 @@ DeviationMaximumHeading=10
 
 <li>azimuthDriveMaxDegPerSecond (needed for Azimuth Drive models) : the maximum number of degrees that the azipod drive can rotate in the lateral plane in one second. (typically 30)</li>
 
-
-
 <li>azimuthDriveSameDirectionAsSchottel (needed for Azimuth Drive models) : On most vessels the azimuth drive turns in the same direction as the shcottel, so the thrust lever is in the same direction as the actual thrust from the propellor.  So in the case of an azimuth stern drive configuration, the turning behaviour is similar to a tiller.  Turn the schottel clockwise and the ship will turn to port.  The opposite is true in a tractor configuration where the azimuth drives are ahead of amidships.  However, some vessels equipped with aft mounted azimuth drives (e.g. Lass class ships, Shetland Trader , Neptune) have a different control response, which is when the schottel is turned clockwise then the azimuth drive turns anticlockwise.  So when the schottel is turned clockwise the ship steers to starboard. So the thrust lever only points in the direction of the thrust when it is in the dead ahead or dead astern position.  The objective is to make it easier to steer.  Trust me it doesn't.  (value is typically and normally 1)</li>
-
-<li>AzimuthDrive (Optional): Set to 1 if the ship has azimuth drives, or 0 for conventional engine and rudder</li>
-<li><strike>AzimuthPositionAstern (Optional): If the ship has azimuth drives, how far (in m) aft they are of the turning centre of the vessel</strike></li>
 
 <!-- DEE_DEC22 ^^^^ -->
 

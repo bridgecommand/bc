@@ -397,7 +397,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
 
-                model->setPortThrustLever(model->inputToAzimuthEngineMapping(angle));
+                model->setPortAzimuthThrustLever(model->inputToAzimuthEngineMapping(angle));
                 //  DEE_Boxing_Day_2022 ^^^^
             } // end if engine port
 
@@ -407,7 +407,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
                                                                                                // we arent interested in the getMag
                                                                                                // DEE_Boxing_Day_2022 vvvv
-                model->setStbdThrustLever(model->inputToAzimuthEngineMapping(angle));
+                model->setStbdAzimuthThrustLever(model->inputToAzimuthEngineMapping(angle));
                 // DEE_Boxing_Day_2022 ^^^^
             } // end if engine port
 
@@ -1494,11 +1494,14 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 {
 
                     irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    // the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
-                    // we can ammend this to
-                    // mappedValue = (mappedValue*0.5)+0.5;
-                    // model->setPortThrustLever(mappedValue);
-                    model->setPortThrustLever(0.5 + newJoystickThrustLeverPort * 0.5);
+                    if (model->isAzimuthAsternAllowed()) {
+                        model->setPortAzimuthThrustLever(newJoystickThrustLeverPort);
+                    } else {
+                        // the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
+                        // we can ammend this to
+                        // mappedValue = (mappedValue*0.5)+0.5;
+                        model->setPortAzimuthThrustLever(0.5 + newJoystickThrustLeverPort * 0.5);
+                    }
                     previousJoystickThrustLeverPort = newJoystickThrustLeverPort;
                 }
 
@@ -1506,27 +1509,27 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 if (newJoystickThrustLeverStbd < INFINITY && (joystickSetup.updateAllAxes || thrustLeverStbdChanged))
                 {
                     irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    model->setStbdThrustLever(0.5 + newJoystickThrustLeverStbd * 0.5);
-                    //		    	model->setStbdThrustLever(mappedValue);
+                    if (model->isAzimuthAsternAllowed()) {
+                        model->setStbdAzimuthThrustLever(newJoystickThrustLeverStbd);
+                    } else {
+                        // the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
+                        // we can ammend this to
+                        // mappedValue = (mappedValue*0.5)+0.5;
+                        model->setStbdAzimuthThrustLever(0.5 + newJoystickThrustLeverStbd * 0.5);
+                    }
                     previousJoystickThrustLeverStbd = newJoystickThrustLeverStbd;
                 }
 
                 // Port Schottel
-                // mapping is completely inappropriate for schottel controls
                 if (newJoystickSchottelPort < INFINITY && (joystickSetup.updateAllAxes || schottelPortChanged))
                 {
-                    // irr::f32 mappedValue = lookup1D(newJoystickSchottelPort,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    // model->setPortSchottel(mappedValue);
                     model->setPortSchottel(newJoystickSchottelPort);
                     previousJoystickSchottelPort = newJoystickSchottelPort;
                 }
 
                 // Stbd Schottel
-                // mapping is completely inappropriate for schottel controls
                 if (newJoystickSchottelStbd < INFINITY && (joystickSetup.updateAllAxes || schottelStbdChanged))
                 {
-                    // irr::f32 mappedValue = lookup1D(newJoystickSchottelStbd,joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    // model->setStbdSchottel(mappedValue);
                     model->setStbdSchottel(newJoystickSchottelStbd);
                     previousJoystickSchottelStbd = newJoystickSchottelStbd;
                 }

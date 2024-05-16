@@ -772,26 +772,26 @@ SimulationModel::~SimulationModel()
 
     // Thrust levers
 
-    void SimulationModel::setPortThrustLever(irr::f32 portThrustLever)
+    void SimulationModel::setPortAzimuthThrustLever(irr::f32 portThrustLever)
     {
-        ownShip.setPortThrustLever(portThrustLever);
+        ownShip.setPortAzimuthThrustLever(portThrustLever);
 //        ownShip.setPortThrustLever(irr::f32 portThrustLever);
     }
 
-    void SimulationModel::setStbdThrustLever(irr::f32 stbdThrustLever)
+    void SimulationModel::setStbdAzimuthThrustLever(irr::f32 stbdThrustLever)
     {
 //        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
-        ownShip.setStbdThrustLever(stbdThrustLever);
+        ownShip.setStbdAzimuthThrustLever(stbdThrustLever);
     }
 
-    irr::f32 SimulationModel::getPortThrustLever()
+    irr::f32 SimulationModel::getPortAzimuthThrustLever()
     {
-        return ownShip.getPortThrustLever();
+        return ownShip.getPortAzimuthThrustLever();
     }
 
-    irr::f32 SimulationModel::getStbdThrustLever()
+    irr::f32 SimulationModel::getStbdAzimuthThrustLever()
     {
-        return ownShip.getStbdThrustLever();
+        return ownShip.getStbdAzimuthThrustLever();
     }
 
 
@@ -1430,43 +1430,61 @@ SimulationModel::~SimulationModel()
         return ownShip.isAzimuthDrive();
     }
 
+    bool SimulationModel::isAzimuthAsternAllowed() const
+    {
+        return ownShip.isAzimuthAsternAllowed();
+    }
+
     irr::f32 SimulationModel::inputToAzimuthEngineMapping(irr::f32 inputAngle) const
     {
         irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
 
-        if ((inputAngle >= 0) && (inputAngle < 135))
-        {
-            tempEngLevel = (0.5 + inputAngle / 270); // Gives range 0.5->1 for inputs between 0->135deg
-        }
-        if ((inputAngle >= 135) && (inputAngle < 180)) // Gives 1 for inputs between 135 and 180
-        {
-            tempEngLevel = 1;
-        }
-        if ((inputAngle >= 180) && (inputAngle < 180)) // Not reachable
-        {
-            tempEngLevel = 0;
-        }
-        if ((inputAngle >= 225) && (inputAngle < 360)) // Gives range 0->0.5 for inputs between 225->360
-        {
-            tempEngLevel = ((inputAngle - 225) / 270);
-        }
-        // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
+        if (isAzimuthAsternAllowed()) {
+            if ((inputAngle >= 0) && (inputAngle < 135)) {
+                tempEngLevel = (inputAngle / 135.0); // Gives range 0->1 for inputs between 0->135deg
+            } else if ((inputAngle >= 135) && (inputAngle < 180)) {
+                tempEngLevel = 1; // Gives 1 for inputs between 135 and 180
+            } else if ((inputAngle >= 180) && (inputAngle < 225)) {
+                tempEngLevel = -1; // Gives -1 for inputs between 180 and 225
+            } else if ((inputAngle >= 225) && (inputAngle < 360)) {
+                tempEngLevel = -1 + ((inputAngle-225.0) / 135.0); // Gives range -1->0 for inputs between 225 and 360
+            }
+        } else {
+            if ((inputAngle >= 0) && (inputAngle < 135))
+            {
+                tempEngLevel = (0.5 + inputAngle / 270); // Gives range 0.5->1 for inputs between 0->135deg
+            }
+            if ((inputAngle >= 135) && (inputAngle < 180)) // Gives 1 for inputs between 135 and 180
+            {
+                tempEngLevel = 1;
+            }
+            if ((inputAngle >= 225) && (inputAngle < 360)) // Gives range 0->0.5 for inputs between 225->360
+            {
+                tempEngLevel = ((inputAngle - 225) / 270);
+            }
+            // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
 
-        // limit the output to 0..1 only leaving this in for future elegant solution
-        if (tempEngLevel < 0)
-        {
-            tempEngLevel = 0;
-        }
-        if (tempEngLevel > 1)
-        {
-            tempEngLevel = 1;
+            // limit the output to 0..1 only leaving this in for future elegant solution
+            if (tempEngLevel < 0)
+            {
+                tempEngLevel = 0;
+            }
+            if (tempEngLevel > 1)
+            {
+                tempEngLevel = 1;
+            }
+
         }
         return tempEngLevel;
     }
 
     irr::f32 SimulationModel::azimuthToInputEngineMapping(irr::f32 inputEngine) const
     {
-        return (inputEngine*270)-135;
+        if (isAzimuthAsternAllowed()) {
+            return (inputEngine*135);
+        } else {
+            return (inputEngine*270)-135;
+        }
     }
 
     bool SimulationModel::hasDepthSounder() const

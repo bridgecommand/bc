@@ -79,10 +79,17 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     if (IniFile::iniFileTou32(shipIniFilename, "AzimuthDrive") == 1)
     {
         azimuthDrive = true;
+        // Check if 'astern' allowed for azimuth drives
+        if (IniFile::iniFileTou32(shipIniFilename, "AzimuthDriveAstern") == 1) {
+            azimuthAsternAllowed = true;
+        } else {
+            azimuthAsternAllowed = false;
+        }
     }
     else
     {
         azimuthDrive = false;
+        azimuthAsternAllowed = false; // Not relevant
         aziToLengthRatio = 0;
     }
 
@@ -579,15 +586,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // DEE_NOV22 initialise some new variables here
     portSchottel = 90;     // port schottel dead ahead
     stbdSchottel = 270;    // stbd schottel dead ahead
-    portThrustLever = 0.1; // port thrust lever  DEBUG set to 0.1 TODO calculate the setting that corresponds to the engine intital ship speed
-    stbdThrustLever = 0.1; // stbd thrust lever  DEBUG set to 0.1
+    portAzimuthThrustLever = 0.1; // port thrust lever  DEBUG set to 0.1 TODO calculate the setting that corresponds to the engine intital ship speed
+    stbdAzimuthThrustLever = 0.1; // stbd thrust lever  DEBUG set to 0.1
     portClutch = false;    // Port clutch is disengaged DEGUG set to engaged
     stbdClutch = false;    // Starboard clutch is disengaged
 
     if (azimuthDrive)
     {
-        portEngine = portThrustLever;
-        stbdEngine = stbdThrustLever;
+        portEngine = portAzimuthThrustLever;
+        stbdEngine = stbdAzimuthThrustLever;
     }
     if (azimuthDriveSameDirectionAsSchottel)
     {
@@ -897,8 +904,6 @@ void OwnShip::followupPortAzimuthDrive()
 
     // DEE_NOV22 now determine if it needs to move clockwise or anticlockwise
 
-    bool clockwise = false; // temporary
-
     int shortestAngularDistance = int(commandedPortAngle - portAzimuthAngle) % 360; // approximated by integer
     if (shortestAngularDistance > 180)
     {
@@ -911,7 +916,7 @@ void OwnShip::followupPortAzimuthDrive()
 
     //
 
-    if (abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
+    if (std::abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
     { // the azimuth drive cannot reach the commanded angle on this cycle so move it as much as possible towards it
         int tempInt = int(commandedPortAngle - portAzimuthAngle);
         if (tempInt < 0)
@@ -996,7 +1001,7 @@ void OwnShip::followupStbdAzimuthDrive()
         shortestAngularDistance = shortestAngularDistance + 360;
     } // clockwise
 
-    if (abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
+    if (std::abs(shortestAngularDistance) > int(maxChangeInAzimuthDriveAngleThisCycle))
     { // the azimuth drive cannot reach the commanded angle on this cycle so move it as much as possible towards it
         int tempInt = int(commandedStbdAngle - stbdAzimuthAngle);
         if (tempInt < 0)
@@ -1115,9 +1120,8 @@ void OwnShip::setPortEngine(irr::f32 port)
     controlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
     // DEE_NOV22
-    if (azimuthDrive)
+    if (azimuthDrive && !azimuthAsternAllowed)
     {
-
         portEngine = port; // 0..1
         if (portEngine > 1)
         {
@@ -1130,7 +1134,7 @@ void OwnShip::setPortEngine(irr::f32 port)
     }
     else
     {
-        // this is not an azimuth drive
+        // this is not an azimuth drive, or astern allowed
 
         portEngine = port; //+-1
         if (portEngine > 1)
@@ -1157,7 +1161,7 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
     controlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
     // DEE_NOV22
-    if (azimuthDrive)
+    if (azimuthDrive && !azimuthAsternAllowed)
     {
 
         stbdEngine = stbd; // 0..1
@@ -1172,7 +1176,7 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
     }
     else
     {
-        // this is not an azimuth drive
+        // this is not an azimuth drive, or astern allowed
 
         stbdEngine = stbd; //+-1
         if (stbdEngine > 1)
@@ -1377,6 +1381,11 @@ bool OwnShip::isAzimuthDrive() const
     return azimuthDrive;
 }
 
+bool OwnShip::isAzimuthAsternAllowed() const
+{
+    return azimuthAsternAllowed;
+}
+
 // DEE_NOV22 vvvv
 // Azimuth Drive code added
 
@@ -1464,40 +1473,51 @@ void OwnShip::disengageStbdClutch()
     this->setStbdClutch(false);
 }
 
-void OwnShip::setPortThrustLever(irr::f32 thrustLever)
-{ // sets port thrust lever 0..1
-    if (thrustLever < 0)
+void OwnShip::setPortAzimuthThrustLever(irr::f32 thrustLever)
+{ // sets port thrust lever 0..1 or -1..1
+    if (azimuthAsternAllowed) {
+        if (thrustLever < -1) {
+            thrustLever = -1;
+        }
+    } else {
+        if (thrustLever < 0) {
+            thrustLever = 0;
+        }
+    }
+    
+    if (thrustLever > 1)
     {
-        thrustLever = 0;
+        thrustLever = 1;
+    }
+    this->portAzimuthThrustLever = thrustLever;
+}
+
+void OwnShip::setStbdAzimuthThrustLever(irr::f32 thrustLever)
+{ // sets port thrust lever 0..1 or -1..1
+    if (azimuthAsternAllowed) {
+        if (thrustLever < -1) {
+            thrustLever = -1;
+        }
+    } else {
+        if (thrustLever < 0) {
+            thrustLever = 0;
+        }
     }
     if (thrustLever > 1)
     {
         thrustLever = 1;
     }
-    this->portThrustLever = thrustLever;
+    this->stbdAzimuthThrustLever = thrustLever;
 }
 
-void OwnShip::setStbdThrustLever(irr::f32 thrustLever)
-{ // sets stbd thrust lever 0..1
-    if (thrustLever < 0)
-    {
-        thrustLever = 0;
-    }
-    if (thrustLever > 1)
-    {
-        thrustLever = 1;
-    }
-    this->stbdThrustLever = thrustLever;
+irr::f32 OwnShip::getPortAzimuthThrustLever()
+{ // gets position of port thrust lever 0..1 or -1..1
+    return this->portAzimuthThrustLever;
 }
 
-irr::f32 OwnShip::getPortThrustLever()
-{ // gets position of port thrust lever 0..1
-    return this->portThrustLever;
-}
-
-irr::f32 OwnShip::getStbdThrustLever()
-{ // gets position of stbd thrust lever 0..1
-    return this->stbdThrustLever;
+irr::f32 OwnShip::getStbdAzimuthThrustLever()
+{ // gets position of stbd thrust lever 0..1 or -1..1
+    return this->stbdAzimuthThrustLever;
 }
 
 // todo put this in to SimulationModel and into EventCapture, Add entries into ini file and read them in to the model
@@ -1572,24 +1592,24 @@ void OwnShip::btnDisengageStbdClutch()
 
 void OwnShip::btnIncrementPortThrustLever()
 { // increments the port thrust lever
-    setPortThrustLever(getPortThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+    setPortAzimuthThrustLever(getPortAzimuthThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
 }
 
 void OwnShip::btnDecrementPortThrustLever()
 { // decrements the port thrust lever
     irr::f32 tempvar;
-    tempvar = getPortThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond;
-    setPortThrustLever(tempvar);
+    tempvar = getPortAzimuthThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond;
+    setPortAzimuthThrustLever(tempvar);
 }
 
 void OwnShip::btnIncrementStbdThrustLever()
 { // increments the stbd thrust lever
-    setStbdThrustLever(getStbdThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+    setStbdAzimuthThrustLever(getStbdAzimuthThrustLever() + getLastDeltaTime() * thrustLeverMaxChangePerSecond);
 }
 
 void OwnShip::btnDecrementStbdThrustLever()
 { // decrements the stbd thrust lever
-    setStbdThrustLever(getStbdThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond);
+    setStbdAzimuthThrustLever(getStbdAzimuthThrustLever() - getLastDeltaTime() * thrustLeverMaxChangePerSecond);
 }
 
 // DEE_NOV22 ^^^^
@@ -1753,10 +1773,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             maxChangeInEngineThisCycle = deltaTime * thrustLeverMaxChangePerSecond;
 
             // Port Engine
-            if (portEngine < portThrustLever)
+            if (portEngine < portAzimuthThrustLever)
             {
                 // Port engine setting needs to increase
-                if (portEngine < (portThrustLever - maxChangeInEngineThisCycle))
+                if (portEngine < (portAzimuthThrustLever - maxChangeInEngineThisCycle))
                 {
                     // the port engine cannot attain the commanded setting on this cycle so increment by the most it can
                     newPortEngine = portEngine + maxChangeInEngineThisCycle;
@@ -1764,38 +1784,28 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
                 else
                 {
                     // the port engine can attain the commanded setting on this cycle so set it so
-                    newPortEngine = portThrustLever;
+                    newPortEngine = portAzimuthThrustLever;
                 }
-                if (newPortEngine < idleEngine)
-                {
-                    // prevent a change that would make the engine speed reduce below idling rpm
-                    newPortEngine = idleEngine;
-                } // end if command less than idle engine speed
             }
             else
             {
                 // Port engine setting needs to decrease
-                if (portEngine > (portThrustLever + maxChangeInEngineThisCycle))
+                if (portEngine > (portAzimuthThrustLever + maxChangeInEngineThisCycle))
                 { // the port engine cannot attain the commanded setting on this cycle so decrement by the most it can
                     newPortEngine = portEngine - maxChangeInEngineThisCycle;
                 }
                 else
                 {
                     // the port engine can attain the commanded setting on this cycle so set it so
-                    newPortEngine = portThrustLever;
-                }
-                if (newPortEngine < idleEngine)
-                {
-                    // prevent a change that would make the engine speed reduce below idling rpm
-                    newPortEngine = idleEngine;
+                    newPortEngine = portAzimuthThrustLever;
                 }
             } // end if increase port engine else decrease port engine
-              // there is another possibility and that is portEngine == portThrustLever in which case nothing needs to happen so theres no code
-            if (newPortEngine < idleEngine)
+              // there is another possibility and that is portEngine == portAzimuthThrustLever in which case nothing needs to happen so theres no code
+            if (std::abs(newPortEngine) < idleEngine)
             {
                 // prevent a change that would make the engine speed reduce below idling rpm
-                newPortEngine = idleEngine;
-            } // end if commanded engine speed is less than engine speed
+                newPortEngine = idleEngine * sign(newPortEngine);
+            }
             setPortEngine(newPortEngine);
 
             // DEE_NOV22 end of port engine code
@@ -1806,12 +1816,12 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             if (ifFuC)
             {
                 // Follow up Control with automatic clutch
-                if ((portEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM)
+                if (std::abs(portEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM)
                 {
                     // the clutch should be in the engaged position
                     engagePortClutch();
                 }
-                if ((portEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM)
+                if (std::abs(portEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM)
                 {
                     // the clutch should be in the disengaged position
                     disengagePortClutch();
@@ -1825,10 +1835,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             // DEE_NOV22 end of port propulsion system clutch
 
             // Starboard Engine code
-            if (stbdEngine < stbdThrustLever)
+            if (stbdEngine < stbdAzimuthThrustLever)
             {
                 // Starboard engine setting needs to increase
-                if (stbdEngine < (stbdThrustLever - maxChangeInEngineThisCycle))
+                if (stbdEngine < (stbdAzimuthThrustLever - maxChangeInEngineThisCycle))
                 {
                     // the stbd engine cannot attain the commanded setting on this cycle so increment by the most it can
                     newStbdEngine = stbdEngine + maxChangeInEngineThisCycle;
@@ -1836,13 +1846,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
                 else
                 {
                     // the stbd engine can maintain the commanded setting on this cycle so set it so
-                    newStbdEngine = stbdThrustLever;
+                    newStbdEngine = stbdAzimuthThrustLever;
                 }
             }
             else
             {
                 // Starboard engine setting needs to decrease
-                if (stbdEngine > (stbdThrustLever + maxChangeInEngineThisCycle))
+                if (stbdEngine > (stbdAzimuthThrustLever + maxChangeInEngineThisCycle))
                 {
                     // the stbd engine cannot attain the commanded setting on this cycle so decrement by the most it can
                     newStbdEngine = stbdEngine - maxChangeInEngineThisCycle;
@@ -1850,14 +1860,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
                 else
                 {
                     // the starboard engine can attain the commanded setting on this cycle so set it so
-                    newStbdEngine = stbdThrustLever;
+                    newStbdEngine = stbdAzimuthThrustLever;
                 }
             }
-            // there is another possibility and that is stbdEngine == stbdThrustLever in which case nothing needs to happen
-            if (newStbdEngine < idleEngine)
+            // there is another possibility and that is stbdEngine == stbdAzimuthThrustLever in which case nothing needs to happen
+            if (std::abs(newStbdEngine) < idleEngine)
             {
                 // prevent a change that would make the engine speed reduce below idling rpm
-                newStbdEngine = idleEngine;
+                newStbdEngine = idleEngine * sign(newStbdEngine);
             } // end if commanded engine speed is less than engine speed
             setStbdEngine(newStbdEngine);
             // End of starboard engine code
@@ -1870,7 +1880,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             if (isFuC)
             {
                 // Follow up Control with automatic clutch
-                if ((stbdEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM)
+                if (std::abs(stbdEngine * maxEngineRevs) > azimuthDriveClutchEngageRPM)
                 {
                     // the clutch should be in the engaged position
                     if (stbdClutch == false)
@@ -1881,7 +1891,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
                         engageStbdClutch();
                     } // end if the stbd clutch is disengaged then engage it
                 }     // end if the stbd engine in running at greater than the clutch in speed
-                if ((stbdEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM)
+                if (std::abs(stbdEngine * maxEngineRevs) < azimuthDriveClutchDisengageRPM)
                 {
                     // the clutch should be in the disengaged position
                     if (stbdClutch == true)
@@ -2400,7 +2410,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
             // Contact model (proof of principle!)
             if (localDepth < 0)
             {
-                localIntersection = -1 * localDepth * abs(contactPoints.at(i).normal.Y); // Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
+                localIntersection = -1 * localDepth * std::abs(contactPoints.at(i).normal.Y); // Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
             }
 
             irr::f32 remotePointAxialSpeed = 0;

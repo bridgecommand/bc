@@ -120,10 +120,10 @@ public:
     void disengagePortClutch();
     void engageStbdClutch();
     void disengageStbdClutch();
-    void setPortThrustLever(irr::f32);   // sets port thrust lever range is 0..+1
-    irr::f32 getPortThrustLever(); 	 // gets port thrust lever range is 0..+1
-    void setStbdThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1
-    irr::f32 getStbdThrustLever(); // gets starboard thrust lever range is 0..+1
+    void setPortAzimuthThrustLever(irr::f32);   // sets port thrust lever range is 0..+1 or -1..+1
+    irr::f32 getPortAzimuthThrustLever(); 	 // gets port thrust lever range is 0..+1 or -1..+1
+    void setStbdAzimuthThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1 or -1..+1
+    irr::f32 getStbdAzimuthThrustLever(); // gets starboard thrust lever range is 0..+1 or -1..+1
 
     void btnIncrementPortThrustLever(); // increments the port thrust lever
     void btnDecrementPortThrustLever(); // decrements the port thrust lever
@@ -290,6 +290,7 @@ public:
     bool hasGPS() const;
     bool isSingleEngine() const;
     bool isAzimuthDrive() const;
+    bool isAzimuthAsternAllowed() const;
     irr::f32 inputToAzimuthEngineMapping(irr::f32 inputAngle) const;
     irr::f32 azimuthToInputEngineMapping(irr::f32 inputEngine) const;
     bool hasDepthSounder() const;

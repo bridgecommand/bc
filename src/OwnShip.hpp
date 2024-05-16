@@ -102,6 +102,7 @@ public:
         irr::core::vector3df getWheelControlPosition() const;
         bool isSingleEngine() const;
         bool isAzimuthDrive() const;
+        bool isAzimuthAsternAllowed() const;
         bool isAzimuth1Master() const;
         bool isAzimuth2Master() const;
 
@@ -120,10 +121,10 @@ public:
         void engageStbdClutch();                  // engages the starboard clutch
         void disengageStbdClutch();               // disengages the starboard clutch
 
-        void setPortThrustLever(irr::f32 thrustLever);    // sets port thrust lever 0..1
-        void setStbdThrustLever(irr::f32 thrustLever);    // sets stbd thrust lever 0..1
-        irr::f32 getPortThrustLever();                    // gets position of port thrust lever 0..1
-        irr::f32 getStbdThrustLever();                    // gets position of stbd thrust lever 0..1
+        void setPortAzimuthThrustLever(irr::f32 thrustLever);    // sets port thrust lever 0..1 or -1..+1
+        void setStbdAzimuthThrustLever(irr::f32 thrustLever);    // sets stbd thrust lever 0..1 or -1..+1
+        irr::f32 getPortAzimuthThrustLever();                    // gets position of port thrust lever 0..1 or -1..+1
+        irr::f32 getStbdAzimuthThrustLever();                    // gets position of stbd thrust lever 0..1 or -1..+1
         void btnIncrementPortSchottel();                  // turn port schottel clockwise in response to a key press D
         void btnDecrementPortSchottel();                  // turn port schottel anticlockwise in response to a key press A
         void btnIncrementStbdSchottel();                  // turn stbd schottel clockwise in response to a key press L
@@ -185,6 +186,7 @@ private:
         bool azimuthDrive;
         bool azimuth1Master;            // If azimuth control 1 should also control azimuth control 2
         bool azimuth2Master;            // If azimuth control 2 should also control azimuth control 1
+        bool azimuthAsternAllowed;      // If azimuth drives can run in astern as well as ahead (e.g. for outboard motors)
         irr::f32 azimuthPositionAstern; // How far azimuth drives are astern
 
         irr::f32 deltaTime; // stores the last delta time which is good enough for the movement of levers and schottels etc
@@ -242,8 +244,8 @@ private:
         // DEE_NOV22 vvvv
         irr::f32 portLateralThrust;          // Athwartships thrust attributable to port azimuth drive
         irr::f32 stbdLateralThrust;          // Athwartships thrust attributable to stbd azimuth drive
-        irr::f32 portThrustLever;            // this should be 0 .. +1 as the propellor only turns one way on azimuth drives
-        irr::f32 stbdThrustLever;            // as above but for starboard
+        irr::f32 portAzimuthThrustLever;     // Normally 0 to +1, can be -1 to +1 for things like outboards
+        irr::f32 stbdAzimuthThrustLever;     // as above but for starboard
         irr::f32 portSchottel;               // angle of the port Schottel, so basically the commanded azimuth port
         irr::f32 stbdSchottel;               // angle of the stbd Schottel,  ditto for stabd
         bool portClutch;                     // port clutch true for clutch engaged false for clutch disengaged

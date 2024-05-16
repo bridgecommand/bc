@@ -363,9 +363,9 @@ void NetworkPrimary::receiveNetwork()
                                             } else if (overrideMode == 4) {
                                                 model->setStbdSchottel(overrideData);
                                             } else if (overrideMode == 5) {
-                                                model->setPortThrustLever(overrideData);
+                                                model->setPortAzimuthThrustLever(overrideData);
                                             } else if (overrideMode == 6) {
-                                                model->setStbdThrustLever(overrideData);
+                                                model->setStbdAzimuthThrustLever(overrideData);
                                             } else if (overrideMode == 7) {
                                                 model->setBowThruster(overrideData);
                                             } else if (overrideMode == 8) {
@@ -599,9 +599,9 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdSchottel()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortThrustLever()));
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getPortAzimuthThrustLever()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdThrustLever()));
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getStbdAzimuthThrustLever()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getBowThruster()));
     stringToSend.append(",");

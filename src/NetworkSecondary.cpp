@@ -464,10 +464,10 @@ void NetworkSecondary::receiveMessage()
                         model->setStbdSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(5)));
                     }
                     if (!model->getIsSecondaryControlPortThrustLever()) {
-                        model->setPortThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(6)));
+                        model->setPortAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(6)));
                     }
                     if (!model->getIsSecondaryControlStbdThrustLever()) {
-                        model->setStbdThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(7)));
+                        model->setStbdAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(7)));
                     }
                     if (!model->getIsSecondaryControlBowThruster()) {
                         model->setBowThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(8)));
@@ -536,12 +536,12 @@ void NetworkSecondary::receiveMessage()
                 }
                 if (model->getIsSecondaryControlPortThrustLever()) {
                     controlOverride.append("MCCO,5,");
-                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortThrustLever()));
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getPortAzimuthThrustLever()));
                     controlOverride.append("|");
                 }
                 if (model->getIsSecondaryControlStbdThrustLever()) {
                     controlOverride.append("MCCO,6,");
-                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdThrustLever()));
+                    controlOverride.append(Utilities::lexical_cast<std::string>(model->getStbdAzimuthThrustLever()));
                     controlOverride.append("|");
                 }
                 if (model->getIsSecondaryControlBowThruster()) {
