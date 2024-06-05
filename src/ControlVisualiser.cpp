@@ -18,7 +18,9 @@
 
 ControlVisualiser::ControlVisualiser()
 {
-
+    // Initialise to null in case we don't want to display the control;
+    controlNode = 0;
+    displayValue = 0;
 }
 
 ControlVisualiser::~ControlVisualiser()
@@ -28,10 +30,7 @@ ControlVisualiser::~ControlVisualiser()
 
 void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType)
 {
-    // Initialise to null in case we don't want to display the control;
-    controlNode = 0;
-    
-    this->displayValue = 0;
+    // Store rotation axis (0=x, 1=y, 2=z)
     this->rotationAxis = rotationAxis;
     
     // Load unless 'no data' marker for position is set
@@ -39,15 +38,24 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
     {
         // Load from media/throttle.x
         // TODO: Check path is sensible here?
-        irr::scene::IMesh* controlMesh;
+        irr::scene::IMesh* controlMesh = 0;
         if (controlType == 0) 
         {
             controlMesh = smgr->getMesh("media/throttle.x");
         } 
-        else 
+        else if (controlType == 1)
         {
             controlMesh = smgr->getMesh("media/wheel.x");
         }
+        else if (controlType == 2)
+        {
+            controlMesh = smgr->getMesh("media/schottel_base.x");
+        }
+        else if (controlType == 3)
+        {
+            controlMesh = smgr->getMesh("media/schottel_body.x");
+        }
+
         if (controlMesh != 0) 
         {
             controlNode = smgr->addMeshSceneNode(controlMesh, parent, -1, offset, irr::core::vector3df(0.0, 0.0, 0.0), irr::core::vector3df(scale,scale,scale));
@@ -77,4 +85,9 @@ void ControlVisualiser::update(irr::f32 displayValue)
         }
     }
 
+}
+
+irr::scene::ISceneNode* ControlVisualiser::getSceneNode()
+{
+    return controlNode;
 }

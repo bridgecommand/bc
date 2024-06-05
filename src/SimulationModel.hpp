@@ -369,6 +369,8 @@ private:
     RadarScreen radarScreen;
     ControlVisualiser portEngineVisual;
     ControlVisualiser stbdEngineVisual;
+    ControlVisualiser portAzimuthThrottleVisual;
+    ControlVisualiser stbdAzimuthThrottleVisual;
     ControlVisualiser wheelVisual;
     GUIMain* guiMain;
 	Sound* sound;

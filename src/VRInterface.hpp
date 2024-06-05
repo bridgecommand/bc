@@ -139,6 +139,30 @@ private:
 
     SimulationModel* model; // Store pointer to model
 
+    // Vars to track position and orientation of controllers
+    irr::core::vector3df vrLeftGripPosition;
+    irr::core::vector3df vrRightGripPosition;
+    irr::core::vector3df vrLeftAimPosition;
+    irr::core::vector3df vrRightAimPosition;
+    irr::core::quaternion vrLeftGripOrientation;
+    irr::core::quaternion vrRightGripOrientation;
+    irr::core::quaternion vrLeftAimOrientation;
+    irr::core::quaternion vrRightAimOrientation;
+    
+    // Reference values to track movement
+    irr::core::vector3df vrLeftGripPositionReference;
+    irr::core::vector3df vrRightGripPositionReference;
+    bool vrChangingPortEngine;
+    bool vrChangingStbdEngine;
+    // Engine settings for these reference positions
+    irr::f32 portEngineReference;
+    irr::f32 stbdEngineReference;
+    irr::f32 wheelReference;
+    irr::f32 portSchottelReference;
+    irr::f32 portAzimuthThrottleReference;
+    irr::f32 stbdSchottelReference;
+    irr::f32 stbdAzimuthThrottleReference;
+
     irr::scene::ISceneNode* leftController;
     irr::scene::ISceneNode* rightController;
     irr::scene::ISceneNode* leftRayNode;

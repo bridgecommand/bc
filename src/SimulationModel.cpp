@@ -228,9 +228,16 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         rain.load(smgr, camera.getSceneNode(), device);
 
         //Set up 3d engine/wheel controls/visualisation
-        portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0/ownShip.getScaleFactor(), 0, 0);
-        stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0/ownShip.getScaleFactor(), 0, 0);
-        wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), 1.0/ownShip.getScaleFactor(), 2, 1);
+        if (isAzimuthDrive()) {
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2);
+            portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3); // 3 = schottel lever
+            stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3);
+        } else {
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
+            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), 1.0 / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+        }
 
         //make a radar screen, setting parent and offset from own ship
         radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
@@ -1812,9 +1819,16 @@ SimulationModel::~SimulationModel()
         //update the camera position
         camera.update(deltaTime);
         }{ IPROF("Update controls visualisation");
-            portEngineVisual.update(45.0*ownShip.getPortEngine());
-            stbdEngineVisual.update(45.0*ownShip.getStbdEngine());
-            wheelVisual.update(-6.0 * ownShip.getWheel());
+            if (isAzimuthDrive()) {
+                portEngineVisual.update(ownShip.getPortSchottel());
+                stbdEngineVisual.update(ownShip.getStbdSchottel());
+                portAzimuthThrottleVisual.update(45 * getPortAzimuthThrustLever());
+                stbdAzimuthThrottleVisual.update(45 * getStbdAzimuthThrustLever());
+            } else {
+                portEngineVisual.update(45.0 * ownShip.getPortEngine());
+                stbdEngineVisual.update(45.0 * ownShip.getStbdEngine());
+                wheelVisual.update(-6.0 * ownShip.getWheel());
+            }
         }
         if (radarCalculation.isRadarOn()) {
             { IPROF("Update radar cursor position");

@@ -617,7 +617,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Add paused button
         irr::core::stringw pausedButtonMessage = language->translate("pausedbutton");
         if (vr3dMode) {
-            pausedButtonMessage = language->translate("vrpausedbutton") + pausedButtonMessage;
+            pausedButtonMessage = pausedButtonMessage + language->translate("vrpausedbutton");
+        } else {
+            pausedButtonMessage = pausedButtonMessage + language->translate("normalpausedbutton");
         }
         pausedButton = guienv->addButton(irr::core::rect<irr::s32>(0.2*su,0.1*sh,0.8*su,0.9*sh),0,GUI_ID_START_BUTTON, pausedButtonMessage.c_str());
 

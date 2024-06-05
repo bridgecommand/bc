@@ -27,6 +27,7 @@ class ControlVisualiser
 
         void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType);
         void update(irr::f32 displayValue);
+        irr::scene::ISceneNode* getSceneNode();
 
     private:
         irr::scene::IMeshSceneNode* controlNode;
