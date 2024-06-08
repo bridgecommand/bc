@@ -424,13 +424,16 @@ int main()
             //Intermediate entries need to be present, but values aren't used
             stringToSend.append("4#5#6#7#8#9#10#");
 
-            //Lines information (mooring/towing)
+            //11: Lines information (mooring/towing)
             std::string linesString = linesData.getLineDataString(thisPeer);
             //strip trailing '|' if present
             if(linesString.length()>0) {
                 linesString = linesString.substr(0,linesString.length()-1);
             }
             stringToSend.append(linesString);
+
+            //12: 13 basic records in data sent, entry 12 is engine and wheel data for secondary controls, not needed, so send blank entry
+            stringToSend.append("12#");
 
             //std::cout << stringToSend << std::endl;
 
