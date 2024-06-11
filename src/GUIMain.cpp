@@ -625,29 +625,32 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //show/hide interface
         showInterface = true; //If we start with the 2d interface shown
-        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
-        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.13*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
+        showInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.125*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_INTERFACE_BUTTON,language->translate("showinterface").c_str());
+        hideInterfaceButton = guienv->addButton(irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.92*sh,0.125*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_HIDE_INTERFACE_BUTTON,language->translate("hideinterface").c_str());
         showInterfaceButton->setVisible(false);
 
         //binoculars button
-        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.13*su+azimuthGUIOffsetL,0.92*sh,0.17*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
+        binosButton = guienv->addButton(irr::core::rect<irr::s32>(0.125*su+azimuthGUIOffsetL,0.92*sh,0.16*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BINOS_INTERFACE_BUTTON,language->translate("zoom").c_str());
         binosButton->setIsPushButton(true);
 
         //Take bearing button
-        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.17*su+azimuthGUIOffsetL,0.92*sh,0.21*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
+        bearingButton = guienv->addButton(irr::core::rect<irr::s32>(0.16*su+azimuthGUIOffsetL,0.92*sh,0.195*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_BEARING_INTERFACE_BUTTON,language->translate("bearing").c_str());
         bearingButton->setIsPushButton(true);
 
+        // Change view button
+        changeViewButton = guienv->addButton(irr::core::rect<irr::s32>(0.195*su+azimuthGUIOffsetL,0.92*sh,0.23*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_CHANGE_VIEW_BUTTON,language->translate("changeView").c_str());
+
         //Exit button
-        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.21*su+azimuthGUIOffsetL,0.92*sh,0.25*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
+        exitButton = guienv->addButton(irr::core::rect<irr::s32>(0.23*su+azimuthGUIOffsetL,0.92*sh,0.265*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_EXIT_BUTTON,language->translate("exit").c_str());
 
         //Show button to display extra controls window
-        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.25*su+azimuthGUIOffsetL,0.92*sh,0.33*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
+        showExtraControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.265*su+azimuthGUIOffsetL,0.92*sh,0.34*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_EXTRA_CONTROLS_BUTTON,language->translate("extraControls").c_str());
 
         //Show button to display lines control window
-        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.33*su+azimuthGUIOffsetL,0.92*sh,0.37*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
+        showLinesControlsButton = guienv->addButton(irr::core::rect<irr::s32>(0.34*su+azimuthGUIOffsetL,0.92*sh,0.375*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LINES_CONTROLS_BUTTON,language->translate("lines").c_str());
 
         //Show internal log window button
-        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.37*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
+        pcLogButton = guienv->addButton(irr::core::rect<irr::s32>(0.375*su+azimuthGUIOffsetL,0.92*sh,0.39*su+azimuthGUIOffsetL,0.95*sh),0,GUI_ID_SHOW_LOG_BUTTON,language->translate("log").c_str());
         
         //Set initial visibility
         updateVisibility();
@@ -862,10 +865,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //dataDisplay->setVisible(!radarLarge);
         binosButton->setVisible(!radarLarge);
         bearingButton->setVisible(!radarLarge);
-		rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
+		changeViewButton->setVisible(!radarLarge);
+        rateofturnScrollbar->setVisible(!radarLarge && hasRateOfTurnIndicator);
         hideInterfaceButton->setVisible(showInterface && !radarLarge);
         showInterfaceButton->setVisible(!showInterface && !radarLarge);
-
+        
         bigRadarButton->setVisible(showInterface && !radarLarge);
 
         smallRadarButton->setVisible(radarLarge);

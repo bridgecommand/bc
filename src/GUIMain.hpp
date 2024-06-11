@@ -186,6 +186,7 @@ public:
         GUI_ID_KEEP_SLACK_LINE_CHECKBOX,
         GUI_ID_HAUL_IN_LINE_CHECKBOX,
         GUI_ID_LINES_LIST,
+        GUI_ID_CHANGE_VIEW_BUTTON,
         GUI_ID_EXIT_BUTTON,
         GUI_ID_CLOSE_BOX
     };
@@ -276,6 +277,7 @@ private:
     irr::gui::IGUIButton* radarColourButton2;
     irr::gui::IGUIButton* nonFollowUpPortButton;
     irr::gui::IGUIButton* nonFollowUpStbdButton;
+    irr::gui::IGUIButton* changeViewButton;
 
     irr::gui::IGUITabControl* radarTabControl;
     irr::gui::IGUIScrollBar* radarGainScrollbar;

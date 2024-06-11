@@ -701,6 +701,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 model->getLines()->removeLine(model->getLines()->getSelectedLine());
             }
 
+            if (id == GUIMain::GUI_ID_CHANGE_VIEW_BUTTON)
+            {
+                model->changeView();
+            }
+
         } // Button clicked
 
         if (event.GUIEvent.EventType == irr::gui::EGET_COMBO_BOX_CHANGED)
