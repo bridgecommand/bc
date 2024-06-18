@@ -1411,7 +1411,7 @@ int VRInterface::update() {
 
 			// Get ray from controller, prioritise right hand. Length 10m
 			irr::core::line3d<irr::f32> selectRay;
-			getRayFromController(selectRay, 10.0);
+			getRayFromController(&selectRay, 10.0);
 
 			// Tracks the current intersection point with the level or a mesh
 			irr::core::vector3df intersection;
