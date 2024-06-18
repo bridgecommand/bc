@@ -999,7 +999,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model

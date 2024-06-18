@@ -23,14 +23,16 @@
 #include "Lines.hpp"
 #include "Utilities.hpp"
 #include "AzimuthDial.h"
+#include "VRInterface.hpp"
 #include "Constants.hpp"
 
 // using namespace irr;
 
-MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
+MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
 {
     this->model = model; // Link to the model
     this->gui = gui;     // Link to GUI
+    this->vrInterface = vrInterface; // Link to VR interface
     scrollBarPosSpeed = 0;
     scrollBarPosHeading = 0;
 
@@ -117,16 +119,20 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             // Add line (mooring/towing) start or end if in required mode
             if ((linesMode == 1) || (linesMode == 2))
             {
-                // Scale if required because 3d view may be different
-                irr::s32 scaledMouseY = mouseClickY;
-                if (gui->getShowInterface())
-                {
-                    scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                irr::core::line3df rayForLines;
+                // Check for ray from VR interface first. If false, fall back to mouse position
+                // Note that the VR interface triggers a mouse event, which means we should get here
+                if (!vrInterface->getRayFromController(&rayForLines, 1000.0)) {
+                    // Scale if required because 3d view may be different
+                    irr::s32 scaledMouseY = mouseClickY;
+                    if (gui->getShowInterface())
+                    {
+                        scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                    }
+                    rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
                 }
-
-                irr::scene::ISceneNode *contactNode = model->getContactFromRay(
-                    device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY)),
-                    linesMode);
+                
+                irr::scene::ISceneNode *contactNode = model->getContactFromRay(rayForLines, linesMode);
 
                 if (contactNode)
                 {

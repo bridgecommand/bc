@@ -25,6 +25,7 @@
 class GUIMain;
 class SimulationModel;
 class Lines;
+class VRInterface;
 
 //Data about joystick setup
 class JoystickSetup {
@@ -165,7 +166,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
+    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -175,6 +176,7 @@ private:
 
     SimulationModel* model;
     GUIMain* gui;
+    VRInterface* vrInterface;
     bool leftMouseDown;
     bool rightMouseDown;
     irr::IrrlichtDevice* device;

@@ -68,6 +68,7 @@ public:
     float getAspectRatio();
     int runtimeEvents();
     int update();
+    bool getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength);
 
 private:
     static bool xr_check(XrInstance instance, XrResult result, const char* format, ...);

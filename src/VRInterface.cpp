@@ -100,7 +100,7 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 	smgr->getMeshManipulator()->transform(hudPlane, meshRotationMatrix);
 	hudScreen = smgr->addMeshSceneNode(hudPlane,
 		0, // No parent
-		IDFlag_IsPickable // ID to mark that it is pickable
+		IDFlag_IsPickable_2d // ID to mark that it is pickable
 		);
 
 	hudScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -1409,27 +1409,9 @@ int VRInterface::update() {
 	if (showHUD) {
 		if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
 
-			// If both are selected, prioritise right hand
-			int selectHandActive = HAND_LEFT_INDEX;
-			if (selectState[HAND_RIGHT_INDEX]) {
-				selectHandActive = HAND_RIGHT_INDEX;
-			}
-
-			// Find the 'ray' scene node that we want to match
-			irr::scene::ISceneNode* usedRayNode;
-			if (selectHandActive == HAND_LEFT_INDEX) {
-				usedRayNode = leftRayNode;
-			}
-			else {
-				usedRayNode = rightRayNode;
-			}
-
-			// Construct an actual ray from this. Start is node start point, end from start and angles
+			// Get ray from controller, prioritise right hand. Length 10m
 			irr::core::line3d<irr::f32> selectRay;
-			selectRay.start = usedRayNode->getPosition(); // No parent, so position is same as absolute position
-			irr::core::vector3df rayForwardVector = usedRayNode->getRotation().rotationToDirection(irr::core::vector3df(0, 0, 1));
-			irr::f32 rayLength = 10.0; // Ray length in metres
-			selectRay.end = selectRay.start + rayLength * rayForwardVector;
+			getRayFromController(selectRay, 10.0);
 
 			// Tracks the current intersection point with the level or a mesh
 			irr::core::vector3df intersection;
@@ -1441,7 +1423,7 @@ int VRInterface::update() {
 					selectRay,
 					intersection,			// This will be the position of the collision
 					hitTriangle,			// This will be the triangle hit in the collision
-					IDFlag_IsPickable,		// This ensures that only nodes that we have set up to be pickable are considered
+					IDFlag_IsPickable_2d,	// This ensures that only nodes that we have set up to be pickable are considered
 					hudScreen->getParent());// Check only the HUD screen (or actually things below its parent) (0 for whole scene)
 
 			if (selectedSceneNode) {
@@ -1628,6 +1610,53 @@ int VRInterface::update() {
 #else
 	std::cout << "VR interface not implemented" << std::endl;
 	return 1;
+#endif
+}
+
+bool VRInterface::getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength)
+{
+#if defined _WIN64 || defined __linux__
+	if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
+		// Return a ray from controller
+
+		// If both are selected, prioritise right hand
+		int selectHandActive = HAND_LEFT_INDEX;
+		if (selectState[HAND_RIGHT_INDEX]) {
+			selectHandActive = HAND_RIGHT_INDEX;
+		}
+
+		// Find the 'ray' scene node that we want to match
+		irr::scene::ISceneNode* usedRayNode;
+		if (selectHandActive == HAND_LEFT_INDEX) {
+			usedRayNode = leftRayNode;
+		}
+		else {
+			usedRayNode = rightRayNode;
+		}
+
+		// Construct an actual ray from this. Start is node start point, end from start and angles
+		ray->start = usedRayNode->getPosition(); // No parent, so position is same as absolute position
+		irr::core::vector3df rayForwardVector = usedRayNode->getRotation().rotationToDirection(irr::core::vector3df(0, 0, 1));
+		ray->end = ray->start + rayLength * rayForwardVector;
+		return true;
+	} else {
+		// Neither is selected
+		ray->start.X = 0;
+		ray->start.Y = 0;
+		ray->start.Z = 0;
+		ray->end.X = 0;
+		ray->end.Y = 0;
+		ray->end.Z = 0;
+		return false;	
+	}
+#else
+	ray->start.X = 0;
+	ray->start.Y = 0;
+	ray->start.Z = 0;
+	ray->end.X = 0;
+	ray->end.Y = 0;
+	ray->end.Z = 0;
+	return false;
 #endif
 }
 

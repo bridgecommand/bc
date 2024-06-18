@@ -1607,7 +1607,7 @@ SimulationModel::~SimulationModel()
             ray,
             intersection, // This will be the position of the collision
             hitTriangle, // This will be the triangle hit in the collision
-            0, // (bitmask), 0 for all
+            IDFlag_IsPickable, // (bitmask), 0 for all
             0); // Check all nodes
 
         irr::scene::ISceneNode* contactPointNode = 0;
