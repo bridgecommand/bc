@@ -1409,6 +1409,11 @@ int VRInterface::update() {
 	if (showHUD) {
 		if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
 
+			// Post user event that can be used for mooring line start/end detection. Content does not matter
+			irr::SEvent userEventFromVR;
+			userEventFromVR.EventType = irr::EET_USER_EVENT;
+			dev->postEventFromUser(userEventFromVR);
+
 			// Get ray from controller, prioritise right hand. Length 10m
 			irr::core::line3d<irr::f32> selectRay;
 			getRayFromController(&selectRay, 10.0);

@@ -106,6 +106,19 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         return true;
     }
 
+    // Special event used to pass VR click event for mooring lines
+    if (event.EventType == irr::EET_USER_EVENT)
+    {
+        if ((linesMode == 1) || (linesMode == 2))
+        {
+            irr::core::line3df rayForLines;
+            if (vrInterface->getRayFromController(&rayForLines, 1000.0)) {
+                // Ray found from VR interface
+                handleMooringLines(rayForLines);
+            }
+        }
+    }
+    
     // From mouse - keep track of button press state
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT)
     {
@@ -115,90 +128,6 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             // Log position of mouse click, so we can track relative movement
             mouseClickX = event.MouseInput.X;
             mouseClickY = event.MouseInput.Y;
-
-            // Add line (mooring/towing) start or end if in required mode
-            if ((linesMode == 1) || (linesMode == 2))
-            {
-                irr::core::line3df rayForLines;
-                // Check for ray from VR interface first. If false, fall back to mouse position
-                // Note that the VR interface triggers a mouse event, which means we should get here
-                if (!vrInterface->getRayFromController(&rayForLines, 1000.0)) {
-                    // Scale if required because 3d view may be different
-                    irr::s32 scaledMouseY = mouseClickY;
-                    if (gui->getShowInterface())
-                    {
-                        scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
-                    }
-                    rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
-                }
-                
-                irr::scene::ISceneNode *contactNode = model->getContactFromRay(rayForLines, linesMode);
-
-                if (contactNode)
-                {
-                    // If returns non-null, then successful, so move onto next point or finish
-
-                    // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
-                    int nodeType = 0;
-                    int nodeID = 0;
-
-                    // Find node type and ID from name
-                    std::string nodeName = std::string(contactNode->getName());
-
-                    if (nodeName.find("OwnShip") == 0)
-                    {
-                        nodeType = 1;
-                        nodeID = 0;
-                    }
-                    else if (nodeName.find("OtherShip") == 0)
-                    {
-                        nodeType = 2;
-                        // Find other ship ID from name (should be OtherShip_#)
-                        std::vector<std::string> splitName = Utilities::split(nodeName, '_');
-                        if (splitName.size() == 2)
-                        {
-                            nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
-                        }
-                    }
-                    else if (nodeName.find("Buoy") == 0)
-                    {
-                        nodeType = 3;
-                        // Find other buoy ID from name (should be Buoy_#)
-                        std::vector<std::string> splitName = Utilities::split(nodeName, '_');
-                        if (splitName.size() == 2)
-                        {
-                            nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
-                        }
-                    }
-                    else if (nodeName.find("LandObject") == 0)
-                    {
-                        nodeType = 4;
-                        // Find other land object ID from name (should be LandObject_#)
-                        std::vector<std::string> splitName = Utilities::split(nodeName, '_');
-                        if (splitName.size() == 2)
-                        {
-                            nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
-                        }
-                    }
-                    // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
-
-                    if (linesMode == 2)
-                    {
-
-                        model->getLines()->setLineEnd(contactNode, model->getOwnShipMass(), nodeType, nodeID);
-                        // Finished
-                        linesMode = 0;
-                        gui->setLinesControlsText("");
-                    }
-                    if (linesMode == 1)
-                    {
-                        model->getLines()->setLineStart(contactNode, nodeType, nodeID); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
-                        // Move on to end point
-                        linesMode = 2;
-                        gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
-                    }
-                }
-            }
         }
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP)
         {
@@ -220,6 +149,23 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             rightMouseDown = false;
         }
         model->setMouseDown(leftMouseDown || rightMouseDown); // Set if either mouse is down
+
+        // Mooring lines controls
+        if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
+        {
+            // Add line (mooring/towing) start or end if in required mode
+            if ((linesMode == 1) || (linesMode == 2))
+            {
+                // Scale if required because 3d view may be different
+                irr::s32 scaledMouseY = mouseClickY;
+                if (gui->getShowInterface())
+                {
+                    scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                }
+                irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
+                handleMooringLines(rayForLines);
+            }
+        }
 
         // Check mouse movement
         if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && leftMouseDown)
@@ -2026,6 +1972,78 @@ void MyEventReceiver::startShutdown()
     {
         device->getGUIEnvironment()->addMessageBox(L"Quit?", L"Quit?", true, irr::gui::EMBF_OK | irr::gui::EMBF_CANCEL, 0, GUIMain::GUI_ID_CLOSE_BOX); // I18n
         shutdownDialogActive = true;
+    }
+}
+
+void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
+{
+    if ((linesMode == 1) || (linesMode == 2)) {
+        irr::scene::ISceneNode* contactNode = model->getContactFromRay(rayForLines, linesMode);
+
+        if (contactNode)
+        {
+            // If returns non-null, then successful, so move onto next point or finish
+
+            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
+            int nodeType = 0;
+            int nodeID = 0;
+
+            // Find node type and ID from name
+            std::string nodeName = std::string(contactNode->getName());
+
+            if (nodeName.find("OwnShip") == 0)
+            {
+                nodeType = 1;
+                nodeID = 0;
+            }
+            else if (nodeName.find("OtherShip") == 0)
+            {
+                nodeType = 2;
+                // Find other ship ID from name (should be OtherShip_#)
+                std::vector<std::string> splitName = Utilities::split(nodeName, '_');
+                if (splitName.size() == 2)
+                {
+                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+            }
+            else if (nodeName.find("Buoy") == 0)
+            {
+                nodeType = 3;
+                // Find other buoy ID from name (should be Buoy_#)
+                std::vector<std::string> splitName = Utilities::split(nodeName, '_');
+                if (splitName.size() == 2)
+                {
+                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+            }
+            else if (nodeName.find("LandObject") == 0)
+            {
+                nodeType = 4;
+                // Find other land object ID from name (should be LandObject_#)
+                std::vector<std::string> splitName = Utilities::split(nodeName, '_');
+                if (splitName.size() == 2)
+                {
+                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+            }
+            // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
+
+            if (linesMode == 2)
+            {
+
+                model->getLines()->setLineEnd(contactNode, model->getOwnShipMass(), nodeType, nodeID);
+                // Finished
+                linesMode = 0;
+                gui->setLinesControlsText("");
+            }
+            if (linesMode == 1)
+            {
+                model->getLines()->setLineStart(contactNode, nodeType, nodeID); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
+                // Move on to end point
+                linesMode = 2;
+                gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
+            }
+        }
     }
 }
 
