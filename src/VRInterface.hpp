@@ -65,7 +65,8 @@ public:
     ~VRInterface();
     int load(SimulationModel* model);
     void unload();
-    float getAspectRatio();
+    float getAspectRatio() const;
+    bool isVRActive() const;
     int runtimeEvents();
     int update();
     bool getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength);
@@ -137,6 +138,7 @@ private:
     bool quit_mainloop;
     bool session_running; // to avoid beginning an already running session
     bool run_framecycle;  // for some session states skip the frame cycle
+    bool vrActive; // If VR has been successfully loaded
 
     SimulationModel* model; // Store pointer to model
 

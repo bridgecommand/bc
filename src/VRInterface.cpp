@@ -38,6 +38,8 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 	identity_pose.position.y = 0;
 	identity_pose.position.z = 0;
 
+	vrActive = false;
+
 	menuPressedRepeats = 0;
 	showHUD = true;
 
@@ -794,6 +796,7 @@ int VRInterface::load(SimulationModel* model) {
 	delete[] swapchain_formats;
 
 	// If successfull, return 0
+	vrActive = true;
 	return 0;
 #else
 	std::cout << "VR interface not implemented" << std::endl;
@@ -814,13 +817,17 @@ void VRInterface::getContextInformation(Display** xDisplay,
 }
 #endif
 
-float VRInterface::getAspectRatio() {
+float VRInterface::getAspectRatio() const {
 	if (swapchainImageHeight > 0) {
 		return (float)swapchainImageWidth / (float)swapchainImageHeight;
 	}
 	else {
 		return 1.0;
 	}
+}
+
+bool VRInterface::isVRActive() const {
+	return vrActive;
 }
 
 void VRInterface::unload() {
@@ -1471,12 +1478,15 @@ int VRInterface::update() {
 				mouseEventFromVR.MouseInput.Shift = false;
 				mouseEventFromVR.MouseInput.Control = false;
 				mouseEventFromVR.MouseInput.ButtonStates = irr::E_MOUSE_BUTTON_STATE_MASK::EMBSM_LEFT;
+				
+				mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_MOUSE_MOVED;
+				dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
+				
 				if (previousSelectState[HAND_LEFT_INDEX] || previousSelectState[HAND_RIGHT_INDEX]) {
 					mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_LMOUSE_PRESSED_DOWN;
 					dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
 				}
-				mouseEventFromVR.MouseInput.Event = irr::EMOUSE_INPUT_EVENT::EMIE_MOUSE_MOVED;
-				dev->getGUIEnvironment()->postEventFromUser(mouseEventFromVR);
+
 
 			}
 

@@ -207,7 +207,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_LINES_LIST)
             {
                 // Allow de-selection by double click
-                ((irr::gui::IGUIListBox *)event.GUIEvent.Caller)->setSelected(-1);
+                if (!vrInterface->isVRActive()) {
+                    // Workaround for now for VR mode, as 'SELECTED_AGAIN' always seems to run
+                    ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->setSelected(-1);
+                }
                 model->getLines()->setSelectedLine(((irr::gui::IGUIListBox *)event.GUIEvent.Caller)->getSelected());
             }
 
@@ -215,6 +218,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // Allow de-selection
                 int arpaSelected = -1;
+                if (vrInterface->isVRActive()) {
+                    // Workaround for now for VR mode, as 'SELECTED_AGAIN' always seems to run
+                    arpaSelected = ((irr::gui::IGUIListBox*)event.GUIEvent.Caller)->getSelected();
+                }
                 gui->setARPAList(arpaSelected);
                 // Set selected ID via model.
                 model->setArpaListSelection(arpaSelected);
