@@ -45,7 +45,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         } 
         else if (controlType == 1)
         {
-            controlMesh = smgr->getMesh("media/wheel.x");
+            controlMesh = smgr->getMesh("media/wheel.3ds");
         }
         else if (controlType == 2)
         {
@@ -59,7 +59,19 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         if (controlMesh != 0) 
         {
             controlNode = smgr->addMeshSceneNode(controlMesh, parent, -1, offset, irr::core::vector3df(0.0, 0.0, 0.0), irr::core::vector3df(scale,scale,scale));
+        
+            // Set material parameters
+            if (controlNode && controlNode->getMaterialCount() > 0)
+            {
+                for (irr::u32 mat = 0; mat < controlNode->getMaterialCount(); mat++)
+                {
+                    controlNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                    controlNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+                }
+            }
+        
         }
+        
     }
 }
 
