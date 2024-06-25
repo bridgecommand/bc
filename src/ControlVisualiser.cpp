@@ -41,7 +41,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         irr::scene::IMesh* controlMesh = 0;
         if (controlType == 0) 
         {
-            controlMesh = smgr->getMesh("media/throttle.x");
+            controlMesh = smgr->getMesh("media/throttle.3ds");
         } 
         else if (controlType == 1)
         {
