@@ -49,11 +49,11 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         }
         else if (controlType == 2)
         {
-            controlMesh = smgr->getMesh("media/schottel_base.x");
+            controlMesh = smgr->getMesh("media/schottel_base.3ds");
         }
         else if (controlType == 3)
         {
-            controlMesh = smgr->getMesh("media/schottel_body.x");
+            controlMesh = smgr->getMesh("media/schottel_body.3ds");
         }
 
         if (controlMesh != 0) 
