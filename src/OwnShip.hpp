@@ -100,6 +100,7 @@ public:
         irr::core::vector3df getPortEngineControlPosition() const;
         irr::core::vector3df getStbdEngineControlPosition() const;
         irr::core::vector3df getWheelControlPosition() const;
+        irr::f32 getWheelControlScale() const;
         bool isSingleEngine() const;
         bool isAzimuthDrive() const;
         bool isAzimuthAsternAllowed() const;
@@ -322,6 +323,7 @@ private:
         irr::core::vector3df portThrottlePosition;
         irr::core::vector3df stbdThrottlePosition;
         irr::core::vector3df wheelControlPosition;
+        irr::f32 wheelControlScale;
 
         bool buoyCollision;
         bool otherShipCollision;
