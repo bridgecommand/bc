@@ -22,6 +22,7 @@
 
 //global constants
 const int IDFlag_IsPickable=1;
+const int IDFlag_IsPickable_2d=2;
 const irr::f32 RHO_SW = 1024; // density of seawater kg / m^3
 const irr::f32 RHO_FW = 1000; // density of freshwater kg / m^3
 const irr::f32 RHO_AIR = 1.225; // density of air at sea level kg / m^3 approximately
@@ -43,8 +44,7 @@ const irr::f32 DEG_IN_RAD = 180.0 / PI;
 const irr::f32 RAD_PER_S_IN_DEG_PER_MINUTE = 180.0/PI * 60 ;
 
 //general definitions
-const std::string LONGNAME = "Bridge Command 5.9.5";
+const std::string LONGNAME = "Bridge Command 5.9.6";
 const std::string VERSION = "5.9";
-const std::string LONGVERSION = "5.9.5";
-
+const std::string LONGVERSION = "5.9.6";
 #endif

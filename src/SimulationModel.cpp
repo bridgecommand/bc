@@ -236,7 +236,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         } else {
             portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
             stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
-            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), 1.0 / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
         }
 
         //make a radar screen, setting parent and offset from own ship
@@ -1607,7 +1607,7 @@ SimulationModel::~SimulationModel()
             ray,
             intersection, // This will be the position of the collision
             hitTriangle, // This will be the triangle hit in the collision
-            0, // (bitmask), 0 for all
+            IDFlag_IsPickable, // (bitmask), 0 for all
             0); // Check all nodes
 
         irr::scene::ISceneNode* contactPointNode = 0;

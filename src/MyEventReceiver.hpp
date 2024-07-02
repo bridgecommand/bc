@@ -25,6 +25,7 @@
 class GUIMain;
 class SimulationModel;
 class Lines;
+class VRInterface;
 
 //Data about joystick setup
 class JoystickSetup {
@@ -165,7 +166,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
+    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -173,8 +174,15 @@ public:
 
 private:
 
+    void startShutdown();
+    irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
+    std::wstring f32To3dp(irr::f32 value, bool stripZeros = false);
+    bool IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const;
+    void handleMooringLines(irr::core::line3df rayForLines);
+
     SimulationModel* model;
     GUIMain* gui;
+    VRInterface* vrInterface;
     bool leftMouseDown;
     bool rightMouseDown;
     irr::IrrlichtDevice* device;
@@ -218,11 +226,6 @@ private:
     bool previousJoystickPOVInitialised;
 
     irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
-
-    void startShutdown();
-    irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
-    std::wstring f32To3dp(irr::f32 value, bool stripZeros=false);
-    bool IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const;
 };
 
 #endif

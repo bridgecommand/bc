@@ -784,6 +784,8 @@ int main(int argc, char ** argv)
         scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
     }
 
+    hostname = Utilities::trim(hostname);
+
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {
         std::string pathToMake = Utilities::getUserDirBase();
@@ -838,7 +840,7 @@ int main(int argc, char ** argv)
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
     Network* extraNetwork = 0;
-    if (mode == OperatingMode::Multiplayer) {
+    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
         extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
         extraNetwork->connectToServer(hostname);
         //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
@@ -997,7 +999,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model

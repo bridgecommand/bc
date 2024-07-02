@@ -228,6 +228,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     wheelControlPosition.X = IniFile::iniFileTof32(shipIniFilename, "WheelX", -999);
     wheelControlPosition.Y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
     wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
+    wheelControlScale = IniFile::iniFileTof32(shipIniFilename, "WheelScale", 1);
 
     // Do not scale portThrottlePosition, stbd... and wheelControlPosition, as these are implicitly scaled as position used relative to parent
     
@@ -315,6 +316,19 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
                 }
             }
         }
+
+        // For testing, make wireframe
+        /*
+        for (irr::u32 i=0; i<shipMesh->getMeshBufferCount(); ++i)
+        {
+            irr::scene::IMeshBuffer* mb = shipMesh->getMeshBuffer(i);
+            if (mb)
+            {
+                mb->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
+            }
+        }
+        */
+
         ship = smgr->addAnimatedMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
         // For debugging:
@@ -1369,6 +1383,11 @@ irr::core::vector3df OwnShip::getStbdEngineControlPosition() const
 irr::core::vector3df OwnShip::getWheelControlPosition() const
 {
     return wheelControlPosition;
+}
+
+irr::f32 OwnShip::getWheelControlScale() const
+{
+    return wheelControlScale;
 }
 
 bool OwnShip::isSingleEngine() const
