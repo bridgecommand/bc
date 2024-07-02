@@ -62,6 +62,27 @@
 					<Add library="pthread" />
 				</Linker>
 			</Target>
+			<Target title="Windows64">
+				<Option output="../../bin/bridgecommand-mc" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
+					<Add library="../libs/Irrlicht/irrlicht-svn/lib/Win64-gcc/libIrrlicht.a" />
+					<Add library="ws2_32" />
+					<Add library="Winmm" />
+					<Add library="enet" />
+					<Add directory="../libs/Irrlicht/irrlicht-svn/include" />
+					<Add directory="../libs/enet-1.3.14/bin/Release/win64/" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="cmd /c cd ../../bin &amp; useMinGW64dll.bat" />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -84,6 +105,7 @@
 		<Unit filename="../icon.rc">
 			<Option compilerVar="WINDRES" />
 			<Option target="Windows" />
+			<Option target="Windows64" />
 		</Unit>
 		<Unit filename="AISOverUDP.cpp" />
 		<Unit filename="AISOverUDP.hpp" />
