@@ -11,7 +11,7 @@ To build on Linux:
 To build on Mac OSX:
 ====================
 
-1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store
+1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'
 2) Build the required sound packages:
 
 Libsndfile:
