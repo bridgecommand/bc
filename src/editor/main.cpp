@@ -13,6 +13,7 @@
 //#include "Network.hpp"
 #include "ControllerModel.hpp"
 #include "GUI.hpp"
+#include "ImportExportGUI.hpp"
 #include "EventReceiver.hpp"
 
 #include "../Constants.hpp"
@@ -131,6 +132,8 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     const irr::s32 WORLD_BOX_ID = 102;
     const irr::s32 OK_SCENARIO_BUTTON_ID = 103;
     const irr::s32 OK_WORLD_BUTTON_ID = 104;
+    const irr::s32 IMPORT_SCENARIO_BUTTON_ID = 105;
+    const irr::s32 EXPORT_SCENARIO_BUTTON_ID = 106;
 
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
     irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
@@ -140,6 +143,8 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     irr::gui::IGUIStaticText* worldText = device->getGUIEnvironment()->addStaticText(language->translate("selectWorld").c_str(),irr::core::rect<irr::s32>(0.520*su,0.150*sh,0.970*su,0.190*sh),false,true,scnWorldChoiceWindow);
     irr::gui::IGUIButton* scenarioOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.85*sh,0.485*su,0.90*sh),scnWorldChoiceWindow,OK_SCENARIO_BUTTON_ID,language->translate("editScenario").c_str());
     irr::gui::IGUIButton* worldOK = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.85*sh,0.970*su,0.90*sh),scnWorldChoiceWindow,OK_WORLD_BUTTON_ID,language->translate("newScenario").c_str());
+    irr::gui::IGUIButton* importScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.91*sh,0.485*su,0.96*sh),scnWorldChoiceWindow,IMPORT_SCENARIO_BUTTON_ID,language->translate("importScenario").c_str());
+    irr::gui::IGUIButton* exportScenario = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.495*su,0.91*sh,0.970*su,0.96*sh),scnWorldChoiceWindow,EXPORT_SCENARIO_BUTTON_ID,language->translate("exportScenario").c_str());
     scnWorldChoiceWindow->getCloseButton()->setVisible(false);
 
     //Add scenarios to list box
@@ -158,12 +163,15 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     if (worldListBox->getItemCount()>0) {
         worldListBox->setSelected(0);
     }
-
+    
     //set focus on first box
     //device->getGUIEnvironment()->setFocus(scenarioListBox);
 
+    // Create a different set of GUI components that we can show/hide to import and export scenarios
+    GUIImportExport importExport(device, language);
+    
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID);
+    StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID,IMPORT_SCENARIO_BUTTON_ID,EXPORT_SCENARIO_BUTTON_ID,&importExport);
     device->setEventReceiver(&startupReceiver);
 
     while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 ) {

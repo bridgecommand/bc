@@ -6,6 +6,7 @@ add_executable(bridgecommand-ed
     ../Utilities.cpp
     ControllerModel.cpp
     EventReceiver.cpp
+    ImportExportGUI.cpp
     GUI.cpp
     StartupEventReceiver.cpp
 )

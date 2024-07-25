@@ -17,10 +17,11 @@
 #include "StartupEventReceiver.hpp"
 
 #include <iostream>
+#include "ImportExportGUI.hpp"
 
 //using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID) //Constructor
+    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID, irr::s32 importScenarioButtonID, irr::s32 exportScenarioButtonID, GUIImportExport* guiImportExport) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->worldListBox = worldListBox;
@@ -28,6 +29,9 @@
 		this->worldListBoxID = worldListBoxID;
 		this->okScenarioButtonID = okScenarioButtonID;
 		this->okWorldButtonID = okWorldButtonID;
+        this->importScenarioButtonID = importScenarioButtonID;
+        this->exportScenarioButtonID = exportScenarioButtonID;
+        this->guiImportExport = guiImportExport;
 		scenarioSelected = -1; //Set as initially invalid
 		worldSelected = -1; //Set as initially invalid
 	}

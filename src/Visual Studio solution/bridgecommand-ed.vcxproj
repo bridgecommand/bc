@@ -166,6 +166,7 @@
     <ClCompile Include="..\editor\ControllerModel.cpp" />
     <ClCompile Include="..\editor\EventReceiver.cpp" />
     <ClCompile Include="..\editor\GUI.cpp" />
+    <ClCompile Include="..\editor\ImportExportGUI.cpp" />
     <ClCompile Include="..\editor\StartupEventReceiver.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="..\editor\ControllerModel.hpp" />
     <ClInclude Include="..\editor\EventReceiver.hpp" />
     <ClInclude Include="..\editor\GUI.hpp" />
+    <ClInclude Include="..\editor\ImportExportGUI.hpp" />
     <ClInclude Include="..\editor\GeneralDataStruct.hpp" />
     <ClInclude Include="..\editor\OtherShipDataStruct.hpp" />
     <ClInclude Include="..\editor\OwnShipDataStruct.hpp" />

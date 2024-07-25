@@ -19,11 +19,14 @@
 
 #include "irrlicht.h"
 
+//Forward declarations
+class GUIImportExport;
+
 class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID, irr::s32 importScenarioButtonID, irr::s32 exportScenarioButtonID, GUIImportExport* guiImportExport);
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected() const;
@@ -33,10 +36,13 @@ private:
 
     irr::gui::IGUIListBox* scenarioListBox;
     irr::gui::IGUIListBox* worldListBox;
+    GUIImportExport* guiImportExport;
     irr::s32 scenarioListBoxID;
     irr::s32 worldListBoxID;
     irr::s32 okScenarioButtonID;
     irr::s32 okWorldButtonID;
+    irr::s32 importScenarioButtonID;
+    irr::s32 exportScenarioButtonID;
     irr::s32 scenarioSelected;
     irr::s32 worldSelected;
 
