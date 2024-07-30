@@ -111,7 +111,8 @@ void OwnShipData::deserialise(std::string data)
 
 std::string ScenarioData::serialise()
 {
-    std::string serialised = "SCN1"; //Scenario data, serialised format 1
+    // SCN2 is the same as SCN1, but allows whitespace around the delimiters
+    std::string serialised = "SCN2"; //Scenario data, serialised format 2
     serialised.append("#");
     serialised.append(scenarioName);
     serialised.append("#");
@@ -152,25 +153,28 @@ void ScenarioData::deserialise(std::string data)
     std::vector<std::string> splitData = Utilities::split(data,'#');
     if (splitData.size() == 14) {
         //note that splitData.at(0) is the version of the serialised data format
-        scenarioName = splitData.at(1);
-        worldName = splitData.at(2);
-        startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
-        startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-        startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-        startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
-        sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
-        sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
-        weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
-        rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
-        visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
-        ownShipData.deserialise(splitData.at(12));
-        //clear any existing legs data
-        otherShipsData.clear();
-        std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(13),',');
-        for(unsigned int i=0; i<otherShipsVector.size(); i++) {
-            OtherShipData tempOther;
-            tempOther.deserialise(otherShipsVector.at(i));
-            otherShipsData.push_back(tempOther);
+        // SCN2 is the same as SCN1, but allows whitespace around the delimiters
+        if ((splitData.at(0) == "SCN1") || (splitData.at(0) == "SCN2")) {
+            scenarioName = splitData.at(1);
+            worldName = splitData.at(2);
+            startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
+            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
+            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
+            sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
+            sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
+            weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
+            rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
+            visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
+            ownShipData.deserialise(splitData.at(12));
+            //clear any existing legs data
+            otherShipsData.clear();
+            std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(13),',');
+            for(unsigned int i=0; i<otherShipsVector.size(); i++) {
+                OtherShipData tempOther;
+                tempOther.deserialise(otherShipsVector.at(i));
+                otherShipsData.push_back(tempOther);
+            }
         }
     }
 

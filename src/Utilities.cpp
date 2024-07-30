@@ -139,7 +139,8 @@ namespace Utilities
         std::stringstream ss(inputString);
         std::string item;
         while (std::getline(ss, item, delim)) {
-            splitStrings.push_back(item);
+            // Trim blank spaces from the string
+            splitStrings.push_back(trim(item));
         }
         //Special case - if the final character is the delimitor, add an empty string at the end
         if (inputString.length() > 0) {
