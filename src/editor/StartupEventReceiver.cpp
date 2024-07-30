@@ -17,6 +17,8 @@
 #include "StartupEventReceiver.hpp"
 
 #include <iostream>
+#include <string>
+#include "../ScenarioDataStructure.hpp"
 #include "../Utilities.hpp"
 #include "ImportExportGUI.hpp"
 
@@ -79,7 +81,20 @@
 
                 if (id == exportScenarioButtonID) {
                     if (scenarioListBox->getSelected() > -1 ) {
-                        guiImportExport->setText(Utilities::lexical_cast<std::string>(scenarioListBox->getSelected()));
+                        
+                        // Temporary for testing, will be replaced by actual scenario serialised data
+                        std::wstring scenarioWName = std::wstring(scenarioListBox->getListItem(scenarioListBox->getSelected()));
+                        std::string scenarioName(scenarioWName.begin(), scenarioWName.end());
+                        
+                        std::string userFolder = Utilities::getUserDir();
+                        std::string scenarioPath = "Scenarios/";
+                        if (Utilities::pathExists(userFolder + scenarioPath)) {
+                            scenarioPath = userFolder + scenarioPath;
+                        }
+                        // Load scenario data, and show in window
+                        ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName); //Read a scenario from ini files
+                        scenarioData.serialise();
+                        guiImportExport->setText(scenarioData.serialise());
                     }
                     selectWindow->setVisible(false);
                     guiImportExport->setVisible(true);

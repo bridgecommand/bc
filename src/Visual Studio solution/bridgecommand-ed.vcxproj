@@ -162,6 +162,7 @@
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\Lang.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
+    <ClCompile Include="..\ScenarioDataStructure.cpp" />
     <ClCompile Include="..\editor\main.cpp" />
     <ClCompile Include="..\editor\ControllerModel.cpp" />
     <ClCompile Include="..\editor\EventReceiver.cpp" />

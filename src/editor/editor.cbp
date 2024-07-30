@@ -92,6 +92,7 @@
 		<Unit filename="../Lang.cpp" />
 		<Unit filename="../Lang.hpp" />
 		<Unit filename="../Leg.hpp" />
+		<Unit filename="../ScenarioDataStructure.cpp" />
 		<Unit filename="../ScenarioDataStructure.hpp" />
 		<Unit filename="../Utilities.cpp" />
 		<Unit filename="../Utilities.hpp" />
