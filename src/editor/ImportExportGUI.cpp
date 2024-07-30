@@ -17,8 +17,44 @@
 #include "ImportExportGUI.hpp"
 
 
-GUIImportExport::GUIImportExport(irr::IrrlichtDevice* device, Lang* language){
+GUIImportExport::GUIImportExport(
+    irr::IrrlichtDevice* device, 
+    Lang* language, 
+    irr::u32 su, 
+    irr::u32 sh){
     this->device = device;
     this->language = language;
     guienv = device->getGUIEnvironment();
+
+    importExportWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), true);
+    if (importExportWindow) {
+        importExportWindow->getCloseButton()->setVisible(false);
+
+        importExportText = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.920*su,0.80*sh), true, importExportWindow);
+    }
+}
+
+void GUIImportExport::setVisible(bool isVisible)
+{
+    if (importExportWindow) {
+        importExportWindow->setVisible(isVisible);
+    }
+}
+
+void GUIImportExport::setText(std::string text)
+{
+    if (importExportText) {
+        importExportText->setText(irr::core::stringw(text.c_str()).c_str());
+    }
+}
+
+std::string GUIImportExport::getText() const
+{
+    if (importExportText) {
+        std::wstring wideText(importExportText->getText());
+        std::string text(wideText.begin(),wideText.end());
+        return text;
+    } else {
+        return "";
+    }
 }

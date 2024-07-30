@@ -168,10 +168,21 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     //device->getGUIEnvironment()->setFocus(scenarioListBox);
 
     // Create a different set of GUI components that we can show/hide to import and export scenarios
-    GUIImportExport importExport(device, language);
+    GUIImportExport importExport(device, language, su, sh);
+    importExport.setVisible(false);
     
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,worldListBox,SCENARIO_BOX_ID,WORLD_BOX_ID,OK_SCENARIO_BUTTON_ID,OK_WORLD_BUTTON_ID,IMPORT_SCENARIO_BUTTON_ID,EXPORT_SCENARIO_BUTTON_ID,&importExport);
+    StartupEventReceiver startupReceiver(
+        scenarioListBox,
+        worldListBox,
+        scnWorldChoiceWindow,
+        SCENARIO_BOX_ID,
+        WORLD_BOX_ID,
+        OK_SCENARIO_BUTTON_ID,
+        OK_WORLD_BUTTON_ID,
+        IMPORT_SCENARIO_BUTTON_ID,
+        EXPORT_SCENARIO_BUTTON_ID,
+        &importExport);
     device->setEventReceiver(&startupReceiver);
 
     while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 ) {

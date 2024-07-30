@@ -18,6 +18,7 @@
 #define __IMPORTEXPORTGUI_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include <string>
 
 #include "../Lang.hpp"
 
@@ -25,16 +26,23 @@ class GUIImportExport {
     
 public:
     
-    GUIImportExport(irr::IrrlichtDevice* device, Lang* language);
-    
+    GUIImportExport(
+        irr::IrrlichtDevice* device, 
+        Lang* language, 
+        irr::u32 su, 
+        irr::u32 sh);
+    void setVisible(bool isVisible);
+    void setText(std::string text);
+    std::string getText() const;
 private:
 
     Lang* language;
 
     irr::IrrlichtDevice* device;
     irr::gui::IGUIEnvironment* guienv;
-    
-    
+    irr::gui::IGUIWindow* importExportWindow;
+    irr::gui::IGUIEditBox* importExportText;
+    irr::gui::IGUIButton* importExportOKButton;
     
 };
 

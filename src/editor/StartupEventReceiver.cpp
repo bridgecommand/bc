@@ -17,14 +17,26 @@
 #include "StartupEventReceiver.hpp"
 
 #include <iostream>
+#include "../Utilities.hpp"
 #include "ImportExportGUI.hpp"
 
 //using namespace irr;
 
-    StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIListBox* worldListBox, irr::s32 scenarioListBoxID, irr::s32 worldListBoxID, irr::s32 okScenarioButtonID, irr::s32 okWorldButtonID, irr::s32 importScenarioButtonID, irr::s32 exportScenarioButtonID, GUIImportExport* guiImportExport) //Constructor
+    StartupEventReceiver::StartupEventReceiver(
+        irr::gui::IGUIListBox* scenarioListBox, 
+        irr::gui::IGUIListBox* worldListBox, 
+        irr::gui::IGUIWindow* selectWindow,
+        irr::s32 scenarioListBoxID, 
+        irr::s32 worldListBoxID, 
+        irr::s32 okScenarioButtonID, 
+        irr::s32 okWorldButtonID, 
+        irr::s32 importScenarioButtonID, 
+        irr::s32 exportScenarioButtonID, 
+        GUIImportExport* guiImportExport) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->worldListBox = worldListBox;
+        this->selectWindow = selectWindow;
 		this->scenarioListBoxID = scenarioListBoxID;
 		this->worldListBoxID = worldListBoxID;
 		this->okScenarioButtonID = okScenarioButtonID;
@@ -54,6 +66,23 @@
             {
                 if (worldListBox->getSelected() > -1 ) {
                     worldSelected = worldListBox->getSelected();
+                }
+            }
+
+            // Other buttons
+            if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) 
+            {
+                if (id == importScenarioButtonID) {
+                    selectWindow->setVisible(false);
+                    guiImportExport->setVisible(true);
+                }
+
+                if (id == exportScenarioButtonID) {
+                    if (scenarioListBox->getSelected() > -1 ) {
+                        guiImportExport->setText(Utilities::lexical_cast<std::string>(scenarioListBox->getSelected()));
+                    }
+                    selectWindow->setVisible(false);
+                    guiImportExport->setVisible(true);
                 }
             }
 
