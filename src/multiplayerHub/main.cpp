@@ -320,7 +320,7 @@ int main()
             thisPeerData.otherShipsData.erase(thisPeerData.otherShipsData.begin()+thisPeer);
 
             //Send initial scenario information (reliable packet)
-            network.sendString(thisPeerData.serialise(),true,thisPeer);
+            network.sendString(thisPeerData.serialise(false),true,thisPeer);
 
             //Store the data for this peer
             peerScenarioData.push_back(thisPeerData);

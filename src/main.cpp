@@ -871,7 +871,7 @@ int main(int argc, char ** argv)
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
-    std::string serialisedScenarioData = scenarioData.serialise();
+    std::string serialisedScenarioData = scenarioData.serialise(false);
 
     loadingMessage->remove(); loadingMessage = 0;
 

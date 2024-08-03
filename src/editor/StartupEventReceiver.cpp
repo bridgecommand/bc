@@ -93,8 +93,7 @@
                         }
                         // Load scenario data, and show in window
                         ScenarioData scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName); //Read a scenario from ini files
-                        scenarioData.serialise();
-                        guiImportExport->setText(scenarioData.serialise());
+                        guiImportExport->setText(scenarioData.serialise(true));
                     }
                     selectWindow->setVisible(false);
                     guiImportExport->setVisible(true);

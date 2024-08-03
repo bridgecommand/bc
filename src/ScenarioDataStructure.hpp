@@ -30,7 +30,7 @@ class OwnShipData {
     irr::f32 initialSpeed, initialLong, initialLat, initialBearing;
 
     OwnShipData():initialSpeed(0),initialLong(0),initialLat(0), initialBearing(0){}
-    std::string serialise();
+    std::string serialise(bool withSpaces);
     void deserialise(std::string data);
 };
 
@@ -40,7 +40,7 @@ class LegData {
 
     LegData():bearing(0),speed(0),distance(0){}
 
-    std::string serialise();
+    std::string serialise(bool withSpaces);
     void deserialise(std::string data);
 };
 
@@ -53,7 +53,7 @@ class OtherShipData {
 
     OtherShipData():initialLong(0),initialLat(0){}
 
-    std::string serialise();
+    std::string serialise(bool withSpaces);
     void deserialise(std::string data);
 };
 
@@ -67,7 +67,7 @@ class ScenarioData {
 
     ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0){}
 
-    std::string serialise();
+    std::string serialise(bool withSpaces);
     void deserialise(std::string data);
 };
 

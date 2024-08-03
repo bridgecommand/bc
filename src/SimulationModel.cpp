@@ -82,7 +82,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         moveViewWithPrimary = true;
 
         //Store a serialised form of the scenario loaded, as we may want to send this over the network
-        serialisedScenarioData = scenarioData.serialise();
+        serialisedScenarioData = scenarioData.serialise(false);
 
         scenarioName = scenarioData.scenarioName;
 

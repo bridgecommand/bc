@@ -22,13 +22,17 @@
 //Serialisers:
 //Separators (largest first: # , | / ?
 
-std::string LegData::serialise()
+std::string LegData::serialise(bool withSpaces)
 {
     std::string serialised;
+    std::string separator = "?";
+    if (withSpaces) {
+        separator = "? ";
+    }
     serialised.append(Utilities::lexical_cast<std::string>(bearing));
-    serialised.append("?");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(speed));
-    serialised.append("?");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(distance));
     return serialised;
 }
@@ -43,21 +47,29 @@ void LegData::deserialise(std::string data)
     }
 }
 
-std::string OtherShipData::serialise()
+std::string OtherShipData::serialise(bool withSpaces)
 {
     std::string serialised;
+    std::string separator = "|";
+    if (withSpaces) {
+        separator = "| ";
+    }
     serialised.append(shipName);
-    serialised.append("|");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(mmsi));
-    serialised.append("|");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialLong));
-    serialised.append("|");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialLat));
-    serialised.append("|");
+    serialised.append(separator);
     for(unsigned int i=0;i<legs.size();i++) {
-        serialised.append(legs.at(i).serialise());
+        serialised.append(legs.at(i).serialise(withSpaces));
         if (i+1<legs.size()) { //Add terminating mark if not the last
-            serialised.append("/");
+            if (withSpaces) {
+                serialised.append("/ ");
+            } else {
+                serialised.append("/");
+            }
         }
     }
     return serialised;
@@ -82,17 +94,21 @@ void OtherShipData::deserialise(std::string data)
     }
 }
 
-std::string OwnShipData::serialise()
+std::string OwnShipData::serialise(bool withSpaces)
 {
     std::string serialised;
+    std::string separator = ",";
+    if (withSpaces) {
+        separator = ", ";
+    }
     serialised.append(ownShipName);
-    serialised.append(",");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialSpeed));
-    serialised.append(",");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialLong));
-    serialised.append(",");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialLat));
-    serialised.append(",");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialBearing));
     return serialised;
 }
@@ -109,39 +125,47 @@ void OwnShipData::deserialise(std::string data)
     }
 }
 
-std::string ScenarioData::serialise()
+std::string ScenarioData::serialise(bool withSpaces)
 {
+    std::string separator = "#";
+    if (withSpaces) {
+        separator = "# ";
+    }
     // SCN2 is the same as SCN1, but allows whitespace around the delimiters
     std::string serialised = "SCN2"; //Scenario data, serialised format 2
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(scenarioName);
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(worldName);
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(startTime));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(startDay));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(startMonth));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(startYear));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(sunRise));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(sunSet));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(weather));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(rainIntensity));
-    serialised.append("#");
+    serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(visibilityRange));
-    serialised.append("#");
-    serialised.append(ownShipData.serialise());
-    serialised.append("#");
+    serialised.append(separator);
+    serialised.append(ownShipData.serialise(withSpaces));
+    serialised.append(separator);
     for(unsigned int i=0;i<otherShipsData.size();i++) {
-        serialised.append(otherShipsData.at(i).serialise());
+        serialised.append(otherShipsData.at(i).serialise(withSpaces));
         if (i+1<otherShipsData.size()) { //Add terminating mark if not the last
-            serialised.append(",");
+            if (withSpaces) {
+                serialised.append(", ");
+            } else {
+                serialised.append(",");
+            }
         }
     }
     return serialised;
