@@ -31,6 +31,11 @@ GUIImportExport::GUIImportExport(
         importExportWindow->getCloseButton()->setVisible(false);
 
         importExportText = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.920*su,0.80*sh), true, importExportWindow);
+        if (importExportText) {
+            importExportText->setMultiLine(true);
+            importExportText->setWordWrap(true);
+            importExportText->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
+        }
     }
 }
 
