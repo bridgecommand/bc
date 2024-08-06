@@ -570,6 +570,7 @@ int main (int argc, char ** argv)
     scenarioData.description = "Scenario description";
     scenarioData.multiplayerName = false;
     scenarioData.willOverwrite = false;
+    scenarioData.scenarioName = "New Scenario";
 
     //Change default scenario name if in multiplayer mode
     if (multiplayer) {
