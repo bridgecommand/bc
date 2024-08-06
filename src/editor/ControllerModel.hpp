@@ -23,9 +23,7 @@
 #include "irrlicht.h"
 
 #include "PositionDataStruct.hpp"
-#include "OwnShipDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
-#include "GeneralDataStruct.hpp"
+#include "../ScenarioDataStructure.hpp"
 
 #include "GUI.hpp"
 #include "../Lang.hpp"
@@ -36,7 +34,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData, irr::u32 _zoomLevels);
+    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, irr::u32 _zoomLevels);
     ~ControllerModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -49,7 +47,7 @@ public:
     void setShipPosition(irr::s32 ship, irr::core::vector2df position); //To be called from eventReceiver
     void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
-    void setScenarioData(GeneralData newData); //To be called from event receiver
+    void setGeneralScenarioData(ScenarioData newData); //To be called from event receiver
     void checkName(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
 
     void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
@@ -79,10 +77,8 @@ private:
 	irr::u32 zoomLevels;
 
     //Data shared from main
-    OwnShipEditorData* ownShipData;
     std::vector<PositionData>* buoysData;
-    std::vector<OtherShipEditorData>* otherShipsData;
-    GeneralData* generalData;
+    ScenarioData* scenarioData;
     std::string worldName;
 
     irr::video::IImage* unscaledMap;

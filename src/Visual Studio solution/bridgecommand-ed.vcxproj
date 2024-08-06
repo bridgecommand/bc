@@ -181,11 +181,7 @@
     <ClInclude Include="..\editor\EventReceiver.hpp" />
     <ClInclude Include="..\editor\GUI.hpp" />
     <ClInclude Include="..\editor\ImportExportGUI.hpp" />
-    <ClInclude Include="..\editor\GeneralDataStruct.hpp" />
-    <ClInclude Include="..\editor\OtherShipDataStruct.hpp" />
-    <ClInclude Include="..\editor\OwnShipDataStruct.hpp" />
     <ClInclude Include="..\editor\PositionDataStruct.hpp" />
-    <ClInclude Include="..\editor\ShipDataStruct.hpp" />
     <ClInclude Include="..\editor\StartupEventReceiver.hpp" />
   </ItemGroup>
   <ItemGroup>

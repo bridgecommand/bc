@@ -26,10 +26,11 @@
 
 class OwnShipData {
     public:
-    std::string ownShipName;
+    std::string ownShipName;    
     irr::f32 initialSpeed, initialLong, initialLat, initialBearing;
+    irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
 
-    OwnShipData():initialSpeed(0),initialLong(0),initialLat(0), initialBearing(0){}
+    OwnShipData():initialSpeed(0),initialLong(0),initialLat(0), initialBearing(0), initialX(0), initialZ(0){}
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);
 };
@@ -37,8 +38,9 @@ class OwnShipData {
 class LegData {
     public:
     irr::f32 bearing, speed, distance;
+    irr::f32 startTime; //startTime only used in scenario editor
 
-    LegData():bearing(0),speed(0),distance(0){}
+    LegData():bearing(0),speed(0),distance(0),startTime(0){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);
@@ -49,9 +51,10 @@ class OtherShipData {
     std::string shipName;
     irr::u32 mmsi;
     irr::f32 initialLong, initialLat;
+    irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
     std::vector<LegData> legs;
 
-    OtherShipData():initialLong(0),initialLat(0){}
+    OtherShipData():initialLong(0), initialLat(0), initialX(0), initialZ(0){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);
@@ -64,8 +67,10 @@ class ScenarioData {
     irr::u32 startDay, startMonth, startYear;
     OwnShipData ownShipData;
     std::vector<OtherShipData> otherShipsData;
+    std::string description; // description only used in scenario editor
+    bool multiplayerName, willOverwrite; // multiplayerName only used in scenario editor
 
-    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0){}
+    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0),description(""),multiplayerName(false),willOverwrite(false){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);

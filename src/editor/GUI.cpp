@@ -183,16 +183,16 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     startDay->setText(dayString.c_str());
 
     //SunRise, SunSet, Weather, Rain
-    sunRise->setText((irr::core::stringw(oldScenarioInfo.sunRiseTime)).c_str());
-    sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSetTime)).c_str());
+    sunRise->setText((irr::core::stringw(oldScenarioInfo.sunRise)).c_str());
+    sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSet)).c_str());
     weather->setSelected(floor(oldScenarioInfo.weather*2));
-    rain->setSelected(floor(oldScenarioInfo.rain*2));
+    rain->setSelected(floor(oldScenarioInfo.rainIntensity*2));
 
     irr::s32 selectedVis;
-    if (oldScenarioInfo.visibility<=1) {
-        selectedVis = Utilities::round(-10.0*oldScenarioInfo.visibility + 28); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+    if (oldScenarioInfo.visibilityRange<=1) {
+        selectedVis = Utilities::round(-10.0*oldScenarioInfo.visibilityRange + 28); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
     } else {
-        selectedVis = Utilities::round(-2.0*oldScenarioInfo.visibility + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
+        selectedVis = Utilities::round(-2.0*oldScenarioInfo.visibilityRange + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
     }
     if(selectedVis >= 0 && selectedVis < visibility->getItemCount()) {
         visibility->setSelected(selectedVis);
@@ -221,15 +221,15 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const OwnShipEditorData& ownShipData, const std::vector<PositionData>& buoys, const std::vector<OtherShipEditorData>& otherShips, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
+void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
     //TODO: Check that conversion to texture does not distort image
 
     //Calculate map centre as displayed
-    mapCentreX = ownShipData.X - mapOffsetX*metresPerPx;
-    mapCentreZ = ownShipData.Z + mapOffsetZ*metresPerPx;
+    mapCentreX = scenarioData.ownShipData.initialX - mapOffsetX*metresPerPx;
+    mapCentreZ = scenarioData.ownShipData.initialZ + mapOffsetZ*metresPerPx;
 
     irr::f32 mapCentreLong = terrainLong + mapCentreX*terrainLongExtent/terrainXWidth;
     irr::f32 mapCentreLat = terrainLat + mapCentreZ*terrainLatExtent/terrainZWidth;
@@ -280,8 +280,8 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
 
     //Note that this section is duplicated in constructor to populate with initial values
     //Show start time & data
-    if (oldScenarioInfo.startTime != scenarioInfo.startTime) {
-        irr::f32 timeFloat = scenarioInfo.startTime/SECONDS_IN_HOUR;
+    if (oldScenarioInfo.startTime != scenarioData.startTime) {
+        irr::f32 timeFloat = scenarioData.startTime/SECONDS_IN_HOUR;
         irr::u32 timeHrs = floor(timeFloat);
         irr::u32 timeMins = (timeFloat - timeHrs)*60;
         irr::core::stringw hoursString(timeHrs);
@@ -292,40 +292,40 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
         startMins->setText(minsString.c_str());
     }
 
-    if (oldScenarioInfo.startYear != scenarioInfo.startYear) {
-        startYear->setText((irr::core::stringw(scenarioInfo.startYear)).c_str());
+    if (oldScenarioInfo.startYear != scenarioData.startYear) {
+        startYear->setText((irr::core::stringw(scenarioData.startYear)).c_str());
     }
 
-    if (oldScenarioInfo.startMonth != scenarioInfo.startMonth) {
-        irr::core::stringw monthString(scenarioInfo.startMonth);
+    if (oldScenarioInfo.startMonth != scenarioData.startMonth) {
+        irr::core::stringw monthString(scenarioData.startMonth);
         if (monthString.size() == 1) monthString = irr::core::stringw(L"0") + monthString;
         startMonth->setText(monthString.c_str());
     }
 
-    if (oldScenarioInfo.startDay != scenarioInfo.startDay) {
-        irr::core::stringw dayString(scenarioInfo.startDay);
+    if (oldScenarioInfo.startDay != scenarioData.startDay) {
+        irr::core::stringw dayString(scenarioData.startDay);
         if (dayString.size() == 1) dayString = irr::core::stringw(L"0") + dayString;
         startDay->setText(dayString.c_str());
     }
 
-    if (oldScenarioInfo.sunRiseTime != scenarioInfo.sunRiseTime) {
-        sunRise->setText((irr::core::stringw(scenarioInfo.sunRiseTime)).c_str());
+    if (oldScenarioInfo.sunRise != scenarioData.sunRise) {
+        sunRise->setText((irr::core::stringw(scenarioData.sunRise)).c_str());
     }
-    if (oldScenarioInfo.sunSetTime != scenarioInfo.sunSetTime) {
-        sunSet->setText((irr::core::stringw(scenarioInfo.sunSetTime)).c_str());
+    if (oldScenarioInfo.sunSet != scenarioData.sunSet) {
+        sunSet->setText((irr::core::stringw(scenarioData.sunSet)).c_str());
     }
-    if (oldScenarioInfo.weather != scenarioInfo.weather) {
-        weather->setSelected(floor(scenarioInfo.weather*2));
+    if (oldScenarioInfo.weather != scenarioData.weather) {
+        weather->setSelected(floor(scenarioData.weather*2));
     }
-    if (oldScenarioInfo.rain != scenarioInfo.rain) {
-        rain->setSelected(floor(scenarioInfo.rain*2));
+    if (oldScenarioInfo.rainIntensity != scenarioData.rainIntensity) {
+        rain->setSelected(floor(scenarioData.rainIntensity*2));
     }
-    if (oldScenarioInfo.visibility != scenarioInfo.visibility) {
+    if (oldScenarioInfo.visibilityRange != scenarioData.visibilityRange) {
         irr::s32 selectedVis;
-        if (scenarioInfo.visibility<=1) {
-            selectedVis = Utilities::round(-10.0*scenarioInfo.visibility + 28.0); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+        if (scenarioData.visibilityRange<=1) {
+            selectedVis = Utilities::round(-10.0*scenarioData.visibilityRange + 28.0); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
         } else {
-            selectedVis = Utilities::round(-2.0*scenarioInfo.visibility + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
+            selectedVis = Utilities::round(-2.0*scenarioData.visibilityRange + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
         }
         if(selectedVis >= 0 && selectedVis < visibility->getItemCount()) {
             visibility->setSelected(selectedVis);
@@ -335,25 +335,25 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             visibility->setSelected(visibility->getItemCount()-1);
         }
     }
-    if (oldScenarioInfo.scenarioName != scenarioInfo.scenarioName) {
-        scenarioName->setText(irr::core::stringw(scenarioInfo.scenarioName.c_str()).c_str());
+    if (oldScenarioInfo.scenarioName != scenarioData.scenarioName) {
+        scenarioName->setText(irr::core::stringw(scenarioData.scenarioName.c_str()).c_str());
     }
 
-    if (oldScenarioInfo.description != scenarioInfo.description) {
-        descriptionEdit->setText(irr::core::stringw(scenarioInfo.description.c_str()).c_str());
+    if (oldScenarioInfo.description != scenarioData.description) {
+        descriptionEdit->setText(irr::core::stringw(scenarioData.description.c_str()).c_str());
     }
 
     //Initially set name colour as default, unless a warning is shown
     scenarioName->enableOverrideColor(false);
 
     //Check and warn about name validitiy for multiplayer
-    if (multiplayer && ! scenarioInfo.multiplayerName) {
+    if (multiplayer && ! scenarioData.multiplayerName) {
         //Name needs to have _mp at end
         scenarioName->setOverrideColor(irr::video::SColor(255, 255, 165, 0)); //Highlight in orange
         //Show relevant warning
         multiplayerNameWarning->setVisible(true);
         notMultiplayerNameWarning->setVisible(false);
-    } else if (!multiplayer && scenarioInfo.multiplayerName) {
+    } else if (!multiplayer && scenarioData.multiplayerName) {
         //Name needs not to have _mp at end
         scenarioName->setOverrideColor(irr::video::SColor(255, 255, 165, 0)); //Highlight in orange
         //Show relevant warning
@@ -366,7 +366,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
 
     //Check and warn about scenario overwriting
-    if (scenarioInfo.willOverwrite) {
+    if (scenarioData.willOverwrite) {
         scenarioName->setOverrideColor(irr::video::SColor(255, 255, 0, 0)); //Highlight in red
         overwriteWarning->setVisible(true); //Show warning
     } else {
@@ -375,36 +375,36 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
 
     //End of duplicated section
     //Store what's been shown
-    oldScenarioInfo = scenarioInfo;
+    oldScenarioInfo = scenarioData;
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(scenarioInfo.startTime, mapOffsetX, mapOffsetZ, metresPerPx, ownShipData.X, ownShipData.Z, ownShipData.heading, buoys, otherShips, selectedShip, selectedLeg);
+    drawInformationOnMap(scenarioData.startTime, mapOffsetX, mapOffsetZ, metresPerPx, scenarioData.ownShipData.initialX, scenarioData.ownShipData.initialZ, scenarioData.ownShipData.initialBearing, buoys, scenarioData.otherShipsData, selectedShip, selectedLeg);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
     if (editBoxesNeedUpdating) {
-        if (selectedShip >= 0 && selectedShip < otherShips.size()) {
-            mmsiEdit->setText(irr::core::stringw(otherShips.at(selectedShip).mmsi).c_str());
+        if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size()) {
+            mmsiEdit->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).mmsi).c_str());
         } else if (selectedShip == -1) {
             mmsiEdit->setText(L"-");
         }
-        if (selectedShip >= 0 && selectedShip < otherShips.size() && selectedLeg >= 0 && selectedLeg < otherShips.at(selectedShip).legs.size()) {
-            legCourseEdit  ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
-            legSpeedEdit   ->setText(irr::core::stringw(otherShips.at(selectedShip).legs.at(selectedLeg).speed).c_str());
+        if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size() && selectedLeg >= 0 && selectedLeg < scenarioData.otherShipsData.at(selectedShip).legs.size()) {
+            legCourseEdit  ->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).bearing).c_str());
+            legSpeedEdit   ->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).speed).c_str());
             //Distance
-            if ( (selectedLeg+1) < otherShips.at(selectedShip).legs.size() ) {
+            if ( (selectedLeg+1) < scenarioData.otherShipsData.at(selectedShip).legs.size() ) {
                 //There is a next leg, so can check distance
-                irr::f32 legDurationS = otherShips.at(selectedShip).legs.at(selectedLeg+1).startTime - otherShips.at(selectedShip).legs.at(selectedLeg).startTime;
+                irr::f32 legDurationS = scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg+1).startTime - scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).startTime;
                 irr::f32 legDurationH = legDurationS / SECONDS_IN_HOUR;
-                irr::f32 legDistanceNm  = legDurationH * otherShips.at(selectedShip).legs.at(selectedLeg).speed;
+                irr::f32 legDistanceNm  = legDurationH * scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).speed;
                 legDistanceEdit->setText(irr::core::stringw(legDistanceNm).c_str());
             } else {
                 legDistanceEdit->setText(L""); //No next leg, so can't find distance
             }
         } else if (selectedShip == -1) {
             //Own ship
-            legCourseEdit  ->setText((irr::core::stringw(ownShipData.heading)).c_str());
-            legSpeedEdit   ->setText((irr::core::stringw(ownShipData.initialSpeed)).c_str());
+            legCourseEdit  ->setText((irr::core::stringw(scenarioData.ownShipData.initialBearing)).c_str());
+            legSpeedEdit   ->setText((irr::core::stringw(scenarioData.ownShipData.initialSpeed)).c_str());
             legDistanceEdit->setText(L"---");
         } else {
             //Set blank (invalid other ship or leg)
@@ -417,7 +417,7 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             otherShipTypeSelector->setVisible(false);
             ownShipTypeSelector->setVisible(true);
             //Find the ship name in the list that matches (if it exists)
-            irr::core::stringw ownShipName = irr::core::stringw(ownShipData.name.c_str());
+            irr::core::stringw ownShipName = irr::core::stringw(scenarioData.ownShipData.ownShipName.c_str());
             for(int i = 0; i < ownShipTypeSelector->getItemCount(); i++) {
                 irr::core::stringw thisName(ownShipTypeSelector->getItem(i));
                 if (thisName.equals_ignore_case(ownShipName)) {ownShipTypeSelector->setSelected(i);}
@@ -426,9 +426,9 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
             otherShipTypeSelector->setVisible(true);
             ownShipTypeSelector->setVisible(false);
             //Find the ship name in the list that matches (if it exists)
-            if (selectedShip >= 0 && selectedShip < otherShips.size()) {
+            if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size()) {
                 //Find the ship name in the list that matches (if it exists)
-                irr::core::stringw otherShipName = irr::core::stringw(otherShips.at(selectedShip).name.c_str());
+                irr::core::stringw otherShipName = irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).shipName.c_str());
                 for(int i = 0; i < otherShipTypeSelector->getItemCount(); i++) {
                     irr::core::stringw thisName(otherShipTypeSelector->getItem(i));
                     if (thisName.equals_ignore_case(otherShipName)) {otherShipTypeSelector->setSelected(i);}
@@ -440,13 +440,13 @@ void GUIMain::updateGuiData(GeneralData scenarioInfo, irr::s32 mapOffsetX, irr::
     }
 
     //Update comboboxes for other ships and legs
-    updateDropDowns(otherShips,selectedShip,scenarioInfo.startTime);
+    updateDropDowns(scenarioData.otherShipsData,selectedShip,scenarioData.startTime);
 
     guienv->drawAll();
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipEditorData>& otherShips,  const irr::s32& selectedShip, const irr::s32& selectedLeg)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips,  const irr::s32& selectedShip, const irr::s32& selectedLeg)
 {
 
     //draw cross hairs
@@ -487,9 +487,9 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     }
 
     //Draw location of ships
-    for(std::vector<OtherShipEditorData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
-        irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
-        irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
+    for(std::vector<OtherShipData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
+        irr::s32 relPosX = (it->initialX - ownShipPosX)/metresPerPx + mapOffsetX;
+        irr::s32 relPosY = (it->initialZ - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
         device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
         if (selectedShip == (it - otherShips.begin()) ) {
@@ -502,7 +502,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         irr::core::stringw label(thisShipNumber);
         //name
         label.append(" ");
-        label.append(it->name.c_str());
+        label.append(it->shipName.c_str());
         guienv->getSkin()->getFont()->draw(label,irr::core::rect<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY-0.025*height,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(128,0,0,255),true,true);
 
         //Draw leg information for each ship
@@ -574,7 +574,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     } //Loop for each ship
 }
 
-void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
+void GUIMain::updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time) {
 
 //Update drop down menus for ships and legs
 
@@ -587,7 +587,7 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
     for(irr::u32 i = 0; i<otherShips.size(); i++) { //Add other ships (at index 1,2,...)
         irr::core::stringw otherShipLabel(irr::core::stringw(i+1));
         otherShipLabel.append(L" ");
-        otherShipLabel.append(otherShips.at(i).name.c_str());
+        otherShipLabel.append(otherShips.at(i).shipName.c_str());
         shipSelector->addItem(otherShipLabel.c_str());
     }
     //Set selection
@@ -626,7 +626,7 @@ void GUIMain::updateDropDowns(const std::vector<OtherShipEditorData>& otherShips
 
             //Get legs for selected ship
             if (selectedShip>=0 && otherShips.size() > selectedShip) { //SelectedShip is valid
-                std::vector<Leg> selectedShipLegs = otherShips.at(selectedShip).legs;
+                std::vector<LegData> selectedShipLegs = otherShips.at(selectedShip).legs;
 
                 //Find current leg (FIXME: Duplicated code)
                 //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.

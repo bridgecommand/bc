@@ -20,7 +20,7 @@
 
 #include "GUI.hpp"
 #include "ControllerModel.hpp"
-#include "GeneralDataStruct.hpp"
+#include "../ScenarioDataStructure.hpp"
 //#include "Network.hpp"
 #include "../Utilities.hpp"
 
@@ -161,20 +161,20 @@
 
             //Check scenario name change, or user clicks on 'save or apply'. If so, apply general data changes to model.
             if ((event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && (id == GUIMain::GUI_ID_APPLY_BUTTON || id == GUIMain::GUI_ID_SAVE_BUTTON)) || (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED && id == GUIMain::GUI_ID_SCENARIONAME_EDITBOX)) {
-                GeneralData tempData;
+                ScenarioData tempData;
                 tempData.startTime = gui->getStartTime();
                 tempData.startDay = gui->getStartDay();
                 tempData.startMonth = gui->getStartMonth();
                 tempData.startYear = gui->getStartYear();
-                tempData.sunRiseTime = gui->getSunRise();
-                tempData.sunSetTime = gui->getSunSet();
+                tempData.sunRise = gui->getSunRise();
+                tempData.sunSet = gui->getSunSet();
                 tempData.weather = gui->getWeather();
-                tempData.rain = gui->getRain();
-                tempData.visibility = gui->getVisibility();
+                tempData.rainIntensity = gui->getRain();
+                tempData.visibilityRange = gui->getVisibility();
                 tempData.scenarioName = gui->getScenarioName();
                 tempData.description = gui->getDescription();
-
-                model->setScenarioData(tempData);
+                // This only applies the 'general' data, not own ship/other ship data etc
+                model->setGeneralScenarioData(tempData);
             }
 
             //Check for Save button here (ensure 'Apply' gets run first!)

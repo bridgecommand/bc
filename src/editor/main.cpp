@@ -6,9 +6,6 @@
 #include <algorithm>
 #include <string>
 #include "PositionDataStruct.hpp"
-#include "OwnShipDataStruct.hpp"
-#include "OtherShipDataStruct.hpp"
-#include "GeneralDataStruct.hpp"
 #include "StartupEventReceiver.hpp"
 //#include "Network.hpp"
 #include "ControllerModel.hpp"
@@ -20,6 +17,7 @@
 #include "../IniFile.hpp"
 #include "../Lang.hpp"
 #include "../Utilities.hpp"
+#include "../ScenarioDataStructure.hpp"
 
 //Mac OS:
 #ifdef __APPLE__
@@ -556,27 +554,39 @@ int main (int argc, char ** argv)
     //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
 
     //Create data structures to hold own ship, other ship and buoy data
-    GeneralData generalData;
-    OwnShipEditorData ownShipData;
+    ScenarioData scenarioData;
     std::vector<PositionData> buoysData;
-    std::vector<OtherShipEditorData> otherShipsData;
+    
+    // Initialise defaults for new scenario
+    scenarioData.startTime = 10*SECONDS_IN_HOUR;
+    scenarioData.sunRise = 6;
+    scenarioData.sunSet = 18;
+    scenarioData.weather = 1.0;
+    scenarioData.visibilityRange = 8.0;
+    scenarioData.rainIntensity = 0.0;
+    scenarioData.startDay = 1;
+    scenarioData.startMonth = 1;
+    scenarioData.startYear = 2024;
+    scenarioData.description = "Scenario description";
+    scenarioData.multiplayerName = false;
+    scenarioData.willOverwrite = false;
 
     //Change default scenario name if in multiplayer mode
     if (multiplayer) {
-        generalData.scenarioName.append("_mp");
+        scenarioData.scenarioName.append("_mp");
     }
 
     //Make default name the first in the list, in case it isn't set by an update later
     if (ownShipTypes.size() > 0) {
-        ownShipData.name = ownShipTypes.at(0);
+        scenarioData.ownShipData.ownShipName = ownShipTypes.at(0);
     }
     if (otherShipTypes.size() > 0) {
-        for (int i=0; i<otherShipsData.size(); i++)
-        otherShipsData.at(i).name = otherShipTypes.at(0);
+        for (int i=0; i<scenarioData.otherShipsData.size(); i++)
+        scenarioData.otherShipsData.at(i).shipName = otherShipTypes.at(0);
     }
 
     //Main model
-    ControllerModel controller(device, &language, &guiMain, worldName, &ownShipData, &otherShipsData, &buoysData, &generalData, zoomLevels);
+    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, zoomLevels);
 
     //If an existing scenario, load data into these structures
     if(scenarioName.length() != 0) {
@@ -601,45 +611,45 @@ int main (int argc, char ** argv)
         descriptionFilename.append("/description.ini");
 
         //Load general information
-        generalData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
-        generalData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
-        generalData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
-        generalData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
-        generalData.sunRiseTime = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
-        generalData.sunSetTime = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
-        generalData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
-        generalData.visibility = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
-        generalData.rain = IniFile::iniFileTof32(environmentIniFilename,"Rain");
-        generalData.scenarioName = scenarioName;
+        scenarioData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+        scenarioData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+        scenarioData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+        scenarioData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+        scenarioData.sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+        scenarioData.sunSet = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
+        scenarioData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+        scenarioData.visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
+        scenarioData.rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+        scenarioData.scenarioName = scenarioName;
         //defaults
-        if(generalData.sunRiseTime==0.0) {generalData.sunRiseTime=6;}
-        if(generalData.sunSetTime==0.0) {generalData.sunSetTime=18;}
+        if(scenarioData.sunRise==0.0) {scenarioData.sunRise=6;}
+        if(scenarioData.sunSet==0.0) {scenarioData.sunSet=18;}
 
         //Load own ship information
-        ownShipData.X = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
-        ownShipData.Z = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
-        ownShipData.heading = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
-        ownShipData.name = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
-        ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
+        scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
+        scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
+        scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
+        scenarioData.ownShipData.ownShipName = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
+        scenarioData.ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
 
         //Load other ship information
         int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
         for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
 
             //Temporary structure to load data
-            OtherShipEditorData thisShip;
+            OtherShipData thisShip;
 
             //Get initial position
-            thisShip.X = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
-            thisShip.Z = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
-            thisShip.name = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
+            thisShip.initialX = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
+            thisShip.initialZ = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
+            thisShip.shipName = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
             thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
             int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
 
-            irr::f32 legStartTime = generalData.startTime; //Legs start at the start of the scenario
+            irr::f32 legStartTime = scenarioData.startTime; //Legs start at the start of the scenario
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
-                Leg currentLeg;
+                LegData currentLeg;
                 currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
                 currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
                 currentLeg.startTime = legStartTime;
@@ -656,7 +666,7 @@ int main (int argc, char ** argv)
             }
             //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
 
-            Leg stopLeg;
+            LegData stopLeg;
             stopLeg.bearing=0;
             stopLeg.speed=0;
             stopLeg.distance=0;
@@ -664,7 +674,7 @@ int main (int argc, char ** argv)
             thisShip.legs.push_back(stopLeg);
 
             //Add to array.
-            otherShipsData.push_back(thisShip);
+            scenarioData.otherShipsData.push_back(thisShip);
 
 
         }
@@ -697,7 +707,7 @@ int main (int argc, char ** argv)
             }
             descriptionStream.close();
         }
-        generalData.description = descriptionLines;
+        scenarioData.description = descriptionLines;
 
     }
 

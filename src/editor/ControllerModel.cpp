@@ -29,7 +29,7 @@
 #define MAX_PX_IN_MAP 160000000
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, OwnShipEditorData* ownShipData, std::vector<OtherShipEditorData>* otherShipsData, std::vector<PositionData>* buoysData, GeneralData* generalData, irr::u32 _zoomLevels)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, irr::u32 _zoomLevels)
 {
 
     this->gui = gui;
@@ -37,10 +37,8 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     this->device = device;
     driver = device->getVideoDriver();
 
-    this->ownShipData = ownShipData;
-    this->otherShipsData = otherShipsData;
     this->buoysData = buoysData;
-    this->generalData = generalData;
+    this->scenarioData = scenarioData;
     this->worldName = worldName;
 	this->zoomLevels = _zoomLevels;
 
@@ -294,8 +292,8 @@ void ControllerModel::update()
     tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData->X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData->Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
+    irr::s32 topLeftX = -1*scenarioData->ownShipData.initialX/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
+    irr::s32 topLeftZ = scenarioData->ownShipData.initialZ/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
 
     scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
@@ -312,7 +310,7 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(*generalData,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),*ownShipData,*buoysData,*otherShipsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(*scenarioData,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),*buoysData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()
@@ -347,14 +345,14 @@ void ControllerModel::setShipPosition(irr::s32 ship, irr::core::vector2df positi
 {
     if (ship==0) {
         //Own ship
-        ownShipData->X = position.X;
-        ownShipData->Z = position.Y;
+        scenarioData->ownShipData.initialX = position.X;
+        scenarioData->ownShipData.initialZ = position.Y;
     } else if (ship>0) {
         //Other ship
         irr::s32 otherShipNumber = ship-1; //Ship number is minimum of 1, so subtract 1 to start at 0
-        if (otherShipNumber < otherShipsData->size()) {
-            otherShipsData->at(otherShipNumber).X = position.X;
-            otherShipsData->at(otherShipNumber).Z = position.Y;
+        if (otherShipNumber < scenarioData->otherShipsData.size()) {
+            scenarioData->otherShipsData.at(otherShipNumber).initialX = position.X;
+            scenarioData->otherShipsData.at(otherShipNumber).initialZ = position.Y;
         }
     }
 }
@@ -376,9 +374,20 @@ void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from even
     //No guarantee from this that the selected leg is valid
 }
 
-void ControllerModel::setScenarioData(GeneralData newData)
+void ControllerModel::setGeneralScenarioData(ScenarioData newData)
 {
-    *generalData=newData;
+    scenarioData->startTime = newData.startTime;
+    scenarioData->startDay = newData.startDay;
+    scenarioData->startMonth = newData.startMonth;
+    scenarioData->startYear = newData.startYear;
+    scenarioData->sunRise = newData.sunRise;
+    scenarioData->sunSet = newData.sunSet;
+    scenarioData->weather = newData.weather;
+    scenarioData->rainIntensity = newData.rainIntensity;
+    scenarioData->visibilityRange = newData.visibilityRange;
+    scenarioData->scenarioName = newData.scenarioName;
+    scenarioData->description = newData.description;
+    
     recalculateLegTimes(); //These need to be updated to match new startTime.
     checkName(); //Check if the scenario name chosen will cause overwrite, and if so, set flag.
 }
@@ -393,20 +402,20 @@ void ControllerModel::checkName() //Check if the scenario name chosen will mean 
     }
 
     //Check if path exists already
-    std::string fullScenarioPath = scenarioPath.append(generalData->scenarioName);
+    std::string fullScenarioPath = scenarioPath.append(scenarioData->scenarioName);
 
     if (Utilities::pathExists(fullScenarioPath)) {
-        generalData->willOverwrite=true;
+        scenarioData->willOverwrite=true;
     } else {
-        generalData->willOverwrite=false;
+        scenarioData->willOverwrite=false;
     }
 
     //Check if a valid multiplayer name
-    generalData->multiplayerName=false;
-    if (generalData->scenarioName.length() >= 3) {
-        std::string endChars = generalData->scenarioName.substr(generalData->scenarioName.length()-3,3);
+    scenarioData->multiplayerName=false;
+    if (scenarioData->scenarioName.length() >= 3) {
+        std::string endChars = scenarioData->scenarioName.substr(scenarioData->scenarioName.length()-3,3);
         if (endChars == "_mp" || endChars == "_MP") {
-            generalData->multiplayerName = true;
+            scenarioData->multiplayerName = true;
         }
     }
 
@@ -416,18 +425,18 @@ void ControllerModel::changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCours
 {
     //If ownship:
     if (ship==0) {
-        ownShipData->heading = legCourse;
-        ownShipData->initialSpeed = legSpeed;
+        scenarioData->ownShipData.initialBearing = legCourse;
+        scenarioData->ownShipData.initialSpeed = legSpeed;
     }
 
     //If other ship:
     if (ship>0) {
         int otherShipIndex = ship-1;
-        if (otherShipIndex < otherShipsData->size()) {
-            if (index < otherShipsData->at(otherShipIndex).legs.size()) {
-                otherShipsData->at(otherShipIndex).legs.at(index).bearing = legCourse;
-                otherShipsData->at(otherShipIndex).legs.at(index).speed = legSpeed;
-                otherShipsData->at(otherShipIndex).legs.at(index).distance = legDistance;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            if (index < scenarioData->otherShipsData.at(otherShipIndex).legs.size()) {
+                scenarioData->otherShipsData.at(otherShipIndex).legs.at(index).bearing = legCourse;
+                scenarioData->otherShipsData.at(otherShipIndex).legs.at(index).speed = legSpeed;
+                scenarioData->otherShipsData.at(otherShipIndex).legs.at(index).distance = legDistance;
             }
         }
     }
@@ -439,10 +448,10 @@ void ControllerModel::deleteLeg(irr::s32 ship, irr::s32 index)
     //If other ship:
     if (ship>0) {
         int otherShipIndex = ship-1;
-        if (otherShipIndex < otherShipsData->size()) {
-            if (index < otherShipsData->at(otherShipIndex).legs.size()) {
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            if (index < scenarioData->otherShipsData.at(otherShipIndex).legs.size()) {
                 //Delete this leg
-                otherShipsData->at(otherShipIndex).legs.erase(otherShipsData->at(otherShipIndex).legs.begin() + index);
+                scenarioData->otherShipsData.at(otherShipIndex).legs.erase(scenarioData->otherShipsData.at(otherShipIndex).legs.begin() + index);
                 recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
             }
         }
@@ -454,8 +463,8 @@ void ControllerModel::setMMSI(irr::s32 ship, int mmsi)
     //If other ship:
     if (ship>0) {
         int otherShipIndex = ship-1;
-        if (otherShipIndex < otherShipsData->size()) {
-            otherShipsData->at(otherShipIndex).mmsi = mmsi;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            scenarioData->otherShipsData.at(otherShipIndex).mmsi = mmsi;
         }
     }   
 }
@@ -465,8 +474,8 @@ void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 le
     //If other ship:
     if (ship>0) {
         int otherShipIndex = ship-1;
-        if (otherShipIndex < otherShipsData->size()) {
-            std::vector<Leg>* legs = &otherShipsData->at(otherShipIndex).legs;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            std::vector<LegData>* legs = &scenarioData->otherShipsData.at(otherShipIndex).legs;
             //Check if leg is reasonable, and is before the 'stop leg'
             //A special case allows afterLegNumber to equal -1, for when only a single 'stop leg' exists
             if (afterLegNumber >= -1 && afterLegNumber < ((int)legs->size() - 1)) {
@@ -474,7 +483,7 @@ void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 le
                 //If the 'after' leg is the penultimate, add a leg before the stop one, starting now
                 if (afterLegNumber == ((int)legs->size()-2))  { //This also catches the special case where there is only the 'stop' leg, so the 'afterLegNumber value is -1
 
-                    Leg newLeg;
+                    LegData newLeg;
                     newLeg.bearing = legCourse;
                     newLeg.speed = legSpeed;
                     newLeg.distance = legDistance;
@@ -482,7 +491,7 @@ void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 le
 
                 } else {
 
-                    Leg newLeg;
+                    LegData newLeg;
                     newLeg.bearing = legCourse;
                     newLeg.speed = legSpeed;
                     newLeg.distance = legDistance;
@@ -499,20 +508,20 @@ void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 le
 
 void ControllerModel::addShip(std::string name, irr::core::vector2df position)
 {
-    OtherShipEditorData newShip;
-    newShip.X = position.X;
-    newShip.Z = position.Y;
-    newShip.name = name;
+    OtherShipData newShip;
+    newShip.initialX = position.X;
+    newShip.initialZ = position.Y;
+    newShip.shipName = name;
     newShip.mmsi = 0;
     //Add a 'stop' leg
-    Leg stopLeg;
+    LegData stopLeg;
     stopLeg.bearing=0;
     stopLeg.speed=0;
     stopLeg.distance=0;
     newShip.legs.push_back(stopLeg);
 
     //Add to list
-    otherShipsData->push_back(newShip);
+    scenarioData->otherShipsData.push_back(newShip);
 
     recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
 }
@@ -522,8 +531,8 @@ void ControllerModel::deleteShip(irr::s32 ship)
 	//If other ship:
 	if (ship > 0) {
 		int otherShipIndex = ship - 1;
-		if (otherShipIndex < otherShipsData->size()) {
-			otherShipsData->erase(otherShipsData->begin()+otherShipIndex);
+		if (otherShipIndex < scenarioData->otherShipsData.size()) {
+			scenarioData->otherShipsData.erase(scenarioData->otherShipsData.begin()+otherShipIndex);
 		}
 	}
 }
@@ -531,15 +540,15 @@ void ControllerModel::deleteShip(irr::s32 ship)
 void ControllerModel::recalculateLegTimes()
 {
     //Run through all othership legs, recalculating leg stop times
-    irr::f32 scenarioStartTime = generalData->startTime; //Legs start at the start of the scenario
+    irr::f32 scenarioStartTime = scenarioData->startTime; //Legs start at the start of the scenario
 
-    for (int thisShip = 0; thisShip < otherShipsData->size(); thisShip++) {
+    for (int thisShip = 0; thisShip < scenarioData->otherShipsData.size(); thisShip++) {
 
         irr::f32 legStartTime = scenarioStartTime; //Legs start at the start of the scenario
-        for (int thisLeg = 0; thisLeg < otherShipsData->at(thisShip).legs.size(); thisLeg++) {
-            otherShipsData->at(thisShip).legs.at(thisLeg).startTime = legStartTime;
-            irr::f32 thisLegDistance = otherShipsData->at(thisShip).legs.at(thisLeg).distance;
-            irr::f32 thisLegSpeed = otherShipsData->at(thisShip).legs.at(thisLeg).speed;
+        for (int thisLeg = 0; thisLeg < scenarioData->otherShipsData.at(thisShip).legs.size(); thisLeg++) {
+            scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).startTime = legStartTime;
+            irr::f32 thisLegDistance = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).distance;
+            irr::f32 thisLegSpeed = scenarioData->otherShipsData.at(thisShip).legs.at(thisLeg).speed;
             //Update legStart time for start of next leg:
             legStartTime+= SECONDS_IN_HOUR*(thisLegDistance/fabs(thisLegSpeed)); // nm/kts -> hours, so convert to seconds
         }
@@ -549,15 +558,15 @@ void ControllerModel::recalculateLegTimes()
 
 void ControllerModel::changeOwnShipName(std::string name)
 {
-    ownShipData->name = name;
+    scenarioData->ownShipData.ownShipName = name;
 
 }
 
 void ControllerModel::changeOtherShipName(irr::s32 ship, std::string name)
 {
     irr::s32 shipIndex = ship-1; //'ship' number starts at 1 for otherShips
-    if (shipIndex < otherShipsData->size()) {
-        otherShipsData->at(shipIndex).name = name;
+    if (shipIndex < scenarioData->otherShipsData.size()) {
+        scenarioData->otherShipsData.at(shipIndex).shipName = name;
     }
 }
 
@@ -567,7 +576,7 @@ void ControllerModel::save()
     std::cout << "About to save" << std::endl;
 
     //check there's a scenario name to save to
-    if (generalData->scenarioName.empty()) {
+    if (scenarioData->scenarioName.empty()) {
         device->getGUIEnvironment()->addMessageBox(lang->translate("failed").c_str(), lang->translate("failedScenarioSave").c_str());
         return;
     }
@@ -580,7 +589,7 @@ void ControllerModel::save()
     }
 
     //Check if path exists already
-    std::string fullScenarioPath = scenarioPath.append(generalData->scenarioName);
+    std::string fullScenarioPath = scenarioPath.append(scenarioData->scenarioName);
 
     if (!Utilities::pathExists(fullScenarioPath)) {
         //Path does not exist, try and create it
@@ -603,17 +612,17 @@ void ControllerModel::save()
 
     envFile.open(envPath.c_str());
     envFile << "Setting=\"" << worldName << "\"" << std::endl;
-    envFile << "StartTime=" << generalData->startTime/SECONDS_IN_HOUR << std::endl;
-    envFile << "StartDay=" << generalData->startDay << std::endl;
-    envFile << "StartMonth=" << generalData->startMonth << std::endl;
-    envFile << "StartYear=" << generalData->startYear << std::endl;
-    envFile << "SunRise=" << generalData->sunRiseTime << std::endl;
-    envFile << "SunSet=" << generalData->sunSetTime << std::endl;
+    envFile << "StartTime=" << scenarioData->startTime/SECONDS_IN_HOUR << std::endl;
+    envFile << "StartDay=" << scenarioData->startDay << std::endl;
+    envFile << "StartMonth=" << scenarioData->startMonth << std::endl;
+    envFile << "StartYear=" << scenarioData->startYear << std::endl;
+    envFile << "SunRise=" << scenarioData->sunRise << std::endl;
+    envFile << "SunSet=" << scenarioData->sunSet << std::endl;
     //envFile << "Variation=0" << std::endl;
-    envFile << "VisibilityRange=" << generalData->visibility << std::endl;
-    envFile << "Weather=" << generalData->weather << std::endl;
+    envFile << "VisibilityRange=" << scenarioData->visibilityRange << std::endl;
+    envFile << "Weather=" << scenarioData->weather << std::endl;
     //envFile << "WindDirection=90" << std::endl;
-    envFile << "Rain=" << generalData->rain << std::endl;
+    envFile << "Rain=" << scenarioData->rainIntensity << std::endl;
     envFile.close();
     if (!envFile.good()) {successOfFar=false;}
 
@@ -622,19 +631,19 @@ void ControllerModel::save()
     std::ofstream otherFile;
 
     otherFile.open(otherPath.c_str());
-    otherFile << "Number=" << otherShipsData->size() << std::endl;
-    for (int i = 1; i<=otherShipsData->size(); i++) {
-        otherFile << "Type(" << i << ")=\"" << otherShipsData->at(i-1).name << "\"" << std::endl;
-        otherFile << "InitLong(" << i << ")=" << xToLong(otherShipsData->at(i-1).X) << std::endl;
-        otherFile << "InitLat(" << i << ")=" << zToLat(otherShipsData->at(i-1).Z) << std::endl;
-        otherFile << "mmsi(" << i << ")=" << otherShipsData->at(i-1).mmsi << std::endl;
+    otherFile << "Number=" << scenarioData->otherShipsData.size() << std::endl;
+    for (int i = 1; i<=scenarioData->otherShipsData.size(); i++) {
+        otherFile << "Type(" << i << ")=\"" << scenarioData->otherShipsData.at(i-1).shipName << "\"" << std::endl;
+        otherFile << "InitLong(" << i << ")=" << xToLong(scenarioData->otherShipsData.at(i-1).initialX) << std::endl;
+        otherFile << "InitLat(" << i << ")=" << zToLat(scenarioData->otherShipsData.at(i-1).initialZ) << std::endl;
+        otherFile << "mmsi(" << i << ")=" << scenarioData->otherShipsData.at(i-1).mmsi << std::endl;
         //Don't save last leg, as this is an automatically added 'stop' leg.
-        otherFile << "Legs(" << i << ")=" << otherShipsData->at(i-1).legs.size() - 1 << std::endl;
+        otherFile << "Legs(" << i << ")=" << scenarioData->otherShipsData.at(i-1).legs.size() - 1 << std::endl;
 
-        for (int j = 1; j<=otherShipsData->at(i-1).legs.size() - 1; j++) {
-            otherFile << "Bearing(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).bearing << std::endl;
-            otherFile << "Speed(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).speed << std::endl;
-            otherFile << "Distance(" << i << "," << j << ")=" << otherShipsData->at(i-1).legs.at(j-1).distance << std::endl;
+        for (int j = 1; j<=scenarioData->otherShipsData.at(i-1).legs.size() - 1; j++) {
+            otherFile << "Bearing(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).bearing << std::endl;
+            otherFile << "Speed(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).speed << std::endl;
+            otherFile << "Distance(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).distance << std::endl;
         }
     }
     otherFile.close();
@@ -645,11 +654,11 @@ void ControllerModel::save()
     std::ofstream ownFile;
 
     ownFile.open(ownPath.c_str());
-    ownFile << "ShipName=\"" << ownShipData->name << "\"" << std::endl;
-    ownFile << "InitialLong=" << xToLong(ownShipData->X) << std::endl;
-    ownFile << "InitialLat=" << zToLat(ownShipData->Z) << std::endl;
-    ownFile << "InitialBearing=" << ownShipData->heading << std::endl;
-    ownFile << "InitialSpeed=" << ownShipData->initialSpeed << std::endl;
+    ownFile << "ShipName=\"" << scenarioData->ownShipData.ownShipName << "\"" << std::endl;
+    ownFile << "InitialLong=" << xToLong(scenarioData->ownShipData.initialX) << std::endl;
+    ownFile << "InitialLat=" << zToLat(scenarioData->ownShipData.initialZ) << std::endl;
+    ownFile << "InitialBearing=" << scenarioData->ownShipData.initialBearing << std::endl;
+    ownFile << "InitialSpeed=" << scenarioData->ownShipData.initialSpeed << std::endl;
     ownFile.close();
     if (!ownFile.good()) {successOfFar=false;}
 
@@ -658,7 +667,7 @@ void ControllerModel::save()
     std::ofstream descriptionFile;
 
     descriptionFile.open(descriptionPath.c_str());
-    descriptionFile << generalData->description;
+    descriptionFile << scenarioData->description;
     descriptionFile.close();
     if (!descriptionFile.good()) {successOfFar=false;}
 
