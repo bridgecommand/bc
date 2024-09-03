@@ -69,8 +69,9 @@ class ScenarioData {
     std::vector<OtherShipData> otherShipsData;
     std::string description; // description only used in scenario editor
     bool multiplayerName, willOverwrite; // multiplayerName only used in scenario editor
+    bool dataPopulated; // dataPopulated only used in scenario editor
 
-    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0),description(""),multiplayerName(false),willOverwrite(false){}
+    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),startDay(0),startMonth(0),startYear(0),description(""),multiplayerName(false),willOverwrite(false),dataPopulated(false){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);

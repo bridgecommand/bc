@@ -34,7 +34,9 @@
         irr::s32 okWorldButtonID, 
         irr::s32 importScenarioButtonID, 
         irr::s32 exportScenarioButtonID, 
-        GUIImportExport* guiImportExport) //Constructor
+        irr::s32 importExportOKButtonID,
+        GUIImportExport* guiImportExport,
+        ScenarioData* scenarioData) //Constructor
 	{
 		this->scenarioListBox = scenarioListBox;
 		this->worldListBox = worldListBox;
@@ -45,7 +47,9 @@
 		this->okWorldButtonID = okWorldButtonID;
         this->importScenarioButtonID = importScenarioButtonID;
         this->exportScenarioButtonID = exportScenarioButtonID;
+        this->importExportOKButtonID = importExportOKButtonID;
         this->guiImportExport = guiImportExport;
+        this->scenarioData = scenarioData;
 		scenarioSelected = -1; //Set as initially invalid
 		worldSelected = -1; //Set as initially invalid
 	}
@@ -75,14 +79,14 @@
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) 
             {
                 if (id == importScenarioButtonID) {
+                    guiImportExport->setText("");
                     selectWindow->setVisible(false);
-                    guiImportExport->setVisible(true);
+                    guiImportExport->setVisible(true, 1); //importExportMode: 0 = export, 1 = import
                 }
 
                 if (id == exportScenarioButtonID) {
                     if (scenarioListBox->getSelected() > -1 ) {
                         
-                        // Temporary for testing, will be replaced by actual scenario serialised data
                         std::wstring scenarioWName = std::wstring(scenarioListBox->getListItem(scenarioListBox->getSelected()));
                         std::string scenarioName(scenarioWName.begin(), scenarioWName.end());
                         
@@ -96,7 +100,17 @@
                         guiImportExport->setText(scenarioData.serialise(true));
                     }
                     selectWindow->setVisible(false);
-                    guiImportExport->setVisible(true);
+                    guiImportExport->setVisible(true, 0);
+                }
+
+                if (id == importExportOKButtonID) {
+                    // Mode: 0 = export, 1 = import
+                    if (guiImportExport->getMode() == 1) {
+                        // Import mode
+                        scenarioData->deserialise(guiImportExport->getText());
+                    }
+                    guiImportExport->setVisible(false, 0);
+                    selectWindow->setVisible(true);
                 }
             }
 

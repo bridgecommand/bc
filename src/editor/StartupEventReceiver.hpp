@@ -21,6 +21,7 @@
 
 //Forward declarations
 class GUIImportExport;
+class ScenarioData;
 
 class StartupEventReceiver : public irr::IEventReceiver
 {
@@ -36,7 +37,9 @@ public:
         irr::s32 okWorldButtonID, 
         irr::s32 importScenarioButtonID, 
         irr::s32 exportScenarioButtonID, 
-        GUIImportExport* guiImportExport);
+        irr::s32 importExportOKButtonID,
+        GUIImportExport* guiImportExport,
+        ScenarioData* scenarioData);
     bool OnEvent(const irr::SEvent& event);
 
     irr::s32 getScenarioSelected() const;
@@ -48,12 +51,14 @@ private:
     irr::gui::IGUIListBox* worldListBox;
     irr::gui::IGUIWindow* selectWindow;
     GUIImportExport* guiImportExport;
+    ScenarioData* scenarioData;
     irr::s32 scenarioListBoxID;
     irr::s32 worldListBoxID;
     irr::s32 okScenarioButtonID;
     irr::s32 okWorldButtonID;
     irr::s32 importScenarioButtonID;
     irr::s32 exportScenarioButtonID;
+    irr::s32 importExportOKButtonID;
     irr::s32 scenarioSelected;
     irr::s32 worldSelected;
 

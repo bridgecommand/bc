@@ -199,6 +199,7 @@ void ScenarioData::deserialise(std::string data)
                 tempOther.deserialise(otherShipsVector.at(i));
                 otherShipsData.push_back(tempOther);
             }
+            dataPopulated = true; // Currently only used in scenario editor
         }
     }
 

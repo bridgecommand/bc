@@ -30,10 +30,12 @@ public:
         irr::IrrlichtDevice* device, 
         Lang* language, 
         irr::u32 su, 
-        irr::u32 sh);
-    void setVisible(bool isVisible);
+        irr::u32 sh,
+        irr::s32 importExportOKButtonID);
+    void setVisible(bool isVisible, irr::u32 importExportMode); //importExportMode: 0 = export, 1 = import
     void setText(std::string text);
     std::string getText() const;
+    irr::u32 getMode() const;
 private:
 
     Lang* language;
@@ -43,6 +45,8 @@ private:
     irr::gui::IGUIWindow* importExportWindow;
     irr::gui::IGUIEditBox* importExportText;
     irr::gui::IGUIButton* importExportOKButton;
+
+    irr::u32 importExportMode; // 0 = export, 1 = import
     
 };
 

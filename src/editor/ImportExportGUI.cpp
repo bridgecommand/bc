@@ -21,10 +21,13 @@ GUIImportExport::GUIImportExport(
     irr::IrrlichtDevice* device, 
     Lang* language, 
     irr::u32 su, 
-    irr::u32 sh){
+    irr::u32 sh,
+    irr::s32 importExportOKButtonID){
     this->device = device;
     this->language = language;
     guienv = device->getGUIEnvironment();
+
+    importExportMode = 0;
 
     importExportWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), true);
     if (importExportWindow) {
@@ -36,14 +39,18 @@ GUIImportExport::GUIImportExport(
             importExportText->setWordWrap(true);
             importExportText->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
         }
+
+        guienv->addButton(irr::core::rect<irr::s32>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, L"OK");
     }
 }
 
-void GUIImportExport::setVisible(bool isVisible)
+void GUIImportExport::setVisible(bool isVisible, irr::u32 importExportMode)
 {
     if (importExportWindow) {
         importExportWindow->setVisible(isVisible);
     }
+
+    this->importExportMode = importExportMode;
 }
 
 void GUIImportExport::setText(std::string text)
@@ -62,4 +69,9 @@ std::string GUIImportExport::getText() const
     } else {
         return "";
     }
+}
+
+irr::u32 GUIImportExport::getMode() const
+{
+    return importExportMode;
 }

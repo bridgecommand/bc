@@ -99,7 +99,7 @@ void getDirectoryList(irr::IrrlichtDevice* device, std::vector<std::string>&dirL
     fileList->drop();
 }
 
-void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
+void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std::string& worldName, std::string& scenarioName, bool& multiplayer, Lang* language, std::string userFolder)
 //Will fill one of worldName of scenarioName, depending on user's selection.
 {
 
@@ -132,6 +132,7 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     const irr::s32 OK_WORLD_BUTTON_ID = 104;
     const irr::s32 IMPORT_SCENARIO_BUTTON_ID = 105;
     const irr::s32 EXPORT_SCENARIO_BUTTON_ID = 106;
+    const irr::s32 IMPORT_EXPORT_OK_BUTTON_ID = 107;
 
     irr::gui::IGUIWindow* scnWorldChoiceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), false);
     irr::gui::IGUIListBox* scenarioListBox = device->getGUIEnvironment()->addListBox(irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.435*su,0.80*sh),scnWorldChoiceWindow,SCENARIO_BOX_ID); //TODO: Set ID so we can use event receiver
@@ -166,8 +167,8 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
     //device->getGUIEnvironment()->setFocus(scenarioListBox);
 
     // Create a different set of GUI components that we can show/hide to import and export scenarios
-    GUIImportExport importExport(device, language, su, sh);
-    importExport.setVisible(false);
+    GUIImportExport importExport(device, language, su, sh, IMPORT_EXPORT_OK_BUTTON_ID);
+    importExport.setVisible(false, 0);
     
     //Link to our event receiver
     StartupEventReceiver startupReceiver(
@@ -180,36 +181,54 @@ void findWhatToLoad(irr::IrrlichtDevice* device, std::string& worldName, std::st
         OK_WORLD_BUTTON_ID,
         IMPORT_SCENARIO_BUTTON_ID,
         EXPORT_SCENARIO_BUTTON_ID,
-        &importExport);
+        IMPORT_EXPORT_OK_BUTTON_ID,
+        &importExport,
+        scenarioData);
     device->setEventReceiver(&startupReceiver);
 
-    while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 ) {
+    // Run until we know scenario data to use
+    while (device->run() && startupReceiver.getScenarioSelected() < 0 && startupReceiver.getWorldSelected() < 0 && scenarioData->dataPopulated == false ) {
         driver->beginScene();
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
     }
 
-    irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
-    if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
-        scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
+    if (scenarioData->dataPopulated == false) {
+        // Normal case
+        irr::s32 selectedScenario = startupReceiver.getScenarioSelected();
+        if (selectedScenario >= 0 && selectedScenario < scenarioDirList.size()) {
+            scenarioName = scenarioDirList.at(selectedScenario); //Get scenario name
 
-        //check if name ends in _mp, and if so, record that this is a multiplayer scenario
-        multiplayer = false;
-        if (scenarioName.length() >= 3) {
-            std::string endChars = scenarioName.substr(scenarioName.length()-3,3);
-            if (endChars == "_mp" || endChars == "_MP") {
-                multiplayer = true;
+            //check if name ends in _mp, and if so, record that this is a multiplayer scenario
+            multiplayer = false;
+            if (scenarioName.length() >= 3) {
+                std::string endChars = scenarioName.substr(scenarioName.length()-3,3);
+                if (endChars == "_mp" || endChars == "_MP") {
+                    multiplayer = true;
+                }
             }
         }
-    }
 
-    irr::s32 selectedWorld = startupReceiver.getWorldSelected();
-    if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
-        worldName = worldDirList.at(selectedWorld);
-        multiplayer = multiplayerBox->isChecked();
+        irr::s32 selectedWorld = startupReceiver.getWorldSelected();
+        if (selectedWorld >= 0 && selectedWorld < worldDirList.size()) {
+            worldName = worldDirList.at(selectedWorld);
+            multiplayer = multiplayerBox->isChecked();
+        }
+        //Store multiplayer status if new scenario    
+    } else {
+        // Scenario data already populated directly (by import), just set worldName, scenarioName, and multiplayer
+        worldName = scenarioData->worldName;
+        scenarioName = scenarioData->worldName;
+        // multiplayerName isn't set in deserialise, so check and update here
+        if (scenarioData->scenarioName.length() >= 3) {
+            std::string endChars = scenarioData->scenarioName.substr(scenarioData->scenarioName.length()-3,3);
+            if (endChars == "_mp" || endChars == "_MP") {
+                scenarioData->multiplayerName = true;
+            }
+        }
+        multiplayer = scenarioData->multiplayerName;
     }
-    //Store multiplayer status if new scenario
-
+    
     //Clean up
     scenarioText->remove();
     worldText->remove();
@@ -489,11 +508,17 @@ int main (int argc, char ** argv)
     device->sleep(200);
     device->clearSystemMessages();
 
+    //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
+
+    //Create data structures to hold own ship, other ship and buoy data
+    ScenarioData scenarioData;
+    std::vector<PositionData> buoysData;
+
     //Query which scenario or world to start with
     std::string worldName;
     std::string scenarioName;
     bool multiplayer;
-    findWhatToLoad(device, worldName, scenarioName, multiplayer, &language, userFolder); //worldName or scenarioName updated by reference
+    findWhatToLoad(device, &scenarioData, worldName, scenarioName, multiplayer, &language, userFolder); //worldName or scenarioName updated by reference
     //check that one of worldName and scenarioName have been set
     if (worldName.length() == 0 && scenarioName.length() == 0) {
         std::cout << "Failed to select a scenario or world model to use" << std::endl;
@@ -550,166 +575,166 @@ int main (int argc, char ** argv)
 
     //GUI class
     GUIMain guiMain(device, &language, ownShipTypes, otherShipTypes, multiplayer);
-
-    //Classes:  Data structures created in main, and shared with controller by pointer. Controller then pushes data to the GUI
-
-    //Create data structures to hold own ship, other ship and buoy data
-    ScenarioData scenarioData;
-    std::vector<PositionData> buoysData;
     
-    // Initialise defaults for new scenario
-    scenarioData.startTime = 10*SECONDS_IN_HOUR;
-    scenarioData.sunRise = 6;
-    scenarioData.sunSet = 18;
-    scenarioData.weather = 1.0;
-    scenarioData.visibilityRange = 8.0;
-    scenarioData.rainIntensity = 0.0;
-    scenarioData.startDay = 1;
-    scenarioData.startMonth = 1;
-    scenarioData.startYear = 2024;
-    scenarioData.description = "Scenario description";
-    scenarioData.multiplayerName = false;
-    scenarioData.willOverwrite = false;
-    scenarioData.scenarioName = "New Scenario";
+    if (scenarioData.dataPopulated == false) {
+        // Initialise defaults for new scenario
+        scenarioData.startTime = 10*SECONDS_IN_HOUR;
+        scenarioData.sunRise = 6;
+        scenarioData.sunSet = 18;
+        scenarioData.weather = 1.0;
+        scenarioData.visibilityRange = 8.0;
+        scenarioData.rainIntensity = 0.0;
+        scenarioData.startDay = 1;
+        scenarioData.startMonth = 1;
+        scenarioData.startYear = 2024;
+        scenarioData.description = "Scenario description";
+        scenarioData.multiplayerName = false;
+        scenarioData.willOverwrite = false;
+        scenarioData.scenarioName = "New Scenario";
 
-    //Change default scenario name if in multiplayer mode
-    if (multiplayer) {
-        scenarioData.scenarioName.append("_mp");
-    }
+        //Change default scenario name if in multiplayer mode
+        if (multiplayer) {
+            scenarioData.scenarioName.append("_mp");
+        }
 
-    //Make default name the first in the list, in case it isn't set by an update later
-    if (ownShipTypes.size() > 0) {
-        scenarioData.ownShipData.ownShipName = ownShipTypes.at(0);
-    }
-    if (otherShipTypes.size() > 0) {
-        for (int i=0; i<scenarioData.otherShipsData.size(); i++)
-        scenarioData.otherShipsData.at(i).shipName = otherShipTypes.at(0);
+        //Make default name the first in the list, in case it isn't set by an update later
+        if (ownShipTypes.size() > 0) {
+            scenarioData.ownShipData.ownShipName = ownShipTypes.at(0);
+        }
+        if (otherShipTypes.size() > 0) {
+            for (int i=0; i<scenarioData.otherShipsData.size(); i++)
+            scenarioData.otherShipsData.at(i).shipName = otherShipTypes.at(0);
+        }
     }
 
     //Main model
     ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, zoomLevels);
 
-    //If an existing scenario, load data into these structures
-    if(scenarioName.length() != 0) {
-        //Find scenario path
-        std::string scenarioPath = "Scenarios/";
-        if (Utilities::pathExists(userFolder + scenarioPath)) {
-            scenarioPath = userFolder + scenarioPath;
-        }
-        scenarioPath.append(scenarioName);
-
-        //Need to read in ownship.ini, othership.ini, environment.ini
-        std::string environmentIniFilename = scenarioPath;
-        environmentIniFilename.append("/environment.ini");
-
-        std::string ownShipIniFilename = scenarioPath;
-        ownShipIniFilename.append("/ownship.ini");
-
-        std::string otherShipIniFilename = scenarioPath;
-        otherShipIniFilename.append("/othership.ini");
-
-        std::string descriptionFilename = scenarioPath;
-        descriptionFilename.append("/description.ini");
-
-        //Load general information
-        scenarioData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
-        scenarioData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
-        scenarioData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
-        scenarioData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
-        scenarioData.sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
-        scenarioData.sunSet = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
-        scenarioData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
-        scenarioData.visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
-        scenarioData.rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
-        scenarioData.scenarioName = scenarioName;
-        //defaults
-        if(scenarioData.sunRise==0.0) {scenarioData.sunRise=6;}
-        if(scenarioData.sunSet==0.0) {scenarioData.sunSet=18;}
-
-        //Load own ship information
-        scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
-        scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
-        scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
-        scenarioData.ownShipData.ownShipName = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
-        scenarioData.ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
-
-        //Load other ship information
-        int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
-        for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
-
-            //Temporary structure to load data
-            OtherShipData thisShip;
-
-            //Get initial position
-            thisShip.initialX = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
-            thisShip.initialZ = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
-            thisShip.shipName = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
-            thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
-            int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
-
-            irr::f32 legStartTime = scenarioData.startTime; //Legs start at the start of the scenario
-            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
-                //go through each leg (if any), and load
-                LegData currentLeg;
-                currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
-                currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
-                currentLeg.startTime = legStartTime;
-
-                //Use distance to calculate startTime of next leg, and stored for later reference.
-                irr::f32 distance = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Distance",i,currentLegNo));
-                currentLeg.distance = distance;
-
-                //Add the leg to the array
-                thisShip.legs.push_back(currentLeg);
-
-                //find the start time for the next leg
-                legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
+    if (scenarioData.dataPopulated == false) {
+        //If an existing scenario, load data into these structures
+        if(scenarioName.length() != 0) {
+            //Find scenario path
+            std::string scenarioPath = "Scenarios/";
+            if (Utilities::pathExists(userFolder + scenarioPath)) {
+                scenarioPath = userFolder + scenarioPath;
             }
-            //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+            scenarioPath.append(scenarioName);
 
-            LegData stopLeg;
-            stopLeg.bearing=0;
-            stopLeg.speed=0;
-            stopLeg.distance=0;
-            stopLeg.startTime = legStartTime;
-            thisShip.legs.push_back(stopLeg);
+            //Need to read in ownship.ini, othership.ini, environment.ini
+            std::string environmentIniFilename = scenarioPath;
+            environmentIniFilename.append("/environment.ini");
 
-            //Add to array.
-            scenarioData.otherShipsData.push_back(thisShip);
+            std::string ownShipIniFilename = scenarioPath;
+            ownShipIniFilename.append("/ownship.ini");
 
+            std::string otherShipIniFilename = scenarioPath;
+            otherShipIniFilename.append("/othership.ini");
 
-        }
+            std::string descriptionFilename = scenarioPath;
+            descriptionFilename.append("/description.ini");
 
-        //Load description information
-        std::ifstream descriptionStream (descriptionFilename.c_str());
-        //Set UTF-8 on Linux/OSX etc
-        #ifndef _WIN32
-            try {
-        #  ifdef __APPLE__
-                char* thisLocale = setlocale(LC_ALL, "");
-                if (thisLocale) {
-                    descriptionStream.imbue(std::locale(thisLocale));
+            //Load general information
+            scenarioData.startTime = SECONDS_IN_HOUR * IniFile::iniFileTof32(environmentIniFilename,"StartTime"); //Time since start of day
+            scenarioData.startDay = IniFile::iniFileTou32(environmentIniFilename,"StartDay");
+            scenarioData.startMonth = IniFile::iniFileTou32(environmentIniFilename,"StartMonth");
+            scenarioData.startYear = IniFile::iniFileTou32(environmentIniFilename,"StartYear");
+            scenarioData.sunRise = IniFile::iniFileTof32(environmentIniFilename,"SunRise");
+            scenarioData.sunSet = IniFile::iniFileTof32(environmentIniFilename,"SunSet");
+            scenarioData.weather = IniFile::iniFileTof32(environmentIniFilename,"Weather");
+            scenarioData.visibilityRange = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange");
+            scenarioData.rainIntensity = IniFile::iniFileTof32(environmentIniFilename,"Rain");
+            scenarioData.scenarioName = scenarioName;
+            //defaults
+            if(scenarioData.sunRise==0.0) {scenarioData.sunRise=6;}
+            if(scenarioData.sunSet==0.0) {scenarioData.sunSet=18;}
+
+            //Load own ship information
+            scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
+            scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
+            scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
+            scenarioData.ownShipData.ownShipName = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
+            scenarioData.ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
+
+            //Load other ship information
+            int numberOfOtherShips = IniFile::iniFileTou32(otherShipIniFilename,"Number");
+            for(irr::u32 i=1;i<=numberOfOtherShips;i++) {
+
+                //Temporary structure to load data
+                OtherShipData thisShip;
+
+                //Get initial position
+                thisShip.initialX = controller.longToX(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLong",i)));
+                thisShip.initialZ = controller.latToZ(IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("InitLat",i)));
+                thisShip.shipName = IniFile::iniFileToString(otherShipIniFilename,IniFile::enumerate1("Type",i));
+                thisShip.mmsi = IniFile::iniFileTou32(otherShipIniFilename,IniFile::enumerate1("mmsi",i));
+                int numberOfLegs = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate1("Legs",i));
+
+                irr::f32 legStartTime = scenarioData.startTime; //Legs start at the start of the scenario
+                for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+                    //go through each leg (if any), and load
+                    LegData currentLeg;
+                    currentLeg.bearing = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Bearing",i,currentLegNo));
+                    currentLeg.speed = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Speed",i,currentLegNo));
+                    currentLeg.startTime = legStartTime;
+
+                    //Use distance to calculate startTime of next leg, and stored for later reference.
+                    irr::f32 distance = IniFile::iniFileTof32(otherShipIniFilename,IniFile::enumerate2("Distance",i,currentLegNo));
+                    currentLeg.distance = distance;
+
+                    //Add the leg to the array
+                    thisShip.legs.push_back(currentLeg);
+
+                    //find the start time for the next leg
+                    legStartTime = legStartTime + SECONDS_IN_HOUR*(distance/fabs(currentLeg.speed)); // nm/kts -> hours, so convert to seconds
                 }
-        #  else
-                descriptionStream.imbue(std::locale("en_US.UTF8"));
-        #  endif
-            } catch (const std::runtime_error& runtimeError) {
-                descriptionStream.imbue(std::locale(""));
-            }
-        #endif
+                //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
 
-        std::string descriptionLines = "";
-        if (descriptionStream.is_open()) {
-            std::string descriptionLine;
-            while ( std::getline (descriptionStream,descriptionLine) )
-            {
-                descriptionLines.append(descriptionLine);
-                descriptionLines.append("\n");
+                LegData stopLeg;
+                stopLeg.bearing=0;
+                stopLeg.speed=0;
+                stopLeg.distance=0;
+                stopLeg.startTime = legStartTime;
+                thisShip.legs.push_back(stopLeg);
+
+                //Add to array.
+                scenarioData.otherShipsData.push_back(thisShip);
+
+
             }
-            descriptionStream.close();
+
+            //Load description information
+            std::ifstream descriptionStream (descriptionFilename.c_str());
+            //Set UTF-8 on Linux/OSX etc
+            #ifndef _WIN32
+                try {
+            #  ifdef __APPLE__
+                    char* thisLocale = setlocale(LC_ALL, "");
+                    if (thisLocale) {
+                        descriptionStream.imbue(std::locale(thisLocale));
+                    }
+            #  else
+                    descriptionStream.imbue(std::locale("en_US.UTF8"));
+            #  endif
+                } catch (const std::runtime_error& runtimeError) {
+                    descriptionStream.imbue(std::locale(""));
+                }
+            #endif
+
+            std::string descriptionLines = "";
+            if (descriptionStream.is_open()) {
+                std::string descriptionLine;
+                while ( std::getline (descriptionStream,descriptionLine) )
+                {
+                    descriptionLines.append(descriptionLine);
+                    descriptionLines.append("\n");
+                }
+                descriptionStream.close();
+            }
+            scenarioData.description = descriptionLines;
+
         }
-        scenarioData.description = descriptionLines;
-
+    } else {
+        // TODO: Populate scenario editor specific data here
     }
 
     //Load buoy data
