@@ -734,7 +734,38 @@ int main (int argc, char ** argv)
 
         }
     } else {
-        // TODO: Populate scenario editor specific data here
+        // Populate scenario editor specific data here
+
+        // TODO: StartTime as used in scenario editor is in seconds, but in hours elsewhere that scenarioDataStructure is used, convert here
+        scenarioData.startTime = scenarioData.startTime * SECONDS_IN_HOUR;
+        
+        // Own ship irr::f32 initialX, initialZ;
+        scenarioData.ownShipData.initialX = controller.longToX(scenarioData.ownShipData.initialLong);
+        scenarioData.ownShipData.initialZ = controller.latToZ(scenarioData.ownShipData.initialLat);
+
+        // Other ship irr::f32 initialX, initialZ, leg stop times, and add final 'stop leg'
+        for (int i=0; i < scenarioData.otherShipsData.size(); i++) {
+            // Position
+            scenarioData.otherShipsData.at(i).initialX = controller.longToX(scenarioData.otherShipsData.at(i).initialLong);
+            scenarioData.otherShipsData.at(i).initialZ = controller.latToZ(scenarioData.otherShipsData.at(i).initialLat);
+
+            // Legs
+            irr::f32 legStartTime = scenarioData.startTime; // Legs start at the start of the scenario
+            for (int thisLeg = 0; thisLeg < scenarioData.otherShipsData.at(i).legs.size(); thisLeg++) {
+                scenarioData.otherShipsData.at(i).legs.at(thisLeg).startTime = legStartTime;
+                irr::f32 thisLegDistance = scenarioData.otherShipsData.at(i).legs.at(thisLeg).distance;
+                irr::f32 thisLegSpeed = scenarioData.otherShipsData.at(i).legs.at(thisLeg).speed;
+                //Update legStart time for start of next leg:
+                legStartTime+= SECONDS_IN_HOUR*(thisLegDistance/fabs(thisLegSpeed)); // nm/kts -> hours, so convert to seconds
+            }
+            //add a final 'stop' leg, which the ship will remain on after it has passed the other legs.
+            LegData stopLeg;
+            stopLeg.bearing=0;
+            stopLeg.speed=0;
+            stopLeg.distance=0;
+            stopLeg.startTime = legStartTime;
+            scenarioData.otherShipsData.at(i).legs.push_back(stopLeg);
+        }
     }
 
     //Load buoy data

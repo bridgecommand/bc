@@ -40,7 +40,7 @@ GUIImportExport::GUIImportExport(
             importExportText->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
         }
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, L"OK");
+        guienv->addButton(irr::core::rect<irr::s32>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, language->translate("ok").c_str());
     }
 }
 
