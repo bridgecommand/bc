@@ -104,6 +104,8 @@
 			<Option target="Windows" />
 			<Option target="Windows64" />
 		</Unit>
+		<Unit filename="EventReceiver.cpp" />
+		<Unit filename="EventReceiver.hpp" />
 		<Unit filename="LinesData.cpp" />
 		<Unit filename="LinesData.hpp" />
 		<Unit filename="Network.cpp" />

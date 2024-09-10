@@ -30,6 +30,7 @@
 #include "Network.hpp"
 #include "ShipPositions.hpp"
 #include "LinesData.hpp"
+#include "EventReceiver.hpp"
 
 #include <fstream> //To save to log
 
@@ -292,6 +293,22 @@ int main()
     //irr::u32 previousTime = currentTime; //Computer clock time (ms)
     irr::f32 accelerator = 1.0;
 
+    //Add some simple information to the GUI, so the user knows it's running
+    //Add text, which will list connected peers, and current time.
+    irr::u32 su = driver->getScreenSize().Width;
+    irr::u32 sh = driver->getScreenSize().Height;
+    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.74*sh),true);
+
+    // Add run and pause buttons
+    irr::s32 runButtonID = 101;
+    irr::s32 pauseButtonID = 102;
+    irr::gui::IGUIButton* runButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.01*su,0.76*sh,0.49*su,0.99*sh), 0, runButtonID, language.translate("run").c_str());
+    irr::gui::IGUIButton* pauseButton = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(0.51*su,0.76*sh,0.99*su,0.99*sh), 0, pauseButtonID, language.translate("pause").c_str());
+
+    // Setup event receiver
+    EventReceiver eventReceiver(pauseButtonID, runButtonID, accelerator);
+    device->setEventReceiver(&eventReceiver);
+
     //Fixme: Think about time zone handling
     //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
     scenarioOffsetTime = Utilities::dmyToTimestamp(masterScenarioData.startDay,masterScenarioData.startMonth,masterScenarioData.startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
@@ -331,12 +348,6 @@ int main()
         }
     }
 
-    //Add some simple information to the GUI, so the user knows it's running
-    //Add text, which will list connected peers, and current time.
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
-    irr::gui::IGUIStaticText* text = device->getGUIEnvironment()->addStaticText(L"",irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.99*su,0.99*sh),true);
-
     //Start main loop, listening for updates from PCs and sending out scenario update, including time handling
     while(device->run())
     {
@@ -345,6 +356,9 @@ int main()
 
         // Pause, so we don't flood clients with data
         device->sleep(sleepTime);
+
+        // Find current time acceleration
+        accelerator = eventReceiver.getAccelerator();
 
         //Do time handling here.
         currentTime = std::chrono::system_clock::now();
