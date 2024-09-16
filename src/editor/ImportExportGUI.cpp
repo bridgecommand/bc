@@ -33,6 +33,9 @@ GUIImportExport::GUIImportExport(
     if (importExportWindow) {
         importExportWindow->getCloseButton()->setVisible(false);
 
+        importDescriptionText = guienv->addStaticText(language->translate("importDescription").c_str(), irr::core::rect<irr::s32>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
+        exportDescriptionText = guienv->addStaticText(language->translate("exportDescription").c_str(), irr::core::rect<irr::s32>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
+        
         importExportText = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.920*su,0.80*sh), true, importExportWindow);
         if (importExportText) {
             importExportText->setMultiLine(true);
@@ -41,6 +44,11 @@ GUIImportExport::GUIImportExport(
         }
 
         guienv->addButton(irr::core::rect<irr::s32>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, language->translate("ok").c_str());
+    } else {
+        importExportText = 0;
+        importDescriptionText = 0;
+        exportDescriptionText = 0;
+
     }
 }
 
@@ -51,6 +59,14 @@ void GUIImportExport::setVisible(bool isVisible, irr::u32 importExportMode)
     }
 
     this->importExportMode = importExportMode;
+
+    if (importExportMode == 0) {
+        importDescriptionText->setVisible(false);
+        exportDescriptionText->setVisible(true);
+    } else {
+        importDescriptionText->setVisible(true);
+        exportDescriptionText->setVisible(false);
+    }
 }
 
 void GUIImportExport::setText(std::string text)

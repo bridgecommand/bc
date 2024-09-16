@@ -56,6 +56,8 @@ selectWorld="Ou choisissez un modèle de monde pour un nouveau scénario"
 ok="OK"
 importScenario="Importer le scénario"
 exportScenario="Exporter le scénario"
+importDescription="Collez le texte d'exportation du scénario dans la zone ci-dessous."
+exportDescription="Copiez le texte d'exportation du scénario dans la zone ci-dessous et envoyez-le au destinataire, par exemple par email.
 
 startTime = "Heure de début"
 startDate="Date (YYYY-MM-DD)"

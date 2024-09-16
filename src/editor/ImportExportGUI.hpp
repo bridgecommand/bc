@@ -45,6 +45,8 @@ private:
     irr::gui::IGUIWindow* importExportWindow;
     irr::gui::IGUIEditBox* importExportText;
     irr::gui::IGUIButton* importExportOKButton;
+    irr::gui::IGUIStaticText* importDescriptionText;
+    irr::gui::IGUIStaticText* exportDescriptionText;
 
     irr::u32 importExportMode; // 0 = export, 1 = import
     
