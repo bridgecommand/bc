@@ -424,6 +424,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     aziDriveLateralLeverArm = length * (0.5 - aziToLengthRatio); // this takes care of the sense of the turn
                                                                  // as the sign changes if tractor configuration
 
+    device->getLogger()->log("Length, breadth, draught are calculated from bounding box as (m):");
+    device->getLogger()->log(irr::core::stringw(length).c_str());
+    device->getLogger()->log(irr::core::stringw(breadth).c_str());
+    device->getLogger()->log(irr::core::stringw(draught).c_str());
+    
     // DEE_DEC22 set ships mass and inertia from displacement and length breadth draught and Cb (block coefficient)
     if (cB > 0) // ie. the block coefficient has been defined so it overrides any declaration of mass or inertia
     {
