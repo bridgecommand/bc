@@ -819,6 +819,9 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 c
                 contactPoint.internalPosition = intersection;
                 contactPoint.internalPosition.Y -= heightCorrection; // Adjust for height correction
 
+                // Adjust internal position, so it's only 1/2 way to the opposite boundary of the model
+                contactPoint.internalPosition = 0.5 * contactPoint.internalPosition + 0.5 * contactPoint.position;
+
                 // Find cross product, for torque component
                 irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
                 contactPoint.torqueEffect = crossProduct.Y;
