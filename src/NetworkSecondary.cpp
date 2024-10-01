@@ -268,7 +268,7 @@ void NetworkSecondary::receiveMessage()
                         if (numberLines > model->getLines()->getNumberOfLines(true)) {
                             // Need to add lines, initially undefined
                             while (numberLines > model->getLines()->getNumberOfLines(true)) {
-                                model->getLines()->addLine(true);
+                                model->getLines()->addLine(model, true);
                             }
                         } else if (numberLines < model->getLines()->getNumberOfLines(true)) {
                             // Need to remove lines

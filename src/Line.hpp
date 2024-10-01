@@ -26,7 +26,7 @@ class SimulationModel;
 class Line
 {
     public:
-        Line();
+        Line(SimulationModel* model);
         virtual ~Line();
         void clearLine(); // Call before we remove the line from the parent vector
         void setStart(irr::scene::ISceneNode* lineStart, int nodeType, int id); // Must always be on own ship
@@ -67,6 +67,7 @@ class Line
         irr::core::vector3df getLocalTorqueVector(); // Call after update() to retrieve result
         
     private:
+        SimulationModel* model;
         irr::scene::ISceneNode* lineStart;
         irr::scene::ISceneNode* lineEnd;
         irr::scene::IMeshSceneNode* lineVisualisation1;

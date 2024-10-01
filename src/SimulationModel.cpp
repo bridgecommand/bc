@@ -45,31 +45,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  GUIMain* gui,
                                  Sound* sound,
                                  ScenarioData scenarioData,
-                                 OperatingMode::Mode mode,
-                                 bool vrMode,
-                                 irr::f32 viewAngle,
-                                 irr::f32 lookAngle,
-                                 irr::f32 cameraMinDistance,
-                                 irr::f32 cameraMaxDistance,
-                                 irr::u32 disableShaders,
-                                 irr::u32 waterSegments,
-                                 irr::core::vector3di numberOfContactPoints,
-                                 irr::f32 minContactPointSpacing,
-                                 irr::f32 contactStiffnessFactor,
-                                 irr::f32 contactDampingFactor,
-                                 irr::f32 frictionCoefficient,
-                                 irr::f32 tanhFrictionFactor,
-                                 irr::u32 limitTerrainResolution,
-                                 bool secondaryControlWheel,
-                                 bool secondaryControlPortEngine,
-                                 bool secondaryControlStbdEngine,
-                                 bool secondaryControlPortSchottel,
-                                 bool secondaryControlStbdSchottel,
-                                 bool secondaryControlPortThrustLever,
-                                 bool secondaryControlStbdThrustLever,
-                                 bool secondaryControlBowThruster,
-                                 bool secondaryControlSternThruster,
-                                 bool debugMode):
+                                 ModelParameters modelParameters):
     manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
     {
         //get reference to scene manager
@@ -86,26 +62,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         scenarioName = scenarioData.scenarioName;
 
-        //store what mode we're in
-        this->mode = mode;
-        this->vrMode = vrMode;
-
-        //store if we're overriding controls in secondary mode
-        this->secondaryControlWheel = secondaryControlWheel;
-        this->secondaryControlPortEngine = secondaryControlPortEngine;
-        this->secondaryControlStbdEngine = secondaryControlStbdEngine;
-        this->secondaryControlPortSchottel = secondaryControlPortSchottel;
-        this->secondaryControlStbdSchottel = secondaryControlStbdSchottel;
-        this->secondaryControlPortThrustLever = secondaryControlPortThrustLever;
-        this->secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
-        this->secondaryControlBowThruster = secondaryControlBowThruster;
-        this->secondaryControlSternThruster = secondaryControlSternThruster;
-
-        //Store if we should show debug details
-        this->debugMode = debugMode;
-
-        //store default view angle
-        this->viewAngle = viewAngle;
+        // Store model parameters
+        this->modelParameters = modelParameters;
 
         //Set loop number to zero
         loopNumber = 0;
@@ -156,23 +114,34 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         }
 
         //Add terrain: Needs to happen first, so the terrain parameters are available
-        terrain.load(worldPath, smgr, device, limitTerrainResolution);
+        terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution);
 
         //sky box/dome
         Sky sky (smgr);
 
         //Load own ship model.
-        ownShip.load(scenarioData.ownShipData, numberOfContactPoints, minContactPointSpacing, contactStiffnessFactor, contactDampingFactor, frictionCoefficient, tanhFrictionFactor, smgr, this, &terrain, device);
-        if(mode == OperatingMode::Secondary) {
+        // TODO: It would be better to pass in modelParameters directly
+        ownShip.load(scenarioData.ownShipData, 
+                     modelParameters.numberOfContactPoints, 
+                     modelParameters.minContactPointSpacing, 
+                     modelParameters.contactStiffnessFactor, 
+                     modelParameters.contactDampingFactor, 
+                     modelParameters.frictionCoefficient, 
+                     modelParameters.tanhFrictionFactor, 
+                     smgr, 
+                     this, 
+                     &terrain, 
+                     device);
+        if(modelParameters.mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
 
         //add water
         bool waterReflection = true;
-        if (vrMode == true) {
+        if (modelParameters.vrMode == true) {
             waterReflection = false;
         }
-        water.load(smgr,ownShip.getSceneNode(),weather,disableShaders,waterReflection,waterSegments);
+        water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
 
         /* To be replaced by getting information and passing into gui load method.
         //Tell gui to hide the second engine scroll bar if we have a single engine
@@ -201,16 +170,16 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
         irr::f32 angleCorrection = ownShip.getAngleCorrection();
-        camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(viewAngle),lookAngle,angleCorrection);
-        camera.setNearValue(cameraMinDistance);
-        camera.setFarValue(cameraMaxDistance);
+        camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(modelParameters.viewAngle),modelParameters.lookAngle,angleCorrection);
+        camera.setNearValue(modelParameters.cameraMinDistance);
+        camera.setFarValue(modelParameters.cameraMaxDistance);
 
         //make ambient light
         light.load(smgr,sunRise,sunSet, camera.getSceneNode());
 
 
         //Load other ships
-        otherShips.load(scenarioData.otherShipsData,scenarioTime,mode,smgr,this,device);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,modelParameters.mode,smgr,this,device);
 
         //Load buoys
         buoys.load(worldPath, smgr, this,device);
@@ -1327,13 +1296,13 @@ SimulationModel::~SimulationModel()
         } else {
             zoom = 1.0;
         }
-        camera.setHFOV(irr::core::degToRad(viewAngle)/zoom);
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle)/zoom);
     }
 
     void SimulationModel::setViewAngle(irr::f32 viewAngle)
     {
-        this->viewAngle = viewAngle;
-        camera.setHFOV(irr::core::degToRad(viewAngle) / zoom);
+        modelParameters.viewAngle = viewAngle;
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / zoom);
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)
@@ -1516,7 +1485,7 @@ SimulationModel::~SimulationModel()
 
     bool SimulationModel::debugModeOn() const
     {
-        return debugMode;
+        return modelParameters.debugMode;
     }
 
     irr::f32 SimulationModel::getOwnShipMass() const
@@ -1546,39 +1515,47 @@ SimulationModel::~SimulationModel()
     }
 
     bool SimulationModel::getIsSecondaryControlWheel() const {
-        return secondaryControlWheel;
+        return modelParameters.secondaryControlWheel;
     }
 
     bool SimulationModel::getIsSecondaryControlPortEngine() const {
-        return secondaryControlPortEngine;
+        return modelParameters.secondaryControlPortEngine;
     }
 
     bool SimulationModel::getIsSecondaryControlStbdEngine() const {
-        return secondaryControlStbdEngine;
+        return modelParameters.secondaryControlStbdEngine;
     }
 
     bool SimulationModel::getIsSecondaryControlPortSchottel() const {
-        return secondaryControlPortSchottel;
+        return modelParameters.secondaryControlPortSchottel;
     }
 
     bool SimulationModel::getIsSecondaryControlStbdSchottel() const {
-        return secondaryControlStbdSchottel;
+        return modelParameters.secondaryControlStbdSchottel;
     }
 
     bool SimulationModel::getIsSecondaryControlPortThrustLever() const {
-        return secondaryControlPortThrustLever;
+        return modelParameters.secondaryControlPortThrustLever;
     }
 
     bool SimulationModel::getIsSecondaryControlStbdThrustLever() const {
-        return secondaryControlStbdThrustLever;
+        return modelParameters.secondaryControlStbdThrustLever;
     }
 
     bool SimulationModel::getIsSecondaryControlBowThruster() const {
-        return secondaryControlBowThruster;
+        return modelParameters.secondaryControlBowThruster;
     }
 
     bool SimulationModel::getIsSecondaryControlSternThruster() const {
-        return secondaryControlSternThruster;
+        return modelParameters.secondaryControlSternThruster;
+    }
+
+    irr::f32 SimulationModel::getLineStiffnessFactor() const {
+        return modelParameters.lineStiffnessFactor;
+    }
+
+    irr::f32 SimulationModel::getLineDampingFactor() const {
+        return modelParameters.lineDampingFactor;
     }
 
     irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
@@ -1671,7 +1648,7 @@ SimulationModel::~SimulationModel()
 
     void SimulationModel::addLine() // Add a line, which will be undefined
     {
-        lines.addLine();
+        lines.addLine(this);
     }
 
     Lines* SimulationModel::getLines() // Get pointer to lines object

@@ -461,6 +461,8 @@ int main(int argc, char ** argv)
 
     irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
     irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+    irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
+    irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
     irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
     irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
     if (frictionCoefficient < 0) {frictionCoefficient = 0;}
@@ -926,37 +928,43 @@ int main(int argc, char ** argv)
 
     }
 
+    SimulationModel::ModelParameters modelParameters;
+    // TODO: most of these intermediate variables can probably be removed.
+    modelParameters.mode = mode; 
+    modelParameters.vrMode = vr3dMode;
+    modelParameters.viewAngle = viewAngle; 
+    modelParameters.lookAngle = lookAngle;
+    modelParameters.cameraMinDistance = cameraMinDistance; 
+    modelParameters.cameraMaxDistance = cameraMaxDistance;
+    modelParameters.disableShaders = disableShaders; 
+    modelParameters.waterSegments = waterSegments; 
+    modelParameters.numberOfContactPoints = numberOfContactPoints; 
+    modelParameters.minContactPointSpacing = minContactPointSpacing; 
+    modelParameters.contactStiffnessFactor = contactStiffnessFactor; 
+    modelParameters.contactDampingFactor = contactDampingFactor; 
+    modelParameters.frictionCoefficient = frictionCoefficient; 
+    modelParameters.tanhFrictionFactor = tanhFrictionFactor;
+    modelParameters.lineStiffnessFactor = lineStiffnessFactor;
+    modelParameters.lineDampingFactor = lineDampingFactor; 
+    modelParameters.limitTerrainResolution = limitTerrainResolution;
+    modelParameters.secondaryControlWheel = secondaryControlWheel;
+    modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
+    modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
+    modelParameters.secondaryControlPortSchottel = secondaryControlPortSchottel;
+    modelParameters.secondaryControlStbdSchottel = secondaryControlStbdSchottel;
+    modelParameters.secondaryControlPortThrustLever = secondaryControlPortThrustLever;
+    modelParameters.secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
+    modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
+    modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
+    modelParameters.debugMode = debugMode;
+
     //Create simulation model
     SimulationModel model(device, 
                           smgr, 
                           &guiMain, 
                           &sound, 
                           scenarioData, 
-                          mode, 
-                          vr3dMode, 
-                          viewAngle, 
-                          lookAngle, 
-                          cameraMinDistance, 
-                          cameraMaxDistance, 
-                          disableShaders, 
-                          waterSegments, 
-                          numberOfContactPoints, 
-                          minContactPointSpacing, 
-                          contactStiffnessFactor, 
-                          contactDampingFactor, 
-                          frictionCoefficient, 
-                          tanhFrictionFactor, 
-                          limitTerrainResolution, 
-                          secondaryControlWheel,
-                          secondaryControlPortEngine,
-                          secondaryControlStbdEngine,
-                          secondaryControlPortSchottel,
-                          secondaryControlStbdSchottel,
-                          secondaryControlPortThrustLever,
-                          secondaryControlStbdThrustLever,
-                          secondaryControlBowThruster,
-                          secondaryControlSternThruster,
-                          debugMode);
+                          modelParameters);
 
     // Load the VR interface, allowing link to model
     int vrSuccess = -1;

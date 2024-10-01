@@ -15,9 +15,10 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Line.hpp"
+#include "SimulationModel.hpp"
 #include <iostream>
 
-Line::Line()
+Line::Line(SimulationModel* model)
 {
     lineNominalLength = 0;
     lineExtension = 0;
@@ -40,6 +41,8 @@ Line::Line()
     endNodeType = 0; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
     startNodeID = 0;
     endNodeID = 0;
+
+    this->model = model;
 }
 
 Line::~Line()
@@ -130,7 +133,7 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
 
        // Set line properties proportional to the ship size
        lineBreakingStrain = 0.25; // Initial guess
-       lineBreakingTension = shipNominalMass * 9.81; // Based on maximum 1g acceleration due to line 
+       lineBreakingTension = shipNominalMass * 9.81 * model->getLineStiffnessFactor(); // Based on maximum 1g acceleration due to line 
 
     }
 }
@@ -299,6 +302,10 @@ void Line::setLineNominalShipMass(irr::f32 shipNominalMass)
 void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting on the ownship in the local coordinate system
 {
     
+    // Initially assume no force and torque
+    localForceVector = irr::core::vector3df(0.0, 0.0, 0.0);
+    localTorqueVector = irr::core::vector3df(0.0, 0.0, 0.0);
+    
     if (lineStart && lineEnd && lineStart->getParent()) {
         
         // Find distance between start and end
@@ -310,6 +317,9 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
             lineEnd->getParent()->updateAbsolutePosition();
         }
         lineEnd->updateAbsolutePosition();
+
+        // Make sure own ship is up to date
+        model->getOwnShipSceneNode()->updateAbsolutePosition();
 
         irr::core::vector3df startPosAbs = lineStart->getAbsolutePosition();
         irr::core::vector3df endPosAbs = lineEnd->getAbsolutePosition();
@@ -353,14 +363,13 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                 if (deltaTime > 0 && shipNominalMass > 0 && lineStiffness > 0) {
                     irr::f32 lineExtensionSpeed = lineExtensionChange / deltaTime;
                     irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
-                    forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping;
+                    forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping * model->getLineDampingFactor();
                 }
 
                 // Avoid force magnitude going negative with damping
                 if (forceMagnitude < 0) {
                     forceMagnitude = 0;
                 }
-    
             }
             // Reduce line length for next time if 'heave in' is active
             if (!keepSlack && heaveIn) {
@@ -388,36 +397,26 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
         // Transform positions to the own ship (start) local coordinate system
         irr::core::vector3df lineStartLocal;
         irr::core::vector3df lineEndLocal;
-        irr::core::matrix4 worldToLocal;
+        irr::core::matrix4 worldToLocal = model->getOwnShipSceneNode()->getAbsoluteTransformation();
+        worldToLocal.makeInverse();
 
-        if (startNodeType == 1) {
-            // Own ship as start (normal case)
-            lineStartLocal = lineStart->getPosition(); //Relative position already
-            lineEndLocal = endPosAbs; //Initially the absolute position, will be transformed
-            worldToLocal = lineStart->getParent()->getAbsoluteTransformation();
-            worldToLocal.makeInverse();
+        if ((startNodeType == 1) || (endNodeType == 1)) {
+            if (startNodeType == 1) {
+                // Own ship as start (normal case)
+                lineStartLocal = startPosAbs; //Initially the absolute position, will be transformed
+                lineEndLocal = endPosAbs; //Initially the absolute position, will be transformed
+            } else if (endNodeType == 1) {
+                // Own ship as end (may occur in network cases)
+                lineStartLocal = endPosAbs; //Initially the absolute position, will be transformed
+                lineEndLocal = startPosAbs; //Initially the absolute position, will be transformed
+            }
+            worldToLocal.transformVect(lineStartLocal);
             worldToLocal.transformVect(lineEndLocal);
-
             irr::core::vector3df lineVectorUnitLocal = lineEndLocal - lineStartLocal;
             lineVectorUnitLocal.normalize();
-
             localForceVector = lineVectorUnitLocal * forceMagnitude;
             // Find torque in local coordinate system (i.e. cross product of local start position vector with local force vector)
             localTorqueVector = lineStartLocal.crossProduct(localForceVector);
-        } else if (endNodeType == 1) {
-            // Own ship as end (may occur in network cases)
-            lineStartLocal = startPosAbs; //Initially the absolute position, will be transformed
-            lineEndLocal = lineEnd->getPosition(); //Relative position already
-            worldToLocal = lineEnd->getParent()->getAbsoluteTransformation();
-            worldToLocal.makeInverse();
-            worldToLocal.transformVect(lineStartLocal);
-
-            irr::core::vector3df lineVectorUnitLocal = lineEndLocal - lineStartLocal;
-            lineVectorUnitLocal.normalize();
-            
-            localForceVector = lineVectorUnitLocal * -1.0 * forceMagnitude;
-            // Find torque in local coordinate system (i.e. cross product of local end position vector with local force vector)
-            localTorqueVector = lineEndLocal.crossProduct(localForceVector);
         } else {
             // Not connected to own ship, no force or torque
             localForceVector = irr::core::vector3df(0.0, 0.0, 0.0);

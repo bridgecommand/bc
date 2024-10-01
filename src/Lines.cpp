@@ -27,9 +27,9 @@ Lines::~Lines()
 }
 
 // Add a line, which will be undefined initially
-void Lines::addLine(bool networkLine) 
+void Lines::addLine(SimulationModel* model, bool networkLine) 
 {
-    Line thisLine;
+    Line thisLine(model);
     if (networkLine) {
         networkLines.push_back(thisLine);
     } else {

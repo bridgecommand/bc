@@ -53,36 +53,42 @@ class SimulationModel //Start of the 'Model' part of MVC
 
 public:
 
+    struct ModelParameters{
+        OperatingMode::Mode mode;
+        bool vrMode;
+        irr::f32 viewAngle;
+        irr::f32 lookAngle;
+        irr::f32 cameraMinDistance;
+        irr::f32 cameraMaxDistance;
+        irr::u32 disableShaders;
+        irr::u32 waterSegments;
+        irr::core::vector3di numberOfContactPoints;
+        irr::f32 minContactPointSpacing;
+        irr::f32 contactStiffnessFactor;
+        irr::f32 contactDampingFactor;
+        irr::f32 lineStiffnessFactor;
+        irr::f32 lineDampingFactor;
+        irr::f32 frictionCoefficient;
+        irr::f32 tanhFrictionFactor;
+        irr::u32 limitTerrainResolution;
+        bool secondaryControlWheel;
+        bool secondaryControlPortEngine;
+        bool secondaryControlStbdEngine;
+        bool secondaryControlPortSchottel;
+        bool secondaryControlStbdSchottel;
+        bool secondaryControlPortThrustLever;
+        bool secondaryControlStbdThrustLever;
+        bool secondaryControlBowThruster;
+        bool secondaryControlSternThruster;
+        bool debugMode;
+    };
+    
     SimulationModel(irr::IrrlichtDevice* dev,
                     irr::scene::ISceneManager* scene,
                     GUIMain* gui,
                     Sound* sound,
                     ScenarioData scenarioData,
-                    OperatingMode::Mode mode,
-                    bool vrMode,
-                    irr::f32 viewAngle,
-                    irr::f32 lookAngle,
-                    irr::f32 cameraMinDistance,
-                    irr::f32 cameraMaxDistance,
-                    irr::u32 disableShaders,
-                    irr::u32 waterSegments,
-                    irr::core::vector3di numberOfContactPoints,
-                    irr::f32 minContactPointSpacing,
-                    irr::f32 contactStiffnessFactor,
-                    irr::f32 contactDampingFactor,
-                    irr::f32 frictionCoefficient,
-                    irr::f32 tanhFrictionFactor,
-                    irr::u32 limitTerrainResolution,
-                    bool secondaryControlWheel,
-                    bool secondaryControlPortEngine,
-                    bool secondaryControlStbdEngine,
-                    bool secondaryControlPortSchottel,
-                    bool secondaryControlStbdSchottel,
-                    bool secondaryControlPortThrustLever,
-                    bool secondaryControlStbdThrustLever,
-                    bool secondaryControlBowThruster,
-                    bool secondaryControlSternThruster,
-                    bool debugMode);
+                    ModelParameters modelParameters);
     ~SimulationModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -314,6 +320,9 @@ public:
     bool getIsSecondaryControlBowThruster() const;
     bool getIsSecondaryControlSternThruster() const;
 
+    irr::f32 getLineStiffnessFactor() const;
+    irr::f32 getLineDampingFactor() const;
+
 	void startHorn();
 	void endHorn();
 
@@ -336,9 +345,9 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
     irr::scene::ISceneManager* smgr;
-    OperatingMode::Mode mode; //What mode are we in
-    bool vrMode;
-    irr::f32 viewAngle;
+
+    ModelParameters modelParameters;
+    
     irr::video::IImage* radarImage; //Basic radar image
     irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
     irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
@@ -376,7 +385,6 @@ private:
 	Sound* sound;
     bool isMouseDown; //Updated by the event receiver, used by radar
     bool moveViewWithPrimary;
-    bool debugMode;
     ManOverboard manOverboard;
 
     //Simulation time handling
@@ -386,17 +394,6 @@ private:
     irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
     uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
     uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
-
-    // If secondary mode should try to override controls
-    bool secondaryControlWheel;
-    bool secondaryControlPortEngine;
-    bool secondaryControlStbdEngine;
-    bool secondaryControlPortSchottel;
-    bool secondaryControlStbdSchottel;
-    bool secondaryControlPortThrustLever;
-    bool secondaryControlStbdThrustLever;
-    bool secondaryControlBowThruster;
-    bool secondaryControlSternThruster;
 
     //utility function to check for collision
     bool checkOwnShipCollision();
