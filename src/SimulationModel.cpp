@@ -1514,6 +1514,10 @@ SimulationModel::~SimulationModel()
         moveViewWithPrimary = moveView;
     }
 
+    SimulationModel::ModelParameters SimulationModel::getModelParameters() const {
+        return modelParameters;
+    }
+
     bool SimulationModel::getIsSecondaryControlWheel() const {
         return modelParameters.secondaryControlWheel;
     }

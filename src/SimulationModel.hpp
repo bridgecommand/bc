@@ -310,6 +310,9 @@ public:
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
 
+    ModelParameters getModelParameters() const;
+
+    // TODO: Most of these can be replaced with getModelParameters()
     bool getIsSecondaryControlWheel() const;
     bool getIsSecondaryControlPortEngine() const;
     bool getIsSecondaryControlStbdEngine() const;
