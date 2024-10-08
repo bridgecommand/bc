@@ -417,10 +417,19 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
         //Add an additional window for lines (will normally be hidden)
-        linesControlsWindow=guienv->addWindow(irr::core::rect<irr::s32>(
-            stdDataDisplayPos.UpperLeftCorner, 
-            stdDataDisplayPos.LowerRightCorner - irr::core::position2d<irr::s32>(0,0.03*sh)
-        ));
+        irr::core::rect<irr::s32> linesWindowPos = stdDataDisplayPos;
+        linesWindowPos.LowerRightCorner -= irr::core::position2d<irr::s32>(0,0.03*sh);
+        // Scale lines window to make smaller if possible
+        irr::core::dimension2d<irr::u32> sampleDimension = guienv->getSkin()->getFont()->getDimension(L"Example");
+        irr::u32 targetHeight = sampleDimension.Height * 8;
+        irr::u32 targetWidth = sampleDimension.Width * 6;
+        if (linesWindowPos.getHeight() > targetHeight) {
+            linesWindowPos.LowerRightCorner.Y = linesWindowPos.UpperLeftCorner.Y + targetHeight;
+        }
+        if (linesWindowPos.getWidth() > targetWidth) {
+            linesWindowPos.LowerRightCorner.X = linesWindowPos.UpperLeftCorner.X + targetWidth;
+        }
+        linesControlsWindow=guienv->addWindow(linesWindowPos);
         linesControlsWindow->getCloseButton()->setVisible(false);
         linesControlsWindow->setText(language->translate("lines").c_str());
         guienv->addButton(linesControlsWindow->getCloseButton()->getRelativePosition(),linesControlsWindow,GUI_ID_HIDE_LINES_CONTROLS_BUTTON,L"X");
