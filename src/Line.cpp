@@ -374,6 +374,11 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                 if (forceMagnitude < 0) {
                     forceMagnitude = 0;
                 }
+
+                // Limit tension to line breaking tension
+                if (forceMagnitude > lineBreakingTension) {
+                    forceMagnitude = lineBreakingTension;
+                }
             }
             // Reduce line length for next time if 'heave in' is active
             if (!keepSlack && heaveIn) {
