@@ -133,7 +133,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
             _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
 		}
 		
-		irr::video::ITexture* bumpTexture = driver->getTexture("/media/waterbump.png");
+		irr::video::ITexture* bumpTexture = driver->getTexture("media/waterbump.png");
 
 		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
