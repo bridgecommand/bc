@@ -500,6 +500,11 @@ int main(int argc, char ** argv)
         udpPort = 18304;
     }
 
+    std::string udpAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+    if (udpAddr.empty()) {
+        udpAddr = "localhost";
+    }
+    
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
     if (fontScale > 1) {

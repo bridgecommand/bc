@@ -1,0 +1,22 @@
+#EnetServer
+
+- Modifiy main.cpp to configure server IP and port 
+- Build server : g++ *.cpp -lenet -o enetserver
+- Launch server : ./enetserver
+
+
+#Existing Clients
+
+- Set server adress:port into Map Controller Settings -> udp_server_address and udp_send_port
+- Set server adress:port into Bridge Command Settings -> udp_server_address and udp_send_port
+
+#Private Client
+
+- You can now send message from any clients to the server.
+- Messages will be broadcasted to all the clients, and consumed if needed.
+
+#TODO
+
+- Remove broadcast to peer to peer client/server
+- Add a checkbox to activate Enet client/server mode
+- Maybe launch server into main BridgeCommand 
