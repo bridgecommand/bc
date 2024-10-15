@@ -57,9 +57,9 @@ irr::f32 Ship::getLength() const
     return length;
 }
 
-irr::f32 Ship::getWidth() const
+irr::f32 Ship::getBreadth() const
 {
-    return width;
+    return breadth;
 }
 
 irr::f32 Ship::getHeightCorrection() const
