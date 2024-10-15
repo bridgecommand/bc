@@ -1493,6 +1493,16 @@ SimulationModel::~SimulationModel()
         return ownShip.getShipMass();
     }
 
+    irr::f32 SimulationModel::getOwnShipMassEstimate() const
+    {
+        return ownShip.getEstimatedDisplacement();
+    }
+
+    irr::f32 SimulationModel::getOtherShipMassEstimate(int number) const
+    {
+        return otherShips.getEstimatedDisplacement(number);
+    }
+
     irr::f32 SimulationModel::getMaxSounderDepth() const
     {
         return ownShip.getMaxSounderDepth();

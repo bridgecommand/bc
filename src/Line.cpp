@@ -85,6 +85,11 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
     endNodeType = nodeType;
     endNodeID = id;
 
+    if (shipNominalMass <= 0) {
+        // Avoid zero mass, as this will cause problems
+        shipNominalMass = 100000;
+    }
+
     if (nodeType == 2) {
         lineName = "Line to vessel";
     } else if (nodeType == 3) {
@@ -133,7 +138,7 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
 
        // Set line properties proportional to the ship size
        lineBreakingStrain = 0.25; // Initial guess
-       lineBreakingTension = shipNominalMass * 9.81; // Based on maximum 1g acceleration due to line
+       lineBreakingTension = shipNominalMass * 9.81 * 0.1; // Based on maximum 0.1g acceleration due to line, or 10 of these lines being able to hold the whole weight of the ship
        //std::cout << "Added line with breaking tension: " << lineBreakingTension << std::endl;
     }
 }

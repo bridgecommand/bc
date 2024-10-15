@@ -202,6 +202,15 @@ irr::f32 OtherShips::getSpeed(int number) const
     }
 }
 
+irr::f32 OtherShips::getEstimatedDisplacement(int number) const
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getEstimatedDisplacement();
+    } else {
+        return 0;
+    }
+}
+
 void OtherShips::setSpeed(int number, irr::f32 speed)
 {
     if (number < (int)otherShips.size() && number >= 0) {
