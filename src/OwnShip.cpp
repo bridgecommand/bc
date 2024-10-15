@@ -364,7 +364,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     // DEE_DEC22 Start setting defaults and sanity checks on parameters
     irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
-    irr::f32 draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
 
     if (rollPeriod == 0)
     {
