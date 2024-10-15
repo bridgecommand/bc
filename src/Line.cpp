@@ -133,8 +133,8 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
 
        // Set line properties proportional to the ship size
        lineBreakingStrain = 0.25; // Initial guess
-       lineBreakingTension = shipNominalMass * 9.81 * model->getLineStiffnessFactor(); // Based on maximum 1g acceleration due to line 
-
+       lineBreakingTension = shipNominalMass * 9.81; // Based on maximum 1g acceleration due to line
+       //std::cout << "Added line with breaking tension: " << lineBreakingTension << std::endl;
     }
 }
 
@@ -355,9 +355,8 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                     lineStiffness = lineStiffness * strainProportion / 0.1;
                 }
 
-
                 // Calculate the stiffness based force
-                forceMagnitude = lineExtension * lineStiffness;
+                forceMagnitude = lineExtension * lineStiffness * model->getLineStiffnessFactor();;
 
                 // Add damping (50% of critical) here
                 if (deltaTime > 0 && shipNominalMass > 0 && lineStiffness > 0) {
