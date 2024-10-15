@@ -37,6 +37,7 @@ class Ship
         irr::f32 getLength() const;
         irr::f32 getBreadth() const;
         irr::f32 getHeightCorrection() const;
+        irr::f32 getEstimatedDisplacement() const;
         void setHeading(irr::f32 hdg);
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
