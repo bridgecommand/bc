@@ -150,12 +150,12 @@ int Com::ClientMsg(const unsigned char *aData)
     {
       if(E_MSG_FROM_BC == Message::Process(tmpBuffer))
 	{
-	    std::cout << "Message from BC to MC"  << std::endl;
+	  //std::cout << "Message from BC to MC"  << std::endl;
 	    mMsgToBd = true;
 	}
       else if(E_MSG_FROM_MC == Message::Process(tmpBuffer))
 	{
-	  std::cout << "Message from MC to BC"  << std::endl;
+	  //std::cout << "Message from MC to BC"  << std::endl;
 	  mMsgToBd = true;
 	}
     }
@@ -183,7 +183,7 @@ void Com::SendMsg(void)
 	  if(mPeerClient[i]->address.host != 0)
 	    {
 	      enet_peer_send(mPeerClient[i], 0, mPacket);
-	      std::cout << "Brodcast Message ! size : " << mEvent.packet->dataLength  << std::endl;
+	      // std::cout << "Brodcast Message ! size : " << mEvent.packet->dataLength  << std::endl;
 	    }
 	}
     }

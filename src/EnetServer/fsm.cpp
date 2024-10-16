@@ -38,7 +38,7 @@ void Fsm::Run(void)
 	  {
 	    timeout = 1000;
 	    if(retEvent > 0)
-	      std::cout << "Waiting connection..." << std::endl;
+	      std::cout << "EnetServer :: Waiting connection..." << std::endl;
 	    else if(retEvent < 0)
 	      mCom.SetState(E_SERVER_DISCONNECTED);
 	    else

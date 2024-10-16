@@ -52,8 +52,6 @@ Network::Network(int port, std::string aAddr)
       /* Connect to some.server.net:18304. */
       enet_address_set_host(&address, aAddr.c_str());
       address.port = port;
-
-      std::cout << "Address :" << aAddr << ":" << port << std::endl;
       
       /* Initiate the connection, allocating the maximum number of channels. */
       peer = enet_host_connect(client, &address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);

@@ -24,7 +24,10 @@
 
 // Include the Irrlicht header
 #include "irrlicht.h"
-
+#include <pthread.h>
+#include "EnetServer/thread.h"
+#include "EnetServer/com.h"
+#include "EnetServer/fsm.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -504,6 +507,14 @@ int main(int argc, char ** argv)
     if (udpAddr.empty()) {
         udpAddr = "localhost";
     }
+
+    //Launch EnetServer
+    pthread_t tTaskServ;
+    
+    Com hComBC(udpAddr, udpPort);
+    Fsm hBC(hComBC);
+    CreateThread(&tTaskServ, &hBC);
+    
     
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
@@ -782,9 +793,6 @@ int main(int argc, char ** argv)
 	Sound sound;
 
     OperatingMode::Mode mode = OperatingMode::Normal;
-    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
-        mode = OperatingMode::Secondary;
-    }
 
     if (mode == OperatingMode::Normal) {
         ScenarioChoice scenarioChoice(device,&language);
@@ -838,7 +846,6 @@ int main(int argc, char ** argv)
 
     //create GUI
     GUIMain guiMain;
-
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
     Network* network = Network::createNetwork(mode, udpPort, device);
@@ -881,7 +888,7 @@ int main(int argc, char ** argv)
     std::string serialisedScenarioData = scenarioData.serialise(false);
 
     loadingMessage->remove(); loadingMessage = 0;
-
+    
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
     
     // Check VR mode

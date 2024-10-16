@@ -17,7 +17,7 @@ eMsgSrc Message::Process(std::string& aMsg)
 
   if(aMsg.substr(0,2) == "MC")
     {
-      std::cout << "------> " << aMsg << std::endl;
+      //std::cout << "------> " << aMsg << std::endl;
       return E_MSG_FROM_MC;    
     }
   return E_MSG_FROM_UNKNOW_HOST;
