@@ -1,4 +1,4 @@
-#include <pthread.h>
+#include <thread>
 #include "fsm.h"
 #include <iostream>
 

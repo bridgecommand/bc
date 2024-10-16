@@ -204,7 +204,6 @@
     <ClCompile Include="..\NavLight.cpp" />
     <ClCompile Include="..\Network.cpp" />
     <ClCompile Include="..\NetworkPrimary.cpp" />
-    <ClCompile Include="..\NetworkSecondary.cpp" />
     <ClCompile Include="..\NMEA.cpp" />
     <ClCompile Include="..\NumberToImage.cpp" />
     <ClCompile Include="..\OtherShip.cpp" />

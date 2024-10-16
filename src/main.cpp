@@ -24,7 +24,6 @@
 
 // Include the Irrlicht header
 #include "irrlicht.h"
-#include <pthread.h>
 #include "EnetServer/thread.h"
 #include "EnetServer/com.h"
 #include "EnetServer/fsm.h"
