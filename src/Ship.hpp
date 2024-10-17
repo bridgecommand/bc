@@ -35,8 +35,9 @@ class Ship
         irr::core::vector3df getRotation() const;
         irr::core::vector3df getPosition() const;
         irr::f32 getLength() const;
-        irr::f32 getWidth() const;
+        irr::f32 getBreadth() const;
         irr::f32 getHeightCorrection() const;
+        irr::f32 getEstimatedDisplacement() const;
         void setHeading(irr::f32 hdg);
         void setSpeed(irr::f32 spd);
         irr::f32 getHeading() const;
@@ -55,7 +56,8 @@ class Ship
         irr::f32 zPos;
         irr::f32 spd;
         irr::f32 length;
-        irr::f32 width;
+        irr::f32 breadth;
+        irr::f32 draught;
         irr::f32 heightCorrection;
         irr::f32 angleCorrection;
 // DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list

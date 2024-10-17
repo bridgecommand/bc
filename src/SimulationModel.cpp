@@ -1345,12 +1345,12 @@ SimulationModel::~SimulationModel()
             relativePosition.Y = 0;
             //Put randomly on port or starboard side of the ship
             if (rand() > RAND_MAX/2) {
-                relativePosition.X = ownShip.getWidth() *  0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() * -0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.X = ownShip.getBreadth() *  0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getBreadth() * -0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
             } else {
-                relativePosition.X = ownShip.getWidth() * -0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
-                relativePosition.Z = ownShip.getWidth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.X = ownShip.getBreadth() * -0.6 * cos(ownShip.getHeading()*irr::core::DEGTORAD);
+                relativePosition.Z = ownShip.getBreadth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
             }
             manOverboard.setPosition(ownShipPos + relativePosition);
@@ -1491,6 +1491,16 @@ SimulationModel::~SimulationModel()
     irr::f32 SimulationModel::getOwnShipMass() const
     {
         return ownShip.getShipMass();
+    }
+
+    irr::f32 SimulationModel::getOwnShipMassEstimate() const
+    {
+        return ownShip.getEstimatedDisplacement();
+    }
+
+    irr::f32 SimulationModel::getOtherShipMassEstimate(int number) const
+    {
+        return otherShips.getEstimatedDisplacement(number);
     }
 
     irr::f32 SimulationModel::getMaxSounderDepth() const

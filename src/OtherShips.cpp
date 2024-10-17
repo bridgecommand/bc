@@ -175,10 +175,10 @@ irr::f32 OtherShips::getLength(int number) const
     }
 }
 
-irr::f32 OtherShips::getWidth(int number) const
+irr::f32 OtherShips::getBreadth(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {
-        return otherShips.at(number)->getWidth();
+        return otherShips.at(number)->getBreadth();
     } else {
         return 0.0;
     }
@@ -197,6 +197,15 @@ irr::f32 OtherShips::getSpeed(int number) const
 {
     if (number < (int)otherShips.size() && number >= 0) {
         return otherShips.at(number)->getSpeed();
+    } else {
+        return 0;
+    }
+}
+
+irr::f32 OtherShips::getEstimatedDisplacement(int number) const
+{
+    if (number < (int)otherShips.size() && number >= 0) {
+        return otherShips.at(number)->getEstimatedDisplacement();
     } else {
         return 0;
     }

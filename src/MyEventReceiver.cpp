@@ -2037,8 +2037,12 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 
             if (linesMode == 2)
             {
-
-                model->getLines()->setLineEnd(contactNode, model->getOwnShipMass(), nodeType, nodeID);
+                irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                if (nodeType == 2) {
+                    // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
+                    nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
+                }
+                model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID);
                 // Finished
                 linesMode = 0;
                 gui->setLinesControlsText("");

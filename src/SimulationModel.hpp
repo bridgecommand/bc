@@ -306,6 +306,8 @@ public:
     bool hasTurnIndicator() const;
     bool debugModeOn() const;
     irr::f32 getOwnShipMass() const;
+    irr::f32 getOwnShipMassEstimate() const;
+    irr::f32 getOtherShipMassEstimate(int number) const;
 
     bool getMoveViewWithPrimary() const;
     void setMoveViewWithPrimary(bool moveView);
