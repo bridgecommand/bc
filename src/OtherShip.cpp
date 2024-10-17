@@ -96,8 +96,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     //store length and RCS information for radar etc
     ship->updateAbsolutePosition();
     length = ship->getTransformedBoundingBox().getExtent().Z;
-    width = ship->getTransformedBoundingBox().getExtent().X;
+    breadth = ship->getTransformedBoundingBox().getExtent().X;
     height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
     
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
@@ -405,7 +406,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.solidHeight=solidHeight;
     //radarData.radarHorizon=99999; //ToDo: Implement when ARPA is implemented
     radarData.length=getLength();
-    radarData.width=getWidth();
+    radarData.width=getBreadth();
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact

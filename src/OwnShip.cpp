@@ -358,15 +358,13 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     ship->updateAbsolutePosition();
 
     length = ship->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
-    width = ship->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
+    breadth = ship->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
 
     // DEE_DEC22 ---------- End of reading in information from .ini files and ownShipData
 
     // DEE_DEC22 Start setting defaults and sanity checks on parameters
-    irr::f32 breadth;
-    breadth = width;                 //  DEE_DEC22 just a more usual term that I am less likely to forget !
     irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
-    irr::f32 draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
 
     if (rollPeriod == 0)
     {
