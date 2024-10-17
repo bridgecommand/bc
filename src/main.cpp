@@ -511,8 +511,6 @@ int main(int argc, char ** argv)
     Com hComBC(udpAddr, udpPort);
     Fsm hBC(hComBC);
     CreateThread(&hBC);
-
-    std::cout << "OK 2" << std::endl;
     
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
