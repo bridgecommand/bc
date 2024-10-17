@@ -2,7 +2,7 @@
 #include "com.h"
 #include "message.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 	#include <windows.h>
 	#define SLEEP Sleep(1000)
 #else
