@@ -168,11 +168,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-  	<ClCompile Include="..\EnetServer\com.cpp" />
-	<ClCompile Include="..\EnetServer\fsm.cpp" />
-	<ClCompile Include="..\EnetServer\comstatus.cpp" />
-	<ClCompile Include="..\EnetServer\message.cpp" />
-	<ClCompile Include="..\EnetServer\thread.cpp" />
     <ClCompile Include="..\AIS.cpp" />
     <ClCompile Include="..\Angles.cpp" />
     <ClCompile Include="..\Autopilot.cpp" />
@@ -233,14 +228,13 @@
     <ClCompile Include="..\VRInterface.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
+	<ClCompile Include="../EnetServer/com.cpp" />
+	<ClCompile Include="../EnetServer/fsm.cpp" />
+    <ClCompile Include="../EnetServer/comstatus.cpp" />
+    <ClCompile Include="../EnetServer/message.cpp" />
+    <ClCompile Include="../EnetServer/thread.cpp" />
   </ItemGroup>
   <ItemGroup>
-  	<ClCompile Include="..\EnetServer\com.h" />	
-	<ClCompile Include="..\EnetServer\fsm.h" />
-	<ClCompile Include="..\EnetServer\miscstatus.h" />
-	<ClCompile Include="..\EnetServer\comstatus.h" />
-	<ClCompile Include="..\EnetServer\message.h" />
-	<ClCompile Include="..\EnetServer\thread.h" />
     <ClInclude Include="..\AIS.hpp" />
     <ClInclude Include="..\Angles.hpp" />
     <ClInclude Include="..\Autopilot.hpp" />
@@ -304,6 +298,12 @@
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />
+	<ClCompile Include="../EnetServer/com.h" />
+    <ClCompile Include="../EnetServer/fsm.h" />
+    <ClCompile Include="../EnetServer/miscstatus.h" />
+    <ClCompile Include="../EnetServer/comstatus.h" />
+    <ClCompile Include="../EnetServer/message.h" />
+    <ClCompile Include="../EnetServer/thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />

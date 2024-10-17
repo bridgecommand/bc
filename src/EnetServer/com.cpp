@@ -9,8 +9,6 @@
 	#define SLEEP sleep(1)	
 #endif
 
-
-
 Com::Com(std::string aAddr, unsigned short aPort)
 {    
   mServer = NULL;
@@ -47,7 +45,7 @@ int Com::InitCom(void)
   
   if(0 != enet_initialize())
     {
-      std::cout << "An error occurred while initializing ENet.\n";
+      std::cout << "An error occurred while initializing Enet.\n";
       return ret;
     }
   
