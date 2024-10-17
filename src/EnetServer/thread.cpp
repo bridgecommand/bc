@@ -1,22 +1,22 @@
 #include "thread.h"
 #include "com.h"
 #include <enet/enet.h>
+#include <thread>
 
-void *TaskLaunchServer(void *aArg)
+static void TaskLaunchServer(Fsm* aFsm)
 {
-  Fsm *hBC = (Fsm*)aArg;
-
-  hBC->Run();
-
-  pthread_exit(NULL);
+  std::cout << "OK 1" << std::endl;
+  aFsm->Run();
 }
 
-int CreateThread(pthread_t* aTask, Fsm* aFsm)
+int CreateThread(Fsm* aFsm)
 {
   int ret = 0;
+  
+  std::cout << "Creating thread :: Launch Enet Server" << std::endl;
+  std::thread taskServer(TaskLaunchServer, aFsm);
 
-  std::cout << "Creating thread :: Lauch Enet Server" << std::endl;
-  ret = pthread_create(aTask, NULL, &TaskLaunchServer, aFsm);
+  taskServer.detach();
 
   return ret;
 }

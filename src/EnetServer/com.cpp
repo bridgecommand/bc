@@ -2,6 +2,15 @@
 #include "com.h"
 #include "message.h"
 
+#ifdef WIN32
+	#include <windows.h>
+	#define SLEEP Sleep(1000)
+#else
+	#define SLEEP sleep(1)	
+#endif
+
+
+
 Com::Com(std::string aAddr, unsigned short aPort)
 {    
   mServer = NULL;
@@ -34,6 +43,7 @@ int Com::InitCom(void)
   unsigned char retryCount = 0;
   int ret = -1;
   char ipAddr[16] ={0};
+ 
   
   if(0 != enet_initialize())
     {
@@ -47,13 +57,13 @@ int Com::InitCom(void)
       if (NULL == mServer)
 	{
 	  retryCount++;
-	  sleep(1);
+	  SLEEP;
 	}
     }
 
   if (NULL == mServer)
     {
-      std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
+      std::cout << "An error occurred while trying to create an ENet server host." << std::endl;
       return ret;
     }
   else

@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -168,6 +168,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\EnetServer\com.cpp" />
+    <ClCompile Include="..\EnetServer\fsm.cpp" />
+    <ClCompile Include="..\EnetServer\comstatus.cpp" />
+    <ClCompile Include="..\EnetServer\message.cpp" />
+    <ClCompile Include="..\EnetServer\thread.cpp" />
     <ClCompile Include="..\AIS.cpp" />
     <ClCompile Include="..\Angles.cpp" />
     <ClCompile Include="..\Autopilot.cpp" />
@@ -230,6 +235,12 @@
     <ClCompile Include="..\iprof.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\EnetServer\com.h" />
+    <ClCompile Include="..\EnetServer\fsm.h" />
+    <ClCompile Include="..\EnetServer\miscstatus.h" />
+    <ClCompile Include="..\EnetServer\comstatus.h" />
+    <ClCompile Include="..\EnetServer\message.h" />
+    <ClCompile Include="..\EnetServer\thread.h" />
     <ClInclude Include="..\AIS.hpp" />
     <ClInclude Include="..\Angles.hpp" />
     <ClInclude Include="..\Autopilot.hpp" />
