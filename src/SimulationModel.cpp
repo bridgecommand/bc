@@ -324,8 +324,8 @@ SimulationModel::~SimulationModel()
         return water.getLocalNormals(relPosX,relPosZ);
     }
 
-    irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
-        return tide.getTidalStream(longitude,latitude,absoluteTime);
+    irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
+        return tide.getTidalStream(longitude,latitude,requestTime);
     }
 
    // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{

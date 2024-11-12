@@ -128,7 +128,7 @@ irr::f32 Tide::calcTideHeight(uint64_t absoluteTime) const {
     return calculatedHeight;
 }
 
-irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const {
+irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
 
 	//Default return value
     irr::core::vector2df tidalStream;
@@ -136,7 +136,7 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
     tidalStream.Y = 0;
 
     //Find time to nearest high tide. TideHour is time since high water, -ve if before high water, +ve if after
-    irr::f32 tideHour = ((irr::f32)absoluteTime - (irr::f32)highTideTime(absoluteTime)) / SECONDS_IN_HOUR; //TODO: Check precision on this. Note we need to convert to signed number before subtraction!
+    irr::f32 tideHour = ((irr::f32)requestTime - (irr::f32)highTideTime(requestTime)) / SECONDS_IN_HOUR; //TODO: Check precision on this. Note we need to convert to signed number before subtraction!
 
     irr::f32 totalWeight = 0;
     irr::f32 weightedSumXSprings = 0;
@@ -208,7 +208,7 @@ irr::core::vector2df Tide::getTidalStream(irr::f32 longitude, irr::f32 latitude,
 		irr::f32 localZSprings = weightedSumZSprings / totalWeight;
 
 		//Find how far we are between springs and neaps, based on meanRangeSprings, meanRangeNeaps, and calculated range
-		irr::f32 rangeOfDay = calcTideHeight(highTideTime(absoluteTime)) - calcTideHeight(lowTideTime(absoluteTime));
+		irr::f32 rangeOfDay = calcTideHeight(highTideTime(requestTime)) - calcTideHeight(lowTideTime(requestTime));
 		if (rangeOfDay <= meanRangeNeaps) {
 			tidalStream.X = localXNeaps;
 			tidalStream.Y = localZNeaps;

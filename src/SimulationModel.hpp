@@ -174,7 +174,7 @@ public:
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
-    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t absoluteTime) const; //Tidal stream in m/s for the specified absolute position
+    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
 
     //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
     //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
