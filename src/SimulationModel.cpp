@@ -191,7 +191,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         landLights.load(worldPath, smgr, this, terrain);
 
         //Load tidal information
-        tide.load(worldPath);
+        tide.load(worldPath, scenarioData);
 
         //Load rain
         rain.load(smgr, camera.getSceneNode(), device);

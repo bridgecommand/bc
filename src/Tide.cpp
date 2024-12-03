@@ -18,6 +18,7 @@
 #include "IniFile.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"
+#include "ScenarioDataStructure.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -34,7 +35,7 @@ Tide::~Tide()
     //dtor
 }
 
-void Tide::load(const std::string& worldName) {
+void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) {
 
     //Initialise
     tideHeight = 0;
