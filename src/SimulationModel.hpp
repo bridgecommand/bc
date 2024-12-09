@@ -345,7 +345,7 @@ public:
     void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
     void update();
-
+  
 private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
@@ -413,6 +413,5 @@ private:
 
     //Structure to pass data to gui
     GUIData* guiData;
-
 };
 #endif

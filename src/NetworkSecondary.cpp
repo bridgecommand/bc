@@ -121,6 +121,11 @@ int NetworkSecondary::getPort()
     return 0;
 }
 
+void NetworkSecondary::shutdownAllSecondaries(void)
+{
+  //Nothing to do
+}
+
 void NetworkSecondary::update()
 {
 
@@ -129,13 +134,13 @@ void NetworkSecondary::update()
         return;
     }
 
+    //std::cout << "update !!" << std::endl;
+    
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
-                printf ("A new client connected from %x:%u.\n",
-                    event.peer->address.host,
-                    event.peer->address.port);
+	      std::cout << "A new client connected from " << event.peer->address.host << ":"<< event.peer->address.port << std::endl;
                 /* Store any relevant client information here. */
                 //event.peer -> data = "Client information";
                 break;
@@ -168,7 +173,7 @@ void NetworkSecondary::receiveMessage()
     //std::cout << "Received data:" << receivedStrings << std::endl;
 
     //Basic checks
-    if (receivedString.length() > 2) { //Check if more than 2 chars long, ie we have at least some data
+    if (receivedString.length() >= 2) { //Check if more than 2 chars long, ie we have at least some data
         if (receivedString.substr(0,2).compare("BC") == 0 ) { //Check if it starts with BC
             //Strip 'BC'
             receivedString = receivedString.substr(2,receivedString.length()-2);
@@ -583,6 +588,10 @@ void NetworkSecondary::receiveMessage()
             }
 
         }
+	else if(receivedString.substr(0,2).compare("SD") == 0 )
+	{
+	  device->closeDevice();
+	}
     }
 
 }
