@@ -28,6 +28,7 @@ class SimulationModel;
 class Lines;
 class VRInterface;
 
+
 //Data about joystick setup
 class JoystickSetup {
 public:
