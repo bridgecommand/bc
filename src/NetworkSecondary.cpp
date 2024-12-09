@@ -136,8 +136,6 @@ void NetworkSecondary::update()
         return;
     }
 
-    //std::cout << "update !!" << std::endl;
-    
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
         switch (event.type) {
