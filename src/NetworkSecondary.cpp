@@ -123,7 +123,7 @@ int NetworkSecondary::getPort()
 
 void NetworkSecondary::shutdownAllSecondaries(void)
 {
-  //Nothing to do
+  //Not relevant for now
 }
 
 void NetworkSecondary::update()
@@ -134,13 +134,10 @@ void NetworkSecondary::update()
         return;
     }
 
-    //std::cout << "update !!" << std::endl;
-    
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (server, & event, 10) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
-	      std::cout << "A new client connected from " << event.peer->address.host << ":"<< event.peer->address.port << std::endl;
                 /* Store any relevant client information here. */
                 //event.peer -> data = "Client information";
                 break;
