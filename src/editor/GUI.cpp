@@ -49,6 +49,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
 
     // Add tab sheet to this window
     tabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.010*su,0.03*sh,0.470*su,0.470*sh), generalDataWindow);
+    tabControl->setTabHeight(0.03*sh);
     
     // Own and other ship information
     irr::gui::IGUITab* generalTab = tabControl->addTab(language->translate("general").c_str());
