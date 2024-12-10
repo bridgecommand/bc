@@ -49,6 +49,9 @@ pump2Failed = "Pompe gouvernail 1 Eteinte"
 followUpWorking = "Gouvernail : Follow up"
 followUpFailed = "Gouvernail : Non follow up"
 
+general="Général"
+ships="Les navires"
+
 editScenario="Editer le scénario"
 newScenario="Nouveau scénario"
 selectScenario="Choisissez un scénario existant à éditer"
