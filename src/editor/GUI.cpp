@@ -101,42 +101,42 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     editBoxesNeedUpdating = true;
 
     // General scenario information
-    guienv->addStaticText(language->translate("startTime").c_str(),irr::core::rect<irr::s32>(0.010*su,0.05*sh,0.115*su,0.08*sh),false,false,generalTab);
-    startHours = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.08*sh,0.035*su,0.11*sh),false,generalTab,GUI_ID_STARTHOURS_EDITBOX );
-    startMins = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.045*su,0.08*sh,0.070*su,0.11*sh),false,generalTab,GUI_ID_STARTMINS_EDITBOX );
+    guienv->addStaticText(language->translate("startTime").c_str(),irr::core::rect<irr::s32>(0.010*su,0.01*sh,0.115*su,0.04*sh),false,false,generalTab);
+    startHours = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.04*sh,0.035*su,0.07*sh),false,generalTab,GUI_ID_STARTHOURS_EDITBOX );
+    startMins = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.045*su,0.04*sh,0.070*su,0.07*sh),false,generalTab,GUI_ID_STARTMINS_EDITBOX );
 
-    guienv->addStaticText(language->translate("startDate").c_str(),irr::core::rect<irr::s32>(0.130*su,0.05*sh,0.280*su,0.08*sh),false,false,generalTab);
-    startYear = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.08*sh,0.180*su,0.11*sh),false,generalTab,GUI_ID_STARTYEAR_EDITBOX );
-    startMonth = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalTab,GUI_ID_STARTMONTH_EDITBOX );
-    startDay = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalTab,GUI_ID_STARTDAY_EDITBOX );
+    guienv->addStaticText(language->translate("startDate").c_str(),irr::core::rect<irr::s32>(0.130*su,0.01*sh,0.280*su,0.04*sh),false,false,generalTab);
+    startYear = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.04*sh,0.180*su,0.07*sh),false,generalTab,GUI_ID_STARTYEAR_EDITBOX );
+    startMonth = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.190*su,0.04*sh,0.215*su,0.07*sh),false,generalTab,GUI_ID_STARTMONTH_EDITBOX );
+    startDay = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.225*su,0.04*sh,0.250*su,0.07*sh),false,generalTab,GUI_ID_STARTDAY_EDITBOX );
 
-    guienv->addStaticText(language->translate("sunRise").c_str(),irr::core::rect<irr::s32>(0.010*su,0.12*sh,0.115*su,0.15*sh),false,false,generalTab);
-    guienv->addStaticText(language->translate("sunSet").c_str(),irr::core::rect<irr::s32>(0.130*su,0.12*sh,0.280*su,0.15*sh),false,false,generalTab);
-    sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalTab,GUI_ID_SUNRISE_EDITBOX );
-    sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalTab,GUI_ID_SUNSET_EDITBOX );
+    guienv->addStaticText(language->translate("sunRise").c_str(),irr::core::rect<irr::s32>(0.010*su,0.08*sh,0.115*su,0.11*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("sunSet").c_str(),irr::core::rect<irr::s32>(0.130*su,0.08*sh,0.280*su,0.11*sh),false,false,generalTab);
+    sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.11*sh,0.085*su,0.14*sh),false,generalTab,GUI_ID_SUNRISE_EDITBOX );
+    sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.11*sh,0.205*su,0.14*sh),false,generalTab,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.19*sh,0.130*su,0.22*sh),false,false,generalTab);
-    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.19*sh,0.250*su,0.22*sh),false,false,generalTab);
-    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.19*sh,0.370*su,0.22*sh),false,false,generalTab);
-    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalTab,GUI_ID_WEATHER_COMBOBOX);
-    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalTab,GUI_ID_RAIN_COMBOBOX);
-    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.22*sh,0.325*su,0.25*sh),generalTab,GUI_ID_VISIBILITY_COMBOBOX);
+    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.130*su,0.18*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.250*su,0.18*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.15*sh,0.370*su,0.18*sh),false,false,generalTab);
+    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.18*sh,0.085*su,0.21*sh),generalTab,GUI_ID_WEATHER_COMBOBOX);
+    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.18*sh,0.205*su,0.21*sh),generalTab,GUI_ID_RAIN_COMBOBOX);
+    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.18*sh,0.325*su,0.21*sh),generalTab,GUI_ID_VISIBILITY_COMBOBOX);
 
-    guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalTab);
-    scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalTab,GUI_ID_SCENARIONAME_EDITBOX );
-    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.280*su,0.25*sh),false,false,generalTab);
+    scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.25*sh,0.205*su,0.28*sh),false,generalTab,GUI_ID_SCENARIONAME_EDITBOX );
+    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.28*sh),false,false,generalTab);
 
-    descriptionEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.33*sh,0.450*su,0.46*sh),false,generalTab,GUI_ID_DESCRIPTION_EDITBOX );
+    descriptionEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.450*su,0.37*sh),false,generalTab,GUI_ID_DESCRIPTION_EDITBOX );
     descriptionEdit->setMultiLine(true);
     descriptionEdit->setWordWrap(true);
     descriptionEdit->setAutoScroll(true);
     descriptionEdit->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
 
-    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalTab);
-    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalTab);
+    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.31*sh),false,true,generalTab);
+    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.31*sh),false,true,generalTab);
 
-    apply = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalTab,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
-    save = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalTab,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
+    apply = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.01*sh,0.450*su,0.07*sh),generalTab,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    save = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.08*sh,0.450*su,0.14*sh),generalTab,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
 
     weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
     weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");
