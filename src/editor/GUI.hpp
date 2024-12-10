@@ -104,6 +104,8 @@ private:
     irr::gui::IGUIWindow* guiWindow;
     irr::gui::IGUIWindow* generalDataWindow;
 
+    irr::gui::IGUITabControl* tabControl;
+
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIEditBox* descriptionEdit;
     irr::gui::IGUIComboBox* shipSelector;
