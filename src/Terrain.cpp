@@ -112,6 +112,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         //Full paths
         std::string heightMapPath;
         std::string textureMapPath;
+	std::string textureDetailMapPath;
         
         if (usingHdrFileOnly) {
             //load from 3dem header format, worldTerrainFile is the .hdr file in this case
@@ -125,10 +126,18 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             //assume map is the same path, with .hdr replaced with .bmp
             //Use this as a texture (is this sensible?!)
             std::string textureMapName = std::string(device->getFileSystem()->getFileBasename(worldTerrainFile.c_str(),false).append(".bmp").c_str());
-            textureMapPath = worldPath;
+
+	    std::string textureDetailMapName = std::string(device->getFileSystem()->getFileBasename(worldTerrainFile.c_str(),false).append(".jpg").c_str());
+
+	    textureMapPath = worldPath;
             textureMapPath.append("/");
             textureMapPath.append(textureMapName);
 
+	    textureDetailMapPath = worldPath;
+            textureDetailMapPath.append("/");
+            textureDetailMapPath.append(textureDetailMapName);
+
+	    std::cout << "Texture detail : " << textureDetailMapName << std::endl;
             //Dummy contents, won't be used in this case
             terrainMaxHeight=0;
             seaMaxDepth=0;
@@ -147,7 +156,9 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 
             std::string heightMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("HeightMap",i));
             std::string textureMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("Texture",i));
+            std::string textureDetailMapName = IniFile::iniFileToString(worldTerrainFile, IniFile::enumerate1("TextureDetail",i));
 
+	    
             usesRGBEncoding = IniFile::iniFileTou32(worldTerrainFile, IniFile::enumerate1("UsesRGB",i)) > 0;
 
             //Full paths
@@ -158,7 +169,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             textureMapPath = worldPath;
             textureMapPath.append("/");
             textureMapPath.append(textureMapName);
-        }
+
+	    textureDetailMapPath = worldPath;
+            textureDetailMapPath.append("/");
+            textureDetailMapPath.append(textureDetailMapName);
+
+	    std::cout << "Texture detail : " << textureDetailMapPath << std::endl;
+	}
 
         //calculations just needed for terrain loading
         //irr::f32 scaleX = terrainXWidth / (terrainHeightMapSize);
@@ -306,11 +323,16 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         heightMapFile->drop();
         //terrains are dropped in destructor.
 
-        terrain->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-        terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+        terrain->setMaterialFlag(irr::video::EMF_LIGHTING, true);
+        //terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
         //Todo: Anti-aliasing flag?
         terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
+	terrain->setMaterialTexture(1, driver->getTexture(textureDetailMapPath.c_str()));
 
+	terrain->setMaterialType(irr::video::EMT_DETAIL_MAP);
+
+	terrain->scaleTexture(1.0f, 20.0f);
+	
         if (i==1) {
             //Private member variables used in further calculations
             primeTerrainLong = terrainLong;
