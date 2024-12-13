@@ -57,6 +57,11 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 
     smgr->getRootSceneNode()->addChild(waterNode);
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
+
+    //waterNode->setMaterialTexture(1, driver->getTexture("media/water2.jpg"));
+
+    waterNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+
 }
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
