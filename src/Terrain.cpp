@@ -173,7 +173,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             textureDetailMapPath.append("/");
             textureDetailMapPath.append(textureDetailMapName);
 
-
 	}
 
         //calculations just needed for terrain loading
@@ -322,8 +321,8 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         heightMapFile->drop();
         //terrains are dropped in destructor.
 
-        terrain->setMaterialFlag(irr::video::EMF_LIGHTING, true);
-        //terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+        terrain->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+        terrain->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
         //Todo: Anti-aliasing flag?
         terrain->setMaterialTexture(0, driver->getTexture(textureMapPath.c_str()));
 	    terrain->setMaterialTexture(1, driver->getTexture(textureDetailMapPath.c_str()));
