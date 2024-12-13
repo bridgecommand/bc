@@ -61,16 +61,21 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::
 
     waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
     waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
+
 }
 
 irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
 {
+
   return waterNode->getWaveHeight(relPosX,relPosZ);
+
 }
 
 irr::core::vector2df Water::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
 {
+
   return waterNode->getLocalNormals(relPosX,relPosZ);
+
 }
 
 
