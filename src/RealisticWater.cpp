@@ -28,8 +28,8 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 						 const irr::core::stringc& resourcePath, core::dimension2du renderTargetSize,
 						 scene::ISceneNode* parent, s32 id):
   scene::ISceneNode(parent, sceneManager, id), _time(0),
-  _size(width, height), _sceneManager(sceneManager), _refractionMap(NULL), _reflectionMap(NULL),
-  _windForce(10),_windDirection(1, 0),_waveHeight(0.3f), _waterColor(0.1f, 0.1f, 0.6f, 1.0f), _colorBlendFactor(0.3f), _camera(NULL)
+    _size(width, height), _sceneManager(sceneManager), _refractionMap(NULL),
+  _windForce(10),_windDirection(1, 0),_waveHeight(0.3f), _waterColor(0.1f, 0.1f, 0.6f, 1.0f), _colorBlendFactor(0.5f), _camera(NULL)
 {
   _videoDriver = sceneManager->getVideoDriver();
 
