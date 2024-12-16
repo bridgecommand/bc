@@ -47,30 +47,29 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 
     //waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,ownShip,0,disableShaders,withReflection,segments);
 
-    //waterNode->setPosition(irr::core::vector3df(0,-0.25f,0));
+    
 
-    const f32 width = 512.0f;
-    const f32 height = 512.0f;
+    const f32 width = 4000;
+    const f32 height = 4000;
 
-    waterNode = new RealisticWaterSceneNode(smgr, width, height, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+    waterNode = new RealisticWaterSceneNode(smgr, width, height, "./", irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+    waterNode->setPosition(irr::core::vector3df(0,-0.25f,0));
 
-    std::cout << "OK 1 !!" << std::endl;
     smgr->getRootSceneNode()->addChild(waterNode);
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
-    std::cout << "OK 2 !!" << std::endl;
 }
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
 {
     //Round these to nearest tileWidth
-    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    irr::f32 yPos = tideHeight;
-    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    //irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+    //irr::f32 yPos = tideHeight;
+    //irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
 
     //std::cout << "update !!" << std::endl;
-    waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    //waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 
     //scale with weather
     //waterNode->setVerticalScale(sqrt(weather));

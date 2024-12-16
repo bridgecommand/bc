@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -214,6 +214,7 @@
     <ClCompile Include="..\RadarCalculation.cpp" />
     <ClCompile Include="..\RadarScreen.cpp" />
     <ClCompile Include="..\Rain.cpp" />
+    <ClCompile Include="..\RealisticWater.cpp" />
     <ClCompile Include="..\ScenarioChoice.cpp" />
     <ClCompile Include="..\ScenarioDataStructure.cpp" />
     <ClCompile Include="..\ScrollDial.cpp" />
@@ -278,6 +279,7 @@
     <ClInclude Include="..\RadarData.hpp" />
     <ClInclude Include="..\RadarScreen.hpp" />
     <ClInclude Include="..\Rain.hpp" />
+    <ClInclude Include="..\RealisticWater.hpp" />
     <ClInclude Include="..\ScenarioChoice.hpp" />
     <ClInclude Include="..\ScenarioDataStructure.hpp" />
     <ClInclude Include="..\ScrollDial.h" />
