@@ -44,23 +44,26 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
     //FIXME: Hardcoded or defined in multiple places
     tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
 
+
     waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,ownShip,0,disableShaders,withReflection,segments);
     waterNode->setPosition(irr::core::vector3df(0,-0.25,0));
     smgr->getRootSceneNode()->addChild(waterNode);
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.jpg"));
     waterNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 
+
 }
 
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
 {
     //Round these to nearest tileWidth
-    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    irr::f32 yPos = tideHeight;
-    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    //irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+    //irr::f32 yPos = tideHeight;
+    //irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
     waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
     waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
+
 
 }
 

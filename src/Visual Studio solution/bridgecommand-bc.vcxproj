@@ -214,6 +214,7 @@
     <ClCompile Include="..\RadarCalculation.cpp" />
     <ClCompile Include="..\RadarScreen.cpp" />
     <ClCompile Include="..\Rain.cpp" />
+    <ClCompile Include="..\RealisticWater.cpp" />
     <ClCompile Include="..\ScenarioChoice.cpp" />
     <ClCompile Include="..\ScenarioDataStructure.cpp" />
     <ClCompile Include="..\ScrollDial.cpp" />
@@ -278,6 +279,7 @@
     <ClInclude Include="..\RadarData.hpp" />
     <ClInclude Include="..\RadarScreen.hpp" />
     <ClInclude Include="..\Rain.hpp" />
+    <ClInclude Include="..\RealisticWater.hpp" />
     <ClInclude Include="..\ScenarioChoice.hpp" />
     <ClInclude Include="..\ScenarioDataStructure.hpp" />
     <ClInclude Include="..\ScrollDial.h" />
