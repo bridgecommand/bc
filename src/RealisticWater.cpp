@@ -29,7 +29,7 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 						 scene::ISceneNode* parent, s32 id):
   scene::ISceneNode(parent, sceneManager, id), _time(0),
   _size(width, height), _sceneManager(sceneManager), _refractionMap(NULL), _reflectionMap(NULL),
-  _windForce(20.0f),_windDirection(0, 1),_waveHeight(0.3f), _waterColor(0.1f, 0.1f, 0.6f, 1.0f), _colorBlendFactor(0.2f), _camera(NULL)
+  _windForce(10),_windDirection(1, 0),_waveHeight(0.3f), _waterColor(0.1f, 0.1f, 0.6f, 1.0f), _colorBlendFactor(0.3f), _camera(NULL)
 {
   _videoDriver = sceneManager->getVideoDriver();
 
@@ -71,8 +71,6 @@ RealisticWaterSceneNode::RealisticWaterSceneNode(scene::ISceneManager* sceneMana
 
   _waterSceneNode->setMaterialTexture(1, _refractionMap);
   _waterSceneNode->setMaterialTexture(2, _reflectionMap);
-
-  std::cout << "ressource path : " << resourcePath.c_str() << std::endl;
 }
 
 RealisticWaterSceneNode::~RealisticWaterSceneNode()
