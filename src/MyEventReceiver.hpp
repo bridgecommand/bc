@@ -18,6 +18,7 @@
 #define __MYEVENTRECEIVER_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "NetworkPrimary.hpp"
 #include <string>
 #include <vector>
 
@@ -166,7 +167,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
+  MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, Network* network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -183,6 +184,7 @@ private:
     SimulationModel* model;
     GUIMain* gui;
     VRInterface* vrInterface;
+    Network* net;
     bool leftMouseDown;
     bool rightMouseDown;
     irr::IrrlichtDevice* device;

@@ -36,6 +36,7 @@ class Network
     virtual void getScenarioFromNetwork(std::string& dataString) = 0; //Not used by primary
     virtual void update() = 0;
     virtual int getPort() = 0;
+    virtual void shutdownAllSecondaries(void) = 0;
     virtual ~Network();
     protected:
     std::string makeNetworkLinesString(SimulationModel* model);
