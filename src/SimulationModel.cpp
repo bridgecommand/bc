@@ -1734,8 +1734,8 @@ SimulationModel::~SimulationModel()
 
         }{ IPROF("Update rain");
         //update rain
-        rain.setIntensity(rainIntensity);
-        rain.update(scenarioTime);
+        //rain.setIntensity(rainIntensity);
+        //rain.update(scenarioTime);
 
         }{ IPROF("Update other ships");
         //update other ship positions etc
