@@ -44,17 +44,8 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
     //FIXME: Hardcoded or defined in multiple places
     tileWidth = 100; //Width in metres - Note this is used in Simulation model normalisation as 1000, so visible jumps in water are minimised
 
-
-    //waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,ownShip,0,disableShaders,withReflection,segments);
-
-    
-
-    const f32 width = 4000;
-    const f32 height = 4000;
-
-    waterNode = new RealisticWaterSceneNode(smgr, width, height, "./", irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
-    waterNode->setPosition(irr::core::vector3df(0,-0.25f,0));
-
+    waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,ownShip,0,disableShaders,withReflection,segments);
+    waterNode->setPosition(irr::core::vector3df(0,-0.25,0));
     smgr->getRootSceneNode()->addChild(waterNode);
     waterNode->setMaterialTexture(0, driver->getTexture("media/water.bmp"));
 
@@ -67,30 +58,22 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
 {
     //Round these to nearest tileWidth
-    //irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    //irr::f32 yPos = tideHeight;
-    //irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
+    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
+    irr::f32 yPos = tideHeight;
+    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
 
-    //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
-
-    //std::cout << "update !!" << std::endl;
-    //waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
-
-    //scale with weather
-    //waterNode->setVerticalScale(sqrt(weather));
-    //waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
-
+    waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
 }
 
 irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
 {
-  return 0;//waterNode->getWaveHeight(relPosX,relPosZ);
+  return waterNode->getWaveHeight(relPosX,relPosZ);
 }
 
 irr::core::vector2df Water::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
 {
-  return irr::core::vector2df(0,0);
-  //waterNode->getLocalNormals(relPosX,relPosZ);
+  return waterNode->getLocalNormals(relPosX,relPosZ);
 }
 
 
