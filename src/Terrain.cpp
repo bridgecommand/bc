@@ -331,8 +331,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
 	    terrain->setMaterialTexture(1, driver->getTexture(textureDetailMapPath.c_str()));
 
 	    terrain->setMaterialType(irr::video::EMT_DETAIL_MAP);
-
-	    terrain->scaleTexture(1.0f, 20.0f);
+	    terrain->scaleTexture(4.0f, 500.0f);
 	
         if (i==1) {
             //Private member variables used in further calculations
