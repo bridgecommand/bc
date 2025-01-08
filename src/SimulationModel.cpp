@@ -1744,6 +1744,7 @@ SimulationModel::~SimulationModel()
         //rain.setIntensity(rainIntensity);
         rain.update(ownShip.getPosition().X, ownShip.getPosition().Y, ownShip.getPosition().Z, getRain());
 
+
         }{ IPROF("Update other ships");
         //update other ship positions etc
         otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength()); //Update other ship motion (based on leg information), and light visibility.

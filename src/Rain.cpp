@@ -115,3 +115,4 @@ void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::
         }
     }
 }
+
