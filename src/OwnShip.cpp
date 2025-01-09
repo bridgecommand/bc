@@ -21,6 +21,7 @@
 #include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "Terrain.hpp"
+#include "Rain.hpp"
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
@@ -33,6 +34,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 {
     // Store reference to terrain
     this->terrain = terrain;
+
+    this->rain = rain;
 
     // Store reference to model
     this->model = model;
