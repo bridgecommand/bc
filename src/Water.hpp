@@ -18,7 +18,8 @@
 #define __WATER_HPP_INCLUDED__
 
 #include "irrlicht.h"
-#include "RealisticWater.hpp"
+//#include "RealisticWater.hpp"
+#include "MovingWater.hpp"
 
 class Water
 {
@@ -34,7 +35,8 @@ class Water
 
     private:
         irr::f32 tileWidth;
-        RealisticWaterSceneNode *waterNode;
+        /*RealisticWaterSceneNode**/
+        irr::scene::MovingWaterSceneNode* waterNode;
 };
 
 #endif

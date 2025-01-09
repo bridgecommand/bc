@@ -27,19 +27,15 @@ public:
 
     Rain();
     ~Rain();
-    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev);
-    void update(irr::f32 scenarioTime);
-    void setIntensity(irr::f32 intensity);
+    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ);
+    void setPos(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ);
 
+    
 private:
 
-    irr::f32 rainIntensity;
     irr::scene::ISceneNode* parent;
-    irr::scene::ISceneNode* rainNode1;
-    irr::scene::ISceneNode* rainNode2;
-    std::vector<irr::video::ITexture*> rainTextures;
-    void applyTextures();
-
+    irr::scene::IParticleSystemSceneNode* ps;
+ 
 };
 
 #endif

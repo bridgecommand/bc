@@ -166,6 +166,7 @@ public:
     irr::f32 getLat() const;
     irr::f32 getLong() const;
     irr::f32 getPosX() const;
+    irr::f32 getPosY() const;
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
@@ -345,7 +346,7 @@ public:
     void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
     void update();
-
+  
 private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
@@ -413,6 +414,5 @@ private:
 
     //Structure to pass data to gui
     GUIData* guiData;
-
 };
 #endif

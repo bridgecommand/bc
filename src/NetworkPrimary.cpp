@@ -393,42 +393,55 @@ void NetworkPrimary::receiveNetwork()
     }
 }
 
-void NetworkPrimary::sendNetwork()
+void NetworkPrimary::shutdownAllSecondaries(void)
 {
-    if (!networkRequested) {
-        return;
-    }
+  sendNetwork("SD"); //SD to Shutdown
+}
 
-    std::string stringToSend;
-    bool scenarioPacket = false;
-    if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
+void NetworkPrimary::sendNetwork(std::string aManualCmd)
+{
+  std::string stringToSend;
+  bool scenarioPacket = false;
+  
+  if (!networkRequested) {
+    return;
+  }
+
+  if(!aManualCmd.empty())
+    { 
+      stringToSend = aManualCmd;
+    }
+  else
+    {
+      if ( model->getLoopNumber() % 100 == 0 ) { //every 100th loop, send the 'SCN' message with all scenario details
         scenarioPacket = true;
         stringToSend = generateSendStringScn();
-    } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
+      } else if ( model->getLoopNumber() % 10 == 0 ){ //every 10th loop, send the main BC message
         stringToSend = generateSendString();
-    } else {
+      } else {
         stringToSend = generateSendStringShort();
+      }
     }
 
-    if (stringToSend.length() > 0) {
+  if (stringToSend.length() > 0) {
 
-        // Type of packet - reliable for scenario data as we want to make sure some gets through!
-        enet_uint32 packetFlag = 0;
-        if (scenarioPacket) {
-            packetFlag = ENET_PACKET_FLAG_RELIABLE;
-        }
-
-        /* Create a packet */
-        ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
-        strlen (stringToSend.c_str()) + 1,
-        packetFlag);
-
-        /* Send the packet to all connected peers over channel id 0. */
-        enet_host_broadcast(client, 0, packet);
-
-        /* One could just use enet_host_service() instead. */
-        enet_host_flush (client);
+    // Type of packet - reliable for scenario data as we want to make sure some gets through!
+    enet_uint32 packetFlag = 0;
+    if (scenarioPacket) {
+      packetFlag = ENET_PACKET_FLAG_RELIABLE;
     }
+
+    /* Create a packet */
+    ENetPacket * packet = enet_packet_create (stringToSend.c_str(),
+					      strlen (stringToSend.c_str()) + 1,
+					      packetFlag);
+
+    /* Send the packet to all connected peers over channel id 0. */
+    enet_host_broadcast(client, 0, packet);
+
+    /* One could just use enet_host_service() instead. */
+    enet_host_flush (client);
+  }
 }
 
 std::string NetworkPrimary::generateSendStringShort()
