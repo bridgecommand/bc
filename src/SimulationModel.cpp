@@ -130,11 +130,15 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                      modelParameters.tanhFrictionFactor, 
                      smgr, 
                      this, 
-                     &terrain, 
+                     &terrain,  
                      device);
         if(modelParameters.mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
+
+        //Load rain
+        rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ());
+
 
         //add water
         bool waterReflection = true;
@@ -193,8 +197,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         //Load tidal information
         tide.load(worldPath, scenarioData);
 
-        //Load rain
-        rain.load(smgr, camera.getSceneNode(), device);
+        
 
         //Set up 3d engine/wheel controls/visualisation
         if (isAzimuthDrive()) {
@@ -298,6 +301,10 @@ SimulationModel::~SimulationModel()
 
     irr::f32 SimulationModel::getPosX() const{
         return ownShip.getPosition().X + offsetPosition.X;
+    }
+
+    irr::f32 SimulationModel::getPosY() const {
+        return ownShip.getPosition().Y + offsetPosition.Y;
     }
 
     irr::f32 SimulationModel::getPosZ() const{
@@ -1735,7 +1742,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Update rain");
         //update rain
         //rain.setIntensity(rainIntensity);
-        //rain.update(scenarioTime);
+        //rain.setPos(getPosX(), getPosY(), getPosZ());
 
         }{ IPROF("Update other ships");
         //update other ship positions etc
