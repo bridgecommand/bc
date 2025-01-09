@@ -45,7 +45,6 @@ private:
 
     irr::scene::ISceneNode* parent;
     irr::scene::IParticleSystemSceneNode* ps[4];
-
  
 };
 

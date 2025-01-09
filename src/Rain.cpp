@@ -25,8 +25,9 @@ Rain::Rain() {
 Rain::~Rain() {
 }
 
+
 void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth)
-{
+{    
     this->parent = parent;
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
     irr::f32 a = 0, b = 0, c = 0, d = 0;
@@ -86,6 +87,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
         ps[i]->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     
         ps[i]->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); 
 
+
         ps[i]->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(
             0, irr::core::vector2df(0, 0), irr::core::vector2df(1.0f, -1.0f), irr::core::vector2df(1.0f, -1.0f)
         ));
@@ -96,7 +98,6 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
 
 void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel)
 {
-
     //Move rain blocks with the ship
     for (unsigned int i = 0; i < 4; i++)
     {
@@ -115,4 +116,3 @@ void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::
         }
     }
 }
-

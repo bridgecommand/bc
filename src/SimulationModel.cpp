@@ -140,6 +140,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
 
 
+
         //add water
         bool waterReflection = true;
         if (modelParameters.vrMode == true) {
@@ -1743,7 +1744,6 @@ SimulationModel::~SimulationModel()
         //update rain
         //rain.setIntensity(rainIntensity);
         rain.update(ownShip.getPosition().X, ownShip.getPosition().Y, ownShip.getPosition().Z, getRain());
-
 
         }{ IPROF("Update other ships");
         //update other ship positions etc
