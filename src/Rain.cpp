@@ -31,49 +31,52 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
     irr::f32 a = 0, b = 0, c = 0, d = 0;
 
+    //Make 4 "rain blocks" around the ship, so there are no rain into ship
     for (unsigned int i = 0; i < 4; i++)
     {
-        if (i == 0) {
-            a = ShipBreadth /1.5;
-            b = 200;
-            c = -200;
-            d = 200;
+        if (i == 0) {//Front block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = RAIN_BORDER_MAX;
+            c = -RAIN_BORDER_MAX;
+            d = RAIN_BORDER_MAX;
         }
-        else if (i == 1) {
-            a = -ShipBreadth / 1.5;
-            b = -200;
-            c = -200;
-            d = 200;
+        else if (i == 1) {//Back block
+            a = -ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -RAIN_BORDER_MAX;
+            c = -RAIN_BORDER_MAX;
+            d = RAIN_BORDER_MAX;
         }
-        else if (i == 2) {
-            a = ShipBreadth / 1.5;
-            b = -ShipBreadth / 1.5;
-            c = -ShipLength / 1.5;
-            d = -80000/ ShipBreadth;
+        else if (i == 2) {//Right Block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -ShipBreadth / RATIO_SHELTER_RAIN;
+            c = -ShipLength / RATIO_SHELTER_RAIN;
+            d = -(RAIN_BORDER_MAX * RAIN_BORDER_MAX)/ ShipBreadth;
         }
-        else if (i == 3) {
-            a = ShipBreadth / 1.5;
-            b = -ShipBreadth / 1.5;
-            c = ShipLength / 1.5;
-            d = 80000/ ShipBreadth;
+        else if (i == 3) {//Left Block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -ShipBreadth / RATIO_SHELTER_RAIN;
+            c = ShipLength / RATIO_SHELTER_RAIN;
+            d = (RAIN_BORDER_MAX * RAIN_BORDER_MAX) / ShipBreadth;
         }
 
+        //For each block, create the particles system
         ps[i] = smgr->addParticleSystemSceneNode(false);
 
         irr::scene::IParticleEmitter* em = ps[i]->createBoxEmitter(
-            irr::core::aabbox3d<irr::f32>(a, 0, c, b, 100, d), 
-            irr::core::vector3df(ShipPosX, -0.1, ShipPosZ),   
+            irr::core::aabbox3d<irr::f32>(a, 0, c, b, RAIN_BORDER_MAX, d),
+            irr::core::vector3df(ShipPosX, RAIN_DIRECTION_AND_FORCE, ShipPosZ),
             0, 0,                            
             irr::video::SColor(0, 255, 255, 255),       
             irr::video::SColor(0, 255, 255, 255),      
-            700, 1000, 0,                         
-            irr::core::dimension2df(0.2f, 0.2f),         
-            irr::core::dimension2df(0.5f, 0.5f));        
+            RAIN_DENSITY_MIN, RAIN_DENSITY_MAX, 0,
+            irr::core::dimension2df(RAIN_DROP_SIZE_MIN, RAIN_DROP_SIZE_MIN),
+            irr::core::dimension2df(RAIN_DROP_SIZE_MAX, RAIN_DROP_SIZE_MAX));
 
         ps[i]->setEmitter(em);
         em->drop();
 
-        irr::scene::IParticleAffector* paf = ps[i]->createGravityAffector(irr::core::vector3df(0, -0.1f, 0), 2000);
+        //Create density
+        irr::scene::IParticleAffector* paf = ps[i]->createGravityAffector(irr::core::vector3df(0, RAIN_DIRECTION_AND_FORCE, 0), RAIN_TIME_FORCE_LOST);
         ps[i]->addAffector(paf);
         paf->drop();
 
@@ -93,12 +96,14 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
 
 void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel)
 {
+
+    //Move rain blocks with the ship
     for (unsigned int i = 0; i < 4; i++)
     {
         ps[i]->setPosition(irr::core::vector3df(ShipPosX, 0.1, ShipPosZ));
         irr::scene::IParticleEmitter* em = ps[i]->getEmitter();
 
-        if (RainLevel < 5)
+        if (RainLevel < RAIN_MIDDLE_INTENSITY)
         {
             em->setMinParticlesPerSecond(RainLevel * 10);
             em->setMaxParticlesPerSecond(RainLevel * 50);
