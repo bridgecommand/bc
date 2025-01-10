@@ -137,7 +137,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         }
 
         //Load rain
-        rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ());
+        rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
 
 
         //add water
@@ -1742,7 +1742,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Update rain");
         //update rain
         //rain.setIntensity(rainIntensity);
-        //rain.setPos(getPosX(), getPosY(), getPosZ());
+        rain.update(ownShip.getPosition().X, ownShip.getPosition().Y, ownShip.getPosition().Z, getRain());
 
         }{ IPROF("Update other ships");
         //update other ship positions etc

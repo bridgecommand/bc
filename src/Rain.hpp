@@ -27,14 +27,14 @@ public:
 
     Rain();
     ~Rain();
-    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ);
-    void setPos(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ);
+    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth);
+    void update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel);
 
     
 private:
 
     irr::scene::ISceneNode* parent;
-    irr::scene::IParticleSystemSceneNode* ps;
+    irr::scene::IParticleSystemSceneNode* ps[4];
  
 };
 
