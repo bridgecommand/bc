@@ -375,21 +375,33 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(extraControlsWindow->getCloseButton()->getRelativePosition(),extraControlsWindow,GUI_ID_HIDE_EXTRA_CONTROLS_BUTTON,L"X");
         extraControlsWindow->setVisible(false);
 
+        // Add tab control for extra settings like weather and machinery failure
+        irr::core::rect<irr::s32> extraControlsTabPosition = irr::core::rect<irr::s32>(
+            0.01 * su,
+            0.05 * sh,
+            stdDataDisplayPos.getWidth() - 0.02 * su,
+            stdDataDisplayPos.getHeight() - 0.01 * sh
+        );
+        irr::gui::IGUITabControl* extraControlsTabControl = guienv->addTabControl(extraControlsTabPosition, extraControlsWindow);
+        extraControlsTabControl->setTabHeight(0.03*sh);
+        
+        // Weather tab
+        irr::gui::IGUITab* extraControlsTabWeather = extraControlsTabControl->addTab(language->translate("weather").c_str());
+
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.03*sh,0.055*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
+        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.02*sh,0.095*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.05*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_WEATHER_SCROLL_BAR);
         //weatherScrollbar = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
         weatherScrollbar->setSmallStep(5);
         weatherScrollbar->setToolTipText(language->translate("weather").c_str());
 
-
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.055*su,0.03*sh,0.105*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.08*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_RAIN_SCROLL_BAR);
+        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.095*su,0.02*sh,0.185*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.14*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -398,8 +410,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.105*su,0.03*sh,0.155*su,0.06*sh),false,true,extraControlsWindow)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.13*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_VISIBILITY_SCROLL_BAR);
+        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.185*su,0.02*sh,0.275*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.23*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -407,14 +419,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
         //Add buttons to control rudder failures etc.
-        //Failure parts of GUI
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.03*sh,0.32*su,0.06*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.06*sh,0.32*su,0.09*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.09*sh,0.32*su,0.12*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.12*sh,0.32*su,0.15*sh),extraControlsWindow,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
+        irr::gui::IGUITab* extraControlsTabRudder = extraControlsTabControl->addTab(language->translate("rudderFailure").c_str());
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.15*sh,0.32*su,0.18*sh),extraControlsWindow,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
-        guienv->addButton(irr::core::rect<irr::s32>(0.16*su,0.18*sh,0.32*su,0.21*sh),extraControlsWindow,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.01*sh,0.16*su,0.04*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.04*sh,0.16*su,0.07*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.08*sh,0.16*su,0.11*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_2_WORKING_BUTTON,language->translate("pump2Working").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.005*su,0.11*sh,0.16*su,0.14*sh),extraControlsTabRudder,GUI_ID_RUDDERPUMP_2_FAILED_BUTTON,language->translate("pump2Failed").c_str());
+
+        guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.01*sh,0.325*su,0.04*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
+        guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.04*sh,0.325*su,0.07*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
         //Add an additional window for lines (will normally be hidden)
         irr::core::rect<irr::s32> linesWindowPos = stdDataDisplayPos;
@@ -460,6 +473,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //add radar buttons
         //add tab control for radar
         radarTabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.455*su+azimuthGUIOffsetR,0.695*sh,0.697*su+azimuthGUIOffsetR,0.990*sh),0,true);
+        radarTabControl->setTabHeight(0.03*sh);
         irr::gui::IGUITab* mainRadarTab = radarTabControl->addTab(language->translate("radarMainTab").c_str(),0);
         //irr::gui::IGUITab* radarEBLTab = radarTabControl->addTab(language->translate("radarEBLVRMTab").c_str(),0);
         irr::gui::IGUITab* radarPITab = radarTabControl->addTab(language->translate("radarPITab").c_str(),0);

@@ -27,6 +27,12 @@
 #include <cstdlib> //For rand()
 #include <algorithm>
 
+#ifdef WITH_PROFILING
+#include "iprof.hpp"
+#else
+#define IPROF(a) //intentionally empty placeholder
+#endif
+
 // using namespace irr;
 
 void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 minContactPointSpacing, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev)
@@ -1709,6 +1715,10 @@ void OwnShip::setLastDeltaTime(irr::f32 myDeltaTime)
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque)
 {
 
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
     // DEE_NOV22 vvvv
     setLastDeltaTime(deltaTime);
     // DEE_NOV22 ^^^^
@@ -2349,6 +2359,10 @@ irr::f32 OwnShip::getDepth() const
 void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, irr::f32 &turnReaction)
 {
 
+    #ifdef WITH_PROFILING
+    IPROF_FUNC;
+    #endif
+
     reaction = 0;
     lateralReaction = 0;
     turnReaction = 0;
@@ -2409,6 +2423,9 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
     {
         // Normal ship model
         ship->updateAbsolutePosition();
+        irr::core::matrix4 rot;
+        rot.setRotationDegrees(ship->getRotation());
+        irr::core::vector3df shipAbsolutePosition = ship->getAbsolutePosition();
 
         for (int i = 0; i < contactPoints.size(); i++)
         {
@@ -2417,15 +2434,13 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
             irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
 
             // Rotate with own ship
-            irr::core::matrix4 rot;
-            rot.setRotationDegrees(ship->getRotation());
             rot.transformVect(pointPosition);
             rot.transformVect(pointPositionForNormal);
             rot.transformVect(internalPointPosition);
 
-            pointPosition += ship->getAbsolutePosition();
-            pointPositionForNormal += ship->getAbsolutePosition();
-            internalPointPosition += ship->getAbsolutePosition();
+            pointPosition += shipAbsolutePosition;
+            pointPositionForNormal += shipAbsolutePosition;
+            internalPointPosition += shipAbsolutePosition;
 
             irr::f32 localIntersection = 0; // Ready to use
 

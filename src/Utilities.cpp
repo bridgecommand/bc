@@ -249,6 +249,15 @@ namespace Utilities
         scenarioData.rainIntensity      = IniFile::iniFileTof32(environmentIniFilename,"Rain");
         scenarioData.visibilityRange    = IniFile::iniFileTof32(environmentIniFilename,"VisibilityRange"); //In Nm
 
+        scenarioData.windDirection      = IniFile::iniFileTof32(environmentIniFilename,"WindDirection");
+        scenarioData.windSpeed          = IniFile::iniFileTof32(environmentIniFilename,"WindSpeed");
+        
+        scenarioData.highTideOverrideTime   = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideTime");
+        scenarioData.highTideOverrideHeight = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideHeight");
+        scenarioData.highTideOverrideRange  = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideRange");
+        scenarioData.highTideOverridePeriod = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverridePeriod");
+        scenarioData.highTideOverridePercentageSprings = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverridePercentageSprings");
+
         std::string scenarioOwnShipFilename = scenarioPath;
         scenarioOwnShipFilename.append("/ownship.ini");
         scenarioData.ownShipData.ownShipName    = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");

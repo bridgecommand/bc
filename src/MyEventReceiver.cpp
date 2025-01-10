@@ -28,7 +28,7 @@
 
 // using namespace irr;
 
-MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
+MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
 {
     this->model = model; // Link to the model
     this->gui = gui;     // Link to GUI
@@ -39,6 +39,9 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
     // store device
     device = dev;
 
+    //network
+    net = network;
+    
     lastShownJoystickStatus = device->getTimer()->getRealTime() - 5000;      // Show joystick raw data every 5s in log
     lastTimeAzimuth1MasterChanged = device->getTimer()->getRealTime() - 500; // Allow azimuth master to change every 500ms (debounce)
     lastTimeAzimuth2MasterChanged = device->getTimer()->getRealTime() - 500; // Allow azimuth master to change every 500ms (debounce)
@@ -413,7 +416,9 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (id == GUIMain::GUI_ID_CLOSE_BOX)
             {
-                device->closeDevice(); // Confirm shutdown.
+	      
+	      net->shutdownAllSecondaries();
+	      device->closeDevice(); // Confirm shutdown.
             }
         }
 

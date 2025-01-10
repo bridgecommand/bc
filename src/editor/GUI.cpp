@@ -43,97 +43,101 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     zoomIn = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.01*sh,0.99*su,0.05*sh),0,GUI_ID_ZOOMIN_BUTTON,L"+");
     zoomOut = guienv->addButton(irr::core::rect<irr::s32>(0.96*su,0.06*sh,0.99*su,0.10*sh),0,GUI_ID_ZOOMOUT_BUTTON,L"-");
 
-    //Add a moveable window to put things in
-    guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.51*sh,0.49*su,0.99*sh));
-    guiWindow->getCloseButton()->setVisible(false);
+    //Add a window to allow general scenario parameters to be edited
+    generalDataWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
+    generalDataWindow->getCloseButton()->setVisible(false);
+
+    // Add tab sheet to this window
+    tabControl = guienv->addTabControl(irr::core::rect<irr::s32>(0.010*su,0.03*sh,0.470*su,0.470*sh), generalDataWindow);
+    tabControl->setTabHeight(0.03*sh);
+    
+    // Own and other ship information
+    irr::gui::IGUITab* generalTab = tabControl->addTab(language->translate("general").c_str());
+    irr::gui::IGUITab* shipTab = tabControl->addTab(language->translate("ships").c_str());
 
     //add data display:
-    dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.01*su,0.05*sh,0.47*su,0.15*sh), true, false, guiWindow, -1, true); //Actual text set later
+    dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.45*su,0.04*sh), true, false, shipTab, -1, true); //Actual text set later
 
     //Add ship selector drop down
-    shipSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),guiWindow,GUI_ID_SHIP_COMBOBOX);
-    guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),false,false,guiWindow);
+    shipSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.09*sh,0.13*su,0.12*sh),shipTab,GUI_ID_SHIP_COMBOBOX);
+    guienv->addStaticText(language->translate("selectShip").c_str(),irr::core::rect<irr::s32>(0.01*su,0.05*sh,0.13*su,0.08*sh),false,false,shipTab);
 
     //Add selectors to allow changing own and other ships (only one visible at a time)
-    guienv->addStaticText(language->translate("shipType").c_str(),irr::core::rect<irr::s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,false,guiWindow);
-    ownShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OWNSHIPSELECT_COMBOBOX);
+    guienv->addStaticText(language->translate("shipType").c_str(),irr::core::rect<irr::s32>(0.01*su,0.13*sh,0.13*su,0.16*sh),false,false,shipTab);
+    ownShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),shipTab,GUI_ID_OWNSHIPSELECT_COMBOBOX);
     for (int i = 0; i<ownShipTypes.size(); i++) {
         ownShipTypeSelector->addItem( irr::core::stringw(ownShipTypes.at(i).c_str()).c_str() );
     }
-    otherShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.27*sh,0.13*su,0.30*sh),guiWindow,GUI_ID_OTHERSHIPSELECT_COMBOBOX);
+    otherShipTypeSelector = guienv->addComboBox(irr::core::rect<irr::s32>(0.01*su,0.16*sh,0.13*su,0.19*sh),shipTab,GUI_ID_OTHERSHIPSELECT_COMBOBOX);
     for (int i = 0; i<otherShipTypes.size(); i++) {
         otherShipTypeSelector->addItem( irr::core::stringw(otherShipTypes.at(i).c_str()).c_str() );
     }
     otherShipTypeSelector->setVisible(false); //Initially show own ship selector.
 
     //Add leg selector drop down
-    legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(0.32*su,0.20*sh,0.47*su,0.30*sh),guiWindow,GUI_ID_LEG_LISTBOX);
-    guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(0.32*su,0.16*sh,0.47*su,0.19*sh),false,false,guiWindow);
+    legSelector  = guienv->addListBox(irr::core::rect<irr::s32>(0.32*su,0.09*sh,0.45*su,0.19*sh),shipTab,GUI_ID_LEG_LISTBOX);
+    guienv->addStaticText(language->translate("selectLeg").c_str(),irr::core::rect<irr::s32>(0.32*su,0.05*sh,0.45*su,0.08*sh),false,false,shipTab);
 
     //Add edit boxes for this leg element
-    legCourseEdit   = guienv->addEditBox(L"C",irr::core::rect<irr::s32>(0.01*su,0.35*sh,0.13*su,0.38*sh),false,guiWindow,GUI_ID_COURSE_EDITBOX);
-    legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(0.18*su,0.35*sh,0.30*su,0.38*sh),false,guiWindow,GUI_ID_SPEED_EDITBOX);
-    legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.47*su,0.38*sh),false,guiWindow,GUI_ID_DISTANCE_EDITBOX);
+    legCourseEdit   = guienv->addEditBox(L"C",irr::core::rect<irr::s32>(0.01*su,0.24*sh,0.13*su,0.27*sh),false,shipTab,GUI_ID_COURSE_EDITBOX);
+    legSpeedEdit    = guienv->addEditBox(L"S",irr::core::rect<irr::s32>(0.18*su,0.24*sh,0.30*su,0.27*sh),false,shipTab,GUI_ID_SPEED_EDITBOX);
+    legDistanceEdit = guienv->addEditBox(L"D",irr::core::rect<irr::s32>(0.35*su,0.24*sh,0.45*su,0.27*sh),false,shipTab,GUI_ID_DISTANCE_EDITBOX);
 
-    guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.31*sh,0.13*su,0.34*sh),false,false,guiWindow);
-    guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.31*sh,0.30*su,0.34*sh),false,false,guiWindow);
-    guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.31*sh,0.47*su,0.34*sh),false,false,guiWindow);
+    guienv->addStaticText(language->translate("setCourse").c_str(),irr::core::rect<irr::s32>(0.01*su,0.20*sh,0.13*su,0.23*sh),false,false,shipTab);
+    guienv->addStaticText(language->translate("setSpeed").c_str(),irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.30*su,0.23*sh),false,false,shipTab);
+    guienv->addStaticText(language->translate("setDistance").c_str(),irr::core::rect<irr::s32>(0.35*su,0.20*sh,0.45*su,0.23*sh),false,false,shipTab);
 
     //Add MMSI editing
-    mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.18*su,0.20*sh,0.31*su,0.23*sh),false,guiWindow,GUI_ID_MMSI_EDITBOX);
-    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.24*sh,0.31*su,0.27*sh),guiWindow,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
+    mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.18*su,0.09*sh,0.31*su,0.12*sh),false,shipTab,GUI_ID_MMSI_EDITBOX);
+    setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.13*sh,0.31*su,0.16*sh),shipTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
     //Add buttons
-    changeLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.39*sh,0.23*su, 0.42*sh),guiWindow,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
-//    changeLegCourseSpeed = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_CHANGE_COURSESPEED_BUTTON,language->translate("changeLegCourseSpeed").c_str());
-    addShip         = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.39*sh,0.45*su, 0.42*sh),guiWindow, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
-    addLeg          = guienv->addButton(irr::core::rect<irr::s32>     (0.03*su, 0.42*sh,0.23*su, 0.45*sh),guiWindow,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
-    deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>     (0.25*su, 0.42*sh,0.45*su, 0.45*sh),guiWindow, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
-    moveShip        = guienv->addButton(irr::core::rect<irr::s32>     (0.14*su, 0.45*sh,0.34*su, 0.48*sh),guiWindow, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
-	deleteShip		= guienv->addButton(irr::core::rect<irr::s32>(0.14*su, 0.20*sh, 0.17*su, 0.23*sh), guiWindow, GUI_ID_DELETESHIP_BUTTON, language->translate("deleteShip").c_str());
+    changeLeg       = guienv->addButton(irr::core::rect<irr::s32>(0.03*su, 0.28*sh, 0.23*su, 0.31*sh),shipTab,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
+    addShip         = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.28*sh, 0.45*su, 0.31*sh),shipTab, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
+    addLeg          = guienv->addButton(irr::core::rect<irr::s32>(0.03*su, 0.31*sh, 0.23*su, 0.34*sh),shipTab,GUI_ID_ADDLEG_BUTTON,language->translate("addLeg").c_str());
+    deleteLeg       = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.31*sh, 0.45*su, 0.34*sh),shipTab, GUI_ID_DELETELEG_BUTTON,language->translate("deleteLeg").c_str());
+    moveShip        = guienv->addButton(irr::core::rect<irr::s32>(0.14*su, 0.34*sh, 0.34*su, 0.37*sh),shipTab, GUI_ID_MOVESHIP_BUTTON,language->translate("move").c_str());
+	deleteShip		= guienv->addButton(irr::core::rect<irr::s32>(0.14*su, 0.09*sh, 0.17*su, 0.12*sh), shipTab, GUI_ID_DELETESHIP_BUTTON, language->translate("deleteShip").c_str());
     //This is used to track when the edit boxes need updating, when ship or legs have changed. Set to true for initial load
     editBoxesNeedUpdating = true;
 
-    //Add a window to allow general scenario parameters to be edited
-    generalDataWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.49*su,0.49*sh));
-    generalDataWindow->getCloseButton()->setVisible(false);
+    // General scenario information
+    guienv->addStaticText(language->translate("startTime").c_str(),irr::core::rect<irr::s32>(0.010*su,0.01*sh,0.115*su,0.04*sh),false,false,generalTab);
+    startHours = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.04*sh,0.035*su,0.07*sh),false,generalTab,GUI_ID_STARTHOURS_EDITBOX );
+    startMins = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.045*su,0.04*sh,0.070*su,0.07*sh),false,generalTab,GUI_ID_STARTMINS_EDITBOX );
 
-    guienv->addStaticText(language->translate("startTime").c_str(),irr::core::rect<irr::s32>(0.010*su,0.05*sh,0.115*su,0.08*sh),false,false,generalDataWindow);
-    startHours = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.08*sh,0.035*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTHOURS_EDITBOX );
-    startMins = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.045*su,0.08*sh,0.070*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMINS_EDITBOX );
+    guienv->addStaticText(language->translate("startDate").c_str(),irr::core::rect<irr::s32>(0.130*su,0.01*sh,0.280*su,0.04*sh),false,false,generalTab);
+    startYear = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.04*sh,0.180*su,0.07*sh),false,generalTab,GUI_ID_STARTYEAR_EDITBOX );
+    startMonth = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.190*su,0.04*sh,0.215*su,0.07*sh),false,generalTab,GUI_ID_STARTMONTH_EDITBOX );
+    startDay = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.225*su,0.04*sh,0.250*su,0.07*sh),false,generalTab,GUI_ID_STARTDAY_EDITBOX );
 
-    guienv->addStaticText(language->translate("startDate").c_str(),irr::core::rect<irr::s32>(0.130*su,0.05*sh,0.280*su,0.08*sh),false,false,generalDataWindow);
-    startYear = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.08*sh,0.180*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTYEAR_EDITBOX );
-    startMonth = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.190*su,0.08*sh,0.215*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTMONTH_EDITBOX );
-    startDay = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.225*su,0.08*sh,0.250*su,0.11*sh),false,generalDataWindow,GUI_ID_STARTDAY_EDITBOX );
+    guienv->addStaticText(language->translate("sunRise").c_str(),irr::core::rect<irr::s32>(0.010*su,0.08*sh,0.115*su,0.11*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("sunSet").c_str(),irr::core::rect<irr::s32>(0.130*su,0.08*sh,0.280*su,0.11*sh),false,false,generalTab);
+    sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.11*sh,0.085*su,0.14*sh),false,generalTab,GUI_ID_SUNRISE_EDITBOX );
+    sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.11*sh,0.205*su,0.14*sh),false,generalTab,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("sunRise").c_str(),irr::core::rect<irr::s32>(0.010*su,0.12*sh,0.115*su,0.15*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("sunSet").c_str(),irr::core::rect<irr::s32>(0.130*su,0.12*sh,0.280*su,0.15*sh),false,false,generalDataWindow);
-    sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.085*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNRISE_EDITBOX );
-    sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.205*su,0.18*sh),false,generalDataWindow,GUI_ID_SUNSET_EDITBOX );
+    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.130*su,0.18*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.250*su,0.18*sh),false,false,generalTab);
+    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.15*sh,0.370*su,0.18*sh),false,false,generalTab);
+    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.18*sh,0.085*su,0.21*sh),generalTab,GUI_ID_WEATHER_COMBOBOX);
+    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.18*sh,0.205*su,0.21*sh),generalTab,GUI_ID_RAIN_COMBOBOX);
+    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.18*sh,0.325*su,0.21*sh),generalTab,GUI_ID_VISIBILITY_COMBOBOX);
 
-    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.19*sh,0.130*su,0.22*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.19*sh,0.250*su,0.22*sh),false,false,generalDataWindow);
-    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.19*sh,0.370*su,0.22*sh),false,false,generalDataWindow);
-    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.085*su,0.25*sh),generalDataWindow,GUI_ID_WEATHER_COMBOBOX);
-    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.22*sh,0.205*su,0.25*sh),generalDataWindow,GUI_ID_RAIN_COMBOBOX);
-    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.22*sh,0.325*su,0.25*sh),generalDataWindow,GUI_ID_VISIBILITY_COMBOBOX);
+    guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.280*su,0.25*sh),false,false,generalTab);
+    scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.25*sh,0.205*su,0.28*sh),false,generalTab,GUI_ID_SCENARIONAME_EDITBOX );
+    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.28*sh),false,false,generalTab);
 
-    guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.26*sh,0.280*su,0.29*sh),false,false,generalDataWindow);
-    scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.205*su,0.32*sh),false,generalDataWindow,GUI_ID_SCENARIONAME_EDITBOX );
-    overwriteWarning = guienv->addStaticText(language->translate("overwrite").c_str(),irr::core::rect<irr::s32>(0.215*su,0.29*sh,0.450*su,0.32*sh),false,false,generalDataWindow);
-
-    descriptionEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.33*sh,0.450*su,0.46*sh),false,generalDataWindow,GUI_ID_DESCRIPTION_EDITBOX );
+    descriptionEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.29*sh,0.450*su,0.37*sh),false,generalTab,GUI_ID_DESCRIPTION_EDITBOX );
     descriptionEdit->setMultiLine(true);
     descriptionEdit->setWordWrap(true);
     descriptionEdit->setAutoScroll(true);
     descriptionEdit->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
 
-    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
-    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.33*sh,0.450*su,0.39*sh),false,true,generalDataWindow);
+    multiplayerNameWarning = guienv->addStaticText(language->translate("multiplayerNeedsMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.31*sh),false,true,generalTab);
+    notMultiplayerNameWarning = guienv->addStaticText(language->translate("nonMultiplayerNoMP").c_str(),irr::core::rect<irr::s32>(0.215*su,0.25*sh,0.450*su,0.31*sh),false,true,generalTab);
 
-    apply = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.05*sh,0.450*su,0.11*sh),generalDataWindow,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
-    save = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.12*sh,0.450*su,0.18*sh),generalDataWindow,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
+    apply = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.01*sh,0.450*su,0.07*sh),generalTab,GUI_ID_APPLY_BUTTON,language->translate("apply").c_str());
+    save = guienv->addButton(irr::core::rect<irr::s32>(0.300*su,0.08*sh,0.450*su,0.14*sh),generalTab,GUI_ID_SAVE_BUTTON,language->translate("save").c_str());
 
     weather->addItem(L"0"); weather->addItem(L"0.5"); weather->addItem(L"1"); weather->addItem(L"1.5");
     weather->addItem(L"2"); weather->addItem(L"2.5"); weather->addItem(L"3"); weather->addItem(L"3.5");

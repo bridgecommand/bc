@@ -621,8 +621,17 @@ void ControllerModel::save()
     //envFile << "Variation=0" << std::endl;
     envFile << "VisibilityRange=" << scenarioData->visibilityRange << std::endl;
     envFile << "Weather=" << scenarioData->weather << std::endl;
-    //envFile << "WindDirection=90" << std::endl;
+    envFile << "WindDirection=" << scenarioData->windDirection << std::endl;
+    envFile << "WindSpeed=" << scenarioData->windSpeed << std::endl;
     envFile << "Rain=" << scenarioData->rainIntensity << std::endl;
+    
+    // Tidal override information
+    envFile << "HighTideOverrideTime=" << scenarioData->highTideOverrideTime << std::endl;
+    envFile << "HighTideOverrideHeight=" << scenarioData->highTideOverrideHeight << std::endl;
+    envFile << "HighTideOverrideRange=" << scenarioData->highTideOverrideRange << std::endl;
+    envFile << "HighTideOverridePeriod=" << scenarioData->highTideOverridePeriod << std::endl;
+    envFile << "HighTideOverridePercentageSprings=" << scenarioData->highTideOverridePercentageSprings << std::endl;
+
     envFile.close();
     if (!envFile.good()) {successOfFar=false;}
 

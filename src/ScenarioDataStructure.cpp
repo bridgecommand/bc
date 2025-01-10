@@ -132,7 +132,8 @@ std::string ScenarioData::serialise(bool withSpaces)
         separator = "# ";
     }
     // SCN2 is the same as SCN1, but allows whitespace around the delimiters
-    std::string serialised = "SCN2"; //Scenario data, serialised format 2
+    // SCN3 adds wind and tidal override information
+    std::string serialised = "SCN3"; //Scenario data, serialised format 3
     serialised.append(separator);
     serialised.append(scenarioName);
     serialised.append(separator);
@@ -155,6 +156,20 @@ std::string ScenarioData::serialise(bool withSpaces)
     serialised.append(Utilities::lexical_cast<std::string>(rainIntensity));
     serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(visibilityRange));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(windDirection));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(windSpeed));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideTime)); 
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideHeight));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideRange));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(highTideOverridePeriod));
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(highTideOverridePercentageSprings));
     serialised.append(separator);
     serialised.append(ownShipData.serialise(withSpaces));
     serialised.append(separator);
@@ -194,6 +209,39 @@ void ScenarioData::deserialise(std::string data)
             //clear any existing legs data
             otherShipsData.clear();
             std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(13),',');
+            for(unsigned int i=0; i<otherShipsVector.size(); i++) {
+                OtherShipData tempOther;
+                tempOther.deserialise(otherShipsVector.at(i));
+                otherShipsData.push_back(tempOther);
+            }
+            dataPopulated = true; // Currently only used in scenario editor
+        }
+    } else if (splitData.size() == 21) {
+        if (splitData.at(0) == "SCN3") {
+            // SCN3 allows for tidal information to be overridden from scenario
+            scenarioName = splitData.at(1);
+            worldName = splitData.at(2);
+            startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
+            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
+            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
+            sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
+            sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
+            weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
+            rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
+            visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
+            windDirection = Utilities::lexical_cast<irr::f32>(splitData.at(12));
+            windSpeed = Utilities::lexical_cast<irr::f32>(splitData.at(13));
+            highTideOverrideTime = Utilities::lexical_cast<irr::f32>(splitData.at(14)); 
+            highTideOverrideHeight = Utilities::lexical_cast<irr::f32>(splitData.at(15));
+            highTideOverrideRange = Utilities::lexical_cast<irr::f32>(splitData.at(16));
+            highTideOverridePeriod = Utilities::lexical_cast<irr::f32>(splitData.at(17));
+            highTideOverridePercentageSprings = Utilities::lexical_cast<irr::f32>(splitData.at(18));
+
+            ownShipData.deserialise(splitData.at(19));
+            //clear any existing legs data
+            otherShipsData.clear();
+            std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(20),',');
             for(unsigned int i=0; i<otherShipsVector.size(); i++) {
                 OtherShipData tempOther;
                 tempOther.deserialise(otherShipsVector.at(i));
