@@ -66,13 +66,11 @@ void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::
 
 irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
 {
-
   return waterNode->getWaveHeight(relPosX,relPosZ);
 }
 
 irr::core::vector2df Water::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
 {
-
   return waterNode->getLocalNormals(relPosX,relPosZ);
 }
 
