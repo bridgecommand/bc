@@ -137,7 +137,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             textureDetailMapPath.append("/");
             textureDetailMapPath.append(textureDetailMapName);
 
-	    std::cout << "Texture detail : " << textureDetailMapName << std::endl;
             //Dummy contents, won't be used in this case
             terrainMaxHeight=0;
             seaMaxDepth=0;
@@ -174,8 +173,6 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             textureDetailMapPath.append("/");
             textureDetailMapPath.append(textureDetailMapName);
 
-            std::cout << "Texture : " << textureMapPath << std::endl;
-	    std::cout << "Texture detail : " << textureDetailMapPath << std::endl;
 	}
 
         //calculations just needed for terrain loading
