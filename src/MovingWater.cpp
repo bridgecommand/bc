@@ -35,7 +35,7 @@ namespace scene
 MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mgr, ISceneNode* ownShip, irr::s32 id, irr::u32 disableShaders, bool withReflection, irr::u32 segments,
 		const irr::core::vector3df& position, const irr::core::vector3df& rotation)
 	//: IMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
-	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.75), seaState(0.5), disableShaders(disableShaders), withReflection(withReflection), segments(segments)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, irr::core::vector3df(1.0f,1.0f,1.0f)), lightLevel(0.7), seaState(0.5), disableShaders(disableShaders), withReflection(withReflection), segments(segments)
 {
 	#ifdef _DEBUG
 	setDebugName("MovingWaterSceneNode");
@@ -79,12 +79,12 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 		shader = driver->getGPUProgrammingServices()->addHighLevelShaderMaterialFromFiles(
 				vertexShader,
 				"main",
-				irr::video::EVST_VS_2_0,
+				irr::video::EVST_VS_1_1,
 				pixelShader,
 				"main",
-				irr::video::EPST_PS_2_0,
-				this, //For callbacks
-				irr::video::EMT_SOLID
+				irr::video::EPST_PS_1_1,
+				this,
+                irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL
         );
 	}
     shader = shader==-1?0:shader; //Just in case something goes horribly wrong...
@@ -133,7 +133,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
             _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
 		}
 		
-		irr::video::ITexture* bumpTexture = driver->getTexture("media/waterbump.png");
+		irr::video::ITexture* bumpTexture = driver->getTexture("media/water.jpg");
 
 		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{
@@ -161,7 +161,6 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
                 }
 				mb->getMaterial().MaterialType = (irr::video::E_MATERIAL_TYPE)shader;
 				mb->getMaterial().FogEnable = true;
-
 			}
 		}
 	}

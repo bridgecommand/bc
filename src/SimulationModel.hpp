@@ -166,6 +166,7 @@ public:
     irr::f32 getLat() const;
     irr::f32 getLong() const;
     irr::f32 getPosX() const;
+    irr::f32 getPosY() const;
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second

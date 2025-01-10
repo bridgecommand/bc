@@ -18,7 +18,6 @@
 #include "Utilities.hpp"
 #include <iostream>
 
-//using namespace irr;
 
 Rain::Rain() {
 }
@@ -26,90 +25,93 @@ Rain::Rain() {
 Rain::~Rain() {
 }
 
-void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev)
-{
-    //Make rain
+void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth)
+{    
     this->parent = parent;
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
+    irr::f32 a = 0, b = 0, c = 0, d = 0;
 
-    rainIntensity = 0.0;
-    //Load rain.x, flip vertexes, and load rain1.jpg texture
-    irr::scene::IMesh* rainMesh = smgr->getMesh("media/rain.x");
-    //add to scene node
-    irr::scene::IMeshManipulator* meshManipulator = smgr->getMeshManipulator();
-    if (rainMesh!=0) {
-        //meshManipulator->scale(rainMesh,irr::core::vector3df(5.0,5.0,5.0)); //Scale mesh - ToDo: Make this dependent on ship/bridge size
-        meshManipulator->flipSurfaces(rainMesh);
-        rainNode1 = smgr->addMeshSceneNode( rainMesh);
-        rainNode2 = smgr->addMeshSceneNode( rainMesh);
-        rainNode1->setScale(irr::core::vector3df(5.0,5.0,5.0));
-        rainNode2->setScale(irr::core::vector3df(6.0,5.0,6.0));
-    } else {
-        //Failed to load mesh - load with dummy and continue - ToDo: should also flag this up to user
-        dev->getLogger()->log("Failed to load rain mesh (rain.x)");
-        rainNode1 = smgr->addEmptySceneNode();
-        rainNode2 = smgr->addEmptySceneNode();
+    //Make 4 "rain blocks" around the ship, so there are no rain into ship
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        if (i == 0) {//Front block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = RAIN_BORDER_MAX;
+            c = -RAIN_BORDER_MAX;
+            d = RAIN_BORDER_MAX;
+        }
+        else if (i == 1) {//Back block
+            a = -ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -RAIN_BORDER_MAX;
+            c = -RAIN_BORDER_MAX;
+            d = RAIN_BORDER_MAX;
+        }
+        else if (i == 2) {//Right Block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -ShipBreadth / RATIO_SHELTER_RAIN;
+            c = -ShipLength / RATIO_SHELTER_RAIN;
+            d = -(RAIN_BORDER_MAX * RAIN_BORDER_MAX)/ ShipBreadth;
+        }
+        else if (i == 3) {//Left Block
+            a = ShipBreadth / RATIO_SHELTER_RAIN;
+            b = -ShipBreadth / RATIO_SHELTER_RAIN;
+            c = ShipLength / RATIO_SHELTER_RAIN;
+            d = (RAIN_BORDER_MAX * RAIN_BORDER_MAX) / ShipBreadth;
+        }
+
+        //For each block, create the particles system
+        ps[i] = smgr->addParticleSystemSceneNode(false);
+
+        irr::scene::IParticleEmitter* em = ps[i]->createBoxEmitter(
+            irr::core::aabbox3d<irr::f32>(a, 0, c, b, RAIN_BORDER_MAX, d),
+            irr::core::vector3df(ShipPosX, RAIN_DIRECTION_AND_FORCE, ShipPosZ),
+            0, 0,                            
+            irr::video::SColor(0, 255, 255, 255),       
+            irr::video::SColor(0, 255, 255, 255),      
+            RAIN_DENSITY_MIN, RAIN_DENSITY_MAX, 0,
+            irr::core::dimension2df(RAIN_DROP_SIZE_MIN, RAIN_DROP_SIZE_MIN),
+            irr::core::dimension2df(RAIN_DROP_SIZE_MAX, RAIN_DROP_SIZE_MAX));
+
+        ps[i]->setEmitter(em);
+        em->drop();
+
+        //Create density
+        irr::scene::IParticleAffector* paf = ps[i]->createGravityAffector(irr::core::vector3df(0, RAIN_DIRECTION_AND_FORCE, 0), RAIN_TIME_FORCE_LOST);
+
+        ps[i]->addAffector(paf);
+        paf->drop();
+
+        ps[i]->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, true);
+        ps[i]->setMaterialFlag(irr::video::EMF_LIGHTING, false);          
+        ps[i]->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);     
+        ps[i]->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     
+        ps[i]->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); 
+
+        ps[i]->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(
+            0, irr::core::vector2df(0, 0), irr::core::vector2df(1.0f, -1.0f), irr::core::vector2df(1.0f, -1.0f)
+        ));
+
+        smgr->getRootSceneNode()->addChild(ps[i]);
     }
+}
 
-    //set texture
-    irr::video::ITexture* texture;
-    std::vector<irr::io::path> textureNames;
-    textureNames.push_back("./media/rain_0.png");
-    textureNames.push_back("./media/rain_1.png");
-    textureNames.push_back("./media/rain_2.png");
-    textureNames.push_back("./media/rain_3.png");
-    textureNames.push_back("./media/rain_4.png");
-    textureNames.push_back("./media/rain_5.png");
-    textureNames.push_back("./media/rain_6.png");
-    textureNames.push_back("./media/rain_7.png");
-    textureNames.push_back("./media/rain_8.png");
-    textureNames.push_back("./media/rain_9.png");
-    textureNames.push_back("./media/rain_10.png");
+void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel)
+{
+    //Move rain blocks with the ship
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        ps[i]->setPosition(irr::core::vector3df(ShipPosX, 0.1, ShipPosZ));
+        irr::scene::IParticleEmitter* em = ps[i]->getEmitter();
 
-    for(std::vector<irr::io::path>::iterator it = textureNames.begin(); it != textureNames.end(); ++it) {
-        texture = driver->getTexture(*it);
-        if (texture!=0) {
-            rainTextures.push_back(texture);
+        if (RainLevel < RAIN_MIDDLE_INTENSITY)
+        {
+            em->setMinParticlesPerSecond(RainLevel * 10);
+            em->setMaxParticlesPerSecond(RainLevel * 50);
+        }
+        else
+        {
+            em->setMinParticlesPerSecond(RainLevel * 50);
+            em->setMaxParticlesPerSecond(RainLevel * 200);
         }
     }
-
-    rainNode1->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
-    rainNode2->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL  );
-    applyTextures();
-
-}
-
-void Rain::setIntensity(irr::f32 intensity) {
-
-    if (intensity != rainIntensity && intensity <= 10 && intensity >= 0) {
-
-        rainIntensity = intensity;
-        applyTextures();
-    }
-}
-
-void Rain::applyTextures() {
-    if (rainTextures.size()==11) { //Check all textures 0-10 are loaded
-        //Round one up and one down so we can get half step rain intensity level.
-    	irr::u8 texture1 = Utilities::round(rainIntensity+0.25);
-    	irr::u8 texture2 = Utilities::round(rainIntensity-0.25);
-        rainNode1->setMaterialTexture(0,rainTextures.at(texture1));
-        rainNode2->setMaterialTexture(0,rainTextures.at(texture2));
-    }
-}
-
-void Rain::update(irr::f32 scenarioTime) {
-    //update rain animation
-        //(Should move to its own class)
-        irr::f32 rainAnimation1 = scenarioTime/2.0;
-        irr::f32 rainAnimation2 = scenarioTime/2.2;
-        rainAnimation1 = rainAnimation1 - (int)rainAnimation1;
-        rainAnimation2 = rainAnimation2 - (int)rainAnimation2;
-        rainNode1->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation1);
-        rainNode2->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation2);
-
-        //update position - this isn't actually set as a child node, as we want position to update, but not rotation
-        rainNode1->setPosition(parent->getPosition());
-        rainNode2->setPosition(parent->getPosition());
-        //End rain
 }
