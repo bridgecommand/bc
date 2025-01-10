@@ -75,8 +75,10 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
         ps[i]->setEmitter(em);
         em->drop();
 
+
         //Create density
         irr::scene::IParticleAffector* paf = ps[i]->createGravityAffector(irr::core::vector3df(0, RAIN_DIRECTION_AND_FORCE, 0), RAIN_TIME_FORCE_LOST);
+
         ps[i]->addAffector(paf);
         paf->drop();
 
