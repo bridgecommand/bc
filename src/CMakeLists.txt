@@ -78,7 +78,6 @@ set(BC_SOURCES
     RadarCalculation.cpp
     RadarScreen.cpp
     Rain.cpp
-    RealisticWater.cpp	
     ScenarioChoice.cpp
     ScenarioDataStructure.cpp
     ScrollDial.cpp
