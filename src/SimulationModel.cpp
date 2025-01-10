@@ -139,8 +139,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         //Load rain
         rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
 
-
-
         //add water
         bool waterReflection = true;
         if (modelParameters.vrMode == true) {

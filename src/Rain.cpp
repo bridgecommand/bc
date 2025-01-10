@@ -25,9 +25,9 @@ Rain::Rain() {
 Rain::~Rain() {
 }
 
-
 void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth)
 {    
+
     this->parent = parent;
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
     irr::f32 a = 0, b = 0, c = 0, d = 0;
@@ -73,6 +73,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
             irr::core::dimension2df(RAIN_DROP_SIZE_MIN, RAIN_DROP_SIZE_MIN),
             irr::core::dimension2df(RAIN_DROP_SIZE_MAX, RAIN_DROP_SIZE_MAX));
 
+
         ps[i]->setEmitter(em);
         em->drop();
 
@@ -86,7 +87,6 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
         ps[i]->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);     
         ps[i]->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     
         ps[i]->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); 
-
 
         ps[i]->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(
             0, irr::core::vector2df(0, 0), irr::core::vector2df(1.0f, -1.0f), irr::core::vector2df(1.0f, -1.0f)
