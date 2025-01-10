@@ -20,6 +20,17 @@
 #include "irrlicht.h"
 #include <vector>
 
+#define RAIN_BORDER_MAX (200)
+#define RATIO_SHELTER_RAIN (1.5)
+#define RAIN_DIRECTION_AND_FORCE (-0.1)
+#define RAIN_DENSITY_MIN (700)
+#define RAIN_DENSITY_MAX (1000)
+#define RAIN_DROP_SIZE_MIN (0.2)
+#define RAIN_DROP_SIZE_MAX (0.5)
+#define RAIN_TIME_FORCE_LOST (2000)
+#define RAIN_MIDDLE_INTENSITY (5)
+
+
 class Rain
 {
 
