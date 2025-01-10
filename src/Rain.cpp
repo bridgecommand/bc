@@ -18,7 +18,6 @@
 #include "Utilities.hpp"
 #include <iostream>
 
-//using namespace irr;
 
 Rain::Rain() {
 }
@@ -26,52 +25,88 @@ Rain::Rain() {
 Rain::~Rain() {
 }
 
-void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ)
+void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth)
 {
-    //Make rain
     this->parent = parent;
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
+    irr::f32 a = 0, b = 0, c = 0, d = 0;
 
-    // Création du système de particules
-    ps = smgr->addParticleSystemSceneNode(false);
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        if (i == 0) {
+            a = ShipBreadth /1.5;
+            b = 200;
+            c = -200;
+            d = 200;
+        }
+        else if (i == 1) {
+            a = -ShipBreadth / 1.5;
+            b = -200;
+            c = -200;
+            d = 200;
+        }
+        else if (i == 2) {
+            a = ShipBreadth / 1.5;
+            b = -ShipBreadth / 1.5;
+            c = -ShipLength / 1.5;
+            d = -80000/ ShipBreadth;
+        }
+        else if (i == 3) {
+            a = ShipBreadth / 1.5;
+            b = -ShipBreadth / 1.5;
+            c = ShipLength / 1.5;
+            d = 80000/ ShipBreadth;
+        }
 
-    irr::scene::IParticleEmitter* em = ps->createSphereEmitter(
-        irr::core::vector3df(ShipPosX, ShipPosY, ShipPosZ),    // Position du centre de la sphère
-        500.0f,                       // Rayon de la sphère
-        irr::core::vector3df(0.0f, -0.3f, 0.0f),  // Direction des particules
-        2800, 3000,                   // Particules par seconde
-        irr::video::SColor(255, 200, 200, 255),  // Couleur minimale
-        irr::video::SColor(255, 255, 255, 255),  // Couleur maximale
-        2000, 3000,                   // Durée de vie des particules
-        0,                           // Angle d'émission (0 pour collimaté)
-        irr::core::dimension2df(0.5f, 0.5f),   // Taille minimale des particules
-        irr::core::dimension2df(1.0f, 1.0f));  // Taille maximale des particules
+        ps[i] = smgr->addParticleSystemSceneNode(false);
 
-    ps->setEmitter(em);
-    em->drop();
+        irr::scene::IParticleEmitter* em = ps[i]->createBoxEmitter(
+            irr::core::aabbox3d<irr::f32>(a, 0, c, b, 100, d), 
+            irr::core::vector3df(ShipPosX, -0.1, ShipPosZ),   
+            0, 0,                            
+            irr::video::SColor(0, 255, 255, 255),       
+            irr::video::SColor(0, 255, 255, 255),      
+            700, 1000, 0,                         
+            irr::core::dimension2df(0.2f, 0.2f),         
+            irr::core::dimension2df(0.5f, 0.5f));        
 
-    // Ajout d'un affecteur de gravité pour les particules
-    irr::scene::IParticleAffector* paf = ps->createGravityAffector(irr::core::vector3df(0, -0.1f, 0), 2000);
-    ps->addAffector(paf);
-    paf->drop();
+        ps[i]->setEmitter(em);
+        em->drop();
 
-    // Configuration du matériau des particules
-    ps->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, true);
-    ps->setMaterialFlag(irr::video::EMF_LIGHTING, false);          // insensible a la lumiere
-    ps->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);     // desactive zbuffer pour surfaces derriere
-    ps->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     // on colle une texture
-    ps->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); // application transparence
+        irr::scene::IParticleAffector* paf = ps[i]->createGravityAffector(irr::core::vector3df(0, -0.1f, 0), 2000);
+        ps[i]->addAffector(paf);
+        paf->drop();
 
-    ps->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(
-        0, irr::core::vector2df(0, 0), irr::core::vector2df(1.0f, -1.0f), irr::core::vector2df(1.0f, -1.0f)
-    ));
+        ps[i]->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, true);
+        ps[i]->setMaterialFlag(irr::video::EMF_LIGHTING, false);          
+        ps[i]->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);     
+        ps[i]->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     
+        ps[i]->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); 
 
-    smgr->getRootSceneNode()->addChild(ps);
+        ps[i]->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(
+            0, irr::core::vector2df(0, 0), irr::core::vector2df(1.0f, -1.0f), irr::core::vector2df(1.0f, -1.0f)
+        ));
+
+        smgr->getRootSceneNode()->addChild(ps[i]);
+    }
 }
 
-void Rain::setPos(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ)
+void Rain::update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel)
 {
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        ps[i]->setPosition(irr::core::vector3df(ShipPosX, 0.1, ShipPosZ));
+        irr::scene::IParticleEmitter* em = ps[i]->getEmitter();
 
-    ps->setPosition(irr::core::vector3df(ShipPosX, ShipPosY, ShipPosZ));
-
+        if (RainLevel < 5)
+        {
+            em->setMinParticlesPerSecond(RainLevel * 10);
+            em->setMaxParticlesPerSecond(RainLevel * 50);
+        }
+        else
+        {
+            em->setMinParticlesPerSecond(RainLevel * 50);
+            em->setMaxParticlesPerSecond(RainLevel * 200);
+        }
+    }
 }
