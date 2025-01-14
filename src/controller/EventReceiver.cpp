@@ -210,12 +210,15 @@
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED) {
+                // TODO: Add event checks for wind direction and speed scroll bars
                 if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || id == GUIMain::GUI_ID_RAIN_SCROLLBAR || id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR) {
                     //Weather
-                    //4 elements in 'Set weather' command: MCSW,weather,rain,vis
+                    //6 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed
                     irr::f32 weather=gui->getWeather();
                     irr::f32 rain=gui->getRain();
                     irr::f32 visibility=gui->getVisibility();
+                    irr::f32 windDirection=gui->getWindDirection();
+                    irr::f32 windSpeed=gui->getWindSpeed();
 
                     std::string messageToSend = "MCSW,";
                     messageToSend.append(Utilities::lexical_cast<std::string>(weather));
@@ -223,6 +226,10 @@
                     messageToSend.append(Utilities::lexical_cast<std::string>(rain));
                     messageToSend.append(",");
                     messageToSend.append(Utilities::lexical_cast<std::string>(visibility));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(windDirection));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(windSpeed));
                     messageToSend.append("#");
                     network->setStringToSend(messageToSend);
                 }

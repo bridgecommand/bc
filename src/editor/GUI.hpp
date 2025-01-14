@@ -85,6 +85,8 @@ public:
     irr::f32 getWeather() const;
     irr::f32 getRain() const;
     irr::f32 getVisibility() const;
+    irr::f32 getWindDirection() const;
+    irr::f32 getWindSpeed() const;
     irr::u32 getEditBoxMMSI() const;
     std::string getScenarioName() const;
     std::string getDescription() const;

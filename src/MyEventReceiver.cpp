@@ -410,6 +410,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 model->setVisibility(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 10.0); // Scroll bar 1-101, vis 0.1-10.1
             }
+            // TODO: Set windDirection and windSpeed here
         }
 
         if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_OK)

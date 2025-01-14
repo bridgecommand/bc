@@ -171,6 +171,8 @@
                 tempData.weather = gui->getWeather();
                 tempData.rainIntensity = gui->getRain();
                 tempData.visibilityRange = gui->getVisibility();
+                tempData.windDirection = gui->getWindDirection();
+                tempData.windSpeed = gui->getWindSpeed();
                 tempData.scenarioName = gui->getScenarioName();
                 tempData.description = gui->getDescription();
                 // This only applies the 'general' data, not own ship/other ship data etc

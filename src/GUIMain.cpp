@@ -1114,6 +1114,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
         visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
 
+        // TODO: Show windDirection and windSpeed here
+
 
 // DEE vvvvv  this should display the rate of turn data on the screen
 // DEE        since internalrate of turn is in rads per second then for deg per min x 3438

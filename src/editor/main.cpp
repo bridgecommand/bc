@@ -582,6 +582,8 @@ int main (int argc, char ** argv)
         scenarioData.sunRise = 6;
         scenarioData.sunSet = 18;
         scenarioData.weather = 1.0;
+        scenarioData.windDirection = 0.0;
+        scenarioData.windSpeed = 5; // Nm/h
         scenarioData.visibilityRange = 8.0;
         scenarioData.rainIntensity = 0.0;
         scenarioData.startDay = 1;

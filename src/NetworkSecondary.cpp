@@ -430,12 +430,14 @@ void NetworkSecondary::receiveMessage()
                 } //Check if 4 number elements for Other ships, buoys, MOBs and lines
 
                 //Get weather info from record 7
-                //0 is weather, 1 is visibility, 3 is rain
+                // Weather, Fog range, wind dirn, rain, wind speed #
                 std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
                 if (weatherData.size() == 5) {
                     model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
                     model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
+                    model->setWindDirection(Utilities::lexical_cast<irr::f32>(weatherData.at(2)));
                     model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
+                    model->setWindSpeed(Utilities::lexical_cast<irr::f32>(weatherData.at(4)));
                 }
 
                 //Get view information from record 9

@@ -1005,6 +1005,26 @@ SimulationModel::~SimulationModel()
         return visibilityRange;
     }
 
+    void SimulationModel::setWindDirection(irr::f32 windDirection) //Range 0-360.
+    {
+        this->windDirection = windDirection;
+    }
+
+    irr::f32 SimulationModel::getWindDirection() const
+    {
+        return windDirection;
+    }
+
+    void SimulationModel::setWindSpeed(irr::f32 windSpeed) //Nm/h
+    {
+        this->windSpeed = windSpeed;
+    }
+
+    irr::f32 SimulationModel::getWindSpeed() const
+    {
+        return windSpeed;
+    }
+
     void SimulationModel::setWaterVisible(bool visible)
     {
         water.setVisible(visible);
@@ -1885,6 +1905,8 @@ SimulationModel::~SimulationModel()
         guiData->weather = weather;
         guiData->rain = rainIntensity;
         guiData->visibility = visibilityRange;
+        guiData->windDirection = windDirection;
+        guiData->windSpeed = windSpeed;
         guiData->radarRangeNm = radarCalculation.getRangeNm();
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();

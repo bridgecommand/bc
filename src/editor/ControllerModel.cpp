@@ -385,6 +385,8 @@ void ControllerModel::setGeneralScenarioData(ScenarioData newData)
     scenarioData->weather = newData.weather;
     scenarioData->rainIntensity = newData.rainIntensity;
     scenarioData->visibilityRange = newData.visibilityRange;
+    scenarioData->windDirection = newData.windDirection;
+    scenarioData->windSpeed = newData.windSpeed;
     scenarioData->scenarioName = newData.scenarioName;
     scenarioData->description = newData.description;
     

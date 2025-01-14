@@ -54,6 +54,8 @@ struct GUIData {
     irr::f32 weather;
     irr::f32 rain;
     irr::f32 visibility;
+    irr::f32 windDirection;
+    irr::f32 windSpeed;
     bool radarOn;
     irr::f32 radarRangeNm;
     irr::f32 radarGain;

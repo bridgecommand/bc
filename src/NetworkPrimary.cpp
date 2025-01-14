@@ -272,14 +272,18 @@ void NetworkPrimary::receiveNetwork()
                                     } else if (thisCommand.substr(0,2).compare("SW") == 0) {
                                         //'SW' Set weather
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
-                                        if (parts.size() == 4) {
-                                            //4 elements in 'Set weather' command: SW,weather,rain,vis
+                                        if (parts.size() == 6) {
+                                            //6 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed
                                             irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
                                             irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
                                             irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            irr::f32 windDirection = Utilities::lexical_cast<irr::f32>(parts.at(4));
+                                            irr::f32 windSpeed = Utilities::lexical_cast<irr::f32>(parts.at(5));
                                             if (weather >= 0) {model->setWeather(weather);}
                                             if (rain >=0) {model->setRain(rain);}
                                             if (visibility>0) {model->setVisibility(visibility);}
+                                            if (windSpeed>=0) {model->setWindSpeed(windSpeed);}
+                                            model->setWindDirection(windDirection);
                                         }
 
 
@@ -572,16 +576,16 @@ std::string NetworkPrimary::generateSendString()
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getLoopNumber()));
     stringToSend.append("#");
 
-    //7 Weather: Weather, Fog range, wind dirn, rain, light level #
+    //7 Weather: Weather, Fog range, wind dirn, rain, wind speed #
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getWeather()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getVisibility()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Wind dirn
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWindDirection()));
     stringToSend.append(",");
     stringToSend.append(Utilities::lexical_cast<std::string>(model->getRain()));
     stringToSend.append(",");
-    stringToSend.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Light level
+    stringToSend.append(Utilities::lexical_cast<std::string>(model->getWindSpeed()));
     stringToSend.append("#");
 
     //8 EBL Brg, height, show (or 0,0,0) #

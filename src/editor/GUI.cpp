@@ -191,6 +191,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSet)).c_str());
     weather->setSelected(floor(oldScenarioInfo.weather*2));
     rain->setSelected(floor(oldScenarioInfo.rainIntensity*2));
+    // TODO: Show windDirection and windSpeed here
 
     irr::s32 selectedVis;
     if (oldScenarioInfo.visibilityRange<=1) {
@@ -339,6 +340,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
             visibility->setSelected(visibility->getItemCount()-1);
         }
     }
+    // TODO: Show windDirection and windSpeed here
     if (oldScenarioInfo.scenarioName != scenarioData.scenarioName) {
         scenarioName->setText(irr::core::stringw(scenarioData.scenarioName.c_str()).c_str());
     }
@@ -801,6 +803,14 @@ irr::f32 GUIMain::getVisibility() const {
     std::string sStringVal(wStringVal.begin(), wStringVal.end());
     irr::f32 value = Utilities::lexical_cast<irr::f32>(sStringVal);
     return value;
+}
+
+irr::f32 GUIMain::getWindDirection() const {
+    return 0; // FIXME: To implement
+}
+    
+irr::f32 GUIMain::getWindSpeed() const {
+    return 0; // FIXME: To implement
 }
 
 std::string GUIMain::getScenarioName() const {

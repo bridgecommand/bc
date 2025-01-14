@@ -252,6 +252,8 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     visibilityBar->setPos(Utilities::round(visibility*10.0));
     rainBar->setPos(Utilities::round(rain*10.0));
 
+    // TODO: Update for windDirection and windSpeed as well, if these change.
+
     guienv->drawAll();
 
 }
@@ -580,6 +582,14 @@ irr::f32 GUIMain::getRain() const {
 
 irr::f32 GUIMain::getVisibility() const {
     return (irr::f32)(visibilityBar->getPos())/10.0;
+}
+
+irr::f32 GUIMain::getWindDirection() const {
+    return 0; // FIXME: To implement
+}
+
+irr::f32 GUIMain::getWindSpeed() const {
+    return 0; // FIXME: To implement
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)
