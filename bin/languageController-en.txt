@@ -21,6 +21,8 @@ weather = "Weather"
 rain = "Rain"
 visibility="Visibility"
 setDistance = "Distance (Nm)"
+windDirection = "Wind direction"
+windSpeed = "Wind Speed (Kts)"
 
 setMMSI = "Set MMSI"
 

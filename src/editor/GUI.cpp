@@ -54,6 +54,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     // Own and other ship information
     irr::gui::IGUITab* generalTab = tabControl->addTab(language->translate("general").c_str());
     irr::gui::IGUITab* shipTab = tabControl->addTab(language->translate("ships").c_str());
+    irr::gui::IGUITab* weatherTab = tabControl->addTab(language->translate("weather").c_str());
 
     //add data display:
     dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.45*su,0.04*sh), true, false, shipTab, -1, true); //Actual text set later
@@ -116,12 +117,12 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     sunRise = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.11*sh,0.085*su,0.14*sh),false,generalTab,GUI_ID_SUNRISE_EDITBOX );
     sunSet = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.11*sh,0.205*su,0.14*sh),false,generalTab,GUI_ID_SUNSET_EDITBOX );
 
-    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.130*su,0.18*sh),false,false,generalTab);
-    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.250*su,0.18*sh),false,false,generalTab);
-    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.15*sh,0.370*su,0.18*sh),false,false,generalTab);
-    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.18*sh,0.085*su,0.21*sh),generalTab,GUI_ID_WEATHER_COMBOBOX);
-    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.18*sh,0.205*su,0.21*sh),generalTab,GUI_ID_RAIN_COMBOBOX);
-    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.18*sh,0.325*su,0.21*sh),generalTab,GUI_ID_VISIBILITY_COMBOBOX);
+    guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.010*su,0.15*sh,0.130*su,0.18*sh),false,false,weatherTab);
+    guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.130*su,0.15*sh,0.250*su,0.18*sh),false,false,weatherTab);
+    guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.250*su,0.15*sh,0.370*su,0.18*sh),false,false,weatherTab);
+    weather    = guienv->addComboBox(irr::core::rect<irr::s32>(0.010*su,0.18*sh,0.085*su,0.21*sh),weatherTab,GUI_ID_WEATHER_COMBOBOX);
+    rain       = guienv->addComboBox(irr::core::rect<irr::s32>(0.130*su,0.18*sh,0.205*su,0.21*sh),weatherTab,GUI_ID_RAIN_COMBOBOX);
+    visibility = guienv->addComboBox(irr::core::rect<irr::s32>(0.250*su,0.18*sh,0.325*su,0.21*sh),weatherTab,GUI_ID_VISIBILITY_COMBOBOX);
 
     guienv->addStaticText(language->translate("scenario").c_str(),irr::core::rect<irr::s32>(0.010*su,0.22*sh,0.280*su,0.25*sh),false,false,generalTab);
     scenarioName = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.25*sh,0.205*su,0.28*sh),false,generalTab,GUI_ID_SCENARIONAME_EDITBOX );
@@ -163,6 +164,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
     visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");
 
+    // Wind
+    guienv->addStaticText(language->translate("windDirection").c_str(),irr::core::rect<irr::s32>(0.010*su,0.01*sh,0.115*su,0.04*sh),false,false,weatherTab);
+    windDirection = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.04*sh,0.070*su,0.07*sh),false,weatherTab,GUI_ID_WINDDIRECTION_EDITBOX );
+
+    guienv->addStaticText(language->translate("windSpeed").c_str(),irr::core::rect<irr::s32>(0.130*su,0.01*sh,0.280*su,0.04*sh),false,false,weatherTab);
+    windSpeed = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.130*su,0.04*sh,0.180*su,0.07*sh),false,weatherTab,GUI_ID_WINDSPEED_EDITBOX );
+    
+
     //Fill in initial info into dialog boxes:
     irr::f32 timeFloat = oldScenarioInfo.startTime/SECONDS_IN_HOUR;
     irr::u32 timeHrs = floor(timeFloat);
@@ -191,7 +200,9 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     sunSet->setText((irr::core::stringw(oldScenarioInfo.sunSet)).c_str());
     weather->setSelected(floor(oldScenarioInfo.weather*2));
     rain->setSelected(floor(oldScenarioInfo.rainIntensity*2));
-    // TODO: Show windDirection and windSpeed here
+    
+    windDirection->setText((irr::core::stringw(oldScenarioInfo.windDirection)).c_str());
+    windSpeed->setText((irr::core::stringw(oldScenarioInfo.windSpeed)).c_str());
 
     irr::s32 selectedVis;
     if (oldScenarioInfo.visibilityRange<=1) {
@@ -340,7 +351,12 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
             visibility->setSelected(visibility->getItemCount()-1);
         }
     }
-    // TODO: Show windDirection and windSpeed here
+    if (oldScenarioInfo.windDirection != scenarioData.windDirection) {
+        windDirection->setText((irr::core::stringw(scenarioData.windDirection)).c_str());
+    }
+    if (oldScenarioInfo.windSpeed != scenarioData.windSpeed) {
+        windSpeed->setText((irr::core::stringw(scenarioData.windSpeed)).c_str());
+    }
     if (oldScenarioInfo.scenarioName != scenarioData.scenarioName) {
         scenarioName->setText(irr::core::stringw(scenarioData.scenarioName.c_str()).c_str());
     }
@@ -806,11 +822,13 @@ irr::f32 GUIMain::getVisibility() const {
 }
 
 irr::f32 GUIMain::getWindDirection() const {
-    return 0; // FIXME: To implement
+    wchar_t* endPtr;
+    return wcstof(windDirection->getText(),&endPtr);
 }
     
 irr::f32 GUIMain::getWindSpeed() const {
-    return 0; // FIXME: To implement
+    wchar_t* endPtr;
+    return wcstof(windSpeed->getText(),&endPtr);
 }
 
 std::string GUIMain::getScenarioName() const {
