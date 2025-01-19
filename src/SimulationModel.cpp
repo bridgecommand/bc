@@ -87,6 +87,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         visibilityRange = scenarioData.visibilityRange;
         if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
 
+        windDirection = scenarioData.windDirection;
+        windSpeed = scenarioData.windSpeed;
+
+        //std::cout << "Wind direction: " << windDirection << " Wind speed: " << windSpeed << std::endl;
+
         //Fixme: Think about time zone handling
         //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
         scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)

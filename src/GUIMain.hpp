@@ -167,6 +167,8 @@ public:
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_VISIBILITY_SCROLL_BAR,
+        GUI_ID_WINDDIRECTION_SCROLL_BAR,
+        GUI_ID_WINDSPEED_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
@@ -302,6 +304,8 @@ private:
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
+    irr::gui::IGUIScrollBar* windDirectionScrollbar;
+    irr::gui::IGUIScrollBar* windSpeedScrollbar;
     irr::gui::HeadingIndicator* headingIndicator;
 
     irr::gui::IGUIButton* showInterfaceButton;

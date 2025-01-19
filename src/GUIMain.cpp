@@ -418,6 +418,20 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setSmallStep(1);
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR);
+        windDirectionScrollbar->setMax(360);
+        windDirectionScrollbar->setMin(0);
+        windDirectionScrollbar->setLargeStep(45);
+        windDirectionScrollbar->setSmallStep(5);
+        windDirectionScrollbar->setToolTipText(language->translate("windDirection").c_str());
+
+        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
+        windSpeedScrollbar->setMax(50);
+        windSpeedScrollbar->setMin(0);
+        windSpeedScrollbar->setLargeStep(5);
+        windSpeedScrollbar->setSmallStep(1);
+        windSpeedScrollbar->setToolTipText(language->translate("windSpeed").c_str());
+
         //Add buttons to control rudder failures etc.
         irr::gui::IGUITab* extraControlsTabRudder = extraControlsTabControl->addTab(language->translate("rudderFailure").c_str());
 
@@ -1102,6 +1116,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (bowThrusterScrollbar) {bowThrusterScrollbar->setPos(Utilities::round(guiData->bowThruster * 100));}
         if (sternThrusterScrollbar) {sternThrusterScrollbar->setPos(Utilities::round(guiData->sternThruster * 100));}
 
+        // TODO: is the 'round' needed here?
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
         radarRainScrollbar->setPos(Utilities::round(guiData->radarRain));
@@ -1114,7 +1129,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
         visibilityScrollbar->setPos(Utilities::round(guiData->visibility*10.0)); //Visibility scroll bar is 1-101, visibility is 0.1 to 10.1 Nm
 
-        // TODO: Show windDirection and windSpeed here
+        windDirectionScrollbar->setPos(Utilities::round(guiData->windDirection));
+        windSpeedScrollbar->setPos(Utilities::round(guiData->windSpeed));
 
 
 // DEE vvvvv  this should display the rate of turn data on the screen
