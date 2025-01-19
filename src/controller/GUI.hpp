@@ -65,7 +65,7 @@ public:
         GUI_ID_WINDSPEED_SCROLL_BAR
     };
 
-    void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain);
+    void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
     irr::f32 getEditBoxCourse() const;
     irr::f32 getEditBoxSpeed() const;
@@ -88,11 +88,6 @@ private:
     irr::gui::IGUIEnvironment* guienv;
 
     irr::gui::IGUIWindow* guiWindow;
-    irr::gui::IGUITabControl* guiTabs;
-    irr::gui::IGUITab* mainTab;
-    irr::gui::IGUITab* failureTab;
-
-    //irr::gui::IGUIWindow* guiWeatherWindow;
 
     irr::gui::IGUIStaticText* dataDisplay;
     irr::gui::IGUIStaticText* shipSelectorTitle;
@@ -119,6 +114,8 @@ private:
     irr::gui::IGUIButton* retrieveMOB;
     irr::gui::IGUIButton* zoomIn;
     irr::gui::IGUIButton* zoomOut;
+    irr::gui::IGUIScrollBar* windDirectionBar;
+    irr::gui::IGUIScrollBar* windSpeedBar;
     irr::f32 mapCentreX;
     irr::f32 mapCentreZ;
 

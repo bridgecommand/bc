@@ -228,6 +228,8 @@ int main (int argc, char ** argv)
     irr::f32 weather = 0; //(0-12)
     irr::f32 rain = 0; //(0-10)
     irr::f32 visibility = 10.1; //(0.1-10.1)
+    irr::f32 windDirection = 0;
+    irr::f32 windSpeed = 0;
     ShipData ownShipData;
     std::vector<PositionData> buoysData;
     std::vector<OtherShipDisplayData> otherShipsData;
@@ -250,7 +252,7 @@ int main (int argc, char ** argv)
         driver->beginScene();
 
         //Read in data from network
-        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
+        network.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, windDirection, windSpeed);
 
         //If listening to AIS Data, get a local copy from the AIS thread that we can pass to the controller
         if (aisPort!=0) {
@@ -261,7 +263,7 @@ int main (int argc, char ** argv)
         }
 
         //Update the internal model, and call the gui
-        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData);
+        controller.update(time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, localAISData, windDirection, windSpeed);
 
         driver->endScene();
     }

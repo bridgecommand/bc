@@ -17,6 +17,7 @@
 #include "GUI.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
+#include "../ScrollDial.h"
 
 #include <iostream>
 #include <limits>
@@ -50,9 +51,11 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guiWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su,0.01*sh,0.01*su+36.5*fw,0.01*sh+20*fh),false,0,0,GUI_ID_WINDOW);
     guiWindow->getCloseButton()->setVisible(false);
 
-    guiTabs = guienv->addTabControl(irr::core::rect<irr::s32>(0.5*fw,0.5*fh,36*fw,19.5*fh),guiWindow);
-    mainTab = guiTabs->addTab(language->translate("main").c_str());
-    failureTab = guiTabs->addTab(language->translate("failures").c_str());
+    irr::gui::IGUITabControl* guiTabs = guienv->addTabControl(irr::core::rect<irr::s32>(0.5*fw,0.5*fh,36*fw,19.5*fh),guiWindow);
+    
+    irr::gui::IGUITab* mainTab = guiTabs->addTab(language->translate("main").c_str());
+    irr::gui::IGUITab* failureTab = guiTabs->addTab(language->translate("failures").c_str());
+    irr::gui::IGUITab* weatherTab = guiTabs->addTab(language->translate("weather").c_str());
 
     //add data display:
     dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(1*fw,1*fh,24*fw,4*fh), true, true, mainTab, -1, true); //Actual text set later
@@ -93,9 +96,9 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     retrieveMOB = guienv->addButton(irr::core::rect<irr::s32>(29.0*fw,3.25*fh,35*fw,5.5*fh),mainTab,GUI_ID_RETRIEVEMOB_BUTTON,language->translate("retrieveMOB").c_str());
 
     //Scroll bars for weather setting
-    visibilityBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(24.5*fw,1*fh,25.5*fw,5.5*fh),mainTab,GUI_ID_VISIBILITY_SCROLLBAR);
-    rainBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(26.0*fw,1*fh,27.0*fw,5.5*fh),mainTab,GUI_ID_RAIN_SCROLLBAR);
-    weatherBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(27.5*fw,1*fh,28.5*fw,5.5*fh),mainTab,GUI_ID_WEATHER_SCROLLBAR);
+    visibilityBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(24.5*fw,1*fh,25.5*fw,5.5*fh),weatherTab,GUI_ID_VISIBILITY_SCROLLBAR);
+    rainBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(26.0*fw,1*fh,27.0*fw,5.5*fh),weatherTab,GUI_ID_RAIN_SCROLLBAR);
+    weatherBar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(27.5*fw,1*fh,28.5*fw,5.5*fh),weatherTab,GUI_ID_WEATHER_SCROLLBAR);
 
     visibilityBar->setToolTipText(language->translate("visibility").c_str());
     rainBar->setToolTipText(language->translate("rain").c_str());
@@ -112,6 +115,21 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     visibilityBar->setMin(1);
     visibilityBar->setLargeStep(5);
     visibilityBar->setSmallStep(1);
+
+    // TODO: For wind direction and speed, make sure the locations are correct, and update other scroll bars (plus add headings)
+    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,5*fh),2*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR);
+    windDirectionBar->setMax(360);
+    windDirectionBar->setMin(0);
+    windDirectionBar->setLargeStep(45);
+    windDirectionBar->setSmallStep(5);
+    windDirectionBar->setToolTipText(language->translate("windDirection").c_str());
+
+    windSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,5*fh),2*fh,guienv,weatherTab,GUI_ID_WINDSPEED_SCROLL_BAR);
+    windSpeedBar->setMax(50);
+    windSpeedBar->setMin(0);
+    windSpeedBar->setLargeStep(5);
+    windSpeedBar->setSmallStep(1);
+    windSpeedBar->setToolTipText(language->translate("windSpeed").c_str());
 
     //Failure parts of GUI
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
@@ -138,7 +156,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -248,11 +266,12 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     updateDropDowns(otherShips,selectedShip,time);
 
     //Update gui info for weather bars
+    // TODO: Is the 'round' needed here?
     weatherBar->setPos(Utilities::round(weather*10.0));
     visibilityBar->setPos(Utilities::round(visibility*10.0));
     rainBar->setPos(Utilities::round(rain*10.0));
-
-    // TODO: Update for windDirection and windSpeed as well, if these change.
+    windDirectionBar->setPos(Utilities::round(windDirection));
+    windSpeedBar->setPos(Utilities::round(windSpeed));
 
     guienv->drawAll();
 
@@ -585,11 +604,11 @@ irr::f32 GUIMain::getVisibility() const {
 }
 
 irr::f32 GUIMain::getWindDirection() const {
-    return 0; // FIXME: To implement
+    return (irr::f32)(windDirectionBar->getPos());
 }
 
 irr::f32 GUIMain::getWindSpeed() const {
-    return 0; // FIXME: To implement
+    return (irr::f32)(windSpeedBar->getPos());
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)

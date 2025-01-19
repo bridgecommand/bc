@@ -11,6 +11,7 @@ add_executable(bridgecommand-mc
     ../IniFile.cpp
     ../Lang.cpp
     ../Utilities.cpp
+    ../ScrollDial.cpp
 )
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)

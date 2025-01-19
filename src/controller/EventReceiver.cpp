@@ -210,8 +210,11 @@
             }
 
             if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED) {
-                // TODO: Add event checks for wind direction and speed scroll bars
-                if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || id == GUIMain::GUI_ID_RAIN_SCROLLBAR || id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR) {
+                if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || 
+                    id == GUIMain::GUI_ID_RAIN_SCROLLBAR || 
+                    id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR ||
+                    id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR ||
+                    id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR) {
                     //Weather
                     //6 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed
                     irr::f32 weather=gui->getWeather();
