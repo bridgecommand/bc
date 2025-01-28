@@ -78,6 +78,8 @@ gain="Gain"
 rain="Pluie"
 weather = "Météo"
 visibility="Visibilité"
+windDirection = "Direction du vent"
+windSpeed = "Vitesse du vent (kts)"
 clutter="Clutter"
 eblLeft="EBL -"
 eblRight="EBL +"
@@ -110,7 +112,7 @@ hideinterface="Cacher"
 exit="Quitter"
 
 log="!"
-extraControls="Contr�les suppl�mentaires"
+extraControls="Contrôles supplémentaires"
 
 lines="Amarres"
 
