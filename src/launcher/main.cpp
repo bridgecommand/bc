@@ -3,6 +3,15 @@
 //Map Controller executable depending
 //on which button the user presses
 
+/*
+* Image and logo thanks :
+* https://www.freepik.com/
+* https://www.flaticon.com/fr/auteurs/nangicon
+* https://www.flaticon.com/fr/auteurs/gravisio
+* https://www.flaticon.com/fr/auteurs/najmunnahar
+* https://www.flaticon.com/fr/auteurs/alkhalifi-design
+*/
+
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
