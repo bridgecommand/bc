@@ -1535,16 +1535,21 @@ guiTideHeight = guiData->tideHeight;
         // Update lines display
         if (model && model->getLines()) {
             std::vector<std::string> linesNames = model->getLines()->getLineNames();
-            
-            irr::s32 previousSelection = linesList->getSelected();
-            linesList->clear();
 
-            for (unsigned int i = 0; i < linesNames.size(); i++) {
-                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
+            // remove excess lines if required
+            while (linesList->getItemCount() > linesNames.size()) {
+                linesList->removeItem(linesList->getItemCount() - 1);
+                linesList->setSelected(-1);
             }
 
-            if (linesList->getItemCount() > previousSelection) {
-                linesList->setSelected(previousSelection);
+            // Update text for existing lines
+            for (unsigned int i = 0; i < linesList->getItemCount(); i++) {
+                linesList->setItem(i, irr::core::stringw(linesNames.at(i).c_str()).c_str(), -1);
+            }
+            
+            // Add additional lines if required
+            for (unsigned int i = linesList->getItemCount(); i < linesNames.size(); i++) {
+                linesList->addItem(irr::core::stringw(linesNames.at(i).c_str()).c_str());
             }
 
             // Get 'keepSlack' & 'heaveIn' status of current line
