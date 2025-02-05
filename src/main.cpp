@@ -1230,6 +1230,24 @@ int main(int argc, char ** argv)
 
     device->drop();
 
+    scriptToExe = IniFile::iniFileToString(iniFilename, "script_stop_BC");
+
+    if (!scriptToExe.empty())
+      {
+#ifdef _WIN32
+	std::string winScript = "./Scripts/win/" + scriptToExe;
+        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+#else
+#ifdef __APPLE__
+	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
+	execl(macOsScript.c_str(), "script stop", "-M", NULL);
+#else
+	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
+	system(linuxScript.c_str());
+#endif
+#endif
+      }
+
     //Save log messages out
 	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
 	//Save log messages to user directory, into log.txt, overwrite old file with that name
