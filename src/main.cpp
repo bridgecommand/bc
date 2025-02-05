@@ -411,6 +411,25 @@ int main(int argc, char ** argv)
         std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
     }
 
+    std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
+
+    if (!scriptToExe.empty())
+      {
+#ifdef _WIN32
+	std::string winScript = "./Scripts/win/" + scriptToExe;
+        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+#else
+#ifdef __APPLE__
+	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
+	execl(macOsScript.c_str(), "script start", "-M", NULL);
+#else
+	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
+	execl(linuxScript.c_str(), "script start", "-M", NULL);
+#endif
+#endif
+      }
+
+    
     #ifdef __arm__
     if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
         setenv("PA_ALSA_PLUGHW", "1", true);
@@ -1039,24 +1058,6 @@ int main(int argc, char ** argv)
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
     }
-
-    std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
-
-    if (!scriptToExe.empty())
-      {
-#ifdef _WIN32
-	std::string winScript = "./Scripts/win/" + scriptToExe;
-        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
-#else
-#ifdef __APPLE__
-	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	execl(macOsScript.c_str(), "script start", "-M", NULL);
-#else
-	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
-	execl(linuxScript.c_str(), "script start", "-M", NULL);
-#endif
-#endif
-      }
     
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
