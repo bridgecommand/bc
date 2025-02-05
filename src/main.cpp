@@ -424,7 +424,7 @@ int main(int argc, char ** argv)
 	execl(macOsScript.c_str(), "script start", "-M", NULL);
 #else
 	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
-	execl(linuxScript.c_str(), "script start", "-M", NULL);
+	system(linuxScript.c_str());
 #endif
 #endif
       }
