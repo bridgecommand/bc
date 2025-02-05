@@ -50,6 +50,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h> // For GetSystemMetrics
 #include <direct.h> //for windows _mkdir
+#include <shellapi.h>
 #else
 #include <sys/stat.h>
 #endif // _WIN32
