@@ -99,6 +99,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     breadth = ship->getTransformedBoundingBox().getExtent().X;
     height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
     
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
