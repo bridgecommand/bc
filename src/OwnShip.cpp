@@ -1760,7 +1760,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         // Find tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(), model->getLat(), model->getTimestamp());
-        std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
+        //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
         irr::f32 streamScaling = fmax(0, fmin(1, getDepth())); // Reduce effect as water gets shallower
         stream *= streamScaling;
         // Convert this into stream axial and lateral speed
