@@ -17,7 +17,6 @@
 #include "Network.hpp"
 #include "NetworkPrimary.hpp"
 #include "NetworkSecondary.hpp"
-
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"

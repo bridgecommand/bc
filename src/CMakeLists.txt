@@ -91,10 +91,15 @@ set(BC_SOURCES
     Tide.cpp
     Utilities.cpp
     VRInterface.cpp
-	ExitMessage.cpp
+    ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp
     BCTerrainTriangleSelector.cpp
+    EnetServer/com.cpp
+    EnetServer/comstatus.cpp
+    EnetServer/fsm.cpp
+    EnetServer/message.cpp
+    EnetServer/thread.cpp
 )
 
 add_executable(bridgecommand-bc
