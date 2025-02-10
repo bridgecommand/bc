@@ -16,7 +16,7 @@
 
 #include "Network.hpp"
 #include "NetworkPrimary.hpp"
-
+#include "NetworkSecondary.hpp"
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"
@@ -31,7 +31,11 @@ Network::~Network() //Virtual destructor
 
 Network* Network::createNetwork(OperatingMode::Mode mode, int port, irr::IrrlichtDevice* dev) //Factory class, create a primary or secondary network object, and return a pointer
 {
-  return new NetworkPrimary(port, dev);
+    if (mode != OperatingMode::Normal) {
+        return new NetworkSecondary(port, mode, dev);
+    } else {
+        return new NetworkPrimary(port, dev);
+    }
 }
 
 std::string Network::makeNetworkLinesString(SimulationModel* model)

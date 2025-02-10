@@ -497,20 +497,20 @@ int main(int argc, char ** argv)
     std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-    if (udpPort == 0) {
-        udpPort = 18304;
+    irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
+    if (enetSrvPort == 0) {
+        enetSrvPort = 18304;
     }
 
-    std::string udpAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
-    if (udpAddr.empty()) {
-        udpAddr = "localhost";
+    std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+    if (enetSrvAddr.empty()) {
+        enetSrvAddr = "localhost";
     }
 
-    //Launch EnetServer
-    Com hComBC(udpAddr, udpPort);
-    Fsm hBC(hComBC);
-    CreateThread(&hBC);
+    OperatingMode::Mode mode = OperatingMode::Normal;
+    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
+        mode = OperatingMode::Secondary;
+    }
     
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
@@ -787,12 +787,10 @@ int main(int argc, char ** argv)
 
 	//Start sound
 	Sound sound;
-
-    OperatingMode::Mode mode = OperatingMode::Normal;
-
+    
     if (mode == OperatingMode::Normal) {
         ScenarioChoice scenarioChoice(device,&language);
-        scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
+        scenarioChoice.chooseScenario(scenarioName, hostname, enetSrvPort, mode, scenarioPath);
     }
 
     hostname = Utilities::trim(hostname);
@@ -839,21 +837,21 @@ int main(int argc, char ** argv)
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
-
+    
     //create GUI
     GUIMain guiMain;
+        
     //Set up networking (this will get a pointer to the model later)
     //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(mode, udpPort, device);
+    Network* network = Network::createNetwork(mode, enetSrvPort, device);
     //Network network(&model);
     network->connectToServer(hostname);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
     Network* extraNetwork = 0;
     if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
-        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
+        extraNetwork = Network::createNetwork(OperatingMode::Normal, enetSrvPort, device);
         extraNetwork->connectToServer(hostname);
-        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
     }
 
     //Read in scenario data (work in progress)
@@ -1002,6 +1000,7 @@ int main(int argc, char ** argv)
 
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
+    
     //Give the network class a pointer to the model
     network->setModel(&model);
     if (extraNetwork) {
@@ -1047,6 +1046,7 @@ int main(int argc, char ** argv)
         model.setRadarHeadUp();
     }
 
+    
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
         device->run();

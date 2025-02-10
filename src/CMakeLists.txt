@@ -69,6 +69,7 @@ set(BC_SOURCES
     NavLight.cpp
     Network.cpp
     NetworkPrimary.cpp
+    NetworkSecondary.cpp
     NumberToImage.cpp
     OtherShip.cpp
     OtherShips.cpp
