@@ -18,7 +18,7 @@ namespace gui
 
 		//! constructor
 		ScrollDial(core::position2d< s32 > centre, u32 radius, IGUIEnvironment* environment,
-				IGUIElement* parent, s32 id, bool noclip=false);
+				IGUIElement* parent, s32 id, s32 maxAngle=315,bool noclip=false);
 
 		//! destructor
 		virtual ~ScrollDial();
@@ -99,6 +99,9 @@ namespace gui
 		s32 DesiredPos;
 		//u32 LastChange;
 		video::SColor CurrentIconColor;
+
+		s32 maxAngle;
+		s32 thresholdAngle;
 
 		f32 range () const { return (f32) ( Max - Min ); }
 	};

@@ -117,7 +117,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     visibilityBar->setSmallStep(1);
 
     // TODO: For wind direction and speed, make sure the locations are correct, and update other scroll bars (plus add headings)
-    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,5*fh),2*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR);
+    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,5*fh),2*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
     windDirectionBar->setMax(360);
     windDirectionBar->setMin(0);
     windDirectionBar->setLargeStep(45);
@@ -131,7 +131,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     windSpeedBar->setSmallStep(1);
     windSpeedBar->setToolTipText(language->translate("windSpeed").c_str());
 
-    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,15*fh),2*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR);
+    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,15*fh),2*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR,360);
     streamDirectionBar->setMax(360);
     streamDirectionBar->setMin(0);
     streamDirectionBar->setLargeStep(45);

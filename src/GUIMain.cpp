@@ -419,7 +419,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
         // Wind direction and speed    
-        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR);
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
         windDirectionScrollbar->setMax(360);
         windDirectionScrollbar->setMin(0);
         windDirectionScrollbar->setLargeStep(45);
@@ -434,7 +434,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         windSpeedScrollbar->setToolTipText(language->translate("windSpeed").c_str());
 
         // Tidal stream override
-        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR);
+        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR,360);
         streamDirectionScrollbar->setMax(360);
         streamDirectionScrollbar->setMin(0);
         streamDirectionScrollbar->setLargeStep(45);
