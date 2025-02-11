@@ -274,6 +274,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     model->getLines()->getSelectedLine(),
                     ((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
+
+            if (id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) 
+            {
+                model->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
+            }
         }
 
         if (event.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED)
@@ -418,6 +423,14 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 model->setWindSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
+            if (id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR)
+            {
+                model->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }
+            if (id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR)
+            {
+                model->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }        
 
         }
 

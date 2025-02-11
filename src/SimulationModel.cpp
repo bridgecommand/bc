@@ -330,7 +330,15 @@ SimulationModel::~SimulationModel()
     }
 
     irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
-        return tide.getTidalStream(longitude,latitude,requestTime);
+        
+        if (streamOverride) {
+            irr::core::vector2df overrideStream;
+            overrideStream.X = sin(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            overrideStream.Y = cos(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            return overrideStream;
+        } else {
+            return tide.getTidalStream(longitude,latitude,requestTime);
+        }
     }
 
    // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
@@ -1028,6 +1036,36 @@ SimulationModel::~SimulationModel()
     irr::f32 SimulationModel::getWindSpeed() const
     {
         return windSpeed;
+    }
+
+    void SimulationModel::setStreamOverrideDirection(irr::f32 streamDirection) //Range 0-360.
+    {
+        this->streamOverrideDirection = streamDirection;
+    }
+
+    irr::f32 SimulationModel::getStreamOverrideDirection() const
+    {
+        return streamOverrideDirection;
+    }
+
+    void SimulationModel::setStreamOverrideSpeed(irr::f32 streamSpeed) //Nm/h
+    {
+        this->streamOverrideSpeed = streamSpeed;
+    } 
+
+    irr::f32 SimulationModel::getStreamOverrideSpeed() const
+    {
+        return streamOverrideSpeed;
+    }
+
+    void SimulationModel::setStreamOverride(bool streamOverride)
+    {
+        this->streamOverride = streamOverride;
+    }
+
+    bool SimulationModel::getStreamOverride() const
+    {
+        return streamOverride;
     }
 
     void SimulationModel::setWaterVisible(bool visible)
@@ -1912,6 +1950,9 @@ SimulationModel::~SimulationModel()
         guiData->visibility = visibilityRange;
         guiData->windDirection = windDirection;
         guiData->windSpeed = windSpeed;
+        guiData->streamDirection = streamOverrideDirection;
+        guiData->streamSpeed = streamOverrideSpeed;
+        guiData->streamOverride = streamOverride;
         guiData->radarRangeNm = radarCalculation.getRangeNm();
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();

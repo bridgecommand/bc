@@ -209,19 +209,26 @@
                 }
             }
 
-            if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED) {
+            if (event.GUIEvent.EventType==irr::gui::EGET_SCROLL_BAR_CHANGED ||
+                event.GUIEvent.EventType==irr::gui::EGET_CHECKBOX_CHANGED) {
                 if (id == GUIMain::GUI_ID_WEATHER_SCROLLBAR || 
                     id == GUIMain::GUI_ID_RAIN_SCROLLBAR || 
                     id == GUIMain::GUI_ID_VISIBILITY_SCROLLBAR ||
                     id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR ||
-                    id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR) {
+                    id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR ||
+                    id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR ||
+                    id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR ||
+                    id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) {
                     //Weather
-                    //6 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed
+                    //9 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride
                     irr::f32 weather=gui->getWeather();
                     irr::f32 rain=gui->getRain();
                     irr::f32 visibility=gui->getVisibility();
                     irr::f32 windDirection=gui->getWindDirection();
                     irr::f32 windSpeed=gui->getWindSpeed();
+                    irr::f32 streamDirection=gui->getStreamDirection();
+                    irr::f32 streamSpeed=gui->getStreamSpeed();
+                    bool streamOverride=gui->getStreamOverride();
 
                     std::string messageToSend = "MCSW,";
                     messageToSend.append(Utilities::lexical_cast<std::string>(weather));
@@ -233,6 +240,16 @@
                     messageToSend.append(Utilities::lexical_cast<std::string>(windDirection));
                     messageToSend.append(",");
                     messageToSend.append(Utilities::lexical_cast<std::string>(windSpeed));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(streamDirection));
+                    messageToSend.append(",");
+                    messageToSend.append(Utilities::lexical_cast<std::string>(streamSpeed));
+                    messageToSend.append(",");
+                    if (streamOverride) {
+                        messageToSend.append("1");
+                    } else {
+                        messageToSend.append("0");
+                    }
                     messageToSend.append("#");
                     network->setStringToSend(messageToSend);
                 }

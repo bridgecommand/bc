@@ -246,7 +246,7 @@ irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed)
+void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride)
 {
     //Check if current zoom is valid, if not return.
     if(!(currentZoom<zoomLevels)) {
@@ -371,7 +371,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     }
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain, windDirection, windSpeed);
+    gui->updateGuiData(time,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),ownShipData.X,ownShipData.Z,ownShipData.heading, buoysData,otherShipsData,aisShips,mobVisible, mobData.X, mobData.Z, displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth, weather, visibility, rain, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 }
 
 void ControllerModel::resetOffset()

@@ -221,6 +221,12 @@ public:
     irr::f32 getWindDirection() const;
     void setWindSpeed(irr::f32 windSpeed); //Nm/h
     irr::f32 getWindSpeed() const;
+    void setStreamOverrideDirection(irr::f32 streamDirection); //Range 0-360.
+    irr::f32 getStreamOverrideDirection() const;
+    void setStreamOverrideSpeed(irr::f32 streamSpeed); //Nm/h
+    irr::f32 getStreamOverrideSpeed() const;
+    void setStreamOverride(bool streamOverride);
+    bool getStreamOverride() const;
     void setWaterVisible(bool visible);
     void lookUp();
     void lookDown();
@@ -370,6 +376,9 @@ private:
     irr::f32 visibilityRange; //Nm
     irr::f32 windDirection; //0-360
     irr::f32 windSpeed; //Nm
+    irr::f32 streamOverrideDirection; //0-360
+    irr::f32 streamOverrideSpeed; //Nm
+    bool streamOverride;
     irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
     irr::f32 zoom;
     Terrain terrain;

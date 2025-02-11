@@ -418,19 +418,37 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setSmallStep(1);
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
-        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR);
+        // Wind direction and speed    
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR);
         windDirectionScrollbar->setMax(360);
         windDirectionScrollbar->setMin(0);
         windDirectionScrollbar->setLargeStep(45);
         windDirectionScrollbar->setSmallStep(5);
         windDirectionScrollbar->setToolTipText(language->translate("windDirection").c_str());
 
-        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
+        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
         windSpeedScrollbar->setMax(50);
         windSpeedScrollbar->setMin(0);
         windSpeedScrollbar->setLargeStep(5);
         windSpeedScrollbar->setSmallStep(1);
         windSpeedScrollbar->setToolTipText(language->translate("windSpeed").c_str());
+
+        // Tidal stream override
+        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR);
+        streamDirectionScrollbar->setMax(360);
+        streamDirectionScrollbar->setMin(0);
+        streamDirectionScrollbar->setLargeStep(45);
+        streamDirectionScrollbar->setSmallStep(5);
+        streamDirectionScrollbar->setToolTipText(language->translate("streamDirection").c_str());
+
+        streamSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMSPEED_SCROLL_BAR);
+        streamSpeedScrollbar->setMax(50);
+        streamSpeedScrollbar->setMin(0);
+        streamSpeedScrollbar->setLargeStep(5);
+        streamSpeedScrollbar->setSmallStep(1);
+        streamSpeedScrollbar->setToolTipText(language->translate("streamSpeed").c_str());
+
+        streamOverride = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.29*su,0.01*sh,0.31*su,0.03*sh),extraControlsTabWeather,GUI_ID_STREAMOVERRIDE_BOX, language->translate("streamOverride").c_str());
 
         //Add buttons to control rudder failures etc.
         irr::gui::IGUITab* extraControlsTabRudder = extraControlsTabControl->addTab(language->translate("rudderFailure").c_str());
@@ -1131,6 +1149,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         windDirectionScrollbar->setPos(Utilities::round(guiData->windDirection));
         windSpeedScrollbar->setPos(Utilities::round(guiData->windSpeed));
+
+        streamDirectionScrollbar->setPos(Utilities::round(guiData->streamDirection));
+        streamSpeedScrollbar->setPos(Utilities::round(guiData->streamSpeed));
+        streamOverride->setChecked(guiData->streamOverride);
 
 
 // DEE vvvvv  this should display the rate of turn data on the screen

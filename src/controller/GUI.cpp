@@ -131,6 +131,22 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     windSpeedBar->setSmallStep(1);
     windSpeedBar->setToolTipText(language->translate("windSpeed").c_str());
 
+    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,15*fh),2*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR);
+    streamDirectionBar->setMax(360);
+    streamDirectionBar->setMin(0);
+    streamDirectionBar->setLargeStep(45);
+    streamDirectionBar->setSmallStep(5);
+    streamDirectionBar->setToolTipText(language->translate("streamDirection").c_str());
+
+    streamSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,15*fh),2*fh,guienv,weatherTab,GUI_ID_STREAMSPEED_SCROLL_BAR);
+    streamSpeedBar->setMax(50);
+    streamSpeedBar->setMin(0);
+    streamSpeedBar->setLargeStep(5);
+    streamSpeedBar->setSmallStep(1);
+    streamSpeedBar->setToolTipText(language->translate("streamSpeed").c_str());
+
+    streamOverrideBox = guienv->addCheckBox(false, irr::core::rect<irr::s32>(11*fw,10*fh,13*fw,14*fh),weatherTab,GUI_ID_STREAMOVERRIDE_BOX,language->translate("streamOverride").c_str());
+
     //Failure parts of GUI
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,2*fh,35*fw,3*fh),failureTab,GUI_ID_RUDDERPUMP_1_FAILED_BUTTON,language->translate("pump1Failed").c_str());
@@ -156,7 +172,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed)
+void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed, irr::f32 streamDirection, irr::f32 streamSpeed, bool streamOverride)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -272,6 +288,9 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
     rainBar->setPos(Utilities::round(rain*10.0));
     windDirectionBar->setPos(Utilities::round(windDirection));
     windSpeedBar->setPos(Utilities::round(windSpeed));
+    streamDirectionBar->setPos(Utilities::round(streamDirection));
+    streamSpeedBar->setPos(Utilities::round(streamSpeed));
+    streamOverrideBox->setChecked(streamOverride);
 
     guienv->drawAll();
 
@@ -609,6 +628,18 @@ irr::f32 GUIMain::getWindDirection() const {
 
 irr::f32 GUIMain::getWindSpeed() const {
     return (irr::f32)(windSpeedBar->getPos());
+}
+
+irr::f32 GUIMain::getStreamDirection() const {
+    return (irr::f32)(streamDirectionBar->getPos());
+}
+
+irr::f32 GUIMain::getStreamSpeed() const {
+    return (irr::f32)(streamSpeedBar->getPos());
+}
+
+bool GUIMain::getStreamOverride() const {
+    return (streamOverrideBox->isChecked());
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)
