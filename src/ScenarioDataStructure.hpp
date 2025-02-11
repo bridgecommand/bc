@@ -63,7 +63,7 @@ class OtherShipData {
 class ScenarioData {
     public:
     std::string scenarioName, worldName;
-    irr::f32 startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange, windDirection, windSpeed, highTideOverrideTime, highTideOverrideHeight, highTideOverrideRange, highTideOverridePeriod, highTideOverridePercentageSprings;
+    irr::f32 startTime, sunRise, sunSet, weather, rainIntensity, visibilityRange, windDirection, windSpeed;
     irr::u32 startDay, startMonth, startYear;
     OwnShipData ownShipData;
     std::vector<OtherShipData> otherShipsData;
@@ -71,7 +71,7 @@ class ScenarioData {
     bool multiplayerName, willOverwrite; // multiplayerName only used in scenario editor
     bool dataPopulated; // dataPopulated only used in scenario editor
 
-    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),windDirection(0),windSpeed(0),highTideOverrideTime(0),highTideOverrideHeight(0),highTideOverrideRange(0),highTideOverridePeriod(0),highTideOverridePercentageSprings(0),startDay(0),startMonth(0),startYear(0),description(""),multiplayerName(false),willOverwrite(false),dataPopulated(false){}
+    ScenarioData():startTime(0),sunRise(0),sunSet(0),weather(0),rainIntensity(0),visibilityRange(0),windDirection(0),windSpeed(0),startDay(0),startMonth(0),startYear(0),description(""),multiplayerName(false),willOverwrite(false),dataPopulated(false){}
 
     std::string serialise(bool withSpaces);
     void deserialise(std::string data);

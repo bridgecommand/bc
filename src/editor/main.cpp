@@ -654,13 +654,6 @@ int main (int argc, char ** argv)
             scenarioData.windDirection = IniFile::iniFileTof32(environmentIniFilename,"WindDirection");
             scenarioData.windSpeed = IniFile::iniFileTof32(environmentIniFilename,"WindSpeed");
             
-            // Load tidal override information
-            scenarioData.highTideOverrideTime = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideTime");
-            scenarioData.highTideOverrideHeight = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideHeight");
-            scenarioData.highTideOverrideRange = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverrideRange");
-            scenarioData.highTideOverridePeriod = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverridePeriod");
-            scenarioData.highTideOverridePercentageSprings = IniFile::iniFileTof32(environmentIniFilename,"HighTideOverridePercentageSprings");
-
             //Load own ship information
             scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
             scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));

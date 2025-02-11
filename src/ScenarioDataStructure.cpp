@@ -161,16 +161,6 @@ std::string ScenarioData::serialise(bool withSpaces)
     serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(windSpeed));
     serialised.append(separator);
-    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideTime)); 
-    serialised.append(separator);
-    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideHeight));
-    serialised.append(separator);
-    serialised.append(Utilities::lexical_cast<std::string>(highTideOverrideRange));
-    serialised.append(separator);
-    serialised.append(Utilities::lexical_cast<std::string>(highTideOverridePeriod));
-    serialised.append(separator);
-    serialised.append(Utilities::lexical_cast<std::string>(highTideOverridePercentageSprings));
-    serialised.append(separator);
     serialised.append(ownShipData.serialise(withSpaces));
     serialised.append(separator);
     for(unsigned int i=0;i<otherShipsData.size();i++) {
@@ -216,7 +206,7 @@ void ScenarioData::deserialise(std::string data)
             }
             dataPopulated = true; // Currently only used in scenario editor
         }
-    } else if (splitData.size() == 21) {
+    } else if (splitData.size() == 16) {
         if (splitData.at(0) == "SCN3") {
             // SCN3 allows for tidal information to be overridden from scenario
             scenarioName = splitData.at(1);
@@ -232,16 +222,11 @@ void ScenarioData::deserialise(std::string data)
             visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
             windDirection = Utilities::lexical_cast<irr::f32>(splitData.at(12));
             windSpeed = Utilities::lexical_cast<irr::f32>(splitData.at(13));
-            highTideOverrideTime = Utilities::lexical_cast<irr::f32>(splitData.at(14)); 
-            highTideOverrideHeight = Utilities::lexical_cast<irr::f32>(splitData.at(15));
-            highTideOverrideRange = Utilities::lexical_cast<irr::f32>(splitData.at(16));
-            highTideOverridePeriod = Utilities::lexical_cast<irr::f32>(splitData.at(17));
-            highTideOverridePercentageSprings = Utilities::lexical_cast<irr::f32>(splitData.at(18));
 
-            ownShipData.deserialise(splitData.at(19));
+            ownShipData.deserialise(splitData.at(14));
             //clear any existing legs data
             otherShipsData.clear();
-            std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(20),',');
+            std::vector<std::string> otherShipsVector = Utilities::split(splitData.at(15),',');
             for(unsigned int i=0; i<otherShipsVector.size(); i++) {
                 OtherShipData tempOther;
                 tempOther.deserialise(otherShipsVector.at(i));
