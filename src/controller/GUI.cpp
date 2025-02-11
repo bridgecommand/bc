@@ -145,7 +145,8 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     streamSpeedBar->setSmallStep(1);
     streamSpeedBar->setToolTipText(language->translate("streamSpeed").c_str());
 
-    streamOverrideBox = guienv->addCheckBox(false, irr::core::rect<irr::s32>(11*fw,10*fh,13*fw,14*fh),weatherTab,GUI_ID_STREAMOVERRIDE_BOX,language->translate("streamOverride").c_str());
+    streamOverrideBox = guienv->addCheckBox(false, irr::core::rect<irr::s32>(11*fw,10*fh,13*fw,14*fh),weatherTab,GUI_ID_STREAMOVERRIDE_BOX);
+    streamOverrideBox->setToolTipText(language->translate("streamOverride").c_str());
 
     //Failure parts of GUI
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,1*fh,35*fw,2*fh),failureTab,GUI_ID_RUDDERPUMP_1_WORKING_BUTTON,language->translate("pump1Working").c_str());
