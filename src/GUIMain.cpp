@@ -390,8 +390,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add weather scroll bar
         //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
-        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.02*sh,0.095*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.05*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_WEATHER_SCROLL_BAR);
+        guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.02*sh,0.085*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.045*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_WEATHER_SCROLL_BAR);
         //weatherScrollbar = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
         weatherScrollbar->setMax(120); //Divide by 10 to get weather
         weatherScrollbar->setMin(0);
@@ -400,8 +400,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add rain scroll bar
         //rainScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.389*su, 0.79*sh, 0.412*su, 0.94*sh), 0, GUI_ID_RAIN_SCROLL_BAR);
-        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.095*su,0.02*sh,0.185*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.14*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_RAIN_SCROLL_BAR);
+        guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.085*su,0.02*sh,0.165*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        rainScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.125*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_RAIN_SCROLL_BAR);
         rainScrollbar->setMax(100);
         rainScrollbar->setMin(0);
         rainScrollbar->setLargeStep(5);
@@ -410,8 +410,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add visibility scroll bar: Will be divided by 10 to get visibility in Nm
         //visibilityScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.361*su, 0.79*sh, 0.384*su, 0.94*sh),0,GUI_ID_VISIBILITY_SCROLL_BAR);
-        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.185*su,0.02*sh,0.275*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.23*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_VISIBILITY_SCROLL_BAR);
+        guienv->addStaticText(language->translate("visibility").c_str(),irr::core::rect<irr::s32>(0.165*su,0.02*sh,0.245*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        visibilityScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.205*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_VISIBILITY_SCROLL_BAR);
         visibilityScrollbar->setMax(101);
         visibilityScrollbar->setMin(1);
         visibilityScrollbar->setLargeStep(5);
@@ -419,14 +419,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
         // Wind direction and speed    
-        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
         windDirectionScrollbar->setMax(360);
         windDirectionScrollbar->setMin(0);
         windDirectionScrollbar->setLargeStep(45);
         windDirectionScrollbar->setSmallStep(5);
         windDirectionScrollbar->setToolTipText(language->translate("windDirection").c_str());
 
-        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
+        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
         windSpeedScrollbar->setMax(50);
         windSpeedScrollbar->setMin(0);
         windSpeedScrollbar->setLargeStep(5);
@@ -434,21 +434,22 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         windSpeedScrollbar->setToolTipText(language->translate("windSpeed").c_str());
 
         // Tidal stream override
-        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR,360);
+        streamDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_STREAMDIRECTION_SCROLL_BAR,360);
         streamDirectionScrollbar->setMax(360);
         streamDirectionScrollbar->setMin(0);
         streamDirectionScrollbar->setLargeStep(45);
         streamDirectionScrollbar->setSmallStep(5);
         streamDirectionScrollbar->setToolTipText(language->translate("streamDirection").c_str());
 
-        streamSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.02*su,guienv,extraControlsTabWeather,GUI_ID_STREAMSPEED_SCROLL_BAR);
+        streamSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_STREAMSPEED_SCROLL_BAR);
         streamSpeedScrollbar->setMax(50);
         streamSpeedScrollbar->setMin(0);
         streamSpeedScrollbar->setLargeStep(5);
         streamSpeedScrollbar->setSmallStep(1);
         streamSpeedScrollbar->setToolTipText(language->translate("streamSpeed").c_str());
 
-        streamOverride = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.29*su,0.01*sh,0.31*su,0.03*sh),extraControlsTabWeather,GUI_ID_STREAMOVERRIDE_BOX, language->translate("streamOverride").c_str());
+        streamOverride = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.29*su,0.01*sh,0.31*su,0.03*sh),extraControlsTabWeather,GUI_ID_STREAMOVERRIDE_BOX);
+        streamOverride->setToolTipText(language->translate("streamOverride").c_str());
 
         //Add buttons to control rudder failures etc.
         irr::gui::IGUITab* extraControlsTabRudder = extraControlsTabControl->addTab(language->translate("rudderFailure").c_str());
