@@ -33,6 +33,7 @@
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
 #include "MyEventReceiver.hpp"
+#include "Message.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -41,6 +42,7 @@
 #include "Sound.hpp"
 #include "Utilities.hpp"
 #include "OperatingModeEnum.hpp"
+#include "Update.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -499,7 +501,7 @@ int main(int argc, char ** argv)
     //Load UDP network settings
     irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
     if (enetSrvPort == 0) {
-        enetSrvPort = 18304;
+        enetSrvPort = DEFAULT_PORT;
     }
 
     std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
@@ -793,7 +795,7 @@ int main(int argc, char ** argv)
         scenarioChoice.chooseScenario(scenarioName, hostname, enetSrvPort, mode, scenarioPath);
     }
 
-    hostname = Utilities::trim(hostname);
+    Utilities::trim(hostname);
 
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {
@@ -840,19 +842,18 @@ int main(int argc, char ** argv)
     
     //create GUI
     GUIMain guiMain;
-        
-    //Set up networking (this will get a pointer to the model later)
-    //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(mode, enetSrvPort, device);
-    //Network network(&model);
-    network->connectToServer(hostname);
+
+    Network network;
+    network.Connect(enetSrvAddr, enetSrvPort);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    Network* extraNetwork = 0;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
-        extraNetwork = Network::createNetwork(OperatingMode::Normal, enetSrvPort, device);
-        extraNetwork->connectToServer(hostname);
-    }
+
+    bool bExtraNet=false;
+    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 ))
+      {
+	bExtraNet=true;
+        //network.Connect(hostname);
+      }
 
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
@@ -866,7 +867,7 @@ int main(int argc, char ** argv)
         std::string ourHostName = asio::ip::host_name();
         portMessage.append(irr::core::stringw(ourHostName.c_str()));
         portMessage.append(L":");
-        portMessage.append(irr::core::stringw(network->getPort()));
+        portMessage.append(irr::core::stringw(network.GetPort()));
         loadingMessage->setText(portMessage.c_str());
         device->run();
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
@@ -875,7 +876,7 @@ int main(int argc, char ** argv)
         //Get the data
         std::string receivedSerialisedScenarioData;
         while (device->run() && receivedSerialisedScenarioData.empty()) {
-            network->getScenarioFromNetwork(receivedSerialisedScenarioData);
+            network.GetScenarioFromNetwork(receivedSerialisedScenarioData);
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
@@ -1002,9 +1003,9 @@ int main(int argc, char ** argv)
 
     
     //Give the network class a pointer to the model
-    network->setModel(&model);
-    if (extraNetwork) {
-        extraNetwork->setModel(&model);
+    //network.setModel(&model);
+    if (true == bExtraNet) {
+      //extraNetwork.setModel(&model);
     }
 
     //load realistic water
@@ -1014,7 +1015,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, network, &vrInterface, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
@@ -1070,21 +1071,18 @@ int main(int argc, char ** argv)
 
     //main loop
     while(device->run())
-    {
-
+      {
         { IPROF("Network");
-//        networkProfile.tic();
-        network->update();
-        if (extraNetwork) {
-            extraNetwork->update();
+
+	  Update::UpdateNetwork(&model, &network);
+	    
+	  if (true == bExtraNet) {
+            //extraNetwork.update();
+	  }
         }
-//        networkProfile.toc();
+	{ IPROF("NMEA");
 
-        // Update NMEA, check if new sensor or AIS data is ready to be sent
-//        nmeaProfile.tic();
-        }{ IPROF("NMEA");
-
-        if (!nmeaUDPListenPortName.empty()) {
+	  if (!nmeaUDPListenPortName.empty()) {
             nmea.receive();
         }
 
@@ -1203,13 +1201,7 @@ int main(int argc, char ** argv)
         << InternalProfiler::stats << std::endl;
     #endif
 
-    //networking should be stopped (presumably with destructor when it goes out of scope?)
-    device->getLogger()->log("About to stop network");
-    delete network;
-    if (extraNetwork) {
-        delete extraNetwork;
-    }
-
+    
     // Close down OpenXR and clean up
     if (vr3dMode && vrSuccess == 0) {
         vrInterface.unload();

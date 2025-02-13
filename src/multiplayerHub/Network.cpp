@@ -73,7 +73,8 @@ void Network::connectToServer(std::string hostnames)
         ENetAddress address;
         ENetPeer* peer;
 
-        std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
+        std::string thisHostname = multipleHostnames.at(i);
+	Utilities::trim(thisHostname);
         //Todo: validate this?
 
         //Check if the string contains a ':', and if so, split into hostname and port part

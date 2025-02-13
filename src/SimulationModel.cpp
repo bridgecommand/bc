@@ -26,6 +26,7 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
+#include "MessageMisc.hpp"
 
 #include <cmath>
 #include <fstream>
@@ -1929,8 +1930,140 @@ SimulationModel::~SimulationModel()
         }
     }
 
-    bool SimulationModel::checkOwnShipCollision()
+void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
+{
+  switch(aMsgType)
     {
+    case E_CMD_MESSAGE_UPDATE_LEG:
+      {
+	sUpLeg *dataUpdateLeg = (sUpLeg*)aDataCmd;
+	changeOtherShipLeg(dataUpdateLeg->shipNo, dataUpdateLeg->legNo, dataUpdateLeg->bearing, dataUpdateLeg->speed, dataUpdateLeg->dist);
+	break;
+      }
+    case E_CMD_MESSAGE_DELETE_LEG:
+      {
+	sDelLeg *dataDeleteLeg = (sDelLeg*)aDataCmd;
+	deleteOtherShipLeg(dataDeleteLeg->shipNo, dataDeleteLeg->legNo);
+	break;
+      }
+    case  E_CMD_MESSAGE_REPOSITION_SHIP:
+      {
+	sRepoShip *dataRepoShip = (sRepoShip*)aDataCmd;	
+
+	if(dataRepoShip->shipNo < 0)
+	  setPos(dataRepoShip->posX, dataRepoShip->posZ);
+	else
+	  setOtherShipPos(dataRepoShip->shipNo, dataRepoShip->posX, dataRepoShip->posZ);
+
+	break;
+      }
+    case E_CMD_MESSAGE_RESET_LEGS:
+      {
+        sResetLegs *dataResetLegs = (sResetLegs*)aDataCmd;	
+
+	if(dataResetLegs->shipNo >= 0)
+	  {
+	    setOtherShipPos(dataResetLegs->shipNo, dataResetLegs->posX, dataResetLegs->posZ);
+	    resetOtherShipLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1);
+	    //1Nm Hard-coded
+	  }
+	
+	break;
+      }
+    case E_CMD_MESSAGE_SET_WEATHER:
+      {
+	sWeather *dataWeather = (sWeather*)aDataCmd;
+
+        if(dataWeather->weather >= 0) {setWeather(dataWeather->weather);}
+	if(dataWeather->rain >= 0) {setRain(dataWeather->rain);}
+	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
+
+	break;
+      }
+    case E_CMD_MESSAGE_MAN_OVERBOARD:
+      {
+	sMob *dataMob = (sMob*)aDataCmd;
+
+        if(dataMob->mobMode==1) releaseManOverboard();
+	else if(dataMob->mobMode==-1) retrieveManOverboard();
+
+	break;
+      }
+    case E_CMD_MESSAGE_SET_MMSI:
+      {
+	sMmsi *dataMmmsi = (sMmsi*)aDataCmd;
+	setOtherShipMMSI(dataMmmsi->shipNo, dataMmmsi->mmsi);
+	
+	break;
+      }
+    case E_CMD_MESSAGE_RUDDER_WORKING:
+      {
+	sRuddWork *dataRudderWorking = (sRuddWork*)aDataCmd;
+
+	if(dataRudderWorking->whichPump==1)
+	  {
+	    if(dataRudderWorking->rudderFunction==0)
+	      {
+		setRudderPumpState(1,false);
+		setAlarm(true);
+	      }
+	    else
+	      {
+		setRudderPumpState(1,true);
+		if(getRudderPumpState(2))
+		    setAlarm(false);
+	      }
+	  }
+	else if(dataRudderWorking->whichPump==2)
+	  {
+	    if(dataRudderWorking->rudderFunction==0)
+	      {
+	        setRudderPumpState(2,false);
+		setAlarm(true);
+	      }
+	    else
+	      {
+		setRudderPumpState(2,true);
+		if(getRudderPumpState(1))
+		  setAlarm(false);
+	      }
+	  }
+	break;
+      }
+    case E_CMD_MESSAGE_RUDDER_FOLLOW_UP:
+      {
+	sRuddFol *dataRudderFollowUp = (sRuddFol*)aDataCmd;
+
+	if (dataRudderFollowUp->rudderFunction==1) setFollowUpRudderWorking(true);
+	else if(dataRudderFollowUp->rudderFunction==0) setFollowUpRudderWorking(false);
+
+	break;
+      }
+    case E_CMD_MESSAGE_CONTROLS_OVERRIDE:
+      {
+	sCtrlOv	*dataCtrlOverride = (sCtrlOv*)aDataCmd;
+	
+	if(dataCtrlOverride->overrideMode == 0) setWheel(dataCtrlOverride->overrideData); 
+	else if(dataCtrlOverride->overrideMode == 1) setPortEngine(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 2) setStbdEngine(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 3) setPortSchottel(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 4) setStbdSchottel(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 5) setPortAzimuthThrustLever(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 6) setStbdAzimuthThrustLever(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 7) setBowThruster(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
+	break;
+      }
+    case E_CMD_MESSAGE_UNKNOWN:
+    default:
+      {	
+	break;
+      }
+    }
+}
+
+bool SimulationModel::checkOwnShipCollision()
+{
 
         return (ownShip.isBuoyCollision() || ownShip.isOtherShipCollision());
 

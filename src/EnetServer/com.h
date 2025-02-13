@@ -8,7 +8,7 @@
 #include "comstatus.h"
 
 #define MAX_RETRY_COUNTER (10)
-#define MAX_CLIENT_CONNEXION (3)
+#define MAX_CLIENT_CONNEXION (4)
 #define MAX_RECEIVE_BUFFER (8192)
 
 class Com

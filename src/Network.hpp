@@ -18,28 +18,33 @@
 #define __NETWORK_HPP_INCLUDED__
 
 #include <string>
-
-#include "irrlicht.h"
+#include <vector>
 #include <enet/enet.h>
+#include "irrlicht.h"
 #include "OperatingModeEnum.hpp"
+#include "Message.hpp"
 
-//Forward declarations
-class SimulationModel;
+class Message;
+
+#define DEFAULT_PORT (18304)
+#define MAX_PEERS (1) /*Standalone and MultiPlayer*/
 
 class Network
 {
-    public:
-    //Factory method
-    static Network* createNetwork(OperatingMode::Mode mode, int port, irr::IrrlichtDevice* dev); //remember to use 'delete' later.
-    virtual void connectToServer(std::string hostnames) = 0;
-    virtual void setModel(SimulationModel* model) = 0;
-    virtual void getScenarioFromNetwork(std::string& dataString) = 0; //Not used by primary
-    virtual void update() = 0;
-    virtual int getPort() = 0;
-    virtual void shutdownAllSecondaries(void) = 0;
-    virtual ~Network();
-    protected:
-    std::string makeNetworkLinesString(SimulationModel* model);
+public:
+  Network();
+  ~Network();
+  int Connect(std::string aAddr = "localhost", unsigned int aPort = DEFAULT_PORT);
+  void WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void *aCmdData);
+  void GetScenarioFromNetwork(std::string& aScnData);
+  int SendMessage(std::string& aMsg, bool aIsReliable=false);
+  int GetPort();
+
+private:
+  ENetAddress mServAddr;
+  ENetHost* mClient;
+  ENetPeer* mPeer;
+
 };
 
 #endif

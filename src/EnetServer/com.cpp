@@ -51,7 +51,7 @@ int Com::InitCom(void)
   
   while(NULL == mServer && MAX_RETRY_COUNTER > retryCount)
     {
-      mServer = enet_host_create(&mAddrServ, MAX_CLIENT_CONNEXION, 0, 0, 0);			       
+      mServer = enet_host_create(&mAddrServ, MAX_CLIENT_CONNEXION, 2, 0, 0);			       
       if (NULL == mServer)
 	{
 	  retryCount++;
@@ -206,6 +206,8 @@ int Com::WaitEvent(unsigned short aTimeout)
   
   if(0 < retEvent)
     {
+      std::cout << "-- Event received : " << mEvent.type << " --"  << std::endl;
+      
       switch(mEvent.type)
 	{
 	case ENET_EVENT_TYPE_RECEIVE:
