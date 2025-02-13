@@ -204,7 +204,6 @@
     <ClCompile Include="..\NavLight.cpp" />
     <ClCompile Include="..\Network.cpp" />
     <ClCompile Include="..\NetworkPrimary.cpp" />
-    <ClCompile Include="..\NetworkSecondary.cpp" />
     <ClCompile Include="..\NMEA.cpp" />
     <ClCompile Include="..\NumberToImage.cpp" />
     <ClCompile Include="..\OtherShip.cpp" />
@@ -229,6 +228,11 @@
     <ClCompile Include="..\VRInterface.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
+	<ClCompile Include="../EnetServer/com.cpp" />
+	<ClCompile Include="../EnetServer/fsm.cpp" />
+    <ClCompile Include="../EnetServer/comstatus.cpp" />
+    <ClCompile Include="../EnetServer/message.cpp" />
+    <ClCompile Include="../EnetServer/thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AIS.hpp" />
@@ -294,6 +298,12 @@
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />
+	<ClCompile Include="../EnetServer/com.h" />
+    <ClCompile Include="../EnetServer/fsm.h" />
+    <ClCompile Include="../EnetServer/miscstatus.h" />
+    <ClCompile Include="../EnetServer/comstatus.h" />
+    <ClCompile Include="../EnetServer/message.h" />
+    <ClCompile Include="../EnetServer/thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />

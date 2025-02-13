@@ -24,13 +24,16 @@
 
 // Include the Irrlicht header
 #include "irrlicht.h"
-
+#include "EnetServer/thread.h"
+#include "EnetServer/com.h"
+#include "EnetServer/fsm.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
 #include "MyEventReceiver.hpp"
+#include "Message.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -39,6 +42,7 @@
 #include "Sound.hpp"
 #include "Utilities.hpp"
 #include "OperatingModeEnum.hpp"
+#include "Update.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -495,11 +499,21 @@ int main(int argc, char ** argv)
     std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-    if (udpPort == 0) {
-        udpPort = 18304;
+    irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
+    if (enetSrvPort == 0) {
+        enetSrvPort = DEFAULT_PORT;
     }
 
+    std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+    if (enetSrvAddr.empty()) {
+        enetSrvAddr = "localhost";
+    }
+
+    OperatingMode::Mode mode = OperatingMode::Normal;
+    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
+        mode = OperatingMode::Secondary;
+    }
+    
     int fontSize = 12;
     float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
     if (fontScale > 1) {
@@ -775,18 +789,13 @@ int main(int argc, char ** argv)
 
 	//Start sound
 	Sound sound;
-
-    OperatingMode::Mode mode = OperatingMode::Normal;
-    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
-        mode = OperatingMode::Secondary;
-    }
-
+    
     if (mode == OperatingMode::Normal) {
         ScenarioChoice scenarioChoice(device,&language);
-        scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
+        scenarioChoice.chooseScenario(scenarioName, hostname, enetSrvPort, mode, scenarioPath);
     }
 
-    hostname = Utilities::trim(hostname);
+    Utilities::trim(hostname);
 
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {
@@ -830,23 +839,21 @@ int main(int argc, char ** argv)
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
-
+    
     //create GUI
     GUIMain guiMain;
 
-    //Set up networking (this will get a pointer to the model later)
-    //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(mode, udpPort, device);
-    //Network network(&model);
-    network->connectToServer(hostname);
+    Network network;
+    network.Connect(enetSrvAddr, enetSrvPort);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    Network* extraNetwork = 0;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
-        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
-        extraNetwork->connectToServer(hostname);
-        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
-    }
+
+    bool bExtraNet=false;
+    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 ))
+      {
+	bExtraNet=true;
+        //network.Connect(hostname);
+      }
 
     //Read in scenario data (work in progress)
     ScenarioData scenarioData;
@@ -860,7 +867,7 @@ int main(int argc, char ** argv)
         std::string ourHostName = asio::ip::host_name();
         portMessage.append(irr::core::stringw(ourHostName.c_str()));
         portMessage.append(L":");
-        portMessage.append(irr::core::stringw(network->getPort()));
+        portMessage.append(irr::core::stringw(network.GetPort()));
         loadingMessage->setText(portMessage.c_str());
         device->run();
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
@@ -869,14 +876,14 @@ int main(int argc, char ** argv)
         //Get the data
         std::string receivedSerialisedScenarioData;
         while (device->run() && receivedSerialisedScenarioData.empty()) {
-            network->getScenarioFromNetwork(receivedSerialisedScenarioData);
+            network.GetScenarioFromNetwork(receivedSerialisedScenarioData);
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
     std::string serialisedScenarioData = scenarioData.serialise(false);
 
     loadingMessage->remove(); loadingMessage = 0;
-
+    
     //Note: We could use this serialised format as a scenario import/export format or for online distribution
     
     // Check VR mode
@@ -994,10 +1001,11 @@ int main(int argc, char ** argv)
 
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
+    
     //Give the network class a pointer to the model
-    network->setModel(&model);
-    if (extraNetwork) {
-        extraNetwork->setModel(&model);
+    //network.setModel(&model);
+    if (true == bExtraNet) {
+      //extraNetwork.setModel(&model);
     }
 
     //load realistic water
@@ -1007,7 +1015,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, network, &vrInterface, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
@@ -1039,6 +1047,7 @@ int main(int argc, char ** argv)
         model.setRadarHeadUp();
     }
 
+    
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
         device->run();
@@ -1062,21 +1071,18 @@ int main(int argc, char ** argv)
 
     //main loop
     while(device->run())
-    {
-
+      {
         { IPROF("Network");
-//        networkProfile.tic();
-        network->update();
-        if (extraNetwork) {
-            extraNetwork->update();
+
+	  Update::UpdateNetwork(&model, &network);
+	    
+	  if (true == bExtraNet) {
+            //extraNetwork.update();
+	  }
         }
-//        networkProfile.toc();
+	{ IPROF("NMEA");
 
-        // Update NMEA, check if new sensor or AIS data is ready to be sent
-//        nmeaProfile.tic();
-        }{ IPROF("NMEA");
-
-        if (!nmeaUDPListenPortName.empty()) {
+	  if (!nmeaUDPListenPortName.empty()) {
             nmea.receive();
         }
 
@@ -1195,13 +1201,7 @@ int main(int argc, char ** argv)
         << InternalProfiler::stats << std::endl;
     #endif
 
-    //networking should be stopped (presumably with destructor when it goes out of scope?)
-    device->getLogger()->log("About to stop network");
-    delete network;
-    if (extraNetwork) {
-        delete extraNetwork;
-    }
-
+    
     // Close down OpenXR and clean up
     if (vr3dMode && vrSuccess == 0) {
         vrInterface.unload();

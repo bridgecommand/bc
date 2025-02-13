@@ -41,8 +41,8 @@ namespace Utilities
     std::string timestampToString(time_t timestamp);
     std::string ttos(time_t timestamp);
 
-    std::string trim(std::string inString, std::string trimChrs = " \f\n\r\t\v");
-    std::wstring trim(std::wstring inString, std::wstring trimChrs = L" \f\n\r\t\v");
+    void trim(std::string& inString, std::string trimChrs = " \f\n\r\t\v");
+    void trim(std::wstring& inString, std::wstring trimChrs = L" \f\n\r\t\v");
 
     std::vector<std::string> split(const std::string &inputString, char delim);
     std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Bridge Command/ on windows)
