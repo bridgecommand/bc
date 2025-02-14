@@ -90,7 +90,7 @@ int Network::GetPort()
     return 0;
 }
 
-void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void *aCmdData)
+void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData)
 {
   ENetEvent event;    
 

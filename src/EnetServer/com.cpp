@@ -191,7 +191,7 @@ void Com::SendMsg(void)
 	  if(mPeerClient[i]->address.host != 0)
 	    {
 	      enet_peer_send(mPeerClient[i], 0, mPacket);
-	      // std::cout << "Brodcast Message ! size : " << mEvent.packet->dataLength  << std::endl;
+	      std::cout << "Brodcast Message ! size : " << mEvent.packet->dataLength  << std::endl;
 	    }
 	}
     }

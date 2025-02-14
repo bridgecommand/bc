@@ -17,10 +17,9 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet)
   std::string msgKeepAlive = outMsg.KeepAlive();
   std::string msgKeepAliveShort = outMsg.KeepAliveShort();
   
-  aNet->WaitMessage(inMsg, msgType, dataCmd);
-
+  aNet->WaitMessage(inMsg, msgType, &dataCmd);
   aModel->updateFromNetwork(msgType, dataCmd);	  
-
+  
   if(aModel->getLoopNumber() % 100 == 0)
     aNet->SendMessage(msgKeepAliveScn, true);
   else if(aModel->getLoopNumber() % 10 == 0)
