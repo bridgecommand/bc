@@ -199,11 +199,11 @@
     <ClCompile Include="..\Light.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\ManOverboard.cpp" />
+    <ClCompile Include="..\Message.cpp" />
     <ClCompile Include="..\MovingWater.cpp" />
     <ClCompile Include="..\MyEventReceiver.cpp" />
     <ClCompile Include="..\NavLight.cpp" />
     <ClCompile Include="..\Network.cpp" />
-    <ClCompile Include="..\NetworkPrimary.cpp" />
     <ClCompile Include="..\NMEA.cpp" />
     <ClCompile Include="..\NumberToImage.cpp" />
     <ClCompile Include="..\OtherShip.cpp" />
@@ -223,16 +223,12 @@
     <ClCompile Include="..\StartupEventReceiver.cpp" />
     <ClCompile Include="..\Terrain.cpp" />
     <ClCompile Include="..\Tide.cpp" />
+    <ClCompile Include="..\Update.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
     <ClCompile Include="..\ExitMessage.cpp" />
     <ClCompile Include="..\VRInterface.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
-	<ClCompile Include="../EnetServer/com.cpp" />
-	<ClCompile Include="../EnetServer/fsm.cpp" />
-    <ClCompile Include="../EnetServer/comstatus.cpp" />
-    <ClCompile Include="../EnetServer/message.cpp" />
-    <ClCompile Include="../EnetServer/thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AIS.hpp" />
@@ -264,12 +260,12 @@
     <ClInclude Include="..\Line.hpp" />
     <ClInclude Include="..\Lines.hpp" />
     <ClInclude Include="..\ManOverboard.hpp" />
+    <ClInclude Include="..\Message.hpp" />
+    <ClInclude Include="..\MessageMisc.hpp" />
     <ClInclude Include="..\MovingWater.hpp" />
     <ClInclude Include="..\MyEventReceiver.hpp" />
     <ClInclude Include="..\NavLight.hpp" />
     <ClInclude Include="..\Network.hpp" />
-    <ClInclude Include="..\NetworkPrimary.hpp" />
-    <ClInclude Include="..\NetworkSecondary.hpp" />
     <ClInclude Include="..\NMEA.hpp" />
     <ClInclude Include="..\NumberToImage.hpp" />
     <ClInclude Include="..\OperatingModeEnum.hpp" />
@@ -292,18 +288,13 @@
     <ClInclude Include="..\StartupEventReceiver.hpp" />
     <ClInclude Include="..\Terrain.hpp" />
     <ClInclude Include="..\Tide.hpp" />
+    <ClInclude Include="..\Update.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\ExitMessage.hpp" />
     <ClInclude Include="..\VRInterface.hpp" />
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />
-	<ClCompile Include="../EnetServer/com.h" />
-    <ClCompile Include="../EnetServer/fsm.h" />
-    <ClCompile Include="../EnetServer/miscstatus.h" />
-    <ClCompile Include="../EnetServer/comstatus.h" />
-    <ClCompile Include="../EnetServer/message.h" />
-    <ClCompile Include="../EnetServer/thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\icon.rc" />
