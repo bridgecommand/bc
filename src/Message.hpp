@@ -12,7 +12,7 @@ class Message
   
   Message(SimulationModel* aModel);
   ~Message();
-  eCmdMsg Parse(const char *aData, size_t aDataSize, void *aCmdData);
+  eCmdMsg Parse(const char *aData, size_t aDataSize, void** aCmdData);
   sUpLeg* UpdateLeg(std::string aCmd);
   sDelLeg* DeleteLeg(std::string aCmd);
   sRepoShip* RepositionShip(std::string aCmd);

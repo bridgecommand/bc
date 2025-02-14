@@ -1949,7 +1949,6 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
     case  E_CMD_MESSAGE_REPOSITION_SHIP:
       {
 	sRepoShip *dataRepoShip = (sRepoShip*)aDataCmd;	
-
 	if(dataRepoShip->shipNo < 0)
 	  setPos(dataRepoShip->posX, dataRepoShip->posZ);
 	else

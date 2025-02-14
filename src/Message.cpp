@@ -64,6 +64,7 @@ sResetLegs* Message::ResetLegs(std::string aCmd)
       dataResetLegs.cog = Utilities::lexical_cast<float>(parts.at(4));
       dataResetLegs.sog = Utilities::lexical_cast<float>(parts.at(5));
     }
+  
   return &dataResetLegs;
 }
 
@@ -138,7 +139,7 @@ sCtrlOv* Message::CtrlOverride(std::string aCmd)
   return &dataCtrlOverride;
 }
 			      
-eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void *aCmdData)
+eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 {
   std::string inRawData(aData, aDataSize);
   std::vector<std::string> inData = Utilities::split(inRawData,'|');
@@ -152,7 +153,6 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void *aCmdData)
 	  if(message.substr(0,2).compare("MC") == 0) /*From Map Controller*/
 	    { 
 	      message = message.substr(2,message.length()-2);
-
 	      std::vector<std::string> cmds = Utilities::split(message,'#');
 		
 	      if(cmds.size() > 0)
@@ -166,52 +166,52 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void *aCmdData)
 			  if(itCmd.substr(0,2).compare("CL") == 0 || /*Change Leg*/
 			     itCmd.substr(0,2).compare("AL") == 0)   /*Add Leg*/
 			    {
-			      aCmdData = (void*)UpdateLeg(itCmd);
+			      *aCmdData = (void*)UpdateLeg(itCmd);
 			      return E_CMD_MESSAGE_UPDATE_LEG;
 			    }
 			  else if(itCmd.substr(0,2).compare("DL") == 0) /*Delete Leg*/
 			    {
-			      aCmdData = (void*)DeleteLeg(itCmd); 		      
+			      *aCmdData = (void*)DeleteLeg(itCmd); 		      
 			      return E_CMD_MESSAGE_DELETE_LEG;
 			    }
 			  else if(itCmd.substr(0,2).compare("RS") == 0) /*Reposition Ship*/
 			    {			
-			      aCmdData = (void*)RepositionShip(itCmd);
+			      *aCmdData = (void*)RepositionShip(itCmd);
 			      return E_CMD_MESSAGE_REPOSITION_SHIP;
 			    }
 			  else if(itCmd.substr(0,2).compare("RL") == 0) /*Reset Legs*/
 			    {
-			      aCmdData = (void*)ResetLegs(itCmd);
+			      *aCmdData = (void*)ResetLegs(itCmd);
 			      return E_CMD_MESSAGE_RESET_LEGS;
 			    }
 			  else if(itCmd.substr(0,2).compare("SW") == 0) /*Set Weather*/
 			    {
-			      aCmdData = (void*)SetWeather(itCmd);
+			      *aCmdData = (void*)SetWeather(itCmd);
 			      return E_CMD_MESSAGE_SET_WEATHER;
 			    }
 			  else if(itCmd.substr(0,2).compare("MO") == 0) /*Man Overboard*/
 			    {		      
-			      aCmdData = (void*)ManOverboard(itCmd);
+			      *aCmdData = (void*)ManOverboard(itCmd);
 			      return E_CMD_MESSAGE_MAN_OVERBOARD;
 			    }
 			  else if(itCmd.substr(0,2).compare("MM") == 0) /*Set MMSI*/
 			    {			
-			      aCmdData = (void*)SetMMSI(itCmd);
+			      *aCmdData = (void*)SetMMSI(itCmd);
 			      return E_CMD_MESSAGE_SET_MMSI;
 			    }
 			  else if(itCmd.substr(0,2).compare("RW") == 0) /*Rudder Working*/
 			    {
-			      aCmdData = (void*)RudderWorking(itCmd);
+			      *aCmdData = (void*)RudderWorking(itCmd);
 			      return E_CMD_MESSAGE_RUDDER_WORKING;
 			    }
 			  else if(itCmd.substr(0,2).compare("RF") == 0) /*Rudder Follow up*/
 			    {
-			      aCmdData = (void*)RudderFollowUp(itCmd);
+			      *aCmdData = (void*)RudderFollowUp(itCmd);
 			      return E_CMD_MESSAGE_RUDDER_FOLLOW_UP;
 			    }
 			  else if(itCmd.substr(0,2).compare("CO") == 0) /*Controls Override*/
 			    {
-			      aCmdData = (void*)CtrlOverride(itCmd);
+			      *aCmdData = (void*)CtrlOverride(itCmd);
 			      return E_CMD_MESSAGE_CONTROLS_OVERRIDE;
 			    }
 			} 
