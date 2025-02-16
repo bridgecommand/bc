@@ -167,6 +167,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
 
 }
 
+GUIMain::~GUIMain() 
+{
+    windDirectionBar->drop();
+    windSpeedBar->drop();
+    streamDirectionBar->drop();
+    streamSpeedBar->drop();
+}
+
 void GUIMain::updateEditBoxes()
 {
     //Trigger update the edit boxes for course, speed & distance when the selection is changed.

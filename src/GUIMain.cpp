@@ -745,6 +745,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
         rainScrollbar->drop();
+        windDirectionScrollbar->drop();
+        windSpeedScrollbar->drop();
+        streamDirectionScrollbar->drop();
+        streamSpeedScrollbar->drop();
 
         radarGainScrollbar->drop();
         radarClutterScrollbar->drop();
