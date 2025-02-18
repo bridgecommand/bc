@@ -27,7 +27,7 @@
 class Message;
 
 #define DEFAULT_PORT (18304)
-#define MAX_PEERS (1) /*Standalone and MultiPlayer*/
+#define MAX_PEERS (1) 
 
 class Network
 {

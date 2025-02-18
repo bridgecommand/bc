@@ -24,16 +24,12 @@
 
 // Include the Irrlicht header
 #include "irrlicht.h"
-#include "EnetServer/thread.h"
-#include "EnetServer/com.h"
-#include "EnetServer/fsm.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioChoice.hpp"
 #include "MyEventReceiver.hpp"
-#include "Message.hpp"
 #include "Network.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -370,7 +366,6 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 
 int main(int argc, char ** argv)
 {
-
     #ifdef WITH_PROFILING
     IPROF_FUNC;
     #endif
@@ -489,7 +484,6 @@ int main(int argc, char ** argv)
     if (cameraMaxDistance<=0) {
         cameraMaxDistance = 6*M_IN_NM;
     }
-
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
@@ -763,16 +757,6 @@ int main(int argc, char ** argv)
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
-    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
-    if (font == NULL) {
-        std::cout << "Could not load font, using fallback" << std::endl;
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
-
     //Choose scenario
     std::string scenarioName = "";
     std::string hostname = "";
@@ -847,7 +831,6 @@ int main(int argc, char ** argv)
     network.Connect(enetSrvAddr, enetSrvPort);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-
     bool bExtraNet=false;
     if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 ))
       {
@@ -876,7 +859,7 @@ int main(int argc, char ** argv)
         //Get the data
         std::string receivedSerialisedScenarioData;
         while (device->run() && receivedSerialisedScenarioData.empty()) {
-            network.GetScenarioFromNetwork(receivedSerialisedScenarioData);
+	  network.GetScenarioFromNetwork(receivedSerialisedScenarioData);
         }
         scenarioData.deserialise(receivedSerialisedScenarioData);
     }
@@ -1074,7 +1057,7 @@ int main(int argc, char ** argv)
       {
         { IPROF("Network");
 
-	  Update::UpdateNetwork(&model, &network);
+	  Update::UpdateNetwork(&model, &network, mode);
 	    
 	  if (true == bExtraNet) {
             //extraNetwork.update();

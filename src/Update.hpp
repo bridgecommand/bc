@@ -14,7 +14,7 @@ class Update
   
   Update();
   ~Update();
-  static void UpdateNetwork(SimulationModel* aModel, Network* aNet);
+  static void UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode::Mode aMode);
   
 private:
   

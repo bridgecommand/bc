@@ -2053,6 +2053,193 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
 	break;
       }
+    case E_CMD_MESSAGE_BRIDGE_COMMAND:
+      {
+	sMasterCmdsInf *dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
+
+	/************************************************************************/
+	setTimeDelta(dataMasterCmds->time.timeD);
+	setAccelerator(dataMasterCmds->time.accel);
+
+	/************************************************************************/
+	setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
+        setHeading(dataMasterCmds->ownShip.hdg);
+	setRateOfTurn(dataMasterCmds->ownShip.rot);
+	setSpeed(dataMasterCmds->ownShip.speed);
+	
+	/************************************************************************/
+	if(dataMasterCmds->otherShips.nbrShips > 0)
+	  {
+	    for(unsigned short i=0; i<dataMasterCmds->otherShips.nbrShips; i++)
+	      {
+		setOtherShipHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
+		setOtherShipSpeed(i, (dataMasterCmds->otherShips.ships[i].speed)/MPS_TO_KTS);
+		setOtherShipRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
+		setOtherShipPos(i, dataMasterCmds->otherShips.ships[i].posX, dataMasterCmds->otherShips.ships[i].posZ);
+	      }
+	    delete[] dataMasterCmds->otherShips.ships;
+	  }
+	
+	/************************************************************************/	
+	if(dataMasterCmds->mob.isMob)
+	  {
+	    setManOverboardVisible(true);
+	    setManOverboardPos(dataMasterCmds->mob.posX, dataMasterCmds->mob.posZ);
+	  }
+	else
+	  setManOverboardVisible(false);
+
+	/************************************************************************/
+	if(dataMasterCmds->lines.lineNbr > 0)
+	  {
+	    if(dataMasterCmds->lines.lineNbr > (unsigned int)getLines()->getNumberOfLines(true))
+	      {
+		while(dataMasterCmds->lines.lineNbr > (unsigned int)getLines()->getNumberOfLines(true))
+		  {
+		    getLines()->addLine(this, true);
+		  }
+	      }
+	    else if(dataMasterCmds->lines.lineNbr < (unsigned int)getLines()->getNumberOfLines(true))
+	      {
+		while (dataMasterCmds->lines.lineNbr < (unsigned int)getLines()->getNumberOfLines(true))
+		  {
+		    getLines()->removeLine(0, true);
+		  }
+	      }
+
+	    bool lineKeepSlack = false;
+	    if(dataMasterCmds->lines.lineKeepSlackInt == 1)
+	      lineKeepSlack = true;
+	   
+	    bool lineHeaveIn = false;
+	    if (dataMasterCmds->lines.lineHeaveInInt == 1)
+	      lineHeaveIn = true;
+
+	    for(unsigned short i=0; i<dataMasterCmds->lines.lineNbr; i++)
+	      {
+		if((getLines()->getLineStartType(i, true) != dataMasterCmds->lines.lineStartType) ||
+		   (getLines()->getLineEndType(i, true) != dataMasterCmds->lines.lineEndType) ||
+		   (getLines()->getLineStartID(i, true) != dataMasterCmds->lines.lineStartID) ||
+		   (getLines()->getLineEndID(i, true) != dataMasterCmds->lines.lineEndID))
+		  {
+		    getLines()->clearLine(i, true);
+
+		    if((dataMasterCmds->lines.lineStartType > 0) &&
+		       (dataMasterCmds->lines.lineEndType > 0))
+		      {
+			irr::scene::ISceneNode* startParent = 0;
+			irr::scene::ISceneNode* endParent = 0;
+			if(dataMasterCmds->lines.lineStartType == 1)
+			  {
+			    // Own ship
+			    startParent = getOwnShipSceneNode();
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 2)
+			  {
+			    // Other ship
+			    startParent = getOtherShipSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 3)
+			  {
+			    // Buoy
+			    startParent = getBuoySceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 4)
+			  {
+			    // Land object
+			    startParent = getLandObjectSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			
+			if(dataMasterCmds->lines.lineEndType == 1)
+			  {
+			    // Own ship
+			    endParent = getOwnShipSceneNode();
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 2)
+			  {
+			    // Other ship
+			    endParent = getOtherShipSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 3)
+			  {
+			    // Buoy
+			    endParent = getBuoySceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 4)
+			  {
+			    // Land object
+			    endParent = getLandObjectSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+
+			// Make child sphere nodes based on these (in the right position), then pass in to create the lines
+			irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+			if(startParent && startParent->getScale().X > 0)
+			  {
+			    sphereScale = irr::core::vector3df(1.0f/startParent->getScale().X,
+							       1.0f/startParent->getScale().X,
+							       1.0f/startParent->getScale().X);
+			  }
+			irr::scene::ISceneNode* startNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineStartX, dataMasterCmds->lines.lineStartY, dataMasterCmds->lines.lineStartZ),irr::core::vector3df(0, 0, 0),sphereScale);
+			sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+			if(endParent && endParent->getScale().X > 0)
+			  {
+			    sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X,1.0f/endParent->getScale().X,1.0f/endParent->getScale().X);
+			  }
+			irr::scene::ISceneNode* endNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineEndX, dataMasterCmds->lines.lineEndY, dataMasterCmds->lines.lineEndZ),irr::core::vector3df(0, 0, 0),sphereScale);
+
+			// Set name to match parent for convenience
+			if (startParent && startNode) {
+			  startNode->setName(startParent->getName());
+			}
+			if (endParent && endNode) {
+			  endNode->setName(endParent->getName());
+			}
+
+			// Create the lines
+			getLines()->setLineStart(startNode, dataMasterCmds->lines.lineStartType, dataMasterCmds->lines.lineStartID, true, i);
+			getLines()->setLineEnd(endNode, dataMasterCmds->lines.lineNominalShipMass, dataMasterCmds->lines.lineEndType, dataMasterCmds->lines.lineEndID, true, i);
+		      }
+		  }
+
+		// Check and update other parameters
+		getLines()->setKeepSlack(i, lineKeepSlack, true);
+		getLines()->setHeaveIn(i, lineHeaveIn, true);
+		getLines()->setLineNominalLength(i, dataMasterCmds->lines.lineNominalLength, true);
+		getLines()->setLineBreakingTension(i, dataMasterCmds->lines.lineBreakingTension, true);
+		getLines()->setLineBreakingStrain(i, dataMasterCmds->lines.lineBreakingStrain, true);
+		getLines()->setLineNominalShipMass(i, dataMasterCmds->lines.lineNominalShipMass, true);
+	      }
+	  }
+	else
+	  {	    
+	    while(getLines()->getNumberOfLines(true) > 0)
+	      {
+		getLines()->removeLine(0, true);	    
+	      }
+	  }
+
+	/************************************************************************/
+        setWeather(dataMasterCmds->weather.weather);
+	setVisibility(dataMasterCmds->weather.visibility);
+	setRain(dataMasterCmds->weather.rain);
+
+	/************************************************************************/
+	setView(dataMasterCmds->view.view);
+
+	/************************************************************************/
+        setWheel(dataMasterCmds->controls.wheel);
+        setRudder(dataMasterCmds->controls.rudder);
+        setPortEngine(dataMasterCmds->controls.portEng);
+	setStbdEngine(dataMasterCmds->controls.stbdEng);
+	setPortSchottel(dataMasterCmds->controls.portSch);
+	setStbdSchottel(dataMasterCmds->controls.stbdSch);
+	setPortAzimuthThrustLever(dataMasterCmds->controls.portThrust);
+	setStbdAzimuthThrustLever(dataMasterCmds->controls.stbdThrust);
+	setBowThruster(dataMasterCmds->controls.bowThrust);
+	setSternThruster(dataMasterCmds->controls.sternThrust);
+	
+	break;
+      }
     case E_CMD_MESSAGE_UNKNOWN:
     default:
       {	
