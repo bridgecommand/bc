@@ -11,11 +11,13 @@ class Message
  public:
   
   Message(SimulationModel* aModel);
+  Message();
   ~Message();
   eCmdMsg Parse(const char *aData, size_t aDataSize, void** aCmdData);
   eCmdMsg ParseMapController(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseMasterCommand(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseOwnShip(std::string& aMsg, void** aCmdData);
+  eCmdMsg ParseScenario(std::string& aMsg, void** aCmdData);
   std::string& KeepAliveShort(void);
   std::string& KeepAlive(void);
   std::string& MakeLines(void);

@@ -15,6 +15,7 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
   Message inMsg(aModel), outMsg(aModel);
 
   aNet->WaitMessage(inMsg, msgType, &dataCmd);
+  std::cout << "msg : " << msgType << std::endl;
   aModel->updateFromNetwork(msgType, dataCmd);	  
 
   if(OperatingMode::Secondary == aMode)

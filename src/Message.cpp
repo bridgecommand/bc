@@ -5,12 +5,18 @@
 
 sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController},
 					     {"BC", &Message::ParseMasterCommand},
-					     {"OS", &Message::ParseOwnShip}
+					     {"OS", &Message::ParseOwnShip},
+					     {"SC", &Message::ParseScenario}
 					    };
 
 Message::Message(SimulationModel* aModel)
 {
   mModel = aModel;
+}
+
+Message::Message()
+{
+ 
 }
 
 Message::~Message()
@@ -182,13 +188,16 @@ sTimeInf Message::GetTimeInfos(std::vector<std::string>& aTimeData)
 sShipInf Message::GetInfosOwnShip(std::vector<std::string>& aOwnShipData)
 {
   sShipInf shipInfos = {0};
-  if(aOwnShipData.size() == 9)
+  if(aOwnShipData.size() == 9 || aOwnShipData.size() == 5)
     {
       shipInfos.posX = Utilities::lexical_cast<float>(aOwnShipData.at(0));
       shipInfos.posZ = Utilities::lexical_cast<float>(aOwnShipData.at(1));
       shipInfos.hdg = Utilities::lexical_cast<float>(aOwnShipData.at(2));
       shipInfos.rot = Utilities::lexical_cast<float>(aOwnShipData.at(3));
-      shipInfos.speed = Utilities::lexical_cast<float>(aOwnShipData.at(6))/MPS_TO_KTS;
+      if(aOwnShipData.size() == 9)
+	shipInfos.speed = Utilities::lexical_cast<float>(aOwnShipData.at(6))/MPS_TO_KTS;
+      else
+	shipInfos.speed = Utilities::lexical_cast<float>(aOwnShipData.at(4))/MPS_TO_KTS;
     }
   return shipInfos;
 }
@@ -388,13 +397,28 @@ eCmdMsg Message::ParseOwnShip(std::string& aMsg, void** aCmdData)
   std::vector<std::string> osRec = Utilities::split(aMsg,',');
   static sShipInf ownShipInfos = {0};
   if(osRec.size() > 0)
-    {      
+    { 
       ownShipInfos = GetInfosOwnShip(osRec);
       *aCmdData = (void*)&ownShipInfos;
       return E_CMD_MESSAGE_OWN_SHIP;
     }
   return E_CMD_MESSAGE_UNKNOWN;
 }
+
+eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
+{
+  static std::string rawScenario;
+  rawScenario.clear();
+  rawScenario = "SC" + aMsg;
+  
+  if(rawScenario.size() > 4)
+    {      
+      *aCmdData = (void*)rawScenario.c_str();
+      return E_CMD_MESSAGE_SCENARIO;
+    }
+  return E_CMD_MESSAGE_UNKNOWN;
+}
+
 
 eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 {
@@ -469,7 +493,7 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 {
   static sMasterCmdsInf masterCmdsData;
   std::vector<std::string> bcRec = Utilities::split(aMsg,'#');
-  
+
   if(MAX_RECORD_BC_MSG == bcRec.size())
     {
       /*Time Infos*/

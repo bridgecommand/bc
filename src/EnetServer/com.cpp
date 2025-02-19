@@ -206,7 +206,7 @@ int Com::WaitEvent(unsigned short aTimeout)
   
   if(0 < retEvent)
     {
-      std::cout << "-- Event received : " << mEvent.type << " --"  << std::endl;
+      //std::cout << "-- Event received : " << mEvent.type << " --"  << std::endl;
       
       switch(mEvent.type)
 	{

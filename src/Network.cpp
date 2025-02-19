@@ -78,18 +78,6 @@ int Network::Connect(std::string aAddr, unsigned int aPort)
   return ret;
 }
 
-
-void Network::GetScenarioFromNetwork(std::string& dataString)
-{
-    //Not used by primary
-}
-
-
-int Network::GetPort()
-{
-    return 0;
-}
-
 void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData)
 {
   ENetEvent event;    

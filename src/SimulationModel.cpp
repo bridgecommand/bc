@@ -2240,6 +2240,15 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	
 	break;
       }
+    case E_CMD_MESSAGE_OWN_SHIP:
+      {
+	sShipInf *dataOwnShip = (sShipInf*)aDataCmd;
+	
+	setPos(dataOwnShip->posX, dataOwnShip->posZ);
+        setHeading(dataOwnShip->hdg);
+	setRateOfTurn(dataOwnShip->rot);
+	setSpeed(dataOwnShip->speed);
+      }
     case E_CMD_MESSAGE_UNKNOWN:
     default:
       {	

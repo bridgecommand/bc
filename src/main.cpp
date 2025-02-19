@@ -415,6 +415,16 @@ int main(int argc, char ** argv)
     }
     #endif
 
+
+    int fontSize = 12;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale > 1) {
+        fontSize = (int)(fontSize * fontScale + 0.5);
+    } else {
+	    fontScale = 1.0;
+    }
+
+    
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -508,14 +518,6 @@ int main(int argc, char ** argv)
         mode = OperatingMode::Secondary;
     }
     
-    int fontSize = 12;
-    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale > 1) {
-        fontSize = (int)(fontSize * fontScale + 0.5);
-    } else {
-	    fontScale = 1.0;
-    }
-
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
         irr::core::dimension2d<irr::u32> deskres;
@@ -838,46 +840,6 @@ int main(int argc, char ** argv)
         //network.Connect(hostname);
       }
 
-    //Read in scenario data (work in progress)
-    ScenarioData scenarioData;
-    if (mode == OperatingMode::Normal) {
-        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
-    } else {
-        //If in secondary mode, get scenario information from the server
-        //Tell user what we're doing
-        irr::core::stringw portMessage = language.translate("secondaryWait");
-        portMessage.append(L" ");
-        std::string ourHostName = asio::ip::host_name();
-        portMessage.append(irr::core::stringw(ourHostName.c_str()));
-        portMessage.append(L":");
-        portMessage.append(irr::core::stringw(network.GetPort()));
-        loadingMessage->setText(portMessage.c_str());
-        device->run();
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
-        //Get the data
-        std::string receivedSerialisedScenarioData;
-        while (device->run() && receivedSerialisedScenarioData.empty()) {
-	  network.GetScenarioFromNetwork(receivedSerialisedScenarioData);
-        }
-        scenarioData.deserialise(receivedSerialisedScenarioData);
-    }
-    std::string serialisedScenarioData = scenarioData.serialise(false);
-
-    loadingMessage->remove(); loadingMessage = 0;
-    
-    //Note: We could use this serialised format as a scenario import/export format or for online distribution
-    
-    // Check VR mode
-    bool vr3dMode = false;
-    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
-        vr3dMode=true;
-    }
-
-    // Set up the VR interface
-    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
-
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
@@ -918,6 +880,12 @@ int main(int argc, char ** argv)
 
     }
 
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+    }
+    
     SimulationModel::ModelParameters modelParameters;
     // TODO: most of these intermediate variables can probably be removed.
     modelParameters.mode = mode; 
@@ -948,13 +916,56 @@ int main(int argc, char ** argv)
     modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
     modelParameters.debugMode = debugMode;
 
-    //Create simulation model
+    
+    ScenarioData scenarioData;
+    
+    std::cout << "scenario : " << mode << std::endl;
+    
+    if(mode == OperatingMode::Normal)
+      {
+        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
+      }
+    else
+      {
+        irr::core::stringw portMessage = language.translate("secondaryWait");
+        loadingMessage->setText(portMessage.c_str());
+        device->run();
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+        //Get the data
+	Message inMsg;
+	eCmdMsg msgType;
+	void* dataScn = NULL;
+
+	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
+	  {
+
+	    network.WaitMessage(inMsg, msgType, &dataScn);
+	  }
+	if(dataScn != NULL)
+	  {
+	    std::string scnStr((char*)dataScn);
+	    std::cout << "scenario :" << scnStr << std::endl; 
+	    scenarioData.deserialise(scnStr);
+	  }
+    }
+    std::string serialisedScenarioData = scenarioData.serialise(false);
+
     SimulationModel model(device, 
                           smgr, 
                           &guiMain, 
                           &sound, 
                           scenarioData, 
                           modelParameters);
+
+    loadingMessage->remove(); loadingMessage = 0;
+    
+    //Note: We could use this serialised format as a scenario import/export format or for online distribution
+    
+    // Set up the VR interface
+    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
+
 
     // Load the VR interface, allowing link to model
     int vrSuccess = -1;

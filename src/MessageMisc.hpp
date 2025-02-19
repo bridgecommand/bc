@@ -1,7 +1,7 @@
 #ifndef MESSAGE_MISC_HPP
 #define MESSAGE_MISC_HPP
 
-#define MAX_HEADER_MSG (3)
+#define MAX_HEADER_MSG (4)
 #define MAX_RECORD_BC_MSG (13)
 
 /*****************Enum cmds*****************************/
@@ -18,6 +18,7 @@ typedef enum{
   E_CMD_MESSAGE_CONTROLS_OVERRIDE,
   E_CMD_MESSAGE_BRIDGE_COMMAND,
   E_CMD_MESSAGE_OWN_SHIP,
+  E_CMD_MESSAGE_SCENARIO,
   E_CMD_MESSAGE_UNKNOWN=0x99
 }eCmdMsg;
 

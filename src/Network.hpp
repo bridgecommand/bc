@@ -36,9 +36,7 @@ public:
   ~Network();
   int Connect(std::string aAddr = "localhost", unsigned int aPort = DEFAULT_PORT);
   void WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData);
-  void GetScenarioFromNetwork(std::string& aScnData);
   int SendMessage(std::string& aMsg, bool aIsReliable=false);
-  int GetPort();
 
 private:
   ENetAddress mServAddr;
