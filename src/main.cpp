@@ -424,7 +424,8 @@ int main(int argc, char ** argv)
 	    fontScale = 1.0;
     }
 
-    
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -741,10 +742,20 @@ int main(int argc, char ** argv)
     #endif
 
     //set gui skin and 'flatten' this
-    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC   );
+    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
+
+    irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    }
+    else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
+
 
 	irr::u32 su = driver->getScreenSize().Width;
 	irr::u32 sh = driver->getScreenSize().Height;
