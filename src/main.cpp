@@ -935,7 +935,7 @@ int main(int argc, char ** argv)
         driver->endScene();
         //Get the data
 	Message inMsg;
-	eCmdMsg msgType;
+	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
 	void* dataScn = NULL;
 
 	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
