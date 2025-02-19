@@ -103,9 +103,6 @@ int Network::SendMessage(std::string& aMsg, bool aIsReliable)
 	packetFlag = ENET_PACKET_FLAG_RELIABLE;
 
       ENetPacket* packet = enet_packet_create(aMsg.c_str(), aMsg.length(), packetFlag);
-
-      std::cout << "Msg : " << aMsg << " Size : " << aMsg.length() << std::endl;
-      
       enet_peer_send(mPeer, 0, packet);
       enet_host_flush(mClient);
       ret = 0;

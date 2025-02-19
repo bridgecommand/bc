@@ -493,7 +493,7 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 {
   static sMasterCmdsInf masterCmdsData;
   std::vector<std::string> bcRec = Utilities::split(aMsg,'#');
-
+  
   if(MAX_RECORD_BC_MSG == bcRec.size())
     {
       /*Time Infos*/
@@ -729,7 +729,7 @@ std::string& Message::KeepAlive(void)
       msg.append(":");
       msg.append(Utilities::lexical_cast<std::string>(it->speed));
       msg.append(":");
-      msg.append(Utilities::lexical_cast<std::string>(it->startTime));
+      msg.append(Utilities::lexical_cast<std::string>(it->distance));
       if (it!= (legs.end()-1)) {msg.append("/");}
     }
 
