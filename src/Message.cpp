@@ -503,7 +503,7 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
       /*Own Ship Infos*/
       std::vector<std::string> positionData = Utilities::split(bcRec.at(1),',');
       masterCmdsData.ownShip = GetInfosOwnShip(positionData);
-
+      
       std::vector<std::string> numberData = Utilities::split(bcRec.at(2),',');
       if(numberData.size() == 4)
 	{
@@ -513,21 +513,24 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 	    {
 	      std::vector<std::string> otherShipsData = Utilities::split(bcRec.at(3),'|');
 	      masterCmdsData.otherShips.ships = new sShipInf[numberOthers];
-	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
+	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);	 
 	    }
 	  
 	  /*Buoys*/
 	  //Not recovered
-	  
+
 	  /*MOB*/
 	  unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
-	  std::vector<std::string> mobData = Utilities::split(numberData.at(5),',');
-	  masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
+	  if(numberMOB)
+	    {
+	      std::vector<std::string> mobData = Utilities::split(numberData.at(5),',');
+	      masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
+	    }	  
 	  
 	  /*Lines*/
 	  unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
 	  std::vector<std::string> linesData = Utilities::split(bcRec.at(11),'|');
-	  masterCmdsData.lines = GetInfosLines(linesData, numberLines);	  
+	  masterCmdsData.lines = GetInfosLines(linesData, numberLines);
 	}
 
       /*Weather*/
@@ -552,12 +555,20 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 {
   std::string inRawData(aData, aDataSize);
-  std::vector<std::string> inData = Utilities::split(inRawData,'|');
-
-  for(int idMessage=0; idMessage < inData.size(); idMessage++)
+  unsigned int nbrMsg = 1;
+  std::string message = inRawData;
+  unsigned int idMessage = 0;
+  
+  /*Map Controller message*/
+  if(inRawData.substr(0,2).compare(tParseHeader[0].header)==0)
     {
-      std::string message = inData.at(idMessage);
-
+      std::vector<std::string> inData = Utilities::split(inRawData,'|');
+      nbrMsg = inData.size();
+      message = inData.at(idMessage);
+    }
+ 
+  for(idMessage=0; idMessage < nbrMsg; idMessage++)
+    {
       if(message.length() > 2)
 	{
 	  for(unsigned char i = 0;i<MAX_HEADER_MSG;i++)
