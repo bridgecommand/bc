@@ -410,6 +410,8 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
   static std::string rawScenario;
   rawScenario.clear();
   rawScenario = "SC" + aMsg;
+
+  std::cout << "Scenario : " << rawScenario << std::endl;
   
   if(rawScenario.size() > 4)
     {      

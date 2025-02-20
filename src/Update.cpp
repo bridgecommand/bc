@@ -32,6 +32,7 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
       if(aModel->getLoopNumber() % 100 == 0)
 	{
 	  std::string msgKeepAliveScn = aModel->getSerialisedScenario();
+      std::cout << "Scenario Master : " << msgKeepAliveScn << std::endl;
 	  aNet->SendMessage(msgKeepAliveScn, true);
 	}
       else if(aModel->getLoopNumber() % 10 == 0)
@@ -42,6 +43,7 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
       else
 	{
 	  std::string msgKeepAliveShort = outMsg.KeepAliveShort();      
+      std::cout << "Keep Alive Short : " << msgKeepAliveShort << std::endl;
 	  aNet->SendMessage(msgKeepAliveShort);
 	}    
     } 
