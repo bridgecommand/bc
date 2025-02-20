@@ -11,6 +11,13 @@
 #define MAX_CLIENT_CONNEXION (4)
 #define MAX_RECEIVE_BUFFER (8192)
 
+typedef enum{
+  MASTER=0x0A,
+  SLAVE,
+  MULTIPLAYER,
+  UNKNOWN
+}eTarget;
+
 class Com
 {
  public:
@@ -27,11 +34,11 @@ class Com
   
  private:
 
-  int ClientConnect(ENetPeer** aPeer);
+  int ClientConnect(ENetPeer** aPeer, unsigned int aData);
   int ClientDisconnect(ENetPeer** aPeer);
   int ClientMsg(const unsigned char *aData);  
   void RouteMsg(void);
-  void SendMsg(void);
+  void SendMsg(eTarget aTarget);
   
   /*Server*/
   ENetAddress mAddrServ;
@@ -45,7 +52,8 @@ class Com
   unsigned char mClientCounter;
 
   /*Flag Broadcast*/
-  bool mMsgToBd;
+  bool mMsgToMaster;
+  bool mMsgToSlave;
   
 };
 

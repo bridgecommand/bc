@@ -841,7 +841,7 @@ int main(int argc, char ** argv)
     GUIMain guiMain;
 
     Network network;
-    network.Connect(enetSrvAddr, enetSrvPort);
+    network.Connect(enetSrvAddr, enetSrvPort, mode);
 
     // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
     bool bExtraNet=false;
@@ -929,9 +929,7 @@ int main(int argc, char ** argv)
 
     
     ScenarioData scenarioData;
-    
-    std::cout << "scenario : " << mode << std::endl;
-    
+     
     if(mode == OperatingMode::Normal)
       {
         scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
@@ -951,13 +949,11 @@ int main(int argc, char ** argv)
 
 	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
 	  {
-
 	    network.WaitMessage(inMsg, msgType, &dataScn);
 	  }
 	if(dataScn != NULL)
 	  {
-	    std::string scnStr((char*)dataScn);
-	    std::cout << "scenario :" << scnStr << std::endl; 
+	    std::string scnStr((char*)dataScn);	    
 	    scenarioData.deserialise(scnStr);
 	  }
     }

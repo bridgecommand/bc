@@ -15,7 +15,8 @@ Com::Com(std::string aAddr, unsigned short aPort)
   mAddrServ.port = aPort;
   enet_address_set_host (&mAddrServ, aAddr.c_str());
   mClientCounter = 0;
-  mMsgToBd = 0;
+  mMsgToMaster = 0;
+  mMsgToSlave = 0;
   mPeerClient[0] = NULL;
 }
 
@@ -25,7 +26,8 @@ Com::Com()
   mAddrServ.host = ENET_HOST_ANY;
   mAddrServ.port = 0;
   mClientCounter = 0;
-  mMsgToBd = 0;
+  mMsgToMaster = 0;
+  mMsgToSlave = 0;
   mPeerClient[0] = NULL;
 }
 
@@ -74,8 +76,9 @@ int Com::InitCom(void)
   return ret;
 }
 
-int Com::ClientConnect(ENetPeer** aPeer)
+int Com::ClientConnect(ENetPeer** aPeer, unsigned int aData)
 {
+  static unsigned int typeClient[MAX_CLIENT_CONNEXION] = {0};
   bool isConnected = false;
   char ipAddr[16] = {0};
   int ret = -1;
@@ -100,7 +103,9 @@ int Com::ClientConnect(ENetPeer** aPeer)
 
       if(!isConnected)
 	{
+	  typeClient[mClientCounter] = aData;
      	  mPeerClient[mClientCounter] = *aPeer;
+	  mPeerClient[mClientCounter]->data = &typeClient[mClientCounter];
 	  enet_address_get_host_ip(&mPeerClient[mClientCounter]->address, ipAddr, 16);
 	  std::cout << "Client :" << ipAddr << ":" << mPeerClient[mClientCounter]->address.port << " connected" << std::endl;
 	  mClientCounter++;
@@ -156,15 +161,15 @@ int Com::ClientMsg(const unsigned char *aData)
 
   if(tmpBuffer.length() > 4)
     {
-      if(E_MSG_FROM_BC == Message::Process(tmpBuffer))
+      if(E_MSG_FROM_MASTER == Message::Process(tmpBuffer))
 	{
 	  //std::cout << "Message from BC to MC"  << std::endl;
-	    mMsgToBd = true;
+	  mMsgToSlave = true;
 	}
       else if(E_MSG_FROM_MC == Message::Process(tmpBuffer))
 	{
 	  //std::cout << "Message from MC to BC"  << std::endl;
-	  mMsgToBd = true;
+	  mMsgToMaster = true;
 	}
     }
 
@@ -173,14 +178,23 @@ int Com::ClientMsg(const unsigned char *aData)
 
 void Com::RouteMsg(void)
 {
-  if(true == mMsgToBd)
+  eTarget target = UNKNOWN;
+  if(true == mMsgToMaster)
     {
-      SendMsg();
-      mMsgToBd = false;
+      target = MASTER;
+      mMsgToMaster = false;
     }
+  
+  if(true == mMsgToSlave)
+    {
+      target = SLAVE;
+      mMsgToSlave = false;
+    }
+
+   SendMsg(target);
 }
 
-void Com::SendMsg(void)
+void Com::SendMsg(eTarget aTarget)
 {
   mPacket = enet_packet_create(mEvent.packet->data, mEvent.packet->dataLength + 1, 1);
 
@@ -188,10 +202,10 @@ void Com::SendMsg(void)
     {
       if(NULL != mPeerClient[i])
 	{
-	  if(mPeerClient[i]->address.host != 0)
+	  if(mPeerClient[i]->address.host != 0 && mPeerClient[i]->data == (void*)aTarget)
 	    {
 	      enet_peer_send(mPeerClient[i], 0, mPacket);
-	      std::cout << "Brodcast Message ! size : " << mEvent.packet->dataLength  << std::endl;
+	      std::cout << "Send Message ! size : " << mEvent.packet->dataLength << " Type : " <<mPeerClient[i]->data << std::endl;
 	    }
 	}
     }
@@ -218,7 +232,7 @@ int Com::WaitEvent(unsigned short aTimeout)
 	  }
 	case ENET_EVENT_TYPE_CONNECT:
 	  {
-	    ret = ClientConnect(&mEvent.peer);
+	    ret = ClientConnect(&mEvent.peer, mEvent.data);
 	    break;
 	  }
 	case ENET_EVENT_TYPE_DISCONNECT:

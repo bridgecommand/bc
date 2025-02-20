@@ -48,7 +48,7 @@ Network::~Network()
   enet_deinitialize();
 }
 
-int Network::Connect(std::string aAddr, unsigned int aPort)
+int Network::Connect(std::string aAddr, unsigned int aPort, OperatingMode::Mode aMode)
 {
   int ret = -1;
   ENetEvent event;
@@ -56,7 +56,7 @@ int Network::Connect(std::string aAddr, unsigned int aPort)
   enet_address_set_host (&mServAddr, aAddr.c_str());
   mServAddr.port = aPort;
   
-  mPeer = enet_host_connect(mClient, &mServAddr, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+  mPeer = enet_host_connect(mClient, &mServAddr, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, aMode);
 
   if(NULL == mPeer)
     {

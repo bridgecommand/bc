@@ -12,10 +12,11 @@ Message::~Message()
 
 eMsgSrc Message::Process(std::string& aMsg)
 {
+    
   if(aMsg.substr(0,3) == "SCN" || aMsg.substr(0,2) == "BC" || aMsg.substr(0,2) == "OS")
     {
       std::cout << "------> " << aMsg << std::endl;
-      return E_MSG_FROM_BC;    
+      return E_MSG_FROM_MASTER;    
     }
   
   if(aMsg.substr(0,2) == "MC")
