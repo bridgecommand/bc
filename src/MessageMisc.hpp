@@ -24,6 +24,7 @@ typedef enum{
 
 /*****************Struct usefull for process BC cmds*****************************/
 typedef struct{
+  bool setTimeD;
   float timeD;
   float accel;
 }sTimeInf;

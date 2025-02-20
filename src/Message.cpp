@@ -161,13 +161,17 @@ sTimeInf Message::GetTimeInfos(std::vector<std::string>& aTimeData)
     {
       timeError = Utilities::lexical_cast<float>(aTimeData.at(2)) - mModel->getTimeDelta(); //How far we are behind the master
       float baseAccelerator = Utilities::lexical_cast<float>(aTimeData.at(3)); //The master accelerator setting
+
       if(fabs(timeError) > 1)
 	{
+      timeInfos.setTimeD = true;
 	  timeInfos.timeD = Utilities::lexical_cast<float>(aTimeData.at(2));
 	  accelAdjustment = 0;	  
 	}
       else
-	{ //Adjust accelerator to maintain time alignment
+	{ 
+      timeInfos.setTimeD = false;
+      //Adjust accelerator to maintain time alignment
 	  accelAdjustment += timeError*0.01; //Integral only at the moment
 	  //Check for zero crossing, and reset
 	  if(previousTimeError * timeError < 0)
@@ -202,7 +206,7 @@ sShipInf Message::GetInfosOwnShip(std::vector<std::string>& aOwnShipData)
   return shipInfos;
 }
 
-void Message::GetInfosOtherShips(std::vector<std::string>& aOtherShipsData, unsigned int aNumberOthers, sOthShipInf aOthersShipsInfos)
+void Message::GetInfosOtherShips(std::vector<std::string>& aOtherShipsData, unsigned int aNumberOthers, sOthShipInf& aOthersShipsInfos)
 {
   if(aNumberOthers == aOtherShipsData.size())
     {
@@ -287,8 +291,10 @@ sViewInf Message::GetInfosView(std::vector<std::string>& aViewData)
   sViewInf viewInfos = {0};
   if(aViewData.size() == 1)
     {
-      if(mModel->getMoveViewWithPrimary())
-	viewInfos.view = Utilities::lexical_cast<float>(aViewData.at(0));	  
+       if(mModel->getMoveViewWithPrimary())
+       {
+           viewInfos.view = Utilities::lexical_cast<float>(aViewData.at(0));
+       }
     }
   return viewInfos;
 }
@@ -396,6 +402,7 @@ eCmdMsg Message::ParseOwnShip(std::string& aMsg, void** aCmdData)
 {
   std::vector<std::string> osRec = Utilities::split(aMsg,',');
   static sShipInf ownShipInfos = {0};
+
   if(osRec.size() > 0)
     { 
       ownShipInfos = GetInfosOwnShip(osRec);
@@ -410,8 +417,6 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
   static std::string rawScenario;
   rawScenario.clear();
   rawScenario = "SC" + aMsg;
-
-  std::cout << "Scenario : " << rawScenario << std::endl;
   
   if(rawScenario.size() > 4)
     {      
@@ -511,11 +516,12 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 	{
 	  /*Other Ships Infos*/
 	  unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
+      
 	  if(numberOthers > 0)
 	    {
 	      std::vector<std::string> otherShipsData = Utilities::split(bcRec.at(3),'|');
 	      masterCmdsData.otherShips.ships = new sShipInf[numberOthers];
-	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);	 
+	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
 	    }
 	  
 	  /*Buoys*/
@@ -556,11 +562,11 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 {
-  std::string inRawData(aData, aDataSize);
+  std::string inRawData(aData, aDataSize-1);
   unsigned int nbrMsg = 1;
   std::string message = inRawData;
   unsigned int idMessage = 0;
-  
+
   /*Map Controller message*/
   if(inRawData.substr(0,2).compare(tParseHeader[0].header)==0)
     {
@@ -578,7 +584,7 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 	      if(message.substr(0,2).compare(tParseHeader[i].header)==0) 
 		{ 
 		  message = message.substr(2,message.length()-2);
-		  return (this->*tParseHeader[i].pFuncParse)(message, aCmdData);
+          return (this->*tParseHeader[i].pFuncParse)(message, aCmdData);
 		}
 	    }
 	}

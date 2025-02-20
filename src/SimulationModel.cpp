@@ -2057,9 +2057,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sMasterCmdsInf *dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
 
+    
 	/************************************************************************/
-	setTimeDelta(dataMasterCmds->time.timeD);
-	setAccelerator(dataMasterCmds->time.accel);
+	if(dataMasterCmds->time.setTimeD)
+        setTimeDelta(dataMasterCmds->time.timeD);
+	
+    setAccelerator(dataMasterCmds->time.accel);
 
 	/************************************************************************/
 	setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
@@ -2090,7 +2093,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	  setManOverboardVisible(false);
 
 	/************************************************************************/
-	if(dataMasterCmds->lines.lineNbr > 0)
+	if (dataMasterCmds->lines.lineNbr > 0)
 	  {
 	    if(dataMasterCmds->lines.lineNbr > (unsigned int)getLines()->getNumberOfLines(true))
 	      {
@@ -2242,12 +2245,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       }
     case E_CMD_MESSAGE_OWN_SHIP:
       {
-	sShipInf *dataOwnShip = (sShipInf*)aDataCmd;
+	    sShipInf *dataOwnShip = (sShipInf*)aDataCmd;
 	
-	setPos(dataOwnShip->posX, dataOwnShip->posZ);
+	    setPos(dataOwnShip->posX, dataOwnShip->posZ);
         setHeading(dataOwnShip->hdg);
-	setRateOfTurn(dataOwnShip->rot);
-	setSpeed(dataOwnShip->speed);
+	    setRateOfTurn(dataOwnShip->rot);
+	    setSpeed(dataOwnShip->speed);
       }
     case E_CMD_MESSAGE_UNKNOWN:
     default:

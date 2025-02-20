@@ -37,7 +37,7 @@ private:
   sCtrlOv* CtrlOverride(std::string aCmd);
   sTimeInf GetTimeInfos(std::vector<std::string>& aTimeData);
   sShipInf GetInfosOwnShip(std::vector<std::string>& aOwnShipData);
-  void GetInfosOtherShips(std::vector<std::string>& aOtherShipsData, unsigned int aNumberOthers, sOthShipInf othersShipsInfos);
+  void GetInfosOtherShips(std::vector<std::string>& aOtherShipsData, unsigned int aNumberOthers, sOthShipInf& othersShipsInfos);
   sMobInf GetInfosMob(std::vector<std::string>& aMobData, unsigned int aNbrMob);
   sLinesInf GetInfosLines(std::vector<std::string>& aLinesData, unsigned int aNumberLines);
   sWeatherInf GetInfosWeather(std::vector<std::string>& aWeatherData);
