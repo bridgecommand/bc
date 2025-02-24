@@ -17,7 +17,10 @@ Com::Com(std::string aAddr, unsigned short aPort)
   mClientCounter = 0;
   mMsgToMaster = 0;
   mMsgToSlave = 0;
-  mPeerClient[0] = NULL;
+  for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
+    {
+      mPeerClient[0] = NULL;
+    }
 }
 
 Com::Com()
@@ -28,7 +31,10 @@ Com::Com()
   mClientCounter = 0;
   mMsgToMaster = 0;
   mMsgToSlave = 0;
-  mPeerClient[0] = NULL;
+  for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
+    {
+      mPeerClient[0] = NULL;
+    }  
 }
 
 
@@ -84,7 +90,7 @@ int Com::ClientConnect(ENetPeer** aPeer, unsigned char aData)
   
   std::cout << "-- Connect Event received --"  << std::endl;
 
-  if(mClientCounter < MAX_CLIENT_CONNEXION)
+  if(mClientCounter <= MAX_CLIENT_CONNEXION)
     {
       for(unsigned char i=0; i<=mClientCounter; i++)
 	{
