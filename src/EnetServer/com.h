@@ -7,7 +7,7 @@
 #include "miscstatus.h"
 #include "comstatus.h"
 
-#define MAX_RETRY_COUNTER (10)
+#define MAX_RETRY_COUNTER (100)
 #define MAX_CLIENT_CONNEXION (8)
 
 typedef enum{

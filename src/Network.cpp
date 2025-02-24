@@ -82,7 +82,7 @@ void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdDat
 {
   ENetEvent event;    
 
-  if(enet_host_service(mClient, &event, 10) > 0)
+  if(enet_host_service(mClient, &event, 1) > 0)
     {
       if(ENET_EVENT_TYPE_RECEIVE == event.type)
 	{

@@ -3,7 +3,7 @@
 
 #include "com.h"
 
-#define WATCHDOG_COUNTER (500)
+#define WATCHDOG_COUNTER (30000)
 
 class Fsm
 {
