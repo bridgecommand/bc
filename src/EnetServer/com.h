@@ -8,8 +8,7 @@
 #include "comstatus.h"
 
 #define MAX_RETRY_COUNTER (10)
-#define MAX_CLIENT_CONNEXION (4)
-
+#define MAX_CLIENT_CONNEXION (8)
 
 typedef enum{
   MASTER=0x0A,
