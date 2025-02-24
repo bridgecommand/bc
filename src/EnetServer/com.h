@@ -34,9 +34,9 @@ class Com
   
  private:
 
-  int ClientConnect(ENetPeer** aPeer, unsigned int aData);
+  int ClientConnect(ENetPeer** aPeer, unsigned char aData);
   int ClientDisconnect(ENetPeer** aPeer);
-  int ClientMsg(const unsigned char *aData);  
+  int ClientMsg(const char *aData, size_t aDataSize);  
   void RouteMsg(void);
   void SendMsg(eTarget aTarget);
   
@@ -49,6 +49,7 @@ class Com
   /*Client*/
   ENetPacket* mPacket;
   ENetPeer* mPeerClient[MAX_CLIENT_CONNEXION];
+  unsigned char mTypeClient[MAX_CLIENT_CONNEXION];
   unsigned char mClientCounter;
 
   /*Flag Broadcast*/
