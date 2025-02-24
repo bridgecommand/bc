@@ -19,7 +19,7 @@ Com::Com(std::string aAddr, unsigned short aPort)
   mMsgToSlave = 0;
   for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
     {
-      mPeerClient[0] = NULL;
+      mPeerClient[i] = NULL;
     }
 }
 
@@ -33,7 +33,7 @@ Com::Com()
   mMsgToSlave = 0;
   for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
     {
-      mPeerClient[0] = NULL;
+      mPeerClient[i] = NULL;
     }  
 }
 
