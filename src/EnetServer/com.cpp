@@ -162,7 +162,7 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
   
   //std::cout << "-- Message Event received --"  << std::endl;
   
-  if(tmpBuffer.length() > 4)
+  if(tmpBuffer.length() >= 2)
     {
       if(E_MSG_FROM_MASTER == Message::Process(tmpBuffer))
 	{

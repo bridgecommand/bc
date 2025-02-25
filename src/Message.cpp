@@ -568,7 +568,7 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 {
-  std::string inRawData(aData, aDataSize-1);
+  std::string inRawData(aData, aDataSize);
   unsigned int nbrMsg = 1;
   std::string message = inRawData;
   unsigned int idMessage = 0;
@@ -583,7 +583,7 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
  
   for(idMessage=0; idMessage < nbrMsg; idMessage++)
     {
-      if(message.length() > 2)
+      if(message.length() >= 2)
 	{
 	  for(unsigned char i = 0;i<MAX_HEADER_MSG;i++)
 	    {

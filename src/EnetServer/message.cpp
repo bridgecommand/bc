@@ -18,7 +18,7 @@ eMsgSrc Message::Process(std::string& aMsg)
      || aMsg.substr(0,2) == "OS"
      || aMsg.substr(0,2) == "SD")
     {
-      //std::cout << "------> " << aMsg << std::endl;
+      std::cout << "------> " << aMsg << std::endl;
       return E_MSG_FROM_MASTER;    
     }
   
