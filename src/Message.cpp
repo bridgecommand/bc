@@ -429,11 +429,7 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::ParseShutDown(std::string& aMsg, void** aCmdData)
 {
-  if(aMsg.size() >= 2)
-    {      
-      return E_CMD_MESSAGE_SHUTDOWN;
-    }
-  return E_CMD_MESSAGE_UNKNOWN;
+  return E_CMD_MESSAGE_SHUTDOWN;
 }
 
 
@@ -594,7 +590,7 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 	      if(message.substr(0,2).compare(tParseHeader[i].header)==0) 
 		{ 
 		  message = message.substr(2,message.length()-2);
-          return (this->*tParseHeader[i].pFuncParse)(message, aCmdData);
+		  return (this->*tParseHeader[i].pFuncParse)(message, aCmdData);
 		}
 	    }
 	}
