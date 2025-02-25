@@ -385,6 +385,8 @@ void ControllerModel::setGeneralScenarioData(ScenarioData newData)
     scenarioData->weather = newData.weather;
     scenarioData->rainIntensity = newData.rainIntensity;
     scenarioData->visibilityRange = newData.visibilityRange;
+    scenarioData->windDirection = newData.windDirection;
+    scenarioData->windSpeed = newData.windSpeed;
     scenarioData->scenarioName = newData.scenarioName;
     scenarioData->description = newData.description;
     
@@ -625,13 +627,6 @@ void ControllerModel::save()
     envFile << "WindSpeed=" << scenarioData->windSpeed << std::endl;
     envFile << "Rain=" << scenarioData->rainIntensity << std::endl;
     
-    // Tidal override information
-    envFile << "HighTideOverrideTime=" << scenarioData->highTideOverrideTime << std::endl;
-    envFile << "HighTideOverrideHeight=" << scenarioData->highTideOverrideHeight << std::endl;
-    envFile << "HighTideOverrideRange=" << scenarioData->highTideOverrideRange << std::endl;
-    envFile << "HighTideOverridePeriod=" << scenarioData->highTideOverridePeriod << std::endl;
-    envFile << "HighTideOverridePercentageSprings=" << scenarioData->highTideOverridePercentageSprings << std::endl;
-
     envFile.close();
     if (!envFile.good()) {successOfFar=false;}
 

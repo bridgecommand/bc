@@ -54,6 +54,11 @@ struct GUIData {
     irr::f32 weather;
     irr::f32 rain;
     irr::f32 visibility;
+    irr::f32 windDirection;
+    irr::f32 windSpeed;
+    irr::f32 streamDirection;
+    irr::f32 streamSpeed;
+    bool streamOverride;
     bool radarOn;
     irr::f32 radarRangeNm;
     irr::f32 radarGain;
@@ -165,6 +170,11 @@ public:
         GUI_ID_WEATHER_SCROLL_BAR,
         GUI_ID_RAIN_SCROLL_BAR,
         GUI_ID_VISIBILITY_SCROLL_BAR,
+        GUI_ID_WINDDIRECTION_SCROLL_BAR,
+        GUI_ID_WINDSPEED_SCROLL_BAR,
+        GUI_ID_STREAMDIRECTION_SCROLL_BAR,
+        GUI_ID_STREAMSPEED_SCROLL_BAR,
+        GUI_ID_STREAMOVERRIDE_BOX,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
@@ -300,6 +310,11 @@ private:
     irr::gui::IGUIScrollBar* visibilityScrollbar;
     irr::gui::IGUIScrollBar* weatherScrollbar;
     irr::gui::IGUIScrollBar* rainScrollbar;
+    irr::gui::IGUIScrollBar* windDirectionScrollbar;
+    irr::gui::IGUIScrollBar* windSpeedScrollbar;
+    irr::gui::IGUIScrollBar* streamDirectionScrollbar;
+    irr::gui::IGUIScrollBar* streamSpeedScrollbar;
+    irr::gui::IGUICheckBox* streamOverride;
     irr::gui::HeadingIndicator* headingIndicator;
 
     irr::gui::IGUIButton* showInterfaceButton;

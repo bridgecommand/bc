@@ -169,6 +169,7 @@
     <ClCompile Include="..\libs\serial\src\impl\unix.cc" />
     <ClCompile Include="..\libs\serial\src\impl\win.cc" />
     <ClCompile Include="..\libs\serial\src\serial.cc" />
+    <ClCompile Include="..\ScrollDial.cpp" />
     <ClCompile Include="..\Utilities.cpp" />
     <ClCompile Include="..\controller\ControllerModel.cpp" />
     <ClCompile Include="..\controller\EventReceiver.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\Lang.hpp" />
     <ClInclude Include="..\Leg.hpp" />
+    <ClInclude Include="..\ScrollDial.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\controller\ControllerModel.hpp" />
     <ClInclude Include="..\controller\EventReceiver.hpp" />

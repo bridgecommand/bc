@@ -82,10 +82,10 @@ void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) 
             irr::f32 speedNeaps = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedN",i,hour));
             irr::f32 speedSprings = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("SpeedS",i,hour));
             irr::f32 streamDirection = IniFile::iniFileTof32(tidalStreamFilename,IniFile::enumerate2("Direction",i,hour));
-            loadingDiamond.speedXSprings[i] = sin(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
-            loadingDiamond.speedZSprings[i] = cos(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
-            loadingDiamond.speedXNeaps[i] = sin(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
-            loadingDiamond.speedZNeaps[i] = cos(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            loadingDiamond.speedXSprings[j] = sin(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedZSprings[j] = cos(streamDirection*irr::core::DEGTORAD)*speedSprings*KTS_TO_MPS;
+            loadingDiamond.speedXNeaps[j] = sin(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
+            loadingDiamond.speedZNeaps[j] = cos(streamDirection*irr::core::DEGTORAD)*speedNeaps*KTS_TO_MPS;
             //std::cout << "Loading hour " << hour << " where direction is " << streamDirection << std::endl;
             //std::cout << "Loading from: " << IniFile::enumerate2("Direction",i,hour) << std::endl;
         }
