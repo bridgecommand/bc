@@ -21,8 +21,13 @@ weather = "Weather"
 rain = "Rain"
 visibility="Visibility"
 setDistance = "Distance (Nm)"
+wind = "Wind"
 windDirection = "Wind direction"
 windSpeed = "Wind Speed (Kts)"
+stream = "Tidal stream"
+streamDirection = "Tidal stream direction"
+streamSpeed = "Tidal stream speed (kts)"
+streamOverride = "Override stream"
 
 setMMSI = "Set MMSI"
 
