@@ -419,14 +419,14 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         visibilityScrollbar->setToolTipText(language->translate("visibility").c_str());
 
         // Wind direction and speed    
-        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
+        windDirectionScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.26*su,0.06*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
         windDirectionScrollbar->setMax(360);
         windDirectionScrollbar->setMin(0);
         windDirectionScrollbar->setLargeStep(45);
         windDirectionScrollbar->setSmallStep(5);
         windDirectionScrollbar->setToolTipText(language->translate("windDirection").c_str());
 
-        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.25*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
+        windSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.26*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_WINDSPEED_SCROLL_BAR);
         windSpeedScrollbar->setMax(50);
         windSpeedScrollbar->setMin(0);
         windSpeedScrollbar->setLargeStep(5);
