@@ -5,7 +5,6 @@
 
 static void TaskLaunchServer(Fsm* aFsm)
 {
-  std::cout << "OK 1" << std::endl;
   aFsm->Run();
 }
 

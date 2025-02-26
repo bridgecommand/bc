@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <enet/enet.h>
+#include "enet/enet.h"
 #include "miscstatus.h"
 #include "comstatus.h"
 
