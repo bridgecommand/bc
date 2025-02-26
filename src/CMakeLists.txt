@@ -32,6 +32,7 @@ add_subdirectory(iniEditor)
 add_subdirectory(launcher)
 add_subdirectory(multiplayerHub)
 add_subdirectory(repeater)
+add_subdirectory(EnetServer)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
