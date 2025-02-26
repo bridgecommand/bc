@@ -39,10 +39,10 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 	  std::string msgKeepAlive = outMsg.KeepAlive();
 	  aNet->SendMessage(msgKeepAlive);
 	}
-      else
+     /*else
 	{
 	  std::string msgKeepAliveShort = outMsg.KeepAliveShort();      
 	  aNet->SendMessage(msgKeepAliveShort);
-	}    
+	}  */  
     } 
 }	  

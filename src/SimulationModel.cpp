@@ -1946,7 +1946,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	deleteOtherShipLeg(dataDeleteLeg->shipNo, dataDeleteLeg->legNo);
 	break;
       }
-    case  E_CMD_MESSAGE_REPOSITION_SHIP:
+    case E_CMD_MESSAGE_REPOSITION_SHIP:
       {
 	sRepoShip *dataRepoShip = (sRepoShip*)aDataCmd;	
 	if(dataRepoShip->shipNo < 0)
@@ -2068,7 +2068,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
         setHeading(dataMasterCmds->ownShip.hdg);
 	setRateOfTurn(dataMasterCmds->ownShip.rot);
-	setSpeed(dataMasterCmds->ownShip.speed);
+    setSpeed(dataMasterCmds->ownShip.speed);
 	
 	/************************************************************************/
 	if(dataMasterCmds->otherShips.nbrShips > 0)
