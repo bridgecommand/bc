@@ -21,6 +21,13 @@ weather = "Météo"
 rain = "Pluie"
 visibility="Visibilité"
 setDistance = "Distance (Nm)"
+wind = "Vent"
+windDirection = "Direction du vent"
+windSpeed = "Vitesse du vent (kts)"
+stream = "Courant"
+streamDirection = "Direction du courant"
+streamSpeed = "Vitesse du courant (kts)"
+streamOverride = "Contrôler le courant"
 
 setMMSI = "Paramétrer MMSI"
 
