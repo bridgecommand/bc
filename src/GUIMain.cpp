@@ -442,7 +442,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         streamDirectionScrollbar->setToolTipText(language->translate("streamDirection").c_str());
 
         streamSpeedScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.30*su,0.12*sh),0.0175*su,guienv,extraControlsTabWeather,GUI_ID_STREAMSPEED_SCROLL_BAR, 315, true);
-        streamSpeedScrollbar->setMax(50);
+        streamSpeedScrollbar->setMax(10);
         streamSpeedScrollbar->setMin(0);
         streamSpeedScrollbar->setLargeStep(5);
         streamSpeedScrollbar->setSmallStep(1);
