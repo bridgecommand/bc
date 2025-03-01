@@ -123,14 +123,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     visibilityBar->setSmallStep(1);
 
     guienv->addStaticText(language->translate("wind").c_str(),irr::core::rect<irr::s32>(0*fw,7.5*fh,10*fw,8.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR,360);
+    windDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDDIRECTION_SCROLL_BAR, 360, true);
     windDirectionBar->setMax(360);
     windDirectionBar->setMin(0);
     windDirectionBar->setLargeStep(45);
     windDirectionBar->setSmallStep(5);
     windDirectionBar->setToolTipText(language->translate("windDirection").c_str());
 
-    windSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDSPEED_SCROLL_BAR);
+    windSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_WINDSPEED_SCROLL_BAR, 315, true);
     windSpeedBar->setMax(50);
     windSpeedBar->setMin(0);
     windSpeedBar->setLargeStep(5);
@@ -138,14 +138,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     windSpeedBar->setToolTipText(language->translate("windSpeed").c_str());
 
     guienv->addStaticText(language->translate("stream").c_str(),irr::core::rect<irr::s32>(10*fw,7.5*fh,20*fw,8.5*fh),false,true,weatherTab)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR,360);
+    streamDirectionBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,10.5*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMDIRECTION_SCROLL_BAR, 360, true);
     streamDirectionBar->setMax(360);
     streamDirectionBar->setMin(0);
     streamDirectionBar->setLargeStep(45);
     streamDirectionBar->setSmallStep(5);
     streamDirectionBar->setToolTipText(language->translate("streamDirection").c_str());
 
-    streamSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMSPEED_SCROLL_BAR);
+    streamSpeedBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(15*fw,14*fh),1.5*fh,guienv,weatherTab,GUI_ID_STREAMSPEED_SCROLL_BAR, 315, true);
     streamSpeedBar->setMax(50);
     streamSpeedBar->setMin(0);
     streamSpeedBar->setLargeStep(5);
