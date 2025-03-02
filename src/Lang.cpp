@@ -33,7 +33,10 @@ irr::core::stringw Lang::translate(std::string phraseName)
     if (translatedPhrase==L"") {
         if (phraseName == "deg") {
             //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
-            translatedPhrase = L"°";
+            wchar_t degSymbolChar = 176;
+            irr::core::stringw degSymbolString = L"";
+            degSymbolString.append(degSymbolChar);
+            return degSymbolString;
         } else {
             std::cout << "Translation for " << phraseName << " not found in " << languageFileName << std::endl;
             translatedPhrase = std::wstring(phraseName.begin(), phraseName.end());
