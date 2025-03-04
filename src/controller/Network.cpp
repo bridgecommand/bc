@@ -108,8 +108,7 @@ std::string Network::findWorldName()
 	    std::cout << receivedString << std::endl;
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
-                if ((receivedString.substr(0,4) == "SCN1") || (receivedString.substr(0,4) == "SCN2" ) || (receivedString.substr(0,4) == "SCN3")) { //Check if it starts with SCN1 or SCN2
-
+                if ((receivedString.substr(0,4) == "SCN1") || (receivedString.substr(0,4) == "SCN2" ) || (receivedString.substr(0,4) == "SCN3" )) { //Check if it starts with SCN1, SCN2 or SCN3
                     //Find world model from this
                     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
                     if (receivedData.size() > 2) {
@@ -126,7 +125,7 @@ std::string Network::findWorldName()
     return worldName;
 }
 
-void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData)
+void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride)
 {
     /* Wait up to 10 milliseconds for an event. */
     while (enet_host_service (client, & event, 10) > 0) {
@@ -141,7 +140,7 @@ void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShi
 
             case ENET_EVENT_TYPE_RECEIVE:
                 //receive it
-                receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain,mobVisible,mobData);
+                receiveMessage(time,ownShipData,otherShipsData,buoysData,weather,visibility,rain,mobVisible,mobData,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride);
 
                 //send something back
                 sendMessage(event.peer); //Todo: Think if we only want to send after receipt?
@@ -190,7 +189,7 @@ void Network::sendMessage(ENetPeer* peer)
     }
 }
 
-void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData)
+void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride)
 {
     //Assumes that event contains a received message
     /*printf ("A packet of length %u was received from %s on channel %u.\n",
@@ -210,14 +209,14 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
             receivedString = receivedString.substr(2,receivedString.length()-2);
 
             //Populate the data structures from the stripped string
-            findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData);
+            findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 
         } //Check received message starts with BC
     } //Check message at least 3 characters
 
 }
 
-void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData) {
+void Network::findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride) {
 //Split into main parts
     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
 
@@ -280,11 +279,16 @@ void Network::findDataFromString(const std::string& receivedString, irr::f32& ti
 
         //Weather data in record 7 (Weather, rain, vis etc)
         std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
-        if (weatherData.size() == 5) {
+        if (weatherData.size() == 8) {
             //Weather at 0, Vis at 1, rain at 3
             weather = Utilities::lexical_cast<irr::f32>(weatherData.at(0));
             visibility = Utilities::lexical_cast<irr::f32>(weatherData.at(1));
+            windDirection = Utilities::lexical_cast<irr::f32>(weatherData.at(2));
             rain = Utilities::lexical_cast<irr::f32>(weatherData.at(3));
+            windSpeed = Utilities::lexical_cast<irr::f32>(weatherData.at(4));
+            streamDirection = Utilities::lexical_cast<irr::f32>(weatherData.at(5));
+            streamSpeed = Utilities::lexical_cast<irr::f32>(weatherData.at(6));
+            streamOverride = (weatherData.at(7)=="1");
         }
 
     } //Check correct number of records received

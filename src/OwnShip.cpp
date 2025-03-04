@@ -371,6 +371,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // DEE_DEC22 Start setting defaults and sanity checks on parameters
     irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
     draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
 
     if (rollPeriod == 0)
     {
@@ -1740,6 +1741,32 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         // std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
 
+        // Add drag from wind and stream
+        irr::f32 windSpeed = model->getWindSpeed();
+        irr::f32 windDirection = model->getWindDirection();
+        // Convert this into wind axial speed and wind lateral speed
+        irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+        irr::f32 relativeWindFlowDirection = windFlowDirection - hdg;
+        irr::f32 axialWind = windSpeed * cos(relativeWindFlowDirection * irr::core::DEGTORAD);
+        irr::f32 lateralWind = windSpeed * sin(relativeWindFlowDirection * irr::core::DEGTORAD);
+
+        irr::f32 relWindAxial_mps = (axialWind - axialSpd) * KTS_TO_MPS;
+        irr::f32 relWindLateral_mps = (lateralWind - lateralSpd) * KTS_TO_MPS;
+        irr::f32 frontalArea = breadth * airDraught;
+        irr::f32 sideArea = length * airDraught;
+
+        irr::f32 axialWindDrag = -1 * pow(relWindAxial_mps, 2) * sign(relWindAxial_mps) * 0.5 * RHO_AIR * frontalArea;
+        irr::f32 lateralWindDrag = -1 * pow(relWindLateral_mps, 2) * sign(relWindLateral_mps) * 0.5 * RHO_AIR * sideArea;
+
+        // Find tidal stream, based on our current absolute position
+        irr::core::vector2df stream = model->getTidalStream(model->getLong(), model->getLat(), model->getTimestamp());
+        //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
+        irr::f32 streamScaling = fmax(0, fmin(1, getDepth())); // Reduce effect as water gets shallower
+        stream *= streamScaling;
+        // Convert this into stream axial and lateral speed
+        irr::f32 axialStream = stream.X * sin(hdg * irr::core::DEGTORAD) + stream.Y * cos(hdg * irr::core::DEGTORAD); // Stream in ahead direction
+        irr::f32 lateralStream = stream.X * cos(hdg * irr::core::DEGTORAD) - stream.Y * sin(hdg * irr::core::DEGTORAD);// Stream in stbd direction
+
         // Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
         if (bowThruster > 1)
@@ -2028,15 +2055,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //		groundingDrag	"	groundingAxialDrag
 
         irr::f32 axialDrag;
-        if (axialSpd < 0)
+        irr::f32 axialRelSpeed = axialSpd - axialStream;
+        if (axialRelSpeed < 0)
         { // Compensate for loss of sign when squaring
-            axialDrag = -1 * dynamicsSpeedA * axialSpd * axialSpd + dynamicsSpeedB * axialSpd;
+            axialDrag = -1 * dynamicsSpeedA * axialRelSpeed * axialRelSpeed + dynamicsSpeedB * axialRelSpeed;
         }
         else
         {
-            axialDrag = dynamicsSpeedA * axialSpd * axialSpd + dynamicsSpeedB * axialSpd;
+            axialDrag = dynamicsSpeedA * axialRelSpeed * axialRelSpeed + dynamicsSpeedB * axialRelSpeed;
         }
-        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust - axialDrag - groundingAxialDrag) / shipMass;
+        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (axialAcceleration > 9.81)
         {
@@ -2090,15 +2118,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         // DEE_DEC22 this does the sway of the vessel when turning it probably models centrifugal drift too
         irr::f32 lateralDrag;
-        if (lateralSpd < 0)
+        irr::f32 lateralRelSpd = lateralSpd - lateralStream;
+        if (lateralRelSpd < 0)
         { // Compensate for loss of sign when squaring
-            lateralDrag = -1 * dynamicsLateralDragA * lateralSpd * lateralSpd + dynamicsLateralDragB * lateralSpd;
+            lateralDrag = -1 * dynamicsLateralDragA * lateralRelSpd * lateralRelSpd + dynamicsLateralDragB * lateralRelSpd;
         }
         else
         {
-            lateralDrag = dynamicsLateralDragA * lateralSpd * lateralSpd + dynamicsLateralDragB * lateralSpd;
+            lateralDrag = dynamicsLateralDragA * lateralRelSpd * lateralRelSpd + dynamicsLateralDragB * lateralRelSpd;
         } //  end if lateral drag
-        irr::f32 lateralAcceleration = (lateralThrust - lateralDrag - groundingLateralDrag) / shipMass;
+        irr::f32 lateralAcceleration = (lateralThrust - lateralDrag - groundingLateralDrag - lateralWindDrag) / shipMass;
         // std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (lateralAcceleration > 9.81)
@@ -2272,14 +2301,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         xChange = sin(hdg * irr::core::DEGTORAD) * axialSpd * deltaTime + cos(hdg * irr::core::DEGTORAD) * lateralSpd * deltaTime;
         zChange = cos(hdg * irr::core::DEGTORAD) * axialSpd * deltaTime - sin(hdg * irr::core::DEGTORAD) * lateralSpd * deltaTime;
-        // Apply tidal stream, based on our current absolute position
-        irr::core::vector2df stream = model->getTidalStream(model->getLong(), model->getLat(), model->getTimestamp());
-        if (getDepth() > 0)
-        {
-            irr::f32 streamScaling = fmin(1, getDepth()); // Reduce effect as water gets shallower
-            xChange += stream.X * deltaTime * streamScaling;
-            zChange += stream.Y * deltaTime * streamScaling;
-        }
     }
     else
     {

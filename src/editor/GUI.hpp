@@ -64,7 +64,9 @@ public:
         GUI_ID_APPLY_BUTTON,
         GUI_ID_SAVE_BUTTON,
         GUI_ID_OWNSHIPSELECT_COMBOBOX,
-        GUI_ID_OTHERSHIPSELECT_COMBOBOX
+        GUI_ID_OTHERSHIPSELECT_COMBOBOX,
+        GUI_ID_WINDDIRECTION_EDITBOX,
+        GUI_ID_WINDSPEED_EDITBOX
     };
 
     void updateGuiData(ScenarioData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
@@ -85,6 +87,8 @@ public:
     irr::f32 getWeather() const;
     irr::f32 getRain() const;
     irr::f32 getVisibility() const;
+    irr::f32 getWindDirection() const;
+    irr::f32 getWindSpeed() const;
     irr::u32 getEditBoxMMSI() const;
     std::string getScenarioName() const;
     std::string getDescription() const;
@@ -136,6 +140,8 @@ private:
     irr::gui::IGUIComboBox* weather;
     irr::gui::IGUIComboBox* visibility;
     irr::gui::IGUIComboBox* rain;
+    irr::gui::IGUIEditBox* windDirection;
+    irr::gui::IGUIEditBox* windSpeed;
     irr::gui::IGUIEditBox* scenarioName;
     irr::gui::IGUIStaticText* overwriteWarning;
     irr::gui::IGUIStaticText* notMultiplayerNameWarning;
