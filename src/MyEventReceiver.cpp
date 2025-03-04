@@ -274,6 +274,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     model->getLines()->getSelectedLine(),
                     ((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
+
+            if (id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) 
+            {
+                model->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
+            }
         }
 
         if (event.GUIEvent.EventType == irr::gui::EGET_SCROLL_BAR_CHANGED)
@@ -410,6 +415,23 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 model->setVisibility(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 10.0); // Scroll bar 1-101, vis 0.1-10.1
             }
+            if (id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR)
+            {
+                model->setWindDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }
+            if (id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR)
+            {
+                model->setWindSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }
+            if (id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR)
+            {
+                model->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }
+            if (id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR)
+            {
+                model->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+            }        
+
         }
 
         if (event.GUIEvent.EventType == irr::gui::EGET_MESSAGEBOX_OK)

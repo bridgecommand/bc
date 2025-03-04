@@ -37,7 +37,7 @@ public:
 
     std::string findWorldName();
     int getPort();
-    void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData);
+    void update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride);
     void setStringToSend(std::string stringToSend);
 
 private:
@@ -50,9 +50,9 @@ private:
     std::string stringToSend;
     ENetPacket * packet;
 
-    void receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData); //Acts on 'event'
+    void receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride); //Acts on 'event'
     //Subroutines to break down process of extracting data from the received string:
-    void findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData);
+    void findDataFromString(const std::string& receivedString, irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride);
     void findOwnShipPositionData(const std::vector<std::string>& positionData, ShipData& ownShipData);
     void findOtherShipData(const std::vector<std::string>& otherShipsDataString, std::vector<OtherShipDisplayData>& otherShipsData);
     void findBuoyPositionData(const std::vector<std::string>& buoysDataString, std::vector<PositionData>& buoysData);

@@ -18,9 +18,9 @@ namespace gui
 
 //! constructor
 ScrollDial::ScrollDial(core::position2d< s32 > centre, u32 radius, IGUIEnvironment* environment,
-				IGUIElement* parent, s32 id, bool noclip) :
+				IGUIElement* parent, s32 id, s32 maxAngle, bool showValue, bool noclip) :
 				IGUIScrollBar(environment, parent, id, core::rect<s32>(centre.X - radius, centre.Y - radius, centre.X + radius,centre.Y + radius)),
-				centre(centre), radius(radius),
+				centre(centre), radius(radius), maxAngle(maxAngle), showValue(showValue),
 				Dragging(false), Pos(0), DrawPos(0), DrawAngle(0), DrawHeight(0),
 				Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0)
 {
@@ -38,6 +38,9 @@ ScrollDial::ScrollDial(core::position2d< s32 > centre, u32 radius, IGUIEnvironme
 	setTabOrder(-1);
 
 	setPos(0);
+
+	//Threshold angle is half way between the max angle and 360 degrees. Input between maxAngle and theshold goes to max, above theshold goes to 0
+	thresholdAngle = (maxAngle + 360) / 2;
 }
 
 
@@ -236,6 +239,18 @@ void ScrollDial::draw()
 		Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,0,0,0));
 	}
 
+	// Display value on scroll dial
+	if (showValue) {
+		if (Environment->getHovered() == this) {
+			if (skin) {
+				irr::gui::IGUIFont* font = skin->getFont();
+				if (font) {
+					font->draw(irr::core::stringw(Pos),AbsoluteRect,video::SColor(skinAlpha,0,0,0),true,true,&AbsoluteRect);
+				}
+			}
+		}
+	}
+
 }
 
 
@@ -259,11 +274,15 @@ s32 ScrollDial::getPosFromMousePos(const core::position2di &pos) const
 
     f32 angle = atan2(relX,-1.0*relY)*core::RADTODEG;
     while (angle<0) {angle+=360;} //As atan2 gives -pi to +pi
-    if (angle > 337.5) {angle=0;} //Closer to 0 than to max
-    if (angle > 315) {angle=315;} //Above max
-    f32 proportion = angle/315.0;
+    if (angle > thresholdAngle) {
+		//Closer to 0 than to max
+		angle=0;
+	} else if (angle > maxAngle) {
+		//Above max
+		angle=maxAngle;
+	} 
+    f32 proportion = angle/maxAngle;
     return (s32) (proportion * range()) + Min;
-
 }
 
 
@@ -275,7 +294,7 @@ void ScrollDial::setPos(s32 pos)
 	f32 f = RelativeRect.getHeight()/ range();
 
     DrawPos = (s32)(( Pos - Min ) * f);
-    DrawAngle = (Pos-Min) * 315 / range() * core::DEGTORAD; //0-315 degrees for display
+    DrawAngle = (Pos-Min) * maxAngle / range() * core::DEGTORAD; //0-315 degrees for display
     DrawHeight = RelativeRect.getWidth();
 
 

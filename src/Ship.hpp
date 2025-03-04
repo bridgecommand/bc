@@ -58,6 +58,7 @@ class Ship
         irr::f32 length;
         irr::f32 breadth;
         irr::f32 draught;
+        irr::f32 airDraught;
         irr::f32 heightCorrection;
         irr::f32 angleCorrection;
 // DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
