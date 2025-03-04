@@ -109,6 +109,7 @@ std::string Network::findWorldName()
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
                 if ((receivedString.substr(0,4) == "SCN1") || (receivedString.substr(0,4) == "SCN2" ) || (receivedString.substr(0,4) == "SCN3" )) { //Check if it starts with SCN1, SCN2 or SCN3
+
                     //Find world model from this
                     std::vector<std::string> receivedData = Utilities::split(receivedString,'#');
                     if (receivedData.size() > 2) {

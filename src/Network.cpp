@@ -78,11 +78,11 @@ int Network::Connect(std::string aAddr, unsigned int aPort, OperatingMode::Mode 
   return ret;
 }
 
-void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData)
+void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData, unsigned int aTimeout)
 {
   ENetEvent event;    
 
-  if(enet_host_service(mClient, &event, 10) > 0)
+  if(enet_host_service(mClient, &event, aTimeout) > 0)
     {
       if(ENET_EVENT_TYPE_RECEIVE == event.type)
 	{
@@ -108,4 +108,17 @@ int Network::SendMessage(std::string& aMsg, bool aIsReliable)
       ret = 0;
     }
   return ret;
+}
+
+std::string Network::GetIPServer(void)
+{
+  char ipAddr[16] ={0};
+  std::string retStr;
+  
+  enet_address_get_host_ip(&mServAddr, ipAddr, 16);
+  retStr = ipAddr;
+  retStr.append(":");
+  retStr.append(Utilities::lexical_cast<std::string>(mServAddr.port));
+
+  return retStr;
 }
