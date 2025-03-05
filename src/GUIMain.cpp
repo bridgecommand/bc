@@ -1493,7 +1493,8 @@ guiTideHeight = guiData->tideHeight;
                     }
                     displayText = L"";
                     displayText.append(headingText);
-                    displayText.append(L"° ");
+                    displayText.append(language->translate("deg"));
+                    displayText.append(L" ");
                     displayText.append(irr::core::stringw(arpaspd));
                     displayText.append(L" kts");
                     //Add to the correct box
