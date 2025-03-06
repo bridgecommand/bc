@@ -25,13 +25,9 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 			std::string msgCtrlOv = outMsg.ControlOverride();
 			aNet->SendMessage(msgCtrlOv);
 		}
-		else if (OperatingMode::Multiplayer == aMode)
-		{
-			std::string msgMpFeedBack = outMsg.MpFeedBack();
-			aNet->SendMessage(msgMpFeedBack);
-		}
 		else
-		{
+		{ 
+		
 			if (aModel->getLoopNumber() % 100 == 0)
 			{
 				std::string msgKeepAliveScn = aModel->getSerialisedScenario();
@@ -41,6 +37,13 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 			{
 				std::string msgKeepAlive = outMsg.KeepAlive();
 				aNet->SendMessage(msgKeepAlive);
+
+				if (OperatingMode::Multiplayer == aMode)
+				{
+					std::string msgMpFeedBack = outMsg.MpFeedBack();
+				aNet->SendMessage(msgMpFeedBack);
+			
+				}
 			}
 			/*else if (aModel->getLoopNumber() % 10 == 0)
 			  {

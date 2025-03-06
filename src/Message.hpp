@@ -16,6 +16,7 @@ class Message
   eCmdMsg Parse(const char *aData, size_t aDataSize, void** aCmdData);
   eCmdMsg ParseMapController(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseMasterCommand(std::string& aMsg, void** aCmdData);
+  eCmdMsg ParseMultiPlayer(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseOwnShip(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseScenario(std::string& aMsg, void** aCmdData);
   eCmdMsg ParseShutDown(std::string& aMsg, void** aCmdData);

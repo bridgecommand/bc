@@ -1,7 +1,7 @@
 #ifndef MESSAGE_MISC_HPP
 #define MESSAGE_MISC_HPP
 
-#define MAX_HEADER_MSG (5)
+#define MAX_HEADER_MSG (6)
 #define MAX_RECORD_BC_MSG (13)
 
 /*****************Enum cmds*****************************/

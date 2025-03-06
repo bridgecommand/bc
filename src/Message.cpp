@@ -7,7 +7,8 @@ sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController
 					     {"BC", &Message::ParseMasterCommand},
 					     {"OS", &Message::ParseOwnShip},
 					     {"SC", &Message::ParseScenario},
-					     {"SD", &Message::ParseShutDown}
+					     {"SD", &Message::ParseShutDown},
+                         {"MH", &Message::ParseMultiPlayer}
 					    };
 
 Message::Message(SimulationModel* aModel)
@@ -500,6 +501,12 @@ eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 	}
     }
   return E_CMD_MESSAGE_UNKNOWN;
+}
+
+eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
+{
+    
+    return ParseMasterCommand(aMsg, aCmdData);
 }
 
 eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)

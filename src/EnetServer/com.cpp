@@ -15,8 +15,6 @@ Com::Com(std::string aAddr, unsigned short aPort)
   mAddrServ.port = aPort;
   enet_address_set_host (&mAddrServ, aAddr.c_str());
   mClientCounter = 0;
-  mMsgToMaster = 0;
-  mMsgToSlave = 0;
   for(unsigned char i=0; i<MAX_CLIENT_CONNEXION; i++)
     {
       mPeerClient[i] = NULL;
@@ -29,8 +27,6 @@ Com::Com()
   mAddrServ.host = ENET_HOST_ANY;
   mAddrServ.port = 0;
   mClientCounter = 0;
-  mMsgToMaster = 0;
-  mMsgToSlave = 0;
   for(unsigned char i=0; i<MAX_CLIENT_CONNEXION; i++)
     {
       mPeerClient[i] = NULL;
@@ -157,43 +153,31 @@ int Com::ClientDisconnect(ENetPeer** aPeer)
 int Com::ClientMsg(const char *aData, size_t aDataSize)
 {
   std::string tmpBuffer(aData, aDataSize);
-  
+  eTarget target = UNKNOWN;
+
   //std::cout << "-- Message Event received --"  << std::endl;
+  eMsgDest msg = Message::Process(tmpBuffer);
   
   if(tmpBuffer.length() >= 2)
     {
-      if(E_MSG_FROM_MASTER == Message::Process(tmpBuffer))
+      if(E_MSG_TO_MASTER == msg)
 	{
-	  //std::cout << "Message from BC to MC"  << std::endl;
-	  mMsgToSlave = true;
+		  SendMsg(MASTER);
 	}
-      else if(E_MSG_FROM_MC == Message::Process(tmpBuffer))
+      else if(E_MSG_TO_SLAVE == msg)
 	{
-	  //std::cout << "Message from MC to BC"  << std::endl;
-	  mMsgToMaster = true;
+		  SendMsg(SLAVE);
 	}
+	  else if (E_MSG_TO_MH == msg)
+	  {
+		  SendMsg(MULTIHUB);
+	  }
+
     }
 
   return 0;
 }
 
-void Com::RouteMsg(void)
-{
-  eTarget target = UNKNOWN;
-  if(true == mMsgToMaster)
-    {
-      target = MASTER;
-      mMsgToMaster = false;
-    }
-  
-  if(true == mMsgToSlave)
-    {
-      target = SLAVE;
-      mMsgToSlave = false;
-    }
-
-   SendMsg(target);
-}
 
 void Com::SendMsg(eTarget aTarget)
 {
@@ -228,7 +212,6 @@ int Com::WaitEvent(unsigned short aTimeout)
 	case ENET_EVENT_TYPE_RECEIVE:
 	  {
 	    ret = ClientMsg((char*)mEvent.packet->data, mEvent.packet->dataLength);
-	    RouteMsg();
 	    break;
 	  }
 	case ENET_EVENT_TYPE_CONNECT:

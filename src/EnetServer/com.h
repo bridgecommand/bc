@@ -13,7 +13,7 @@
 typedef enum{
   MASTER=0x0A,
   SLAVE,
-  MULTIPLAYER,
+  MULTIHUB,
   UNKNOWN
 }eTarget;
 
@@ -36,7 +36,6 @@ class Com
   int ClientConnect(ENetPeer** aPeer, unsigned int aData);
   int ClientDisconnect(ENetPeer** aPeer);
   int ClientMsg(const char *aData, size_t aDataSize);  
-  void RouteMsg(void);
   void SendMsg(eTarget aTarget);
   
   /*Server*/
@@ -51,9 +50,6 @@ class Com
   unsigned int mTypeClient[MAX_CLIENT_CONNEXION];
   unsigned char mClientCounter;
 
-  /*Flag Broadcast*/
-  bool mMsgToMaster;
-  bool mMsgToSlave;
   
 };
 
