@@ -17,7 +17,7 @@ Com::Com(std::string aAddr, unsigned short aPort)
   mClientCounter = 0;
   mMsgToMaster = 0;
   mMsgToSlave = 0;
-  for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
+  for(unsigned char i=0; i<MAX_CLIENT_CONNEXION; i++)
     {
       mPeerClient[i] = NULL;
     }
@@ -31,7 +31,7 @@ Com::Com()
   mClientCounter = 0;
   mMsgToMaster = 0;
   mMsgToSlave = 0;
-  for(unsigned char i=0; i<=MAX_CLIENT_CONNEXION; i++)
+  for(unsigned char i=0; i<MAX_CLIENT_CONNEXION; i++)
     {
       mPeerClient[i] = NULL;
     }  
@@ -82,7 +82,7 @@ int Com::InitCom(void)
   return ret;
 }
 
-int Com::ClientConnect(ENetPeer** aPeer, unsigned char aData)
+int Com::ClientConnect(ENetPeer** aPeer, unsigned int aData)
 {
   bool isConnected = false;
   char ipAddr[16] = {0};
@@ -111,7 +111,7 @@ int Com::ClientConnect(ENetPeer** aPeer, unsigned char aData)
 	  mTypeClient[mClientCounter] = aData;
      	  mPeerClient[mClientCounter] = *aPeer;
 	  enet_address_get_host_ip(&mPeerClient[mClientCounter]->address, ipAddr, 16);
-	  std::cout << "Client :" << ipAddr << ":" << mPeerClient[mClientCounter]->address.port << " connected" << std::endl;
+	  std::cout << "Client :" << ipAddr << ":" << mPeerClient[mClientCounter]->address.port << " connected - type : " << mTypeClient[mClientCounter] << std::endl;
 	  mClientCounter++;
 	  ret = 0;
 	}
@@ -126,7 +126,6 @@ int Com::ClientConnect(ENetPeer** aPeer, unsigned char aData)
 int Com::ClientDisconnect(ENetPeer** aPeer)
 {
   char ipAddr[16] ={0};
-  int ret = -1;
   
   std::cout << "-- Disconnect Event received --"  << std::endl;
 
@@ -142,18 +141,17 @@ int Com::ClientDisconnect(ENetPeer** aPeer)
 
 	      mPeerClient[i] = {0};
 	      mClientCounter--;
-	      ret = 0;
-	    }
-	  else
-	    {
-	      enet_address_get_host_ip(&(*aPeer)->address, ipAddr, 16);
-	      std::cout << "Client :" << ipAddr << "never been connected" << std::endl;
-	      ret = 1;
+	      return  0;
 	    }
 	}
+      else
+	return -1;
     }
-  
-  return ret;
+
+  enet_address_get_host_ip(&(*aPeer)->address, ipAddr, 16);
+  std::cout << "Client :" << ipAddr << "never been connected" << std::endl;
+    
+  return 1;
 }
 
 int Com::ClientMsg(const char *aData, size_t aDataSize)
@@ -199,7 +197,7 @@ void Com::RouteMsg(void)
 
 void Com::SendMsg(eTarget aTarget)
 {
-  mPacket = enet_packet_create(mEvent.packet->data, mEvent.packet->dataLength + 1, 1);
+  mPacket = enet_packet_create(mEvent.packet->data, mEvent.packet->dataLength, 0);
 
   for(unsigned char i=0; i<mClientCounter; i++)
     {
@@ -223,7 +221,7 @@ int Com::WaitEvent(unsigned short aTimeout)
   
   if(0 < retEvent)
     {
-      //std::cout << "-- Event received : " << mEvent.type << " --"  << std::endl;
+      //std::cout << "-- Event received : " << mEvent.type << " - "<< mEvent.data << " --"  << std::endl;
       
       switch(mEvent.type)
 	{
@@ -235,7 +233,7 @@ int Com::WaitEvent(unsigned short aTimeout)
 	  }
 	case ENET_EVENT_TYPE_CONNECT:
 	  {
-	    ret = ClientConnect(&mEvent.peer, (unsigned char)mEvent.data);
+	    ret = ClientConnect(&mEvent.peer, mEvent.data);
 	    break;
 	  }
 	case ENET_EVENT_TYPE_DISCONNECT:

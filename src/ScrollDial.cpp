@@ -18,9 +18,9 @@ namespace gui
 
 //! constructor
 ScrollDial::ScrollDial(core::position2d< s32 > centre, u32 radius, IGUIEnvironment* environment,
-				IGUIElement* parent, s32 id, s32 maxAngle, bool noclip) :
+				IGUIElement* parent, s32 id, s32 maxAngle, bool showValue, bool noclip) :
 				IGUIScrollBar(environment, parent, id, core::rect<s32>(centre.X - radius, centre.Y - radius, centre.X + radius,centre.Y + radius)),
-				centre(centre), radius(radius), maxAngle(maxAngle),
+				centre(centre), radius(radius), maxAngle(maxAngle), showValue(showValue),
 				Dragging(false), Pos(0), DrawPos(0), DrawAngle(0), DrawHeight(0),
 				Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0)
 {
@@ -237,6 +237,18 @@ void ScrollDial::draw()
 		endPoint.Y = absoluteCentre.Y - radius*cos(DrawAngle);
 
 		Environment->getVideoDriver()->draw2DLine(absoluteCentre,endPoint,video::SColor(skinAlpha,0,0,0));
+	}
+
+	// Display value on scroll dial
+	if (showValue) {
+		if (Environment->getHovered() == this) {
+			if (skin) {
+				irr::gui::IGUIFont* font = skin->getFont();
+				if (font) {
+					font->draw(irr::core::stringw(Pos),AbsoluteRect,video::SColor(skinAlpha,0,0,0),true,true,&AbsoluteRect);
+				}
+			}
+		}
 	}
 
 }

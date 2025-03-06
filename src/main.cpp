@@ -936,8 +936,9 @@ int main(int argc, char ** argv)
       }
     else
       {
-        irr::core::stringw portMessage = language.translate("secondaryWait");
-        loadingMessage->setText(portMessage.c_str());
+        irr::core::stringw waitingMessage = language.translate("secondaryWait");
+	waitingMessage += network.GetIPServer().c_str();
+        loadingMessage->setText(waitingMessage.c_str());
         device->run();
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
         device->getGUIEnvironment()->drawAll();
@@ -949,7 +950,7 @@ int main(int argc, char ** argv)
 
 	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
 	  {
-	    network.WaitMessage(inMsg, msgType, &dataScn);
+	    network.WaitMessage(inMsg, msgType, &dataScn, 1000);
 	  }
 	if(dataScn != NULL)
 	  {
@@ -1048,7 +1049,6 @@ int main(int argc, char ** argv)
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
     }
-
     
     //check enough time has elapsed to show the credits screen (5s)
     while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
@@ -1071,12 +1071,14 @@ int main(int argc, char ** argv)
 
 	sound.StartSound();
 
+	
     //main loop
     while(device->run())
       {
         { IPROF("Network");
 
-	  Update::UpdateNetwork(&model, &network, mode);
+
+        Update::UpdateNetwork(&model, &network, mode);
 	    
 	  if (true == bExtraNet) {
             //extraNetwork.update();
