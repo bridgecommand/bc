@@ -375,7 +375,11 @@ int main()
         //for each peer
         for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
 
+#ifdef _WIN32
             Sleep(10);
+#elif
+            sleep(10)
+#endif
 
             std::string stringToSend = "MH";
 
