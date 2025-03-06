@@ -21,11 +21,6 @@ eMsgDest Message::Process(std::string& aMsg)
       return E_MSG_TO_SLAVE;
     }
 
-  if (aMsg.substr(0, 3) == "SCN")
-  {
-      return E_MSG_TO_SLAVE;
-  }
-
     if (aMsg.substr(0, 3) == "MPH")
         {
             return E_MSG_TO_MH;
