@@ -168,7 +168,7 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
 	{
 		  SendMsg(SLAVE);
 	}
-	  else if (E_MSG_TO_MH == msg)
+	  else if(E_MSG_TO_MH == msg)
 	  {
 		  SendMsg(MULTIHUB);
 	  }

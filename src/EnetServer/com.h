@@ -13,6 +13,7 @@
 typedef enum{
   MASTER=0x0A,
   SLAVE,
+  MASTER_MP,
   MULTIHUB,
   UNKNOWN
 }eTarget;

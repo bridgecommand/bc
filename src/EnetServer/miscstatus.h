@@ -15,6 +15,7 @@ typedef enum{
   E_MSG_TO_MASTER,
   E_MSG_TO_SLAVE,
   E_MSG_TO_MH,
+  E_MSG_TO_MASTER_MP,
   E_MSG_TO_UNKNOW_HOST=0x88
   
 }eMsgDest;
