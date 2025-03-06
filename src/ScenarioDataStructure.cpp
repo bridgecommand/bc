@@ -133,7 +133,7 @@ std::string ScenarioData::serialise(bool withSpaces)
     }
     // SCN2 is the same as SCN1, but allows whitespace around the delimiters
     // SCN3 adds wind and tidal override information
-    std::string serialised = "MHSCN3"; //Scenario data, serialised format 3
+    std::string serialised = "SCN3"; //Scenario data, serialised format 3
     serialised.append(separator);
     serialised.append(scenarioName);
     serialised.append(separator);

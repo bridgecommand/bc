@@ -505,12 +505,6 @@ eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
 {
-    if(aMsg.substr(0, 3).compare("SCN") == 0)
-      {
-	std::string msg = aMsg.substr(3);
-        return ParseScenario(msg, aCmdData);
-      }
-    else
         return ParseMasterCommand(aMsg, aCmdData);
 }
 
