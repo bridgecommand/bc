@@ -377,7 +377,7 @@ int main()
 
 #ifdef _WIN32
             Sleep(10);
-#elif
+#else
             sleep(10)
 #endif
 
