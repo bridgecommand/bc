@@ -375,7 +375,7 @@ int main()
         //for each peer
         for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
 
-            std::string stringToSend = "BC";
+            std::string stringToSend = "MH";
 
             //0: Time info
             stringToSend.append(timeString);
