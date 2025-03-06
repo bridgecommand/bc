@@ -172,7 +172,10 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
 	  {
 		  SendMsg(MULTIHUB);
 	  }
-
+	  else if (E_MSG_TO_MASTER_MP == msg)
+	  {
+		  SendMsg(MASTER_MP);
+	  }
     }
 
   return 0;

@@ -12,7 +12,9 @@ Message::~Message()
 
 eMsgDest Message::Process(std::string& aMsg)
 {
-    
+ 
+    std::cout << "----------> " << aMsg << std::endl;
+
   if(aMsg.substr(0, 3) == "SCN"
      || aMsg.substr(0,2) == "BC"
      || aMsg.substr(0,2) == "OS"
@@ -26,11 +28,15 @@ eMsgDest Message::Process(std::string& aMsg)
             return E_MSG_TO_MH;
     }
   
-  if(aMsg.substr(0,2) == "MC"
-      || aMsg.substr(0, 2) == "MH")
+  if(aMsg.substr(0,2) == "MC")
     {
       return E_MSG_TO_MASTER;
     }
+
+  if (aMsg.substr(0, 2) == "MH")
+  {
+      return E_MSG_TO_MASTER_MP;
+  }
 
   return E_MSG_TO_UNKNOW_HOST;
 }

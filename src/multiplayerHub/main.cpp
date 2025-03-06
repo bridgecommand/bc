@@ -375,6 +375,8 @@ int main()
         //for each peer
         for(unsigned int thisPeer = 0; thisPeer<numberOfPeers; thisPeer++ ) {
 
+            Sleep(10);
+
             std::string stringToSend = "MH";
 
             //0: Time info
