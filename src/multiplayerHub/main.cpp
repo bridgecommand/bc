@@ -378,7 +378,7 @@ int main()
 #ifdef _WIN32
             Sleep(10);
 #else
-            sleep(10)
+            sleep(10);
 #endif
 
             std::string stringToSend = "MH";
