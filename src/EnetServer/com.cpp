@@ -156,26 +156,26 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
   eTarget target = UNKNOWN;
 
   //std::cout << "-- Message Event received --"  << std::endl;
-  eMsgDest msg = Message::Process(tmpBuffer);
+  int msgTo = Message::Process(tmpBuffer);
   
   if(tmpBuffer.length() >= 2)
     {
-      if(E_MSG_TO_MASTER == msg)
-	{
+      if(E_MSG_TO_MASTER == msgTo)
+		{
 		  SendMsg(MASTER);
-	}
-      else if(E_MSG_TO_SLAVE == msg)
-	{
+		}
+		if(E_MSG_TO_SLAVE & msgTo)
+		{
 		  SendMsg(SLAVE);
-	}
-	  else if(E_MSG_TO_MH == msg)
-	  {
+		}
+		if(E_MSG_TO_MH == msgTo)
+		{
 		  SendMsg(MULTIHUB);
-	  }
-	  else if (E_MSG_TO_MASTER_MP == msg)
-	  {
+		}
+		if(E_MSG_TO_MASTER_MP == msgTo)
+		{
 		  SendMsg(MASTER_MP);
-	  }
+		}
     }
 
   return 0;

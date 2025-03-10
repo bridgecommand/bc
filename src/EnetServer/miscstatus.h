@@ -9,26 +9,13 @@ typedef enum{
   
 }eServState;
 
-typedef enum{
+#define E_MSG_TO_MC			 (0x01)
+#define E_MSG_TO_MASTER		 (0x02)
+#define E_MSG_TO_SLAVE		 (0x04)
+#define E_MSG_TO_MH			 (0x08)
+#define E_MSG_TO_MASTER_MP	 (0x10)
+#define E_MSG_TO_UNKNOW_HOST (0x20)
 
-  E_MSG_TO_MC=0x55,
-  E_MSG_TO_MASTER,
-  E_MSG_TO_SLAVE,
-  E_MSG_TO_MH,
-  E_MSG_TO_MASTER_MP,
-  E_MSG_TO_UNKNOW_HOST=0x88
-  
-}eMsgDest;
-
-typedef enum{
-
-  E_MSG_FROM_MC=0x66,
-  E_MSG_FROM_MASTER,
-  E_MSG_FROM_SLAVE,
-  E_MSG_FROM_MH,
-  E_MSG_FROM_UNKNOW_HOST=0x99
-  
-}eMsgSrc;
 
 
 #endif

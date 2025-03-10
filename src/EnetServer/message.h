@@ -11,7 +11,7 @@ class Message
   Message();
   ~Message();
 
-  static eMsgDest Process(std::string& aMsg);
+  static int Process(std::string& aMsg);
     
  private:
 

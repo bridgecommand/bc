@@ -10,18 +10,22 @@ Message::~Message()
 }
 
 
-eMsgDest Message::Process(std::string& aMsg)
+int Message::Process(std::string& aMsg)
 {
  
     std::cout << "----------> " << aMsg << std::endl;
 
-  if(aMsg.substr(0, 3) == "SCN"
-     || aMsg.substr(0,2) == "BC"
+  if(aMsg.substr(0,2) == "BC"
      || aMsg.substr(0,2) == "OS"
      || aMsg.substr(0,2) == "SD") 
     {
       return E_MSG_TO_SLAVE;
     }
+
+  if (aMsg.substr(0, 3) == "SCN")
+  {
+      return E_MSG_TO_SLAVE | E_MSG_TO_MASTER_MP;
+  }
 
     if (aMsg.substr(0, 3) == "MPH")
         {
