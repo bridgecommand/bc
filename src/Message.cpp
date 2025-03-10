@@ -558,7 +558,7 @@ eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
 
         *aCmdData = (void*)&masterCmdsData;
 
-        return E_CMD_MESSAGE_BRIDGE_COMMAND;
+        return E_CMD_MESSAGE_MULTIPLAYER_COMMAND;
     }
     return E_CMD_MESSAGE_UNKNOWN;
 }

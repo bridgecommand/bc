@@ -2333,7 +2333,31 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 
 	break;
       }
+    case E_CMD_MESSAGE_MULTIPLAYER_COMMAND:
+    {
+        sMasterCmdsInf* dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
 
+        /************************************************************************/
+        setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
+        setHeading(dataMasterCmds->ownShip.hdg);
+        setRateOfTurn(dataMasterCmds->ownShip.rot);
+        setSpeed(dataMasterCmds->ownShip.speed);
+
+        /************************************************************************/
+        if (dataMasterCmds->otherShips.nbrShips > 0)
+        {
+            for (unsigned short i = 0; i < dataMasterCmds->otherShips.nbrShips; i++)
+            {
+                setOtherShipHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
+                setOtherShipSpeed(i, (dataMasterCmds->otherShips.ships[i].speed) / MPS_TO_KTS);
+                setOtherShipRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
+                setOtherShipPos(i, dataMasterCmds->otherShips.ships[i].posX, dataMasterCmds->otherShips.ships[i].posZ);
+            }
+            delete[] dataMasterCmds->otherShips.ships;
+        }
+
+        break;
+    }
     case E_CMD_MESSAGE_UNKNOWN:
     default:
       {	
