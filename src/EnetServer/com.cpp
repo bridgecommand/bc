@@ -160,7 +160,7 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
   
   if(tmpBuffer.length() >= 2)
     {
-      if(E_MSG_TO_MASTER == msgTo)
+      if(E_MSG_TO_MASTER & msgTo)
 		{
 		  SendMsg(MASTER);
 		}
@@ -168,11 +168,11 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
 		{
 		  SendMsg(SLAVE);
 		}
-		if(E_MSG_TO_MH == msgTo)
+		if(E_MSG_TO_MH & msgTo)
 		{
 		  SendMsg(MULTIHUB);
 		}
-		if(E_MSG_TO_MASTER_MP == msgTo)
+		if(E_MSG_TO_MASTER_MP & msgTo)
 		{
 		  SendMsg(MASTER_MP);
 		}
