@@ -27,7 +27,7 @@ int Message::Process(std::string& aMsg)
       return E_MSG_TO_SLAVE | E_MSG_TO_MASTER_MP;
   }
 
-    if (aMsg.substr(0, 3) == "MPH")
+    if (aMsg.substr(0, 3) == "MPF")
         {
             return E_MSG_TO_MH;
     }

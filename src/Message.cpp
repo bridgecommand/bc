@@ -505,7 +505,62 @@ eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
 {
-        return ParseMasterCommand(aMsg, aCmdData);
+    static sMasterCmdsInf masterCmdsData;
+    std::vector<std::string> bcRec = Utilities::split(aMsg, '#');
+
+    if (MAX_RECORD_BC_MSG == bcRec.size())
+    {
+        /*Time Infos*/
+        std::vector<std::string> timeData = Utilities::split(bcRec.at(0), ',');
+        masterCmdsData.time = GetTimeInfos(timeData);
+
+        std::vector<std::string> numberData = Utilities::split(bcRec.at(2), ',');
+        if (numberData.size() == 4)
+        {
+            /*Other Ships Infos*/
+            unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
+
+            if (numberOthers > 0)
+            {
+                std::vector<std::string> otherShipsData = Utilities::split(bcRec.at(3), '|');
+                masterCmdsData.otherShips.ships = new sShipInf[numberOthers];
+                GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
+            }
+
+            /*Buoys*/
+            //Not recovered
+
+            /*MOB*/
+            unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
+            if (numberMOB)
+            {
+                std::vector<std::string> mobData = Utilities::split(numberData.at(5), ',');
+                masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
+            }
+
+            /*Lines*/
+            unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
+            std::vector<std::string> linesData = Utilities::split(bcRec.at(11), '|');
+            masterCmdsData.lines = GetInfosLines(linesData, numberLines);
+        }
+
+        /*Weather*/
+        std::vector<std::string> weatherData = Utilities::split(bcRec.at(7), ',');
+        masterCmdsData.weather = GetInfosWeather(weatherData);
+
+        /*Views*/
+        std::vector<std::string> viewData = Utilities::split(bcRec.at(9), ',');
+        masterCmdsData.view = GetInfosView(viewData);
+
+        /*Controls*/
+        std::vector<std::string> controlsData = Utilities::split(bcRec.at(12), ',');
+        masterCmdsData.controls = GetInfosControls(controlsData);
+
+        *aCmdData = (void*)&masterCmdsData;
+
+        return E_CMD_MESSAGE_BRIDGE_COMMAND;
+    }
+    return E_CMD_MESSAGE_UNKNOWN;
 }
 
 eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
