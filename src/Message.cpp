@@ -606,8 +606,10 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
 
 std::string& Message::MpFeedBack(void)
 {
-  static std::string mpFeedBack = "MPF";
+  static std::string mpFeedBack;
   mpFeedBack.clear();
+
+  mpFeedBack = "MPF";
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getPosX()));
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
