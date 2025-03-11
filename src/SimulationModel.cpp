@@ -2337,12 +2337,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
     {
         sMasterCmdsInf* dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
 
-        /************************************************************************/
-        setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
-        setHeading(dataMasterCmds->ownShip.hdg);
-        setRateOfTurn(dataMasterCmds->ownShip.rot);
-        setSpeed(dataMasterCmds->ownShip.speed);
 
+        /************************************************************************/
+        if (dataMasterCmds->time.setTimeD)
+            setTimeDelta(dataMasterCmds->time.timeD);
+
+        setAccelerator(dataMasterCmds->time.accel);
         /************************************************************************/
         if (dataMasterCmds->otherShips.nbrShips > 0)
         {
