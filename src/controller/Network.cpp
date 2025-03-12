@@ -54,7 +54,7 @@ Network::Network(int port, std::string aAddr)
       address.port = port;
       
       /* Initiate the connection, allocating the maximum number of channels. */
-      peer = enet_host_connect(client, &address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+      peer = enet_host_connect(client, &address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 14);
       //Note we don't store peer pointer, as we broadcast to all connected peers.
       if (peer == NULL)
         {

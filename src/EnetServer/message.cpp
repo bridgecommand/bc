@@ -19,12 +19,12 @@ int Message::Process(std::string& aMsg)
      || aMsg.substr(0,2) == "OS"
      || aMsg.substr(0,2) == "SD") 
     {
-      return E_MSG_TO_SLAVE;
+      return E_MSG_TO_SLAVE | E_MSG_TO_MC;
     }
 
   if (aMsg.substr(0, 3) == "SCN")
   {
-      return E_MSG_TO_SLAVE | E_MSG_TO_MASTER_MP;
+      return E_MSG_TO_SLAVE | E_MSG_TO_MASTER_MP | E_MSG_TO_MC;
   }
 
     if (aMsg.substr(0, 3) == "MPF")

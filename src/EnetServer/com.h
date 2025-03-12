@@ -15,6 +15,7 @@ typedef enum{
   SLAVE,
   MASTER_MP,
   MULTIHUB,
+  MAP_CTRL,
   UNKNOWN
 }eTarget;
 
