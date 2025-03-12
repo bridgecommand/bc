@@ -33,7 +33,7 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 				std::string msgKeepAliveScn = aModel->getSerialisedScenario();
 				aNet->SendMessage(msgKeepAliveScn, true);
 			}
-			else if (aModel->getLoopNumber() % 10 == 0)
+			else if (aModel->getLoopNumber() % 6 == 0)
 			{
 				std::string msgKeepAlive = outMsg.KeepAlive();
 				aNet->SendMessage(msgKeepAlive);
