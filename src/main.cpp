@@ -415,8 +415,9 @@ int main(int argc, char ** argv)
     if (!scriptToExe.empty())
       {
 #ifdef _WIN32
-	std::string winScript = "./Scripts/win/" + scriptToExe;
-        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+        std::string winScript = "Scripts\\win\\" + scriptToExe;
+        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
+
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
@@ -809,7 +810,7 @@ int main(int argc, char ** argv)
     
     if (mode == OperatingMode::Normal) {
         ScenarioChoice scenarioChoice(device,&language);
-        scenarioChoice.chooseScenario(scenarioName, hostname, enetSrvPort, mode, scenarioPath);
+        scenarioChoice.chooseScenario(scenarioName, mode, scenarioPath);
     }
 
     Utilities::trim(hostname);
@@ -1239,8 +1240,9 @@ int main(int argc, char ** argv)
     if (!scriptToExe.empty())
       {
 #ifdef _WIN32
-	std::string winScript = "./Scripts/win/" + scriptToExe;
-        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+        std::string winScript = "Scripts\\win\\" + scriptToExe;
+        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_HIDE);
+
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;

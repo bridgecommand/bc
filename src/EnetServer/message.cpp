@@ -13,7 +13,7 @@ Message::~Message()
 int Message::Process(std::string& aMsg)
 {
  
-    std::cout << "----------> " << aMsg << std::endl;
+    //std::cout << "----------> " << aMsg << std::endl;
 
   if(aMsg.substr(0,2) == "BC"
      || aMsg.substr(0,2) == "OS"
