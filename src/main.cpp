@@ -416,14 +416,14 @@ int main(int argc, char ** argv)
     if (!scriptToExe.empty())
       {
 #ifdef _WIN32
-	std::string winScript = "./Scripts/win/" + scriptToExe;
-        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+	std::string winScript = "Scripts\\win\\" + scriptToExe;
+        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	execl(macOsScript.c_str(), "script start", "-M", NULL);
+	system(linuxScript.c_str());
 #else
-	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
+	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
 	system(linuxScript.c_str());
 #endif
 #endif
@@ -1235,14 +1235,14 @@ int main(int argc, char ** argv)
     if (!scriptToExe.empty())
       {
 #ifdef _WIN32
-	std::string winScript = "./Scripts/win/" + scriptToExe;
-        ShellExecute(NULL, NULL, winScript.c_str(), "-M", NULL, SW_SHOW);
+	std::string winScript = "Scripts\\win\\" + scriptToExe;
+        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	execl(macOsScript.c_str(), "script stop", "-M", NULL);
+	system(linuxScript.c_str());
 #else
-	std::string linuxScript = "./Scripts/linux/" + scriptToExe + ".sh";
+	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
 	system(linuxScript.c_str());
 #endif
 #endif
