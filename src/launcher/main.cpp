@@ -4,12 +4,9 @@
 //on which button the user presses
 
 /*
-* Image and logo thanks :
-* https://www.freepik.com/
-* https://www.flaticon.com/fr/auteurs/nangicon
-* https://www.flaticon.com/fr/auteurs/gravisio
-* https://www.flaticon.com/fr/auteurs/najmunnahar
-* https://www.flaticon.com/fr/auteurs/alkhalifi-design
+* Icons from :
+* https://github.com/dubdubdubco/iconicicons.git
+* CC0 Public domain 
 */
 
 #ifdef _MSC_VER
