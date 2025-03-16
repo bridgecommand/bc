@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5 - Land objects</title>
+  <title>Aegir Styra 5 - Land objects</title>
 
 </head>
 
@@ -20,20 +20,20 @@ Land objects are models that can be loaded into the world model, to represent bu
 </p>
 
 <p>
-The most fundamental part of any land object to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format (.3ds). With this, the text file object.ini can be used to define modifications to the way the model is loaded. The specification of this file is detailed below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file format</a>. 
+The most fundamental part of any land object to load in Aegir Styra is the 3D model itself. This can be in DirectX (.x) or 3DS Max format (.3ds). With this, the text file object.ini can be used to define modifications to the way the model is loaded. The specification of this file is detailed below, but for a general introduction to the .ini file format used by Aegir Styra, please read <a href="IniFileFormat.html">the .ini file format</a>. 
 </p> 
 
 <p>
-Each land object is contained in a folder, with the land object's name, under Models\LandObject. So if Bridge Command is installed in its default location, a land object model called 'Church' would be at 'C:\Program Files (x86)\Bridge Command x.x\models\LandObject\Church'
+Each land object is contained in a folder, with the land object's name, under Models\LandObject. So if Aegir Styra is installed in its default location, a land object model called 'Church' would be at 'C:\Program Files (x86)\Aegir Styra x.x\models\LandObject\Church'
 </p>
 
 <h2>Simple model loading</h2>
 
-<p>If the 3d model is in DirectX (.x) format, and does not need scaling (In Bridge Command 1 unit = 1 metre), to make the object available, rename the model file 'object.x'. In the land object's folder (Models\LandObject\ in Bridge Command's installation folder), create a sub-folder with the object name that you want, and place the model file and all required textures in this folder.</p> You can now load the land object into a world model, using the folder name you chose.
+<p>If the 3d model is in DirectX (.x) format, and does not need scaling (In Aegir Styra 1 unit = 1 metre), to make the object available, rename the model file 'object.x'. In the land object's folder (Models\LandObject\ in Aegir Styra's installation folder), create a sub-folder with the object name that you want, and place the model file and all required textures in this folder.</p> You can now load the land object into a world model, using the folder name you chose.
 
 <h2>Normal model loading</h2>
 
-<p>If you wish to scale the model, to make it the right size to load into Bridge Command, or if the file is in the 3DS format (.3ds), an additional settings file, 'object.ini' must be used. In the land object's folder (Models\LandObject\ in Bridge Command's installation folder), create a sub-folder with the object name that you want. Place your model and texture files in this folder. You must also create an object.ini file in this folder. This can either be created from a blank text file using Notepad, or copied from another model and edited with Notepad.</p>
+<p>If you wish to scale the model, to make it the right size to load into Aegir Styra, or if the file is in the 3DS format (.3ds), an additional settings file, 'object.ini' must be used. In the land object's folder (Models\LandObject\ in Aegir Styra's installation folder), create a sub-folder with the object name that you want. Place your model and texture files in this folder. You must also create an object.ini file in this folder. This can either be created from a blank text file using Notepad, or copied from another model and edited with Notepad.</p>
 
 <h3>Object.ini</h3>
 
@@ -45,7 +45,7 @@ ScaleFactor=4.0
 </pre>
 
 <p>
-The FileName is set as the name of the model file you wish to load. This model file must exist in the folder, and should be either a 3ds or DirectX (.3ds or .x) model. The ScaleFactor is the amount that the model will be multiplied by to scale it for Bridge Command. This should therefore be set to 1 if no scaling is required.
+The FileName is set as the name of the model file you wish to load. This model file must exist in the folder, and should be either a 3ds or DirectX (.3ds or .x) model. The ScaleFactor is the amount that the model will be multiplied by to scale it for Aegir Styra. This should therefore be set to 1 if no scaling is required.
 </p>
 
 </body>

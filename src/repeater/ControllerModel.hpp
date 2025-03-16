@@ -1,5 +1,5 @@
 
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2014 James Packer
 
      This program is free software; you can redistribute it and/or modify

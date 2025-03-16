@@ -1,4 +1,4 @@
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2023 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -369,7 +369,7 @@ int VRInterface::load(SimulationModel* model) {
 	instance_create_info.applicationInfo.applicationVersion = 1;
 	instance_create_info.applicationInfo.engineVersion = 0;
 	instance_create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
-	strncpy(instance_create_info.applicationInfo.applicationName, "Bridge Command",
+	strncpy(instance_create_info.applicationInfo.applicationName, "Aegir Styra",
 		XR_MAX_APPLICATION_NAME_SIZE);
 	strncpy(instance_create_info.applicationInfo.engineName, "Irrlicht Custom", XR_MAX_ENGINE_NAME_SIZE);
 

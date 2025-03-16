@@ -1,5 +1,5 @@
 //Common launcher program
-//This just launches Bridge Command or
+//This just launches Aegir Styra or
 //Map Controller executable depending
 //on which button the user presses
 
@@ -201,7 +201,7 @@ int main (int argc, char ** argv)
 {
 
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R

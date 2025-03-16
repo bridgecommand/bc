@@ -1,4 +1,4 @@
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2014 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -45,8 +45,8 @@ namespace Utilities
     std::wstring trim(std::wstring inString, std::wstring trimChrs = L" \f\n\r\t\v");
 
     std::vector<std::string> split(const std::string &inputString, char delim);
-    std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Bridge Command/ on windows)
-    std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Bridge Command/VERSIONUMBER/ on windows)
+    std::string getUserDirBase(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory, the first level folder in the user's filesystem (eg %appdata%/Aegir Styra/ on windows)
+    std::string getUserDir(); //Returns the directory path (absolute, with trailing slash) for a user read/writable directory (eg %appdata%/Aegir Styra/VERSIONUMBER/ on windows)
     bool pathExists(std::string filePath);
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName); //Read a scenario from ini files
     bool hasEnding(std::string const &fullString, std::string const &ending);

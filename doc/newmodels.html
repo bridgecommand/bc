@@ -3,7 +3,7 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5.2 - Ship models</title>
+  <title>Aegir Styra 5.2 - Ship models</title>
 
 </head>
 
@@ -16,24 +16,24 @@
 <h2>Introduction</h2>
 
 <p>
-There are two classes of other ship models that can be defined in Bridge Command. These are 'own ships' and 'other ships.' Ownships are models 
+There are two classes of other ship models that can be defined in Aegir Styra. These are 'own ships' and 'other ships.' Ownships are models 
 that have their full dynamics modelled, and are for use as the user's own ship. 'Other ships' are used to model all other ships in the 
 environment. For details of what you can do with these, and how to load them in scenarios, please see the <a href="Scenario.html">Scenario 
 specification</a> and the <a href="writer.html">Scenario writer</a>.
 </p>
 
 <p>
-The most fundamental part of any ship model to load in Bridge Command is the 3D model itself. This can be in DirectX (.x) or 3DS Max format 
+The most fundamental part of any ship model to load in Aegir Styra is the 3D model itself. This can be in DirectX (.x) or 3DS Max format 
 (.3ds). Additionally, for own ship models, equirectangular panoramic photos can be used. For more details on this, please see below.
 Alongside the model, the text file boat.ini is used to define the other characteristics. The specification of this file is detailed 
-below, but for a general introduction to the .ini file format used by Bridge Command, please read <a href="IniFileFormat.html">the .ini file 
+below, but for a general introduction to the .ini file format used by Aegir Styra, please read <a href="IniFileFormat.html">the .ini file 
 format</a>. 
 </p> 
 
 <p>
-Each vessel is contained in a folder, with the vessel's name, under Models\Othership  or Models\Ownship as appropriate. So if Bridge Command 
-is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files (x86)\Bridge Command X.X\models\Ownship\Protis'.
-Bridge Command also looks in the user directory, which can be found using the button on the Bridge Command launcher, so users can add new ship models 
+Each vessel is contained in a folder, with the vessel's name, under Models\Othership  or Models\Ownship as appropriate. So if Aegir Styra 
+is installed in its default location, an own ship model called 'Protis' would be at 'C:\Program Files (x86)\Aegir Styra X.X\models\Ownship\Protis'.
+Aegir Styra also looks in the user directory, which can be found using the button on the Aegir Styra launcher, so users can add new ship models 
 without needing to be able to make changes in the installation directory.
 </p>
 
@@ -53,7 +53,7 @@ explained below this:
 
 <p>
 If you are using panoramic photos for the own ship, each photo must be an equirectangular panorama, with transparency set for all areas of the photo 
-that are not part of the ship. So for example, all bridge windows must be transparent, so Bridge Command can render the surrounding scene. To use this 
+that are not part of the ship. So for example, all bridge windows must be transparent, so Aegir Styra can render the surrounding scene. To use this 
 mode, instead of specifying a model file with the FileName parameter, FileName="360" should be used. The view positions are defined as for a normal ship 
 model, and are set as follows:
 </p>
@@ -173,10 +173,10 @@ WheelScale=1.0
 <p>
 <ul>
 <li>FileName: Sets the name of the 3D model file to load</li>
-<li>ScaleFactor: The amount to scale the 3D model by. Bridge Command uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
+<li>ScaleFactor: The amount to scale the 3D model by. Aegir Styra uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
 <li><b>Note that all subsequent positions/distances are in the units/coordinate system of the 3D model file, except for the propulsion system.</b></li>
 <li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negative value</li>
-<li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Bridge Command axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Bridge Command uses a left handed coordinate system internally, so the Z axis is towards the ship's bow)</li>
+<li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Aegir Styra axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Aegir Styra uses a left handed coordinate system internally, so the Z axis is towards the ship's bow)</li>
 <li>Depth: The vessel's depth under the water line (in the 3D model's units)</li>
 <li>Views: The number of viewpoints on board the vessel (Minimum 1)</li>
 <li>For each viewpoint, where # is the viewpoint number:
@@ -324,7 +324,7 @@ WheelScale=1.0
 </p>
 
 <!--<p>
-If there is a file <i>horn.wav</i> in the directory, this will be used as the ship's horn sound. If not, Bridge Command will default to it's own horn sound.
+If there is a file <i>horn.wav</i> in the directory, this will be used as the ship's horn sound. If not, Aegir Styra will default to it's own horn sound.
 </p>-->
 
 <h3>Radar.ini</h3>
@@ -491,11 +491,11 @@ LightEndAngle(5)=472.5
 <p>
 <ul>
 <li>FileName: Sets the name of the 3D model file to load</li>
-<li>ScaleFactor: The amount to scale the 3D model by. Bridge Command uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
+<li>ScaleFactor: The amount to scale the 3D model by. Aegir Styra uses metres as it's units, so if the model is in feet, then this should be around 0.3</li>
 <li><b>Note that all subsequent positions/distances are in the units/coordinate system of the 3D model file</b></li>
 <li>YCorrection: The amount to move the model UP. Therefore, if the model's origin is at its keel, this should be a negatve value</li>
 <li>(Optional): SolidHeight: The maximum height at which the model should block radar targets behind it. If omitted, this defaults to about half of the height above the waterline. Note that this should be set in the model units and above the model's origin.</li>
-<li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Bridge Command axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Bridge Command uses a left handed coordinate system internally, so the Z axis is towards the ship's bow).</li>
+<li>AngleCorrection: The number of degrees the model should be rotated about its vertical axis to correctly align it: The Aegir Styra axis system is Y up and Z towards the model's stern (when viewed in a 3d model editor with a right handed coordinate system. Aegir Styra uses a left handed coordinate system internally, so the Z axis is towards the ship's bow).</li>
 <!--<li>OPTIONAL:
 <ul>
 <li>Filename2: If required, the filename of any secondary model file to be added to the ship model. This filename is relative to the ship's folder, so if one of the generic dayshapes is required, this can be set as "../Anchor.3ds" or similar.</li>

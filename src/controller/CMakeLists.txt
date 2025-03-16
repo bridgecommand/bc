@@ -1,7 +1,7 @@
 
 add_subdirectory(libs/aisparser)
 
-add_executable(bridgecommand-mc
+add_executable(aegirstyra-mc
     ControllerModel.cpp
     EventReceiver.cpp
     GUI.cpp
@@ -17,7 +17,7 @@ add_executable(bridgecommand-mc
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 
-target_link_libraries(bridgecommand-mc
+target_link_libraries(aegirstyra-mc
     bc-asio
     enet
     bc-irrlicht

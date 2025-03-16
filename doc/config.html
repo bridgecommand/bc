@@ -1,12 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>Bridge Command 5</title>
+  <title>Aegir Styra 5</title>
 
 
   <meta name="resource-type" content="document">
 
-  <meta name="description" content="Bridge Command Ship and navigation simulator, a non-commercial (freeware) 3d ship simulator for the PC.">
+  <meta name="description" content="Aegir Styra Ship and navigation simulator, a non-commercial (freeware) 3d ship simulator for the PC.">
 
   <meta name="keywords" content="Bridge, Command, ship, boat, navigation, chartwork, simulator, free, freeware, Windows, 3d">
 
@@ -16,7 +16,7 @@
 <body style="background-color: rgb(221, 221, 221);">
 
 <div style="text-align: center;">
-<h1>Bridge Command 5</h1>
+<h1>Aegir Styra 5</h1>
 </div>
 
 <center>
@@ -26,24 +26,24 @@
 
 <h3>Introduction</h3>
 
-<p>Bridge Command's settings are controlled in the file bc5.ini, found in the Bridge Command root directory. Note that Bridge Command will 
+<p>Aegir Styra's settings are controlled in the file bc5.ini, found in the Aegir Styra root directory. Note that Aegir Styra will 
 look first in the user directory for a settings file, and will use this in preference to the global bc5.ini file. This allows users to change
 their own settings.
-The user directory is %appdata%/Bridge Command/x.x on Windows, ~/.Bridge Command/x.x on Linux and 
-~/Library/Application Support/Bridge Command/x.x on OSX. For all of these, x.x is the Bridge Command short version number (e.g. 5.6)
+The user directory is %appdata%/Aegir Styra/x.x on Windows, ~/.Aegir Styra/x.x on Linux and 
+~/Library/Application Support/Aegir Styra/x.x on OSX. For all of these, x.x is the Aegir Styra short version number (e.g. 5.6)
 </p>
 <p>
 The settings file can  be edited with either a standard text editor (such as notepad), or with the program provided, which can be started by 
-clicking on the 'Settings: Main' button on the Bridge Command launcher. For advanced users, Bridge Command can be run with the command line 
-option '-c' to point to an alternative settings file. For example, 'bridgecommand-bc.exe -c c:\path\to\alternativeIniFile.ini'.</p>
+clicking on the 'Settings: Main' button on the Aegir Styra launcher. For advanced users, Aegir Styra can be run with the command line 
+option '-c' to point to an alternative settings file. For example, 'aegirstyra-bc.exe -c c:\path\to\alternativeIniFile.ini'.</p>
 
-<p>The settings control how Bridge Command runs on your screen, such as whether it runs full screen, or in a window, and at what resolution, 
+<p>The settings control how Aegir Styra runs on your screen, such as whether it runs full screen, or in a window, and at what resolution, 
 as well as many other things.
 </p>
 
 <h3>Using the Settings Editor</h3>
 
-<p>When you run the Bridge Command launcher, click the button 'Settings: Main' towards the bottom of the list. This will load an editor, as 
+<p>When you run the Aegir Styra launcher, click the button 'Settings: Main' towards the bottom of the list. This will load an editor, as 
 shown below. This allows you to read about the different settings and change them. To change a value, double click on the line you want
 to change, then type the setting in the box that appears, and press enter to continue. When you have finished, clicking 'Save' at the 
 bottom of the screen will save your changes and exit the editor.</p>
@@ -53,11 +53,11 @@ bottom of the screen will save your changes and exit the editor.</p>
 <!--
 <h3>Special ini file options</h3>
 
-<p>Bridge Command will normally used the file bc4.ini in the Bridge Command installation directory. However you can specify a different file if you start Bridge Command from a shortcut or the command line. If you run bc4.exe /ini="OtherIniFile.ini", you can specify a different file to load (either a full or relative path).</p>
+<p>Aegir Styra will normally used the file bc4.ini in the Aegir Styra installation directory. However you can specify a different file if you start Aegir Styra from a shortcut or the command line. If you run bc4.exe /ini="OtherIniFile.ini", you can specify a different file to load (either a full or relative path).</p>
 
 <h3>Individual user settings</h3>
 
-<p>In order to allow individual users to edit scenarios if they do not have write access to the location where Bridge Command is installed, an additional bc4.ini file located in %appdata%\Bridge Command\4.x (C:\Documents and Settings\USERNAME\Application Data\Bridge Command\4.x\bc4.ini for a standard installation) is used. This can override the 'scenario_dir' setting, meaning that each user can have a different scenario directory.</p>
+<p>In order to allow individual users to edit scenarios if they do not have write access to the location where Aegir Styra is installed, an additional bc4.ini file located in %appdata%\Aegir Styra\4.x (C:\Documents and Settings\USERNAME\Application Data\Aegir Styra\4.x\bc4.ini for a standard installation) is used. This can override the 'scenario_dir' setting, meaning that each user can have a different scenario directory.</p>
 <p>If you use the <a href="writer.html">scenario editor</a>, it will check if the current scenario directory is writable, and if not, relocate it to the user's %appdata% folder automatically.</p>
 -->
 <h3>The bc5.ini technical specification</h3>
@@ -162,12 +162,12 @@ radar_mode=0
 <li>minimum_distance: The minimum distance in metres that is rendered by the camera. If this is too small, you will see strange depth artifacts.</li> 
 <li>maximum_distance: The maximum distance the camera will render in metres. If the visiblity is less than this, the smaller value will be used.</li>
 <li>Joystick settings: <a href="joystick.html">Please see the Joystick documentation</a></li>
-<li>udp_send_port: The port used by Bridge Command to send UDP data when being used with the Map Controller or multiple displays.</li>
-<li>NMEA_ComPort: Sets the serial port number that Bridge Command should use to send emulated GPS data for use with a chart plotter, or 0 to disable.</li>
-<li>secondary_mode: If set to 1, Bridge Command will start directly in secondary mode, waiting for input from the main Bridge Command session. Default is 0.</li>
-<li>hide_instruments: If set to 1, Bridge Command will start with the 2d instruments panel hidden, and a full 3d view. Default is 0.</li>
-<li>full_radar: If set to 1, Bridge Command will start with the radar maximised. Default is 0.</li>
-<li>arpa_on: If set to 1, Bridge Command will start the radar with ARPA active. Default is 0.</li>
+<li>udp_send_port: The port used by Aegir Styra to send UDP data when being used with the Map Controller or multiple displays.</li>
+<li>NMEA_ComPort: Sets the serial port number that Aegir Styra should use to send emulated GPS data for use with a chart plotter, or 0 to disable.</li>
+<li>secondary_mode: If set to 1, Aegir Styra will start directly in secondary mode, waiting for input from the main Aegir Styra session. Default is 0.</li>
+<li>hide_instruments: If set to 1, Aegir Styra will start with the 2d instruments panel hidden, and a full 3d view. Default is 0.</li>
+<li>full_radar: If set to 1, Aegir Styra will start with the radar maximised. Default is 0.</li>
+<li>arpa_on: If set to 1, Aegir Styra will start the radar with ARPA active. Default is 0.</li>
 <li>radar_mode: Mode to start radar in, 0 for North Up, 1 for Course Up (stabilised), 2 for Head Up (Unstabilised).</li>
 </ul>
 </p>
@@ -202,7 +202,7 @@ lang="en"
 <li>graphics_depth: This is the colour depth used when running full screen. It should be supported by your card, and is likely to be one of 16 or 32.</li>
 <li>zoom_levels: How many zoom steps are available.</li>
 <li>ais_udp_port: If non-zero, the port to listen on for incoming raw AIS data.</li>
-<li>udp_send_port: The port used by the Map Controller to send UDP data to Bridge Command.</li>
+<li>udp_send_port: The port used by the Map Controller to send UDP data to Aegir Styra.</li>
 </ul>
 </p>
 

@@ -1,5 +1,5 @@
 //Common launcher program
-//This just launches Bridge Command or
+//This just launches Aegir Styra or
 //Map Controller executable depending
 //on which button the user presses
 
@@ -82,127 +82,127 @@ public:
 
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-bc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-bc.exe", "aegirstyra-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
+                        execl("./aegirstyra-bc", "aegirstyra-bc", NULL);
                     #endif
                     #endif
                 }
                 if (id == MC_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-mc.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-mc.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-mc.exe", "aegirstyra-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
+                        execl("./aegirstyra-mc", "aegirstyra-mc", NULL);
                     #endif
                     #endif
                 }
                 if (id == RP_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-rp.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-rp.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-rp.exe", "aegirstyra-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/rp.app/Contents/MacOS/rp", "rp", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
+                        execl("./aegirstyra-rp", "aegirstyra-rp", NULL);
                     #endif
                     #endif
                 }
                 if (id == ED_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ed.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-ed.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-ed.exe", "aegirstyra-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
+                        execl("./aegirstyra-ed", "aegirstyra-ed", NULL);
                     #endif
                     #endif
                 }
                 if (id == MH_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-mh.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-mh.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-mh.exe", "aegirstyra-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
+                        execl("./aegirstyra-mh", "aegirstyra-mh", NULL);
                     #endif
                     #endif
                 }
                 if (id == INI_BC_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-ini.exe", NULL, NULL, SW_SHOW);
+                        //_execl("./aegirstyra-ini.exe", "aegirstyra-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
+                        execl("./aegirstyra-ini", "aegirstyra-ini", NULL);
                     #endif
                     #endif
                 }
                 if (id == INI_MC_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-M", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-ini.exe", "-M", NULL, SW_SHOW);
+                        //_execl("./aegirstyra-ini.exe", "aegirstyra-ini.exe", "-M", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
+                        execl("./aegirstyra-ini", "aegirstyra-ini", "-M", NULL);
                     #endif
                     #endif
                 }
                 if (id == INI_RP_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-R", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-ini.exe", "-R", NULL, SW_SHOW);
+                        //_execl("./aegirstyra-ini.exe", "aegirstyra-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
+                        execl("./aegirstyra-ini", "aegirstyra-ini", "-R", NULL);
                     #endif
                     #endif
                 }
                 if (id == INI_MH_BUTTON) {
                     #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-H", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
+                        ShellExecute(NULL, NULL, "aegirstyra-ini.exe", "-H", NULL, SW_SHOW);
+                        //_execl("./aegirstyra-ini.exe", "aegirstyra-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
                         //APPLE
                         execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
                     #else
                         //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
+                        execl("./aegirstyra-ini", "aegirstyra-ini", "-H", NULL);
                     #endif
                     #endif
                 }
@@ -219,7 +219,7 @@ public:
                     #else
                         //Other (assumed posix)
                         #ifdef FOR_DEB
-                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/doc/bridgecommand/index.html", NULL);
+                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/doc/aegirstyra/index.html", NULL);
                             //If execuation gets to this point, it has failed to launch help. Bring up a message to tell user?
                         #else
                             execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
@@ -265,7 +265,7 @@ int main (int argc, char ** argv)
     }
     
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Mac OS:
@@ -342,7 +342,7 @@ int main (int argc, char ** argv)
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
     #endif
 
-    device->setWindowCaption(L"Bridge Command");
+    device->setWindowCaption(L"Aegir Styra");
     irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_CLASSIC);
     device->getGUIEnvironment()->setSkin(newskin);
 

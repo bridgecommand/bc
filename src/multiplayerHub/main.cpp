@@ -1,4 +1,4 @@
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2016 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ int main()
 {
 
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Mac OS:
@@ -264,7 +264,7 @@ int main()
 
     unsigned int numberOfPeers = network.getNumberOfPeers();
 
-    std::cout << "Connected to " << numberOfPeers << " Bridge Command peers." << std::endl;
+    std::cout << "Connected to " << numberOfPeers << " Aegir Styra peers." << std::endl;
 
 
     //Load overall scenario information
@@ -343,7 +343,7 @@ int main()
             peerScenarioData.push_back(thisPeerData);
 
         } else {
-            std::cout << "More Bridge Command peers than ships available from scenario." << std::endl;
+            std::cout << "More Aegir Styra peers than ships available from scenario." << std::endl;
             exit(EXIT_FAILURE);
         }
     }
