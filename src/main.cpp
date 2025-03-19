@@ -1239,7 +1239,7 @@ int main(int argc, char ** argv)
         ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
 #else
 #ifdef __APPLE__
-	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
+	std::string macOsScript = "./Scripts/macOS/" + scriptToExe;
 	system(macOsScript.c_str());
 #else
 	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
