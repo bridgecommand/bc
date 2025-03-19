@@ -421,7 +421,7 @@ int main(int argc, char ** argv)
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	system(linuxScript.c_str());
+	system(macOsScript.c_str());
 #else
 	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
 	system(linuxScript.c_str());
@@ -1240,7 +1240,7 @@ int main(int argc, char ** argv)
 #else
 #ifdef __APPLE__
 	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	system(linuxScript.c_str());
+	system(macOsScript.c_str());
 #else
 	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
 	system(linuxScript.c_str());
