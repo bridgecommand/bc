@@ -412,24 +412,32 @@ int main(int argc, char ** argv)
     }
 
     std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
-
-    if (!scriptToExe.empty())
-      {
-#ifdef _WIN32
-	std::string winScript = "Scripts\\win\\" + scriptToExe;
-        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
-#else
-#ifdef __APPLE__
-	std::string macOsScript = "./Scripts/macOs/" + scriptToExe;
-	system(macOsScript.c_str());
-#else
-	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
-	system(linuxScript.c_str());
-#endif
-#endif
-      }
-
+    if (!scriptToExe.empty()) {
+        std::string scriptPath;
+        if (Utilities::pathExists(userFolder + scriptToExe)) {
+            scriptPath = userFolder + scriptToExe;
+        } else {
+            #ifdef _WIN32
+	        scriptPath = "Scripts\\win\\" + scriptToExe;
+            #else
+            #ifdef __APPLE__
+	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+            #else
+	        scriptPath = "./Scripts/linux/" + scriptToExe;
+            #endif
+            #endif    
+        }
     
+        std::cout << "Going to run " << scriptPath << std::endl;
+
+        #ifdef _WIN32
+        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+        #else
+	    scriptPath = "\"" + scriptPath + "\"";
+        system(scriptPath.c_str());
+        #endif
+    }
+
     #ifdef __arm__
     if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
         setenv("PA_ALSA_PLUGHW", "1", true);
@@ -1231,22 +1239,31 @@ int main(int argc, char ** argv)
     device->drop();
 
     scriptToExe = IniFile::iniFileToString(iniFilename, "script_stop_BC");
+    if (!scriptToExe.empty()) {
+        std::string scriptPath;
+        if (Utilities::pathExists(userFolder + scriptToExe)) {
+            scriptPath = userFolder + scriptToExe;
+        } else {
+            #ifdef _WIN32
+	        scriptPath = "Scripts\\win\\" + scriptToExe;
+            #else
+            #ifdef __APPLE__
+	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+            #else
+	        scriptPath = "./Scripts/linux/" + scriptToExe;
+            #endif
+            #endif    
+        }
+    
+        std::cout << "Going to run " << scriptPath << std::endl;
 
-    if (!scriptToExe.empty())
-      {
-#ifdef _WIN32
-	std::string winScript = "Scripts\\win\\" + scriptToExe;
-        ShellExecute(NULL, "open", winScript.c_str(), NULL, NULL, SW_MINIMIZE);
-#else
-#ifdef __APPLE__
-	std::string macOsScript = "./Scripts/macOS/" + scriptToExe;
-	system(macOsScript.c_str());
-#else
-	std::string linuxScript = "./Scripts/linux/" + scriptToExe;
-	system(linuxScript.c_str());
-#endif
-#endif
-      }
+        #ifdef _WIN32
+        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+        #else
+	    scriptPath = "\"" + scriptPath + "\"";
+        system(scriptPath.c_str());
+        #endif
+    }
 
     //Save log messages out
 	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
