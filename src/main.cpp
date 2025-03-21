@@ -991,8 +991,9 @@ int main(int argc, char ** argv)
                           modelParameters);
 
     
-    //Note: We could use this serialised format as a scenario import/export format or for online distribution
-    
+    std::thread taskUpdateNet(Update::UpdateNetwork, &model, &network, mode);
+    taskUpdateNet.detach();
+
     // Set up the VR interface
     VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
 
@@ -1099,7 +1100,7 @@ int main(int argc, char ** argv)
         { IPROF("Network");
 
 
-        Update::UpdateNetwork(&model, &network, mode);
+        //Update::UpdateNetwork(&model, &network, mode);
 	    
 	  if (true == bExtraNet) {
             //extraNetwork.update();

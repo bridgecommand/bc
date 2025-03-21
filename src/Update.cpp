@@ -11,11 +11,14 @@ Update::~Update()
 
 void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode::Mode aMode)
 {
-	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;;
+	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
 	void* dataCmd = NULL;
 	Message inMsg(aModel), outMsg(aModel);
-	unsigned int timeout = 0;
+	unsigned int timeout = 1;
 
+	while (true)
+	{
+		msgType = E_CMD_MESSAGE_UNKNOWN;
 
 		aNet->WaitMessage(inMsg, msgType, &dataCmd, timeout);
 		aModel->updateFromNetwork(msgType, dataCmd);
@@ -26,8 +29,8 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 			aNet->SendMessage(msgCtrlOv);
 		}
 		else
-		{ 
-		
+		{
+
 			if (aModel->getLoopNumber() % 100 == 0)
 			{
 				std::string msgKeepAliveScn = aModel->getSerialisedScenario();
@@ -41,15 +44,15 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 				if (OperatingMode::Multiplayer == aMode)
 				{
 					std::string msgMpFeedBack = outMsg.MpFeedBack();
-				aNet->SendMessage(msgMpFeedBack);
-			
+					aNet->SendMessage(msgMpFeedBack);
+
 				}
 			}
 			/*else if (aModel->getLoopNumber() % 10 == 0)
 			  {
 			  std::string msgKeepAliveShort = outMsg.KeepAliveShort();
 			  aNet->SendMessage(msgKeepAliveShort);
-			  }*/ 
+			  }*/
 		}
- 
+	}
 }	  
