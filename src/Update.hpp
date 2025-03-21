@@ -15,6 +15,7 @@ class Update
   Update();
   ~Update();
   static void UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode::Mode aMode);
+  static void WaitingScenario(Network* aNet, bool* abEnd);
   
 private:
   

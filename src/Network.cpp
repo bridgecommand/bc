@@ -78,13 +78,13 @@ int Network::Connect(std::string aAddr, unsigned int aPort, OperatingMode::Mode 
   return ret;
 }
 
-void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData, unsigned int aTimeout)
+void Network::WaitMessage(Message& aInMessage, eCmdMsg& aMsgType, void** aCmdData, unsigned int aTimeout, bool aParse)
 {
   ENetEvent event;    
 
   if(enet_host_service(mClient, &event, aTimeout) > 0)
     {
-      if(ENET_EVENT_TYPE_RECEIVE == event.type)
+      if(ENET_EVENT_TYPE_RECEIVE == event.type && aParse == true)
 	{
 	  aMsgType = aInMessage.Parse((char*)event.packet->data, event.packet->dataLength, aCmdData);
 	  enet_packet_destroy(event.packet);

@@ -982,17 +982,25 @@ int main(int argc, char ** argv)
     //std::string serialisedScenarioData = scenarioData.serialise(false);
 
     loadingMessage->remove(); loadingMessage = 0;
- 
-    SimulationModel model(device, 
-                          smgr, 
-                          &guiMain, 
-                          &sound, 
-                          scenarioData, 
-                          modelParameters);
+    bool bEnd = false;
 
-    
-    std::thread taskUpdateNet(Update::UpdateNetwork, &model, &network, mode);
-    taskUpdateNet.detach();
+    std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
+
+    SimulationModel model(device,
+        smgr,
+        &guiMain,
+        &sound,
+        scenarioData,
+        modelParameters);
+
+    bEnd = true;
+    taskWaitingNet.join();
+
+    if (mode == OperatingMode::Normal)
+    {
+        std::string msgScn = model.getSerialisedScenario();
+        network.SendMessage(msgScn);
+    }
 
     // Set up the VR interface
     VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
@@ -1100,7 +1108,7 @@ int main(int argc, char ** argv)
         { IPROF("Network");
 
 
-        //Update::UpdateNetwork(&model, &network, mode);
+        Update::UpdateNetwork(&model, &network, mode);
 	    
 	  if (true == bExtraNet) {
             //extraNetwork.update();

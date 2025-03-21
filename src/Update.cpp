@@ -9,15 +9,25 @@ Update::~Update()
 {    
 }
 
+void Update::WaitingScenario(Network* aNet, bool *abEnd)
+{
+	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
+	void* dataCmd = NULL;
+	Message inMsg;
+	unsigned int timeout = 1;
+
+	while(!(*abEnd))
+	aNet->WaitMessage(inMsg, msgType, &dataCmd, timeout, false);
+
+}
+
 void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode::Mode aMode)
 {
 	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
 	void* dataCmd = NULL;
 	Message inMsg(aModel), outMsg(aModel);
-	unsigned int timeout = 1;
+	unsigned int timeout = 0;
 
-	while (true)
-	{
 		msgType = E_CMD_MESSAGE_UNKNOWN;
 
 		aNet->WaitMessage(inMsg, msgType, &dataCmd, timeout);
@@ -34,7 +44,7 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 			if (aModel->getLoopNumber() % 100 == 0)
 			{
 				std::string msgKeepAliveScn = aModel->getSerialisedScenario();
-				aNet->SendMessage(msgKeepAliveScn, true);
+				aNet->SendMessage(msgKeepAliveScn);
 			}
 			else if (aModel->getLoopNumber() % 6 == 0)
 			{
@@ -54,5 +64,4 @@ void Update::UpdateNetwork(SimulationModel* aModel, Network* aNet, OperatingMode
 			  aNet->SendMessage(msgKeepAliveShort);
 			  }*/
 		}
-	}
 }	  
