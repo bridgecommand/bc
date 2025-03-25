@@ -1,7 +1,7 @@
 ;setup names
 !define PROGRAMNAME "Bridge Command 5.10"
 !ifndef OUTPUTFILE
-!define OUTPUTFILE "..\BridgeCommand5.10.0-alpha.5.exe"
+!define OUTPUTFILE "..\BridgeCommand5.10.0-alpha.6.exe"
 !endif
 !define INSTALLLOCATION "Bridge Command 5.10"
 !define SMFOLDER "Bridge Command 5.10"
@@ -73,6 +73,7 @@ SetShellVarContext all
   RMDir /r "$INSTDIR\shaders"
   RMDir /r "$INSTDIR\doc"
   RMDir /r "$INSTDIR\Sounds"
+  RMDir /r "$INSTDIR\Scripts"
   
   Delete "$INSTDIR\bc5.ini"
   Delete "$INSTDIR\LICENSE"
