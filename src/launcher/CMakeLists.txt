@@ -1,11 +1,11 @@
 
-add_executable(bridgecommand
+add_executable(aegirstyra
     main.cpp
     ../IniFile.cpp
     ../Lang.cpp
     ../Utilities.cpp
 )
 
-target_link_libraries(bridgecommand
+target_link_libraries(aegirstyra
     bc-irrlicht
 )

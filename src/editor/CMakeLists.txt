@@ -1,5 +1,5 @@
 
-add_executable(bridgecommand-ed
+add_executable(aegirstyra-ed
     main.cpp
     ../IniFile.cpp
     ../Lang.cpp
@@ -13,6 +13,6 @@ add_executable(bridgecommand-ed
 )
 
 
-target_link_libraries(bridgecommand-ed
+target_link_libraries(aegirstyra-ed
     bc-irrlicht
 )

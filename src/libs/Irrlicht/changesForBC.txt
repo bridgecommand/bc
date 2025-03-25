@@ -1,9 +1,9 @@
-Notes on Irrlicht as used in Bridge Command
+Notes on Irrlicht as used in Aegir Styra
 ===========================================
 
 Irrlicht updated to r6565 from SVN trunk
 
-The following changes are applied for Bridge Command from 
+The following changes are applied for Aegir Styra from 
 Irrlicht trunk, and all changes marked in source with //JAMES:
 
 In include:

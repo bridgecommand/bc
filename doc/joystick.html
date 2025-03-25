@@ -3,20 +3,20 @@
 <head>
 
   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-  <title>Bridge Command 5 - External controls</title>
+  <title>Aegir Styra 5 - External controls</title>
 
 </head>
 
 <body style="color: rgb(0, 0, 0); background-color: rgb(221, 221, 221);" alink="#000099" link="#000099" vlink="#990099">
 
 <div style="text-align: center;">
-<h1>Using external controls with Bridge Command</h1>
+<h1>Using external controls with Aegir Styra</h1>
 </div>
 
 <h2>Introduction</h2>
 
 <p>
-To increase the realism of the simulation, it is possible to use physical throttle levers and a wheel to control your vessel in Bridge Command.
+To increase the realism of the simulation, it is possible to use physical throttle levers and a wheel to control your vessel in Aegir Styra.
 In principle, any three axis analog joystick can be used, but in practice suitable joysticks are not readily available, and it is quite 
 simple to construct one to your own requirements. How to do this is explained at <a href="makethrottle.html">How to make a set of throttles 
 and wheel</a>.
@@ -25,7 +25,7 @@ and wheel</a>.
 <h2>Details</h2>
 
 <p>
-Joystick support is enabled by default in Bridge Command, so the first step is to plug in your joystick and test if it works as expected, by 
+Joystick support is enabled by default in Aegir Styra, so the first step is to plug in your joystick and test if it works as expected, by 
 moving the controls on the joystick and checking how the engines and rudder respond. If they do not respond as expected, you may need to change
 the settings.
 </p>
@@ -33,22 +33,22 @@ the settings.
 <h3>Settings</h3>
 
 <p>
-To change the settings, start the Bridge Command launcher, and click on 'Settings: Main', to start the settings editor, and then change to the
+To change the settings, start the Aegir Styra launcher, and click on 'Settings: Main', to start the settings editor, and then change to the
 joystick tab. The settings on this tab allow you to set which joystick channel is used to control the port engine, starboard engine, and rudder.
 </p>
 
 <p>
 If the controller you want to use is not the only joystick connected to your system, you may have to change the 'joystick_no_' values to the 
-correct one. To find the joystick number, start Bridge Command, and open up the log window by pressing the '!' button just above the rudder
+correct one. To find the joystick number, start Aegir Styra, and open up the log window by pressing the '!' button just above the rudder
 control, and scroll to the bottom of the log window, where you will see a list of the detected joysticks and their number. You can use different
 joysticks to control different engines and the rudder.
 </p>
 
 <p>
-You can also open the configuration file <i>bc5.ini</i> directly, in the Bridge Command installation directory. 
-Note that Bridge Command will look first in the user directory for a settings file, and will use this in preference to the global bc5.ini file.
-The user directory is %appdata%/Bridge Command/x.x on Windows, ~/.Bridge Command/x.x on Linux and ~/Library/Application Support/Bridge Command/x.x on 
-OSX. For all of these, x.x is the Bridge Command version number, e.g. 5.6.
+You can also open the configuration file <i>bc5.ini</i> directly, in the Aegir Styra installation directory. 
+Note that Aegir Styra will look first in the user directory for a settings file, and will use this in preference to the global bc5.ini file.
+The user directory is %appdata%/Aegir Styra/x.x on Windows, ~/.Aegir Styra/x.x on Linux and ~/Library/Application Support/Aegir Styra/x.x on 
+OSX. For all of these, x.x is the Aegir Styra version number, e.g. 5.6.
 </p> 
 
 
@@ -87,31 +87,31 @@ bow_thruster_channel: This sets which joystick channel is used to control the bo
 Stern_thruster_channel: This sets which joystick channel is used to control the stern thruster if present.
 </li>
 <li>
-joystick_no_port: This sets which joystick on your system Bridge Command uses for the port throttle (or mainsail). If you only have one joystick connected, this will be 0.
+joystick_no_port: This sets which joystick on your system Aegir Styra uses for the port throttle (or mainsail). If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_stbd: This sets which joystick on your system Bridge Command uses for the starboard throttle (or jib). If you only have one joystick connected, this will be 0.
+joystick_no_stbd: This sets which joystick on your system Aegir Styra uses for the starboard throttle (or jib). If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_rudder: This sets which joystick on your system Bridge Command uses for the rudder. If you only have one joystick connected, this will be 0.
+joystick_no_rudder: This sets which joystick on your system Aegir Styra uses for the rudder. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_port_throttleAzimuth: This sets which joystick on your system Bridge Command uses for the port azimuth throttle. If you only have one joystick connected, this will be 0.
+joystick_no_port_throttleAzimuth: This sets which joystick on your system Aegir Styra uses for the port azimuth throttle. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_stbd_throttleAzimuth: This sets which joystick on your system Bridge Command uses for the stbd azimuth throttle. If you only have one joystick connected, this will be 0.
+joystick_no_stbd_throttleAzimuth: This sets which joystick on your system Aegir Styra uses for the stbd azimuth throttle. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_portAzimuth: This sets which joystick on your system Bridge Command uses for the port azimuth angle. If you only have one joystick connected, this will be 0.
+joystick_no_portAzimuth: This sets which joystick on your system Aegir Styra uses for the port azimuth angle. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_stbdAzimuth: This sets which joystick on your system Bridge Command uses for the stbd azimuth angle. If you only have one joystick connected, this will be 0.
+joystick_no_stbdAzimuth: This sets which joystick on your system Aegir Styra uses for the stbd azimuth angle. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_bow_thruster: This sets which joystick on your system Bridge Command uses for the bow thruster. If you only have one joystick connected, this will be 0.
+joystick_no_bow_thruster: This sets which joystick on your system Aegir Styra uses for the bow thruster. If you only have one joystick connected, this will be 0.
 </li>
 <li>
-joystick_no_stern_thruster: This sets which joystick on your system Bridge Command uses for the stern thruster. If you only have one joystick connected, this will be 0.
+joystick_no_stern_thruster: This sets which joystick on your system Aegir Styra uses for the stern thruster. If you only have one joystick connected, this will be 0.
 </li>
 <li>
 invert_rudder: This should be 0 or 1. If set to 1, it swaps the direction the rudder changes in response to the joystick input.

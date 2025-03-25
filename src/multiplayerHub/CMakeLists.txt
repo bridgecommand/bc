@@ -1,5 +1,5 @@
 
-add_executable(bridgecommand-mh
+add_executable(aegirstyra-mh
     main.cpp
     ../IniFile.cpp
     ../Lang.cpp
@@ -13,7 +13,7 @@ add_executable(bridgecommand-mh
     EventReceiver.cpp
 )
 
-target_link_libraries(bridgecommand-mh
+target_link_libraries(aegirstyra-mh
     enet
     bc-irrlicht
 )

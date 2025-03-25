@@ -90,7 +90,7 @@ int main (int argc, char ** argv)
 {
 
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Mac OS:
@@ -238,7 +238,7 @@ int main (int argc, char ** argv)
             graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
             graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
 
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+            hWnd = CreateWindowA(Win32ClassName, "Aegir Styra",
                 style, x, y, graphicsWidth, graphicsHeight,
                 NULL, NULL, hInstance, NULL);
 
@@ -278,7 +278,7 @@ int main (int argc, char ** argv)
                 graphicsHeight = rc.bottom - rc.top;
             }
 
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+            hWnd = CreateWindowA(Win32ClassName, "Aegir Styra",
                 style, x, y, graphicsWidth, graphicsHeight,
                 NULL, NULL, hInstance, NULL);
 

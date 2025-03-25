@@ -1,4 +1,4 @@
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2014 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -108,10 +108,10 @@ namespace IniFile {
 irr::core::stringw getCredits(){
 
     irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
-    creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
-    creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
+    creditsString.append(L"Aegir Styra is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
+    creditsString.append(L"Aegir Styra  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
     creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
-    creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
+    creditsString.append(L"Many thanks to those who have made their models available for use in Aegir Styra:\n");
     creditsString.append(L"> Juergen Klemp\n");
     creditsString.append(L"> Simon D Richardson\n");
     creditsString.append(L"> Jason Simpson\n");
@@ -123,7 +123,7 @@ irr::core::stringw getCredits(){
 
     creditsString.append(L"Many thanks to contributors including David Elir Evans, Antoine Saillard, Konrad Wolsing, Jan Bauer, AndreySSH, Manfred, ceeac.\n\n");
 
-	creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
+	creditsString.append(L"Aegir Styra uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Aegir Styra depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
 
     creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
 
@@ -372,7 +372,7 @@ int main(int argc, char ** argv)
     #endif
 
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Mac OS:
@@ -609,7 +609,7 @@ int main(int argc, char ** argv)
             graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
             graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
 
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+            hWnd = CreateWindowA(Win32ClassName, "Aegir Styra",
                 style, x, y, graphicsWidth, graphicsHeight,
                 NULL, NULL, hInstance, NULL);
 
@@ -649,7 +649,7 @@ int main(int argc, char ** argv)
                 graphicsHeight = rc.bottom - rc.top;
             }
 
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
+            hWnd = CreateWindowA(Win32ClassName, "Aegir Styra",
                 style, x, y, graphicsWidth, graphicsHeight,
                 NULL, NULL, hInstance, NULL);
 
@@ -673,7 +673,7 @@ int main(int argc, char ** argv)
         if (irr::IrrlichtDevice::isDriverSupported(irr::video::EDT_DIRECT3D9)) {
             deviceParameters.DriverType = irr::video::EDT_DIRECT3D9;
         } else {
-            std::cerr << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
+            std::cerr << "DirectX 9 requested but not available.\nThis may be because Aegir Styra has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
         }
 	}
 

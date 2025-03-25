@@ -11,7 +11,7 @@
 
 <div style="text-align: center;">
    
-<h1>Bridge Command 5 related files specification</h1>
+<h1>Aegir Styra 5 related files specification</h1>
    
 <h2>World file</h2>
 </div>
@@ -49,10 +49,10 @@ steps (for example if you have high mountains within the world area), another fo
 
 <p>
 The world model is made up of files in a common folder. The folder name is used when loading the world model, and is found under <i>World</i>
-in the <i>Bridge Command</i> root folder. For example, if <i>Bridge Command</i> is installed in <i>C:\Program files (x86)\Bridge Command 5.x</i>, the 
-files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files (x86)\Bridge Command 5.x\World\Atlantis</i>. To allow users to 
-edit or add world models without changing the overall installation, Bridge Command will look first in the user directory for a world model, and 
-will use this in preference to the global model. The user directory can be found using the button on the Bridge Command launcher.
+in the <i>Aegir Styra</i> root folder. For example, if <i>Aegir Styra</i> is installed in <i>C:\Program files (x86)\Aegir Styra 5.x</i>, the 
+files making up a world model called <i>Atlantis</i> would be in <i>C:\Program files (x86)\Aegir Styra 5.x\World\Atlantis</i>. To allow users to 
+edit or add world models without changing the overall installation, Aegir Styra will look first in the user directory for a world model, and 
+will use this in preference to the global model. The user directory can be found using the button on the Aegir Styra launcher.
 </p>
    
 <p>
@@ -68,7 +68,7 @@ type of .bmp images used).
 </p>
 
 <p>
-Alternatively, a raw binary format is allowed. Bridge Command will load files with the standard 3dem header and binary format (.hdr and .bin). Also, height 
+Alternatively, a raw binary format is allowed. Aegir Styra will load files with the standard 3dem header and binary format (.hdr and .bin). Also, height 
 maps with the extension .f32 will be interpreted as a list of heights in metres as 32 bit floating point numbers. The benefit of both the RGB encoding and 
 the binary format is a higher vertical resolution of height map, which may be helpful if your area includes deep sea and high mountains. 
 </p>
@@ -105,7 +105,7 @@ The filenames for the height map and texture files are as specified in <i>terrai
 format (3dem format with a .bin and .hdr file, or 32 bit floating point file with extension .f32), and the texture and map image should generally 
 be square and power of two (2^n) sizes (512, 1024, ...). 
 
-The heightmap does not have to be square, but internally Bridge Command uses square terrain models with 2^n + 1 in size (513, 1025, 2049, ...). 
+The heightmap does not have to be square, but internally Aegir Styra uses square terrain models with 2^n + 1 in size (513, 1025, 2049, ...). 
 Therefore it is less efficient to define a heightmap slightly larger than one of than this size, as it will be padded to fit the next largest square.
 </p>
 
@@ -173,7 +173,7 @@ SeaMaxDepth(2)=44.07
 <p>Contains 1 general variable, and a set of 3 to 6 variables for each buoy defined. The global variable is Number, which is the number of 
 buoys to be defined in the file. This can be zero, in which case no buoys are defined, and nothing further is required in this file. The three 
 required variables for each buoy are Type(#), Long(#) and Lat(#). Type(#) takes the buoy type, as a text string. This must correspond to an 
-available buoy model as defined in the <i>Models\Buoy</i> folder under the Bridge Command root directory.
+available buoy model as defined in the <i>Models\Buoy</i> folder under the Aegir Styra root directory.
 Long(#) and Lat(#) take respectively the buoy's Longitude and Latitude in standard decimal degrees. Note that only the buoy model and its 
 location is specified here - if the buoy has a light attached, it must be specified in <i>light.ini</i>, as specified below. 
 The first optional variable is RCS(#), which sets the buoy's radar cross section in metres squared. If not set, a default value will be used.
@@ -197,7 +197,7 @@ variables for each land object defined. </p>
     this file.</p>
 
 <ul>
-<li><i>Type(#)</i> is defined in the same way as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Bridge Command root folder.</li>    
+<li><i>Type(#)</i> is defined in the same way as for buoys, except that the available land objects are located in the <i>LandObject</i> folder under <i>Models</i> in the Aegir Styra root folder.</li>    
 <li><i>Long(#)</i> is defined in the same way as for buoys.</li>
 <li><i>Lat(#)</i> is defined in the same way as for buoys.</li>
 <li><i>Rotation(#)</i> allows for the model to be rotated about its vertical axis. Specified in degrees. An anticlockwise rotation, as viewed from the top, is positive.</li>
@@ -331,7 +331,7 @@ be at the defined hight relative to the land at its position.
 
 <h5>tide.ini</h5>
 <p>
-Bridge Command defines the tide in terms of it's harmonic constituents, which each have an amplitude, speed and offset. This means that any tide of any complexity can be modelled. Currently there is only one set of tidal characteristics, which apply across all of the environment model. The amplitude is set in metres, and is half the range of the component. The speed is set in degrees/hour, where one full period is 360 degrees. So for example, the main component of a tide, which has approximately two highs and two lows in a 25 hour period would have a speed of around 28.8 degrees/hour. The offset is how much the tidal component is shifted in degrees, relative to a component that had a peak at 0000 on the morning of the 1st January 1970 (used as Bridge Command's time reference point).
+Aegir Styra defines the tide in terms of it's harmonic constituents, which each have an amplitude, speed and offset. This means that any tide of any complexity can be modelled. Currently there is only one set of tidal characteristics, which apply across all of the environment model. The amplitude is set in metres, and is half the range of the component. The speed is set in degrees/hour, where one full period is 360 degrees. So for example, the main component of a tide, which has approximately two highs and two lows in a 25 hour period would have a speed of around 28.8 degrees/hour. The offset is how much the tidal component is shifted in degrees, relative to a component that had a peak at 0000 on the morning of the 1st January 1970 (used as Aegir Styra's time reference point).
 </p>
 
 <p>
@@ -543,8 +543,8 @@ This is optional, and is a thumbnail image that will be displayed to the user wh
 -->
 <h3>Conclusion</h3>
 
-If you have any questions, please ask the author - <a href="mail.php" onmouseover="this.href='mai' + 'lto:' + 'help' + '@' + 'bridgecommand.co.uk'">send
-me an email</a>, or ask on the <a href="https://www.bridgecommand.co.uk/forum">Forum</a></p>
+If you have any questions, please ask the author - <a href="mail.php" onmouseover="this.href='mai' + 'lto:' + 'help' + '@' + 'aegirstyra.co.uk'">send
+me an email</a>, or ask on the <a href="https://www.aegirstyra.co.uk/forum">Forum</a></p>
  
 </body>
 </html>

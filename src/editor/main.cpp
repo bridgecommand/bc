@@ -390,7 +390,7 @@ int main (int argc, char ** argv)
 {
 
     #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
+    chdir("/usr/share/aegirstyra");
     #endif // FOR_DEB
 
     //Mac OS:

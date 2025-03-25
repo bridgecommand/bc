@@ -1,4 +1,4 @@
-/*   Bridge Command 5.0 Ship Simulator
+/*   Aegir Styra 5.0 Ship Simulator
      Copyright (C) 2014 James Packer
 
      This program is free software; you can redistribute it and/or modify
@@ -153,10 +153,10 @@ namespace Utilities
     }
 
     std::string getUserDirBase() {
-        // Return the user directory (eg %appdata%/Bridge Command/ on Windows,
-        // ~/.Bridge Command/ on Linux
+        // Return the user directory (eg %appdata%/Aegir Styra/ on Windows,
+        // ~/.Aegir Styra/ on Linux
         // and
-        // ~/Library/Application Support/Bridge Command/on Mac)
+        // ~/Library/Application Support/Aegir Styra/on Mac)
 
         std::string userFolder;
 
@@ -165,7 +165,7 @@ namespace Utilities
             appdataLocation = getenv("APPDATA"); //TODO: Check this works on windows XP-10
             if (appdataLocation!=NULL) {
                 userFolder = appdataLocation;
-                userFolder.append("/Bridge Command/");
+                userFolder.append("/Aegir Styra/");
             }
         #else
             #ifdef __APPLE__
@@ -177,14 +177,14 @@ namespace Utilities
                 FSRefMakePath( &ref, (UInt8*)&path, PATH_MAX );
                 // You now have ~/Library/Application Support stored in 'path'
                 userFolder = path; //This works as std::string has an operator= method that takes a char[] input.
-                userFolder.append("/Bridge Command/");
+                userFolder.append("/Aegir Styra/");
             #else
                 //Other posix
                 struct passwd *pw = getpwuid(getuid());
                 const char *path = pw->pw_dir;
                 if (path!=NULL) {
                     userFolder = path;
-                    userFolder.append("/.Bridge Command/");
+                    userFolder.append("/.Aegir Styra/");
                 }
             #endif // __APPLE__
 
@@ -194,10 +194,10 @@ namespace Utilities
     }
 
     std::string getUserDir() {
-        // Return the user directory (eg %appdata%/Bridge Command/version on Windows,
-        // ~/.Bridge Command/version on Linux
+        // Return the user directory (eg %appdata%/Aegir Styra/version on Windows,
+        // ~/.Aegir Styra/version on Linux
         // and
-        // ~/Library/Application Support/Bridge Command/version on Mac)
+        // ~/Library/Application Support/Aegir Styra/version on Mac)
 
         std::string userFolder = getUserDirBase();
 

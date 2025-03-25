@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(bridgecommand)
+project(aegirstyra)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -97,7 +97,7 @@ set(BC_SOURCES
     BCTerrainTriangleSelector.cpp
 )
 
-add_executable(bridgecommand-bc
+add_executable(aegirstyra-bc
     ${BC_SOURCES}
 )
 
@@ -114,7 +114,7 @@ if (APPLE)
       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/libs/portaudio/include"
     )
 
-    target_link_libraries(bridgecommand-bc PRIVATE
+    target_link_libraries(aegirstyra-bc PRIVATE
         bc-asio
         enet
         bc-serial
@@ -127,7 +127,7 @@ if (APPLE)
 	    "-framework CoreAudio"
     )
 else (APPLE)
-    target_link_libraries(bridgecommand-bc PRIVATE
+    target_link_libraries(aegirstyra-bc PRIVATE
         bc-asio
         enet
         bc-serial

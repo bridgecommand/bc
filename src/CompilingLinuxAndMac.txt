@@ -6,7 +6,7 @@ To build on Linux:
 2) Start a terminal session, and make sure you are in the 'bc/bin' directory
 3) Run 'cmake ../src' to prepare the build files
 4) Run 'make' to actually build the program 
-5) Run './bridgecommand' to start the simulator.
+5) Run './aegirstyra' to start the simulator.
 
 To build on Mac OSX:
 ====================
@@ -20,7 +20,7 @@ Download and uncompress libsndfile-1.0.28.tar.gz from http://www.mega-nerd.com/l
 Create a folder for the output, referred to as <Somewhere> (Absolute path)
 Change directory to where you've uncompressed libsndfile, then run the following in the terminal window:
 
-(If building to be compatible with older macOS versions, run export MACOSX_DEPLOYMENT_TARGET=10.7 before building libsndfile and portaudio, and then open a new terminal before running the main Bridge Command build)
+(If building to be compatible with older macOS versions, run export MACOSX_DEPLOYMENT_TARGET=10.7 before building libsndfile and portaudio, and then open a new terminal before running the main Aegir Styra build)
 
 ./configure --disable-shared --prefix=<Somewhere>
 make
