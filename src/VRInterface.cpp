@@ -20,6 +20,7 @@
 
 #include "VRInterface.hpp"
 #include "Constants.hpp"
+#include "Camera.hpp"
 #include <iostream>
 #include <cstdarg>
 
@@ -609,6 +610,10 @@ int VRInterface::load(SimulationModel* model) {
 	xrStringToPath(instance, "/user/hand/right/input/menu/click",
 		&menu_click_path[HAND_RIGHT_INDEX]);
 
+	XrPath thumbstick_click_path;
+	xrStringToPath(instance, "/user/hand/right/input/thumbstick/click", 
+		&thumbstick_click_path);
+
 	/*
 	XrPath thumbstick_y_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/thumbstick/y",
@@ -710,6 +715,22 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
+	// Camera Switch action:
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT; // Boolean for click event
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "switchcamera");
+		strcpy(action_info.localizedActionName, "Switch Camera");
+
+		result = xrCreateAction(gameplay_actionset, &action_info, &switch_camera_action);
+		if (!xr_check(instance, result, "failed to create switch camera action"))
+			return 1;
+	}
+
 	// Menu action:
 	{
 		XrActionCreateInfo action_info;
@@ -762,6 +783,7 @@ int VRInterface::load(SimulationModel* model) {
 			{menu_action, menu_click_path[HAND_RIGHT_INDEX]},
 			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
 			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
+			{switch_camera_action, thumbstick_click_path},
 		};
 		
 		const XrInteractionProfileSuggestedBinding suggested_bindings = {
@@ -1060,6 +1082,21 @@ int VRInterface::update() {
 	actions_sync_info.activeActionSets = active_actionsets;
 	result = xrSyncActions(session, &actions_sync_info);
 	xr_check(instance, result, "failed to sync actions!");
+
+	// Camera View Switch
+	XrActionStateBoolean cameraSwitchState{ XR_TYPE_ACTION_STATE_BOOLEAN };
+	XrActionStateGetInfo getInfo{ XR_TYPE_ACTION_STATE_GET_INFO };
+	getInfo.action = switch_camera_action;
+	getInfo.subactionPath = hand_paths[HAND_RIGHT_INDEX];  // Check right hand input
+
+	xrGetActionStateBoolean(session, &getInfo, &cameraSwitchState);
+
+	if (cameraSwitchState.currentState && cameraSwitchState.changedSinceLastSync) {
+		if (model) {
+			model->changeView();  // Call the function that switches camera view
+		}
+	}
+
 
 	// query each value / location with a subaction path != XR_NULL_PATH
 	// resulting in individual values per hand/.

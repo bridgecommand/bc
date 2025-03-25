@@ -115,6 +115,7 @@ private:
     XrAction select_action_float;
     XrAction menu_action;
     XrAction haptic_action;
+    XrAction switch_camera_action; // Added action for switching camera
     XrResult result;
 
     int menuPressedRepeats;
