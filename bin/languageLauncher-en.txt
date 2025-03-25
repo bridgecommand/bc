@@ -3,7 +3,7 @@ The characters \n will be replaced with a line break, so multiple lines of text 
 
 This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
 
-startBC = "Start Bridge Command          "
+startBC = "Start Aegir Styra          "
 startMC = "Map Controller          "
 startRP = "Heading/Compass Repeater          "
 startED = "Scenario Editor          "

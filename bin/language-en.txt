@@ -1,4 +1,4 @@
-Bridge Command Language file. To translate, please change the part after the 'equals' symbol
+Aegir Styra Language file. To translate, please change the part after the 'equals' symbol
 The characters \n will be replaced with a line break, so multiple lines of text are possible
 
 This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
@@ -7,7 +7,7 @@ ok="OK"
 scnChoose="Please choose a scenario:"
 secondary="Use as secondary display"
 secondaryWait="Waiting for connection. This computer's hostname and port is:\n"
-moveMessage="Please move this message box to the monitor where Bridge Command should run, and click OK"
+moveMessage="Please move this message box to the monitor where Aegir Styra should run, and click OK"
 multiplayer="Multiplayer mode"
 hostname="Optional: Hostname for controller/secondary display.\nLeave blank if not needed to improve speed."
 hostnameHelp="Hostnames:\nStart secondary displays or controller sessions first.\nThese will show the hostname and port.\nEnter these here, as hostname:port\nUse commas to separate hostnames."
