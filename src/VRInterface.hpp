@@ -116,6 +116,7 @@ private:
     XrAction menu_action;
     XrAction haptic_action;
     XrAction switch_camera_action; // Added action for switching camera
+    XrAction horn_action; // VR button action for horn
     XrResult result;
 
     int menuPressedRepeats;

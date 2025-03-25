@@ -614,6 +614,9 @@ int VRInterface::load(SimulationModel* model) {
 	xrStringToPath(instance, "/user/hand/right/input/thumbstick/click", 
 		&thumbstick_click_path);
 
+	XrPath grip_click_path;
+	xrStringToPath(instance, "/user/hand/right/input/grip/click", &grip_click_path);
+
 	/*
 	XrPath thumbstick_y_path[HAND_COUNT];
 	xrStringToPath(instance, "/user/hand/left/input/thumbstick/y",
@@ -731,6 +734,22 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
+	// Horn action:
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT; // Boolean input (pressed or not)
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "horn");
+		strcpy(action_info.localizedActionName, "Horn");
+
+		result = xrCreateAction(gameplay_actionset, &action_info, &horn_action);
+		if (!xr_check(instance, result, "Failed to create horn action"))
+			return 1;
+	}
+
 	// Menu action:
 	{
 		XrActionCreateInfo action_info;
@@ -784,6 +803,7 @@ int VRInterface::load(SimulationModel* model) {
 			{haptic_action, haptic_path[HAND_LEFT_INDEX]},
 			{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
 			{switch_camera_action, thumbstick_click_path},
+			{horn_action, grip_click_path},
 		};
 		
 		const XrInteractionProfileSuggestedBinding suggested_bindings = {
@@ -1083,20 +1103,52 @@ int VRInterface::update() {
 	result = xrSyncActions(session, &actions_sync_info);
 	xr_check(instance, result, "failed to sync actions!");
 
-	// Camera View Switch
-	XrActionStateBoolean cameraSwitchState{ XR_TYPE_ACTION_STATE_BOOLEAN };
-	XrActionStateGetInfo getInfo{ XR_TYPE_ACTION_STATE_GET_INFO };
-	getInfo.action = switch_camera_action;
-	getInfo.subactionPath = hand_paths[HAND_RIGHT_INDEX];  // Check right hand input
+	// Camera View Switch for Both Hands
+	XrActionStateBoolean cameraSwitchState[HAND_COUNT];
+	XrActionStateGetInfo cameraGetInfo[HAND_COUNT];
 
-	xrGetActionStateBoolean(session, &getInfo, &cameraSwitchState);
+	for (int i = 0; i < HAND_COUNT; i++) {
+		cameraGetInfo[i].type = XR_TYPE_ACTION_STATE_GET_INFO;
+		cameraGetInfo[i].next = NULL;
+		cameraGetInfo[i].action = switch_camera_action;
+		cameraGetInfo[i].subactionPath = hand_paths[i]; // Check both hands
 
-	if (cameraSwitchState.currentState && cameraSwitchState.changedSinceLastSync) {
-		if (model) {
-			model->changeView();  // Call the function that switches camera view
+		xrGetActionStateBoolean(session, &cameraGetInfo[i], &cameraSwitchState[i]);
+
+		// If the button is pressed on either hand, switch the camera
+		if (cameraSwitchState[i].currentState && cameraSwitchState[i].changedSinceLastSync) {
+			if (model) {
+				model->changeView();
+			}
 		}
 	}
 
+	// Horn Action Handling for Both Hands
+	XrActionStateBoolean hornState[HAND_COUNT];
+	XrActionStateGetInfo hornGetInfo[HAND_COUNT];
+
+	for (int i = 0; i < HAND_COUNT; i++) {
+		hornGetInfo[i].type = XR_TYPE_ACTION_STATE_GET_INFO;
+		hornGetInfo[i].next = NULL;
+		hornGetInfo[i].action = horn_action;
+		hornGetInfo[i].subactionPath = hand_paths[i]; // Check both left and right hands
+
+		xrGetActionStateBoolean(session, &hornGetInfo[i], &hornState[i]);
+
+		// If the button is pressed on either hand, start the horn
+		if (hornState[i].currentState && hornState[i].changedSinceLastSync) {
+			if (model) {
+				model->startHorn();
+			}
+		}
+
+		// If the button is released on either hand, stop the horn
+		if (!hornState[i].currentState && hornState[i].changedSinceLastSync) {
+			if (model) {
+				model->endHorn();
+			}
+		}
+	}
 
 	// query each value / location with a subaction path != XR_NULL_PATH
 	// resulting in individual values per hand/.
