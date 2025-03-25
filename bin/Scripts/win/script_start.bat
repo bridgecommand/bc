@@ -14,5 +14,3 @@ if %COUNT% == 0 (
 )
 
 del serverStatus.log
-
-endlocal
