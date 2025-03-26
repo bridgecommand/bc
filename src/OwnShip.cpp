@@ -58,6 +58,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Get initial position and heading, and set these
     axialSpd = ownShipData.initialSpeed * KTS_TO_MPS;
     lateralSpd = 0;
+    speedThroughWater = 0;
     xPos = model->longToX(ownShipData.initialLong);
     yPos = 0;
     zPos = model->latToZ(ownShipData.initialLat);
@@ -1767,6 +1768,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 axialStream = stream.X * sin(hdg * irr::core::DEGTORAD) + stream.Y * cos(hdg * irr::core::DEGTORAD); // Stream in ahead direction
         irr::f32 lateralStream = stream.X * cos(hdg * irr::core::DEGTORAD) - stream.Y * sin(hdg * irr::core::DEGTORAD);// Stream in stbd direction
 
+        speedThroughWater = axialSpd - axialStream;
+
         // Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
         if (bowThruster > 1)
@@ -2055,14 +2058,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         //		groundingDrag	"	groundingAxialDrag
 
         irr::f32 axialDrag;
-        irr::f32 axialRelSpeed = axialSpd - axialStream;
-        if (axialRelSpeed < 0)
+        if (speedThroughWater < 0)
         { // Compensate for loss of sign when squaring
-            axialDrag = -1 * dynamicsSpeedA * axialRelSpeed * axialRelSpeed + dynamicsSpeedB * axialRelSpeed;
+            axialDrag = -1 * dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
         }
         else
         {
-            axialDrag = dynamicsSpeedA * axialRelSpeed * axialRelSpeed + dynamicsSpeedB * axialRelSpeed;
+            axialDrag = dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
         }
         irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
@@ -2178,11 +2180,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             // Regular rudder
             if ((portThrust + stbdThrust) > 0)
             {
-                rudderTorque = rudder * axialSpd * rudderA + rudder * (portThrust + stbdThrust) * rudderB;
+                rudderTorque = rudder * speedThroughWater * rudderA + rudder * (portThrust + stbdThrust) * rudderB;
             }
             else
             {
-                rudderTorque = rudder * axialSpd * rudderA + rudder * (portThrust + stbdThrust) * rudderBAstern; // Reduced effect of rudder when engines engaged astern
+                rudderTorque = rudder * speedThroughWater * rudderA + rudder * (portThrust + stbdThrust) * rudderBAstern; // Reduced effect of rudder when engines engaged astern
             }
             // Engine
             engineTorque = (portThrust * propellorSpacing - stbdThrust * propellorSpacing) / 2.0; // propspace is spacing between propellors, so halve to get moment arm
@@ -2370,6 +2372,11 @@ irr::f32 OwnShip::getCOG() const
 irr::f32 OwnShip::getSOG() const
 {
     return sog; // m/s
+}
+
+irr::f32 OwnShip::getSpeedThroughWater() const
+{
+    return speedThroughWater; // m/s
 }
 
 irr::f32 OwnShip::getDepth() const

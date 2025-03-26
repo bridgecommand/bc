@@ -38,7 +38,7 @@ struct GUIData {
     irr::f32 hdg;
     irr::f32 viewAngle;
     irr::f32 viewElevationAngle;
-    irr::f32 spd;
+    irr::f32 spd; // Show speed through water
     irr::f32 portEng;
     irr::f32 stbdEng;
     irr::f32 rudder;

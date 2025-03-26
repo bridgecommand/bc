@@ -288,11 +288,6 @@ SimulationModel::~SimulationModel()
          ownShip.setSpeed(spd);
     }
 
-    irr::f32 SimulationModel::getSpeed() const
-    {
-        return(ownShip.getSpeed());
-    }
-
     irr::f32 SimulationModel::getLat()  const{
         return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
     }
@@ -1933,7 +1928,7 @@ SimulationModel::~SimulationModel()
         guiData->hdg = ownShip.getHeading();
         guiData->viewAngle = camera.getLook();
         guiData->viewElevationAngle = elevAngle;
-        guiData->spd = ownShip.getSpeed();
+        guiData->spd = ownShip.getSpeedThroughWater();
         guiData->portEng = ownShip.getPortEngine();
         guiData->stbdEng = ownShip.getStbdEngine();
         guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
