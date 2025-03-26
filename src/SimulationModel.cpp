@@ -1905,11 +1905,6 @@ SimulationModel::~SimulationModel()
         //check if paused
         paused = device->getTimer()->getSpeed()==0.0;
 
-        }{ IPROF("Calc elevation etc ");
-        //calculate current angular elevation due to pitch and roll in the view direction
-        irr::f32 lookRadians = irr::core::degToRad(camera.getLook());
-        elevAngle = -1*ownShip.getPitch()*cos(lookRadians) + ownShip.getRoll()*sin(lookRadians) + camera.getLookUp();
-
         }{ IPROF("Get radar ARPA data for GUI");
 
         //get radar ARPA data to show
@@ -1926,8 +1921,11 @@ SimulationModel::~SimulationModel()
         guiData->lat = getLat();
         guiData->longitude = getLong();
         guiData->hdg = ownShip.getHeading();
-        guiData->viewAngle = camera.getLook();
-        guiData->viewElevationAngle = elevAngle;
+        
+        irr::core::vector3df cameraForwardVector = camera.getForwardVector(); 
+        guiData->viewAngle = atan2(cameraForwardVector.X, cameraForwardVector.Z) * irr::core::RADTODEG;
+        guiData->viewElevationAngle = asin(cameraForwardVector.Y) * irr::core::RADTODEG;
+
         guiData->spd = ownShip.getSpeedThroughWater();
         guiData->portEng = ownShip.getPortEngine();
         guiData->stbdEng = ownShip.getStbdEngine();
