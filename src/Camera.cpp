@@ -212,10 +212,15 @@ irr::f32 Camera::getLookUp() const
     return lookUpAngle;
 }
 
+irr::core::vector3df Camera::getForwardVector() const
+{
+    return frv;
+}
+
 void Camera::moveForwards()
 {
-    irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-    views[currentView] += 0.05 * frv;
+    irr::core::vector3df frvLocal(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
+    views[currentView] += 0.05 * frvLocal;
 
     //For displaying position
     std::string cameraPositionText = "Camera: (";
@@ -230,8 +235,8 @@ void Camera::moveForwards()
 
 void Camera::moveBackwards()
 {
-    irr::core::vector3df frv(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-    views[currentView] -= 0.05 * frv;
+    irr::core::vector3df frvLocal(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
+    views[currentView] -= 0.05 * frvLocal;
 
     //For displaying position
     std::string cameraPositionText = "Camera: (";
@@ -389,7 +394,7 @@ void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::v
         }
 
         // transform forward vector of camera
-        irr::core::vector3df frv(0.0f,0.0f,1.0f);
+        frv = irr::core::vector3df(0.0f,0.0f,1.0f);
         frv=quat*frv;
         frv=viewQuat*frv;
         parentAngles.transformVect(frv);

@@ -53,6 +53,7 @@ class Camera
         void lookStbd();
         irr::f32 getLook() const;
         irr::f32 getLookUp() const;
+        irr::core::vector3df getForwardVector() const;
         void highView(bool highViewRequired);
         void changeView();
         void setView(irr::u32 view);
@@ -83,6 +84,7 @@ class Camera
         irr::s32 verticalPanSpeed; //Degrees per second
         irr::f32 hFOV;//horizontal field of view (radians)
         irr::core::vector3df sideViewVector; // Side vector
+        irr::core::vector3df frv;
 
         bool isHighViewActive;
         irr::f32 previousLookAngle;

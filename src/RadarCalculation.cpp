@@ -686,7 +686,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     } { IPROF("Update ARPA");
 	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
 	} { IPROF("Render");
-	render(radarImage, radarImageOverlaid, ownShip.getHeading(), ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+	render(radarImage, radarImageOverlaid, ownShip.getCOG(), ownShip.getSOG()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 	}
 
 }
@@ -1370,8 +1370,8 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                         thisArpaContact.estimate.absHeading += 360;
                     }
                     //Relative vector:
-                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSpeed() * sin((ownShip.getHeading())*irr::core::DEGTORAD);
-                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSpeed() * cos((ownShip.getHeading())*irr::core::DEGTORAD); //ownShipSpeed in m/s
+                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSOG() * sin((ownShip.getCOG())*irr::core::DEGTORAD);
+                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSOG() * cos((ownShip.getCOG())*irr::core::DEGTORAD); //ownShipSpeed in m/s
                     thisArpaContact.estimate.relHeading = std::atan2(thisArpaContact.estimate.relVectorX,thisArpaContact.estimate.relVectorZ)/RAD_IN_DEG;
                     while (thisArpaContact.estimate.relHeading < 0 ) {
                         thisArpaContact.estimate.relHeading += 360;
