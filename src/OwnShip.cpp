@@ -1743,7 +1743,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         // std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
 
         // Add drag from wind and stream
-        irr::f32 windSpeed = model->getWindSpeed();
+        irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
         irr::f32 windDirection = model->getWindDirection();
         // Convert this into wind axial speed and wind lateral speed
         irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
