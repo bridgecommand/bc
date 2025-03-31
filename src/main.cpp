@@ -859,7 +859,7 @@ int main(int argc, char ** argv)
     creditsText.append(getCredits());
     irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<irr::s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
     device->run();
-    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+    driver->beginScene(true, true, irr::video::SColor(0,255,255,255));
     device->getGUIEnvironment()->drawAll();
     driver->endScene();
 

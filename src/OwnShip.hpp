@@ -27,6 +27,7 @@
 class SimulationModel;
 class OwnShipData;
 class Terrain;
+class Rain;
 
 struct ContactPoint
 {
@@ -169,6 +170,7 @@ private:
         std::string radarConfigFile;
         std::string basePath; // The location the model is loaded from
         Terrain *terrain;
+        Rain *rain;
         SimulationModel *model;
         bool is360textureShip;
         bool showDebugData;
