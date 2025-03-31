@@ -501,7 +501,7 @@ void NetworkSecondary::receiveMessage()
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getRateOfTurn()*irr::core::RADTODEG));
                     multiplayerFeedback.append("#");
-                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSpeed()));
+                    multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getSOG()));
                     multiplayerFeedback.append("#");
                     multiplayerFeedback.append(Utilities::lexical_cast<std::string>(model->getTimeDelta()));
                     multiplayerFeedback.append("#");

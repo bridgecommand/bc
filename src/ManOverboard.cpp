@@ -18,6 +18,7 @@
 #include "IniFile.hpp"
 #include "Utilities.hpp"
 #include "SimulationModel.hpp"
+#include "Constants.hpp"
 
 #include <iostream>
 
@@ -123,11 +124,24 @@ void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 
     //Move with tidal stream (if not aground)
     irr::f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
-    irr::core::vector2df stream = model->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
+    irr::core::vector2df mobVector = model->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
+    
+    // Add component from wind
+    irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+    irr::f32 windDirection = model->getWindDirection();
+    // Convert this into wind axial speed and wind lateral speed
+    irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+    irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
+    irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+    // Assume that the MoB moves at 1/10 of the wind speed
+    mobVector.X += windX * 0.1;
+    mobVector.Y += windZ * 0.1;
+
+    // Apply movement vector
     if (depth > 0) {
         irr::f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
-        pos.X += stream.X*deltaTime*streamScaling;
-        pos.Z += stream.Y*deltaTime*streamScaling;
+        pos.X += mobVector.X*deltaTime*streamScaling;
+        pos.Z += mobVector.Y*deltaTime*streamScaling;
     }
 
     setPosition(pos);

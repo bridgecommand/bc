@@ -1170,7 +1170,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guiLong = guiData->longitude;
         guiHeading = guiData->hdg; //Heading in degrees
         headingIndicator->setHeading(guiHeading);
-        viewHdg = guiData->viewAngle+guiData->hdg;
+        viewHdg = guiData->viewAngle;
         viewElev = guiData->viewElevationAngle;
         while (viewHdg>=360) {viewHdg-=360;}
         while (viewHdg<0) {viewHdg+=360;}
