@@ -673,7 +673,7 @@ std::string& Message::MpFeedBack(void)
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getRateOfTurn()*irr::core::RADTODEG));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getSpeed()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getSOG()));
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getTimeDelta()));
   mpFeedBack.append("#");
