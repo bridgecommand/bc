@@ -161,7 +161,6 @@ public:
     void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
     void setAccelerator(irr::f32 accelerator); //Set simulation time compression
     irr::f32 getAccelerator() const;
-    irr::f32 getSpeed() const; //Gets the own ship's speed
     irr::f32 getHeading() const; //Gets the own ship's heading
 
     irr::f32 getLat() const;

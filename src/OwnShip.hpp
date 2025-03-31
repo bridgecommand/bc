@@ -93,6 +93,7 @@ public:
         irr::f32 getRoll() const;
         irr::f32 getCOG() const;
         irr::f32 getSOG() const; // m/s
+        irr::f32 getSpeedThroughWater() const; // m/s
         std::string getBasePath() const;
         irr::core::vector3df getScreenDisplayPosition() const;
         irr::f32 getScreenDisplaySize() const;
@@ -302,6 +303,7 @@ private:
         irr::f32 propWalkTorque;
         irr::f32 axialSpd; // DEE_DEC22
         irr::f32 lateralSpd;
+        irr::f32 speedThroughWater;
 
         // DEE_DEC22 vvvv
         irr::f32 seawaterDensity; // 1024 kg/m^3 however can be less in dockwater and freshwater
