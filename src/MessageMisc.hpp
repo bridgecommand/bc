@@ -74,6 +74,11 @@ typedef struct{
   float weather;
   float visibility;
   float rain;
+  float windDirection;
+  float windSpeed;
+  float streamDirection;
+  float streamSpeed;
+  int streamOverrideInt;
 }sWeatherInf;
 
 typedef struct{
@@ -136,6 +141,11 @@ typedef struct{
   int weather;
   int rain;
   int visibility;
+  float windDirection;
+  float windSpeed;
+  float streamDirection;
+  float streamSpeed;
+  int streamOverrideInt;
 }sWeather;
 
 typedef struct{
