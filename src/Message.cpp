@@ -914,9 +914,9 @@ std::string& Message::KeepAliveShort(void)
   msg.clear();
   msg = "OS"; //Own ship only
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getLong()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getLat()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getHeading()));
   msg.append(",");
