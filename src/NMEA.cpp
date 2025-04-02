@@ -407,6 +407,9 @@ void NMEA::updateNMEA()
 
     irr::f32 depth = model->getDepth();
 
+    irr::f32 windDirection = model->getWindDirection();
+    irr::f32 windSpeed = model->getWindSpeed();
+    
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
 
@@ -543,6 +546,12 @@ void NMEA::updateNMEA()
             snprintf(messageBuffer,maxSentenceChars,"$HEROT,%.1f,A",rot);  // A = data valid
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
+        }
+	case WIMWV:
+        {
+	  snprintf(messageBuffer,maxSentenceChars,"$WIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
+	  messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+	  break;
         }
         /*
         case VTG: // 8.3.98 Course over ground and ground speed
