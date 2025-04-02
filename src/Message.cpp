@@ -442,7 +442,7 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
 eCmdMsg Message::ParseWindInjection(std::string& aMsg, void** aCmdData)
 {
   static sWeather windInfos;
-  std::vector<std::string> wiRec = Utilities::split(aMsg,',');
+  std::vector<std::string> wiRec = Utilities::split(aMsg, ',');
 
   if(wiRec.size() > 0)
     { 

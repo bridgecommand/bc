@@ -2366,7 +2366,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	sWeather *dataWeather = (sWeather*)aDataCmd;
 
 	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
-	if(dataWeather->windDirection > 0) {setWindSpeed(dataWeather->windDirection);}
+	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
 
 	break;
       }
