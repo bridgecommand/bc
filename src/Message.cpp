@@ -8,7 +8,8 @@ sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController
 					     {"OS", &Message::ParseOwnShip},
 					     {"SC", &Message::ParseScenario},
 					     {"SD", &Message::ParseShutDown},
-					     {"MH", &Message::ParseMultiPlayer}
+					     {"MH", &Message::ParseMultiPlayer},
+					     {"WI", &Message::ParseWindInjection}
 					    };
 
 Message::Message(SimulationModel* aModel)
@@ -438,11 +439,27 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
   return E_CMD_MESSAGE_UNKNOWN;
 }
 
+eCmdMsg Message::ParseWindInjection(std::string& aMsg, void** aCmdData)
+{
+  static sWeather windInfos;
+  std::vector<std::string> wiRec = Utilities::split(aMsg,',');
+
+  if(wiRec.size() > 0)
+    { 
+      windInfos.windDirection=std::stof(wiRec.at(0));
+      windInfos.windSpeed=std::stof(wiRec.at(1));
+
+      *aCmdData = (void*)&windInfos;
+      return E_CMD_MESSAGE_WIND_INJECTION;
+    }
+  return E_CMD_MESSAGE_UNKNOWN;
+}
+
+
 eCmdMsg Message::ParseShutDown(std::string& aMsg, void** aCmdData)
 {
   return E_CMD_MESSAGE_SHUTDOWN;
 }
-
 
 eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 {
@@ -854,16 +871,23 @@ std::string& Message::KeepAlive(void)
   msg.append(Utilities::lexical_cast<std::string>(mModel->getLoopNumber()));
   msg.append("#");
 
-  //7 Weather: Weather, Fog range, wind dirn, rain, light level #
+  //7 Weather: Weather, Fog range, wind dirn, rain #
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWeather()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getVisibility()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Wind dirn
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getRain()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Light level
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideDirection()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideSpeed()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverride()));
+
   msg.append("#");
 
   //8 EBL Brg, height, show (or 0,0,0) #

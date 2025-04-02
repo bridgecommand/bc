@@ -2037,6 +2037,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         if(dataWeather->weather >= 0) {setWeather(dataWeather->weather);}
 	if(dataWeather->rain >= 0) {setRain(dataWeather->rain);}
 	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
+	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {setWindSpeed(dataWeather->windDirection);}
+	if(dataWeather->streamDirection > 0) {setStreamOverrideDirection(dataWeather->streamDirection);}
+	if(dataWeather->streamSpeed > 0) {setStreamOverrideSpeed(dataWeather->streamSpeed);}
+	if(dataWeather->streamOverrideInt > 0) {setStreamOverride(dataWeather->streamOverrideInt);}
 
 	break;
       }
@@ -2286,7 +2291,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         setWeather(dataMasterCmds->weather.weather);
 	setVisibility(dataMasterCmds->weather.visibility);
 	setRain(dataMasterCmds->weather.rain);
-
+	setWindSpeed(dataMasterCmds->weather.windSpeed);
+	setWindDirection(dataMasterCmds->weather.windDirection);
+	setStreamOverrideDirection(dataMasterCmds->weather.streamDirection);
+	setStreamOverrideSpeed(dataMasterCmds->weather.streamSpeed);
+	setStreamOverride(dataMasterCmds->weather.streamOverrideInt);
+	
 	/************************************************************************/
 	setView(dataMasterCmds->view.view);
 
@@ -2327,7 +2337,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	break;
       }
     case E_CMD_MESSAGE_MULTIPLAYER_COMMAND:
-    {
+      {
         sMasterCmdsInf* dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
 
 
@@ -2350,7 +2360,16 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         }
 
         break;
-    }
+      }
+    case E_CMD_MESSAGE_WIND_INJECTION:
+      {
+	sWeather *dataWeather = (sWeather*)aDataCmd;
+
+	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {setWindSpeed(dataWeather->windDirection);}
+
+	break;
+      }
     case E_CMD_MESSAGE_UNKNOWN:
     default:
       {	
