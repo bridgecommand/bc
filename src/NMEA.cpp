@@ -392,8 +392,8 @@ void NMEA::updateNMEA()
     irr::f32 rudderAngle = model->getRudder();
 
     int engineRPM[] = {
-        Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
-        Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
+        Utilities::round(model->getStbdEngine()*100), // idx=1, odd (starboard)
+        Utilities::round(model->getPortEngine()*100)  // idx=2, even (port)
     };
 
     irr::f32 lat = model->getLat();
@@ -549,7 +549,7 @@ void NMEA::updateNMEA()
         }
 	case WIMWV:
         {
-	  snprintf(messageBuffer,maxSentenceChars,"$WIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
+	  snprintf(messageBuffer,maxSentenceChars,"$IIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
 	  messageQueue.push_back(addChecksum(std::string(messageBuffer)));
 	  break;
         }
