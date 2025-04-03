@@ -8,7 +8,8 @@ sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController
 					     {"OS", &Message::ParseOwnShip},
 					     {"SC", &Message::ParseScenario},
 					     {"SD", &Message::ParseShutDown},
-                         {"MH", &Message::ParseMultiPlayer}
+					     {"MH", &Message::ParseMultiPlayer},
+					     {"WI", &Message::ParseWindInjection}
 					    };
 
 Message::Message(SimulationModel* aModel)
@@ -85,11 +86,16 @@ sWeather* Message::SetWeather(std::string aCmd)
 {
   static sWeather dataWeather = {0};
   std::vector<std::string> parts = Utilities::split(aCmd,',');
-  if (parts.size() == 4)
+  if (parts.size() == 9)
     { 
       dataWeather.weather = Utilities::lexical_cast<float>(parts.at(1));
       dataWeather.rain = Utilities::lexical_cast<float>(parts.at(2));
       dataWeather.visibility = Utilities::lexical_cast<float>(parts.at(3));
+      dataWeather.windDirection = Utilities::lexical_cast<float>(parts.at(4));
+      dataWeather.windSpeed = Utilities::lexical_cast<float>(parts.at(5));
+      dataWeather.streamDirection = Utilities::lexical_cast<float>(parts.at(6));
+      dataWeather.streamSpeed = Utilities::lexical_cast<float>(parts.at(7));
+      dataWeather.streamOverrideInt = Utilities::lexical_cast<float>(parts.at(8));
     }
   return &dataWeather;
 }
@@ -279,11 +285,16 @@ sLinesInf Message::GetInfosLines(std::vector<std::string>& aLinesData, unsigned 
 sWeatherInf Message::GetInfosWeather(std::vector<std::string>& aWeatherData)
 {
   sWeatherInf weatherInfos = {0};
-  if(aWeatherData.size() == 5)
+  if(aWeatherData.size() == 8)
     {
       weatherInfos.weather = Utilities::lexical_cast<float>(aWeatherData.at(0));
       weatherInfos.visibility = Utilities::lexical_cast<float>(aWeatherData.at(1));
+      weatherInfos.windDirection = Utilities::lexical_cast<float>(aWeatherData.at(2));
       weatherInfos.rain = Utilities::lexical_cast<float>(aWeatherData.at(3));
+      weatherInfos.windSpeed = Utilities::lexical_cast<float>(aWeatherData.at(4));
+      weatherInfos.streamDirection = Utilities::lexical_cast<float>(aWeatherData.at(5));
+      weatherInfos.streamSpeed = Utilities::lexical_cast<float>(aWeatherData.at(6));
+      weatherInfos.streamOverrideInt = Utilities::lexical_cast<float>(aWeatherData.at(7));
     }
   return weatherInfos;
 }
@@ -428,11 +439,27 @@ eCmdMsg Message::ParseScenario(std::string& aMsg, void** aCmdData)
   return E_CMD_MESSAGE_UNKNOWN;
 }
 
+eCmdMsg Message::ParseWindInjection(std::string& aMsg, void** aCmdData)
+{
+  static sWeather windInfos;
+  std::vector<std::string> wiRec = Utilities::split(aMsg, ',');
+
+  if(wiRec.size() > 0)
+    { 
+      windInfos.windDirection=std::stof(wiRec.at(0));
+      windInfos.windSpeed=std::stof(wiRec.at(1));
+
+      *aCmdData = (void*)&windInfos;
+      return E_CMD_MESSAGE_WIND_INJECTION;
+    }
+  return E_CMD_MESSAGE_UNKNOWN;
+}
+
+
 eCmdMsg Message::ParseShutDown(std::string& aMsg, void** aCmdData)
 {
   return E_CMD_MESSAGE_SHUTDOWN;
 }
-
 
 eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 {
@@ -844,16 +871,23 @@ std::string& Message::KeepAlive(void)
   msg.append(Utilities::lexical_cast<std::string>(mModel->getLoopNumber()));
   msg.append("#");
 
-  //7 Weather: Weather, Fog range, wind dirn, rain, light level #
+  //7 Weather: Weather, Fog range, wind dirn, rain #
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWeather()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getVisibility()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Wind dirn
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getRain()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Light level
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideDirection()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideSpeed()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverride()));
+
   msg.append("#");
 
   //8 EBL Brg, height, show (or 0,0,0) #
@@ -904,9 +938,9 @@ std::string& Message::KeepAliveShort(void)
   msg.clear();
   msg = "OS"; //Own ship only
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getLong()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getLat()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getHeading()));
   msg.append(",");

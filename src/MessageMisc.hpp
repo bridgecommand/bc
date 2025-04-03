@@ -1,7 +1,7 @@
 #ifndef MESSAGE_MISC_HPP
 #define MESSAGE_MISC_HPP
 
-#define MAX_HEADER_MSG (6)
+#define MAX_HEADER_MSG (7)
 #define MAX_RECORD_BC_MSG (13)
 
 /*****************Enum cmds*****************************/
@@ -21,6 +21,7 @@ typedef enum{
   E_CMD_MESSAGE_SCENARIO,
   E_CMD_MESSAGE_SHUTDOWN,
   E_CMD_MESSAGE_MULTIPLAYER_COMMAND,
+  E_CMD_MESSAGE_WIND_INJECTION,
   E_CMD_MESSAGE_UNKNOWN=0x99
 }eCmdMsg;
 
@@ -74,6 +75,11 @@ typedef struct{
   float weather;
   float visibility;
   float rain;
+  float windDirection;
+  float windSpeed;
+  float streamDirection;
+  float streamSpeed;
+  int streamOverrideInt;
 }sWeatherInf;
 
 typedef struct{
@@ -136,6 +142,11 @@ typedef struct{
   int weather;
   int rain;
   int visibility;
+  float windDirection;
+  float windSpeed;
+  float streamDirection;
+  float streamSpeed;
+  int streamOverrideInt;
 }sWeather;
 
 typedef struct{

@@ -213,6 +213,13 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
             findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 
         } //Check received message starts with BC
+	else if(receivedString.substr(0,2).compare("WI") == 0 )
+	  {
+	    std::vector<std::string> inData = Utilities::split(&receivedString[2],',');
+
+	    windDirection=std::stof(inData.at(0));
+	    windSpeed=std::stof(inData.at(1));
+	  }
     } //Check message at least 3 characters
 
 }

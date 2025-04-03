@@ -105,7 +105,7 @@ int Com::ClientConnect(ENetPeer** aPeer, unsigned int aData)
       if(!isConnected)
 	{
 	  mTypeClient[mClientCounter] = aData;
-      mPeerClient[mClientCounter] = *aPeer;
+	  mPeerClient[mClientCounter] = *aPeer;
 	  enet_address_get_host_ip(&mPeerClient[mClientCounter]->address, ipAddr, 16);
 	  std::cout << "Client :" << ipAddr << ":" << mPeerClient[mClientCounter]->address.port << " connected - type : " << mTypeClient[mClientCounter] << std::endl;
 	  mClientCounter++;
@@ -160,26 +160,12 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
   
   if(tmpBuffer.length() >= 2)
     {
-      if(E_MSG_TO_MASTER & msgTo)
-		{
-		  SendMsg(MASTER);
-		}
-		if(E_MSG_TO_SLAVE & msgTo)
-		{
-		  SendMsg(SLAVE);
-		}
-		if(E_MSG_TO_MH & msgTo)
-		{
-		  SendMsg(MULTIHUB);
-		}
-		if(E_MSG_TO_MASTER_MP & msgTo)
-		{
-		  SendMsg(MASTER_MP);
-		}
-		if (E_MSG_TO_MC & msgTo)
-		{
-			SendMsg(MAP_CTRL);
-		}
+      if(E_MSG_TO_MASTER & msgTo) SendMsg(MASTER);
+      if(E_MSG_TO_SLAVE & msgTo) SendMsg(SLAVE);     
+      if(E_MSG_TO_MH & msgTo) SendMsg(MULTIHUB);
+      if(E_MSG_TO_MASTER_MP & msgTo) SendMsg(MASTER_MP);
+      if(E_MSG_TO_MC & msgTo) SendMsg(MAP_CTRL);
+      if(E_MSG_TO_WI & msgTo) SendMsg(WIND_INJ);
     }
 
   return 0;

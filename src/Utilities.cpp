@@ -65,7 +65,7 @@ namespace Utilities
 
     }
 
-    void trim(std::string& inString, std::string trimChrs) {
+    void trim(std::string& inString, std::string trimChrs) { // 
         //Based on http://codereview.stackexchange.com/questions/40124/trim-white-space-from-string, Loki Astari answer
         if(inString.empty()) {
             return;
