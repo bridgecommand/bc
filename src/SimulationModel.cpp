@@ -2038,7 +2038,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataWeather->rain >= 0) {setRain(dataWeather->rain);}
 	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
 	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
-	if(dataWeather->windDirection > 0) {setWindSpeed(dataWeather->windDirection);}
+	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
 	if(dataWeather->streamDirection > 0) {setStreamOverrideDirection(dataWeather->streamDirection);}
 	if(dataWeather->streamSpeed > 0) {setStreamOverrideSpeed(dataWeather->streamSpeed);}
 	if(dataWeather->streamOverrideInt > 0) {setStreamOverride(dataWeather->streamOverrideInt);}
