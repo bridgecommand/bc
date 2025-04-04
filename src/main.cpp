@@ -894,6 +894,7 @@ int main(int argc, char ** argv)
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
+	device->getCursorControl()->setVisible(false);
         //Get the data
         std::string receivedSerialisedScenarioData;
         while (device->run() && receivedSerialisedScenarioData.empty()) {
