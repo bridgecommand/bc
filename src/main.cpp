@@ -1048,9 +1048,13 @@ int main(int argc, char ** argv)
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
     //Set up initial options
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
         guiMain.hide2dInterface();
     }
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_max")==1) {
+        guiMain.hide2dInterfaceFull();
+    }
+    
     if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
         model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
