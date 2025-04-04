@@ -65,10 +65,8 @@ Network::Network(int port, std::string aAddr)
 
       /* Wait up to 1 second for the connection attempt to succeed. */
       if(enet_host_service(client, &event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
-        std::cout << "*** Connect ! ***" << std::endl;
       }
       else {
-        std::cout << "*** Reset ! ***" << std::endl;
         enet_peer_reset (peer);
       }
     }
@@ -104,8 +102,7 @@ std::string Network::findWorldName()
             char tempString[8192]; //Fixme: Think if this is long enough
             snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
-
-	    std::cout << receivedString << std::endl;
+	   
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
                 if ((receivedString.substr(0,4) == "SCN1") || (receivedString.substr(0,4) == "SCN2" ) || (receivedString.substr(0,4) == "SCN3" )) { //Check if it starts with SCN1, SCN2 or SCN3
