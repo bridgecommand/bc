@@ -872,14 +872,6 @@ int main(int argc, char ** argv)
     Network network;
     network.Connect(enetSrvAddr, enetSrvPort, mode);
 
-    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    bool bExtraNet=false;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 ))
-      {
-	bExtraNet=true;
-        //network.Connect(hostname);
-      }
-
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
@@ -1042,13 +1034,6 @@ int main(int argc, char ** argv)
 
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
-    
-    //Give the network class a pointer to the model
-    //network.setModel(&model);
-    if (true == bExtraNet) {
-      //extraNetwork.setModel(&model);
-    }
-
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
@@ -1114,13 +1099,8 @@ int main(int argc, char ** argv)
     while(device->run())
       {
         { IPROF("Network");
-
-
-        Update::UpdateNetwork(&model, &network, mode);
-	    
-	  if (true == bExtraNet) {
-            //extraNetwork.update();
-	  }
+	  
+	  Update::UpdateNetwork(&model, &network, mode);
         }
 	{ IPROF("NMEA");
 
