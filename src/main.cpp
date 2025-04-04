@@ -964,6 +964,7 @@ int main(int argc, char ** argv)
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
+	device->getCursorControl()->setVisible(false);
         //Get the data
 	Message inMsg;
 	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
@@ -1033,13 +1034,6 @@ int main(int argc, char ** argv)
     }
 
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
-
-    
-    //Give the network class a pointer to the model
-    //network.setModel(&model);
-    if (true == bExtraNet) {
-      //extraNetwork.setModel(&model);
-    }
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -1111,12 +1105,8 @@ int main(int argc, char ** argv)
       {
         { IPROF("Network");
 
-
-        Update::UpdateNetwork(&model, &network, mode);
+	  Update::UpdateNetwork(&model, &network, mode);
 	    
-	  if (true == bExtraNet) {
-            //extraNetwork.update();
-	  }
         }
 	{ IPROF("NMEA");
 
