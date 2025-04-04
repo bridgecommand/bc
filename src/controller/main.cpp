@@ -132,6 +132,11 @@ int main (int argc, char ** argv)
         udpPort = 18304;
     }
 
+    std::string udpAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+    if (udpAddr.empty()) {
+        udpAddr = "localhost";
+    }
+    
     //Listen on UDP for AIS data if set
     irr::u32 aisPort = IniFile::iniFileTou32(iniFilename, "ais_udp_port");
 
@@ -176,7 +181,7 @@ int main (int argc, char ** argv)
 
     //Classes:  Network and Controller share data with shared data structures (passed by ref). Controller then pushes data to the GUI
     //Network class
-    Network network(udpPort);
+    Network network(udpPort, udpAddr);
 
     std::vector<AISData> localAISData; //A copy of AIS data held on the main thread
 
@@ -184,9 +189,6 @@ int main (int argc, char ** argv)
     std::string ourHostName = asio::ip::host_name();
     irr::core::stringw patienceMessage = language.translate("startBC");
     patienceMessage.append(L"\n");
-    patienceMessage.append(irr::core::stringw(ourHostName.c_str()));
-    patienceMessage.append(L":");
-    patienceMessage.append(irr::core::stringw(network.getPort()));
 
     //Find world model to use, from the network
     irr::gui::IGUIWindow* patienceWindow = device->getGUIEnvironment()->addWindow(irr::core::rect<irr::s32>(10, 10, driver->getScreenSize().Width-10, driver->getScreenSize().Height-10), false, language.translate("waiting").c_str());

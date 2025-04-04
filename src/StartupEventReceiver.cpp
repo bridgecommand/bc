@@ -20,15 +20,11 @@
 
 //using namespace irr;
 
-StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::gui::IGUIStaticText* description, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
+StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* description, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev)
 	{
 		device = dev;
 		this->scenarioListBox = scenarioListBox;
 		this->scenarioText = scenarioText;
-		this->hostnameText = hostnameText;
-		this->hostnameBox = hostnameBox;
-		this->portText = portText;
-		this->portBox = portBox;
         this->description = description;
 		this->secondaryBox = secondaryBox;
 		this->multiplayerBox = multiplayerBox;
@@ -67,25 +63,11 @@ StartupEventReceiver::StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBo
                         scenarioListBox->setVisible(false);
                         scenarioText->setVisible(false);
                         description->setVisible(false);
-                        portText->setVisible(true);
-                        portBox->setVisible(true);
-                        if (multiplayerBox->isChecked()) {
-                            // If multiplayer, we also want to be able to send to secondary display
-                            hostnameBox->setVisible(true);
-                            hostnameText->setVisible(true);
-                        } else {
-                            hostnameBox->setVisible(false);
-                            hostnameText->setVisible(false);
-                        }
                     } else {
                         // Normal mode
                         scenarioListBox->setVisible(true);
                         scenarioText->setVisible(true);
-                        hostnameBox->setVisible(true);
-                        hostnameText->setVisible(true);
                         description->setVisible(true);
-                        portText->setVisible(false);
-                        portBox->setVisible(false);
                     }
                     
                 }

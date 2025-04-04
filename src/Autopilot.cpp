@@ -26,6 +26,8 @@
 #include <iostream>
 #include <tuple>
 
+using namespace std;
+
 Autopilot::Autopilot(SimulationModel* model)
 {
     this->model = model;
@@ -141,7 +143,7 @@ bool Autopilot::receiveRMB(RMB sentence)
     }
     irr::f32 leg_progress = 1.0 - ((sentence.range_to_dest * M_IN_NM) / currentLegLen);
     if (leg_progress > 0.75) {
-        throttle = std::max(0.1, throttle * (-3.6 * leg_progress + 3.7));
+        throttle = max(0.1, throttle * (-3.6 * leg_progress + 3.7));
     }
     model->setPortEngine(throttle);
     model->setStbdEngine(throttle);

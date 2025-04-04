@@ -46,7 +46,7 @@ private:
     float accelAdjustment;
     float previousTimeError;
 
-    ENetHost * server;
+    ENetHost *server;
     ENetEvent event;
     OperatingMode::Mode mode;
 

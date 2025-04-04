@@ -32,7 +32,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, irr::u32& udpPort, OperatingMode::Mode& mode, std::string scenarioPath)
+void ScenarioChoice::chooseScenario(std::string& scenarioName, OperatingMode::Mode& mode, std::string scenarioPath)
 {
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -67,17 +67,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),irr::core::rect<irr::s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
     irr::gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
 
-    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.52*su,0.33*sh,0.99*su, 0.38*sh));
-    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.52*su,0.39*sh,0.80*su,0.42*sh));
-    hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
-
-    //For secondary only, allow the user to change the UDP port to listen on
-    irr::gui::IGUIStaticText* portText = gui->addStaticText(language->translate("udpListenPort").c_str(),irr::core::rect<irr::s32>(0.52*su,0.43*sh,0.99*su, 0.48*sh));
-    irr::gui::IGUIEditBox* portBox = gui->addEditBox(irr::core::stringw(udpPort).c_str(),irr::core::rect<irr::s32>(0.52*su,0.49*sh,0.80*su,0.52*sh));
-    portBox->setToolTipText(language->translate("udpListenPortHelp").c_str());
-    portText->setVisible(false);
-    portBox->setVisible(false);
-
     //add credits text
     //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
 
@@ -97,7 +86,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     device->clearSystemMessages();
 
     //Link to our event receiver
-    StartupEventReceiver startupReceiver(scenarioListBox,instruction,hostnameText,hostnameBox,secondaryCheckbox,multiplayerCheckbox,portText,portBox,description,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
+    StartupEventReceiver startupReceiver(scenarioListBox,instruction,secondaryCheckbox,multiplayerCheckbox,description,GUI_ID_SCENARIO_LISTBOX,GUI_ID_OK_BUTTON,GUI_ID_SECONDARY_CHECKBOX,GUI_ID_MULTIPLAYER_CHECKBOX, device);
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
@@ -129,16 +118,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 		ExitMessage::exitWithMessage("No scenario selected.");
     }
 
-    //Get hostname, and convert from wchar_t* to wstring to string
-    std::wstring wHostname = std::wstring(hostnameBox->getText());
-    std::string sHostname(wHostname.begin(), wHostname.end());
-    hostname = sHostname; //hostname is a pass by reference return value
-
-    //Get UDP port, if the box is visible
-    if (portBox->isVisible()) {
-        udpPort = irr::core::strtoul10(irr::core::stringc(portBox->getText()).c_str());
-    }
-
     //Check if 'secondary' mode is selected
     if(secondaryCheckbox->isChecked()) {
         mode = OperatingMode::Secondary;
@@ -162,10 +141,6 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     secondaryCheckbox->remove(); secondaryCheckbox=0;
     multiplayerCheckbox->remove();multiplayerCheckbox=0;
     multiplayerText->remove();multiplayerText=0;
-    hostnameBox->remove(); hostnameBox=0;
-    hostnameText->remove();hostnameText=0;
-    portBox->remove();portBox=0;
-    portText->remove();portText=0;
     description->remove();description=0;
     //creditsText->remove(); creditsText=0;
     device->setEventReceiver(oldReceiver); //Remove link to startup event receiver, as this will be destroyed, and return to what we were using

@@ -18,15 +18,16 @@
 #define __MYEVENTRECEIVER_HPP_INCLUDED__
 
 #include "irrlicht.h"
-#include "NetworkPrimary.hpp"
 #include <string>
 #include <vector>
+#include "Network.hpp"
 
 //forward declarations
 class GUIMain;
 class SimulationModel;
 class Lines;
 class VRInterface;
+
 
 //Data about joystick setup
 class JoystickSetup {

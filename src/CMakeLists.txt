@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.8)
+
+cmake_minimum_required(VERSION 3.10)
 project(bridgecommand)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -12,6 +14,7 @@ if (APPLE)
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.7")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
 endif (APPLE)
+
 
 add_subdirectory(libs/asio)
 add_subdirectory(libs/enet-1.3.14)
@@ -32,6 +35,7 @@ add_subdirectory(iniEditor)
 add_subdirectory(launcher)
 add_subdirectory(multiplayerHub)
 add_subdirectory(repeater)
+add_subdirectory(EnetServer)
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
@@ -64,13 +68,12 @@ set(BC_SOURCES
     Line.cpp
     Lines.cpp
     ManOverboard.cpp
+    Message.cpp	
     MovingWater.cpp
     MyEventReceiver.cpp
     NMEA.cpp
     NavLight.cpp
     Network.cpp
-    NetworkPrimary.cpp
-    NetworkSecondary.cpp
     NumberToImage.cpp
     OtherShip.cpp
     OtherShips.cpp
@@ -89,9 +92,10 @@ set(BC_SOURCES
     StartupEventReceiver.cpp
     Terrain.cpp
     Tide.cpp
+    Update.cpp	
     Utilities.cpp
     VRInterface.cpp
-	ExitMessage.cpp
+    ExitMessage.cpp
     Water.cpp
     BCTerrainSceneNode.cpp
     BCTerrainTriangleSelector.cpp

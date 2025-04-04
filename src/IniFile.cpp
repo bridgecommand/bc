@@ -96,12 +96,15 @@ bool IniCache::readFile(const std::string& fileName)
     while ( std::getline (file,line) )
     {
         const std::size_t equalsPos = line.find_first_of("=");
-        if (equalsPos != std::string::npos) {
-            std::string key   = Utilities::trim(line.substr(0, equalsPos));
-            std::string value = Utilities::trim(line.substr(equalsPos+1, std::string::npos));
+        if (equalsPos != std::string::npos)
+	  {
+	    std::string key = line.substr(0, equalsPos);
+            Utilities::trim(key);
+            std::string value = line.substr(equalsPos+1, std::string::npos);
+	    Utilities::trim(value);
 
             Utilities::to_lower(key);
-            value = Utilities::trim(value, "\"");
+            Utilities::trim(value, "\"");
 
             m_stringData[fileName][key] = value;
         }
@@ -153,13 +156,14 @@ bool IniCache::readWFile(const std::string& fileName)
     {
         const std::size_t equalsPos = line.find_first_of(L"=");
         if (equalsPos != std::wstring::npos) {
-            std::wstring key   = Utilities::trim(line.substr(0, equalsPos));
-            std::wstring value = Utilities::trim(line.substr(equalsPos+1, std::wstring::npos));
+	  std::wstring key = line.substr(0, equalsPos);
+	  Utilities::trim(key);
+	  std::wstring value = line.substr(equalsPos+1, std::wstring::npos);
+	  Utilities::trim(value);
 
-            Utilities::to_lower(key);
-            value = Utilities::trim(value, L"\"");
-
-            m_wstringData[fileName][key] = value;
+	  Utilities::to_lower(key);
+	  Utilities::trim(value,  L"\"");
+	  m_wstringData[fileName][key] = value;
         }
     }
 
