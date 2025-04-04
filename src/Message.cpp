@@ -561,7 +561,7 @@ eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
             unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
             if (numberMOB)
             {
-                std::vector<std::string> mobData = Utilities::split(numberData.at(5), ',');
+                std::vector<std::string> mobData = Utilities::split(bcRec.at(5), ',');
                 masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
             }
 
@@ -625,7 +625,7 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 	  unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
 	  if(numberMOB)
 	    {
-	      std::vector<std::string> mobData = Utilities::split(numberData.at(5),',');
+	      std::vector<std::string> mobData = Utilities::split(bcRec.at(5),',');
 	      masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
 	    }	  
 	  
