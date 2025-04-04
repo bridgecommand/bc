@@ -205,6 +205,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    void hide2dInterfaceFull();
     void zoomOn();
     void zoomOff();
     void toggleBearings();
@@ -414,7 +415,7 @@ private:
     bool nfuPortDown;
     bool nfuStbdDown;
 
-    void updateVisibility();
+    void updateVisibility(bool bHideFull=false);
     void hideInSecondary();
     void draw2dRadar();
     void draw2dBearing();

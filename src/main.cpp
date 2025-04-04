@@ -872,14 +872,6 @@ int main(int argc, char ** argv)
     Network network;
     network.Connect(enetSrvAddr, enetSrvPort, mode);
 
-    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    bool bExtraNet=false;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 ))
-      {
-	bExtraNet=true;
-        //network.Connect(hostname);
-      }
-
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
@@ -1068,9 +1060,13 @@ int main(int argc, char ** argv)
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
     //Set up initial options
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
         guiMain.hide2dInterface();
     }
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_max")==1) {
+        guiMain.hide2dInterfaceFull();
+    }
+    
     if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
         model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
