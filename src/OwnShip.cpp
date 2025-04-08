@@ -21,7 +21,6 @@
 #include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "Terrain.hpp"
-#include "Rain.hpp"
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
@@ -34,14 +33,12 @@
 #define IPROF(a) //intentionally empty placeholder
 #endif
 
-using namespace std;
+// using namespace irr;
 
 void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 minContactPointSpacing, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev)
 {
     // Store reference to terrain
     this->terrain = terrain;
-
-    this->rain = rain;
 
     // Store reference to model
     this->model = model;
@@ -693,9 +690,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Find if we need more contact points to maintain minContactPointSpacing
     if (minContactPointSpacing > 0)
     {
-        numberOfContactPoints.X = max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
-        numberOfContactPoints.Y = max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
-        numberOfContactPoints.Z = max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
+        numberOfContactPoints.X = std::max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
+        numberOfContactPoints.Y = std::max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
+        numberOfContactPoints.Z = std::max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
     }
 
     // Grid from below looking up
@@ -2380,6 +2377,11 @@ irr::f32 OwnShip::getSOG() const
 irr::f32 OwnShip::getSpeedThroughWater() const
 {
     return speedThroughWater; // m/s
+}
+
+irr::f32 OwnShip::getLateralSpeed() const
+{
+    return lateralSpd; 
 }
 
 irr::f32 OwnShip::getDepth() const

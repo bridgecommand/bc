@@ -319,6 +319,9 @@ SimulationModel::~SimulationModel()
         return ownShip.getSOG();
     }
 
+    irr::f32 SimulationModel::getLateralSpeed() const{
+        return ownShip.getLateralSpeed();
+    }
     irr::f32 SimulationModel::getDepth() const{
         return ownShip.getDepth();
     }

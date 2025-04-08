@@ -95,6 +95,7 @@ public:
         irr::f32 getCOG() const;
         irr::f32 getSOG() const; // m/s
         irr::f32 getSpeedThroughWater() const; // m/s
+        irr::f32 getLateralSpeed() const;
         std::string getBasePath() const;
         irr::core::vector3df getScreenDisplayPosition() const;
         irr::f32 getScreenDisplaySize() const;
