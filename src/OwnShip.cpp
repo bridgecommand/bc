@@ -457,6 +457,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         else
         {
             device->getLogger()->log("cB not defined in boat.ini mass declared in boat.ini used");
+            irr::f32 estimatedMass = seawaterDensity * length * breadth * draught * 1;
+            device->getLogger()->log((irr::core::stringw("Mass: ") + irr::core::stringw(shipMass)).c_str());
+            device->getLogger()->log((irr::core::stringw("Mass with cB=1: ") + irr::core::stringw(estimatedMass)).c_str());
+            device->getLogger()->log((irr::core::stringw("Effective cB=") + irr::core::stringw(shipMass / estimatedMass)).c_str());
         }
         if (Izz <= 0)
         {
