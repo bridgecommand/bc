@@ -40,7 +40,8 @@ public:
     void ReceiveThread(std::string udpListenPortName);
     void receive();
     // not implemented: RSD, OSD, POS, VTG, HRM, VDO, HBT
-  enum NMEAMessage { RMC=0, GPROT, GLL, RSA, RPM, GPHDT, HEROT, TTM, GGA, ZDA, DTM, HEHDT, WIMWV, TIROT, DPT};
+  enum NMEAMessage { RMC=0, GPROT, GLL, RSA, RPM, VHW, GPHDT, HEROT, TTM, GGA, ZDA, DTM, HEHDT, WIMWV, TIROT, DPT};
+
 
 private:
     Autopilot autopilot;
