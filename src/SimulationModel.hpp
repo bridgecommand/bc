@@ -169,7 +169,7 @@ public:
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
     irr::f32 getDepth() const;
-
+    irr::f32 getOwnShipSpeedThroughWater(void);
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 

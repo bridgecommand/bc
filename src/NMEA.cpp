@@ -401,7 +401,7 @@ void NMEA::updateNMEA()
 
     irr::f32 cog = model->getCOG();
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;
-
+    irr::f32 spdWater = model->getOwnShipSpeedThroughWater();
     irr::f32 hdg = model->getHeading();
     irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
@@ -544,6 +544,13 @@ void NMEA::updateNMEA()
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
+       
+        case VHW:
+	  {
+	    snprintf(messageBuffer,maxSentenceChars,"$VDVHW,0,T,0,M,%.1f,N,0,K",spdWater);
+            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            break;
+	  }
         /*
         case VTG: // 8.3.98 Course over ground and ground speed
             snprintf(messageBuffer,maxSentenceChars,"$VDVTG,");

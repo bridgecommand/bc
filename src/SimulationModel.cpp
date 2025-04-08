@@ -424,6 +424,11 @@ SimulationModel::~SimulationModel()
         return otherShips.getLegs(number);
     }
 
+    irr::f32 SimulationModel::getOwnShipSpeedThroughWater(void)
+    {
+        return ownShip.getSpeedThroughWater();
+    }
+
     irr::f32 SimulationModel::getBuoyPosX(int number) const{
         return buoys.getPosition(number).X + offsetPosition.X;
     }
