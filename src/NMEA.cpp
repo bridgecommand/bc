@@ -556,7 +556,7 @@ void NMEA::updateNMEA()
         case VHW:
 	  {
 	    snprintf(messageBuffer,maxSentenceChars,"$VDVHW,0,T,0,M,%.1f,N,0,K",spdWater);
-            messageToSend.append(addChecksum(std::string(messageBuffer)));
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
 	  }
         /*
