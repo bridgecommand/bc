@@ -690,9 +690,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Find if we need more contact points to maintain minContactPointSpacing
     if (minContactPointSpacing > 0)
     {
-        numberOfContactPoints.X = max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
-        numberOfContactPoints.Y = max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
-        numberOfContactPoints.Z = max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
+      numberOfContactPoints.X = std::max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
+      numberOfContactPoints.Y = std::max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
+      numberOfContactPoints.Z = std::max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
     }
 
     // Grid from below looking up
