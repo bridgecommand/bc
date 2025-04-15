@@ -1,37 +1,42 @@
-NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED FOR NAVIGATION. 
+NO DATA SUPPLIED WITH THIS SOFTWARE OR DERIVED FROM IT SHOULD BE USED 
+FOR NAVIGATION. 
 
-BRIDGE COMMAND MUST NOT BE USED FOR SAFETY-CRITICAL 
-APPLICATIONS SUCH AS NAVIGATION ON THE SEA.
+BRIDGE COMMAND MUST NOT BE USED FOR SAFETY-CRITICAL APPLICATIONS SUCH
+AS NAVIGATION ON THE SEA.
 
-Bridge Command is Copyright (C) 2024 by James Packer. The model
-files distributed in this release are copyright by their authors. In this
-release, models have been provided by Ragnar, Juergen Klemp, 
-Simon D Richardson, Jason Simpson, Thierry Videlaine, NETC (Naval 
-Education and Training Command) and James Packer.
+Bridge Command is Copyright (C) 2025 by James Packer. The model files
+distributed in this release are copyright by their authors. In this
+release, models have been provided by Ragnar, Juergen Klemp, Simon D 
+Richardson, Jason Simpson, Thierry Videlaine, NETC (Naval Education 
+and Training Command) and James Packer.
 
-Bridge Command is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License Version 2 as published by
-the Free Software Foundation.
+Bridge Command is free software; you can redistribute it and/or 
+modify it under the terms of the GNU General Public License Version 2
+as published by the Free Software Foundation.
 
-The models provided by Ragnar, Jason Simpson and James Packer are free software; 
-you can redistribute them and/or modify them under the terms of the GNU General 
-Public License Version 2 as published by the Free Software Foundation.
+The models provided by Ragnar, Jason Simpson and James Packer are 
+free software; you can redistribute them and/or modify them under the
+terms of the GNU General Public License Version 2 as published by the
+Free Software Foundation.
 
-Other models distributed with Bridge Command may be used with Bridge Command. 
-For any other use, you must obtain permission from the relevant author. 
+Other models distributed with Bridge Command may be used with Bridge 
+Command. For any other use, you must obtain permission from the 
+relevant author. 
 
-Each model is credited to its author in the documentation 
-distributed with Bridge Command.
+Each model is credited to its author in the documentation distributed
+with Bridge Command.
 
-Bridge Command uses the Irrlicht Engine (http://irrlicht.sourceforge.net), the ENet 
-networking library (http://enet.bespin.org), ASIO, PortAudio, water based on Keith 
-Lantz FFT water implementation and the RealisticWaterSceneNode by elvman 
-(https://github.com/elvman/RealisticWaterSceneNode), AIS Parser by Brian C. Lane,  
-and the Serial library by William Woodall. Bridge Command depends on libsndfile, 
-which is released under the GNU Lesser General Public License version 2.1 or 3.
+Bridge Command uses the Irrlicht Engine 
+(http://irrlicht.sourceforge.net), the ENet networking library 
+(http://enet.bespin.org), ASIO, PortAudio, water based on Keith Lantz
+FFT water implementation and the RealisticWaterSceneNode by elvman
+(https://github.com/elvman/RealisticWaterSceneNode), AIS Parser by 
+Brian C. Lane, and the Serial library by William Woodall. Bridge 
+Command depends on libsndfile, which is released under the GNU Lesser
+General Public License version 2.1 or 3.
 
-The Irrlicht Engine is based in part on the work of the Independent JPEG Group, 
-the zlib, and libpng.
+The Irrlicht Engine is based in part on the work of the Independent 
+JPEG Group, the zlib, and libpng.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
