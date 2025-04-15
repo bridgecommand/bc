@@ -64,7 +64,7 @@
         reflectionColour = mix(reflectionColour,vec4(0.0,0.0,0.0,1.0),seaState/12.0);
 
         //Mix the two, more reflection at night so lights show up
-        vec4 outputColour = mix(reflectionColour, simpleShading,0.8+lightLevel/6.0);
+        vec4 outputColour = mix(reflectionColour, simpleShading,0.6+lightLevel/6.0);
 
         //Todo: Think about white shading if normal is near upwards, and height is high (i.e. at a crest)
 

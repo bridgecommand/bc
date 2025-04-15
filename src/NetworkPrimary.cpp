@@ -418,7 +418,7 @@ void NetworkPrimary::sendNetwork(std::string aManualCmd)
   }
 
   if(!aManualCmd.empty())
-    { 
+    {
       stringToSend = aManualCmd;
     }
   else

@@ -65,28 +65,28 @@ namespace Utilities
 
     }
 
-    std::string trim(std::string inString, std::string trimChrs) {
+    void trim(std::string& inString, std::string trimChrs) { // 
         //Based on http://codereview.stackexchange.com/questions/40124/trim-white-space-from-string, Loki Astari answer
         if(inString.empty()) {
-            return inString;
+            return;
         }
 
         std::size_t firstScan = inString.find_first_not_of(trimChrs);
         std::size_t first     = firstScan == std::string::npos ? inString.length() : firstScan;
         std::size_t last      = inString.find_last_not_of(trimChrs);
-        return inString.substr(first, last-first+1);
+        inString = inString.substr(first, last-first+1);
     }
 
-    std::wstring trim(std::wstring inString, std::wstring trimChrs) {
+    void trim(std::wstring& inString, std::wstring trimChrs) {
         //Based on http://codereview.stackexchange.com/questions/40124/trim-white-space-from-string, Loki Astari answer
         if(inString.empty()) {
-            return inString;
+            return;
         }
 
         std::size_t firstScan = inString.find_first_not_of(trimChrs);
         std::size_t first     = firstScan == std::string::npos ? inString.length() : firstScan;
         std::size_t last      = inString.find_last_not_of(trimChrs);
-        return inString.substr(first, last-first+1);
+        inString = inString.substr(first, last-first+1);
     }
 
     signed int round(float numberIn) {
@@ -140,7 +140,8 @@ namespace Utilities
         std::string item;
         while (std::getline(ss, item, delim)) {
             // Trim blank spaces from the string
-            splitStrings.push_back(trim(item));
+	  trim(item);
+	  splitStrings.push_back(item);
         }
         //Special case - if the final character is the delimitor, add an empty string at the end
         if (inputString.length() > 0) {

@@ -24,7 +24,6 @@
 
 // Include the Irrlicht header
 #include "irrlicht.h"
-
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -39,6 +38,7 @@
 #include "Sound.hpp"
 #include "Utilities.hpp"
 #include "OperatingModeEnum.hpp"
+#include "Update.hpp"
 
 #include <cstdlib> //For rand(), srand()
 #include <vector>
@@ -367,7 +367,6 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
 
 int main(int argc, char ** argv)
 {
-
     #ifdef WITH_PROFILING
     IPROF_FUNC;
     #endif
@@ -412,6 +411,7 @@ int main(int argc, char ** argv)
     }
 
     std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
+
     if (!scriptToExe.empty()) {
         std::string scriptPath;
         if (Utilities::pathExists(userFolder + scriptToExe)) {
@@ -437,13 +437,24 @@ int main(int argc, char ** argv)
         system(scriptPath.c_str());
         #endif
     }
-
+	
     #ifdef __arm__
     if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
         setenv("PA_ALSA_PLUGHW", "1", true);
     }
     #endif
 
+
+    int fontSize = 12;
+    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+    if (fontScale > 1) {
+        fontSize = (int)(fontSize * fontScale + 0.5);
+    } else {
+	    fontScale = 1.0;
+    }
+
+    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -514,7 +525,6 @@ int main(int argc, char ** argv)
         cameraMaxDistance = 6*M_IN_NM;
     }
 
-
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
     irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
@@ -523,19 +533,21 @@ int main(int argc, char ** argv)
     std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
-    if (udpPort == 0) {
-        udpPort = 18304;
+    irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
+    if (enetSrvPort == 0) {
+        enetSrvPort = DEFAULT_PORT;
     }
 
-    int fontSize = 12;
-    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale > 1) {
-        fontSize = (int)(fontSize * fontScale + 0.5);
-    } else {
-	    fontScale = 1.0;
+    std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+    if (enetSrvAddr.empty()) {
+        enetSrvAddr = "localhost";
     }
 
+    OperatingMode::Mode mode = OperatingMode::Normal;
+    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
+        mode = OperatingMode::Secondary;
+    }
+    
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
         irr::core::dimension2d<irr::u32> deskres;
@@ -759,10 +771,20 @@ int main(int argc, char ** argv)
     #endif
 
     //set gui skin and 'flatten' this
-    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC   );
+    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
+
+    irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+    if (font == NULL) {
+        std::cout << "Could not load font, using fallback" << std::endl;
+    }
+    else {
+        //set skin default font
+        device->getGUIEnvironment()->getSkin()->setFont(font);
+    }
+
 
 	irr::u32 su = driver->getScreenSize().Width;
 	irr::u32 sh = driver->getScreenSize().Height;
@@ -776,16 +798,6 @@ int main(int argc, char ** argv)
 	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
-
-    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
-    if (font == NULL) {
-        std::cout << "Could not load font, using fallback" << std::endl;
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
 
     //Choose scenario
     std::string scenarioName = "";
@@ -803,18 +815,13 @@ int main(int argc, char ** argv)
 
 	//Start sound
 	Sound sound;
-
-    OperatingMode::Mode mode = OperatingMode::Normal;
-    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
-        mode = OperatingMode::Secondary;
-    }
-
+    
     if (mode == OperatingMode::Normal) {
         ScenarioChoice scenarioChoice(device,&language);
-        scenarioChoice.chooseScenario(scenarioName, hostname, udpPort, mode, scenarioPath);
+        scenarioChoice.chooseScenario(scenarioName, mode, scenarioPath);
     }
 
-    hostname = Utilities::trim(hostname);
+    Utilities::trim(hostname);
 
     //Save hostname in user directory (hostname.txt). Check first that the location exists
     if (!Utilities::pathExists(Utilities::getUserDirBase())) {
@@ -852,69 +859,18 @@ int main(int argc, char ** argv)
     creditsText.append(getCredits());
     irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<irr::s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
     device->run();
-    driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+    driver->beginScene(true, true, irr::video::SColor(0,255,255,255));
     device->getGUIEnvironment()->drawAll();
     driver->endScene();
 
     //seed random number generator
     std::srand(device->getTimer()->getTime());
-
+    
     //create GUI
     GUIMain guiMain;
 
-    //Set up networking (this will get a pointer to the model later)
-    //Create networking, linked to model, choosing whether to use main or secondary network mode
-    Network* network = Network::createNetwork(mode, udpPort, device);
-    //Network network(&model);
-    network->connectToServer(hostname);
-
-    // If in multiplayer mode, also start 'normal' network, so we can send data to secondary displays
-    Network* extraNetwork = 0;
-    if ((mode == OperatingMode::Multiplayer) && (hostname.length() > 0 )) {
-        extraNetwork = Network::createNetwork(OperatingMode::Normal, udpPort, device);
-        extraNetwork->connectToServer(hostname);
-        //std::cout << "Starting extra network to " << hostname << " on " << udpPort << std::endl;
-    }
-
-    //Read in scenario data (work in progress)
-    ScenarioData scenarioData;
-    if (mode == OperatingMode::Normal) {
-        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
-    } else {
-        //If in secondary mode, get scenario information from the server
-        //Tell user what we're doing
-        irr::core::stringw portMessage = language.translate("secondaryWait");
-        portMessage.append(L" ");
-        std::string ourHostName = asio::ip::host_name();
-        portMessage.append(irr::core::stringw(ourHostName.c_str()));
-        portMessage.append(L":");
-        portMessage.append(irr::core::stringw(network->getPort()));
-        loadingMessage->setText(portMessage.c_str());
-        device->run();
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
-        //Get the data
-        std::string receivedSerialisedScenarioData;
-        while (device->run() && receivedSerialisedScenarioData.empty()) {
-            network->getScenarioFromNetwork(receivedSerialisedScenarioData);
-        }
-        scenarioData.deserialise(receivedSerialisedScenarioData);
-    }
-    std::string serialisedScenarioData = scenarioData.serialise(false);
-
-    loadingMessage->remove(); loadingMessage = 0;
-
-    //Note: We could use this serialised format as a scenario import/export format or for online distribution
-    
-    // Check VR mode
-    bool vr3dMode = false;
-    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
-        vr3dMode=true;
-    }
-
-    // Set up the VR interface
-    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
+    Network network;
+    network.Connect(enetSrvAddr, enetSrvPort, mode);
 
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
@@ -956,6 +912,12 @@ int main(int argc, char ** argv)
 
     }
 
+    // Check VR mode
+    bool vr3dMode = false;
+    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+        vr3dMode=true;
+    }
+    
     SimulationModel::ModelParameters modelParameters;
     // TODO: most of these intermediate variables can probably be removed.
     modelParameters.mode = mode; 
@@ -986,13 +948,64 @@ int main(int argc, char ** argv)
     modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
     modelParameters.debugMode = debugMode;
 
-    //Create simulation model
-    SimulationModel model(device, 
-                          smgr, 
-                          &guiMain, 
-                          &sound, 
-                          scenarioData, 
-                          modelParameters);
+    
+    ScenarioData scenarioData;
+     
+    if(mode == OperatingMode::Normal)
+      {
+        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
+      }
+    else
+      {
+        irr::core::stringw waitingMessage = language.translate("secondaryWait");
+	waitingMessage += network.GetIPServer().c_str();
+        loadingMessage->setText(waitingMessage.c_str());
+        device->run();
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+	device->getCursorControl()->setVisible(false);
+        //Get the data
+	Message inMsg;
+	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
+	void* dataScn = NULL;
+
+	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
+	  {
+	    network.WaitMessage(inMsg, msgType, &dataScn, 1000);
+	  }
+	if(dataScn != NULL)
+	  {
+	    std::string scnStr((char*)dataScn);	    
+	    scenarioData.deserialise(scnStr);
+	  }
+    }
+    //std::string serialisedScenarioData = scenarioData.serialise(false);
+
+    loadingMessage->remove(); loadingMessage = 0;
+    bool bEnd = false;
+
+    std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
+
+    SimulationModel model(device,
+        smgr,
+        &guiMain,
+        &sound,
+        scenarioData,
+        modelParameters);
+
+    bEnd = true;
+    taskWaitingNet.join();
+
+    if (mode == OperatingMode::Normal)
+    {
+        std::string msgScn = model.getSerialisedScenario();
+        network.SendMessage(msgScn);
+    }
+
+    // Set up the VR interface
+    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
+
 
     // Load the VR interface, allowing link to model
     int vrSuccess = -1;
@@ -1022,12 +1035,6 @@ int main(int argc, char ** argv)
 
     guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
-    //Give the network class a pointer to the model
-    network->setModel(&model);
-    if (extraNetwork) {
-        extraNetwork->setModel(&model);
-    }
-
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
@@ -1035,7 +1042,7 @@ int main(int argc, char ** argv)
     JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
 
     //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, network, &vrInterface, joystickSetup, &logMessages);
+    MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
@@ -1047,9 +1054,13 @@ int main(int argc, char ** argv)
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
     //Set up initial options
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments")==1) {
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
         guiMain.hide2dInterface();
     }
+    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_max")==1) {
+        guiMain.hide2dInterfaceFull();
+    }
+    
     if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
         model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
@@ -1088,23 +1099,18 @@ int main(int argc, char ** argv)
 
 	sound.StartSound();
 
+	
     //main loop
     while(device->run())
-    {
-
+      {
         { IPROF("Network");
-//        networkProfile.tic();
-        network->update();
-        if (extraNetwork) {
-            extraNetwork->update();
+
+	  Update::UpdateNetwork(&model, &network, mode);
+	    
         }
-//        networkProfile.toc();
+	{ IPROF("NMEA");
 
-        // Update NMEA, check if new sensor or AIS data is ready to be sent
-//        nmeaProfile.tic();
-        }{ IPROF("NMEA");
-
-        if (!nmeaUDPListenPortName.empty()) {
+	  if (!nmeaUDPListenPortName.empty()) {
             nmea.receive();
         }
 
@@ -1223,13 +1229,7 @@ int main(int argc, char ** argv)
         << InternalProfiler::stats << std::endl;
     #endif
 
-    //networking should be stopped (presumably with destructor when it goes out of scope?)
-    device->getLogger()->log("About to stop network");
-    delete network;
-    if (extraNetwork) {
-        delete extraNetwork;
-    }
-
+    
     // Close down OpenXR and clean up
     if (vr3dMode && vrSuccess == 0) {
         vrInterface.unload();
