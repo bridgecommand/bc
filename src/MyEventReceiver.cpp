@@ -2004,6 +2004,7 @@ void MyEventReceiver::startShutdown()
     device->sleep(500);
     if (!shutdownDialogActive)
     {
+        device->getGUIEnvironment()->getRootGUIElement()->setVisible(true);
         device->getGUIEnvironment()->addMessageBox(L"Quit?", L"Quit?", true, irr::gui::EMBF_OK | irr::gui::EMBF_CANCEL, 0, GUIMain::GUI_ID_CLOSE_BOX); // I18n
         shutdownDialogActive = true;
     }
