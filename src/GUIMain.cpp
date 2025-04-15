@@ -771,10 +771,23 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return showInterface;
     }
 
+    // Roll round between normal view, full view with limited gui, and full view with no GUI
     void GUIMain::toggleShow2dInterface()
     {
-        showInterface = !showInterface;
-        updateVisibility();
+        if (!getLargeRadar()) {
+            if (!showInterface) {
+                if (guienv->getRootGUIElement()->isVisible()) {
+                    guienv->getRootGUIElement()->setVisible(false);
+                } else {
+                    showInterface = true;
+                    guienv->getRootGUIElement()->setVisible(true);
+                }
+
+            } else {
+                showInterface = false;
+            }
+            updateVisibility();
+        }
     }
 
     void GUIMain::show2dInterface()
@@ -896,7 +909,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     }
 
     void GUIMain::updateVisibility()
-    {
+    {   
         //Items to show if we're showing interface
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
