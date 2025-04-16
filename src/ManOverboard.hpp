@@ -17,7 +17,7 @@
 #ifndef __MANOVERBOARD_HPP_INCLUDED__
 #define __MANOVERBOARD_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 //Forward declarations
 class SimulationModel;

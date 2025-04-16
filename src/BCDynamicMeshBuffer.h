@@ -5,7 +5,7 @@
 #ifndef __BC_DYNAMIC_MESHBUFFER_H_INCLUDED__
 #define __BC_DYNAMIC_MESHBUFFER_H_INCLUDED__
 
-#include "irrlicht/IDynamicMeshBuffer.h"
+#include "IDynamicMeshBuffer.h"
 
 #include "BCVertexBuffer.h"
 #include "BCIndexBuffer.h"

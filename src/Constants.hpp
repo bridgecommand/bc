@@ -17,7 +17,7 @@
 #ifndef __CONSTANTS_HPP_INCLUDED__
 #define __CONSTANTS_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include <string>
 
 //global constants

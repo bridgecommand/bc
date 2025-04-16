@@ -17,7 +17,7 @@
 #ifndef __SKY_HPP_INCLUDED__
 #define __SKY_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 class Sky
 {

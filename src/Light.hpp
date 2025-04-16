@@ -17,7 +17,7 @@
 #ifndef __LIGHT_HPP_INCLUDED__
 #define __LIGHT_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 class Light
 {

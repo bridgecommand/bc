@@ -17,7 +17,7 @@
 #ifndef __WATER_HPP_INCLUDED__
 #define __WATER_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 //#include "RealisticWater.hpp"
 #include "MovingWater.hpp"
 

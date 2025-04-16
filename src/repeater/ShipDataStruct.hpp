@@ -17,7 +17,7 @@
 #ifndef __SHIPDATASTRUCT_HPP_INCLUDED__
 #define __SHIPDATASTRUCT_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include "PositionDataStruct.hpp"
 
 struct ShipData : public PositionData //To hold information about a ship's position and heading

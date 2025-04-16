@@ -22,7 +22,7 @@
 #ifndef __MOVING_WATER_HPP_INCLUDED__
 #define __MOVING_WATER_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 #include "FFTWave.hpp"
 

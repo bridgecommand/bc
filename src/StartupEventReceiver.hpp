@@ -17,7 +17,7 @@
 #ifndef __STARTUPEVENTRECEIVER_HPP_INCLUDED__
 #define __STARTUPEVENTRECEIVER_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 class StartupEventReceiver : public irr::IEventReceiver
 {

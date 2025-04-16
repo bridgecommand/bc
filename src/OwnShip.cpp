@@ -301,7 +301,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     }
     else
     {
+        std::cout << "Check OS 1!!" << std::endl;
         shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+        std::cout << "Check OS 2!!" << std::endl;
         // Make mesh scene node
         if (shipMesh == 0)
         {
@@ -310,7 +312,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             device->getLogger()->log(ownShipFullPath.c_str());
             shipMesh = smgr->addSphereMesh("Dummy name");
         }
-
+        std::cout << "Check OS 3!!" << std::endl;
         // If any part is partially transparent, make it fully transparent (for bridge windows etc!)
         if (IniFile::iniFileTou32(shipIniFilename, "MakeTransparent") == 1)
         {
@@ -323,7 +325,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
                 }
             }
         }
-
+        std::cout << "Check OS 4!!" << std::endl;
         // For testing, make wireframe
         /*
         for (irr::u32 i=0; i<shipMesh->getMeshBufferCount(); ++i)
@@ -344,7 +346,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             // ship->setDebugDataVisible(irr::scene::EDS_NORMALS|irr::scene::EDS_BBOX_ALL);
             ship->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
         }
-
+        std::cout << "Check OS 5!!" << std::endl;
         ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
         ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); // Normalise normals on scaled meshes, for correct lighting
         // Set lighting to use diffuse and ambient, so lighting of untextured models works
@@ -357,7 +359,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             }
         }
     }
-
+    std::cout << "Check OS 6!!" << std::endl;
     ship->setName("OwnShip");
 
     ship->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
@@ -366,7 +368,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     length = ship->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
     breadth = ship->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
-
+    std::cout << "Check OS 7!!" << std::endl;
     // DEE_DEC22 ---------- End of reading in information from .ini files and ownShipData
 
     // DEE_DEC22 Start setting defaults and sanity checks on parameters
@@ -374,6 +376,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
     airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
 
+    std::cout << "Check OS 8!!" << std::endl;
     if (rollPeriod == 0)
     {
         rollPeriod = 8; // default to a roll period of 8 seconds if unspecified
@@ -584,7 +587,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // DEE_NOV22 each engine's rpm
     rudder = 0;
     rateOfTurn = 0;
-
+    std::cout << "Check OS 10!!" << std::endl;
     followUpRudderWorking = true;
     rudderPump1Working = true; // Fully working rudder actuation
     rudderPump2Working = true; // Fully working rudder actuation
@@ -645,6 +648,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     // Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     // Add a triangle selector
+    std::cout << "Check OS 11!!" << std::endl;
     selector = smgr->createTriangleSelector(ship);
     if (selector)
     {
@@ -652,7 +656,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         ship->setTriangleSelector(selector);
     }
     triangleSelectorEnabled = true;
-
+    std::cout << "Check OS 11!!" << std::endl;
     ship->updateAbsolutePosition();
 
     irr::core::aabbox3df boundingBox = ship->getTransformedBoundingBox();
@@ -722,7 +726,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             addContactPointFromRay(ray, xSpacing * zSpacing);
         }
     }
-
+    std::cout << "Check OS 12!!" << std::endl;
     // Grid from ahead/astern
     for (int i = 0; i < numberOfContactPoints.X; i++)
     {

@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 
 struct LineData {

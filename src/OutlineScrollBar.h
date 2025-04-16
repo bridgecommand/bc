@@ -5,7 +5,7 @@
 #ifndef __OUTLINE_SCROLL_BAR_H_INCLUDED__
 #define __OUTLINE_SCROLL_BAR_H_INCLUDED__
 
-#include "irrlicht/IGUIScrollBar.h"
+#include "IGUIScrollBar.h"
 
 namespace irr
 {

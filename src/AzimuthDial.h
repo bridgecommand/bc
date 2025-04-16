@@ -5,7 +5,7 @@
 #ifndef __AZIMUTH_DIAL_H_INCLUDED__
 #define __AZIMUTH_DIAL_H_INCLUDED__
 
-#include "irrlicht/IGUIScrollBar.h"
+#include "IGUIScrollBar.h"
 
 namespace irr
 {

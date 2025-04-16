@@ -3,10 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 //#include "IGUISkin.h"
-#include "irrlicht/IGUIEnvironment.h"
-#include "irrlicht/IVideoDriver.h"
-#include "irrlicht/IGUIFont.h"
-#include "irrlicht/IGUIFontBitmap.h"
+#include "IGUIEnvironment.h"
+#include "IVideoDriver.h"
+#include "IGUIFont.h"
+#include "IGUIFontBitmap.h"
 
 #include "OutlineScrollBar.h"
 

@@ -17,7 +17,7 @@
 #ifndef __LANDOBJECT_HPP_INCLUDED__
 #define __LANDOBJECT_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 #include <string>
 

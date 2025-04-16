@@ -5,7 +5,7 @@
 #ifndef __HEADING_INDICATOR_H_INCLUDED__
 #define __HEADING_INDICATOR_H_INCLUDED__
 
-#include "irrlicht/IGUIElement.h"
+#include "IGUIElement.h"
 
 namespace irr
 {

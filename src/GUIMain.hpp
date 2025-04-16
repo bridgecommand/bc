@@ -17,8 +17,8 @@
 #ifndef __GUIMAIN_HPP_INCLUDED__
 #define __GUIMAIN_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
-#include "irrlicht/IGUIButton.h"
+#include "irrlicht.h"
+#include "IGUIButton.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"

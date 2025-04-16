@@ -23,7 +23,7 @@
 #endif
 
 // Include the Irrlicht header
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -851,6 +851,8 @@ int main(int argc, char ** argv)
             file.close();
         }
     }
+
+    std::cout << "Could not load font, using fallback" << std::endl;
 
 	//Show loading message
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();

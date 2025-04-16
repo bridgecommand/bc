@@ -2,11 +2,11 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "irrlicht/IGUISkin.h"
-#include "irrlicht/IGUIEnvironment.h"
-#include "irrlicht/IVideoDriver.h"
-#include "irrlicht/IGUIFont.h"
-#include "irrlicht/IGUIFontBitmap.h"
+#include "IGUISkin.h"
+#include "IGUIEnvironment.h"
+#include "IVideoDriver.h"
+#include "IGUIFont.h"
+#include "IGUIFontBitmap.h"
 
 #include "AzimuthDial.h"
 

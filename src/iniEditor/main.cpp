@@ -8,7 +8,7 @@
 //Copy bc5.ini into user dir if needed
 //(Later - drop downs for _OPTION)
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include <iostream>
 #include <fstream>
 #include "../Lang.hpp"

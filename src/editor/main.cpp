@@ -1,4 +1,4 @@
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include <iostream>
 #include <fstream>
 #include <cstdio>

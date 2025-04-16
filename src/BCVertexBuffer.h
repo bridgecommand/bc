@@ -5,7 +5,7 @@
 #ifndef __BC_VERTEX_BUFFER_H_INCLUDED__
 #define __BC_VERTEX_BUFFER_H_INCLUDED__
 
-#include "irrlicht/IVertexBuffer.h"
+#include "IVertexBuffer.h"
 
 
 namespace irr

@@ -9,10 +9,10 @@
 #ifndef __BC_TERRAIN_SCENE_NODE_H__
 #define __BC_TERRAIN_SCENE_NODE_H__
 
-#include "irrlicht/ITerrainSceneNode.h"
-#include "irrlicht/IDynamicMeshBuffer.h"
-#include "irrlicht/IrrlichtDevice.h"
-#include "irrlicht/path.h"
+#include "ITerrainSceneNode.h"
+#include "IDynamicMeshBuffer.h"
+#include "IrrlichtDevice.h"
+#include "path.h"
 
 #include <vector>
 

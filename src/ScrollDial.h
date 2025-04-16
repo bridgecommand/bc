@@ -5,7 +5,7 @@
 #ifndef __SCROLL_DIAL_H_INCLUDED__
 #define __SCROLL_DIAL_H_INCLUDED__
 
-#include "irrlicht/IGUIScrollBar.h"
+#include "IGUIScrollBar.h"
 
 namespace irr
 {
