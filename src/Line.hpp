@@ -17,7 +17,7 @@
 #ifndef __LINE_HPP_INCLUDED__
 #define __LINE_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include <string>
 
 //Forward declarations

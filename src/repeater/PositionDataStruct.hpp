@@ -17,7 +17,7 @@
 #ifndef __POSITIONDATASTRUCT_HPP_INCLUDED__
 #define __POSITIONDATASTRUCT_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 struct PositionData //To hold information about a position
 {

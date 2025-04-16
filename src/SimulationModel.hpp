@@ -22,7 +22,7 @@
 #include <vector>
 #include <stdint.h> //for uint64_t
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 //Forward declarations
 class ScenarioData;

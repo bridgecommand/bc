@@ -23,7 +23,7 @@
 #endif
 
 // Include the Irrlicht header
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"

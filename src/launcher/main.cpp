@@ -13,7 +13,7 @@
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include <iostream>
 #include <thread>
 #include "../IniFile.hpp"

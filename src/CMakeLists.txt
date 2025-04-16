@@ -19,6 +19,9 @@ find_package(X11 REQUIRED)
 add_subdirectory(libs/asio)
 add_subdirectory(libs/serial)
 
+set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
+include_directories(${IRRLICHT_INCLUDE_DIR})
+
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
 if (NOT APPLE)

@@ -17,7 +17,7 @@
 #ifndef __OTHERSHIP_HPP_INCLUDED__
 #define __OTHERSHIP_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 #include "Ship.hpp"
 

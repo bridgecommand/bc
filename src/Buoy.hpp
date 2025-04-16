@@ -17,7 +17,7 @@
 #ifndef __BUOY_HPP_INCLUDED__
 #define __BUOY_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 #include <string>
 #include <cmath>

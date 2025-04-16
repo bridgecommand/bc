@@ -17,7 +17,7 @@
 #ifndef __RADARCALCULATION_HPP_INCLUDED__
 #define __RADARCALCULATION_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 #include <vector>
 #include <string>

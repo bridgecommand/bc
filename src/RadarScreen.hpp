@@ -17,7 +17,7 @@
 #ifndef __RADARSCREEN_HPP_INCLUDED__
 #define __RADARSCREEN_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 class RadarScreen
 {

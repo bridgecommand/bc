@@ -19,7 +19,7 @@
 
 #include <vector>
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include "ShipDataStruct.hpp"
 #include "../Leg.hpp"
 

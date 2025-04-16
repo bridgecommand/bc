@@ -17,7 +17,7 @@
 #ifndef __VRINTERFACE_HPP_INCLUDED__
 #define __VRINTERFACE_HPP_INCLUDED__
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 #include "SimulationModel.hpp"
 #include <cstdint> // For int64_t
 

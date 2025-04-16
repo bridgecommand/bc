@@ -18,7 +18,7 @@
 #define __NMEA_HPP_INCLUDED__
 
 #include "Autopilot.hpp"
-#include "irrlicht/irrlicht.h" //For logger only
+#include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
 #include <mutex>
 #include <string>

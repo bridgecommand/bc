@@ -19,7 +19,7 @@
 
 //Utility functions for angles
 
-#include "irrlicht/irrlicht.h"
+#include "irrlicht.h"
 
 namespace Angles
 {
