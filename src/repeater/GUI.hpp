@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 #include "../Lang.hpp"
 #include "../HeadingIndicator.h"

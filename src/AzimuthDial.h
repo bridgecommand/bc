@@ -5,7 +5,7 @@
 #ifndef __AZIMUTH_DIAL_H_INCLUDED__
 #define __AZIMUTH_DIAL_H_INCLUDED__
 
-#include "IGUIScrollBar.h"
+#include "irrlicht/IGUIScrollBar.h"
 
 namespace irr
 {
@@ -71,11 +71,10 @@ namespace gui
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 
-		//! Writes attributes of the element.
-		//virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
-
-		//! Reads attributes of the element
-		//virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+	        void setDrawBackground(bool){};
+  	        bool isDrawBackgroundEnabled() const {return false;};
+	        IGUIButton* getUpLeftButton() const {return NULL;};
+	        IGUIButton* getDownRightButton() const {return NULL;};
 
 	private:
 

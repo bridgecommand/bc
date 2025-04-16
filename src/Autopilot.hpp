@@ -19,7 +19,7 @@
 
 #include "NMEASentences.hpp"
 #include "SimulationModel.hpp"
-#include "irrTypes.h"
+#include "irrlicht/irrTypes.h"
 #include <array>
 
 class Autopilot

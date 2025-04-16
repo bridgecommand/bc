@@ -1,22 +1,16 @@
-
-add_executable(bridgecommand-es
-    main.cpp
-    com.cpp
-    comstatus.cpp
-    fsm.cpp
-    message.cpp
-    thread.cpp
-    ../IniFile.cpp
-    ../Utilities.cpp
+file(GLOB SRC_FILES
+    "*.cpp"
+    "../IniFile.cpp"
+    "../Utilities.cpp"
 )
+add_executable(bridgecommand-es ${SRC_FILES})
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 
-
 target_link_libraries(bridgecommand-es
     enet
-    bc-irrlicht
+    Irrlicht
     Threads::Threads
 )
 

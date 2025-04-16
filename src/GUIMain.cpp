@@ -1254,7 +1254,7 @@ guiTideHeight = guiData->tideHeight;
 
         if (logWindow && logText && logMessages) {
 
-            logText->setDrawBackground(true);
+	  //logText->setDrawBackground(true);
             logText->clear();
 
             for (unsigned int i = 0; i<logMessages->size(); i++) {

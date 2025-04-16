@@ -19,7 +19,7 @@
 
 #include <string>
 #include <vector>
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 //These classes are used as structures to hold a scenario definition, and therefore have all members as public.
 //Methods for serialisation and deserialisation are included for utility

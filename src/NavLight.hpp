@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 class NavLight {
 

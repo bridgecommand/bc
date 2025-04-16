@@ -18,7 +18,7 @@
 #define __SHIPPOSITIONS_HPP_INCLUDED__
 
 #include <vector>
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 
 struct ShipPosition {

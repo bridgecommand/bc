@@ -23,7 +23,7 @@
 #endif
 
 // Include the Irrlicht header
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include "DefaultEventReceiver.hpp"
 #include "GUIMain.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -702,7 +702,7 @@ int main(int argc, char ** argv)
     //Use an extra SIrrlichtCreationParameters parameter, added to our version of the Irrlicht source, to request a borderless X11 window if requested
     #ifdef __linux__
     if (fakeFullScreen) {
-	deviceParameters.X11borderless=true; //Has an effect on X11 only
+      //deviceParameters.X11borderless=true; //Has an effect on X11 only
     }
     #endif
 
@@ -961,7 +961,7 @@ int main(int argc, char ** argv)
 	waitingMessage += network.GetIPServer().c_str();
         loadingMessage->setText(waitingMessage.c_str());
         device->run();
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
+        driver->beginScene(true, true, irr::video::SColor(0,200,200,200));
         device->getGUIEnvironment()->drawAll();
         driver->endScene();
 	device->getCursorControl()->setVisible(false);
@@ -1132,7 +1132,7 @@ int main(int argc, char ** argv)
 //        modelProfile.tic();
         }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,128,128,128));
+        driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();

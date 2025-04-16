@@ -9,8 +9,8 @@
 #ifndef __BC_TERRAIN_TRIANGLE_SELECTOR_H__
 #define __BC_TERRAIN_TRIANGLE_SELECTOR_H__
 
-#include "ITriangleSelector.h"
-#include "irrArray.h"
+#include "irrlicht/ITriangleSelector.h"
+#include "irrlicht/irrArray.h"
 
 namespace irr
 {

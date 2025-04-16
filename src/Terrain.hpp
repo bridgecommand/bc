@@ -17,7 +17,7 @@
 #ifndef __TERRAIN_HPP_INCLUDED__
 #define __TERRAIN_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 #include <string>
 #include <vector>

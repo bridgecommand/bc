@@ -5,7 +5,7 @@
 #ifndef __GUI_RECTANGLE_H_INCLUDED__
 #define __GUI_RECTANGLE_H_INCLUDED__
 
-#include "IGUIElement.h"
+#include "irrlicht/IGUIElement.h"
 
 namespace irr
 {

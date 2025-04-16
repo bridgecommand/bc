@@ -17,7 +17,7 @@
 #ifndef __NMEASENTENCES_HPP_INCLUDED__
 #define __NMEASENTENCES_HPP_INCLUDED__
 
-#include "irrTypes.h"
+#include "irrlicht/irrTypes.h"
 #include <stdexcept>
 #include <string>
 #include <sys/types.h>

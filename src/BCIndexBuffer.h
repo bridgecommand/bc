@@ -5,7 +5,7 @@
 #ifndef __BC_INDEX_BUFFER_H_INCLUDED__
 #define __BC_INDEX_BUFFER_H_INCLUDED__
 
-#include "IIndexBuffer.h"
+#include "irrlicht/IIndexBuffer.h"
 
 namespace irr
 {

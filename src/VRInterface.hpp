@@ -17,7 +17,7 @@
 #ifndef __VRINTERFACE_HPP_INCLUDED__
 #define __VRINTERFACE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include "SimulationModel.hpp"
 #include <cstdint> // For int64_t
 
@@ -26,7 +26,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <GL/GL.h>
-#include "libs/Irrlicht/irrlicht-svn/source/Irrlicht/glext.h"
+//#include "libs/Irrlicht/irrlicht-svn/source/Irrlicht/glext.h"
 #define XR_USE_GRAPHICS_API_OPENGL
 #define XR_USE_PLATFORM_WIN32
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
@@ -34,7 +34,7 @@
 #include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_reflection.h"
 #elif defined __linux__
 #include <GL/gl.h>
-#include "libs/Irrlicht/irrlicht-svn/source/Irrlicht/glext.h"
+//#include "libs/Irrlicht/irrlicht-svn/source/Irrlicht/glext.h"
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #define XR_USE_PLATFORM_XLIB

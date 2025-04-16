@@ -20,7 +20,7 @@
 
 #include <vector>
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"

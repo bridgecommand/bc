@@ -17,7 +17,7 @@
 #ifndef __CONTROLVISUALISER_HPP_INCLUDED__
 #define __CONTROLVISUALISER_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 class ControlVisualiser
 {
