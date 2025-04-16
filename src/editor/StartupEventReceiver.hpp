@@ -17,7 +17,7 @@
 #ifndef __STARTUPEVENTRECEIVER_HPP_INCLUDED__
 #define __STARTUPEVENTRECEIVER_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 //Forward declarations
 class GUIImportExport;

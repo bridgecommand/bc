@@ -17,7 +17,7 @@
 #ifndef __EVENTRECEIVER_HPP_INCLUDED__
 #define __EVENTRECEIVER_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 //forward declarations
 class GUIMain;

@@ -17,7 +17,7 @@
 #ifndef __IMPORTEXPORTGUI_HPP_INCLUDED__
 #define __IMPORTEXPORTGUI_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include <string>
 
 #include "../Lang.hpp"

@@ -17,7 +17,8 @@
 #ifndef __GUIMAIN_HPP_INCLUDED__
 #define __GUIMAIN_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
+#include "irrlicht/IGUIButton.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
@@ -229,7 +230,13 @@ public:
     void setExtraControlsWindowVisible(bool windowVisible);
     void setLinesControlsWindowVisible(bool windowVisible);
     void setLinesControlsText(std::string textToShow);
+    void setDrawBackground(bool){};
+    bool isDrawBackgroundEnabled(){return false;};
+    irr::gui::IGUIButton* getUpLeftButton(){return NULL;};
+    irr::gui::IGUIButton* getDownRightButton(){return NULL;};
 
+  
+  
 private:
 
     irr::IrrlichtDevice* device;

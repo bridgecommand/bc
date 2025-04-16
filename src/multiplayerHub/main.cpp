@@ -20,7 +20,7 @@
 #include <chrono>
 
 // Include the Irrlicht header
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include "../Utilities.hpp"
 #include "../Constants.hpp"
 #include "../IniFile.hpp"

@@ -7,22 +7,22 @@
 // distributed under this licence. I only modified some parts. A lot of thanks
 // go to him.
 
-#include "IrrCompileConfig.h"
+#include "irrlicht/IrrCompileConfig.h"
 
 #include "BCTerrainSceneNode.h"
 #include "BCTerrainTriangleSelector.h"
-#include "IVideoDriver.h"
-#include "ISceneManager.h"
-#include "ICameraSceneNode.h"
-#include "SViewFrustum.h"
-#include "irrMath.h"
+#include "irrlicht/IVideoDriver.h"
+#include "irrlicht/ISceneManager.h"
+#include "irrlicht/ICameraSceneNode.h"
+#include "irrlicht/SViewFrustum.h"
+#include "irrlicht/irrMath.h"
 //#include "os.h"
-#include "IGUIFont.h"
-#include "IFileSystem.h"
-#include "IReadFile.h"
-#include "ITextSceneNode.h"
-#include "IAnimatedMesh.h"
-#include "SMesh.h"
+#include "irrlicht/IGUIFont.h"
+#include "irrlicht/IFileSystem.h"
+#include "irrlicht/IReadFile.h"
+#include "irrlicht/ITextSceneNode.h"
+#include "irrlicht/IAnimatedMesh.h"
+#include "irrlicht/SMesh.h"
 #include "BCDynamicMeshBuffer.h"
 #include <algorithm>
 

@@ -21,7 +21,7 @@
 #include "NMEASentences.hpp"
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
-#include "irrTypes.h"
+#include "irrlicht/irrTypes.h"
 #include <algorithm>
 #include <iostream>
 #include <tuple>

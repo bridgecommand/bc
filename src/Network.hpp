@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include <enet/enet.h>
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include "OperatingModeEnum.hpp"
 #include "Message.hpp"
 

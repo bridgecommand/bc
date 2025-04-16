@@ -17,7 +17,7 @@
 #ifndef __SCENARIOCHOICE_HPP_INCLUDED__
 #define __SCENARIOCHOICE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include <asio.hpp> //To find hostname

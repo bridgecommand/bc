@@ -17,7 +17,7 @@
 #ifndef __MYEVENTRECEIVER_HPP_INCLUDED__
 #define __MYEVENTRECEIVER_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 #include <string>
 #include <vector>
 #include "Network.hpp"

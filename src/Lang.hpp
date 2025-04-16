@@ -18,7 +18,7 @@
 #define __LANG_HPP_INCLUDED__
 
 #include <string>
-#include "irrlicht.h"
+#include "irrlicht/irrlicht.h"
 
 class Lang //Start of the 'Model' part of MVC
 {
