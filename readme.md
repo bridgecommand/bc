@@ -1,4 +1,4 @@
-# Bridge Command
+# Bridge Command ⛵
 
 This is the source code for Bridge Command, developed in C++ using the
 Irrlicht 3d library.
