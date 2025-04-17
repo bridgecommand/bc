@@ -5,51 +5,39 @@ Irrlicht 3d library.
 
 For more information, see https://www.bridgecommand.co.uk
 
-## To compile Irrlicht on Windows
-----------
+## To compile Irrlicht on Windows (mandatory to run BC)
 1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
 2) Put it in bin/libs/irrlicht
 3) Download last DirectX SDK here : https://www.microsoft.com/en-us/download/details.aspx?id=6812
 4) Add Irrlicht project to BC project into VS : bin/libs/irrlicht/source/Irrlicht/*.sln
 5) Update Irrlicht properties to add include and libraries folder from DirectX SDK
 
-## To compile Irrlicht on Linux/MacOs
-----------
+## To compile Irrlicht on Linux/MacOs (mandatory to run BC)
 1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
 2) Put it in bin/libs/irrlicht
 3) Go to bin/libs/irrlicht/source/Irrlicht/ 
 4) Run "make sharedlib; make install"
 5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
 
-## Add last version of Enet library
-----------
+## Add last version of Enet library (mandatory to run BC)
 1) Download tarball here : http://enet.bespin.org/Downloads.html
 2) Untar into :  bin/libs/enet/
 
 ## To compile BC on Windows
-----------
 1) Visual Studio 2022 (or greater) are used
 2) Add BC project -> Generate
 
 ## To compile BC on Linux
-----------
 1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev"
 2) Go to bc/bin directory
 3) Run cmake ../src 
 4) Run make
 
-## To compile BC on Linux
-----------
-1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'
-2) Build the required sound packages:
-
 ## To compile BC on MacOs
-----------
 1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'
 2) Build the required sound packages:
 
 ## Libsndfile (not mandatory to run BC):
------------
 Download and uncompress libsndfile-1.0.28.tar.gz from http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28.tar.gz
 Create a folder for the output, referred to as <Somewhere> (Absolute path)
 Change directory to where you've uncompressed libsndfile, then run the following in the terminal window:
@@ -63,7 +51,6 @@ cd <Somewhere>
 cp -a lib <BridgeCommandSourceLocation>/libs/libsndfile/
 
 ## Portaudio (not mandatory to run BC):
-----------
 Download and uncompress pa_stable_v190600_20161030.tgz from http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
 (For macOS Big Sur (11.0) and onwards, a more recent version is needed. 
 I have successfully compiled with http://files.portaudio.com/archives/pa_snapshot.tgz created Sunday, 07-Mar-2021 01:23:04 UTC)
@@ -81,8 +68,6 @@ This assumes that the CMake binary exists at /Applications/CMake.app/Contents/bi
 
 
 ## Licence
--------
-
 Bridge Command is Copyright (C) 2025 by James Packer. The model files
 distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, Simon D 
