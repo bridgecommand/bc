@@ -60,7 +60,7 @@ namespace scene
 
 		//! Update mesh
 		//virtual void setMesh(IMesh* mesh);
-		void setMesh(IMesh* mesh, bool copyMeshMaterials=true);
+		void setMesh(IMesh* mesh, bool copyMeshMaterials = true);
 
 		//! Returns type of the scene node
 		//virtual ESCENE_NODE_TYPE getType() const { return ESNT_WATER_SURFACE; }

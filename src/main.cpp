@@ -600,7 +600,7 @@ int main(int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "language-";
+    std::string languageFile = "lang/language-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {

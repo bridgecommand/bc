@@ -108,7 +108,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
             std::cerr << "World model name not defined" << std::endl;
             exit(EXIT_FAILURE);
         }
-        std::cout << "Check SM 1 !!" << std::endl;
+
         //construct path to world model
         std::string worldPath = "World/";
         worldPath.append(worldName);
@@ -124,7 +124,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //sky box/dome
         Sky sky (smgr);
-        std::cout << "Check SM 2 !!" << std::endl;
+
         //Load own ship model.
         // TODO: It would be better to pass in modelParameters directly
         ownShip.load(scenarioData.ownShipData, 
@@ -141,7 +141,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         if(modelParameters.mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
-        std::cout << "Check SM 3 !!" << std::endl;
+
         //Load rain
         rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
 

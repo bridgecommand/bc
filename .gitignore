@@ -15,7 +15,4 @@
 Thumbs.db
 build/
 bin/
-src/libs/Irrlicht/irrlicht-svn/lib/Linux/
-src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/src/
-src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/tmp/
 *.kdev4

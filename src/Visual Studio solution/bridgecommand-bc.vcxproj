@@ -168,7 +168,8 @@
       <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call ..\..\bin\useVS64dll.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
