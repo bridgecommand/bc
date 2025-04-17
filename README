@@ -6,9 +6,29 @@ Irrlicht 3d library.
 
 For more information, see https://www.bridgecommand.co.uk
 
-To compile
+To compile Irrlicht on Windows
 ----------
+1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+2) Put it in bin/libs/irrlicht
+3) Download last DirectX SDK here : https://www.microsoft.com/en-us/download/details.aspx?id=6812
+4) Add Irrlicht project to BC project into VS : bin/libs/irrlicht/source/Irrlicht/*.sln
+5) Update Irrlicht properties to add include and libraries folder from DirectX SDK
 
+To compile Irrlicht on Linux
+----------
+1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+2) Put it in bin/libs/irrlicht
+3) Go to bin/libs/irrlicht/source/Irrlicht/ 
+4) Run "make sharedlib; make install"
+5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
+
+Add last version of Enet library
+----------
+1) Download tarball here : http://enet.bespin.org/Downloads.html
+2) Untar into :  bin/libs/enet/
+
+To compile BC
+----------
 For Windows, Visual Studio 2022 (or greater) and Code::Blocks are used 
 and tested. Project files for both are in the src folder.
 
