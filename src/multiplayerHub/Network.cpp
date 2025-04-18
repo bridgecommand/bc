@@ -73,7 +73,8 @@ void Network::connectToServer(std::string hostnames)
         ENetAddress address;
         ENetPeer* peer;
 
-        std::string thisHostname = Utilities::trim(multipleHostnames.at(i));
+        std::string thisHostname = multipleHostnames.at(i);
+	Utilities::trim(thisHostname);
         //Todo: validate this?
 
         //Check if the string contains a ':', and if so, split into hostname and port part
@@ -100,7 +101,7 @@ void Network::connectToServer(std::string hostnames)
         enet_address_set_host (& address, thisHostname.c_str());
 
         /* Initiate the connection, allocating the maximum number of channels. */
-        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 0);
+        peer = enet_host_connect (client, & address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 13);
 
         if (peer == NULL)
         {

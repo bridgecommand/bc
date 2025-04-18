@@ -32,7 +32,7 @@ class ControllerModel;
 class Network
 {
 public:
-    Network(int port);
+  Network(int port, std::string aAddr);
     ~Network();
 
     std::string findWorldName();
@@ -44,7 +44,7 @@ private:
 
     ControllerModel* model;
     ENetAddress address;
-    ENetHost * server;
+    ENetHost * client;
 
     ENetEvent event;
     std::string stringToSend;

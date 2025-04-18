@@ -51,7 +51,7 @@ NetworkSecondary::NetworkSecondary(int port, OperatingMode::Mode mode, irr::Irrl
 
     while (server==NULL && tries < 10) {
         address.port = port;
-        server = enet_host_create (& address /* the address to bind the server host to */,
+        server = enet_host_create (NULL/* the address to bind the server host to */,
         32 /* allow up to 32 clients and/or outgoing connections */,
         0 /* allow maximum number of channels */,
         0 /* assume any amount of incoming bandwidth */,
@@ -269,14 +269,14 @@ void NetworkSecondary::receiveMessage()
                     if (numberLines > 0) {
 
                         // Check if numberLines is different from the number of lines being shown (on network lines list)
-                        if (numberLines > model->getLines()->getNumberOfLines(true)) {
+		      if (numberLines > (irr::u32)model->getLines()->getNumberOfLines(true)) {
                             // Need to add lines, initially undefined
-                            while (numberLines > model->getLines()->getNumberOfLines(true)) {
+                            while (numberLines > (irr::u32)model->getLines()->getNumberOfLines(true)) {
                                 model->getLines()->addLine(model, true);
                             }
-                        } else if (numberLines < model->getLines()->getNumberOfLines(true)) {
+                        } else if (numberLines < (irr::u32)model->getLines()->getNumberOfLines(true)) {
                             // Need to remove lines
-                            while (numberLines < model->getLines()->getNumberOfLines(true)) {
+                            while (numberLines < (irr::u32)model->getLines()->getNumberOfLines(true)) {
                                 // We don't really know which to remove, so just remove from start, and update as needed later
                                 model->getLines()->removeLine(0, true);
                             }

@@ -22,61 +22,70 @@
 #include <vector>
 
 //Constructor
-Network::Network(int port)
+Network::Network(int port, std::string aAddr)
 {
-
-    server = 0;
-
-    if (enet_initialize () != 0)
+    ENetPeer* peer;
+    ENetAddress address;
+    client = 0;
+    
+ if (enet_initialize () != 0)
     {
-        std::cout << "An error occurred while initializing ENet.\n";
-        exit(EXIT_FAILURE);
+      std::cout << "An error occurred while initializing ENet.\n";
+      exit(EXIT_FAILURE);
     }
 
-    /* Bind the server to the default localhost. */
-    /* A specific host address can be specified by */
-    /* enet_address_set_host (& address, "x.x.x.x"); */
-    address.host = ENET_HOST_ANY;
-    int tries=0;
+  client = enet_host_create (NULL /* the address to bind the server host to */,
+                               32 /* allow up to 32 clients and/or outgoing connections */,
+                               0 /* allow maximum number of channels */,
+                               0 /* assume any amount of incoming bandwidth */,
+                               0 /* assume any amount of outgoing bandwidth */);
 
-    while (server==NULL && tries < 10) {
-        address.port = port;
-        server = enet_host_create (& address /* the address to bind the server host to */,
-        32 /* allow up to 32 clients and/or outgoing connections */,
-        0 /* allow maximum number of channels */,
-        0 /* assume any amount of incoming bandwidth */,
-        0 /* assume any amount of outgoing bandwidth */);
 
-        //Update for next attempt if needed
-        if (server==NULL) {
-            tries++;
-            port++;
+  if (client == NULL)
+    {
+      std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
+      enet_deinitialize();
+      exit (EXIT_FAILURE);
+    }
+  else
+    {
+      /* Connect to some.server.net:18304. */
+      enet_address_set_host(&address, aAddr.c_str());
+      address.port = port;
+      
+      /* Initiate the connection, allocating the maximum number of channels. */
+      peer = enet_host_connect(client, &address, ENET_PROTOCOL_MAXIMUM_CHANNEL_COUNT, 14);
+      //Note we don't store peer pointer, as we broadcast to all connected peers.
+      if (peer == NULL)
+        {
+          std::cerr << "No available peers for initiating an ENet connection." << std::endl;
+          enet_deinitialize();
+          exit(EXIT_FAILURE);
         }
+
+      /* Wait up to 1 second for the connection attempt to succeed. */
+      if(enet_host_service(client, &event, 1000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
+        std::cout << "*** Connect ! ***" << std::endl;
+      }
+      else {
+        std::cout << "*** Reset ! ***" << std::endl;
+        enet_peer_reset (peer);
+      }
     }
-
-    if (server == NULL)
-    {
-        std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;
-        exit (EXIT_FAILURE);
-    } else {
-        std::cout << "Connected on UDP port " << server->address.port << std::endl;
-    }
-
-    stringToSend = "";
-
+  stringToSend = "";
 }
 
 //Destructor
 Network::~Network()
 {
-    enet_host_destroy(server);
+    enet_host_destroy(client);
     enet_deinitialize();
 }
 
 int Network::getPort()
 {
-    if (server) {
-        return server->address.port;
+    if (client) {
+        return client->address.port;
     }
     return 0;
 }
@@ -89,13 +98,14 @@ std::string Network::findWorldName()
     std::string worldName = "";
 
 
-    if (enet_host_service (server, & event, 10) > 0) {
+    if (enet_host_service (client, & event, 10) > 0) {
         if (event.type == ENET_EVENT_TYPE_RECEIVE) {
             //receive it
             char tempString[8192]; //Fixme: Think if this is long enough
             snprintf(tempString,8192,"%s",event.packet -> data);
             std::string receivedString(tempString);
 
+	    std::cout << receivedString << std::endl;
             //Basic checks
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
                 if ((receivedString.substr(0,4) == "SCN1") || (receivedString.substr(0,4) == "SCN2" ) || (receivedString.substr(0,4) == "SCN3" )) { //Check if it starts with SCN1, SCN2 or SCN3
@@ -119,7 +129,7 @@ std::string Network::findWorldName()
 void Network::update(irr::f32& time, ShipData& ownShipData, std::vector<OtherShipDisplayData>& otherShipsData, std::vector<PositionData>& buoysData, irr::f32& weather, irr::f32& visibility, irr::f32& rain, bool& mobVisible, PositionData& mobData, irr::f32& windDirection, irr::f32& windSpeed, irr::f32& streamDirection, irr::f32& streamSpeed, bool& streamOverride)
 {
     /* Wait up to 10 milliseconds for an event. */
-    while (enet_host_service (server, & event, 10) > 0) {
+    while (enet_host_service (client, & event, 10) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
                 printf ("A new client connected from %x:%u.\n",
@@ -174,7 +184,7 @@ void Network::sendMessage(ENetPeer* peer)
         /* enet_host_broadcast (host, 0, packet); */
         enet_peer_send (peer, 0, packet);
         /* One could just use enet_host_service() instead. */
-        enet_host_flush (server);
+        enet_host_flush (client);
 
         stringToSend = ""; //Sent message, so clear it
     }
@@ -203,6 +213,13 @@ void Network::receiveMessage(irr::f32& time, ShipData& ownShipData, std::vector<
             findDataFromString(receivedString, time, ownShipData, otherShipsData, buoysData, weather, visibility, rain, mobVisible, mobData, windDirection, windSpeed, streamDirection, streamSpeed, streamOverride);
 
         } //Check received message starts with BC
+	else if(receivedString.substr(0,2).compare("WI") == 0 )
+	  {
+	    std::vector<std::string> inData = Utilities::split(&receivedString[2],',');
+
+	    windDirection=std::stof(inData.at(0));
+	    windSpeed=std::stof(inData.at(1));
+	  }
     } //Check message at least 3 characters
 
 }

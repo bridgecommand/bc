@@ -26,6 +26,7 @@
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
+#include "MessageMisc.hpp"
 
 #include <cmath>
 #include <fstream>
@@ -135,11 +136,14 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                      modelParameters.tanhFrictionFactor, 
                      smgr, 
                      this, 
-                     &terrain, 
+                     &terrain,  
                      device);
         if(modelParameters.mode == OperatingMode::Secondary) {
             ownShip.setSpeed(0); //Don't start moving if in secondary mode
         }
+
+        //Load rain
+        rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
 
         //add water
         bool waterReflection = true;
@@ -198,8 +202,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         //Load tidal information
         tide.load(worldPath, scenarioData);
 
-        //Load rain
-        rain.load(smgr, camera.getSceneNode(), device);
+        
 
         //Set up 3d engine/wheel controls/visualisation
         if (isAzimuthDrive()) {
@@ -300,6 +303,10 @@ SimulationModel::~SimulationModel()
         return ownShip.getPosition().X + offsetPosition.X;
     }
 
+    irr::f32 SimulationModel::getPosY() const {
+        return ownShip.getPosition().Y + offsetPosition.Y;
+    }
+
     irr::f32 SimulationModel::getPosZ() const{
         return ownShip.getPosition().Z + offsetPosition.Z;
     }
@@ -312,6 +319,9 @@ SimulationModel::~SimulationModel()
         return ownShip.getSOG();
     }
 
+    irr::f32 SimulationModel::getLateralSpeed() const{
+        return ownShip.getLateralSpeed();
+    }
     irr::f32 SimulationModel::getDepth() const{
         return ownShip.getDepth();
     }
@@ -422,6 +432,11 @@ SimulationModel::~SimulationModel()
 
     std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
         return otherShips.getLegs(number);
+    }
+
+    irr::f32 SimulationModel::getOwnShipSpeedThroughWater(void)
+    {
+        return ownShip.getSpeedThroughWater();
     }
 
     irr::f32 SimulationModel::getBuoyPosX(int number) const{
@@ -1792,8 +1807,8 @@ SimulationModel::~SimulationModel()
 
         }{ IPROF("Update rain");
         //update rain
-        rain.setIntensity(rainIntensity);
-        rain.update(scenarioTime);
+        //rain.setIntensity(rainIntensity);
+        rain.update(ownShip.getPosition().X, ownShip.getPosition().Y, ownShip.getPosition().Z, getRain());
 
         }{ IPROF("Update other ships");
         //update other ship positions etc
@@ -1990,8 +2005,395 @@ SimulationModel::~SimulationModel()
         }
     }
 
-    bool SimulationModel::checkOwnShipCollision()
+void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
+{
+  switch(aMsgType)
     {
+    case E_CMD_MESSAGE_UPDATE_LEG:
+      {
+	sUpLeg *dataUpdateLeg = (sUpLeg*)aDataCmd;
+	changeOtherShipLeg(dataUpdateLeg->shipNo, dataUpdateLeg->legNo, dataUpdateLeg->bearing, dataUpdateLeg->speed, dataUpdateLeg->dist);
+	break;
+      }
+    case E_CMD_MESSAGE_DELETE_LEG:
+      {
+	sDelLeg *dataDeleteLeg = (sDelLeg*)aDataCmd;
+	deleteOtherShipLeg(dataDeleteLeg->shipNo, dataDeleteLeg->legNo);
+	break;
+      }
+    case E_CMD_MESSAGE_REPOSITION_SHIP:
+      {
+	sRepoShip *dataRepoShip = (sRepoShip*)aDataCmd;	
+	if(dataRepoShip->shipNo < 0)
+	  setPos(dataRepoShip->posX, dataRepoShip->posZ);
+	else
+	  setOtherShipPos(dataRepoShip->shipNo, dataRepoShip->posX, dataRepoShip->posZ);
+
+	break;
+      }
+    case E_CMD_MESSAGE_RESET_LEGS:
+      {
+        sResetLegs *dataResetLegs = (sResetLegs*)aDataCmd;	
+
+	if(dataResetLegs->shipNo >= 0)
+	  {
+	    setOtherShipPos(dataResetLegs->shipNo, dataResetLegs->posX, dataResetLegs->posZ);
+	    resetOtherShipLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1);
+	    //1Nm Hard-coded
+	  }
+	
+	break;
+      }
+    case E_CMD_MESSAGE_SET_WEATHER:
+      {
+	sWeather *dataWeather = (sWeather*)aDataCmd;
+
+        if(dataWeather->weather >= 0) {setWeather(dataWeather->weather);}
+	if(dataWeather->rain >= 0) {setRain(dataWeather->rain);}
+	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
+	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
+	if(dataWeather->streamDirection > 0) {setStreamOverrideDirection(dataWeather->streamDirection);}
+	if(dataWeather->streamSpeed > 0) {setStreamOverrideSpeed(dataWeather->streamSpeed);}
+	if(dataWeather->streamOverrideInt > 0) {setStreamOverride(dataWeather->streamOverrideInt);}
+
+	break;
+      }
+    case E_CMD_MESSAGE_MAN_OVERBOARD:
+      {
+	sMob *dataMob = (sMob*)aDataCmd;
+
+        if(dataMob->mobMode==1) releaseManOverboard();
+	else if(dataMob->mobMode==-1) retrieveManOverboard();
+
+	break;
+      }
+    case E_CMD_MESSAGE_SET_MMSI:
+      {
+	sMmsi *dataMmmsi = (sMmsi*)aDataCmd;
+	setOtherShipMMSI(dataMmmsi->shipNo, dataMmmsi->mmsi);
+	
+	break;
+      }
+    case E_CMD_MESSAGE_RUDDER_WORKING:
+      {
+	sRuddWork *dataRudderWorking = (sRuddWork*)aDataCmd;
+
+	if(dataRudderWorking->whichPump==1)
+	  {
+	    if(dataRudderWorking->rudderFunction==0)
+	      {
+		setRudderPumpState(1,false);
+		setAlarm(true);
+	      }
+	    else
+	      {
+		setRudderPumpState(1,true);
+		if(getRudderPumpState(2))
+		    setAlarm(false);
+	      }
+	  }
+	else if(dataRudderWorking->whichPump==2)
+	  {
+	    if(dataRudderWorking->rudderFunction==0)
+	      {
+	        setRudderPumpState(2,false);
+		setAlarm(true);
+	      }
+	    else
+	      {
+		setRudderPumpState(2,true);
+		if(getRudderPumpState(1))
+		  setAlarm(false);
+	      }
+	  }
+	break;
+      }
+    case E_CMD_MESSAGE_RUDDER_FOLLOW_UP:
+      {
+	sRuddFol *dataRudderFollowUp = (sRuddFol*)aDataCmd;
+
+	if (dataRudderFollowUp->rudderFunction==1) setFollowUpRudderWorking(true);
+	else if(dataRudderFollowUp->rudderFunction==0) setFollowUpRudderWorking(false);
+
+	break;
+      }
+    case E_CMD_MESSAGE_CONTROLS_OVERRIDE:
+      {
+	sCtrlOv	*dataCtrlOverride = (sCtrlOv*)aDataCmd;
+	
+	if(dataCtrlOverride->overrideMode == 0) setWheel(dataCtrlOverride->overrideData); 
+	else if(dataCtrlOverride->overrideMode == 1) setPortEngine(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 2) setStbdEngine(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 3) setPortSchottel(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 4) setStbdSchottel(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 5) setPortAzimuthThrustLever(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 6) setStbdAzimuthThrustLever(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 7) setBowThruster(dataCtrlOverride->overrideData);
+	else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
+	break;
+      }
+    case E_CMD_MESSAGE_BRIDGE_COMMAND:
+      {
+	sMasterCmdsInf *dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
+
+    
+	/************************************************************************/
+	if(dataMasterCmds->time.setTimeD)
+        setTimeDelta(dataMasterCmds->time.timeD);
+	
+    setAccelerator(dataMasterCmds->time.accel);
+
+	/************************************************************************/
+	setPos(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
+        setHeading(dataMasterCmds->ownShip.hdg);
+	setRateOfTurn(dataMasterCmds->ownShip.rot);
+    setSpeed(dataMasterCmds->ownShip.speed);
+	
+	/************************************************************************/
+	if(dataMasterCmds->otherShips.nbrShips > 0)
+	  {
+	    for(unsigned short i=0; i<dataMasterCmds->otherShips.nbrShips; i++)
+	      {
+		setOtherShipHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
+		setOtherShipSpeed(i, (dataMasterCmds->otherShips.ships[i].speed)/MPS_TO_KTS);
+		setOtherShipRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
+		setOtherShipPos(i, dataMasterCmds->otherShips.ships[i].posX, dataMasterCmds->otherShips.ships[i].posZ);
+	      }
+	    delete[] dataMasterCmds->otherShips.ships;
+	  }
+	
+	/************************************************************************/	
+	if(dataMasterCmds->mob.isMob)
+	  {
+	    setManOverboardVisible(true);
+	    setManOverboardPos(dataMasterCmds->mob.posX, dataMasterCmds->mob.posZ);
+	  }
+	else
+	  setManOverboardVisible(false);
+
+	/************************************************************************/
+	if (dataMasterCmds->lines.lineNbr > 0)
+	  {
+	    if(dataMasterCmds->lines.lineNbr > (unsigned int)getLines()->getNumberOfLines(true))
+	      {
+		while(dataMasterCmds->lines.lineNbr > (unsigned int)getLines()->getNumberOfLines(true))
+		  {
+		    getLines()->addLine(this, true);
+		  }
+	      }
+	    else if(dataMasterCmds->lines.lineNbr < (unsigned int)getLines()->getNumberOfLines(true))
+	      {
+		while (dataMasterCmds->lines.lineNbr < (unsigned int)getLines()->getNumberOfLines(true))
+		  {
+		    getLines()->removeLine(0, true);
+		  }
+	      }
+
+	    bool lineKeepSlack = false;
+	    if(dataMasterCmds->lines.lineKeepSlackInt == 1)
+	      lineKeepSlack = true;
+	   
+	    bool lineHeaveIn = false;
+	    if (dataMasterCmds->lines.lineHeaveInInt == 1)
+	      lineHeaveIn = true;
+
+	    for(unsigned short i=0; i<dataMasterCmds->lines.lineNbr; i++)
+	      {
+		if((getLines()->getLineStartType(i, true) != dataMasterCmds->lines.lineStartType) ||
+		   (getLines()->getLineEndType(i, true) != dataMasterCmds->lines.lineEndType) ||
+		   (getLines()->getLineStartID(i, true) != dataMasterCmds->lines.lineStartID) ||
+		   (getLines()->getLineEndID(i, true) != dataMasterCmds->lines.lineEndID))
+		  {
+		    getLines()->clearLine(i, true);
+
+		    if((dataMasterCmds->lines.lineStartType > 0) &&
+		       (dataMasterCmds->lines.lineEndType > 0))
+		      {
+			irr::scene::ISceneNode* startParent = 0;
+			irr::scene::ISceneNode* endParent = 0;
+			if(dataMasterCmds->lines.lineStartType == 1)
+			  {
+			    // Own ship
+			    startParent = getOwnShipSceneNode();
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 2)
+			  {
+			    // Other ship
+			    startParent = getOtherShipSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 3)
+			  {
+			    // Buoy
+			    startParent = getBuoySceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			else if(dataMasterCmds->lines.lineStartType == 4)
+			  {
+			    // Land object
+			    startParent = getLandObjectSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
+			
+			if(dataMasterCmds->lines.lineEndType == 1)
+			  {
+			    // Own ship
+			    endParent = getOwnShipSceneNode();
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 2)
+			  {
+			    // Other ship
+			    endParent = getOtherShipSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 3)
+			  {
+			    // Buoy
+			    endParent = getBuoySceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if(dataMasterCmds->lines.lineEndType == 4)
+			  {
+			    // Land object
+			    endParent = getLandObjectSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+
+			// Make child sphere nodes based on these (in the right position), then pass in to create the lines
+			irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+			if(startParent && startParent->getScale().X > 0)
+			  {
+			    sphereScale = irr::core::vector3df(1.0f/startParent->getScale().X,
+							       1.0f/startParent->getScale().X,
+							       1.0f/startParent->getScale().X);
+			  }
+			irr::scene::ISceneNode* startNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineStartX, dataMasterCmds->lines.lineStartY, dataMasterCmds->lines.lineStartZ),irr::core::vector3df(0, 0, 0),sphereScale);
+			sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+			if(endParent && endParent->getScale().X > 0)
+			  {
+			    sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X,1.0f/endParent->getScale().X,1.0f/endParent->getScale().X);
+			  }
+			irr::scene::ISceneNode* endNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineEndX, dataMasterCmds->lines.lineEndY, dataMasterCmds->lines.lineEndZ),irr::core::vector3df(0, 0, 0),sphereScale);
+
+			// Set name to match parent for convenience
+			if (startParent && startNode) {
+			  startNode->setName(startParent->getName());
+			}
+			if (endParent && endNode) {
+			  endNode->setName(endParent->getName());
+			}
+
+			// Create the lines
+			getLines()->setLineStart(startNode, dataMasterCmds->lines.lineStartType, dataMasterCmds->lines.lineStartID, true, i);
+			getLines()->setLineEnd(endNode, dataMasterCmds->lines.lineNominalShipMass, dataMasterCmds->lines.lineEndType, dataMasterCmds->lines.lineEndID, true, i);
+		      }
+		  }
+
+		// Check and update other parameters
+		getLines()->setKeepSlack(i, lineKeepSlack, true);
+		getLines()->setHeaveIn(i, lineHeaveIn, true);
+		getLines()->setLineNominalLength(i, dataMasterCmds->lines.lineNominalLength, true);
+		getLines()->setLineBreakingTension(i, dataMasterCmds->lines.lineBreakingTension, true);
+		getLines()->setLineBreakingStrain(i, dataMasterCmds->lines.lineBreakingStrain, true);
+		getLines()->setLineNominalShipMass(i, dataMasterCmds->lines.lineNominalShipMass, true);
+	      }
+	  }
+	else
+	  {	    
+	    while(getLines()->getNumberOfLines(true) > 0)
+	      {
+		getLines()->removeLine(0, true);	    
+	      }
+	  }
+
+	/************************************************************************/
+        setWeather(dataMasterCmds->weather.weather);
+	setVisibility(dataMasterCmds->weather.visibility);
+	setRain(dataMasterCmds->weather.rain);
+	setWindSpeed(dataMasterCmds->weather.windSpeed);
+	setWindDirection(dataMasterCmds->weather.windDirection);
+	setStreamOverrideDirection(dataMasterCmds->weather.streamDirection);
+	setStreamOverrideSpeed(dataMasterCmds->weather.streamSpeed);
+	setStreamOverride(dataMasterCmds->weather.streamOverrideInt);
+	
+	/************************************************************************/
+	setView(dataMasterCmds->view.view);
+
+	/************************************************************************/
+        setWheel(dataMasterCmds->controls.wheel);
+        setRudder(dataMasterCmds->controls.rudder);
+        setPortEngine(dataMasterCmds->controls.portEng);
+	setStbdEngine(dataMasterCmds->controls.stbdEng);
+	setPortSchottel(dataMasterCmds->controls.portSch);
+	setStbdSchottel(dataMasterCmds->controls.stbdSch);
+	setPortAzimuthThrustLever(dataMasterCmds->controls.portThrust);
+	setStbdAzimuthThrustLever(dataMasterCmds->controls.stbdThrust);
+	setBowThruster(dataMasterCmds->controls.bowThrust);
+	setSternThruster(dataMasterCmds->controls.sternThrust);
+	
+	break;
+      }
+    case E_CMD_MESSAGE_OWN_SHIP:
+      {
+	sShipInf *dataOwnShip = (sShipInf*)aDataCmd;
+	
+	setPos(dataOwnShip->posX, dataOwnShip->posZ);
+	setHeading(dataOwnShip->hdg);
+	setRateOfTurn(dataOwnShip->rot);
+	setSpeed(dataOwnShip->speed);
+	break;    
+      }
+    case E_CMD_MESSAGE_SCENARIO:
+      {
+
+
+	break;
+      }
+    case E_CMD_MESSAGE_SHUTDOWN:
+      {
+	device->closeDevice();
+
+	break;
+      }
+    case E_CMD_MESSAGE_MULTIPLAYER_COMMAND:
+      {
+        sMasterCmdsInf* dataMasterCmds = (sMasterCmdsInf*)aDataCmd;
+
+
+        /************************************************************************/
+        if (dataMasterCmds->time.setTimeD)
+            setTimeDelta(dataMasterCmds->time.timeD);
+
+        setAccelerator(dataMasterCmds->time.accel);
+        /************************************************************************/
+        if (dataMasterCmds->otherShips.nbrShips > 0)
+        {
+            for (unsigned short i = 0; i < dataMasterCmds->otherShips.nbrShips; i++)
+            {
+                setOtherShipHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
+                setOtherShipSpeed(i, (dataMasterCmds->otherShips.ships[i].speed) / MPS_TO_KTS);
+                setOtherShipRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
+                setOtherShipPos(i, dataMasterCmds->otherShips.ships[i].posX, dataMasterCmds->otherShips.ships[i].posZ);
+            }
+            delete[] dataMasterCmds->otherShips.ships;
+        }
+
+        break;
+      }
+    case E_CMD_MESSAGE_WIND_INJECTION:
+      {
+	sWeather *dataWeather = (sWeather*)aDataCmd;
+
+	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
+
+	break;
+      }
+    case E_CMD_MESSAGE_UNKNOWN:
+    default:
+      {	
+	break;
+      }
+    }
+}
+
+bool SimulationModel::checkOwnShipCollision()
+{
 
         return (ownShip.isBuoyCollision() || ownShip.isOtherShipCollision());
 

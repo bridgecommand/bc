@@ -352,7 +352,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         {
             for (irr::u32 mat = 0; mat < ship->getMaterialCount(); mat++)
             {
-                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                ship->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
                 ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
             }
         }
@@ -694,9 +694,9 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Find if we need more contact points to maintain minContactPointSpacing
     if (minContactPointSpacing > 0)
     {
-        numberOfContactPoints.X = std::max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
-        numberOfContactPoints.Y = std::max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
-        numberOfContactPoints.Z = std::max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
+      numberOfContactPoints.X = std::max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
+      numberOfContactPoints.Y = std::max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
+      numberOfContactPoints.Z = std::max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
     }
 
     // Grid from below looking up
@@ -2381,6 +2381,11 @@ irr::f32 OwnShip::getSOG() const
 irr::f32 OwnShip::getSpeedThroughWater() const
 {
     return speedThroughWater; // m/s
+}
+
+irr::f32 OwnShip::getLateralSpeed() const
+{
+    return lateralSpd; 
 }
 
 irr::f32 OwnShip::getDepth() const

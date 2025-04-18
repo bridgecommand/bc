@@ -802,6 +802,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         updateVisibility();
     }
 
+    void GUIMain::hide2dInterfaceFull()
+    {
+        showInterface = false;
+        updateVisibility(true);
+    }
+
+
     void GUIMain::showBearings()
     {
         bearingButton->setPressed(true);
@@ -908,8 +915,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         return (nfuPortDown || nfuStbdDown);
     }
 
-    void GUIMain::updateVisibility()
-    {   
+
+    void GUIMain::updateVisibility(bool bHideFull)
+    {
         //Items to show if we're showing interface
         radarTabControl->setVisible(showInterface);
         radarText->setVisible(showInterface);
@@ -977,9 +985,16 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         }
 
         //If we're in secondary mode, make sure things are hidden if they shouldn't be shown on the secondary screen
-        if (controlsHidden) {
+        if (controlsHidden || bHideFull) {
             hideInSecondary();
         }
+
+	if(bHideFull)
+	  {
+	    if(headingIndicator) headingIndicator->setVisible(false);
+	    if(rateofturnScrollbar) rateofturnScrollbar->setVisible(false);
+	    if(dataDisplay) dataDisplay->setVisible(false);
+	  }
 
     }
 

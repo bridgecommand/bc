@@ -20,6 +20,17 @@
 #include "irrlicht.h"
 #include <vector>
 
+#define RAIN_BORDER_MAX (200)
+#define RATIO_SHELTER_RAIN (1.5)
+#define RAIN_DIRECTION_AND_FORCE (-0.1)
+#define RAIN_DENSITY_MIN (700)
+#define RAIN_DENSITY_MAX (1000)
+#define RAIN_DROP_SIZE_MIN (0.2)
+#define RAIN_DROP_SIZE_MAX (0.5)
+#define RAIN_TIME_FORCE_LOST (2000)
+#define RAIN_MIDDLE_INTENSITY (5)
+
+
 class Rain
 {
 
@@ -27,19 +38,14 @@ public:
 
     Rain();
     ~Rain();
-    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev);
-    void update(irr::f32 scenarioTime);
-    void setIntensity(irr::f32 intensity);
-
+    void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev, irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 ShipLength, irr::f32 ShipBreadth);
+    void update(irr::f32 ShipPosX, irr::f32 ShipPosY, irr::f32 ShipPosZ, irr::f32 RainLevel);
+    
 private:
 
-    irr::f32 rainIntensity;
     irr::scene::ISceneNode* parent;
-    irr::scene::ISceneNode* rainNode1;
-    irr::scene::ISceneNode* rainNode2;
-    std::vector<irr::video::ITexture*> rainTextures;
-    void applyTextures();
-
+    irr::scene::IParticleSystemSceneNode* ps[4];
+ 
 };
 
 #endif

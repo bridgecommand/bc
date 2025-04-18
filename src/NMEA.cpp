@@ -392,8 +392,8 @@ void NMEA::updateNMEA()
     irr::f32 rudderAngle = model->getRudder();
 
     int engineRPM[] = {
-        Utilities::round(model->getStbdEngineRPM()), // idx=1, odd (starboard)
-        Utilities::round(model->getPortEngineRPM())  // idx=2, even (port)
+        Utilities::round(model->getStbdEngine()*100), // idx=1, odd (starboard)
+        Utilities::round(model->getPortEngine()*100)  // idx=2, even (port)
     };
 
     irr::f32 lat = model->getLat();
@@ -401,12 +401,16 @@ void NMEA::updateNMEA()
 
     irr::f32 cog = model->getCOG();
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;
-
+    irr::f32 spdWater = model->getOwnShipSpeedThroughWater();
+    irr::f32 latSpeed = model->getLateralSpeed();
     irr::f32 hdg = model->getHeading();
     irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
     irr::f32 depth = model->getDepth();
 
+    irr::f32 windDirection = model->getWindDirection();
+    irr::f32 windSpeed = model->getWindSpeed();
+    
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
 
@@ -544,7 +548,25 @@ void NMEA::updateNMEA()
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
-        /*
+	case WIMWV:
+        {
+	  snprintf(messageBuffer,maxSentenceChars,"$IIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
+	  messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+	  break;
+        }
+        case VHW:
+	  {
+	    snprintf(messageBuffer,maxSentenceChars,"$VDVHW,0,T,0,M,%.1f,N,0,K",spdWater);
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+	  }
+        case VTG:
+	  {
+	    snprintf(messageBuffer,maxSentenceChars,"$VDVTG,0,T,0,M,%.1f,N,0,K",latSpeed);
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+	  }
+	  /*
         case VTG: // 8.3.98 Course over ground and ground speed
             snprintf(messageBuffer,maxSentenceChars,"$VDVTG,");
             messageToSend.append(addChecksum(std::string(messageBuffer)));

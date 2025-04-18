@@ -47,6 +47,7 @@ class Sound;
 #include "ControlVisualiser.hpp"
 #include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
+#include "Network.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
@@ -165,11 +166,13 @@ public:
     irr::f32 getLat() const;
     irr::f32 getLong() const;
     irr::f32 getPosX() const;
+    irr::f32 getPosY() const;
     irr::f32 getPosZ() const;
     irr::f32 getCOG() const;
     irr::f32 getSOG() const; //In metres/second
     irr::f32 getDepth() const;
-
+    irr::f32 getLateralSpeed() const;
+    irr::f32 getOwnShipSpeedThroughWater(void);
     irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
     irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
@@ -353,8 +356,8 @@ public:
 
     void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
-    void update();
-  
+  void update();
+  void updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd);  
 private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
