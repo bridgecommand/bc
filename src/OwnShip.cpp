@@ -302,6 +302,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     else
     {
         shipMesh = smgr->getMesh(ownShipFullPath.c_str());
+
         // Make mesh scene node
         if (shipMesh == 0)
         {
@@ -373,6 +374,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
     draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
     airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
+
 
     if (rollPeriod == 0)
     {
@@ -645,6 +647,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
     // Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     // Add a triangle selector
+
     selector = smgr->createTriangleSelector(ship);
     if (selector)
     {

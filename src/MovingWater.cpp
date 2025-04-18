@@ -575,7 +575,7 @@ irr::core::vector2df MovingWaterSceneNode::getLocalNormals(irr::f32 relPosX, irr
 
 }
 
-void MovingWaterSceneNode::setMesh(IMesh* mesh)
+void MovingWaterSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
 {
     //std::cout << "In setMesh()" << std::endl;
 }

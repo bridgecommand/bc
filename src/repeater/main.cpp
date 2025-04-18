@@ -189,7 +189,7 @@ int main (int argc, char ** argv)
 	if (modifier.length() == 0) {
 		modifier = "en"; //Default
 	}
-	std::string languageFile = "languageRepeater-";
+	std::string languageFile = "lang/languageRepeater-";
 	languageFile.append(modifier);
 	languageFile.append(".txt");
 	if (Utilities::pathExists(userFolder + languageFile)) {

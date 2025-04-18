@@ -1,19 +1,15 @@
-
-add_executable(bridgecommand-mh
-    main.cpp
-    ../IniFile.cpp
-    ../Lang.cpp
-    ../Utilities.cpp
-    ../ScenarioDataStructure.cpp
-    LinesData.cpp
-    Network.cpp
-    ScenarioChoice.cpp
-    ShipPositions.cpp
-    StartupEventReceiver.cpp
-    EventReceiver.cpp
+file(GLOB SRC_FILES
+    "*.cpp"
+    "../IniFile.cpp"
+    "../Lang.cpp"
+    "../Utilities.cpp"
+    "../ScenarioDataStructure.cpp"
 )
+
+add_executable(bridgecommand-mh ${SRC_FILES})
 
 target_link_libraries(bridgecommand-mh
     enet
-    bc-irrlicht
+    Irrlicht
 )
+

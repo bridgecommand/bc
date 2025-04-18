@@ -128,7 +128,7 @@ int main()
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "languageMultiplayer-";
+    std::string languageFile = "lang/languageMultiplayer-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {

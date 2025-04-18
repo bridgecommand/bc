@@ -302,7 +302,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "languageLauncher-";
+    std::string languageFile = "lang/languageLauncher-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {

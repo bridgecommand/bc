@@ -80,14 +80,16 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\Irrlicht\irrlicht-svn\include;..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\libs\enet-1.3.14\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
     <OutDir>..\..\bin</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\Irrlicht\irrlicht-svn\include;..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\libs\enet-1.3.14\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
     <OutDir>..\..\bin</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,11 +115,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win64-visualstudio;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\libs\enet-1.3.14;..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -160,11 +163,13 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\libs\Irrlicht\irrlicht-svn\lib\Win64-visualstudio;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\libs\enet-1.3.14;..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call ..\..\bin\useVS64dll.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

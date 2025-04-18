@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native")
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if (APPLE)
@@ -15,13 +14,14 @@ if (APPLE)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.7")
 endif (APPLE)
 
+find_package(X11 REQUIRED)
 
 add_subdirectory(libs/asio)
-add_subdirectory(libs/enet-1.3.14)
-add_subdirectory(libs/Irrlicht)
 add_subdirectory(libs/serial)
 
-include_directories("libs/enet-1.3.14/include")
+set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
+include_directories(${IRRLICHT_INCLUDE_DIR})
+
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
 if (NOT APPLE)
@@ -43,67 +43,10 @@ if (NOT APPLE)
 find_package(OpenXR REQUIRED)
 endif(NOT APPLE)
 
-set(BC_SOURCES
-    iprof.cpp
-    main.cpp
-    AIS.cpp
-    Angles.cpp
-    Autopilot.cpp
-    AzimuthDial.cpp
-    Buoy.cpp
-    Buoys.cpp
-    Camera.cpp
-    ControlVisualiser.cpp
-    DefaultEventReceiver.cpp
-    FFTWave.cpp
-    GUIMain.cpp
-    GUIRectangle.cpp
-    HeadingIndicator.cpp
-    IniFile.cpp
-    LandLights.cpp
-    LandObject.cpp
-    LandObjects.cpp
-    Lang.cpp
-    Light.cpp
-    Line.cpp
-    Lines.cpp
-    ManOverboard.cpp
-    Message.cpp	
-    MovingWater.cpp
-    MyEventReceiver.cpp
-    NMEA.cpp
-    NavLight.cpp
-    Network.cpp
-    NumberToImage.cpp
-    OtherShip.cpp
-    OtherShips.cpp
-    OutlineScrollBar.cpp
-    OwnShip.cpp
-    RadarCalculation.cpp
-    RadarScreen.cpp
-    Rain.cpp
-    ScenarioChoice.cpp
-    ScenarioDataStructure.cpp
-    ScrollDial.cpp
-    Ship.cpp
-    SimulationModel.cpp
-    Sky.cpp
-    Sound.cpp
-    StartupEventReceiver.cpp
-    Terrain.cpp
-    Tide.cpp
-    Update.cpp	
-    Utilities.cpp
-    VRInterface.cpp
-    ExitMessage.cpp
-    Water.cpp
-    BCTerrainSceneNode.cpp
-    BCTerrainTriangleSelector.cpp
+file(GLOB SRC_FILES
+    "*.cpp"
 )
-
-add_executable(bridgecommand-bc
-    ${BC_SOURCES}
-)
+add_executable(bridgecommand-bc ${SRC_FILES})
 
 if (APPLE)
     
@@ -135,8 +78,9 @@ else (APPLE)
         bc-asio
         enet
         bc-serial
-        bc-irrlicht
+        Irrlicht
         Threads::Threads
+	${X11_LIBRARIES}
         sndfile
         portaudio
         asound

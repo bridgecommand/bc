@@ -1,18 +1,14 @@
 
 add_subdirectory(libs/aisparser)
 
-add_executable(bridgecommand-mc
-    ControllerModel.cpp
-    EventReceiver.cpp
-    GUI.cpp
-    main.cpp
-    Network.cpp
-    AISOverUDP.cpp
-    ../IniFile.cpp
-    ../Lang.cpp
-    ../Utilities.cpp
-    ../ScrollDial.cpp
+file(GLOB SRC_FILES
+    "*.cpp"
+    "../IniFile.cpp"
+    "../Lang.cpp"
+    "../Utilities.cpp"
+    "../ScrollDial.cpp"
 )
+add_executable(bridgecommand-mc ${SRC_FILES})
 
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
@@ -20,7 +16,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(bridgecommand-mc
     bc-asio
     enet
-    bc-irrlicht
+    Irrlicht
     bc-aisparser
     Threads::Threads
 )

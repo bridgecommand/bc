@@ -161,7 +161,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "languageController-";
+    std::string languageFile = "lang/languageController-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {

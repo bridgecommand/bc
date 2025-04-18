@@ -17,7 +17,7 @@
 #include "AIS.hpp"
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
-#include "libs/Irrlicht/irrlicht-svn/include/irrTypes.h"
+#include "irrTypes.h"
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
