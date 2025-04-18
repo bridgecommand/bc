@@ -79,16 +79,16 @@
     <IntDir>$(Configuration)\ini\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <OutDir>..\..\bin</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\ini\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\bin</OutDir>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\ini\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -174,7 +174,7 @@
     <ClInclude Include="..\Utilities.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\icon.rc" />
+    <ResourceCompile Include="..\..\resources\icon\icon.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

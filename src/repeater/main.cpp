@@ -116,7 +116,7 @@ int main (int argc, char ** argv)
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
-    std::string iniFilename = "repeater.ini";
+    std::string iniFilename = "../../resources/repeater.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -189,7 +189,7 @@ int main (int argc, char ** argv)
 	if (modifier.length() == 0) {
 		modifier = "en"; //Default
 	}
-	std::string languageFile = "lang/languageRepeater-";
+	std::string languageFile = "../../resources/lang/languageRepeater-";
 	languageFile.append(modifier);
 	languageFile.append(".txt");
 	if (Utilities::pathExists(userFolder + languageFile)) {
@@ -316,7 +316,7 @@ int main (int argc, char ** argv)
     #endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;

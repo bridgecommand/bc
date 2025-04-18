@@ -38,7 +38,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     this->name = name;
     this->mmsi = mmsi;
 
-    std::string basePath = "Models/Othership/" + name + "/";
+    std::string basePath = "../../resources/models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {
@@ -47,7 +47,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 
     //Fall back to loading from own ship folder if it doesn't exist in Otherships (useful for multiplayer)
     if (!Utilities::pathExists(basePath)) {
-        basePath = "Models/Ownship/" + name + "/";
+        basePath = "../../resources/models/Ownship/" + name + "/";
         //Read model from user dir if it exists there.
         if (Utilities::pathExists(userFolder + basePath)) {
             basePath = userFolder + basePath;

@@ -30,7 +30,7 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
     this->model=model;
     this->terrain=terrain;
 
-    std::string basePath = "Models/ManOverboard/";
+    std::string basePath = "../../resources/models/ManOverboard/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {

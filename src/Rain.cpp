@@ -84,7 +84,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
         ps[i]->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, true);
         ps[i]->setMaterialFlag(irr::video::EMF_LIGHTING, false);          
         ps[i]->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);     
-        ps[i]->setMaterialTexture(0, driver->getTexture("media/raindrop.png"));     
+        ps[i]->setMaterialTexture(0, driver->getTexture("../../resources/media/raindrop.png"));     
         ps[i]->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL); 
 
         ps[i]->getMaterial(0).setTextureMatrix(0, irr::core::matrix4().buildTextureTransform(

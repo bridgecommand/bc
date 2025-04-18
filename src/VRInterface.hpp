@@ -26,21 +26,21 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <GL/GL.h>
-#include "../bin/libs/irrlicht/source/Irrlicht/glext.h"
+#include "../lib/irrlicht/source/Irrlicht/glext.h"
 #define XR_USE_GRAPHICS_API_OPENGL
 #define XR_USE_PLATFORM_WIN32
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_reflection.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr_reflection.h"
 #elif defined __linux__
 #include <GL/gl.h>
-//#include "libs/irrlicht-svn/source/glext.h"
+#include "../lib/irrlicht/source/Irrlicht/glext.h"
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #define XR_USE_PLATFORM_XLIB
 #define XR_USE_GRAPHICS_API_OPENGL
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #else
 // Not windows 64 bit or linux, just include required headers for interface, functionality will not be used
 #ifdef _WIN32
@@ -51,8 +51,8 @@
 #include <OpenGL/gl.h>
 #endif
 #define XR_USE_GRAPHICS_API_OPENGL
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
-#include "libs/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr.h"
+#include "../lib/OpenXR/OpenXR-SDK-main/include/openxr/openxr_platform.h"
 #endif
 
 #define HAND_LEFT_INDEX 0

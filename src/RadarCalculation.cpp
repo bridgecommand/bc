@@ -96,7 +96,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
     // Radar resolution defaults from bc5.ini
     std::string userFolder = Utilities::getUserDir();
-    std::string iniFilename = "bc5.ini";
+    std::string iniFilename = "../../resources/bc5.ini";
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
     }

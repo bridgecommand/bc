@@ -12,7 +12,7 @@
 *.pdb
 *.iobj
 *.ipdb
+*.exe
 Thumbs.db
 build/
-bin/
 *.kdev4

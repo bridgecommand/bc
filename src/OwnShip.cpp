@@ -64,7 +64,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     zPos = model->latToZ(ownShipData.initialLat);
     hdg = ownShipData.initialBearing; // DEE_DEC22  this is initial heading
 
-    basePath = "Models/Ownship/" + ownShipName + "/";
+    basePath = "../../resources/models/Ownship/" + ownShipName + "/";
     std::string userFolder = Utilities::getUserDir();
     // Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath))
