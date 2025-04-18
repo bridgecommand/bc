@@ -14,5 +14,4 @@
 *.ipdb
 *.exe
 Thumbs.db
-build/
 *.kdev4
