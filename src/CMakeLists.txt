@@ -16,9 +16,10 @@ endif (APPLE)
 
 find_package(X11 REQUIRED)
 
-add_subdirectory(libs/asio)
-add_subdirectory(libs/serial)
+add_subdirectory(../lib/asio ../../lib/asio)
+add_subdirectory(../lib/serial ../../lib/serial) 
 
+include_directories("../lib/asio/include")
 set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
 include_directories(${IRRLICHT_INCLUDE_DIR})
 
