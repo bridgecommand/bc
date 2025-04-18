@@ -15,8 +15,8 @@
 *.exe
 Thumbs.db
 *.kdev4
-Makefile
-*.cmake
-bin/linux
-bin/win
-*CMakeFiles*
+*.dll
+*.exp
+*.lib
+*.ilk
+*Visual*
