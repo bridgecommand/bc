@@ -5,32 +5,31 @@ For more information, see https://www.bridgecommand.co.uk
 
 Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-project.fr/
 
-## To rebuild Irrlicht on Windows (not mandatory to build BC)
-1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
-2) Replace in lib/irrlicht
+## To rebuild Irrlicht on Windows (mandatory to build BC)
+1) (optionnal) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+2) (optionnal) Replace in lib/irrlicht
 3) Download last DirectX SDK here : https://www.microsoft.com/en-us/download/details.aspx?id=6812
 4) If needed, update Irrlicht properties to add include and libraries folder from DirectX SDK
 
-## To rebuild Irrlicht on Linux/MacOs (not mandatory to build BC)
-1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
-2) Replace in lib/irrlicht
+## To rebuild Irrlicht on Linux/MacOs (mandatory to build BC)
+1) (optionnal) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+2) (optionnal) Replace in lib/irrlicht
 3) Go to lib/irrlicht/source/Irrlicht/ 
 4) Run "make sharedlib; make install"
 5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
 
 ## Add last version of Enet library (not mandatory to run BC)
 1) Download tarball here : http://enet.bespin.org/Downloads.html
-2) Untar into :  bin/libs/enet/
+2) Untar into :  lib/enet
 
 ## To compile BC on Windows
 1) Visual Studio 2022 (or greater) are used
 2) Add BC project -> Generate
 
 ## To compile BC on Linux
-1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev"
-2) Go to bc/bin directory, create a folder "linux" if not exist
-3) Go to bc/bin/linux 
-4) Run "cmake ../../src; make" 
+1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev"
+2) Go to bin/linux 
+3) Run "cmake ../../src; make" 
 
 ## To compile BC on MacOs
 1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'
