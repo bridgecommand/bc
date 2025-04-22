@@ -416,10 +416,10 @@ int main (int argc, char ** argv)
     leave->setImage(driver->getTexture("../../resources/media/leave.png"));
     leave->setUseAlphaChannel();
 
-    std::string version = "v" + LONGVERSION; 
+    std::string version = "v" + LONGVERSION + "-" + SOMOSVERSION;
     irr::core::stringw wVer(version.c_str());
 
-    y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+ wVer.size(), y1, x2, y2), true);
+    y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+wVer.size(), y1, x2, y2), true);
 
     device->getGUIEnvironment()->setFocus(launchBC);
 
