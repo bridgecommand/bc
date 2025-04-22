@@ -38,6 +38,9 @@
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\resources\icon\icon.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -91,17 +94,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\bin</OutDir>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\es\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <OutDir>..\..\bin</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\es\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

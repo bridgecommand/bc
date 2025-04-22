@@ -19,7 +19,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-rp", "bridgec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bridgecommand-es", "bridgecommand-es.vcxproj", "{78EBE243-C9D9-409A-ABE5-A8795C4BCEBF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\..\bin\libs\irrlicht\source\Irrlicht\Irrlicht17.0.vcxproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\..\lib\irrlicht\source\Irrlicht\Irrlicht17.0.vcxproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

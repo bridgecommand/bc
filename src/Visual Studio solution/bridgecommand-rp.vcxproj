@@ -79,16 +79,16 @@
     <IntDir>$(Configuration)\rp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\bin</OutDir>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\rp\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\bin</OutDir>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\rp\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -163,15 +163,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_linux.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_osx.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_win.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\unix.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\win.cc" />
+    <ClCompile Include="..\..\lib\serial\src\serial.cc" />
     <ClCompile Include="..\HeadingIndicator.cpp" />
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\Lang.cpp" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\unix.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\win.cc" />
-    <ClCompile Include="..\libs\serial\src\serial.cc" />
     <ClCompile Include="..\Utilities.cpp" />
     <ClCompile Include="..\repeater\ControllerModel.cpp" />
     <ClCompile Include="..\repeater\EventReceiver.cpp" />
@@ -191,7 +191,7 @@
     <ClInclude Include="..\repeater\ShipDataStruct.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\icon.rc" />
+    <ResourceCompile Include="..\..\resources\icon\icon.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

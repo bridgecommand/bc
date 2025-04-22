@@ -399,7 +399,7 @@ int main(int argc, char ** argv)
     std::string userFolder = Utilities::getUserDir();
 
     //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
+    std::string iniFilename = "../../resources/bc5.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -418,12 +418,12 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "Scripts\\win\\" + scriptToExe;
+	        scriptPath = "..\\resources\\scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
-	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;
             #else
-	        scriptPath = "./Scripts/linux/" + scriptToExe;
+	        scriptPath = "../../resources/scripts/linux/" + scriptToExe;
             #endif
             #endif    
         }
@@ -454,7 +454,7 @@ int main(int argc, char ** argv)
     }
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -600,7 +600,7 @@ int main(int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "lang/language-";
+    std::string languageFile = "../../resources/lang/language-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -803,7 +803,7 @@ int main(int argc, char ** argv)
     std::string scenarioName = "";
     std::string hostname = "";
     //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "Scenarios/";
+    std::string scenarioPath = "../../resources/scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }
@@ -1247,12 +1247,12 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "Scripts\\win\\" + scriptToExe;
+	        scriptPath = "..\\resources\\scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
-	        scriptPath = "./Scripts/macOS/" + scriptToExe;
+	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;
             #else
-	        scriptPath = "./Scripts/linux/" + scriptToExe;
+	        scriptPath = "../../resources/scripts/linux/" + scriptToExe;
             #endif
             #endif    
         }

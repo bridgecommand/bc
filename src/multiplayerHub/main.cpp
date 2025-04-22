@@ -118,7 +118,7 @@ int main()
     */
 
     //Read basic ini settings
-    std::string iniFilename = "mph.ini";
+    std::string iniFilename = "../../resources/mph.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -128,7 +128,7 @@ int main()
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "lang/languageMultiplayer-";
+    std::string languageFile = "../../resources/lang/languageMultiplayer-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -204,7 +204,7 @@ int main()
 	#endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;
@@ -217,7 +217,7 @@ int main()
     std::string hostnames;
     std::string scenarioName;
     //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "Scenarios/";
+    std::string scenarioPath = "../../resources/scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }

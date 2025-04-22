@@ -19,7 +19,7 @@
 
 #include "Autopilot.hpp"
 #include "irrlicht.h" //For logger only
-#include "libs/serial/serial.h"
+#include "../lib/serial/serial.h"
 #include <mutex>
 #include <string>
 #include <asio.hpp> //For UDP

@@ -205,15 +205,15 @@ int main (int argc, char ** argv)
     #endif // FOR_DEB
 
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
-    std::string iniFilename = "bc5.ini";
+    std::string iniFilename = "../../resources/bc5.ini";
     if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
-        iniFilename = "map.ini";
+        iniFilename = "../../resources/map.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-H")==0)) {
-        iniFilename = "mph.ini";
+        iniFilename = "../../resources/mph.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-R")==0)) {
-        iniFilename = "repeater.ini";
+        iniFilename = "../../resources/repeater.ini";
     }
 
     //Mac OS:
@@ -412,7 +412,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "lang/languageIniEditor-";
+    std::string languageFile = "../../resources/lang/languageIniEditor-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -471,7 +471,7 @@ int main (int argc, char ** argv)
     #endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = environment->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;

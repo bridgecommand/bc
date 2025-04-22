@@ -1,25 +1,24 @@
 # Bridge Command ⛵
 
-This is the source code for Bridge Command, developed in C++ using the
-Irrlicht 3d library.
-
+This is the source code for Bridge Command, developed in C++ using the Irrlicht 3d library.
 For more information, see https://www.bridgecommand.co.uk
 
-## To compile Irrlicht on Windows (mandatory to run BC)
-1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
-2) Put it in bin/libs/irrlicht
-3) Download last DirectX SDK here : https://www.microsoft.com/en-us/download/details.aspx?id=6812
-4) Add Irrlicht project to BC project into VS : bin/libs/irrlicht/source/Irrlicht/*.sln
-5) Update Irrlicht properties to add include and libraries folder from DirectX SDK
+Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-project.fr/
 
-## To compile Irrlicht on Linux/MacOs (mandatory to run BC)
+## To rebuild Irrlicht on Windows (not mandatory to build BC)
 1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
-2) Put it in bin/libs/irrlicht
-3) Go to bin/libs/irrlicht/source/Irrlicht/ 
+2) Replace in lib/irrlicht
+3) Download last DirectX SDK here : https://www.microsoft.com/en-us/download/details.aspx?id=6812
+4) If needed, update Irrlicht properties to add include and libraries folder from DirectX SDK
+
+## To rebuild Irrlicht on Linux/MacOs (not mandatory to build BC)
+1) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+2) Replace in lib/irrlicht
+3) Go to lib/irrlicht/source/Irrlicht/ 
 4) Run "make sharedlib; make install"
 5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
 
-## Add last version of Enet library (mandatory to run BC)
+## Add last version of Enet library (not mandatory to run BC)
 1) Download tarball here : http://enet.bespin.org/Downloads.html
 2) Untar into :  bin/libs/enet/
 
@@ -29,9 +28,9 @@ For more information, see https://www.bridgecommand.co.uk
 
 ## To compile BC on Linux
 1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev"
-2) Go to bc/bin directory
-3) Run cmake ../src 
-4) Run make
+2) Go to bc/bin directory, create a folder "linux" if not exist
+3) Go to bc/bin/linux 
+4) Run "cmake ../../src; make" 
 
 ## To compile BC on MacOs
 1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'

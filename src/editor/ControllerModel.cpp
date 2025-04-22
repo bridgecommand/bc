@@ -63,7 +63,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     selectedLeg = -1; //Used to signify no leg selected
 
     //construct path to world model
-    std::string worldPath = "World/";
+    std::string worldPath = "../../resources/world/";
     worldPath.append(worldName);
 
     //Check if this world model exists in the user dir.
@@ -398,7 +398,7 @@ void ControllerModel::checkName() //Check if the scenario name chosen will mean 
 {
     //Find path to scenario folder
     std::string userFolder = Utilities::getUserDir();
-    std::string scenarioPath = "Scenarios/";
+    std::string scenarioPath = "../../resources/scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }
@@ -585,7 +585,7 @@ void ControllerModel::save()
 
     //Find path to scenario folder
     std::string userFolder = Utilities::getUserDir();
-    std::string scenarioPath = "Scenarios/";
+    std::string scenarioPath = "../../resources/scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }

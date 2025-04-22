@@ -80,16 +80,16 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <OutDir>..\..\bin</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\libs\asio\include;..\libs\libsndfile\include;..\libs\portaudio\include;..\..\bin\libs\irrlicht\include;..\..\bin\libs\enet\include</IncludePath>
-    <OutDir>..\..\bin</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include</IncludePath>
+    <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\libs\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\libs\libsndfile\lib;..\libs\portaudio\lib;..\..\bin\libs\irrlicht\lib\Win64-visualStudio;..\..\bin\libs\enet</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,7 +124,8 @@
       <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call ..\..\bin\useVS64dll.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -173,6 +174,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_linux.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_osx.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\list_ports\list_ports_win.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\unix.cc" />
+    <ClCompile Include="..\..\lib\serial\src\impl\win.cc" />
+    <ClCompile Include="..\..\lib\serial\src\serial.cc" />
     <ClCompile Include="..\AIS.cpp" />
     <ClCompile Include="..\Angles.cpp" />
     <ClCompile Include="..\Autopilot.cpp" />
@@ -195,12 +202,6 @@
     <ClCompile Include="..\Lang.cpp" />
     <ClCompile Include="..\Line.cpp" />
     <ClCompile Include="..\Lines.cpp" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_linux.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_osx.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\list_ports\list_ports_win.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\unix.cc" />
-    <ClCompile Include="..\libs\serial\src\impl\win.cc" />
-    <ClCompile Include="..\libs\serial\src\serial.cc" />
     <ClCompile Include="..\Light.cpp" />
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\ManOverboard.cpp" />
@@ -302,7 +303,7 @@
     <ClInclude Include="..\hitime.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\icon.rc" />
+    <ResourceCompile Include="..\..\resources\icon\icon.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

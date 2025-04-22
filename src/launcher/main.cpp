@@ -292,7 +292,7 @@ int main (int argc, char ** argv)
     userFolder = Utilities::getUserDir();
 
     //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
+    std::string iniFilename = "../../resources/bc5.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -302,7 +302,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "lang/languageLauncher-";
+    std::string languageFile = "../../resources/lang/languageLauncher-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -327,7 +327,7 @@ int main (int argc, char ** argv)
     irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
-    irr::video::ITexture* imgTexture = driver->getTexture("media/logo.png");
+    irr::video::ITexture* imgTexture = driver->getTexture("../../resources/media/logo.png");
     irr::core::dimension2d<irr::u32> imgSize = imgTexture->getSize();
 
     driver->OnResize(irr::core::dimension2d<irr::u32>(imgSize.Width, graphicsHeight));
@@ -347,7 +347,7 @@ int main (int argc, char ** argv)
     device->getGUIEnvironment()->setSkin(newskin);
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;
@@ -374,42 +374,42 @@ int main (int argc, char ** argv)
 
     y1 = imgSize.Height +   2*bR; y2 = y1 + 2*bH; 
     irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    launchBC->setImage(driver->getTexture("media/startBC.png"));
+    launchBC->setImage(driver->getTexture("../../resources/media/startBC.png"));
     launchBC->setUseAlphaChannel();
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
-    launchED->setImage(driver->getTexture("media/startED.png"));
+    launchED->setImage(driver->getTexture("../../resources/media/startED.png"));
     launchED->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
-    launchMC->setImage(driver->getTexture("media/startMC.png"));
+    launchMC->setImage(driver->getTexture("../../resources/media/startMC.png"));
     launchMC->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
-    launchRP->setImage(driver->getTexture("media/startRP.png"));
+    launchRP->setImage(driver->getTexture("../../resources/media/startRP.png"));
     launchRP->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
-    launchMH->setImage(driver->getTexture("media/startMH.png"));
+    launchMH->setImage(driver->getTexture("../../resources/media/startMH.png"));
     launchMH->setUseAlphaChannel();
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
-    launchINIBC->setImage(driver->getTexture("media/settings.png"));
+    launchINIBC->setImage(driver->getTexture("../../resources/media/settings.png"));
     launchINIBC->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
-    launchINIMC->setImage(driver->getTexture("media/settings.png"));
+    launchINIMC->setImage(driver->getTexture("../../resources/media/settings.png"));
     launchINIMC->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
-    launchINIRP->setImage(driver->getTexture("media/settings.png"));
+    launchINIRP->setImage(driver->getTexture("../../resources/media/settings.png"));
     launchINIRP->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
-    launchINIMH->setImage(driver->getTexture("media/settings.png"));
+    launchINIMH->setImage(driver->getTexture("../../resources/media/settings.png"));
     launchINIMH->setUseAlphaChannel();
 
     y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
-    launchDOC->setImage(driver->getTexture("media/startDOC.png"));
+    launchDOC->setImage(driver->getTexture("../../resources/media/startDOC.png"));
     launchDOC->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
-    launchFOLDER->setImage(driver->getTexture("media/user.png"));
+    launchFOLDER->setImage(driver->getTexture("../../resources/media/user.png"));
     launchFOLDER->setUseAlphaChannel();
     y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
-    leave->setImage(driver->getTexture("media/leave.png"));
+    leave->setImage(driver->getTexture("../../resources/media/leave.png"));
     leave->setUseAlphaChannel();
 
     std::string version = "v" + LONGVERSION; 
