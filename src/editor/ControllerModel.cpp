@@ -19,6 +19,7 @@
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #ifdef _WIN32
 #include <direct.h> //for windows _mkdir
@@ -638,16 +639,16 @@ void ControllerModel::save()
     otherFile << "Number=" << scenarioData->otherShipsData.size() << std::endl;
     for (int i = 1; i<=scenarioData->otherShipsData.size(); i++) {
         otherFile << "Type(" << i << ")=\"" << scenarioData->otherShipsData.at(i-1).shipName << "\"" << std::endl;
-        otherFile << "InitLong(" << i << ")=" << xToLong(scenarioData->otherShipsData.at(i-1).initialX) << std::endl;
-        otherFile << "InitLat(" << i << ")=" << zToLat(scenarioData->otherShipsData.at(i-1).initialZ) << std::endl;
+        otherFile << "InitLong(" << i << ")=" << std::setprecision(8) << xToLong(scenarioData->otherShipsData.at(i-1).initialX) << std::endl;
+        otherFile << "InitLat(" << i << ")=" << std::setprecision(8) << zToLat(scenarioData->otherShipsData.at(i-1).initialZ) << std::endl;
         otherFile << "mmsi(" << i << ")=" << scenarioData->otherShipsData.at(i-1).mmsi << std::endl;
         //Don't save last leg, as this is an automatically added 'stop' leg.
         otherFile << "Legs(" << i << ")=" << scenarioData->otherShipsData.at(i-1).legs.size() - 1 << std::endl;
 
         for (int j = 1; j<=scenarioData->otherShipsData.at(i-1).legs.size() - 1; j++) {
-            otherFile << "Bearing(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).bearing << std::endl;
-            otherFile << "Speed(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).speed << std::endl;
-            otherFile << "Distance(" << i << "," << j << ")=" << scenarioData->otherShipsData.at(i-1).legs.at(j-1).distance << std::endl;
+            otherFile << "Bearing(" << i << "," << j << ")=" << std::setprecision(8) << scenarioData->otherShipsData.at(i-1).legs.at(j-1).bearing << std::endl;
+            otherFile << "Speed(" << i << "," << j << ")=" << std::setprecision(8) << scenarioData->otherShipsData.at(i-1).legs.at(j-1).speed << std::endl;
+            otherFile << "Distance(" << i << "," << j << ")=" << std::setprecision(8) << scenarioData->otherShipsData.at(i-1).legs.at(j-1).distance << std::endl;
         }
     }
     otherFile.close();
@@ -659,10 +660,10 @@ void ControllerModel::save()
 
     ownFile.open(ownPath.c_str());
     ownFile << "ShipName=\"" << scenarioData->ownShipData.ownShipName << "\"" << std::endl;
-    ownFile << "InitialLong=" << xToLong(scenarioData->ownShipData.initialX) << std::endl;
-    ownFile << "InitialLat=" << zToLat(scenarioData->ownShipData.initialZ) << std::endl;
-    ownFile << "InitialBearing=" << scenarioData->ownShipData.initialBearing << std::endl;
-    ownFile << "InitialSpeed=" << scenarioData->ownShipData.initialSpeed << std::endl;
+    ownFile << "InitialLong=" << std::setprecision(8) << xToLong(scenarioData->ownShipData.initialX) << std::endl;
+    ownFile << "InitialLat=" << std::setprecision(8) << zToLat(scenarioData->ownShipData.initialZ) << std::endl;
+    ownFile << "InitialBearing=" << std::setprecision(8) << scenarioData->ownShipData.initialBearing << std::endl;
+    ownFile << "InitialSpeed=" << std::setprecision(8) << scenarioData->ownShipData.initialSpeed << std::endl;
     ownFile.close();
     if (!ownFile.good()) {successOfFar=false;}
 
