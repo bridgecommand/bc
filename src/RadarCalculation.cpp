@@ -98,7 +98,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
     std::string userFolder = Utilities::getUserDir();
     std::string iniFilename = "../../resources/bc5.ini";
     if (Utilities::pathExists(userFolder + "bc5.ini")) {
-        iniFilename = userFolder + iniFilename;
+        iniFilename = userFolder + "bc5.ini";
     }
     rangeResolution = IniFile::iniFileTou32(iniFilename, "RADAR_RangeRes", rangeResolution);
     angularResolution = IniFile::iniFileTou32(iniFilename, "RADAR_AngularRes", angularResolution);

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
     if (Utilities::pathExists(userFolder + "bc5.ini"))
     {
-        iniFilename = userFolder + iniFilename;
+        iniFilename = userFolder + "bc5.ini";
     }
 
     unsigned int enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
