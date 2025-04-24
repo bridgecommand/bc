@@ -298,7 +298,7 @@ int main (int argc, char ** argv)
     //Read basic ini settings
     std::string iniFilename = "../../resources/bc5.ini";
     //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
+    if (Utilities::pathExists(userFolder + "bc5.ini")) {
         iniFilename = userFolder + iniFilename;
     }
 
