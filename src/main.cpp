@@ -553,8 +553,8 @@ int main(int argc, char ** argv)
         irr::core::dimension2d<irr::u32> deskres;
         #ifdef _WIN32
         // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
-        deskres.Width=GetSystemMetrics(SM_CXSCREEN);
-        deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+        deskres.Width=GetSystemMetrics(SM_CXBORDER);
+        deskres.Height=GetSystemMetrics(SM_CYBORDER);
         #else
         // For other OSs, use Irrlicht's resolution call
         irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
@@ -702,7 +702,7 @@ int main(int argc, char ** argv)
     //Use an extra SIrrlichtCreationParameters parameter, added to our version of the Irrlicht source, to request a borderless X11 window if requested
     #ifdef __linux__
     if (fakeFullScreen) {
-      deviceParameters.X11borderless=true; //Has an effect on X11 only
+      //deviceParameters.X11borderless=true; //Has an effect on X11 only
     }
     #endif
 
