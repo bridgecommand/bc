@@ -702,7 +702,7 @@ int main(int argc, char ** argv)
     //Use an extra SIrrlichtCreationParameters parameter, added to our version of the Irrlicht source, to request a borderless X11 window if requested
     #ifdef __linux__
     if (fakeFullScreen) {
-      //deviceParameters.X11borderless=true; //Has an effect on X11 only
+      deviceParameters.X11borderless=true; //Has an effect on X11 only
     }
     #endif
 
@@ -1247,7 +1247,7 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "..\\resources\\scripts\\win\\" + scriptToExe;
+	        scriptPath = "..\\..\\resources\\scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
 	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;
