@@ -401,8 +401,8 @@ int main(int argc, char ** argv)
     //Read basic ini settings
     std::string iniFilename = "../../resources/bc5.ini";
     //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
+    if (Utilities::pathExists(userFolder + "bc5.ini")) {
+        iniFilename = userFolder + "bc5.ini";
     }
 
     if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
@@ -459,12 +459,6 @@ int main(int argc, char ** argv)
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
-	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
-	#ifdef __APPLE__
-	if (fakeFullScreen) {
-		fullScreen = true; //Fall back for mac
-	}
-	#endif
 	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
     irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
 	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
@@ -557,13 +551,14 @@ int main(int argc, char ** argv)
         deskres.Height=GetSystemMetrics(SM_CYSCREEN);
         #else
         // For other OSs, use Irrlicht's resolution call
-        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_NULL);
+        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_OPENGL);
         deskres = nulldevice->getVideoModeList()->getDesktopResolution();
         nulldevice->drop();
+        
         #endif
 
 		if (graphicsWidth == 0) {
-			if (fullScreen || fakeFullScreen) {
+			if (fullScreen) {
 				graphicsWidth = deskres.Width;
 			} else {
 				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
@@ -609,102 +604,6 @@ int main(int argc, char ** argv)
     Lang language(languageFile);
 
 	irr::SIrrlichtCreationParameters deviceParameters;
-
-#ifdef _WIN32
-
-	HWND hWnd;
-	HINSTANCE hInstance = 0;
-	// create dialog
-	const char* Win32ClassName = "CIrrlichtWindowsTestDialog";
-
-	WNDCLASSEX wcex;
-
-	if (fakeFullScreen) {
-
-		int requestedMonitor = IniFile::iniFileTou32(iniFilename, "monitor")-1; //0 indexed, -1 will indicate default
-
-        DWORD style = WS_VISIBLE | WS_POPUP;
-        wcex.cbSize = sizeof(WNDCLASSEX);
-        wcex.style = CS_HREDRAW | CS_VREDRAW;
-        wcex.lpfnWndProc = (WNDPROC)CustomWndProc;
-        wcex.cbClsExtra = 0;
-        wcex.cbWndExtra = DLGWINDOWEXTRA;
-        wcex.hInstance = hInstance;
-        wcex.hIcon = NULL;
-        wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-        wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW);
-        wcex.lpszMenuName = 0;
-        wcex.lpszClassName = Win32ClassName;
-        wcex.hIconSm = 0;
-        RegisterClassEx(&wcex);
-
-        cMonitorsVec Monitors; //The constructor for this initialises it with a list of the monitors
-
-        if (requestedMonitor>-1 && Monitors.iMonitors.size() > requestedMonitor) {
-            //The user has requested a specific monitor
-
-            //Set to fill requested monitor
-            int x = Monitors.rcMonitors[requestedMonitor].left;
-            int y = Monitors.rcMonitors[requestedMonitor].top;
-            graphicsWidth = Monitors.rcMonitors[requestedMonitor].right - Monitors.rcMonitors[requestedMonitor].left;
-            graphicsHeight = Monitors.rcMonitors[requestedMonitor].bottom - Monitors.rcMonitors[requestedMonitor].top;
-
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
-                style, x, y, graphicsWidth, graphicsHeight,
-                NULL, NULL, hInstance, NULL);
-
-            deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
-
-
-        } else {
-            //Get user to move a dialog, so their mouse is positioned on the monitor they want
-            if (GetSystemMetrics(SM_CMONITORS) > 1) {
-                irr::core::stringw locationMessageW = language.translate("moveMessage");
-
-                std::wstring wlocationMessage = std::wstring(locationMessageW.c_str());
-                std::string slocationMessage(wlocationMessage.begin(), wlocationMessage.end());
-
-                MessageBoxA(nullptr, slocationMessage.c_str(), "Multi monitor", MB_OK);
-            }
-
-            //Find location of mouse cursor
-            POINT p;
-            int x = 0;
-            int y = 0;
-            if (GetCursorPos(&p))
-            {
-                //Find monitor this is on
-                HMONITOR monitor = MonitorFromPoint(p, MONITOR_DEFAULTTOPRIMARY);
-                MONITORINFO mi;
-                RECT        rc;
-
-                mi.cbSize = sizeof(mi);
-                GetMonitorInfo(monitor, &mi);
-                rc = mi.rcMonitor;
-
-                //Set to fill current monitor
-                x = rc.left;
-                y = rc.top;
-                graphicsWidth = rc.right - rc.left;
-                graphicsHeight = rc.bottom - rc.top;
-            }
-
-            hWnd = CreateWindowA(Win32ClassName, "Bridge Command",
-                style, x, y, graphicsWidth, graphicsHeight,
-                NULL, NULL, hInstance, NULL);
-
-            deviceParameters.WindowId = hWnd; //Tell irrlicht about the window to use
-        }
-
-	}
-#endif
-
-    //Use an extra SIrrlichtCreationParameters parameter, added to our version of the Irrlicht source, to request a borderless X11 window if requested
-    #ifdef __linux__
-    if (fakeFullScreen) {
-      //deviceParameters.X11borderless=true; //Has an effect on X11 only
-    }
-    #endif
 
     //create device
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
@@ -1247,7 +1146,7 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "..\\resources\\scripts\\win\\" + scriptToExe;
+	        scriptPath = "..\\..\\resources\\scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
 	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;

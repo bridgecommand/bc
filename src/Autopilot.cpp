@@ -39,8 +39,8 @@ Autopilot::Autopilot(SimulationModel* model)
     std::string userFolder = Utilities::getUserDir();
     std::string iniFilename = "../../resources/bc5.ini";
     AUTOPILOT_ENABLED = false;
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
+    if (Utilities::pathExists(userFolder + "bc5.ini")) {
+        iniFilename = userFolder + "bc5.ini";
     }
     std::string enableAutopilot = IniFile::iniFileToString(iniFilename, "Autopilot_Enable", "false");
     if (!enableAutopilot.compare("true")) AUTOPILOT_ENABLED = true;

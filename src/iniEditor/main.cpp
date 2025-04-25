@@ -205,15 +205,19 @@ int main (int argc, char ** argv)
     #endif // FOR_DEB
 
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
-    std::string iniFilename = "../../resources/bc5.ini";
+    std::string iniFilenameRaw = "../../resources/bc5.ini";
+    std::string iniFilename = "bc5.ini";
     if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
-        iniFilename = "../../resources/map.ini";
+        iniFilenameRaw = "../../resources/map.ini";
+        iniFilename = "map.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-H")==0)) {
-        iniFilename = "../../resources/mph.ini";
+        iniFilenameRaw = "../../resources/mph.ini";
+        iniFilename = "mph.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-R")==0)) {
-        iniFilename = "../../resources/repeater.ini";
+        iniFilenameRaw = "../../resources/repeater.ini";
+        iniFilename = "repeater.ini";
     }
 
     //Mac OS:
@@ -263,7 +267,7 @@ int main (int argc, char ** argv)
         }
 
         //Copy ini file from main into user dir
-        std::ifstream iniFileIn (iniFilename.c_str());
+        std::ifstream iniFileIn (iniFilenameRaw.c_str());
         std::ofstream iniFileOut ((userFolder + iniFilename).c_str());
         if (iniFileIn.is_open()) {
             if (iniFileOut.is_open()) {

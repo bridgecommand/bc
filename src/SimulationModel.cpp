@@ -1048,6 +1048,26 @@ SimulationModel::~SimulationModel()
         return windSpeed;
     }
 
+    void SimulationModel::setApparentWindDir(irr::f32 apparentWindDir)
+    {
+        this->apparentWindDir = apparentWindDir;
+    }
+
+    void SimulationModel::setApparentWindSpd(irr::f32 apparentWindSpd)
+    {
+        this->apparentWindSpd = apparentWindSpd;
+    }
+
+    irr::f32 SimulationModel::getApparentWindDir(void) const
+    {
+        return apparentWindDir;
+    }
+
+    irr::f32 SimulationModel::getApparentWindSpd(void) const
+    {
+        return apparentWindSpd;
+    }
+
     void SimulationModel::setStreamOverrideDirection(irr::f32 streamDirection) //Range 0-360.
     {
         this->streamOverrideDirection = streamDirection;

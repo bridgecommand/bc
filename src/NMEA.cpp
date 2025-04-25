@@ -410,6 +410,8 @@ void NMEA::updateNMEA()
 
     irr::f32 windDirection = model->getWindDirection();
     irr::f32 windSpeed = model->getWindSpeed();
+    irr::f32 apparentWindDir = model->getApparentWindDir();
+    irr::f32 apparentWindSpd = model->getApparentWindSpd();
     
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];
@@ -548,24 +550,30 @@ void NMEA::updateNMEA()
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
         }
-	case WIMWV:
+	    case WIMWV:
         {
-	  snprintf(messageBuffer,maxSentenceChars,"$IIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
-	  messageQueue.push_back(addChecksum(std::string(messageBuffer)));
-	  break;
+	        snprintf(messageBuffer,maxSentenceChars,"$IIMWV,%.1f,T,%.1f,N,A", windDirection, windSpeed);
+	        messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+	        break;
+        }
+        case WIMWR:
+        {
+            snprintf(messageBuffer, maxSentenceChars, "$IIMWV,%.1f,R,%.1f,N,A", apparentWindDir, apparentWindSpd);
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
         }
         case VHW:
-	  {
-	    snprintf(messageBuffer,maxSentenceChars,"$VDVHW,0,T,0,M,%.1f,N,0,K",spdWater);
+	    {
+	        snprintf(messageBuffer,maxSentenceChars,"$VDVHW,0,T,0,M,%.1f,N,0,K",spdWater);
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
-	  }
+	    } 
         case VTG:
-	  {
-	    snprintf(messageBuffer,maxSentenceChars,"$VDVTG,0,T,0,M,%.1f,N,0,K",latSpeed);
+	    {
+	        snprintf(messageBuffer,maxSentenceChars,"$VDVTG,0,T,0,M,%.1f,N,0,K",latSpeed);
             messageQueue.push_back(addChecksum(std::string(messageBuffer)));
             break;
-	  }
+	    }
 	  /*
         case VTG: // 8.3.98 Course over ground and ground speed
             snprintf(messageBuffer,maxSentenceChars,"$VDVTG,");

@@ -75,11 +75,6 @@ public:
                     exit(EXIT_SUCCESS);
                 }
 
-                #ifndef _WIN32
-                int pid = fork();  // posix only (GNU/Linux, MacOS)
-                if (pid > 0) return false;
-                #endif
-
                 if (id == BC_BUTTON) {
                     #ifdef _WIN32
                         ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
@@ -298,8 +293,8 @@ int main (int argc, char ** argv)
     //Read basic ini settings
     std::string iniFilename = "../../resources/bc5.ini";
     //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
+    if (Utilities::pathExists(userFolder + "bc5.ini")) {
+        iniFilename = userFolder + "bc5.ini";
     }
 
     std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
@@ -328,7 +323,13 @@ int main (int argc, char ** argv)
     irr::u32 graphicsDepth = 32;
     bool fullScreen = false;
 
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::SIrrlichtCreationParameters deviceParameters;
+    deviceParameters.DriverType = irr::video::EDT_OPENGL;
+    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
+    deviceParameters.Bits = graphicsDepth;
+    deviceParameters.Fullscreen = fullScreen;
+
+    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     irr::video::ITexture* imgTexture = driver->getTexture("../../resources/media/logo.png");

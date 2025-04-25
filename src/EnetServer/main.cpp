@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
     std::string userFolder = Utilities::getUserDir();
     std::string iniFilename = "../../resources/bc5.ini";
 
-    if (Utilities::pathExists(userFolder + iniFilename))
+    if (Utilities::pathExists(userFolder + "bc5.ini"))
     {
-        iniFilename = userFolder + iniFilename;
+        iniFilename = userFolder + "bc5.ini";
     }
 
     unsigned int enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
