@@ -79,8 +79,8 @@ int main (int argc, char ** argv)
 
     std::string iniFilename = "../../resources/map.ini";
     //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + iniFilename)) {
-        iniFilename = userFolder + iniFilename;
+    if (Utilities::pathExists(userFolder + "map.ini")) {
+        iniFilename = userFolder + "map.ini";
     }
 
     int fontSize = 12;
