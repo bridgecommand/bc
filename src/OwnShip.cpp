@@ -1766,15 +1766,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 axialWindDrag = -1 * pow(relWindAxial_mps, 2) * sign(relWindAxial_mps) * 0.5 * RHO_AIR * frontalArea;
         irr::f32 lateralWindDrag = -1 * pow(relWindLateral_mps, 2) * sign(relWindLateral_mps) * 0.5 * RHO_AIR * sideArea;
 
-        irr::f32 alpha = (windDirection-hdg);
-        alpha = alpha * irr::core::DEGTORAD;
-
-        irr::f32 apparentWindSpd = sqrt(pow(axialSpd, 2)+pow(windSpeed, 2)+(2* axialSpd* windSpeed*cos(alpha)));
-        irr::f32 apparentWindDir = acos((axialSpd+(windSpeed*cos(alpha)))/apparentWindSpd);
-
-        model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
-        model->setApparentWindSpd(apparentWindSpd * MPS_TO_KTS);
-
         // Find tidal stream, based on our current absolute position
         irr::core::vector2df stream = model->getTidalStream(model->getLong(), model->getLat(), model->getTimestamp());
         //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
@@ -1785,6 +1776,16 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 lateralStream = stream.X * cos(hdg * irr::core::DEGTORAD) - stream.Y * sin(hdg * irr::core::DEGTORAD);// Stream in stbd direction
 
         speedThroughWater = axialSpd - axialStream;
+
+        irr::f32 alpha = (windDirection - hdg);
+        alpha = alpha * irr::core::DEGTORAD;
+
+        irr::f32 apparentWindSpd = sqrt(pow(speedThroughWater, 2) + pow(windSpeed, 2) + (2 * speedThroughWater * windSpeed * cos(alpha)));
+        irr::f32 apparentWindDir = acos((speedThroughWater + (windSpeed * cos(alpha))) / apparentWindSpd);
+
+        model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
+        model->setApparentWindSpd(apparentWindSpd * MPS_TO_KTS);
+
 
         // Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;
