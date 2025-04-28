@@ -1780,11 +1780,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 alpha = (windDirection - hdg);
         alpha = alpha * irr::core::DEGTORAD;
 
-        irr::f32 apparentWindSpd = sqrt(pow(speedThroughWater, 2) + pow(windSpeed, 2) + (2 * speedThroughWater * windSpeed * cos(alpha)));
-        irr::f32 apparentWindDir = acos((speedThroughWater + (windSpeed * cos(alpha))) / apparentWindSpd);
+        irr::f32 apparentWindSpd = sqrt(pow(speedThroughWater, 2) + pow((windSpeed * MPS_TO_KTS), 2) + (2 * speedThroughWater * (windSpeed * MPS_TO_KTS) * cos(alpha)));
+        irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
 
         model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
-        model->setApparentWindSpd(apparentWindSpd * MPS_TO_KTS);
+        model->setApparentWindSpd(apparentWindSpd);
 
 
         // Update bow and stern thrusters, if being controlled by joystick buttons
