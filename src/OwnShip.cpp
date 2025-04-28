@@ -1767,9 +1767,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 lateralWindDrag = -1 * pow(relWindLateral_mps, 2) * sign(relWindLateral_mps) * 0.5 * RHO_AIR * sideArea;
 
         irr::f32 alpha = (windDirection-hdg);
-        if (alpha < 0) {
-            alpha += 360;
-        }
         alpha = alpha * irr::core::DEGTORAD;
 
         irr::f32 apparentWindSpd = sqrt(pow(axialSpd, 2)+pow(windSpeed, 2)+(2* axialSpd* windSpeed*cos(alpha)));
