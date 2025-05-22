@@ -229,11 +229,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
         radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
         radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-        //fill with bg colour
-        radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageOverlaid->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
-        radarImageOverlaidLarge->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        //Images will be filled with background colour in RadarCalculation
 
         //make radar camera
         std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
@@ -1199,6 +1195,11 @@ SimulationModel::~SimulationModel()
     bool SimulationModel::isRadarOn() const
     {
         return radarCalculation.isRadarOn();
+    }
+
+    irr::video::SColor SimulationModel::getRadarSurroundColour() const
+    {
+        return radarCalculation.getRadarSurroundColour();
     }
 
     void SimulationModel::increaseRadarRange()
