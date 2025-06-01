@@ -37,8 +37,8 @@ Line::Line(SimulationModel* model)
     lineVisualisation2 = 0;
 
     // ID and type of start and end
-    startNodeType = 0 ; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
-    endNodeType = 0; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+    startNodeType = 0 ; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
+    endNodeType = 0; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
     startNodeID = 0;
     endNodeID = 0;
 
@@ -96,6 +96,8 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
         lineName = "Line to buoy";
     } else if (nodeType == 4) {
         lineName = "Line to land";
+    } else if (nodeType == 5) {
+        lineName = "Line to terrain";
     } else {
         lineName = "Line";
     }
@@ -243,12 +245,12 @@ irr::f32 Line::getLineEndZ() const
     }
 }
 
-int Line::getLineStartType() const //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Line::getLineStartType() const //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     return startNodeType;
 }
 
-int Line::getLineEndType() const //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Line::getLineEndType() const //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     return endNodeType;
 }

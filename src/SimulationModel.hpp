@@ -346,6 +346,7 @@ public:
     irr::scene::ISceneNode* getOtherShipSceneNode(int number);
     irr::scene::ISceneNode* getBuoySceneNode(int number);
     irr::scene::ISceneNode* getLandObjectSceneNode(int number);
+    irr::scene::ISceneNode* getTerrainSceneNode(int number);
 
     void addLine(); // Add a line, which will be undefined
     

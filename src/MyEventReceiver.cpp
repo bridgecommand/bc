@@ -2061,6 +2061,16 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                     nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
                 }
             }
+            else if (nodeName.find("Terrain") == 0)
+            {
+                nodeType = 5;
+                // Find terrain ID from name (should be Terrain_#)
+                std::vector<std::string> splitName = Utilities::split(nodeName, '_');
+                if (splitName.size() == 2)
+                {
+                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+            }
             // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
 
             if (linesMode == 2)

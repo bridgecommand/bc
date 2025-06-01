@@ -340,7 +340,7 @@ irr::f32 Lines::getLineEndZ(int lineID, bool networkLine)
     }
 }
 
-int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -358,7 +358,7 @@ int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own s
     }
 }
 
-int Lines::getLineEndType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Lines::getLineEndType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     std::vector<Line>* thisLines;
     if (networkLine) {

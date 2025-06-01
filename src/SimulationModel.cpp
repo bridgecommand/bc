@@ -1718,6 +1718,11 @@ SimulationModel::~SimulationModel()
         return landObjects.getSceneNode(number);
     }
 
+    irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
+    {
+        return terrain.getSceneNode(number);
+    }
+
     void SimulationModel::addLine() // Add a line, which will be undefined
     {
         lines.addLine(this);

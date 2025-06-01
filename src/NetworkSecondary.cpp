@@ -352,6 +352,9 @@ void NetworkSecondary::receiveMessage()
                                             } else if (lineStartType == 4) {
                                                 // Land object
                                                 startParent = model->getLandObjectSceneNode(lineStartID);
+                                            } else if (lineStartType == 5) {
+                                                // Terrain
+                                                startParent = model->getTerrainSceneNode(lineStartID);
                                             }
 
                                             if (lineEndType == 1) {
@@ -366,6 +369,9 @@ void NetworkSecondary::receiveMessage()
                                             } else if (lineEndType == 4) {
                                                 // Land object
                                                 endParent = model->getLandObjectSceneNode(lineEndID);
+                                            } else if (lineEndType == 5) {
+                                                // Terrain
+                                                endParent = model->getTerrainSceneNode(lineEndID);
                                             }
 
                                             // Make child sphere nodes based on these (in the right position), then pass in to create the lines

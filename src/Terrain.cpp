@@ -333,6 +333,11 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
             terrain->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
         }
 
+        //Create buoy and load into vector
+        std::string internalName = "Terrain_";
+        internalName.append(std::to_string(i - 1));
+        terrain->setName(internalName.c_str());
+
         terrains.push_back(terrain);
 
     }
@@ -478,6 +483,16 @@ void Terrain::addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heigh
     terrain->setVisible(false);
 
     terrains.push_back(terrain);
+}
+
+irr::scene::ISceneNode* Terrain::getSceneNode(int number)
+{
+    if (number < (int)terrains.size() && number >= 0) {
+        return terrains.at(number);
+    }
+    else {
+        return 0;
+    }
 }
 
 std::vector<std::vector<irr::f32>> Terrain::transposeHeightMapVector(std::vector<std::vector<irr::f32>> inVector){
