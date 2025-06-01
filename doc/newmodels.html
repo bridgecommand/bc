@@ -364,6 +364,9 @@ radar1_blue(1)=0
 radar_bg_red(1)=0
 radar_bg_green(1)=0
 radar_bg_blue(1)=255
+radar_surround_red(1)=128
+radar_surround_green(1)=128
+radar_surround_blue(1)=128
 
 radar1_red(2)=128
 radar1_green(2)=0
@@ -371,6 +374,9 @@ radar1_blue(2)=0
 radar_bg_red(2)=0
 radar_bg_green(2)=0
 radar_bg_blue(2)=0
+radar_surround_red(2)=64
+radar_surround_green(2)=64
+radar_surround_blue(2)=64
 <!--plot_pi_data=1
 radar_bg_red=0
 radar_bg_green=0
@@ -408,9 +414,11 @@ radar3_blue=0-->
 <li>radar3_red, radar3_green, radar3_blue: The colour for the parallel index lines in red, green and blue components, each in the range 0-255.</li>
 -->
 <li>NumberOfRadarColourSets: How many sets of colours are available on the radar (e.g. 2 if there is a daytime and a nighttime colour scheme)</li>
-<li>For each radar colour set, where # is the set number (1 to NumberOfRadarColourSets):
-  <ul><li>radar1_red(#), radar1_green(#), radar1_blue(#): The colour for the radar plot, in red green and blue components, each in the range 0-255.</li></ul>
-  <ul><li>radar_bg_red(#), radar_bg_green(#), radar_bg_blue(#): The colour for the radar background, in red green and blue components, each in the range 0-255.</li></ul>
+<li>
+    For each radar colour set, where # is the set number (1 to NumberOfRadarColourSets):
+    <ul><li>radar1_red(#), radar1_green(#), radar1_blue(#): The colour for the radar plot, in red green and blue components, each in the range 0-255.</li></ul>
+    <ul><li>radar_bg_red(#), radar_bg_green(#), radar_bg_blue(#): The colour for the radar background, in red green and blue components, each in the range 0-255.</li></ul>
+    <ul><li>radar_surround_red(#), radar_surround_green(#), radar_surround_blue(#): The colour for the radar surround (also used as the general background colour), in red green and blue components, each in the range 0-255.</li></ul>
 </li>
 </ul>
 </p>

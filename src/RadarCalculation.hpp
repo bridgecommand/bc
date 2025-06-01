@@ -160,6 +160,9 @@ class RadarCalculation
         void clearManualPoints();
         void trackTargetFromCursor();
         void clearTargetFromCursor();
+        irr::video::SColor getRadarForegroundColour() const;
+        irr::video::SColor getRadarBackgroundColour() const;
+        irr::video::SColor getRadarSurroundColour() const;
         void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:
@@ -212,6 +215,7 @@ class RadarCalculation
         //colours
         std::vector<irr::video::SColor> radarBackgroundColours;
         std::vector<irr::video::SColor> radarForegroundColours;
+        std::vector<irr::video::SColor> radarSurroundColours;
         irr::u32 currentRadarColourChoice;
 
         std::vector<irr::f32> radarRangeNm;
