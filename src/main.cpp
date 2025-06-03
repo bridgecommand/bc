@@ -520,11 +520,20 @@ int main(int argc, char ** argv)
     }
 
     //Load NMEA settings
-    std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
-    irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
-    std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
-    std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
-    std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
+
+    //Conning
+    std::string nmeaComPortConning = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_Conning");
+    irr::u32 nmeaBaudrateConning = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_Conning", 4800);
+    std::string nmeaUDPAddrConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_Conning");
+    std::string nmeaUDPPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_Conning");
+    std::string nmeaUDPListenPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_Conning");
+
+    //OpenCpn
+    std::string nmeaComPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_OpenCpn");
+    irr::u32 nmeaBaudrateOpCpn = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_OpenCpn", 4800);
+    std::string nmeaUDPAddrOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_OpenCpn");
+    std::string nmeaUDPPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_OpenCpn");
+    std::string nmeaUDPListenPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_OpenCpn");
 
     //Load UDP network settings
     irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
@@ -947,7 +956,8 @@ int main(int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmea(&model, nmeaSerialPortName, nmeaSerialPortBaudrate, nmeaUDPAddressName, nmeaUDPPortName, nmeaUDPListenPortName, device);
+    NMEA nmeaConning(&model, nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning, device);
+    NMEA nmeaOpCpn(&model, nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn, device);
 
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
@@ -1011,27 +1021,20 @@ int main(int argc, char ** argv)
         }
 	{ IPROF("NMEA");
 
-	  if (!nmeaUDPListenPortName.empty()) {
-            nmea.receive();
-        }
+	  if (!nmeaUDPListenPortConning.empty()) nmeaConning.receive();
+      if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA();
+      if (!nmeaComPortConning.empty())  nmeaConning.sendNMEASerial();
+      if (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty()) nmeaConning.sendNMEAUDP();
+      nmeaConning.clearQueue();   
 
-        if (!nmeaSerialPortName.empty() || (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty())) {
-            nmea.updateNMEA();
+      if (!nmeaUDPListenPortOpCpn.empty()) nmeaOpCpn.receive();
+      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA();
+      if (!nmeaComPortOpCpn.empty())  nmeaOpCpn.sendNMEASerial();
+      if (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty()) nmeaOpCpn.sendNMEAUDP();
+      nmeaOpCpn.clearQueue();
 
-            if (!nmeaSerialPortName.empty()) {
-                nmea.sendNMEASerial();
-            }
-
-            if (!nmeaUDPAddressName.empty() && !nmeaUDPPortName.empty()) {
-                nmea.sendNMEAUDP();
-            }
-
-            nmea.clearQueue();
-        }
-//        nmeaProfile.toc();
-
-//        modelProfile.tic();
-        }{ IPROF("Render setup");
+    }
+    { IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
 //        renderSetupProfile.toc();
