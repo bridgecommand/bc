@@ -1641,6 +1641,7 @@ SimulationModel::~SimulationModel()
             // End - not on own ship
             otherShips.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
             buoys.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+            terrain.enableAllTriangleSelectors(true); //This needs to be manually reset
             // TODO: Temporarily enable triangle selector for:
             //   Terrain
             //   Land objects
@@ -1694,6 +1695,7 @@ SimulationModel::~SimulationModel()
 
         // Reset triangle selectors
         ownShip.enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
+        terrain.enableAllTriangleSelectors(false);
         // buoys and otherShips will be reset when their update() method is called
 
         return contactPointNode;
