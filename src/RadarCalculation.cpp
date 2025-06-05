@@ -130,6 +130,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
 
         irr::video::SColor radarBackgroundColour;
         irr::video::SColor radarForegroundColour;
+        irr::video::SColor radarSurroundColour;
 
         radarBackgroundColour.setAlpha(255);
         radarBackgroundColour.setRed(0);
@@ -140,6 +141,12 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
         radarForegroundColour.setRed(255);
         radarForegroundColour.setGreen(220);
         radarForegroundColour.setBlue(0);
+
+        radarSurroundColour.setAlpha(255);
+        radarSurroundColour.setRed(128);
+        radarSurroundColour.setGreen(128);
+        radarSurroundColour.setBlue(128);
+
         
         radarBackgroundColours.push_back(radarBackgroundColour);
         radarForegroundColours.push_back(radarForegroundColour);
@@ -187,6 +194,7 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
             //legacy loading
             irr::video::SColor radarBackgroundColour;
             irr::video::SColor radarForegroundColour;
+            irr::video::SColor radarSurroundColour;
 
             radarBackgroundColour.setAlpha(255);
             radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,"radar_bg_red"));
@@ -198,12 +206,19 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
             radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,"radar1_green"));
             radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,"radar1_blue"));
 
+            radarSurroundColour.setAlpha(255);
+            radarSurroundColour.setRed(IniFile::iniFileTou32(radarConfigFile, "radar_surround_red", 128));
+            radarSurroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile, "radar1_green", 128));
+            radarSurroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile, "radar1_blue", 128));
+
             radarBackgroundColours.push_back(radarBackgroundColour);
             radarForegroundColours.push_back(radarForegroundColour);
+            radarSurroundColours.push_back(radarSurroundColour);
         } else {
             for (unsigned int i = 1; i <= numberOfRadarColourSets; i++) {
                 irr::video::SColor radarBackgroundColour;
                 irr::video::SColor radarForegroundColour;
+                irr::video::SColor radarSurroundColour;
 
                 radarBackgroundColour.setAlpha(255);
                 radarBackgroundColour.setRed(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar_bg_red",i)));
@@ -215,8 +230,14 @@ void RadarCalculation::load(std::string radarConfigFile, irr::IrrlichtDevice* de
                 radarForegroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar1_green",i)));
                 radarForegroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile,IniFile::enumerate1("radar1_blue",i)));
 
+                radarSurroundColour.setAlpha(255);
+                radarSurroundColour.setRed(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_red", i), 128));
+                radarSurroundColour.setGreen(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_green", i), 128));
+                radarSurroundColour.setBlue(IniFile::iniFileTou32(radarConfigFile, IniFile::enumerate1("radar_surround_blue", i), 128));
+
                 radarBackgroundColours.push_back(radarBackgroundColour);
                 radarForegroundColours.push_back(radarForegroundColour);    
+                radarSurroundColours.push_back(radarSurroundColour);
             }
         }
 
@@ -645,7 +666,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 
     //Reset screen if needed
     if(radarScreenStale) {
-        radarImage->fill(irr::video::SColor(255, 128, 128, 128)); //Fill with background colour
+        radarImage->fill(getRadarSurroundColour());
         //Reset 'previous' array so it will all get re-drawn
         for(irr::u32 i = 0; i<angularResolution; i++) {
             toReplot[i] = true;
@@ -1459,22 +1480,20 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     if (pixelColour>1.0) {pixelColour = 1.0;}
                     if (pixelColour<0)   {pixelColour =   0;}
 
-                    if (currentRadarColourChoice < radarForegroundColours.size() && currentRadarColourChoice < radarBackgroundColours.size()) {
-                        //Interpolate colour between foreground and background
-                        irr::video::SColor thisColour = radarForegroundColours.at(currentRadarColourChoice).getInterpolated(radarBackgroundColours.at(currentRadarColourChoice), pixelColour);
-                        drawSector(radarImage,
-                                centrePixel,
-                                centrePixel,
-                                cellMinRange[currentStep],
-                                cellMaxRange[currentStep],
-                                cellMinAngle,
-                                cellMaxAngle,
-                                thisColour.getAlpha(),
-                                thisColour.getRed(),
-                                thisColour.getGreen(),
-                                thisColour.getBlue(),
-                                ownShipHeading);
-                    }
+                    //Interpolate colour between foreground and background
+                    irr::video::SColor thisColour = getRadarForegroundColour().getInterpolated(getRadarBackgroundColour(), pixelColour);
+                    drawSector(radarImage,
+                            centrePixel,
+                            centrePixel,
+                            cellMinRange[currentStep],
+                            cellMaxRange[currentStep],
+                            cellMinAngle,
+                            cellMaxAngle,
+                            thisColour.getAlpha(),
+                            thisColour.getRed(),
+                            thisColour.getGreen(),
+                            thisColour.getBlue(),
+                            ownShipHeading);
 
                     scanArrayToPlotPrevious[scanLine][currentStep] = scanArrayToPlot[scanLine][currentStep]; //Record what we have plotted
                 }
@@ -1846,5 +1865,36 @@ bool RadarCalculation::isPointInEllipse(irr::f32 pointX, irr::f32 pointZ, irr::f
         return true;
     } else {
         return false;
+    }
+
+}
+
+irr::video::SColor RadarCalculation::getRadarForegroundColour() const
+{
+    if (currentRadarColourChoice < radarForegroundColours.size()) {
+        return radarForegroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 255, 220, 0);
+    }
+}
+
+irr::video::SColor RadarCalculation::getRadarBackgroundColour() const
+{
+    if (currentRadarColourChoice < radarBackgroundColours.size()) {
+        return radarBackgroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 0, 0, 200);
+    }
+}
+
+irr::video::SColor RadarCalculation::getRadarSurroundColour() const
+{
+    if (currentRadarColourChoice < radarSurroundColours.size()) {
+        return radarSurroundColours.at(currentRadarColourChoice);
+    }
+    else {
+        return irr::video::SColor(255, 128, 128, 128);
     }
 }
