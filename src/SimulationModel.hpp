@@ -259,6 +259,7 @@ public:
 	void setAlarm(bool alarmState);
     void toggleRadarOn();
     bool isRadarOn() const;
+    irr::video::SColor getRadarSurroundColour() const;
 	void increaseRadarRange();
     void decreaseRadarRange();
     void setRadarGain(irr::f32 value);

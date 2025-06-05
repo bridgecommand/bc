@@ -1033,7 +1033,7 @@ int main(int argc, char ** argv)
 //        modelProfile.tic();
         }{ IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(true, true, irr::video::SColor(0,128,128,128));
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarSurroundColour());
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();
