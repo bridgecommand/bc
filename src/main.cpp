@@ -418,7 +418,7 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "..\\resources\\scripts\\win\\" + scriptToExe;
+	        scriptPath = "..\\..\\resources\\scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
 	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;

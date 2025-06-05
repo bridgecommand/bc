@@ -8,7 +8,7 @@ if [ -s serverStatus.log ]; then
 else
         # EnetServer is not running
         echo ">>>>>> Start EnetServer"
-        cd ~/bc/bin/
+        cd ~/bc/bin/linux
         ./bridgecommand-es &
 fi
 
