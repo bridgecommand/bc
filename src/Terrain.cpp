@@ -24,7 +24,6 @@
 #include "Utilities.hpp"
 
 #include "BCTerrainSceneNode.h"
-#include "BCTerrainTriangleSelector.h"
 
 #include <iostream>
 #include <algorithm>
@@ -338,18 +337,13 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         std::string internalName = "Terrain_";
         internalName.append(std::to_string(i - 1));
         terrain->setName(internalName.c_str());
-
-        //Create triangle selector, but don't set it yet
-        irr::scene::ITriangleSelector* selector = new irr::scene::BCTerrainTriangleSelector(terrain, 0);
-        terrain->setID(IDFlag_IsPickable);
         
         //terrain->setDebugDataVisible(35);
         //terrain->getMesh()->getMeshBuffer(0)->getMaterial().setFlag(irr::video::EMF_WIREFRAME, true);
         terrains.push_back(terrain);
-        selectors.push_back(selector);
 
     }
-    triangleSelectorEnabled = false;
+
 
 }
 
@@ -616,24 +610,5 @@ void Terrain::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
         irr::f32 newPosY = currentPos.Y + deltaY;
         irr::f32 newPosZ = currentPos.Z + deltaZ;
         terrains.at(i)->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
-    }
-}
-
-void Terrain::enableAllTriangleSelectors(bool selectorEnabled)
-{
-    if (selectorEnabled != triangleSelectorEnabled) {
-        // Only reset if needed
-        if (terrains.size() >= selectors.size()) {
-            // There may be additional 'radar reflecting terrains' after our normal terrains. These will not have triangle selectors
-            for (unsigned int i = 0; i < selectors.size(); i++) {
-                if (selectorEnabled) {
-                    terrains.at(i)->setTriangleSelector(selectors.at(i));
-                }
-                else {
-                    terrains.at(i)->setTriangleSelector(0);
-                }
-            }
-            triangleSelectorEnabled = selectorEnabled;
-        }
     }
 }

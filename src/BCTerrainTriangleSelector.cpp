@@ -180,8 +180,6 @@ void BCTerrainTriangleSelector::getTriangles(core::triangle3df* triangles,
 
 	if (transform)
 		mat = (*transform);
-	if (SceneNode && useNodeTransform)
-		mat *= SceneNode->getAbsoluteTransformation();
 
 	s32 tIndex = 0;
 
