@@ -2019,7 +2019,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
         {
             // If returns non-null, then successful, so move onto next point or finish
 
-            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
+            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain)
             int nodeType = 0;
             int nodeID = 0;
 
@@ -2091,6 +2091,41 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 // Move on to end point
                 linesMode = 2;
                 gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
+
+                // special case for 'anchoring', set end node at sea bed under the starting node
+                if (true) {
+                    
+                    irr::f32 nominalMass = model->getOwnShipMassEstimate();
+
+                    // Create a 'contact node' at the terrain height below the anchor point
+                    irr::core::vector3df intersection = contactNode->getAbsolutePosition();
+                    intersection.Y = model->getTerrainHeight(intersection.X, intersection.Z);
+                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrainSceneNode(0);
+
+                    // Add a 'sphere' scene node, with selectedSceneNode as parent.
+                    // Find local coordinates from the global one
+                    irr::core::vector3df localPosition(intersection);
+                    irr::core::matrix4 worldToLocal = terrainSceneNode->getAbsoluteTransformation();
+                    worldToLocal.makeInverse();
+                    worldToLocal.transformVect(localPosition);
+
+                    irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+                    irr::scene::ISceneNode* contactPointNode = device->getSceneManager()->addSphereSceneNode(0.25f, 16, terrainSceneNode, -1,
+                        localPosition,
+                        irr::core::vector3df(0, 0, 0),
+                        sphereScale);
+
+                    // Set name to match parent for convenience
+                    contactPointNode->setName(terrainSceneNode->getName());
+
+                    // Node ID is 0 as we always assume parent is terrain 0
+                    model->getLines()->setLineEnd(contactPointNode, nominalMass, 5, 0);
+                    
+                    // Tidy up
+                    linesMode = 0;
+                    gui->setLinesControlsText("");
+                }
+
             }
         }
     }
