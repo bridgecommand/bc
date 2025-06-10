@@ -159,14 +159,20 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             // Add line (mooring/towing) start or end if in required mode
             if ((linesMode == 1) || (linesMode == 2))
             {
-                // Scale if required because 3d view may be different
-                irr::s32 scaledMouseY = mouseClickY;
-                if (gui->getShowInterface())
+                // Ignore click if over a gui element (getElementFromPoint will return root element if not over anything else)
+                irr::gui::IGUIElement* rootGUIElement = device->getGUIEnvironment()->getRootGUIElement();
+                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+                if (clickElement == rootGUIElement)
                 {
-                    scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                    // Scale if required because 3d view may be different
+                    irr::s32 scaledMouseY = mouseClickY;
+                    if (gui->getShowInterface())
+                    {
+                        scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                    }
+                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
+                    handleMooringLines(rayForLines);
                 }
-                irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
-                handleMooringLines(rayForLines);
             }
         }
 
@@ -2093,7 +2099,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
 
                 // special case for 'anchoring', set end node at sea bed under the starting node
-                if (true) {
+                if (gui->getAnchorLine()) {
                     
                     irr::f32 nominalMass = model->getOwnShipMassEstimate();
 

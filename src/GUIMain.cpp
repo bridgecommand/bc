@@ -501,6 +501,9 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.800*lwSh + lwVO, 0.85*lwSu,0.950*lwSh + lwVO),true,true,linesControlsWindow);
         haulLineInText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
 
+        anchorLine = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.95 * lwSu, 0.800 * lwSh + lwVO, 1.00 * lwSu, 0.950 * lwSh + lwVO), linesControlsWindow, GUI_ID_ANCHOR_LINE_CHECKBOX);
+        anchorLine->setToolTipText(language->translate("anchorLine").c_str());
+
         linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.325*lwSu, 0.01*lwSh + lwVO, 0.95*lwSu, 0.425*lwSh + lwVO),true,true,linesControlsWindow);
  
         //add radar buttons
@@ -836,6 +839,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     bool GUIMain::getLargeRadar() const
     {
         return radarLarge;
+    }
+
+    bool GUIMain::getAnchorLine() const
+    {
+        return anchorLine->isChecked();
     }
 
     void GUIMain::setARPAComboboxes(irr::s32 arpaState)
