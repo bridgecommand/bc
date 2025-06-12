@@ -63,7 +63,7 @@ void Lines::setLineStart(irr::scene::ISceneNode* lineStart,  int nodeType, int i
 }
 
 //Set the end point of the most recently added line
-void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, bool networkLine, int lineID) 
+void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor, bool networkLine, int lineID)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -77,11 +77,11 @@ void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int n
     }
     if (lineID == -1) {
         // Default, last in list
-        thisLines->back().setEnd(lineEnd, shipMass, nodeType, id);
+        thisLines->back().setEnd(lineEnd, shipMass, nodeType, id, lengthFactor);
     } else {
         if (thisLines->size() > lineID && lineID >= 0) {
             std::vector<Line>::iterator it = thisLines->begin() + lineID;
-            it->setEnd(lineEnd, shipMass, nodeType, id);
+            it->setEnd(lineEnd, shipMass, nodeType, id, lengthFactor);
         }
     }
 

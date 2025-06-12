@@ -78,7 +78,7 @@ void Line::setStart(irr::scene::ISceneNode* lineStart, int nodeType, int id)
     startNodeID = id;
 }
 
-void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id)
+void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor)
 {
     this->lineEnd = lineEnd;
     shipNominalMass = shipMass;
@@ -119,7 +119,7 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
         irr::core::vector3df endPosAbs = lineEnd->getAbsolutePosition();
         
         irr::core::vector3df lineVectorAbs = endPosAbs - startPosAbs;
-        lineNominalLength = lineVectorAbs.getLength();
+        lineNominalLength = lineVectorAbs.getLength() * lengthFactor;
         lineExtension = 0; // Initialise
 
         // make a node to visualise the line itself
