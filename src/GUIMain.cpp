@@ -493,16 +493,17 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         
         removeLine = guienv->addButton(irr::core::rect<irr::s32>(0.325*lwSu, 0.450*lwSh + lwVO, 0.95*lwSu,0.600*lwSh + lwVO),linesControlsWindow,GUI_ID_REMOVE_LINE_BUTTON,language->translate("removeLine").c_str());
         
-        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.85*lwSu, 0.625*lwSh + lwVO, 0.95*lwSu,0.775*lwSh + lwVO),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.625*lwSh + lwVO, 0.85*lwSu,0.775*lwSh + lwVO),true,true,linesControlsWindow);
+        keepLineSlack = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.650*lwSu, 0.625*lwSh + lwVO, 0.725*lwSu,0.775*lwSh + lwVO),linesControlsWindow,GUI_ID_KEEP_SLACK_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* keepLineSlackText = guienv->addStaticText(language->translate("keepLineSlack").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.625*lwSh + lwVO, 0.650*lwSu,0.775*lwSh + lwVO),true,true,linesControlsWindow);
         keepLineSlackText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
         
-        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.85*lwSu, 0.800*lwSh + lwVO, 0.95*lwSu,0.950*lwSh + lwVO),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
-        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.800*lwSh + lwVO, 0.85*lwSu,0.950*lwSh + lwVO),true,true,linesControlsWindow);
+        heaveLineIn = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.650*lwSu, 0.800*lwSh + lwVO, 0.725*lwSu,0.950*lwSh + lwVO),linesControlsWindow,GUI_ID_HAUL_IN_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* haulLineInText = guienv->addStaticText(language->translate("haulLineIn").c_str(),irr::core::rect<irr::s32>(0.325*lwSu, 0.800*lwSh + lwVO, 0.650*lwSu,0.950*lwSh + lwVO),true,true,linesControlsWindow);
         haulLineInText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
 
-        anchorLine = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.95 * lwSu, 0.800 * lwSh + lwVO, 1.00 * lwSu, 0.950 * lwSh + lwVO), linesControlsWindow, GUI_ID_ANCHOR_LINE_CHECKBOX);
-        anchorLine->setToolTipText(language->translate("anchorLine").c_str());
+        anchorLine = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.875 * lwSu, 0.625 * lwSh + lwVO, 0.950 * lwSu, 0.775 * lwSh + lwVO), linesControlsWindow, GUI_ID_ANCHOR_LINE_CHECKBOX);
+        irr::gui::IGUIStaticText* anchorLineText = guienv->addStaticText(language->translate("anchorLine").c_str(), irr::core::rect<irr::s32>(0.725 * lwSu, 0.625 * lwSh + lwVO, 0.875 * lwSu, 0.775 * lwSh + lwVO), true, true, linesControlsWindow);
+        anchorLineText->setTextAlignment(irr::gui::EGUIA_LOWERRIGHT, irr::gui::EGUIA_CENTER);
 
         linesText = guienv->addStaticText(L"",irr::core::rect<irr::s32>(0.325*lwSu, 0.01*lwSh + lwVO, 0.95*lwSu, 0.425*lwSh + lwVO),true,true,linesControlsWindow);
  
