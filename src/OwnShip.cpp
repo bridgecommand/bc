@@ -2081,7 +2081,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             axialAcceleration = -9.81;
         }
         axialSpd += axialAcceleration * deltaTime;
-        spd = axialSpd; // for compatability with ancestor object
         // Also check speed for plausibility, limit to 50m/s
         if (axialSpd > 50)
         {
