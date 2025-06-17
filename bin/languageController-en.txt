@@ -28,6 +28,8 @@ stream = "Tidal stream"
 streamDirection = "Tidal stream direction"
 streamSpeed = "Tidal stream speed (kts)"
 streamOverride = "Override stream"
+extraControls = "Extra Controls"
+brightness = "Brightness"
 
 setMMSI = "Set MMSI"
 
