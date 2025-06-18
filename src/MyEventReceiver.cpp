@@ -159,14 +159,20 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             // Add line (mooring/towing) start or end if in required mode
             if ((linesMode == 1) || (linesMode == 2))
             {
-                // Scale if required because 3d view may be different
-                irr::s32 scaledMouseY = mouseClickY;
-                if (gui->getShowInterface())
+                // Ignore click if over a gui element (getElementFromPoint will return root element if not over anything else)
+                irr::gui::IGUIElement* rootGUIElement = device->getGUIEnvironment()->getRootGUIElement();
+                irr::gui::IGUIElement* clickElement = rootGUIElement->getElementFromPoint(irr::core::position2d<irr::s32>(event.MouseInput.X, event.MouseInput.Y));
+                if (clickElement == rootGUIElement)
                 {
-                    scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                    // Scale if required because 3d view may be different
+                    irr::s32 scaledMouseY = mouseClickY;
+                    if (gui->getShowInterface())
+                    {
+                        scaledMouseY = mouseClickY / VIEW_PROPORTION_3D;
+                    }
+                    irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
+                    handleMooringLines(rayForLines);
                 }
-                irr::core::line3df rayForLines = device->getSceneManager()->getSceneCollisionManager()->getRayFromScreenCoordinates(irr::core::position2d<irr::s32>(mouseClickX, scaledMouseY));
-                handleMooringLines(rayForLines);
             }
         }
 
@@ -2019,7 +2025,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
         {
             // If returns non-null, then successful, so move onto next point or finish
 
-            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object)
+            // Find the type of node (0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain)
             int nodeType = 0;
             int nodeID = 0;
 
@@ -2061,6 +2067,16 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                     nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
                 }
             }
+            else if (nodeName.find("Terrain") == 0)
+            {
+                nodeType = 5;
+                // Find terrain ID from name (should be Terrain_#)
+                std::vector<std::string> splitName = Utilities::split(nodeName, '_');
+                if (splitName.size() == 2)
+                {
+                    nodeID = Utilities::lexical_cast<irr::s32>(splitName.at(1));
+                }
+            }
             // std::cout << "Node name: " << nodeName << " nodeType: " << nodeType << " nodeID: " << nodeID << std::endl;
 
             if (linesMode == 2)
@@ -2070,7 +2086,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
                     nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
                 }
-                model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID);
+                model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID, 1.0);
                 // Finished
                 linesMode = 0;
                 gui->setLinesControlsText("");
@@ -2081,6 +2097,41 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 // Move on to end point
                 linesMode = 2;
                 gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
+
+                // special case for 'anchoring', set end node at sea bed under the starting node
+                if (gui->getAnchorLine()) {
+                    
+                    irr::f32 nominalMass = model->getOwnShipMassEstimate();
+
+                    // Create a 'contact node' at the terrain height below the anchor point
+                    irr::core::vector3df intersection = contactNode->getAbsolutePosition();
+                    intersection.Y = model->getTerrainHeight(intersection.X, intersection.Z);
+                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrainSceneNode(0);
+
+                    // Add a 'sphere' scene node, with selectedSceneNode as parent.
+                    // Find local coordinates from the global one
+                    irr::core::vector3df localPosition(intersection);
+                    irr::core::matrix4 worldToLocal = terrainSceneNode->getAbsoluteTransformation();
+                    worldToLocal.makeInverse();
+                    worldToLocal.transformVect(localPosition);
+
+                    irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
+                    irr::scene::ISceneNode* contactPointNode = device->getSceneManager()->addSphereSceneNode(0.25f, 16, terrainSceneNode, -1,
+                        localPosition,
+                        irr::core::vector3df(0, 0, 0),
+                        sphereScale);
+
+                    // Set name to match parent for convenience
+                    contactPointNode->setName(terrainSceneNode->getName());
+
+                    // Node ID is 0 as we always assume parent is terrain 0
+                    model->getLines()->setLineEnd(contactPointNode, nominalMass, 5, 0, 1.5);
+                    
+                    // Tidy up
+                    linesMode = 0;
+                    gui->setLinesControlsText("");
+                }
+
             }
         }
     }

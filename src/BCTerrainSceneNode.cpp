@@ -748,6 +748,9 @@ namespace scene
 		TerrainData.Position = newpos;
 		applyTransformation();
 		ForceRecalculation = true;
+
+		// Also set relative position, so standard irrlicht methods work
+		RelativeTranslation = newpos;
 	}
 
 

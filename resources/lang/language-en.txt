@@ -123,6 +123,7 @@ addLine="Add line"
 removeLine="Remove line"
 keepLineSlack="Keep line slack"
 haulLineIn="Haul in line"
+anchorLine="Anchor"
 
 rudderFailure="Rudder failure"
 

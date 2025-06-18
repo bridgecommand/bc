@@ -54,7 +54,7 @@ class Ship
         irr::f32 xPos;
         irr::f32 yPos;
         irr::f32 zPos;
-        irr::f32 spd;
+        irr::f32 axialSpd;
         irr::f32 length;
         irr::f32 breadth;
         irr::f32 draught;

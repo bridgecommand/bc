@@ -280,6 +280,18 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
 
     scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
+    // Scale tempImage brightness if needed
+    irr::f32 brightnessScaling = gui->getBrightnessScaling();
+    if (brightnessScaling < 1) {
+        for (int i = 0; i < tempImage->getDimension().Width; i++) {
+            for (int j = 0; j < tempImage->getDimension().Height; j++) {
+                irr::video::SColor pixelColour = tempImage->getPixel(i, j);
+                irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+                tempImage->setPixel(i, j, pixelColour.getInterpolated(black, brightnessScaling));
+            }
+        }
+    }
+
     //Drop any previous textures
     for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
         if (driver->getTextureByIndex(i)->getName().getPath()=="DisplayTexture") {

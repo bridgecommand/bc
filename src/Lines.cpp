@@ -63,7 +63,7 @@ void Lines::setLineStart(irr::scene::ISceneNode* lineStart,  int nodeType, int i
 }
 
 //Set the end point of the most recently added line
-void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, bool networkLine, int lineID) 
+void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor, bool networkLine, int lineID)
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -77,11 +77,11 @@ void Lines::setLineEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int n
     }
     if (lineID == -1) {
         // Default, last in list
-        thisLines->back().setEnd(lineEnd, shipMass, nodeType, id);
+        thisLines->back().setEnd(lineEnd, shipMass, nodeType, id, lengthFactor);
     } else {
         if (thisLines->size() > lineID && lineID >= 0) {
             std::vector<Line>::iterator it = thisLines->begin() + lineID;
-            it->setEnd(lineEnd, shipMass, nodeType, id);
+            it->setEnd(lineEnd, shipMass, nodeType, id, lengthFactor);
         }
     }
 
@@ -340,7 +340,7 @@ irr::f32 Lines::getLineEndZ(int lineID, bool networkLine)
     }
 }
 
-int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     std::vector<Line>* thisLines;
     if (networkLine) {
@@ -358,7 +358,7 @@ int Lines::getLineStartType(int lineID, bool networkLine) //0: Unknown, 1: Own s
     }
 }
 
-int Lines::getLineEndType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
+int Lines::getLineEndType(int lineID, bool networkLine) //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object, 5: Terrain
 {
     std::vector<Line>* thisLines;
     if (networkLine) {

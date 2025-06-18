@@ -304,7 +304,6 @@ private:
         irr::f32 rudderTorque;
         irr::f32 engineTorque;
         irr::f32 propWalkTorque;
-        irr::f32 axialSpd; // DEE_DEC22
         irr::f32 lateralSpd;
         irr::f32 speedThroughWater;
 
