@@ -2263,6 +2263,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			    // Land object
 			    startParent = getLandObjectSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
+			else if (dataMasterCmds->lines.lineStartType == 5)
+			  {
+			    // Terrain			   
+			    startParent = getTerrainSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
 			
 			if(dataMasterCmds->lines.lineEndType == 1)
 			  {
@@ -2283,6 +2288,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			  {
 			    // Land object
 			    endParent = getLandObjectSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if (dataMasterCmds->lines.lineEndType == 5)
+			  {
+			    // Terrain
+			    endParent = getTerrainSceneNode(dataMasterCmds->lines.lineEndID);			    
 			  }
 
 			// Make child sphere nodes based on these (in the right position), then pass in to create the lines
