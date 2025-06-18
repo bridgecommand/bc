@@ -1754,6 +1754,16 @@ SimulationModel::~SimulationModel()
         return landObjects.getSceneNode(number);
     }
 
+    irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
+    {
+        return terrain.getSceneNode(number);
+    }
+
+    irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
+    {
+        return terrain.getHeight(posX, posZ);
+    }
+
     void SimulationModel::addLine() // Add a line, which will be undefined
     {
         lines.addLine(this);
@@ -2253,6 +2263,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			    // Land object
 			    startParent = getLandObjectSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
+			else if (dataMasterCmds->lines.lineStartType == 5)
+			  {
+			    // Terrain			   
+			    startParent = getTerrainSceneNode(dataMasterCmds->lines.lineStartID);
+			  }
 			
 			if(dataMasterCmds->lines.lineEndType == 1)
 			  {
@@ -2273,6 +2288,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			  {
 			    // Land object
 			    endParent = getLandObjectSceneNode(dataMasterCmds->lines.lineEndID);
+			  }
+			else if (dataMasterCmds->lines.lineEndType == 5)
+			  {
+			    // Terrain
+			    endParent = getTerrainSceneNode(dataMasterCmds->lines.lineEndID);			    
 			  }
 
 			// Make child sphere nodes based on these (in the right position), then pass in to create the lines

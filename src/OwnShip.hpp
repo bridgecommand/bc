@@ -270,7 +270,6 @@ private:
   irr::f32 newStbdAzimuthDriveAngle;              // ditto
 
   // DEE_NOV22 ^^^^
-
   irr::f32 shipMass;
   irr::f32 inertia;
   irr::f32 maxEngineRevs;

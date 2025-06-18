@@ -196,6 +196,7 @@ public:
         GUI_ID_REMOVE_LINE_BUTTON,
         GUI_ID_KEEP_SLACK_LINE_CHECKBOX,
         GUI_ID_HAUL_IN_LINE_CHECKBOX,
+        GUI_ID_ANCHOR_LINE_CHECKBOX,
         GUI_ID_LINES_LIST,
         GUI_ID_CHANGE_VIEW_BUTTON,
         GUI_ID_EXIT_BUTTON,
@@ -234,6 +235,8 @@ public:
     bool isDrawBackgroundEnabled(){return false;};
     irr::gui::IGUIButton* getUpLeftButton(){return NULL;};
     irr::gui::IGUIButton* getDownRightButton(){return NULL;};
+    bool getAnchorLine() const;
+
 
   
   
@@ -338,6 +341,7 @@ private:
     irr::gui::IGUIButton* removeLine;
     irr::gui::IGUICheckBox* keepLineSlack;
     irr::gui::IGUICheckBox* heaveLineIn;
+    irr::gui::IGUICheckBox* anchorLine;
     irr::gui::IGUIListBox* linesList;
     irr::gui::IGUIStaticText* linesText;
 

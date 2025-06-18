@@ -30,7 +30,7 @@ class Line
         virtual ~Line();
         void clearLine(); // Call before we remove the line from the parent vector
         void setStart(irr::scene::ISceneNode* lineStart, int nodeType, int id); // Must always be on own ship
-        void setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id); // Remote connection point
+        void setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor); // Remote connection point
         void setNominalLength(irr::f32 lineNominalLength);
 
         std::string getLineName() const;

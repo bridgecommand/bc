@@ -90,7 +90,7 @@ void Ship::setHeading(irr::f32 hdg)
 
 void Ship::setSpeed(irr::f32 spd)
 {
-    this->spd = spd;
+    this->axialSpd = spd;
     controlMode = MODE_AUTO; //Switch to auto mode
 }
 
@@ -101,7 +101,7 @@ irr::f32 Ship::getHeading() const
 
 irr::f32 Ship::getSpeed() const
 {
-    return spd;
+    return axialSpd;
 }
 
 irr::u32 Ship::getMMSI() const
