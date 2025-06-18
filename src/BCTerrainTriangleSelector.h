@@ -17,7 +17,7 @@ namespace irr
 namespace scene
 {
 
-class ITerrainSceneNode;
+class BCTerrainSceneNode;
 
 //! Triangle Selector for the TerrainSceneNode
 /** The code for the TerrainTriangleSelector is based on the GeoMipMapSelector
@@ -30,13 +30,13 @@ class BCTerrainTriangleSelector : public ITriangleSelector
 public:
 
 	//! Constructs a selector based on an ITerrainSceneNode
-	BCTerrainTriangleSelector(ITerrainSceneNode* node, s32 LOD);
+	BCTerrainTriangleSelector(BCTerrainSceneNode* node, s32 LOD);
 
 	//! Destructor
 	virtual ~BCTerrainTriangleSelector();
 
 	//! Clears and sets triangle data
-	virtual void setTriangleData(ITerrainSceneNode* node, s32 LOD);
+	virtual void setTriangleData(BCTerrainSceneNode* node, s32 LOD);
 
 	//! Gets all triangles.
 	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
@@ -92,7 +92,7 @@ private:
 		u32 TotalTriangles;
 	};
 
-	ITerrainSceneNode* SceneNode;
+	BCTerrainSceneNode* SceneNode;
 	SGeoMipMapTrianglePatches TrianglePatches;
 };
 

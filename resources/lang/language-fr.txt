@@ -123,6 +123,7 @@ addLine="Ajouter ligne d'amarrage"
 removeLine="Retirer l'amarre"
 keepLineSlack="Gardez la ligne d’amarrage relâchée"
 haulLineIn="Raidir la ligne d'amarrage"
+anchorLine="Ancre"
 
 rudderFailure="Défaillance du gouvernail"
 

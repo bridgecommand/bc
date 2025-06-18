@@ -35,6 +35,7 @@ class Terrain
         irr::f32 getHeight(irr::f32 x, irr::f32 z) const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         void addRadarReflectingTerrain(std::vector<std::vector<irr::f32>> heightVector, irr::f32 positionX, irr::f32 positionZ, irr::f32 widthX, irr::f32 widthZ);
+        irr::scene::ISceneNode* getSceneNode(int number);
 
     private:
         

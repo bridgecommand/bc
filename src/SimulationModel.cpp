@@ -1754,6 +1754,16 @@ SimulationModel::~SimulationModel()
         return landObjects.getSceneNode(number);
     }
 
+    irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
+    {
+        return terrain.getSceneNode(number);
+    }
+
+    irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
+    {
+        return terrain.getHeight(posX, posZ);
+    }
+
     void SimulationModel::addLine() // Add a line, which will be undefined
     {
         lines.addLine(this);

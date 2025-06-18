@@ -31,7 +31,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 {
 
     //Initialise speed and heading, normally updated from leg information
-    spd = 0;
+    axialSpd = 0;
     hdg = 0;
     rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
@@ -192,13 +192,13 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
 
-        spd = legs[currentLeg].speed*KTS_TO_MPS;
+        axialSpd = legs[currentLeg].speed*KTS_TO_MPS;
         hdg = legs[currentLeg].bearing;
     }
 
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*spd*deltaTime;
-        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*spd*deltaTime;
+        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
+        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
     } else {
         positionManuallyUpdated = false;
     }

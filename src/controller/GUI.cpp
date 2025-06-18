@@ -56,6 +56,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     irr::gui::IGUITab* mainTab = guiTabs->addTab(language->translate("main").c_str());
     irr::gui::IGUITab* failureTab = guiTabs->addTab(language->translate("failures").c_str());
     irr::gui::IGUITab* weatherTab = guiTabs->addTab(language->translate("weather").c_str());
+    irr::gui::IGUITab* extraTab = guiTabs->addTab(language->translate("extraControls").c_str());
 
     //add data display:
     dataDisplay = guienv->addStaticText(L"", irr::core::rect<irr::s32>(1*fw,1*fh,24*fw,4*fh), true, true, mainTab, -1, true); //Actual text set later
@@ -165,6 +166,14 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language)
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,5.5*fh,35*fw,6.5*fh),failureTab,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
     guienv->addButton(irr::core::rect<irr::s32>(1*fw,6.5*fh,35*fw,7.5*fh),failureTab,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
     
+    // Display settings
+    guienv->addStaticText(language->translate("brightness").c_str(), irr::core::rect<irr::s32>(1 * fw, 0.5 * fh, 9 * fw, 1.5 * fh), false, true, extraTab)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+    brightnessBar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(5 * fw, 5 * fh), 4 * fw, guienv, extraTab, GUI_ID_BRIGHTNESS_SCROLLBAR);
+    brightnessBar->setMax(100);
+    brightnessBar->setMin(0);
+    brightnessBar->setLargeStep(5);
+    brightnessBar->setSmallStep(1);
+    brightnessBar->setPos(100);
 
     //This is used to track when the edit boxes need updating, when ship or legs have changed
     editBoxesNeedUpdating = false;
@@ -184,6 +193,7 @@ GUIMain::~GUIMain()
     windSpeedBar->drop();
     streamDirectionBar->drop();
     streamSpeedBar->drop();
+    brightnessBar->drop();
 }
 
 void GUIMain::updateEditBoxes()
@@ -319,13 +329,16 @@ void GUIMain::updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffs
 void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ)
 {
 
+    irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+
     //draw cross hairs
     irr::s32 width = device->getVideoDriver()->getScreenSize().Width;
     irr::s32 height = device->getVideoDriver()->getScreenSize().Height;
     irr::s32 screenCentreX = width/2;
     irr::s32 screenCentreY = height/2;
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(screenCentreX,0),irr::core::position2d<irr::s32>(screenCentreX,height),irr::video::SColor(255, 255, 255, 255));
-    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(0,screenCentreY),irr::core::position2d<irr::s32>(width,screenCentreY),irr::video::SColor(255, 255, 255, 255));
+    irr::video::SColor crossHairColour = irr::video::SColor(255, 255, 255, 255);
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(screenCentreX,0),irr::core::position2d<irr::s32>(screenCentreX,height),crossHairColour.getInterpolated(black, getBrightnessScaling()));
+    device->getVideoDriver()->draw2DLine(irr::core::position2d<irr::s32>(0,screenCentreY),irr::core::position2d<irr::s32>(width,screenCentreY), crossHairColour.getInterpolated(black, getBrightnessScaling()));
 
     //Dimensions for dots
     irr::u32 dotHalfWidth = width/400;
@@ -335,10 +348,11 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     //Draw location of own ship
     irr::s32 ownRelPosX = 0 + mapOffsetX;
     irr::s32 ownRelPosY = 0 - mapOffsetZ;
-    device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 0, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+ownRelPosX,screenCentreY-dotHalfWidth-ownRelPosY,screenCentreX+dotHalfWidth+ownRelPosX,screenCentreY+dotHalfWidth-ownRelPosY));
+    irr::video::SColor ownShipColour = irr::video::SColor(255, 255, 0, 0);
+    device->getVideoDriver()->draw2DRectangle(ownShipColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + ownRelPosX, screenCentreY - dotHalfWidth - ownRelPosY, screenCentreX + dotHalfWidth + ownRelPosX, screenCentreY + dotHalfWidth - ownRelPosY));
     if (selectedShip == -1) {
         //Own ship selected
-        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4,irr::video::SColor(255, 255, 0, 0),10);
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+ownRelPosX,screenCentreY-ownRelPosY),dotHalfWidth*4, ownShipColour.getInterpolated(black, getBrightnessScaling()),10);
     }
 
     //Heading line
@@ -346,33 +360,36 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     irr::s32 hdgLineY = ownRelPosY + width/10*cos(ownShipHeading * RAD_IN_DEG);
     irr::core::position2d<irr::s32> hdgStart (screenCentreX + ownRelPosX, screenCentreY - ownRelPosY);
     irr::core::position2d<irr::s32> hdgEnd   (screenCentreX + hdgLineX  , screenCentreY - hdgLineY  );
-    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd,irr::video::SColor(255, 255, 0, 0));
+    device->getVideoDriver()->draw2DLine(hdgStart,hdgEnd, ownShipColour.getInterpolated(black, getBrightnessScaling()));
 
     //Draw location of MOB
+    irr::video::SColor mobColour = irr::video::SColor(255, 255, 255, 0);
     if (mobVisible) {
         irr::s32 relPosX = (mobPosX - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (mobPosZ - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*2,irr::video::SColor(255, 255, 255, 0),10);
+        device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*2,mobColour.getInterpolated(black, getBrightnessScaling()), 10);
     }
 
     //Draw location of buoys
+    irr::video::SColor buoyColour = irr::video::SColor(255, 255, 255, 255);
     for(std::vector<PositionData>::const_iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 255, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(buoyColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
     }
 
     //Draw location of ships
+    irr::video::SColor shipColour = irr::video::SColor(255, 0, 0, 255);
     for(std::vector<OtherShipDisplayData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
         irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
 
-        device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 0, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+        device->getVideoDriver()->draw2DRectangle(shipColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
         if (selectedShip == (it - otherShips.begin()) ) {
             //This ship selected
-            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,irr::video::SColor(255, 0, 0, 255),10);
+            device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,shipColour.getInterpolated(black, getBrightnessScaling()), 10);
         }
 
         //number
@@ -383,9 +400,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             displayNumber.append(irr::core::stringw(it->mmsi));
             displayNumber.append(L")");
         }
-        guienv->getSkin()->getFont()->draw(displayNumber,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,0,255),true,true);
+        guienv->getSkin()->getFont()->draw(displayNumber,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), shipColour.getInterpolated(black, getBrightnessScaling()), true, true);
 
         //Draw leg information for each ship
+        irr::video::SColor lineColour = irr::video::SColor(255, 255, 255, 255);
         if (it->legs.size() > 0) {
 
             //Find current leg: This is the last leg, or the leg where the start time is in the past, and then next start time is in the future. Leg times are from the start of the day of the scenario start.
@@ -422,7 +440,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
                         irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine,lineColour.getInterpolated(black, getBrightnessScaling()));
                     } //Not infinite
 
                 } //If currentLegTimeRemaining > 0
@@ -445,7 +463,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                         irr::core::position2d<irr::s32> startLine (legStartX, legStartY);
                         irr::core::position2d<irr::s32> endLine (legEndX, legEndY);
 
-                        device->getVideoDriver()->draw2DLine(startLine,endLine);
+                        device->getVideoDriver()->draw2DLine(startLine,endLine, lineColour.getInterpolated(black, getBrightnessScaling()));
                     } //Not infinite
                 } //Each leg, except last
             } //If not currently on the last leg
@@ -453,6 +471,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
     } //Loop for each ship
 
     //Draw AIS data
+    irr::video::SColor aisColour = irr::video::SColor(255, 0, 255, 0);
     for(std::vector<AISData>::const_iterator it = aisData.begin(); it != aisData.end(); ++it) {
         //Check if MMSI matches an own ship, if so, don't show
         bool showThisAISContact = true;
@@ -466,7 +485,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             
             irr::s32 relPosX = (it->X - ownShipPosX)/metresPerPx + mapOffsetX;
             irr::s32 relPosY = (it->Z - ownShipPosZ)/metresPerPx - mapOffsetZ;
-            device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 0, 255, 0),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
+            device->getVideoDriver()->draw2DRectangle(aisColour.getInterpolated(black, getBrightnessScaling()), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
         
             //std::cout << "Displaying MMSI " << it->mmsi << " at " << relPosX << " " << relPosY << std::endl;
 
@@ -475,7 +494,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             displayAIS.append(irr::core::stringw(it->mmsi));
             displayAIS.append(L" ");
             displayAIS.append(irr::core::stringw(it->name.c_str()));
-            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), irr::video::SColor(255,0,255,0),true,true);
+            guienv->getSkin()->getFont()->draw(displayAIS,irr::core::rect<irr::s32>(screenCentreX+relPosX-0.02*width,screenCentreY-relPosY-0.02*width,screenCentreX+relPosX,screenCentreY-relPosY), aisColour.getInterpolated(black, getBrightnessScaling()), true, true);
 
             //Show cog if known. AIS COG is: 3600 for unknown, otherwise COG is AIS COG/10. SOG: 1023 is unknown, otherwise knots is AIS SOG/10
             if (it->cog != 3600) {
@@ -490,7 +509,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
                 //Draw
                 irr::core::position2d<irr::s32> startLine (screenCentreX + relPosX, screenCentreY - relPosY);
                 irr::core::position2d<irr::s32> endLine (screenCentreX + cogLineX, screenCentreY - cogLineY);
-                device->getVideoDriver()->draw2DLine(startLine,endLine,irr::video::SColor(255,0,255,0));
+                device->getVideoDriver()->draw2DLine(startLine,endLine,aisColour.getInterpolated(black,getBrightnessScaling()));
             }
         }
 
@@ -660,6 +679,10 @@ irr::f32 GUIMain::getStreamSpeed() const {
 
 bool GUIMain::getStreamOverride() const {
     return (streamOverrideBox->isChecked());
+}
+
+irr::f32 GUIMain::getBrightnessScaling() const {
+    return ((irr::f32)brightnessBar->getPos() / 100);
 }
 
 std::wstring GUIMain::f32To1dp(irr::f32 value)
