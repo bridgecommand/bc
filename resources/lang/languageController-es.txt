@@ -28,6 +28,8 @@ stream = "Corriente"
 streamDirection = "Dirección de la corriente"
 streamSpeed = "Velocidad de la corriente (kn)"
 streamOverride = "Controlar la corriente"
+extraControls = "Controles extra"
+brightness = "Brillo"
 
 setMMSI = "Configurar MMSI"
 

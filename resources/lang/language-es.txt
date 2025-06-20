@@ -123,6 +123,7 @@ addLine="Agregar amarra"
 removeLine="Quitar amarra"
 keepLineSlack="Mantener amarra floja"
 haulLineIn="Cobrar amarra"
+anchorLine="Ancla"
 
 rudderFailure="Fallo del timón"
 
