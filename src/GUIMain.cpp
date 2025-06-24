@@ -462,6 +462,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.01*sh,0.325*su,0.04*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_WORKING_BUTTON,language->translate("followUpWorking").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.165*su,0.04*sh,0.325*su,0.07*sh),extraControlsTabRudder,GUI_ID_FOLLOWUP_FAILED_BUTTON,language->translate("followUpFailed").c_str());
 
+        //Add extra controls for view (zoom etc)
+        irr::gui::IGUITab* extraControlsTabView = extraControlsTabControl->addTab(language->translate("view").c_str());
+        guienv->addStaticText(language->translate("magnification").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        magnificationScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.045 * su, 0.09 * sh), 0.03 * su, guienv, extraControlsTabView, GUI_ID_MAGNIFICATION_SCROLL_BAR);
+        magnificationScrollbar->setMax(200); //Divide by 10 to get magnification
+        magnificationScrollbar->setMin(10);
+        magnificationScrollbar->setSmallStep(5);
+        magnificationScrollbar->setPos(1.0 * 10); // Initialise as 1x zoom
+
         //Add an additional window for lines (will normally be hidden)
         irr::core::rect<irr::s32> linesWindowPos = stdDataDisplayPos;
         linesWindowPos.LowerRightCorner -= irr::core::position2d<irr::s32>(0,0.03*sh);
@@ -768,6 +777,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         spdScrollbar->drop();
 
         headingIndicator->drop();
+
+        magnificationScrollbar->drop();
     }
 
     bool GUIMain::getShowInterface() const

@@ -291,6 +291,7 @@ public:
     void updateViewport(irr::f32 aspect);
     void setMouseDown(bool isMouseDown);
     void setZoom(bool zoomOn);
+    void setZoom(bool zoomOn, irr::f32 zoomLevel);
     void setViewAngle(irr::f32 viewAngle);
     irr::u32 getLoopNumber() const;
     std::string getSerialisedScenario() const;
@@ -383,7 +384,8 @@ private:
     irr::f32 streamOverrideSpeed; //Nm
     bool streamOverride;
     irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
-    irr::f32 zoom;
+    irr::f32 currentZoom; // Zoom currently in use
+    irr::f32 zoomLevel; // Zoom level that should be used if binos are on
     Terrain terrain;
     Light light;
     OwnShip ownShip;
