@@ -55,12 +55,12 @@ namespace io
 
 //! constructor
 CFileSystem::CFileSystem()
+	: FileSystemType(FILESYSTEM_NATIVE)
 {
 	#ifdef _DEBUG
 	setDebugName("CFileSystem");
 	#endif
 
-	setFileListSystem(FILESYSTEM_NATIVE);
 	//! reset current working directory
 	getWorkingDirectory();
 

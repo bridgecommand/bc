@@ -699,6 +699,9 @@ namespace scene
 				case ESNUA_RELATIVE:
 					AbsoluteTransformation = getRelativeTransformation();
 				break;
+				case ESNUA_PARENT_ABSOLUTE_TRANSFORMATION:
+					AbsoluteTransformation = Parent->getAbsoluteTransformation();
+				break;
 				}
 			}
 			else

@@ -86,7 +86,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
         dev->getLogger()->log(shipFullPath.c_str());
         shipMesh = smgr->addSphereMesh("Dummy");
     }
-    ship = smgr->addAnimatedMeshSceneNode( shipMesh, 0, -1);
+    ship = smgr->addMeshSceneNode( shipMesh, 0, -1);
     ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
     ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
 

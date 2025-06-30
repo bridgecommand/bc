@@ -240,7 +240,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Do not scale portThrottlePosition, stbd... and wheelControlPosition, as these are implicitly scaled as position used relative to parent
     
     // Load the model
-    irr::scene::IAnimatedMesh *shipMesh;
+    irr::scene::IMesh *shipMesh;
 
     // Check if the 'model' is actualy the string "360". If so, treat it as a 360 equirectangular panoramic image with transparency.
     is360textureShip = false;
@@ -257,7 +257,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         // make a dummy node, to which the views will be added as children
         shipMesh = smgr->addSphereMesh("Sphere", 1);
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+        ship = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
         // Add child meshes for each
         for (int i = 0; i < views.size(); i++)
@@ -337,7 +337,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         }
         */
 
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+        ship = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+
+        /*Load rotor*/
+        //irr::scene::ISceneNode* rotor = smgr->addSphereSceneNode(2.0f);
+        irr::scene::IMesh* rotorMesh = smgr->getMesh("../../resources/models/Ownship/ContainerShip/rotor.obj");
+        rotor = smgr->addMeshSceneNode(rotorMesh);
+        rotor->setParent(ship); 
+        rotor->setPosition(irr::core::vector3df(25, 11, 2.5)); /*lateral, altitude, frontal*/
+        //rotor->setScale(irr::core::vector3df(2, 2, 2));
 
         // For debugging:
         if (showDebugData)
@@ -648,7 +656,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     // Add a triangle selector
 
-    selector = smgr->createTriangleSelector(ship);
+    selector = smgr->createTriangleSelector(ship->getMesh(), getSceneNode());
     if (selector)
     {
         device->getLogger()->log("Created triangle selector");
@@ -2370,6 +2378,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     {
         roll = weather * rollAngle * sin(scenarioTime * 2 * PI / rollPeriod);
     }
+    static float angle = 0.0;
+
+    angle += 1;
+    irr::core::vector3df rotation(0, angle, 0);
+    rotor->setRotation(rotation);
 
     // Set position & angles
     ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));

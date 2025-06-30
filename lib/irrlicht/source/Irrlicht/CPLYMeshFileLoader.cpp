@@ -159,8 +159,8 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 
 						word = getNextWord();
 
-						prop.Data.List.CountType = getPropertyType(word);
-						if (IsBinaryFile && prop.Data.List.CountType == EPLYPT_UNKNOWN)
+						prop.List.CountType = getPropertyType(word);
+						if (IsBinaryFile && prop.List.CountType == EPLYPT_UNKNOWN)
 						{
 							os::Printer::log("Cannot read binary PLY file containing data types of unknown length", word, ELL_ERROR);
 							continueReading = false;
@@ -168,8 +168,8 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 						else
 						{
 							word = getNextWord();
-							prop.Data.List.ItemType = getPropertyType(word);
-							if (IsBinaryFile && prop.Data.List.ItemType == EPLYPT_UNKNOWN)
+							prop.List.ItemType = getPropertyType(word);
+							if (IsBinaryFile && prop.List.ItemType == EPLYPT_UNKNOWN)
 							{
 								os::Printer::log("Cannot read binary PLY file containing data types of unknown length", word, ELL_ERROR);
 								continueReading = false;
@@ -373,10 +373,10 @@ bool CPLYMeshFileLoader::readFace(const SPLYElement &Element, scene::CDynamicMes
 			&& property.Type == EPLYPT_LIST)
 		{
 			// get count
-			s32 count = getInt(property.Data.List.CountType);
-			u32 a = getInt(property.Data.List.ItemType),
-				b = getInt(property.Data.List.ItemType),
-				c = getInt(property.Data.List.ItemType);
+			s32 count = getInt(property.List.CountType);
+			u32 a = getInt(property.List.ItemType),
+				b = getInt(property.List.ItemType),
+				c = getInt(property.List.ItemType);
 			s32 j = 3;
 
 			mb->getIndexBuffer().push_back(a);
@@ -386,7 +386,7 @@ bool CPLYMeshFileLoader::readFace(const SPLYElement &Element, scene::CDynamicMes
 			for (; j < count; ++j)
 			{
 				b = c;
-				c = getInt(property.Data.List.ItemType);
+				c = getInt(property.List.ItemType);
 				mb->getIndexBuffer().push_back(a);
 				mb->getIndexBuffer().push_back(c);
 				mb->getIndexBuffer().push_back(b);
@@ -422,10 +422,10 @@ void CPLYMeshFileLoader::skipProperty(const SPLYProperty &Property)
 {
 	if (Property.Type == EPLYPT_LIST)
 	{
-		s32 count = getInt(Property.Data.List.CountType);
+		s32 count = getInt(Property.List.CountType);
 
 		for (s32 i=0; i < count; ++i)
-			getInt(Property.Data.List.CountType);
+			getInt(Property.List.CountType);
 	}
 	else
 	{

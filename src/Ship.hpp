@@ -49,7 +49,8 @@ class Ship
 
     protected:
 
-        irr::scene::IAnimatedMeshSceneNode* ship; //The scene node for the own ship.
+        irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
+        irr::scene::IMeshSceneNode* rotor;
         irr::f32 hdg;
         irr::f32 xPos;
         irr::f32 yPos;
