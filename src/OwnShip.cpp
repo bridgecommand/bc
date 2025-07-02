@@ -339,13 +339,33 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         ship = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
-        /*Load rotor*/
-        //irr::scene::ISceneNode* rotor = smgr->addSphereSceneNode(2.0f);
-        irr::scene::IMesh* rotorMesh = smgr->getMesh("../../resources/models/Ownship/ContainerShip/rotor.obj");
-        rotor = smgr->addMeshSceneNode(rotorMesh);
-        rotor->setParent(ship); 
-        rotor->setPosition(irr::core::vector3df(25, 11, 2.5)); /*lateral, altitude, frontal*/
-        //rotor->setScale(irr::core::vector3df(2, 2, 2));
+        /*Load Sails*/
+        mSailsCount = IniFile::iniFileTou32(shipIniFilename, "SailsCount");
+        irr::scene::IMesh* sailMesh[4] = {NULL}; //4 sails max for now 
+        
+
+        if (mSailsCount > 0)
+        {
+            mSailsType = IniFile::iniFileToString(shipIniFilename, "SailsType");
+            std::string sailsSize = IniFile::iniFileToString(shipIniFilename, "SailsSize");
+            std::string meshFile = basePath + "../../Sails/" + mSailsType + "/" + sailsSize + "/" + "sail.obj";
+
+            for (int i = 0; i < mSailsCount; i++)
+            {
+
+                sailMesh[i] = smgr->getMesh(meshFile.c_str());
+                mSails[i] = smgr->addMeshSceneNode(sailMesh[i]);
+
+                irr::f32 sailPosX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsX", i+1));
+                irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
+                irr::f32 sailPosZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsZ", i+1));
+
+                mSails[i]->setParent(ship);
+                mSails[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
+                mSails[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
+             }
+
+        }   
 
         // For debugging:
         if (showDebugData)
@@ -2378,11 +2398,23 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     {
         roll = weather * rollAngle * sin(scenarioTime * 2 * PI / rollPeriod);
     }
-    static float angle = 0.0;
 
-    angle += 1;
-    irr::core::vector3df rotation(0, angle, 0);
-    rotor->setRotation(rotation);
+
+    /*Sails dyn*/
+    if (mSailsType == "Rotor")
+    {
+        static float angle = 0.0;
+
+        angle += 20;
+        irr::core::vector3df rotation(0, angle, 0);
+
+        for (int i = 0; i < mSailsCount; i++)
+        {
+            mSails[i]->setRotation(rotation);
+
+        }
+    }
+    /******************/
 
     // Set position & angles
     ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));
