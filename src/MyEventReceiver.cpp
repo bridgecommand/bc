@@ -436,7 +436,19 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR)
             {
                 model->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
-            }        
+            }   
+            if (id == GUIMain::GUI_ID_MAGNIFICATION_SCROLL_BAR)
+            {   
+                irr::s32 rawZoomLevel = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+                irr::f32 zoomLevel = (irr::f32)rawZoomLevel / 10.0;
+                if (rawZoomLevel > 10) {
+                    gui->zoomOn();
+                    model->setZoom(true, zoomLevel);
+                } else {
+                    gui->zoomOff();
+                    model->setZoom(false, zoomLevel);
+                }
+            }
 
         }
 

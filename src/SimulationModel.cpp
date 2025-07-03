@@ -173,7 +173,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         radarCalculation.load(ownShip.getRadarConfigFile(),device);
 
         //set camera zoom to 1
-        zoom = 1.0;
+        currentZoom = 1.0;
+        zoomLevel = 7.0; //Default zoom of 7x
 
         //make a camera, setting parent and offset
         std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
@@ -1383,20 +1384,26 @@ SimulationModel::~SimulationModel()
         radarCamera.setActive();
     }
 
-    void SimulationModel::setZoom(bool zoomOn)
-    {
+    void SimulationModel::setZoom(bool zoomOn) {
         if (zoomOn) {
-            zoom = 7.0; //Binoculars magnification
-        } else {
-            zoom = 1.0;
+            currentZoom = zoomLevel;
         }
-        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle)/zoom);
+        else {
+            currentZoom = 1;
+        }
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
+    }
+    
+    void SimulationModel::setZoom(bool zoomOn, irr::f32 zoomLevel)
+    {
+       this->zoomLevel = zoomLevel;
+       setZoom(zoomOn);
     }
 
     void SimulationModel::setViewAngle(irr::f32 viewAngle)
     {
         modelParameters.viewAngle = viewAngle;
-        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / zoom);
+        camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
     }
 
     void SimulationModel::setMouseDown(bool isMouseDown)
