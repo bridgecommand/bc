@@ -70,6 +70,7 @@ if (APPLE)
         Threads::Threads
         sndfile
         portaudio
+	netcdf_c++4
         "-framework AudioUnit"
 	    "-framework AudioToolbox"
 	    "-framework CoreAudio"
@@ -87,5 +88,6 @@ else (APPLE)
         asound
         GL
         OpenXR::openxr_loader
+	netcdf_c++4
     )
 endif (APPLE)

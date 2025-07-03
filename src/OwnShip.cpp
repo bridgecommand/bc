@@ -16,7 +16,7 @@
 
 // Extends from the general 'Ship' class
 #include "OwnShip.hpp"
-
+#include "Sail.hpp"
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -237,10 +237,12 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
     wheelControlScale = IniFile::iniFileTof32(shipIniFilename, "WheelScale", 1);
 
-    // Do not scale portThrottlePosition, stbd... and wheelControlPosition, as these are implicitly scaled as position used relative to parent
+    //Load sail parameters
+    mSails.Open("../../resources/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
+    mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
     
     // Load the model
-    irr::scene::IAnimatedMesh *shipMesh;
+    irr::scene::IMesh *shipMesh;
 
     // Check if the 'model' is actualy the string "360". If so, treat it as a 360 equirectangular panoramic image with transparency.
     is360textureShip = false;
@@ -257,7 +259,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         // make a dummy node, to which the views will be added as children
         shipMesh = smgr->addSphereMesh("Sphere", 1);
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+        ship = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
         // Add child meshes for each
         for (int i = 0; i < views.size(); i++)
@@ -337,7 +339,35 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         }
         */
 
-        ship = smgr->addAnimatedMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+        ship = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+
+        /*Load Sails*/
+        mSailsCount = IniFile::iniFileTou32(shipIniFilename, "SailsCount");
+        irr::scene::IMesh* sailMesh[4] = {NULL}; //4 sails max for now 
+        
+
+        if (mSailsCount > 0)
+        {
+            mSailsType = IniFile::iniFileToString(shipIniFilename, "SailsType");
+            std::string sailsSize = IniFile::iniFileToString(shipIniFilename, "SailsSize");
+            std::string meshFile = basePath + "../../Sails/" + mSailsType + "/" + sailsSize + "/" + "sail.obj";
+
+            for (int i = 0; i < mSailsCount; i++)
+            {
+
+                sailMesh[i] = smgr->getMesh(meshFile.c_str());
+                mSails[i] = smgr->addMeshSceneNode(sailMesh[i]);
+
+                irr::f32 sailPosX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsX", i+1));
+                irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
+                irr::f32 sailPosZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsZ", i+1));
+
+                mSails[i]->setParent(ship);
+                mSails[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
+                mSails[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
+             }
+
+        }   
 
         // For debugging:
         if (showDebugData)
@@ -648,7 +678,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
     // Add a triangle selector
 
-    selector = smgr->createTriangleSelector(ship);
+    selector = smgr->createTriangleSelector(ship->getMesh(), getSceneNode());
     if (selector)
     {
         device->getLogger()->log("Created triangle selector");
@@ -1735,9 +1765,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     // dynamics: hdg in degrees, axialSpd lateralSpd in m/s. Internal units all SI
     if (controlMode == MODE_ENGINE)
     {
-
-        // Check depth and update collision response forces and torque
-        irr::f32 groundingAxialDrag = 0;
+      // Check depth and update collision response forces and torque
+      irr::f32 groundingAxialDrag = 0;
         irr::f32 groundingLateralDrag = 0;
         irr::f32 groundingTurnDrag = 0;
         collisionDetectAndRespond(groundingAxialDrag, groundingLateralDrag, groundingTurnDrag); // The drag values will get modified by this call
@@ -1785,6 +1814,15 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
         model->setApparentWindSpd(apparentWindSpd);
+
+	float sailsForceX = 0, sailsForceY = 0;
+	if(windDirection > 180)
+	  windDirection = 180-(windDirection-180);
+	
+        sailsForceX = mSails.GetForce('X', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
+	sailsForceY = mSails.GetForce('Y', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
+	std::cout << "Sail force X = " << sailsForceX << std::endl;
+	std::cout << "Sail force Y = " << sailsForceY << std::endl; 
 
 
         // Update bow and stern thrusters, if being controlled by joystick buttons
@@ -2083,7 +2121,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         {
             axialDrag = dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
         }
-        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
+        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + sailsForceX - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (axialAcceleration > 9.81)
         {
@@ -2145,7 +2183,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         {
             lateralDrag = dynamicsLateralDragA * lateralRelSpd * lateralRelSpd + dynamicsLateralDragB * lateralRelSpd;
         } //  end if lateral drag
-        irr::f32 lateralAcceleration = (lateralThrust - lateralDrag - groundingLateralDrag - lateralWindDrag) / shipMass;
+        irr::f32 lateralAcceleration = (lateralThrust  - sailsForceY - lateralDrag - groundingLateralDrag - lateralWindDrag) / shipMass;
         // std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (lateralAcceleration > 9.81)
@@ -2370,6 +2408,23 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     {
         roll = weather * rollAngle * sin(scenarioTime * 2 * PI / rollPeriod);
     }
+
+
+    /*Sails dyn*/
+    if (mSailsType == "Rotor")
+    {
+        static float angle = 0.0;
+
+        angle += 20;
+        irr::core::vector3df rotation(0, angle, 0);
+
+        for (int i = 0; i < mSailsCount; i++)
+        {
+            mSails[i]->setRotation(rotation);
+
+        }
+    }
+    /******************/
 
     // Set position & angles
     ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));
