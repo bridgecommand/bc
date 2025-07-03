@@ -176,6 +176,7 @@ public:
         GUI_ID_STREAMDIRECTION_SCROLL_BAR,
         GUI_ID_STREAMSPEED_SCROLL_BAR,
         GUI_ID_STREAMOVERRIDE_BOX,
+        GUI_ID_MAGNIFICATION_SCROLL_BAR,
         GUI_ID_SHOW_INTERFACE_BUTTON,
         GUI_ID_HIDE_INTERFACE_BUTTON,
         GUI_ID_BINOS_INTERFACE_BUTTON,
@@ -327,6 +328,8 @@ private:
     irr::gui::IGUIScrollBar* streamSpeedScrollbar;
     irr::gui::IGUICheckBox* streamOverride;
     irr::gui::HeadingIndicator* headingIndicator;
+
+    irr::gui::IGUIScrollBar* magnificationScrollbar;
 
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;

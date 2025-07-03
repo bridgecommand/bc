@@ -1,0 +1,90 @@
+Map Controller Language file. To translate, please change the part after the 'equals' symbol
+The characters \n will be replaced with a line break, so multiple lines of text are possible
+
+This file must be saved with default (ANSI) encoding on Windows, and UTF-8 encoding on other platforms (Linux, OSX, ...)
+
+waiting = "Espere..."
+startBC = "Abra una sesión de Bridge Command. El nombre y el puerto de este ordenador son:"
+loadingMap = "Escalado y carga del mapa"
+
+pos="Posición: "
+minSymbol="'"
+own = "Su buque"
+other = "Otro buque"
+
+selectShip = "Elija el buque"
+shipType="Elija el tipo"
+selectLeg = "Elija el itinerario"
+setCourse = "Rumbo"
+setSpeed = "Velocidad (kn)"
+weather = "Meteorología"
+rain = "Lluvia"
+visibility="Visibilidad"
+setDistance = "Distancia (MN)"
+wind = "Viento"
+windDirection = "Dirección del viento"
+windSpeed = "Velocidad del viento (kn)"
+stream = "Corriente"
+streamDirection = "Dirección de la corriente"
+streamSpeed = "Velocidad de la corriente (kn)"
+streamOverride = "Controlar la corriente"
+extraControls = "Controles extra"
+brightness = "Brillo"
+
+setMMSI = "Configurar MMSI"
+
+releaseMOB = "Soltar\nMOB"
+retrieveMOB = "Recuperar\nMOB"
+
+main="Principal"
+failures="Averías"
+
+past = " (Pasado)"
+current = " (Presente)"
+future = " (Futuro)"
+
+changeLeg = "Cambiar etapa"	
+changeLegCourseSpeed = "Cambiar el rumbo y velocidad de la etapa"
+addLeg = "Añadir etapa (después de la seleccionada)"
+addShip = "Añadir buque"
+deleteLeg = "Borrar etapa"
+deleteShip = "X"
+move = "Desplazar buque"
+
+pump1Working = "Bomba del timón 1 Activa"
+pump1Failed = "Bomba del timón 1 Apagada"
+pump2Working = "Bomba del timón 2 Activa"
+pump2Failed = "Bomba del timón 1 Apagada"
+followUpWorking = "Timón: Follow Up"
+followUpFailed = "Timón: Non Follow Up"
+
+general="General"
+ships="Los buques"
+
+editScenario="Editar el escenario"
+newScenario="Nuevo escenario"
+selectScenario="Seleccione un escenario para editarlo"
+selectWorld="O elija otra zona para un nuevo escenario"
+ok="OK"
+importScenario="Importar el escenario"
+exportScenario="Exportar el escenario"
+importDescription="Pegue el texto exportado de un escenario aqui debajo."
+exportDescription="Copie el texto para exportar un escenario y envieselo al destinatario, por ejemplo por email."
+
+startTime = "Hora de inicio"
+startDate="Fecha (YYYY-MM-DD)"
+sunRise="Amanecer"
+sunSet="Anochecer"
+scenario="Nombre del escenario"
+apply="Aplicar"
+save="Guardar"
+
+saved="Guardado"
+failed="Error"
+scenarioSaved="Escenario guardado"
+failedScenarioSave="Error al guardar el escenario"
+overwrite="El escenario será sobrescrito"
+multiplayer="¿Modo multijugador?"
+multiplayerinfo="Editar un escenario multijugador: \n\nEl menú 'Tu buque' será ignorado. Cada 'Otro buque' será utilizado en orden por los clientes multijugador como su buque. Añade una ruta para cada buque para establecer la velocidad inicial y el rumbo."
+multiplayerNeedsMP="El nombre de los escenario multijugador debe terminar por "_mp""
+nonMultiplayerNoMP="El nombre de los escenario que NO son multijugador NO debe terminar por '_mp'"
