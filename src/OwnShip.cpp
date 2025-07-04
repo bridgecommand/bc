@@ -365,6 +365,16 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
                 mSailsScene[i]->setParent(ship);
                 mSailsScene[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
                 mSailsScene[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
+
+		if (mSails[i]->getMaterialCount() > 0)
+                {
+                    for (irr::u32 mat = 0; mat < ship->getMaterialCount(); mat++)
+                    {
+                        mSails[i]->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
+                        mSails[i]->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+                    }
+                }
+
              }
 
         }   
