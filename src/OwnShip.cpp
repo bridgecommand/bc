@@ -1831,8 +1831,8 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	
         sailsForceX = mSails.GetForce('X', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
 	sailsForceY = mSails.GetForce('Y', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
-	std::cout << "Sail force X = " << sailsForceX << std::endl;
-	std::cout << "Sail force Y = " << sailsForceY << std::endl; 
+	//std::cout << "Sail force X = " << sailsForceX << std::endl;
+	//std::cout << "Sail force Y = " << sailsForceY << std::endl; 
 
 
         // Update bow and stern thrusters, if being controlled by joystick buttons
