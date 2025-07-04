@@ -50,7 +50,7 @@ class Ship
     protected:
 
         irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
-        irr::scene::IMeshSceneNode* mSails[4];
+        irr::scene::IMeshSceneNode* mSailsScene[4];
         unsigned int mSailsCount;
         std::string mSailsType;
         irr::f32 hdg;

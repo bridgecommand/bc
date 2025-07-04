@@ -356,15 +356,15 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             {
 
                 sailMesh[i] = smgr->getMesh(meshFile.c_str());
-                mSails[i] = smgr->addMeshSceneNode(sailMesh[i]);
+                mSailsScene[i] = smgr->addMeshSceneNode(sailMesh[i]);
 
                 irr::f32 sailPosX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsX", i+1));
                 irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
                 irr::f32 sailPosZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsZ", i+1));
 
-                mSails[i]->setParent(ship);
-                mSails[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
-                mSails[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
+                mSailsScene[i]->setParent(ship);
+                mSailsScene[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
+                mSailsScene[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
              }
 
         }   
@@ -2420,7 +2420,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         for (int i = 0; i < mSailsCount; i++)
         {
-            mSails[i]->setRotation(rotation);
+            mSailsScene[i]->setRotation(rotation);
 
         }
     }
