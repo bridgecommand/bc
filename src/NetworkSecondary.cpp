@@ -404,7 +404,7 @@ void NetworkSecondary::receiveMessage()
                                                 endNode->setName(endParent->getName());
                                             }
 
-                                            // TODO: Hardcode length factor as 1.0 for now
+                                            // Length factor can be hard coded as 1.0, as line nominal length will be updated later
                                             irr::f32 lengthFactor = 1.0;
 
                                             // Create the lines
