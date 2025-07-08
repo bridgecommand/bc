@@ -16,7 +16,7 @@ Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-pr
 2) (optionnal) Replace in lib/irrlicht
 3) Go to lib/irrlicht/source/Irrlicht/ 
 4) Run "make sharedlib; make install"
-5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
+5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/; cp /usr/local/lib64/libIrrlicht.so* /usr/lib/
 
 ## Add last version of Enet library (not mandatory to run BC)
 1) Download tarball here : http://enet.bespin.org/Downloads.html
@@ -24,10 +24,12 @@ Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-pr
 
 ## To compile BC on Windows
 1) Visual Studio 2022 (or greater) are used
-2) Add BC project -> Generate
+2) Download NetCdf-4 library here : https://downloads.unidata.ucar.edu/netcdf/
+3) Install by default
+4) Add BC project -> Generate
 
 ## To compile BC on Linux
-1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev"
+1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev libnetcdf-dev"
 2) Go to bin/linux 
 3) Run "cmake ../../src; make" 
 
