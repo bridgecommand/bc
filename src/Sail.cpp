@@ -13,36 +13,54 @@ Sail::Sail(const std::string aPolarFile, std::string aVarNameX, std::string aVar
 {
   mDimCountX = 0;
   mDimCountY = 0;
-  
-  if(!aPolarFile.empty() && !aVarNameX.empty() && !aVarNameY.empty())
-    {    
-      mPolarFile.open(aPolarFile, NcFile::read);
-      mSailVarX = mPolarFile.getVar(aVarNameX);
-      mDimCountX = mSailVarX.getDimCount();
 
-      mSailVarY = mPolarFile.getVar(aVarNameY);
-      mDimCountY = mSailVarY.getDimCount();
-    }
+  Open(aPolarFile, aVarNameX, aVarNameY);
 }
 
 Sail::~Sail()
 {
-  mPolarFile.close();
+  nc_close(mIdPolarFile);
 }
 
 int Sail::Open(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
 {
   if(!aPolarFile.empty() && !aVarNameX.empty() && !aVarNameY.empty())
-    {    
-      mPolarFile.open(aPolarFile, NcFile::read);
-      mSailVarX = mPolarFile.getVar(aVarNameX);
-      mDimCountX = mSailVarX.getDimCount();
+    {
+      int errRet = nc_open(aPolarFile.c_str(), NC_NOWRITE, &mIdPolarFile);
+      if(errRet == NC_NOERR)
+	{
+	  errRet = nc_inq_varid(mIdPolarFile, aVarNameX.c_str(), &mSailVarX);
+	  if(errRet != NC_NOERR)
+	    {
+	      nc_close(mIdPolarFile);
+	    }
+	  else
+	    {
+	      errRet = nc_inq_varndims(mIdPolarFile, mSailVarX, &mDimCountX);
+	      if(errRet != NC_NOERR)
+		{
+		  nc_close(mIdPolarFile);
+		}
+	    }
 
-      mSailVarY = mPolarFile.getVar(aVarNameY);
-      mDimCountY = mSailVarY.getDimCount();
+	  errRet = nc_inq_varid(mIdPolarFile, aVarNameY.c_str(), &mSailVarY);
+	  if(errRet != NC_NOERR)
+	    {
+	      nc_close(mIdPolarFile);
+	    }
+	  else
+	    {
+	      errRet = nc_inq_varndims(mIdPolarFile, mSailVarY, &mDimCountY);
+	      if(errRet != NC_NOERR)
+		{
+		  nc_close(mIdPolarFile);
+		}
 
-      return 0;
+	      return 0;
+	    }
+	}
     }
+
   return -1;
 }
 
@@ -52,26 +70,39 @@ int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, st
   
   if(TOTAL_SAIL_DIM_COUNT == mDimCountX && TOTAL_SAIL_DIM_COUNT == mDimCountY)
     {
-      /*Get variables from file*/
-      NcVar speedTroughWaterVar = mPolarFile.getVar(aSpeedWaterVarName);
-      NcVar trueWindSpeedVar = mPolarFile.getVar(aWindSpeedVarName);
-      NcVar trueWindAngleVar = mPolarFile.getVar(aWindAngleVarName);
+      int speedTroughWaterVar, trueWindSpeedVar, trueWindAngleVar;
+      size_t stwSize, twsSize, twaSize; //2 last dims not used
+      int dimIds[NC_MAX_VAR_DIMS];
+      int nDims;
 
-      /*Get size for each dimension*/
-      size_t stwSize = speedTroughWaterVar.getDim(0).getSize();
-      size_t twsSize = trueWindSpeedVar.getDim(0).getSize();
-      size_t twaSize = trueWindAngleVar.getDim(0).getSize();
-      //2 last dims not used
+      nc_inq_varid(mIdPolarFile, aSpeedWaterVarName.c_str(), &speedTroughWaterVar);
+      nc_inq_varid(mIdPolarFile, aWindSpeedVarName.c_str(), &trueWindSpeedVar);
+      nc_inq_varid(mIdPolarFile, aWindAngleVarName.c_str(), &trueWindAngleVar);
 
+      //speedThroughWaterVar
+      nc_inq_varndims(mIdPolarFile, speedTroughWaterVar, &nDims);
+      nc_inq_vardimid(mIdPolarFile, speedTroughWaterVar, dimIds);
+      nc_inq_dimlen(mIdPolarFile, dimIds[0], &stwSize);
+
+      //trueWindSpeedVar
+      nc_inq_varndims(mIdPolarFile, trueWindSpeedVar, &nDims);
+      nc_inq_vardimid(mIdPolarFile, trueWindSpeedVar, dimIds);
+      nc_inq_dimlen(mIdPolarFile, dimIds[0], &twsSize);
+
+      //trueWindAngleVar
+      nc_inq_varndims(mIdPolarFile, trueWindAngleVar, &nDims);
+      nc_inq_vardimid(mIdPolarFile, trueWindAngleVar, dimIds);
+      nc_inq_dimlen(mIdPolarFile, dimIds[0], &twaSize);
+      
       mStw.resize(stwSize);
       mTws.resize(twsSize);
       mTwa.resize(twaSize);
 
       /*Store data*/
-      speedTroughWaterVar.getVar(mStw.data());
-      trueWindSpeedVar.getVar(mTws.data());
-      trueWindAngleVar.getVar(mTwa.data());
-      
+      nc_get_var_float(mIdPolarFile, speedTroughWaterVar, mStw.data());
+      nc_get_var_float(mIdPolarFile, trueWindSpeedVar, mTws.data());
+      nc_get_var_float(mIdPolarFile, trueWindAngleVar, mTwa.data());
+
       err=0;
     }
 
@@ -110,11 +141,12 @@ float Sail::GetForce(char aAxe, float aStwValue, float aTwsValue, float aTwaValu
 
   if('X' == aAxe)
     {
-      mSailVarX.getVar(start, count, &force);
+
+      nc_get_vara_float(mIdPolarFile, mSailVarX, start.data(), count.data(), &force);
     }
   else if('Y' == aAxe)
     {
-      mSailVarY.getVar(start, count, &force);
+      nc_get_vara_float(mIdPolarFile, mSailVarY, start.data(), count.data(), &force);
     }
       
   return force;

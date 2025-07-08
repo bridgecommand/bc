@@ -1,9 +1,9 @@
 #ifndef SAIL_HPP
 #define SAIL_HPP
 
-#include <netcdf>
-
-using namespace netCDF;
+#include <string>
+#include <vector>
+#include <netcdf.h>
 
 #define TOTAL_SAIL_DIM_COUNT (5)
 
@@ -20,11 +20,11 @@ class Sail
   
  private:
 
-  NcFile mPolarFile;
+  int mIdPolarFile;
 
-  NcVar mSailVarX;
+  int mSailVarX;
   int mDimCountX;
-  NcVar mSailVarY;
+  int mSailVarY;
   int mDimCountY;
   
   std::vector<float> mStw;
