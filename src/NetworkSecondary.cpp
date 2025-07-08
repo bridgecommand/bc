@@ -404,9 +404,12 @@ void NetworkSecondary::receiveMessage()
                                                 endNode->setName(endParent->getName());
                                             }
 
+                                            // TODO: Hardcode length factor as 1.0 for now
+                                            irr::f32 lengthFactor = 1.0;
+
                                             // Create the lines
                                             model->getLines()->setLineStart(startNode, lineStartType, lineStartID, true, i);
-                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, true, i);
+                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, lengthFactor, true, i);
                                         }
 
                                     }
