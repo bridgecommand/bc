@@ -2098,14 +2098,14 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
                     nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
                 }
-                model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID, 1.0);
+                model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID, 1.0, false, -1);
                 // Finished
                 linesMode = 0;
                 gui->setLinesControlsText("");
             }
             if (linesMode == 1)
             {
-                model->getLines()->setLineStart(contactNode, nodeType, nodeID); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
+                model->getLines()->setLineStart(contactNode, nodeType, nodeID, false, -1); // Start should always be on 'own ship' so nodeType = 1, and ID does not matter (leave as 0)
                 // Move on to end point
                 linesMode = 2;
                 gui->setLinesControlsText("Click in 3d view to set end position for line"); // TODO: Add translation
@@ -2137,7 +2137,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                     contactPointNode->setName(terrainSceneNode->getName());
 
                     // Node ID is 0 as we always assume parent is terrain 0
-                    model->getLines()->setLineEnd(contactPointNode, nominalMass, 5, 0, 1.5);
+                    model->getLines()->setLineEnd(contactPointNode, nominalMass, 5, 0, 1.5, false, -1);
                     
                     // Tidy up
                     linesMode = 0;
