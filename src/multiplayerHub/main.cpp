@@ -445,9 +445,10 @@ int main()
                 linesString = linesString.substr(0,linesString.length()-1);
             }
             stringToSend.append(linesString);
+            stringToSend.append("#");
 
             //12: 13 basic records in data sent, entry 12 is engine and wheel data for secondary controls, not needed, so send blank entry
-            stringToSend.append("12#");
+            stringToSend.append("12");
 
             //std::cout << stringToSend << std::endl;
 
