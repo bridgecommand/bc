@@ -202,16 +202,16 @@ int main (int argc, char ** argv)
 
     char cwd[1024]={0};
 
-    if(0 != chdir("../../resources/"))//Launch from builded sources
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources
       {
-	if(0 != chdir("/usr/share/bridgecommand"))//Launch from install
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
 	  {
 	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
 	    exit(-1);
 	  }
       }
 
-    if(getcwd(cwd, sizeof(cwd)) != NULL) printf("Settings::Working Directory : %s\n", cwd);
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Settings::Working Directory : %s\n", cwd);
 	
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
     std::string iniFilenameRaw = "bc5.ini";

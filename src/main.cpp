@@ -373,16 +373,16 @@ int main(int argc, char ** argv)
 
     char cwd[1024]={0};
 
-    if(0 != chdir("../../resources/"))//Launch from builded sources
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources
       {
-	if(0 != chdir("/usr/share/bridgecommand"))//Launch from install
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
 	  {
 	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
 	    exit(-1);
 	  }
       }
 
-    if(getcwd(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
   
     //Mac OS:
 	#ifdef __APPLE__

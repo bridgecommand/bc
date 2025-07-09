@@ -25,6 +25,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
+#include <direct.h>
 #else
 #include <unistd.h>
 #endif
@@ -265,16 +266,16 @@ int main (int argc, char ** argv)
 
   char cwd[1024]={0};
 
-  if(0 != chdir("../../resources/"))//Launch from builded sources
+  if(0 != CHDIR("../../resources/"))//Launch from builded sources
     {
-      if(0 != chdir("/usr/share/bridgecommand"))//Launch from install
+      if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
 	{
 	  std::cout << "Bidge Commands not able to get resources files" << std::endl;
 	  exit(-1);
 	}
     }
 
-  if(getcwd(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
+  if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
     
   //Mac OS:
   //Find starting folder
@@ -441,19 +442,19 @@ int main (int argc, char ** argv)
   device->setEventReceiver(&receiver);
 
 #ifdef _WIN32
-  if(0 != chdir("../bin/win/"))//Launch from builded sources
+  if(0 != CHDIR("../bin/win/"))//Launch from builded sources
 #else
     if(0 != chdir("../bin/linux/"))//Launch from builded sources
 #endif
       {
-	if(0 != chdir("/usr/bin"))//Launch from install
+	if(0 != CHDIR("/usr/bin"))//Launch from install
 	  {
 	    std::cout << "Bidge Commands not able to get binaries files" << std::endl;
 	    exit(-1);
 	  }
       }
 
-  if(getcwd(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
+  if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
       
 
   while (device->run()) {

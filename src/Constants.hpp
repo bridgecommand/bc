@@ -30,6 +30,8 @@ const irr::f32 RHO_AIR = 1.225; // density of air at sea level kg / m^3 approxim
 				// good enough to use for simulation purposes
 const irr::f32 VIEW_PROPORTION_3D = 0.6;
 
+
+
 //units conversions
 const irr::f32 SECONDS_IN_HOUR = 3600.0;
 const irr::f32 SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
