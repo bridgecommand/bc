@@ -89,9 +89,18 @@ struct cMonitorsVec
 int main (int argc, char ** argv)
 {
 
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
+    char cwd[1024]={0};
+
+    if(0 != chdir("../../resources/"))//Launch from builded sources
+      {
+	if(0 != chdir("/usr/share/bridgecommand"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	    exit(-1);
+	  }
+      }
+
+    if(getcwd(cwd, sizeof(cwd)) != NULL) printf("Repeater::Working Directory : %s\n", cwd);
 
     //Mac OS:
     //Find starting folder
@@ -116,7 +125,7 @@ int main (int argc, char ** argv)
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
-    std::string iniFilename = "../../resources/repeater.ini";
+    std::string iniFilename = "repeater.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -189,7 +198,7 @@ int main (int argc, char ** argv)
 	if (modifier.length() == 0) {
 		modifier = "en"; //Default
 	}
-	std::string languageFile = "../../resources/lang/languageRepeater-";
+	std::string languageFile = "lang/languageRepeater-";
 	languageFile.append(modifier);
 	languageFile.append(".txt");
 	if (Utilities::pathExists(userFolder + languageFile)) {
@@ -316,7 +325,7 @@ int main (int argc, char ** argv)
     #endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;

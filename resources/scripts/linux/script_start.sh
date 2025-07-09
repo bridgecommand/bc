@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #Start server
+cd
 ps aux | grep bridgecommand-es | grep -v grep > serverStatus.log
 if [ -s serverStatus.log ]; then
         # EnetServer is already running
@@ -8,8 +9,9 @@ if [ -s serverStatus.log ]; then
 else
         # EnetServer is not running
         echo ">>>>>> Start EnetServer"
-        cd ~/bc/bin/linux
+        cd /usr/bin
         ./bridgecommand-es &
 fi
 
 rm -rf serverStatus.log
+cd -

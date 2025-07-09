@@ -16,7 +16,7 @@ namespace IniFile {
 int main(int argc, char *argv[])
 {
     std::string userFolder = Utilities::getUserDir();
-    std::string iniFilename = "../../resources/bc5.ini";
+    std::string iniFilename = "bc5.ini";
 
     if (Utilities::pathExists(userFolder + "bc5.ini"))
     {

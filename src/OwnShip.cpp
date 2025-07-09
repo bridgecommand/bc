@@ -64,7 +64,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     zPos = model->latToZ(ownShipData.initialLat);
     hdg = ownShipData.initialBearing; // DEE_DEC22  this is initial heading
 
-    basePath = "../../resources/models/Ownship/" + ownShipName + "/";
+    basePath = "models/Ownship/" + ownShipName + "/";
     std::string userFolder = Utilities::getUserDir();
     // Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath))
@@ -345,7 +345,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         if (mSailsCount > 0)
         {
 	  //Load sail parameters
-	  mSails.Open("../../resources/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
+	  mSails.Open("nc/polar.nc", "TotalSails_X", "TotalSails_Y");
 	  mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
 
 	  

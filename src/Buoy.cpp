@@ -29,7 +29,7 @@
 Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
-    std::string basePath = "../../resources/models/Buoy/" + name + "/";
+    std::string basePath = "models/Buoy/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
     //Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath)) {

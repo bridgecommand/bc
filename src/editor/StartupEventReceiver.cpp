@@ -91,7 +91,7 @@
                         std::string scenarioName(scenarioWName.begin(), scenarioWName.end());
                         
                         std::string userFolder = Utilities::getUserDir();
-                        std::string scenarioPath = "../../resources/scenarios/";
+                        std::string scenarioPath = "scenarios/";
                         if (Utilities::pathExists(userFolder + scenarioPath)) {
                             scenarioPath = userFolder + scenarioPath;
                         }

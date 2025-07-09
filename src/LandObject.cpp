@@ -29,7 +29,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 
     device = dev;
     
-    std::string basePath = "../../resources/models/LandObject/" + name + "/";
+    std::string basePath = "models/LandObject/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
     
     if (Utilities::pathExists(userFolder + basePath)) {

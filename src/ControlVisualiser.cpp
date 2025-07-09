@@ -41,19 +41,19 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
         irr::scene::IMesh* controlMesh = 0;
         if (controlType == 0) 
         {
-            controlMesh = smgr->getMesh("../../resources/media/throttle.3ds");
+            controlMesh = smgr->getMesh("media/throttle.3ds");
         } 
         else if (controlType == 1)
         {
-            controlMesh = smgr->getMesh("../../resources/media/wheel.3ds");
+            controlMesh = smgr->getMesh("media/wheel.3ds");
         }
         else if (controlType == 2)
         {
-            controlMesh = smgr->getMesh("../../resources/media/schottel_base.3ds");
+            controlMesh = smgr->getMesh("media/schottel_base.3ds");
         }
         else if (controlType == 3)
         {
-            controlMesh = smgr->getMesh("../../resources/media/schottel_body.3ds");
+            controlMesh = smgr->getMesh("media/schottel_body.3ds");
         }
 
         if (controlMesh != 0) 
