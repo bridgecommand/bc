@@ -141,7 +141,6 @@ float Sail::GetForce(char aAxe, float aStwValue, float aTwsValue, float aTwaValu
 
   if('X' == aAxe)
     {
-
       nc_get_vara_float(mIdPolarFile, mSailVarX, start.data(), count.data(), &force);
     }
   else if('Y' == aAxe)
