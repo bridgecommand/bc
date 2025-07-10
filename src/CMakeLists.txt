@@ -25,9 +25,6 @@ include_directories(${IRRLICHT_INCLUDE_DIR})
 
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
-if (NOT APPLE)
-    #add_definitions(-DFOR_DEB)
-endif (NOT APPLE)
 
 # optional tools
 add_subdirectory(controller)

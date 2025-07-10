@@ -213,18 +213,9 @@ public:
 	  //APPLE
 	  execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
 #else
-	  //Other (assumed posix)
-#ifdef FOR_DEB
-	  execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/doc/bridgecommand/index.html", NULL);
-	  //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation
-	  chdir("/usr/bin"); // If firefox is running in a snap or similar, launching can fail if it can't access the current dir
-	  execl("/usr/bin/xdg-open", "xdg-open", "https://www.bridgecommand.co.uk/Documentation", NULL);
-#else
 	  execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
-	  //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation
-	  chdir("/usr/bin"); // If firefox is running in a snap or similar, launching can fail if it can't access the current dir
+	  //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation	 
 	  execl("/usr/bin/xdg-open", "xdg-open", "https://www.bridgecommand.co.uk/Documentation", NULL);
-#endif // FOR_DEB
 #endif
 #endif
 	}
@@ -260,7 +251,7 @@ int main (int argc, char ** argv)
 {
 
   if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
-    std::cout << LONGVERSION << std::endl;
+    std::cout << LONGVERSION + "-" + SOMOSVERSION  << std::endl;
     exit(EXIT_SUCCESS);
   }
 
