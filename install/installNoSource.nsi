@@ -21,6 +21,14 @@ LicenseData "..\LICENSE"
 
 Icon "..\resources\icon\Icon.ico"
 
+VIProductVersion "1.0.0.0"
+VIAddVersionKey "ProductName" "${PROGRAMNAME}"
+VIAddVersionKey "ProductVersion" "1.0"
+VIAddVersionKey "CompanyName" "ENSM-Nantes"
+VIAddVersionKey "FileDescription" "Install BC"
+VIAddVersionKey "LegalCopyright" "2025 ENSM Nantes"
+VIAddVersionKey "FileVersion" "1.0"
+
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
