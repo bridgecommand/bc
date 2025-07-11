@@ -7,11 +7,11 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd Bridge_Base_color_sRGB.png
-map_Ns Bridge_Roughness_Raw.png
-map_refl Bridge_Metallic_Raw.png
-map_d Bridge_Base_color_sRGB.png
-map_Bump -bm 1.000000 Bridge_Normal_DirectX_Raw.png
+map_Kd bridge_base_color_srgb.png
+map_Ns bridge_roughness_raw.png
+map_refl bridge_metallic_raw.png
+map_d bridge_base_color_srgb.png
+map_Bump -bm 1.000000 bridge_normal_directx_raw.png
 
 newmtl Containers
 Ka 1.000000 1.000000 1.000000
@@ -19,11 +19,11 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd Containers_Base_color_sRGB.png
-map_Ns Containers_Roughness_Raw.png
-map_refl Containers_Metallic_Raw.png
-map_d Containers_Base_color_sRGB.png
-map_Bump -bm 1.000000 Containers_Normal_DirectX_Raw.png
+map_Kd containers_base_color_srgb.png
+map_Ns containers_roughness_raw.png
+map_refl containers_metallic_raw.png
+map_d containers_base_color_srgb.png
+map_Bump -bm 1.000000 containers_normal_directx_raw.png
 
 newmtl Hull
 Ka 1.000000 1.000000 1.000000
@@ -31,11 +31,11 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 illum 2
-map_Kd Hull_Base_color_sRGB.png
-map_Ns Hull_Roughness_Raw.png
-map_refl Hull_Metallic_Raw.png
-map_d Hull_Base_color_sRGB.png
-map_Bump -bm 1.000000 Hull_Normal_DirectX_Raw.png
+map_Kd hull_base_color_srgb.png
+map_Ns hull_roughness_raw.png
+map_refl hull_metallic_raw.png
+map_d hull_base_color_srgb.png
+map_Bump -bm 1.000000 hull_normal_directx_raw.png
 
 newmtl Matériau.003
 Ns 250.000000

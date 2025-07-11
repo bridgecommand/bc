@@ -1,6 +1,11 @@
 #!/bin/sh
+
+file="control"
+arch=$(dpkg --print-architecture)
+versionNo=$(../../bin/linux/bridgecommand --version)
+
 rm -rf ./bridgecommand-somos
-rm ./bridgecommand-somos.deb
+rm ./bridgecommand-somos-$versionNo.deb
 
 mkdir ./bridgecommand-somos
 cd ./bridgecommand-somos
@@ -29,9 +34,6 @@ cp -a ../../../bridgecommand.desktop ./applications/
 cp -a ../../../bridgecommand.png ./icons/hicolor/48x48/apps/
 
 cd ../../DEBIAN
-file="control"
-arch=$(dpkg --print-architecture)
-versionNo=$(../usr/bin/bridgecommand --version)
 echo "Package: BridgeCommand-SOMOS" > $file
 echo "Version: $versionNo" >> $file
 echo "Maintainer: Florent Richard <florent.richard@supmaritime.fr>" >> $file
@@ -52,5 +54,5 @@ chmod +x bridgecommand-somos/usr/share/bridgecommand/scripts/linux/*
 
 strip --strip-unneeded --remove-section=.comment --remove-section=.note bridgecommand-somos/usr/bin/*
 
-fakeroot dpkg-deb --build bridgecommand-somos
-
+fakeroot dpkg-deb --build bridgecommand-somos bridgecommand-somos-$versionNo.deb
+ 
