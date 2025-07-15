@@ -404,9 +404,12 @@ void NetworkSecondary::receiveMessage()
                                                 endNode->setName(endParent->getName());
                                             }
 
+                                            // Length factor can be hard coded as 1.0, as line nominal length will be updated later
+                                            irr::f32 lengthFactor = 1.0;
+
                                             // Create the lines
                                             model->getLines()->setLineStart(startNode, lineStartType, lineStartID, true, i);
-                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, true, i);
+                                            model->getLines()->setLineEnd(endNode, lineNominalShipMass, lineEndType, lineEndID, lengthFactor, true, i);
                                         }
 
                                     }

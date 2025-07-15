@@ -103,13 +103,14 @@ void Line::setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeTy
     }
 
     //Check we have a non-null start and end, and if so, set nominal length to the distance between them
-    if (lineStart && lineEnd && lineStart->getParent()) {
+    if (lineStart && lineEnd) {
         
         // Find distance between start and end
-        lineStart->getParent()->updateAbsolutePosition();
+        if (lineStart->getParent()) {
+            lineStart->getParent()->updateAbsolutePosition();
+        }
         lineStart->updateAbsolutePosition();
 
-        // We don't check before if the lineEnd has a parent, as this isn't absolutely required
         if (lineEnd->getParent()) {
             lineEnd->getParent()->updateAbsolutePosition();
         }
@@ -313,13 +314,14 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
     localForceVector = irr::core::vector3df(0.0, 0.0, 0.0);
     localTorqueVector = irr::core::vector3df(0.0, 0.0, 0.0);
     
-    if (lineStart && lineEnd && lineStart->getParent()) {
+    if (lineStart && lineEnd) {
         
         // Find distance between start and end
-        lineStart->getParent()->updateAbsolutePosition();
+        if (lineStart->getParent()) {
+            lineStart->getParent()->updateAbsolutePosition();
+        }
         lineStart->updateAbsolutePosition();
 
-        // We don't check before if the lineEnd has a parent, as this isn't absolutely required
         if (lineEnd->getParent()) {
             lineEnd->getParent()->updateAbsolutePosition();
         }
