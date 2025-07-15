@@ -381,13 +381,21 @@ void NMEA::updateNMEA()
     std::string dateString = dateTimeString.substr(0, 8);
     std::string timeString = dateTimeString.substr(8, 6);
 
-    const char *year = dateString.substr(0, 4).c_str();
-    const char *mon  = dateString.substr(4, 2).c_str();
-    const char *mday = dateString.substr(6, 2).c_str();
+    std::string yearString = dateString.substr(0, 4);
+    std::string monthString = dateString.substr(4, 2);
+    std::string dayString = dateString.substr(6, 2);
 
-    const char *hour = timeString.substr(0, 4).c_str();
-    const char *min  = timeString.substr(4, 2).c_str();
-    const char *sec  = timeString.substr(6, 2).c_str();
+    std::string hourString = timeString.substr(0, 4);
+    std::string minuteString = timeString.substr(4, 2);
+    std::string secondsString = timeString.substr(6, 2);
+    
+    const char *year = yearString.c_str();
+    const char *mon  = monthString.c_str();
+    const char *mday = dayString.c_str();
+
+    const char *hour = hourString.c_str();
+    const char *min  = minuteString.c_str();
+    const char *sec  =secondsString.c_str();
 
     irr::f32 rudderAngle = model->getRudder();
 
