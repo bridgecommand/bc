@@ -62,16 +62,16 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
 		irr::io::path pixelShader;
 		if (driverType == irr::video::EDT_DIRECT3D9) {
             //DirectX, not currently used
-            vertexShader = "../../resources/shaders/Water_vs.hlsl";
-            pixelShader = "../../resources/shaders/Water_ps.hlsl";
+            vertexShader = "shaders/Water_vs.hlsl";
+            pixelShader = "shaders/Water_ps.hlsl";
 		} else {
             //OpenGL
             if (withReflection) {
-                vertexShader = "../../resources/shaders/Water_vs.glsl";
-                pixelShader = "../../resources/shaders/Water_ps.glsl";
+                vertexShader = "shaders/Water_vs.glsl";
+                pixelShader = "shaders/Water_ps.glsl";
             } else {
-                vertexShader = "../../resources/shaders/Water_vs_noReflection.glsl";
-                pixelShader = "../../resources/shaders/Water_ps_noReflection.glsl";
+                vertexShader = "shaders/Water_vs_noReflection.glsl";
+                pixelShader = "shaders/Water_ps_noReflection.glsl";
             }
             
 		}
@@ -104,7 +104,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
                            irr::core::dimension2d<irr::f32>(tileWidth/(irr::f32)(segments),tileWidth/(irr::f32)(segments)));
 
 
-    flatMesh = mgr->getMesh("../../resources/media/flatsea.x");
+    flatMesh = mgr->getMesh("media/flatsea.x");
     if (!flatMesh) {
         std::cerr << "Could not load flat sea mesh from media/flatsea.x" << std::endl;
         exit(EXIT_FAILURE);
@@ -133,7 +133,7 @@ MovingWaterSceneNode::MovingWaterSceneNode(ISceneNode* parent, ISceneManager* mg
             _reflectionMap = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(512, 512)); //TODO: Check hardcoding here
 		}
 		
-		irr::video::ITexture* bumpTexture = driver->getTexture("../../resources/media/water.jpg");
+		irr::video::ITexture* bumpTexture = driver->getTexture("media/water.jpg");
 
 		for (irr::u32 i = 0; i < mesh->getMeshBufferCount(); ++i)
 		{

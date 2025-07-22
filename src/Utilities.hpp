@@ -26,6 +26,16 @@
 #include <limits>
 #include <type_traits>
 
+
+#ifdef _WIN32
+#define CHDIR _chdir
+#define GETCWD _getcwd
+#else
+#define CHDIR chdir
+#define GETCWD getcwd
+#endif // _WIN32
+
+
 //#include "ScenarioDataStructure.hpp"
 //Forward declaration
 class ScenarioData;

@@ -46,7 +46,7 @@ namespace NumberToImage
                 //Load character image from file (charName.png)
                 char thisChar = numberString.c_str()[character];
 
-                irr::io::path imagePath = "../../resources/media/Char";
+                irr::io::path imagePath = "media/Char";
                 imagePath.append(thisChar);
                 imagePath += ".png";
 

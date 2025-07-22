@@ -1,0 +1,48 @@
+# Blender 4.3.2 MTL File: 'shiptestflettner.blend'
+# www.blender.org
+
+newmtl Bridge
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd bridge_base_color_srgb.png
+map_Ns bridge_roughness_raw.png
+map_refl bridge_metallic_raw.png
+map_d bridge_base_color_srgb.png
+map_Bump -bm 1.000000 bridge_normal_directx_raw.png
+
+newmtl Containers
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd containers_base_color_srgb.png
+map_Ns containers_roughness_raw.png
+map_refl containers_metallic_raw.png
+map_d containers_base_color_srgb.png
+map_Bump -bm 1.000000 containers_normal_directx_raw.png
+
+newmtl Hull
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd hull_base_color_srgb.png
+map_Ns hull_roughness_raw.png
+map_refl hull_metallic_raw.png
+map_d hull_base_color_srgb.png
+map_Bump -bm 1.000000 hull_normal_directx_raw.png
+
+newmtl Matériau.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd metal.jpg

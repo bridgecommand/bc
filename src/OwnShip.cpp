@@ -64,7 +64,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     zPos = model->latToZ(ownShipData.initialLat);
     hdg = ownShipData.initialBearing; // DEE_DEC22  this is initial heading
 
-    basePath = "../../resources/models/Ownship/" + ownShipName + "/";
+    basePath = "models/Ownship/" + ownShipName + "/";
     std::string userFolder = Utilities::getUserDir();
     // Read model from user dir if it exists there.
     if (Utilities::pathExists(userFolder + basePath))
@@ -236,10 +236,6 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     wheelControlPosition.Y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
     wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
     wheelControlScale = IniFile::iniFileTof32(shipIniFilename, "WheelScale", 1);
-
-    //Load sail parameters
-    mSails.Open("../../resources/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
-    mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
     
     // Load the model
     irr::scene::IMesh *shipMesh;
@@ -348,6 +344,11 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
         if (mSailsCount > 0)
         {
+	  //Load sail parameters
+	  mSails.Open("nc/polar.nc", "TotalSails_X", "TotalSails_Y");
+	  mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
+
+	  
             mSailsType = IniFile::iniFileToString(shipIniFilename, "SailsType");
             std::string sailsSize = IniFile::iniFileToString(shipIniFilename, "SailsSize");
             std::string meshFile = basePath + "../../Sails/" + mSailsType + "/" + sailsSize + "/" + "sail.obj";
@@ -1828,12 +1829,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	float sailsForceX = 0, sailsForceY = 0;
 	if(windDirection > 180)
 	  windDirection = 180-(windDirection-180);
-	
-        sailsForceX = mSails.GetForce('X', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
-	sailsForceY = mSails.GetForce('Y', speedThroughWater, windSpeed, (apparentWindDir * irr::core::RADTODEG));
-	//std::cout << "Sail force X = " << sailsForceX << std::endl;
-	//std::cout << "Sail force Y = " << sailsForceY << std::endl; 
 
+	if (mSailsCount > 0)
+	  {
+	    sailsForceX = mSails.GetForce('X', speedThroughWater, windSpeed * MPS_TO_KTS, (apparentWindDir * irr::core::RADTODEG));
+	    sailsForceY = mSails.GetForce('Y', speedThroughWater, windSpeed * MPS_TO_KTS, (apparentWindDir * irr::core::RADTODEG));
+        //std::cout << "Sail force X = " << sailsForceX << std::endl;
+	    //std::cout << "Sail force Y = " << sailsForceY << std::endl;
+	  }
 
         // Update bow and stern thrusters, if being controlled by joystick buttons
         bowThruster += deltaTime * bowThrusterRate;

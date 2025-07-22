@@ -76,10 +76,19 @@ std::string makeTimeString(uint64_t absoluteTime, uint64_t offsetTime, irr::f32 
 int main()
 {
 
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
+    char cwd[1024]={0};
 
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources 
+      {
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	    exit(-1);
+	  }
+      }
+
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Multiplayer::Working Directory : %s\n", cwd);
+    
     //Mac OS:
 	#ifdef __APPLE__
     //Find starting folder
@@ -118,7 +127,7 @@ int main()
     */
 
     //Read basic ini settings
-    std::string iniFilename = "../../resources/mph.ini";
+    std::string iniFilename = "mph.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -128,7 +137,7 @@ int main()
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "../../resources/lang/languageMultiplayer-";
+    std::string languageFile = "lang/languageMultiplayer-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -204,7 +213,7 @@ int main()
 	#endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;
@@ -217,7 +226,7 @@ int main()
     std::string hostnames;
     std::string scenarioName;
     //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "../../resources/scenarios/";
+    std::string scenarioPath = "scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }

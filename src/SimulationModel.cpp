@@ -110,7 +110,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         }
 
         //construct path to world model
-        std::string worldPath = "../../resources/world/";
+        std::string worldPath = "world/";
         worldPath.append(worldName);
 
         //Check if this world model exists in the user dir.
@@ -486,7 +486,7 @@ SimulationModel::~SimulationModel()
 		//Fall back to default, again checking both upper and lower case
 
 		{
-            soundPath = "../../resources/sounds/Engine.wav";
+            soundPath = "sounds/Engine.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -494,7 +494,7 @@ SimulationModel::~SimulationModel()
 		}
 
 		{
-            soundPath = "../../resources/sounds/engine.wav";
+            soundPath = "sounds/engine.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -532,7 +532,7 @@ SimulationModel::~SimulationModel()
 		//Fall back to default, again checking both upper and lower case
 
 		{
-            soundPath = "../../resources/sounds/Bwave.wav";
+            soundPath = "sounds/Bwave.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -540,7 +540,7 @@ SimulationModel::~SimulationModel()
 		}
 
 		{
-            soundPath = "../../resources/sounds/bwave.wav";
+            soundPath = "sounds/bwave.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -578,7 +578,7 @@ SimulationModel::~SimulationModel()
 		//Fall back to default, again checking both upper and lower case
 
 		{
-            soundPath = "../../resources/sounds/Horn.wav";
+            soundPath = "sounds/Horn.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -586,7 +586,7 @@ SimulationModel::~SimulationModel()
 		}
 
 		{
-            soundPath = "../../resources/sounds/horn.wav";
+            soundPath = "sounds/horn.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -624,7 +624,7 @@ SimulationModel::~SimulationModel()
 		//Fall back to default, again checking both upper and lower case
 
 		{
-            soundPath = "../../resources/sounds/Alarm.wav";
+            soundPath = "sounds/Alarm.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;
@@ -632,7 +632,7 @@ SimulationModel::~SimulationModel()
 		}
 
 		{
-            soundPath = "../../resources/sounds/alarm.wav";
+            soundPath = "sounds/alarm.wav";
             std::ifstream file(soundPath.c_str());
             if (file.good()) {
                 return soundPath;

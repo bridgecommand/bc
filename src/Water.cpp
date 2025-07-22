@@ -47,7 +47,7 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
     waterNode = new irr::scene::MovingWaterSceneNode(smgr->getRootSceneNode(),smgr,ownShip,0,disableShaders,withReflection,segments);
     waterNode->setPosition(irr::core::vector3df(0,-0.25,0));
     smgr->getRootSceneNode()->addChild(waterNode);
-    waterNode->setMaterialTexture(0, driver->getTexture("../../resources/media/water.jpg"));
+    waterNode->setMaterialTexture(0, driver->getTexture("media/water.jpg"));
     waterNode->setMaterialType(irr::video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 
 }

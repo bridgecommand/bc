@@ -4,10 +4,10 @@
 //on which button the user presses
 
 /*
-* Icons from :
-* https://github.com/dubdubdubco/iconicicons.git
-* CC0 Public domain 
-*/
+ * Icons from :
+ * https://github.com/dubdubdubco/iconicicons.git
+ * CC0 Public domain 
+ */
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
@@ -25,6 +25,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
+#include <direct.h>
 #else
 #include <unistd.h>
 #endif
@@ -41,7 +42,7 @@ const int FONT_SIZE_DEFAULT = 12;
 
 //Global definition for ini logger
 namespace IniFile {
-    irr::ILogger* irrlichtLogger = 0;
+  irr::ILogger* irrlichtLogger = 0;
 }
 
 const irr::s32 BC_BUTTON = 1;
@@ -63,380 +64,396 @@ std::string userFolder;
 class Receiver : public irr::IEventReceiver
 {
 public:
-    Receiver() { }
+  Receiver() { }
 
-    virtual bool OnEvent(const irr::SEvent& event)
-    {
-        if (event.EventType == irr::EET_GUI_EVENT) {
-            if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
-                irr::s32 id = event.GUIEvent.Caller->getID();
+  virtual bool OnEvent(const irr::SEvent& event)
+  {
+    if (event.EventType == irr::EET_GUI_EVENT) {
+      if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
+	irr::s32 id = event.GUIEvent.Caller->getID();
 
-                if (id == EXIT_BUTTON) {
-                    exit(EXIT_SUCCESS);
-                }
+	if (id == EXIT_BUTTON) {
+	  exit(EXIT_SUCCESS);
+	}
 
-                if (id == BC_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == MC_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-mc.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == RP_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-rp.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/rp.app/Contents/MacOS/rp", "rp", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == ED_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ed.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == MH_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-mh.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == INI_BC_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == INI_MC_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-M", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == INI_RP_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-R", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == INI_MH_BUTTON) {
-                    #ifdef _WIN32
-                        ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-H", NULL, SW_SHOW);
-                        //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
-                    #endif
-                    #endif
-                }
-                if (id == DOC_BUTTON) {
-                    #ifdef _WIN32
-                        //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-                        ShellExecute(NULL, TEXT("open"), TEXT("doc\\index.html"), NULL, NULL, SW_SHOWNORMAL);
-                        //Sleep(5000);
-                        //exit(EXIT_SUCCESS);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
-                    #else
-                        //Other (assumed posix)
-                        #ifdef FOR_DEB
-                            execl("/usr/bin/xdg-open", "xdg-open", "/usr/share/doc/bridgecommand/index.html", NULL);
-                            //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation
-                            chdir("/usr/bin"); // If firefox is running in a snap or similar, launching can fail if it can't access the current dir
-                            execl("/usr/bin/xdg-open", "xdg-open", "https://www.bridgecommand.co.uk/Documentation", NULL);
-                        #else
-                            execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
-                            //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation
-                            chdir("/usr/bin"); // If firefox is running in a snap or similar, launching can fail if it can't access the current dir
-                            execl("/usr/bin/xdg-open", "xdg-open", "https://www.bridgecommand.co.uk/Documentation", NULL);
-                        #endif // FOR_DEB
-                    #endif
-                    #endif
-                }
-                if (id == USER_BUTTON) {
-                    #ifdef _WIN32
-                        //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-                        ShellExecute(NULL, TEXT("open"), TEXT(userFolder.c_str()), NULL, NULL, SW_SHOWNORMAL);
-                        //Sleep(5000);
-                        //exit(EXIT_SUCCESS);
-                    #else
-                    #ifdef __APPLE__
-                        //APPLE
-                        std::cout << userFolder << std::endl;
-                        execl("/usr/bin/open", "open", userFolder.c_str(), NULL);
-                    #else
-                        //Other (assumed posix)
-                        execl("/usr/bin/xdg-open", "xdg-open", userFolder.c_str(), NULL);
-                    #endif
-                    #endif
-                }
-            }
-        }
-        if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-            if (event.KeyInput.Key == irr::KEY_ESCAPE ) {
-                exit(EXIT_SUCCESS);
-            }
-        }
-        return false;
+	if (id == BC_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-bc.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
+#endif
+#endif
+	}
+	if (id == MC_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-mc.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
+#endif
+#endif
+	}
+	if (id == RP_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-rp.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/rp.app/Contents/MacOS/rp", "rp", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
+#endif
+#endif
+	}
+	if (id == ED_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-ed.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
+#endif
+#endif
+	}
+	if (id == MH_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-mh.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
+#endif
+#endif
+	}
+	if (id == INI_BC_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-ini.exe", NULL, NULL, SW_SHOW);
+	  //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
+#endif
+#endif
+	}
+	if (id == INI_MC_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-M", NULL, SW_SHOW);
+	  //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
+#endif
+#endif
+	}
+	if (id == INI_RP_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-R", NULL, SW_SHOW);
+	  //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
+#endif
+#endif
+	}
+	if (id == INI_MH_BUTTON) {
+#ifdef _WIN32
+	  ShellExecute(NULL, NULL, "bridgecommand-ini.exe", "-H", NULL, SW_SHOW);
+	  //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
+#else
+	  //Other (assumed posix)
+	  execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
+#endif
+#endif
+	}
+	if (id == DOC_BUTTON) {
+#ifdef _WIN32
+	  //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	  ShellExecute(NULL, TEXT("open"), TEXT("doc\\index.html"), NULL, NULL, SW_SHOWNORMAL);
+	  //Sleep(5000);
+	  //exit(EXIT_SUCCESS);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
+#else
+	  execl("/usr/bin/xdg-open", "xdg-open", "doc/index.html", NULL);
+	  //If execuation gets to this point, it has failed to launch help. Try to fall back to online documentation	 
+	  execl("/usr/bin/xdg-open", "xdg-open", "https://www.bridgecommand.co.uk/Documentation", NULL);
+#endif
+#endif
+	}
+	if (id == USER_BUTTON) {
+#ifdef _WIN32
+	  //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	  ShellExecute(NULL, TEXT("open"), TEXT(userFolder.c_str()), NULL, NULL, SW_SHOWNORMAL);
+	  //Sleep(5000);
+	  //exit(EXIT_SUCCESS);
+#else
+#ifdef __APPLE__
+	  //APPLE
+	  std::cout << userFolder << std::endl;
+	  execl("/usr/bin/open", "open", userFolder.c_str(), NULL);
+#else
+	  //Other (assumed posix)
+	  execl("/usr/bin/xdg-open", "xdg-open", userFolder.c_str(), NULL);
+#endif
+#endif
+	}
+      }
     }
+    if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
+      if (event.KeyInput.Key == irr::KEY_ESCAPE ) {
+	exit(EXIT_SUCCESS);
+      }
+    }
+    return false;
+  }
 };
 
 int main (int argc, char ** argv)
 {
 
-    if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
-        std::cout << LONGVERSION << std::endl;
-        exit(EXIT_SUCCESS);
+  if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
+    std::cout << LONGVERSION + "-" + SOMOSVERSION  << std::endl;
+    exit(EXIT_SUCCESS);
+  }
+
+  char cwd[1024]={0};
+
+  if(0 != CHDIR("../../resources/"))//Launch from builded sources
+    {
+      if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	{
+	  std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	  exit(-1);
+	}
     }
+
+  if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
     
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
-
-    //Mac OS:
-    //Find starting folder
-	#ifdef __APPLE__
-    char exePath[1024];
-    uint32_t pathSize = sizeof(exePath);
-    std::string exeFolderPath = "";
-    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
-        std::string exePathString(exePath);
-        size_t pos = exePathString.find_last_of("\\/");
-        if (std::string::npos != pos) {
-            exeFolderPath = exePathString.substr(0, pos);
-        }
+  //Mac OS:
+  //Find starting folder
+#ifdef __APPLE__
+  char exePath[1024];
+  uint32_t pathSize = sizeof(exePath);
+  std::string exeFolderPath = "";
+  if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
+    std::string exePathString(exePath);
+    size_t pos = exePathString.find_last_of("\\/");
+    if (std::string::npos != pos) {
+      exeFolderPath = exePathString.substr(0, pos);
     }
-    //change up from BridgeCommand.app/Contents/MacOS to ../Resources
-    exeFolderPath.append("/../Resources");
-    //change to this path now
-    chdir(exeFolderPath.c_str());
-    //Note, we use this again after the createDevice call
-	#endif
+  }
+  //change up from BridgeCommand.app/Contents/MacOS to ../Resources
+  exeFolderPath.append("/../Resources");
+  //change to this path now
+  chdir(exeFolderPath.c_str());
+  //Note, we use this again after the createDevice call
+#endif
 
-    //User read/write location - look in here first and the exe folder second for files
-    userFolder = Utilities::getUserDir();
+  //User read/write location - look in here first and the exe folder second for files
+  userFolder = Utilities::getUserDir();
 
-    //Read basic ini settings
-    std::string iniFilename = "../../resources/bc5.ini";
-    //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + "bc5.ini")) {
+  //Read basic ini settings
+  std::string iniFilename = "bc5.ini";
+
+  if(Utilities::pathExists(userFolder + "bc5.ini"))
+    {
         iniFilename = userFolder + "bc5.ini";
     }
+  
+  std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+  if (modifier.length()==0) {
+    modifier = "en"; //Default
+  }
+  std::string languageFile = "lang/languageLauncher-";
 
-    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
-    if (modifier.length()==0) {
-        modifier = "en"; //Default
-    }
-    std::string languageFile = "../../resources/lang/languageLauncher-";
-    languageFile.append(modifier);
-    languageFile.append(".txt");
-    if (Utilities::pathExists(userFolder + languageFile)) {
-        languageFile = userFolder + languageFile;
-    }
+  languageFile.append(modifier);
+  languageFile.append(".txt");
+  if (Utilities::pathExists(userFolder + languageFile)) {
+    languageFile = userFolder + languageFile;
+  }
 
-    Lang language(languageFile);
+  Lang language(languageFile);
 
-    int fontSize = FONT_SIZE_DEFAULT;
-    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale > 1) {
-        fontSize = (int)(fontSize * fontScale + 0.5);
-    } else {
-	    fontScale = 1.0;
-    }
+  int fontSize = FONT_SIZE_DEFAULT;
+  float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+  if (fontScale > 1) {
+    fontSize = (int)(fontSize * fontScale + 0.5);
+  } else {
+    fontScale = 1.0;
+  }
 
-    irr::u32 graphicsWidth = 300;
-    irr::u32 graphicsHeight = 620;
-    irr::u32 graphicsDepth = 32;
-    bool fullScreen = false;
+  irr::u32 graphicsWidth = 300;
+  irr::u32 graphicsHeight = 620;
+  irr::u32 graphicsDepth = 32;
+  bool fullScreen = false;
 
-    irr::SIrrlichtCreationParameters deviceParameters;
-    deviceParameters.DriverType = irr::video::EDT_OPENGL;
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
-    deviceParameters.Bits = graphicsDepth;
-    deviceParameters.Fullscreen = fullScreen;
+  irr::SIrrlichtCreationParameters deviceParameters;
+  deviceParameters.DriverType = irr::video::EDT_OPENGL;
+  deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
+  deviceParameters.Bits = graphicsDepth;
+  deviceParameters.Fullscreen = fullScreen;
 
-    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
-    irr::video::IVideoDriver* driver = device->getVideoDriver();
+  irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
+  irr::video::IVideoDriver* driver = device->getVideoDriver();
+  
+  irr::video::ITexture* imgTexture = driver->getTexture("media/logo.png");
+  irr::core::dimension2d<irr::u32> imgSize = imgTexture->getSize();
 
-    irr::video::ITexture* imgTexture = driver->getTexture("../../resources/media/logo.png");
-    irr::core::dimension2d<irr::u32> imgSize = imgTexture->getSize();
+  driver->OnResize(irr::core::dimension2d<irr::u32>(imgSize.Width, graphicsHeight));
 
-    driver->OnResize(irr::core::dimension2d<irr::u32>(imgSize.Width, graphicsHeight));
+#ifdef __APPLE__
+  //Mac OS - cd back to original dir - seems to be changed during createDevice
+  irr::io::IFileSystem* fileSystem = device->getFileSystem();
+  if (fileSystem==0) {
+    exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
+    std::cout << "Could not get filesystem" << std::endl;
+  }
+  fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+#endif
 
-    #ifdef __APPLE__
-    //Mac OS - cd back to original dir - seems to be changed during createDevice
-    irr::io::IFileSystem* fileSystem = device->getFileSystem();
-    if (fileSystem==0) {
-        exit(EXIT_FAILURE); //Could not get file system TODO: Message for user
-        std::cout << "Could not get filesystem" << std::endl;
-    }
-    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
-    #endif
+  device->setWindowCaption(L"Bridge Command");
+  irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_CLASSIC);
+  device->getGUIEnvironment()->setSkin(newskin);
 
-    device->setWindowCaption(L"Bridge Command");
-    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_CLASSIC);
-    device->getGUIEnvironment()->setSkin(newskin);
+  std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+  std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+  irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
 
-    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
-    irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
-    if (font == NULL) {
-        std::cout << "Could not load font, using fallback" << std::endl;
-    } else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-        device->getGUIEnvironment()->getSkin()->setFont(device->getGUIEnvironment()->getBuiltInFont(), irr::gui::EGDF_TOOLTIP);
-    }
+
+  if (font == NULL) {
+    std::cout << "Could not load font " << fontPath << std::endl;
+  } else {
+    //set skin default font
+    device->getGUIEnvironment()->getSkin()->setFont(font);
+    device->getGUIEnvironment()->getSkin()->setFont(device->getGUIEnvironment()->getBuiltInFont(), irr::gui::EGDF_TOOLTIP);
+  }
 
     
-    //Add launcher buttons with layout in viewport due to scaling
+  //Add launcher buttons with layout in viewport due to scaling
 
-    short bC = graphicsWidth / 20;       // padding ...
-    short bR = bC / 3 * 2 + 1;
+  short bC = graphicsWidth / 20;       // padding ...
+  short bR = bC / 3 * 2 + 1;
 
-    short bW = graphicsWidth - (2 * bC); // size ...
-    short bH = 20 * (fontSize / (FONT_SIZE_DEFAULT * 1.0)) + 1;
+  short bW = graphicsWidth - (2 * bC); // size ...
+  short bH = 20 * (fontSize / (FONT_SIZE_DEFAULT * 1.0)) + 1;
 
-    short x1 = bC;                       // location ...
-    short x2 = x1 + bW;
-    short y1, y2;
+  short x1 = bC;                       // location ...
+  short x2 = x1 + bW;
+  short y1, y2;
 
-    device->getGUIEnvironment()->addImage(imgTexture, irr::core::position2d<int>(bC, 10));
+  device->getGUIEnvironment()->addImage(imgTexture, irr::core::position2d<int>(bC, 10));
 
-    y1 = imgSize.Height +   2*bR; y2 = y1 + 2*bH; 
-    irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
-    launchBC->setImage(driver->getTexture("../../resources/media/startBC.png"));
-    launchBC->setUseAlphaChannel();
+  y1 = imgSize.Height +   2*bR; y2 = y1 + 2*bH; 
+  irr::gui::IGUIButton* launchBC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,BC_BUTTON,language.translate("startBC").c_str()); //i18n
+  launchBC->setImage(driver->getTexture("media/startBC.png"));
+  launchBC->setUseAlphaChannel();
 
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
-    launchED->setImage(driver->getTexture("../../resources/media/startED.png"));
-    launchED->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
-    launchMC->setImage(driver->getTexture("../../resources/media/startMC.png"));
-    launchMC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
-    launchRP->setImage(driver->getTexture("../../resources/media/startRP.png"));
-    launchRP->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
-    launchMH->setImage(driver->getTexture("../../resources/media/startMH.png"));
-    launchMH->setUseAlphaChannel();
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
-    launchINIBC->setImage(driver->getTexture("../../resources/media/settings.png"));
-    launchINIBC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
-    launchINIMC->setImage(driver->getTexture("../../resources/media/settings.png"));
-    launchINIMC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
-    launchINIRP->setImage(driver->getTexture("../../resources/media/settings.png"));
-    launchINIRP->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
-    launchINIMH->setImage(driver->getTexture("../../resources/media/settings.png"));
-    launchINIMH->setUseAlphaChannel();
+  y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchED    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,ED_BUTTON,language.translate("startED").c_str()); //i18n
+  launchED->setImage(driver->getTexture("media/startED.png"));
+  launchED->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMC    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MC_BUTTON,language.translate("startMC").c_str()); //i18n
+  launchMC->setImage(driver->getTexture("media/startMC.png"));
+  launchMC->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchRP    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,RP_BUTTON,language.translate("startRP").c_str()); //i18n
+  launchRP->setImage(driver->getTexture("media/startRP.png"));
+  launchRP->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchMH    = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,MH_BUTTON,language.translate("startMH").c_str()); //i18n
+  launchMH->setImage(driver->getTexture("media/startMH.png"));
+  launchMH->setUseAlphaChannel();
+  y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIBC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_BC_BUTTON,language.translate("startINIBC").c_str()); //i18n
+  launchINIBC->setImage(driver->getTexture("media/settings.png"));
+  launchINIBC->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMC = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MC_BUTTON,language.translate("startINIMC").c_str()); //i18n
+  launchINIMC->setImage(driver->getTexture("media/settings.png"));
+  launchINIMC->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIRP = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_RP_BUTTON,language.translate("startINIRP").c_str()); //i18n
+  launchINIRP->setImage(driver->getTexture("media/settings.png"));
+  launchINIRP->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchINIMH = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,INI_MH_BUTTON,language.translate("startINIMH").c_str()); //i18n
+  launchINIMH->setImage(driver->getTexture("media/settings.png"));
+  launchINIMH->setUseAlphaChannel();
 
-    y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
-    launchDOC->setImage(driver->getTexture("../../resources/media/startDOC.png"));
-    launchDOC->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
-    launchFOLDER->setImage(driver->getTexture("../../resources/media/user.png"));
-    launchFOLDER->setUseAlphaChannel();
-    y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
-    leave->setImage(driver->getTexture("../../resources/media/leave.png"));
-    leave->setUseAlphaChannel();
+  y1 = y2 + 3*bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchDOC   = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,DOC_BUTTON,language.translate("startDOC").c_str()); //i18n
+  launchDOC->setImage(driver->getTexture("media/startDOC.png"));
+  launchDOC->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* launchFOLDER= device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,USER_BUTTON,language.translate("user").c_str()); //i18n
+  launchFOLDER->setImage(driver->getTexture("media/user.png"));
+  launchFOLDER->setUseAlphaChannel();
+  y1 = y2 +   bR; y2 = y1 +   bH; irr::gui::IGUIButton* leave       = device->getGUIEnvironment()->addButton(irr::core::rect<irr::s32>(x1,y1,x2,y2),0,EXIT_BUTTON,language.translate("leave").c_str()); //i18n
+  leave->setImage(driver->getTexture("media/leave.png"));
+  leave->setUseAlphaChannel();
 
-    std::string version = "v" + LONGVERSION + "-" + SOMOSVERSION;
-    irr::core::stringw wVer(version.c_str());
+  std::string version = "v" + LONGVERSION + "-" + SOMOSVERSION;
+  irr::core::stringw wVer(version.c_str());
 
-    y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+wVer.size(), y1, x2, y2), true);
+  y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+wVer.size(), y1, x2, y2), true);
 
-    device->getGUIEnvironment()->setFocus(launchBC);
+  device->getGUIEnvironment()->setFocus(launchBC);
 
-    Receiver receiver;
-    device->setEventReceiver(&receiver);
+  Receiver receiver;
+  device->setEventReceiver(&receiver);
 
-    #ifdef FOR_DEB
-    chdir("/usr/bin");
-    #endif // FOR_DEB
+#ifdef _WIN32
+  if(0 != CHDIR("../bin/win/"))//Launch from builded sources
+#else
+    if(0 != chdir("../bin/linux/"))//Launch from builded sources
+#endif
+      {
+	if(0 != CHDIR("/usr/bin"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get binaries files" << std::endl;
+	    exit(-1);
+	  }
+      }
 
-    while (device->run()) {
-        driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
-        device->sleep(100);
-    }
+  if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Launcher::Working Directory : %s\n", cwd);
+      
 
-    return EXIT_FAILURE;
+  while (device->run()) {
+    driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
+    device->getGUIEnvironment()->drawAll();
+    driver->endScene();
+    device->sleep(100);
+  }
+
+  return EXIT_FAILURE;
 }

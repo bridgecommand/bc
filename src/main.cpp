@@ -371,10 +371,19 @@ int main(int argc, char ** argv)
     IPROF_FUNC;
     #endif
 
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
+    char cwd[1024]={0};
 
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources
+      {
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	    exit(-1);
+	  }
+      }
+
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
+  
     //Mac OS:
 	#ifdef __APPLE__
     //Find starting folder
@@ -399,17 +408,13 @@ int main(int argc, char ** argv)
     std::string userFolder = Utilities::getUserDir();
 
     //Read basic ini settings
-    std::string iniFilename = "../../resources/bc5.ini";
-    //Use local ini file if it exists
-    if (Utilities::pathExists(userFolder + "bc5.ini")) {
+    std::string iniFilename = "bc5.ini";
+
+    if(Utilities::pathExists(userFolder + "bc5.ini"))
+      {
         iniFilename = userFolder + "bc5.ini";
-    }
-
-    if ((argc>2)&&(strcmp(argv[1],"-c")==0)) {
-        iniFilename = std::string(argv[2]); //TODO: Check this for sanity?
-        std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
-    }
-
+      }
+    
     std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
 
     if (!scriptToExe.empty()) {
@@ -418,12 +423,12 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "..\\..\\resources\\scripts\\win\\" + scriptToExe;
+	        scriptPath = "scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
-	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;
+	        scriptPath = "scripts/macOS/" + scriptToExe;
             #else
-	        scriptPath = "../../resources/scripts/linux/" + scriptToExe;
+	        scriptPath = "scripts/linux/" + scriptToExe;
             #endif
             #endif    
         }
@@ -454,7 +459,7 @@ int main(int argc, char ** argv)
     }
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
     irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
     irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
@@ -604,7 +609,7 @@ int main(int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "../../resources/lang/language-";
+    std::string languageFile = "lang/language-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -686,7 +691,7 @@ int main(int argc, char ** argv)
 
     irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
-        std::cout << "Could not load font, using fallback" << std::endl;
+      std::cout << "Could not load font " << fontPath << std::endl;
     }
     else {
         //set skin default font
@@ -711,7 +716,7 @@ int main(int argc, char ** argv)
     std::string scenarioName = "";
     std::string hostname = "";
     //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "../../resources/scenarios/";
+    std::string scenarioPath = "scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }
@@ -759,9 +764,6 @@ int main(int argc, char ** argv)
             file.close();
         }
     }
-
-    std::cout << "Could not load font, using fallback" << std::endl;
-
 	//Show loading message
 	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
     irr::core::stringw creditsText = language.translate("loadingmsg");
@@ -1149,12 +1151,12 @@ int main(int argc, char ** argv)
             scriptPath = userFolder + scriptToExe;
         } else {
             #ifdef _WIN32
-	        scriptPath = "..\\..\\resources\\scripts\\win\\" + scriptToExe;
+	        scriptPath = "scripts\\win\\" + scriptToExe;
             #else
             #ifdef __APPLE__
-	        scriptPath = "../../resources/scripts/macOS/" + scriptToExe;
+	        scriptPath = "scripts/macOS/" + scriptToExe;
             #else
-	        scriptPath = "../../resources/scripts/linux/" + scriptToExe;
+	        scriptPath = "scripts/linux/" + scriptToExe;
             #endif
             #endif    
         }

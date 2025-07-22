@@ -946,7 +946,15 @@ std::string& Message::KeepAliveShort(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getRateOfTurn()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getSOG()*MPS_TO_KTS));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShipSpeedThroughWater()*MPS_TO_KTS));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getApparentWindDir()));
+  msg.append(",");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getApparentWindSpd()));
 
   return msg;
 }

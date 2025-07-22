@@ -34,6 +34,7 @@
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h> // Also for GetSystemMetrics
     #include <Shellapi.h>
+    #include <direct.h>
 #else // _WIN32
     #ifdef __APPLE__
         #include <copyfile.h>
@@ -110,14 +111,14 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
     irr::u32 sh = driver->getScreenSize().Height;
 
     //Find list of scenarios, and list of available world models
-    std::string scenarioPath = "../../resources/scenarios/";
+    std::string scenarioPath = "scenarios/";
     if (Utilities::pathExists(userFolder + scenarioPath)) {
         scenarioPath = userFolder + scenarioPath;
     }
     std::vector<std::string> scenarioDirList;
     getDirectoryList(device,scenarioDirList,scenarioPath); //Populates scenarioDirList
 
-    std::string worldPath = "../../resources/world/";
+    std::string worldPath = "world/";
     std::vector<std::string> worldDirList;
     getDirectoryList(device,worldDirList,worldPath); //Populates worldDirList
     if (Utilities::pathExists(userFolder + worldPath)) {
@@ -374,7 +375,7 @@ void checkUserScenarioDir(void)
             if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
             mkdir(pathToMake.c_str(),0755);
         }
-        if (!Utilities::pathExists(Utilities::getUserDir() + "../../resources/scenarios/")) {
+        if (!Utilities::pathExists(Utilities::getUserDir() + "scenarios/")) {
             std::string pathToMake = Utilities::getUserDir() + "Scenarios";
             mkdir(pathToMake.c_str(),0755);
         }
@@ -389,9 +390,19 @@ void checkUserScenarioDir(void)
 int main (int argc, char ** argv)
 {
 
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
+      char cwd[1024]={0};
+
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources
+      {
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	    exit(-1);
+	  }
+      }
+
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Editor::Working Directory : %s\n", cwd);
+
 
     //Mac OS:
     //Find starting folder
@@ -416,7 +427,7 @@ int main (int argc, char ** argv)
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
 
-    std::string iniFilename = "../../resources/map.ini";
+    std::string iniFilename = "map.ini";
     //Use local ini file if it exists
     if (Utilities::pathExists(userFolder + iniFilename)) {
         iniFilename = userFolder + iniFilename;
@@ -469,7 +480,7 @@ int main (int argc, char ** argv)
     //scene::ISceneManager* smgr = device->getSceneManager();
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = device->getGUIEnvironment()->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;
@@ -493,7 +504,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "../../resources/lang/languageController-";
+    std::string languageFile = "lang/languageController-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -533,7 +544,7 @@ int main (int argc, char ** argv)
     if (worldName.length() == 0) {
 
         //Find scenario path
-        std::string scenarioPath = "../../resources/scenarios/";
+        std::string scenarioPath = "scenarios/";
         if (Utilities::pathExists(userFolder + scenarioPath)) {
             scenarioPath = userFolder + scenarioPath;
         }
@@ -554,11 +565,11 @@ int main (int argc, char ** argv)
     std::vector<std::string> otherShipTypes;
 
     std::string otherShipModelPath;
-    std::string ownShipModelPath = "../../resources/models/Ownship/";
+    std::string ownShipModelPath = "models/Ownship/";
     if (multiplayer) {
-        otherShipModelPath = "../../resources/models/Ownship/"; //If in multiplayer mode, use own ship list for both own and others
+        otherShipModelPath = "models/Ownship/"; //If in multiplayer mode, use own ship list for both own and others
     } else {
-        otherShipModelPath = "../../resources/models/Othership/";
+        otherShipModelPath = "models/Othership/";
     }
 
     getDirectoryList(device,ownShipTypes,ownShipModelPath);
@@ -616,7 +627,7 @@ int main (int argc, char ** argv)
         //If an existing scenario, load data into these structures
         if(scenarioName.length() != 0) {
             //Find scenario path
-            std::string scenarioPath = "../../resources/scenarios/";
+            std::string scenarioPath = "scenarios/";
             if (Utilities::pathExists(userFolder + scenarioPath)) {
                 scenarioPath = userFolder + scenarioPath;
             }
@@ -776,7 +787,7 @@ int main (int argc, char ** argv)
 
     //Load buoy data
     //construct path to world model
-    std::string worldPath = "../../resources/world/";
+    std::string worldPath = "world/";
     worldPath.append(worldName);
     //Check if this world model exists in the user dir.
     if (Utilities::pathExists(userFolder + worldPath)) {

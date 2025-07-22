@@ -200,23 +200,32 @@ int findCharOccurrences(std::string inputString, std::string findStr)
 int main (int argc, char ** argv)
 {
 
-    #ifdef FOR_DEB
-    chdir("/usr/share/bridgecommand");
-    #endif // FOR_DEB
+    char cwd[1024]={0};
 
+    if(0 != CHDIR("../../resources/"))//Launch from builded sources
+      {
+	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	  {
+	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	    exit(-1);
+	  }
+      }
+
+    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("Settings::Working Directory : %s\n", cwd);
+	
     //Choose the file to edit, with default of bc5.ini, change to map.ini if '-M' is used as first argument, or mph.ini if -H, or repeater.ini -f -R
-    std::string iniFilenameRaw = "../../resources/bc5.ini";
+    std::string iniFilenameRaw = "bc5.ini";
     std::string iniFilename = "bc5.ini";
     if ((argc>1)&&(strcmp(argv[1],"-M")==0)) {
-        iniFilenameRaw = "../../resources/map.ini";
+        iniFilenameRaw = "map.ini";
         iniFilename = "map.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-H")==0)) {
-        iniFilenameRaw = "../../resources/mph.ini";
+        iniFilenameRaw = "mph.ini";
         iniFilename = "mph.ini";
     }
     if ((argc>1)&&(strcmp(argv[1],"-R")==0)) {
-        iniFilenameRaw = "../../resources/repeater.ini";
+        iniFilenameRaw = "repeater.ini";
         iniFilename = "repeater.ini";
     }
 
@@ -416,7 +425,7 @@ int main (int argc, char ** argv)
     if (modifier.length()==0) {
         modifier = "en"; //Default
     }
-    std::string languageFile = "../../resources/lang/languageIniEditor-";
+    std::string languageFile = "lang/languageIniEditor-";
     languageFile.append(modifier);
     languageFile.append(".txt");
     if (Utilities::pathExists(userFolder + languageFile)) {
@@ -475,7 +484,7 @@ int main (int argc, char ** argv)
     #endif
 
     std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "../../resources/media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
     irr::gui::IGUIFont *font = environment->getFont(fontPath.c_str());
     if (font == NULL) {
         std::cout << "Could not load font, using fallback" << std::endl;
