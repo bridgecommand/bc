@@ -93,7 +93,7 @@ int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, st
       nc_inq_varndims(mIdPolarFile, trueWindAngleVar, &nDims);
       nc_inq_vardimid(mIdPolarFile, trueWindAngleVar, dimIds);
       nc_inq_dimlen(mIdPolarFile, dimIds[0], &twaSize);
-      
+
       mStw.resize(stwSize);
       mTws.resize(twsSize);
       mTwa.resize(twaSize);
