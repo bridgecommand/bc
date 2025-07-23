@@ -2326,9 +2326,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			  endNode->setName(endParent->getName());
 			}
 
+            // Length factor can be hard coded as 1.0, as line nominal length will be updated later
+            irr::f32 lengthFactor = 1.0;
+
 			// Create the lines
 			getLines()->setLineStart(startNode, dataMasterCmds->lines.lineStartType, dataMasterCmds->lines.lineStartID, true, i);
-			getLines()->setLineEnd(endNode, dataMasterCmds->lines.lineNominalShipMass, dataMasterCmds->lines.lineEndType, dataMasterCmds->lines.lineEndID, true, i);
+			getLines()->setLineEnd(endNode, dataMasterCmds->lines.lineNominalShipMass, dataMasterCmds->lines.lineEndType, dataMasterCmds->lines.lineEndID, lengthFactor, true, i);
 		      }
 		  }
 
