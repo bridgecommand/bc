@@ -51,4 +51,3 @@ const std::string VERSION = "5.10";
 const std::string LONGVERSION = "5.10.3";
 const std::string SOMOSVERSION = "SOMOS";
 #endif
-
