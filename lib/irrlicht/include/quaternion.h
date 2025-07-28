@@ -536,9 +536,10 @@ inline bool quaternion::equals(const quaternion& other, const f32 tolerance) con
 // normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
-	// removed conditional branch since it may slow down and anyway the condition was
-	// false even after normalization in some cases.
-	return (*this *= (f32)reciprocal_squareroot ( (f64)(X*X + Y*Y + Z*Z + W*W) ));
+	const f64 n = X*X + Y*Y + Z*Z + W*W;
+	if ( n > 0 )
+		*this *= (f32)reciprocal_squareroot(n);
+	return *this;
 }
 
 // Set this quaternion to the result of the linear interpolation between two quaternions

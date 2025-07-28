@@ -959,6 +959,8 @@ bool CIrrDeviceLinux::run()
 				irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 				irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 				irrevent.KeyInput.Key = getKeyCode(event);
+				irrevent.KeyInput.AutoRepeat = false; // TODO: can maybe use XPeekEvent to check if same key got pressed again to get that info
+			    irrevent.KeyInput.Extended = false;
 
 				postEventFromUser(irrevent);
 				break;
@@ -1014,6 +1016,8 @@ bool CIrrDeviceLinux::run()
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 					irrevent.KeyInput.Key = getKeyCode(event);
+					irrevent.KeyInput.AutoRepeat = false;
+					irrevent.KeyInput.Extended = false;
 
 					postEventFromUser(irrevent);
 				}

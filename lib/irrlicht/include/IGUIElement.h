@@ -629,19 +629,19 @@ public:
 	}
 
 
-	//! returns true if the given element is a child of this one.
+	//! returns true if the given element is a child of this one
+	//! Checks recursively, so there can be a few element levels in between
 	//! \param child: The child element to check
-	bool isMyChild(IGUIElement* child) const
+	bool isMyChild(const IGUIElement* child) const
 	{
 		if (!child)
 			return false;
-		do
+
+		child = child->Parent;
+		while ( child && child != this )
 		{
-			if (child->Parent)
-				child = child->Parent;
-
-		} while (child->Parent && child != this);
-
+			child = child->Parent;
+		}
 
 		return child == this;
 	}
