@@ -537,6 +537,13 @@ LightEndAngle(5)=472.5
 <li>LightStartAngle(#): The bearing relative to the ship's head that a light is visible from. (0-360)</li>
 <li>LightEndAngle(#): The bearing relative to the ship's head that a light stops being visible at. (0-720)</li>
 <li><b>So for example, a port steaming light could have LightStartAngle(2)=247.5 and LightEndAngle(2)=361. Note that the LightEndAngle should be greater than the LightStartAngle, and can therefore be between 0 and 720 degrees</b></li>
+<li>(Optional) Sequence(#): A text sequence of 'L' and 'D's. The case is not significant.
+Each character represents a quater of a second of the sequence, and 'L'
+represents the light being on, and 'D' is off. When the end of the
+sequence is reached, the sequence restarts. So for example, <i>Sequence(#)="LLLDDDDDD"</i>
+represents 0.75 seconds where the light is on, followed by 1.5 seconds
+where it is off, then restarting with 0.75s of light and so on. If omitted, the light will be steady.</li>
+<li>(Optional) PhaseStart(#): Which 'step' the light starts on, and should be given as an integer between 1 and the length of the sequence. For example, if you want two lights synchronised, you can give them the same sequence and set both to have a PhaseStart(#) of 1. If omitted or set to zero, the starting phase will be set randomly.</li>
 </ul>
 </li>
 </ul>
