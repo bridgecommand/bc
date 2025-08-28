@@ -429,7 +429,12 @@ std::vector<std::vector<irr::f32>> Terrain::heightMapBinaryToVector(irr::io::IRe
                 const size_t bytesPerPixel = 4; //Hard coded for 32 bit (4 byte)
                 irr::f32 val;
                 if (heightMapFile->read(&val, bytesPerPixel) == bytesPerPixel) {
-                    heightMapLine.push_back(val); //We use this as an unscaled height in metres
+                    if (std::isnormal(val)) {
+                        heightMapLine.push_back(val); //We use this as an unscaled height in metres
+                    }
+                    else {
+                        heightMapLine.push_back(-1e3); // If nan or inf, if so, set to -1e3, to indicate missing data
+                    }
                 } else {
                     heightMapLine.push_back(-1e3); //Fallback, we shouldn't get here?
                 }
