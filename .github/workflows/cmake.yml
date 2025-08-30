@@ -1,7 +1,7 @@
 name: CMake
 
 on:
-  on: workflow_dispatch
+  workflow_dispatch:
   pull_request:
   push:
     paths: 
