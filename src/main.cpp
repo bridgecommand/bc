@@ -894,7 +894,7 @@ int main(int argc, char ** argv)
     }
     //std::string serialisedScenarioData = scenarioData.serialise(false);
 
-    loadingMessage->remove(); loadingMessage = 0;
+    //loadingMessage->remove(); loadingMessage = 0;
     bool bEnd = false;
 
     std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
