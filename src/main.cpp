@@ -919,6 +919,32 @@ int main(int argc, char ** argv)
     VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
 
 
+    //check enough time has elapsed to show the credits screen (5s)
+    while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
+        device->run();
+    }
+    
+    // Show world model credits if available
+    std::string worldReadme = model.getWorldReadme();
+    if (worldReadme.size() > 0) {
+        std::wstring wideWorldReadme = std::wstring(worldReadme.begin(), worldReadme.end());
+        loadingMessage->setText(wideWorldReadme.c_str());
+        device->run();
+        driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
+        device->getGUIEnvironment()->drawAll();
+        driver->endScene();
+        
+        //check enough time has elapsed to show the credits screen (10s) in total (5s main, 5s world)
+        while (device->getTimer()->getRealTime() - creditsStartTime < 10000) {
+            device->run();
+        }
+
+    }
+    
+    // Remove loading message, as not needed again
+    loadingMessage->remove(); loadingMessage = 0;
+
+
     // Load the VR interface, allowing link to model
     int vrSuccess = -1;
     if (vr3dMode) {
@@ -990,13 +1016,6 @@ int main(int argc, char ** argv)
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
     }
-    
-    //check enough time has elapsed to show the credits screen (5s)
-    while(device->getTimer()->getRealTime() - creditsStartTime < 5000) {
-        device->run();
-    }
-    //remove credits here
-    //loadingMessage->remove(); loadingMessage = 0;
 
     //set up timing for NMEA
 

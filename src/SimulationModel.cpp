@@ -119,6 +119,21 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
             worldPath = userFolder + worldPath;
         }
 
+        // Store world model readme.txt file contents here if available
+        std::string worldReadmePath = worldPath + "/readme.txt";
+        worldModelReadmeText = "";
+        if (Utilities::pathExists(worldReadmePath)) {
+            std::ifstream file(worldReadmePath.c_str());
+            if (file.is_open()) {
+                std::string line;
+                while (std::getline(file, line)) {
+                    worldModelReadmeText.append(line);
+                    worldModelReadmeText.append("\n");
+                }
+            }    
+        }
+        
+
         //Add terrain: Needs to happen first, so the terrain parameters are available
         terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution);
 
@@ -1434,6 +1449,11 @@ SimulationModel::~SimulationModel()
     std::string SimulationModel::getWorldName() const
     {
         return worldName;
+    }
+
+    std::string SimulationModel::getWorldReadme() const
+    {
+        return worldModelReadmeText;
     }
 
     void SimulationModel::releaseManOverboard()
