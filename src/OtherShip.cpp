@@ -155,6 +155,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             irr::f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
+            std::string lightSequence = IniFile::iniFileToString(iniFilename, IniFile::enumerate1("Sequence", currentLight));
+            irr::u32 phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
+
             //correct to local scaled coordinates
             /*
             lightX *= scaleFactor;
@@ -163,7 +166,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange));
+            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
         }
     }
 
