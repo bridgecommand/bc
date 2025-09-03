@@ -26,24 +26,21 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         sudo apt-get update
-        sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev
-        cd src
-        sed -i 's/#add_definitions(-DFOR_DEB)/add_definitions(-DFOR_DEB)/g' CMakeLists.txt
-        cat CMakeLists.txt
-        cd ../bin
-        cmake ../src
+        sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev libnetcdf-dev
+        cd bin/linux
+        cmake ../../src
 
     - name: Build
       # Build your program with the given configuration
       run: |
-        cd bin
+        cd bin/linux
         make
         ./bridgecommand --version
-        cd createDeb
-        ./buildDeb
+        cd ../../install/createDeb
+        ./buildDeb.sh
       
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-amd64
-        path: bin/createDeb/bridgecommand.deb
+        path: bin/linux/createDeb/bridgecommand.deb
