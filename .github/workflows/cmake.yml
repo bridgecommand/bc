@@ -24,11 +24,11 @@ jobs:
         sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev libnetcdf-dev
         cd bin/linux
         cmake ../../src
-	cd ../../lib/irrlicht/source/Irrlicht
-	sudo make sharedlib
-	sudo make install
-	sudo cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/
-	sudo cp /usr/local/lib64/libIrrlicht.so* /usr/lib/
+        cd ../../lib/irrlicht/source/Irrlicht
+        sudo make sharedlib
+        sudo make install
+        sudo cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib
+        sudo cp /usr/local/lib64/libIrrlicht.so* /usr/lib
 
     - name: Build
       # Build your program with the given configuration
