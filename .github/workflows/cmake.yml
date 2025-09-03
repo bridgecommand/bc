@@ -43,4 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: linux-amd64
-        path: install/createDeb/bridgecommand.deb
+        path: install/createDeb/*.deb
