@@ -33,6 +33,11 @@ jobs:
         cd vcpkg
         .\vcpkg install netcdf-c netcdf-cxx4
 
+    - name: Add to env
+      run: |
+        echo "INCLUDE=%GITHUB_WORKSPACE%\vcpkg\installed\x64-windows\include;%INCLUDE%" >> $GITHUB_ENV
+        echo "LIB=%GITHUB_WORKSPACE%\vcpkg\installed\x64-windows\lib;%LIB%" >> $GITHUB_ENV
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
