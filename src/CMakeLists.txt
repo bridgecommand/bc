@@ -53,4 +53,3 @@ target_link_libraries(bridgecommand-bc PRIVATE
         OpenXR::openxr_loader
 	netcdf
     )
-endif

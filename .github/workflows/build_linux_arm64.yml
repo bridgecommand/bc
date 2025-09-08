@@ -1,4 +1,4 @@
-name: CMakeARM
+name: Build_linux_arm64
 
 on: push
   

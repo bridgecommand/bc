@@ -1,4 +1,4 @@
-name: MSBuild
+name: Build_Win64
 
 on: push
 
@@ -21,6 +21,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: vcpkg install
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+
+    - name: netCDF install
+      run: |
+        cd vcpkg
+        .\vcpkg install netcdf-c netcdf-cxx4
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
