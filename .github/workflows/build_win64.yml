@@ -22,21 +22,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: vcpkg install
+    - name: Download netCDF
       run: |
-        git clone https://github.com/microsoft/vcpkg.git
-        cd vcpkg
-        .\bootstrap-vcpkg.bat
+        Invoke-WebRequest -Uri "https://downloads.unidata.ucar.edu/netcdf-c/4.9.3/netCDF4.9.3-NC4-64.exe" -OutFile netCDF4.9.3-NC4-64.exe
 
-    - name: netCDF install
+    - name: Install netCDF
       run: |
-        cd vcpkg
-        .\vcpkg install netcdf-c netcdf-cxx4
+        Start-Process -FilePath .\netCDF4.9.3-NC4-64.exe -ArgumentList "/S" -Wait
 
-    - name: Add to env
+    - name: Add netCDF to env
       run: |
-        echo "INCLUDE=%GITHUB_WORKSPACE%\vcpkg\installed\x64-windows\include;%INCLUDE%" >> $GITHUB_ENV
-        echo "LIB=%GITHUB_WORKSPACE%\vcpkg\installed\x64-windows\lib;%LIB%" >> $GITHUB_ENV
+        echo "INCLUDE=C:\Program Files\netCDF\include;%INCLUDE%" >> $GITHUB_ENV
+        echo "LIB=C:\Program Files\netCDF\lib;%LIB%" >> $GITHUB_ENV
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
