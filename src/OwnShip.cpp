@@ -2134,7 +2134,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         {
             axialDrag = dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
         }
-        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + sailsForceX - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
+        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + (sailsForceX*10) - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (axialAcceleration > 9.81)
         {
