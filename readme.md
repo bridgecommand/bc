@@ -1,8 +1,8 @@
-# Bridge Command ⛵
-
 ![Build Linux x86_64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_x86-64.yml/badge.svg)
 ![Build Linux arm64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_arm64.yml/badge.svg)
-![Build win64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_win64.yml/badge.svg)
+![Build win64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_win64.yml/badge.svg)
+
+# Bridge Command ⛵
 
 This is the source code for Bridge Command, developed in C++ using the Irrlicht 3d library.
 For more information, see https://www.bridgecommand.co.uk
