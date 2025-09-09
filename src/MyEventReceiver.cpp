@@ -457,7 +457,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_CLOSE_BOX)
             {
 	      std::string shut = Message::ShutDown();
-	      net->SendMessage(shut);
+	      net->SendMessage(shut, true);
 	      device->closeDevice(); // Confirm shutdown.
             }
         }

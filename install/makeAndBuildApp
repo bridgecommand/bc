@@ -1,2 +1,0 @@
-#!/bin/sh
-/Applications/CMake.app/Contents/bin/cmake ../src/ && make && ./macOScopy && open -n ./BridgeCommand.app
