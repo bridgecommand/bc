@@ -1,6 +1,6 @@
-![Build Linux x86_64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_x86-64.yml/badge.svg)
-![Build Linux arm64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_arm64.yml/badge.svg)
-![Build win64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_win64.yml/badge.svg)
+[![Build Linux x86_64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_x86-64.yml/badge.svg)](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_x86-64.yml)
+[![Build Linux arm64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_arm64.yml/badge.svg)](https://github.com/ENSM-Nantes/bc/actions/workflows/build_linux_arm64.yml)
+[![Build win64](https://github.com/ENSM-Nantes/bc/actions/workflows/build_win64.yml/badge.svg)](https://github.com/ENSM-Nantes/bc/actions/workflows/build_win64.yml)
 
 # Bridge Command ⛵
 
