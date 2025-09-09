@@ -46,7 +46,7 @@ jobs:
 
     - name: Build Installer
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: "makensis.exe install/installNoSource.nsi"
+      run: "makensis.exe install/bc_installer_win64.nsi"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

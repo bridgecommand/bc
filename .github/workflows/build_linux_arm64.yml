@@ -36,11 +36,11 @@ jobs:
         cd bin/linux
         make
         ./bridgecommand --version
-        cd ../../install/createDeb
+        cd ../../install/bc_installer_linux
         ./buildDeb.sh
       
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-arm64
-        path: install/createDeb/*.deb
+        path: install/bc_installer_linux/*.deb
