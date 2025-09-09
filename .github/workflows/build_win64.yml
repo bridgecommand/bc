@@ -30,12 +30,9 @@ jobs:
       run: |
         Start-Process -FilePath .\netCDF4.9.3-NC4-64.exe -ArgumentList "/S" -Wait
 
-    - name: Dir
-      run: Get-ChildItem "C:\Program Files\" | Select-Object -ExpandProperty Name
-
     - name: Add netCDF to env
       run: |
-        echo "INCLUDE=C:\Program Files\netCDF\include;%INCLUDE%" >> $GITHUB_ENV
+        echo "INCLUDE=C:\Program Files\netCDF 4.9.3\include;%INCLUDE%" >> $GITHUB_ENV
         echo "LIB=C:\Program Files\netCDF\lib;%LIB%" >> $GITHUB_ENV
 
     - name: Add MSBuild to PATH
