@@ -1,8 +1,6 @@
 name: Build_Win64
 
-on:
-  workflow_dispatch:
-  pull_request:
+on: push
 
 env:
   # Path to the solution file relative to the root of the project.
