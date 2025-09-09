@@ -1,6 +1,7 @@
 name: Build_linux_x86-64
 
-on: push
+on:
+  pull_request:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
