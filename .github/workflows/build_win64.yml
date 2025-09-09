@@ -31,7 +31,7 @@ jobs:
         Start-Process -FilePath .\netCDF4.9.3-NC4-64.exe -ArgumentList "/S" -Wait
 
     - name: Dir
-      run: dir "C:\Program Files\" /b
+      run: Get-ChildItem "C:\Program Files\" | Select-Object -ExpandProperty Name
 
     - name: Add netCDF to env
       run: |
