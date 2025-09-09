@@ -174,7 +174,7 @@ int Com::ClientMsg(const char *aData, size_t aDataSize)
 
 void Com::SendMsg(eTarget aTarget)
 {
-  mPacket = enet_packet_create(mEvent.packet->data, mEvent.packet->dataLength, 0);
+  mPacket = enet_packet_create(mEvent.packet->data, mEvent.packet->dataLength, ENET_PACKET_FLAG_RELIABLE);
 
   for(unsigned char i=0; i<mClientCounter; i++)
     {
