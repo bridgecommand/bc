@@ -46,10 +46,10 @@ jobs:
 
     - name: Build Installer
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: "makensis.exe /DOUTPUTFILE=../installer_autoBuild.exe bin/installNoSource.nsi"
+      run: "makensis.exe /DOUTPUTFILE=install/bridgecommand_win_installer_x86-64.exe install/installNoSource.nsi"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: BC_windows
-        path: installer_autoBuild.exe
+        path: install/bridgecommand_win_installer_x86-64.exe
