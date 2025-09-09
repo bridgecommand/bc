@@ -1,6 +1,8 @@
 name: Build_Win64
 
-on: push
+on:
+  workflow_dispatch:
+  pull_request:
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -34,17 +36,6 @@ jobs:
       run: |
         echo "INCLUDE=C:\Program Files\netCDF 4.9.3\include;%INCLUDE%" >> $GITHUB_ENV
         echo "LIB=C:\Program Files\netCDF\lib;%LIB%" >> $GITHUB_ENV
-
-    - name: Download DirectX SDK (June 2010)
-      run: |
-        Invoke-WebRequest -Uri "https://download.microsoft.com/download/a/e/7/ae743f1f-632b-4809-87a9-aa1bb3458e31/DXSDK_Jun10.exe" -OutFile DXSDK_Jun10.exe	
-    - name: Install DirectX SDK
-      run: |
-        Start-Process -FilePath .\DXSDK_Jun10.exe -ArgumentList "/quiet" -NoNewWindow -Wait
-
-    - name: Add DXSDK_DIR to env
-      run: echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\" >> $GITHUB_ENV
-
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
