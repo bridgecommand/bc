@@ -30,6 +30,9 @@ jobs:
       run: |
         Start-Process -FilePath .\netCDF4.9.3-NC4-64.exe -ArgumentList "/S" -Wait
 
+    - name: Dir
+      run: dir "C:\Program Files\" /b
+
     - name: Add netCDF to env
       run: |
         echo "INCLUDE=C:\Program Files\netCDF\include;%INCLUDE%" >> $GITHUB_ENV
