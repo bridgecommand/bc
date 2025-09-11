@@ -345,7 +345,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         if (mSailsCount > 0)
         {
 	  //Load sail parameters
-	  mSails.Open("nc/polar.nc", "TotalSails_X", "TotalSails_Y");
+	  mSails.Open(basePath + "/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
 	  mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
 
 	  
