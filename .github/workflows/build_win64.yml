@@ -1,10 +1,7 @@
-name: MSBuild
+name: Build_Win64
 
 on:
   pull_request:
-  push:
-    paths: 
-      - '**/Constants.hpp'
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -26,12 +23,21 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Download netCDF
+      run: |
+        Invoke-WebRequest -Uri "https://downloads.unidata.ucar.edu/netcdf-c/4.9.3/netCDF4.9.3-NC4-64.exe" -OutFile netCDF4.9.3-NC4-64.exe
+
+    - name: Install netCDF
+      run: |
+        Start-Process -FilePath .\netCDF4.9.3-NC4-64.exe -ArgumentList "/S" -Wait
+
+    - name: Add netCDF to env
+      run: |
+        echo "INCLUDE=C:\Program Files\netCDF 4.9.3\include;%INCLUDE%" >> $GITHUB_ENV
+        echo "LIB=C:\Program Files\netCDF\lib;%LIB%" >> $GITHUB_ENV
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
-
-    #- name: Restore NuGet packages
-    #  working-directory: ${{env.GITHUB_WORKSPACE}}
-    #  run: nuget restore "${{env.SOLUTION_FILE_PATH}}"
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -41,10 +47,10 @@ jobs:
 
     - name: Build Installer
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: "makensis.exe /DOUTPUTFILE=../installer_autoBuild.exe bin/installNoSource.nsi"
+      run: "makensis.exe install/bc_installer_win64.nsi"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: BC_windows
-        path: installer_autoBuild.exe
+        path: install/*.exe
