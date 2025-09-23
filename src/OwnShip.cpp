@@ -1824,7 +1824,9 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         alpha = alpha * irr::core::DEGTORAD;
 
         irr::f32 apparentWindSpd = sqrt(pow(speedThroughWater, 2) + pow((windSpeed * MPS_TO_KTS), 2) + (2 * speedThroughWater * (windSpeed * MPS_TO_KTS) * cos(alpha)));
-        irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
+        //irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
+
+        irr::f32 apparentWindDir = atan2(windSpeed * MPS_TO_KTS * sin(alpha), speedThroughWater + windSpeed * MPS_TO_KTS * cos(alpha));
 
         model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
         model->setApparentWindSpd(apparentWindSpd);
