@@ -1828,7 +1828,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
         irr::f32 apparentWindDir = atan2(windSpeed * MPS_TO_KTS * sin(alpha), speedThroughWater + windSpeed * MPS_TO_KTS * cos(alpha));
 
-        model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
+        model->setApparentWindDir(apparentWindDir);
         model->setApparentWindSpd(apparentWindSpd);
 
 	float sailsForceX = 0, sailsForceY = 0;
