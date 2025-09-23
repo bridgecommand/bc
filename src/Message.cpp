@@ -952,7 +952,7 @@ std::string& Message::KeepAliveShort(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getApparentWindDir()));
+  msg.append(Utilities::lexical_cast<std::string>(fabs(mModel->getApparentWindDir()) * irr::core::RADTODEG));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getApparentWindSpd()));
 

@@ -418,7 +418,7 @@ void NMEA::updateNMEA()
 
     irr::f32 windDirection = model->getWindDirection();
     irr::f32 windSpeed = model->getWindSpeed();
-    irr::f32 apparentWindDir = fabs(model->getApparentWindDir()) * irr::core::RADTODEG;
+    irr::f32 apparentWindDir = model->getApparentWindDir() * irr::core::RADTODEG;
     irr::f32 apparentWindSpd = model->getApparentWindSpd();
     
     char eastWest = easting[lon < 0];
