@@ -174,7 +174,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
                                                                                    // so between 0 and 0.5 is a azimuth stern drive congiguration
                                                                                    // and between 0.5 and 1 is a tractor configuration
     maxSpeed = IniFile::iniFileTof32(shipIniFilename, "maxSpeedAhead");            // expressed in knots
+    
+    if (maxSpeed == 0) maxSpeed = 50;
     maxSpeed_mps = maxSpeed * 0.514444;                                            // expressed in metres per second
+    
     // DEE_DEC22 ^^^^
     // Scale
     scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
@@ -2155,13 +2158,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
             axialSpd = -maxSpeed_mps;
         }
 
-        //std::cout << "portAxialThrust : " << portAxialThrust << std::endl;
-        //std::cout << "shipMass : " << shipMass << std::endl;
-        //std::cout << "axialAcceleration : " << axialAcceleration << std::endl;
-        //std::cout << "deltaTime : " << deltaTime << std::endl;
-        //std::cout << "axialSpeed : " << axialSpd << std::endl;
-        //std::cout << "portEngine : " << portEngine << std::endl;
-        //std::cout << "maxForce : " << maxForce << std::endl;
+        /*std::cout << "portAxialThrust : " << portAxialThrust << std::endl;
+        std::cout << "shipMass : " << shipMass << std::endl;
+        std::cout << "axialAcceleration : " << axialAcceleration << std::endl;
+        std::cout << "deltaTime : " << deltaTime << std::endl;
+        std::cout << "axialSpeed : " << axialSpd << std::endl;
+        std::cout << "speedThroughWater : " << speedThroughWater << std::endl;
+        std::cout << "portEngine : " << portEngine << std::endl;
+        std::cout << "maxForce : " << maxForce << std::endl;*/
 
 
         // DEE_DEC22 not commenting out old code for clarity

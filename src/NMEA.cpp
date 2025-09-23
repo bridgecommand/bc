@@ -409,7 +409,7 @@ void NMEA::updateNMEA()
 
     irr::f32 cog = model->getCOG();
     irr::f32 sog = model->getSOG()*MPS_TO_KTS;
-    irr::f32 spdWater = model->getOwnShipSpeedThroughWater();
+    irr::f32 spdWater = model->getOwnShipSpeedThroughWater() * MPS_TO_KTS;
     irr::f32 latSpeed = model->getLateralSpeed();
     irr::f32 hdg = model->getHeading();
     irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
