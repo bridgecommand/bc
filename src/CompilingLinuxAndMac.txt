@@ -2,7 +2,7 @@ To build on Linux:
 ==================
 
 1) Ensure the required library packages are installed with the following command in the terminal window:
-'sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev'
+'sudo apt-get install cmake build-essential mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev'
 2) Start a terminal session, and make sure you are in the 'bc/bin' directory
 3) Run 'cmake ../src' to prepare the build files
 4) Run 'make' to actually build the program 
