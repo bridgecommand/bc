@@ -43,5 +43,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: linux-x86_64
+        name: BC-SOMOS_Linux-x86_64
         path: install/bc_installer_linux/*.deb
