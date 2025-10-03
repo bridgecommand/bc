@@ -1,6 +1,7 @@
 name: Build_Win64
 
 on:
+  workflow_dispatch:
   pull_request:
 
 env:
@@ -18,7 +19,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v4
