@@ -174,7 +174,10 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
                                                                                    // so between 0 and 0.5 is a azimuth stern drive congiguration
                                                                                    // and between 0.5 and 1 is a tractor configuration
     maxSpeed = IniFile::iniFileTof32(shipIniFilename, "maxSpeedAhead");            // expressed in knots
+    
+    if (maxSpeed == 0) maxSpeed = 50;
     maxSpeed_mps = maxSpeed * 0.514444;                                            // expressed in metres per second
+    
     // DEE_DEC22 ^^^^
     // Scale
     scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
@@ -548,7 +551,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         dynamicsTurnDragB = 0; // neglected
                                // note this models the turning drag of the ship as if it was a vertical plane turning in the water about a vertical axis
 
-        maxForce = dynamicsSpeedA * (maxSpeed_mps * maxSpeed_mps) + dynamicsSpeedB * maxSpeed_mps;
+        //maxForce = dynamicsSpeedA * (maxSpeed_mps * maxSpeed_mps) + dynamicsSpeedB * maxSpeed_mps;
         if (!singleEngine)
         {
             maxForce *= 0.5; // We need the max force per engine, so half of the total max force
@@ -1821,9 +1824,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         alpha = alpha * irr::core::DEGTORAD;
 
         irr::f32 apparentWindSpd = sqrt(pow(speedThroughWater, 2) + pow((windSpeed * MPS_TO_KTS), 2) + (2 * speedThroughWater * (windSpeed * MPS_TO_KTS) * cos(alpha)));
-        irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
+        //irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
 
-        model->setApparentWindDir(apparentWindDir * irr::core::RADTODEG);
+        irr::f32 apparentWindDir = atan2(windSpeed * MPS_TO_KTS * sin(alpha), speedThroughWater + windSpeed * MPS_TO_KTS * cos(alpha));
+
+        model->setApparentWindDir(apparentWindDir);
         model->setApparentWindSpd(apparentWindSpd);
 
 	float sailsForceX = 0, sailsForceY = 0;
@@ -2128,13 +2133,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         irr::f32 axialDrag;
         if (speedThroughWater < 0)
         { // Compensate for loss of sign when squaring
-            axialDrag = -1 * dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
+            axialDrag = (- 1 * dynamicsSpeedA * speedThroughWater * speedThroughWater)*0.5*0.003;
         }
         else
         {
-            axialDrag = dynamicsSpeedA * speedThroughWater * speedThroughWater + dynamicsSpeedB * speedThroughWater;
+            axialDrag = (dynamicsSpeedA * speedThroughWater * speedThroughWater)*0.5*0.003 ;
         }
-        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + (sailsForceX*100) - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
+        irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + (sailsForceX) - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
         // Check acceleration plausibility (not more than 1g = 9.81ms/2)
         if (axialAcceleration > 9.81)
         {
@@ -2146,14 +2151,24 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         }
         axialSpd += axialAcceleration * deltaTime;
         // Also check speed for plausibility, limit to 50m/s
-        if (axialSpd > 50)
+        if (axialSpd > maxSpeed_mps)
         {
-            axialSpd = 50;
+            axialSpd = maxSpeed_mps;
         }
-        else if (axialSpd < -50)
+        else if (axialSpd < -maxSpeed_mps)
         {
-            axialSpd = -50;
+            axialSpd = -maxSpeed_mps;
         }
+
+        /*std::cout << "portAxialThrust : " << portAxialThrust << std::endl;
+        std::cout << "shipMass : " << shipMass << std::endl;
+        std::cout << "axialAcceleration : " << axialAcceleration << std::endl;
+        std::cout << "deltaTime : " << deltaTime << std::endl;
+        std::cout << "axialSpeed : " << axialSpd << std::endl;
+        std::cout << "speedThroughWater : " << speedThroughWater << std::endl;
+        std::cout << "portEngine : " << portEngine << std::endl;
+        std::cout << "maxForce : " << maxForce << std::endl;*/
+
 
         // DEE_DEC22 not commenting out old code for clarity
         // Lateral dynamics
