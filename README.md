@@ -10,19 +10,19 @@ For more information, see https://www.bridgecommand.co.uk
 Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-project.fr/
 
 ## To rebuild Irrlicht on Windows (optionnal to build BC)
-1) (optionnal) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+1) (optionnal) Get Irrlicht from SVN repo here: svn://svn.code.sf.net/p/irrlicht/code/trunk
 2) (optionnal) Replace in lib/irrlicht
 
 ## To rebuild Irrlicht on Linuxs (mandatory to build BC)
-1) (optionnal) Get Irrlicht from SVN repo here : svn://svn.code.sf.net/p/irrlicht/code/trunk
+1) (optionnal) Get Irrlicht from SVN repo here: svn://svn.code.sf.net/p/irrlicht/code/trunk
 2) (optionnal) Replace in lib/irrlicht
 3) Go to lib/irrlicht/source/Irrlicht/ 
 4) Run "make sharedlib; make install"
-5) Duplicate generated so files : cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/; cp /usr/local/lib64/libIrrlicht.so* /usr/lib/
+5) Duplicate generated so files: sudo cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/; sudo cp /usr/local/lib64/libIrrlicht.so* /usr/lib/
 
 ## Add last version of Enet library (not mandatory to run BC)
-1) Download tarball here : http://enet.bespin.org/Downloads.html
-2) Untar into :  lib/enet
+1) Download tarball here: http://enet.bespin.org/Downloads.html
+2) Untar into: lib/enet
 
 ## To compile BC on Windows
 1) Visual Studio 2022 (or greater) are used
