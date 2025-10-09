@@ -161,11 +161,6 @@ private:
     irr::f32 portEngineReference;
     irr::f32 stbdEngineReference;
     irr::f32 wheelReference;
-    irr::f32 portSchottelReference;
-    irr::f32 portAzimuthThrottleReference;
-    irr::f32 stbdSchottelReference;
-    irr::f32 stbdAzimuthThrottleReference;
-
     irr::scene::ISceneNode* leftController;
     irr::scene::ISceneNode* rightController;
     irr::scene::ISceneNode* leftRayNode;

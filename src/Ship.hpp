@@ -21,61 +21,98 @@
 
 #include "irrlicht.h"
 #include <string>
+#include <Eigen/Dense>
+#include "Propeller.hpp"
+#include "ShipGlobalParams.hpp"
 
 //Forward declarations
 class SimulationModel;
 
 class Ship
 {
-    public:
-        Ship();
-        virtual ~Ship();
+public:
+  Ship();
+  virtual ~Ship();
 
-        irr::scene::IMeshSceneNode* getSceneNode() const;
-        irr::core::vector3df getRotation() const;
-        irr::core::vector3df getPosition() const;
-        irr::f32 getLength() const;
-        irr::f32 getBreadth() const;
-        irr::f32 getHeightCorrection() const;
-        irr::f32 getEstimatedDisplacement() const;
-        void setHeading(irr::f32 hdg);
-        void setSpeed(irr::f32 spd);
-        irr::f32 getHeading() const;
-        irr::f32 getSpeed() const; //m/s
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void setPosition(irr::f32 xPos, irr::f32 yPos);
-        irr::u32 getMMSI() const;
-        void setMMSI(irr::u32 mmsi);
+  irr::scene::IMeshSceneNode* getSceneNode() const;
+  irr::core::vector3df getRotation() const;
+  irr::core::vector3df getPosition() const;
+  irr::f32 getLength() const;
+  irr::f32 getBreadth() const;
+  irr::f32 getHeightCorrection() const;
+  irr::f32 getEstimatedDisplacement() const;
+  void setHeading(irr::f32 hdg);
+  void setSpeed(irr::f32 spd);
+  irr::f32 getHeading() const;
+  irr::f32 getSpeed() const; //m/s
+  void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+  void setPosition(irr::f32 xPos, irr::f32 yPos);
+  irr::u32 getMMSI() const;
+  void setMMSI(irr::u32 mmsi);
 
-    protected:
+  int setShipParams(const std::string& aType);
+  double getM(void);
+  double getMY(void);
+  double getMX(void);
+  double getRho(void);
+  Eigen::Vector3d& getMu0(void);
+  Eigen::Matrix3d& getInvMatM(void);
+  sGeoParams& getGeoParams(void);
+  Eigen::Vector3d& getMu(void);
+  //Boat parts
+  Propeller& getProp(void);
+  //Hull& getHull(void);
+  //Rudder& getRudd(void);
+  //Wind& getWind(void);
+  
+protected:
 
-        irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
-        irr::scene::IMeshSceneNode* mSailsScene[4];
-        unsigned int mSailsCount;
-        std::string mSailsType;
-        irr::f32 hdg;
-        irr::f32 xPos;
-        irr::f32 yPos;
-        irr::f32 zPos;
-        irr::f32 axialSpd;
-        irr::f32 length;
-        irr::f32 breadth;
-        irr::f32 draught;
-        irr::f32 airDraught;
-        irr::f32 heightCorrection;
-        irr::f32 angleCorrection;
-// DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
-        irr::f32 angleCorrectionRoll;
-        irr::f32 angleCorrectionPitch;
-// DEE_DEC22
-	int controlMode;
-        bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
-        irr::u32 mmsi;
-        enum CONTROL_MODE
-        {
-            MODE_AUTO = 0,
-            MODE_ENGINE = 1
-        };
+  irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
+  irr::scene::IMeshSceneNode* mSailsScene[4];
+  unsigned int mSailsCount;
+  std::string mSailsType;
+  irr::f32 hdg;
+  irr::f32 xPos;
+  irr::f32 yPos;
+  irr::f32 zPos;
+  irr::f32 axialSpd;
+  irr::f32 length;
+  irr::f32 breadth;
+  irr::f32 draught;
+  irr::f32 airDraught;
+  irr::f32 heightCorrection;
+  irr::f32 angleCorrection;
+
+  double mM;
+  double mMX;
+  double mMY;
+  double mRho;
+  Eigen::Matrix3d mMatM;
+  Eigen::Matrix3d mInvMatM;
+  Eigen::Vector3d mMu0;
+  sGeoParams mGeoParams;
+  //Dynamic params
+  Eigen::Vector3d mMu;
+  Eigen::Vector3d mEta;
+  //Boat parts
+  Propeller mProp;
+  //Hull mHull;
+  //Rudder mRudd;
+  //Wind mWind;
+
+  
+  // DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
+  irr::f32 angleCorrectionRoll;
+  irr::f32 angleCorrectionPitch;
+  // DEE_DEC22
+  int controlMode;
+  bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
+  irr::u32 mmsi;
+  enum CONTROL_MODE
+    {
+      MODE_AUTO = 0,
+      MODE_ENGINE = 1
+    };
 };
 
 #endif // __SHIP_HPP_INCLUDED__

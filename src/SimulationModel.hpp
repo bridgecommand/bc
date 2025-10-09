@@ -75,10 +75,6 @@ public:
         bool secondaryControlWheel;
         bool secondaryControlPortEngine;
         bool secondaryControlStbdEngine;
-        bool secondaryControlPortSchottel;
-        bool secondaryControlStbdSchottel;
-        bool secondaryControlPortThrustLever;
-        bool secondaryControlStbdThrustLever;
         bool secondaryControlBowThruster;
         bool secondaryControlSternThruster;
         bool debugMode;
@@ -99,50 +95,12 @@ public:
     irr::f32 getRateOfTurn() const;
     void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
 
-
-
     void setRateOfTurn(irr::f32 rateOfTurn);
     void setPos(irr::f32 positionX, irr::f32 positionZ);
     void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
     void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
     irr::f32 getRudder() const;
     irr::f32 getWheel() const; // DEE
-    void setAzimuth1Master(bool isMaster); // Set if azimuth 1 should also control azimuth 2
-    void setAzimuth2Master(bool isMaster); // Set if azimuth 2 should also control azimuth 1
-    bool getAzimuth1Master() const;
-    bool getAzimuth2Master() const;
-    void setPortAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
-    void setStbdAzimuthAngle(irr::f32 angle); // Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
-
-    // DEE_NOV22 vvvv for follow up shcottel and automatic clutch
-    void setPortSchottel(irr::f32 angle); // Set Port Schottel angle
-    irr::f32 getPortSchottel();
-    void setStbdSchottel(irr::f32 angle); // Set Stbd Schottel angle
-    irr::f32 getStbdSchottel();
-    bool getPortClutch();
-    void setPortClutch(bool);
-    bool getStbdClutch();
-    void setStbdClutch(bool);
-    void engagePortClutch();
-    void disengagePortClutch();
-    void engageStbdClutch();
-    void disengageStbdClutch();
-    void setPortAzimuthThrustLever(irr::f32);   // sets port thrust lever range is 0..+1 or -1..+1
-    irr::f32 getPortAzimuthThrustLever(); 	 // gets port thrust lever range is 0..+1 or -1..+1
-    void setStbdAzimuthThrustLever(irr::f32);   // sets starboard thrust lever range is 0..+1 or -1..+1
-    irr::f32 getStbdAzimuthThrustLever(); // gets starboard thrust lever range is 0..+1 or -1..+1
-
-    void btnIncrementPortThrustLever(); // increments the port thrust lever
-    void btnDecrementPortThrustLever(); // decrements the port thrust lever
-    void btnIncrementStbdThrustLever(); // increments the stbd thrust lever
-    void btnDecrementStbdThrustLever(); // decrements the stbd thrust lever
-
-    void btnIncrementPortSchottel(); // clockwise turn of the port schottel in response to a key press
-    void btnDecrementPortSchottel(); // anticlockwise turn of the port schottel in response to a key press
-    void btnIncrementStbdSchottel(); // clockwise turn of the starboard schottel in response to a key press
-    void btnDecrementStbdSchottel(); // anticlockwise turn of the starboard schottel in response to a key press
-
-    // DEE_NOV22 ^^^^
 
     void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
     void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
@@ -314,10 +272,6 @@ public:
     void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
     bool hasGPS() const;
     bool isSingleEngine() const;
-    bool isAzimuthDrive() const;
-    bool isAzimuthAsternAllowed() const;
-    irr::f32 inputToAzimuthEngineMapping(irr::f32 inputAngle) const;
-    irr::f32 azimuthToInputEngineMapping(irr::f32 inputEngine) const;
     bool hasDepthSounder() const;
     irr::f32 getMaxSounderDepth() const;
     bool hasBowThruster() const;
@@ -336,11 +290,7 @@ public:
     // TODO: Most of these can be replaced with getModelParameters()
     bool getIsSecondaryControlWheel() const;
     bool getIsSecondaryControlPortEngine() const;
-    bool getIsSecondaryControlStbdEngine() const;
-    bool getIsSecondaryControlPortSchottel() const;
-    bool getIsSecondaryControlStbdSchottel() const;
-    bool getIsSecondaryControlPortThrustLever() const;
-    bool getIsSecondaryControlStbdThrustLever() const;
+  bool getIsSecondaryControlStbdEngine() const;
     bool getIsSecondaryControlBowThruster() const;
     bool getIsSecondaryControlSternThruster() const;
 

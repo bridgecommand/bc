@@ -1522,40 +1522,6 @@ int VRInterface::update() {
 	// If HUD not shown, control engines and wheel directly with controller movements
 	// We are using the un-transformed positions, i.e. in the user's space, not the world space.
 	if (!showHUD) {
-		if (model->isAzimuthDrive()) {
-			// Azimuth drive mode, just use left and right angles directly
-			if (selectState[HAND_LEFT_INDEX]) {
-				// Reset 'start' position for controller movement if newly pressed down
-				if (!previousSelectState[HAND_LEFT_INDEX]) {
-					vrLeftGripPositionReference = vrLeftGripPosition;
-					portSchottelReference = model->getPortSchottel();
-    				portAzimuthThrottleReference = model->getPortAzimuthThrustLever();
-				}
-
-				irr::f32 leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
-				irr::f32 leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
-
-				// The 'set' functions will check limits, so don't clamp here
-				model->setPortSchottel(portSchottelReference + 360 * leftHandDeltaX); // TODO: Make sensitivity a parameter?
-				model->setPortAzimuthThrustLever(portAzimuthThrottleReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
-			}
-			if (selectState[HAND_RIGHT_INDEX]) {
-				// Reset 'start' position for controller movement if newly pressed down
-				if (!previousSelectState[HAND_RIGHT_INDEX]) {
-					vrRightGripPositionReference = vrRightGripPosition;
-					stbdSchottelReference = model->getStbdSchottel();
-    				stbdAzimuthThrottleReference = model->getStbdAzimuthThrustLever();
-				}
-
-				irr::f32 rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
-				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
-
-				// The 'set' functions will check limits, so don't clamp here
-				model->setStbdSchottel(stbdSchottelReference + 360 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
-				model->setStbdAzimuthThrustLever(stbdAzimuthThrottleReference + 10 * rightHandDeltaZ); // TODO: Make sensitivity a parameter?
-			}
-		}
-		else {
 			// Normal engine/wheel mode
 
 			// Left hand for engine controls
@@ -1610,7 +1576,7 @@ int VRInterface::update() {
 				model->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?
 			}
-		}
+		
 	}
 
 	// Hide controllers

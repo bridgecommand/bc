@@ -221,16 +221,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         
 
         //Set up 3d engine/wheel controls/visualisation
-        if (isAzimuthDrive()) {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2);
-            portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3); // 3 = schottel lever
-            stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3);
-        } else {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
-            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
-        }
+	portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+	stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
+	wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
 
         //make a radar screen, setting parent and offset from own ship
         radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
@@ -707,195 +700,6 @@ SimulationModel::~SimulationModel()
     irr::f32 SimulationModel::getWheel() const
     {
         return ownShip.getWheel();
-    }
-// DEE ^^^^^^^^^^^
-
-    void SimulationModel::setAzimuth1Master(bool isMaster)
-    { // Set if azimuth 1 should also control azimuth 2
-        ownShip.setAzimuth1Master(isMaster);
-    }
-
-    void SimulationModel::setAzimuth2Master(bool isMaster)
-    { // Set if azimuth 2 should also control azimuth 1
-        ownShip.setAzimuth2Master(isMaster);
-    }
-
-    bool SimulationModel::getAzimuth1Master() const
-    {
-        return ownShip.getAzimuth1Master();
-    }
-
-    bool SimulationModel::getAzimuth2Master() const
-    {
-        return ownShip.getAzimuth2Master();
-    }
-
-// DEE_NOV22 vvvv Azimuth Drive follow up code
-
-    // Schottels
-
-    void SimulationModel::setPortSchottel(irr::f32 portAngle)
-    { // Set the Port Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
-        ownShip.setPortSchottel(portAngle);
-    }
-
-    void SimulationModel::setStbdSchottel(irr::f32 stbdAngle)
-    { // Set the Stbd Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
-        ownShip.setStbdSchottel(stbdAngle);
-    }
-
-    irr::f32 SimulationModel::getPortSchottel()
-    { // Gets the Port Schottel angle, (-ve is anticlockwise, +ve is clockwise)
-        return ownShip.getPortSchottel();
-    }
-
-    irr::f32 SimulationModel::getStbdSchottel()
-    { // Gets the Stbd Schottel angle, (-ve is anticlockwise, +ve is clockwise)
-        return ownShip.getStbdSchottel();
-    }
-
-
-    // DEE_NOV22 btn control of shcottels ... this is for when you dont use a mouse of control console,
-    //           however it is also close enough to emergency steering mode of azimuth drives for all
-    //		 practical playability purposes.
-    void SimulationModel::btnIncrementPortSchottel()
-    {
-	ownShip.btnIncrementPortSchottel(); // DEE_NOV22 stbd schottel clockwise
-    }
-
-    void SimulationModel::btnDecrementPortSchottel()
-    {
-	ownShip.btnDecrementPortSchottel(); // DEE_NOV22 port schottel anticlockwise
-    }
-
-    void SimulationModel::btnIncrementStbdSchottel()
-    {
-	ownShip.btnIncrementStbdSchottel(); // DEE_NOV22 stbd shcottel clockwise in response to KEY_KEY_L
-    }
-
-    void SimulationModel::btnDecrementStbdSchottel()
-    {
-	ownShip.btnDecrementStbdSchottel(); // DEE_NOV22 port schottel anticlockwise in response to KEY_KEY_J
-    }
-
-
-
-
-    // Thrust levers
-
-    void SimulationModel::setPortAzimuthThrustLever(irr::f32 portThrustLever)
-    {
-        ownShip.setPortAzimuthThrustLever(portThrustLever);
-//        ownShip.setPortThrustLever(irr::f32 portThrustLever);
-    }
-
-    void SimulationModel::setStbdAzimuthThrustLever(irr::f32 stbdThrustLever)
-    {
-//        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
-        ownShip.setStbdAzimuthThrustLever(stbdThrustLever);
-    }
-
-    irr::f32 SimulationModel::getPortAzimuthThrustLever()
-    {
-        return ownShip.getPortAzimuthThrustLever();
-    }
-
-    irr::f32 SimulationModel::getStbdAzimuthThrustLever()
-    {
-        return ownShip.getStbdAzimuthThrustLever();
-    }
-
-
-    // DEE_NOV22 below in response to keyboard presses
-    //		 todo implement an emergency steering mode
-    //           respond to physical control's buttons emergency mode
-    //		 other code for follow up response to physical controls
-
-    void SimulationModel::btnIncrementPortThrustLever()
-    {
-	ownShip.btnIncrementPortThrustLever();
-    }
-
-    void SimulationModel::btnDecrementPortThrustLever()
-    {
-	ownShip.btnDecrementPortThrustLever();
-    }
-
-    void SimulationModel::btnIncrementStbdThrustLever()
-    {
-	ownShip.btnIncrementStbdThrustLever();
-    }
-
-    void SimulationModel::btnDecrementStbdThrustLever()
-    {
-	ownShip.btnDecrementStbdThrustLever();
-    }
-
-
-    // DEE_NOV22 Clutches , in normal operation these would be automatic, however in emergency (non follow up) mode they are manual
-    // DEE_NOV22 in future perhaps model engine stall for when clutch engaged at too low a revs and prop shaft snap if clutch
-    // DEE_NOV22 is engaged at too high a revs
-
-    void SimulationModel::setPortClutch(bool portClutch)
-    {
-        ownShip.setPortClutch(portClutch);
-    }
-
-    void SimulationModel::setStbdClutch(bool stbdClutch)
-    {
-        ownShip.setStbdClutch(stbdClutch);
-    }
-
-    bool SimulationModel::getPortClutch()
-    {
-        return ownShip.getPortClutch();
-    }
-
-    bool SimulationModel::getStbdClutch()
-    {
-        return ownShip.getStbdClutch();
-    }
-
-
-    // DEE_NOV22 todo need to assign keys to this is emergency steering mode where there is no automatic clutch
-    //           I think we could use the follow up / non follow up flag to determine if it is in normal or
-    //		 emergency steering mode.
-    //		 todo is it better to use SimulationModel::setXXXXClutch(xxxx) for this
-
-    void SimulationModel::engagePortClutch()
-    {
-	ownShip.setPortClutch(true);
-    }
-
-    void SimulationModel::disengagePortClutch()
-    {
-	ownShip.setPortClutch(false);
-    }
-
-    void SimulationModel::engageStbdClutch()
-    {
-	ownShip.setStbdClutch(true);
-    }
-
-    void SimulationModel::disengageStbdClutch()
-    {
-	ownShip.setStbdClutch(false);
-    }
-
-
-
-
-
-// DEE_NOV22 ^^^^ Azimuth Drive follow up code
-
-    void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
-    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
-        ownShip.setPortAzimuthAngle(angle);
-    }
-
-    void SimulationModel::setStbdAzimuthAngle(irr::f32 angle)
-    {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
-        ownShip.setStbdAzimuthAngle(angle);
     }
 
     void SimulationModel::setPortEngine(irr::f32 port)
@@ -1522,68 +1326,6 @@ SimulationModel::~SimulationModel()
         return ownShip.isSingleEngine();
     }
 
-    bool SimulationModel::isAzimuthDrive() const
-    {
-        return ownShip.isAzimuthDrive();
-    }
-
-    bool SimulationModel::isAzimuthAsternAllowed() const
-    {
-        return ownShip.isAzimuthAsternAllowed();
-    }
-
-    irr::f32 SimulationModel::inputToAzimuthEngineMapping(irr::f32 inputAngle) const
-    {
-        irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
-
-        if (isAzimuthAsternAllowed()) {
-            if ((inputAngle >= 0) && (inputAngle < 135)) {
-                tempEngLevel = (inputAngle / 135.0); // Gives range 0->1 for inputs between 0->135deg
-            } else if ((inputAngle >= 135) && (inputAngle < 180)) {
-                tempEngLevel = 1; // Gives 1 for inputs between 135 and 180
-            } else if ((inputAngle >= 180) && (inputAngle < 225)) {
-                tempEngLevel = -1; // Gives -1 for inputs between 180 and 225
-            } else if ((inputAngle >= 225) && (inputAngle < 360)) {
-                tempEngLevel = -1 + ((inputAngle-225.0) / 135.0); // Gives range -1->0 for inputs between 225 and 360
-            }
-        } else {
-            if ((inputAngle >= 0) && (inputAngle < 135))
-            {
-                tempEngLevel = (0.5 + inputAngle / 270); // Gives range 0.5->1 for inputs between 0->135deg
-            }
-            if ((inputAngle >= 135) && (inputAngle < 180)) // Gives 1 for inputs between 135 and 180
-            {
-                tempEngLevel = 1;
-            }
-            if ((inputAngle >= 225) && (inputAngle < 360)) // Gives range 0->0.5 for inputs between 225->360
-            {
-                tempEngLevel = ((inputAngle - 225) / 270);
-            }
-            // DEE_Boxing_Day_2022 I am sure there is a far more elegant solution than the above
-
-            // limit the output to 0..1 only leaving this in for future elegant solution
-            if (tempEngLevel < 0)
-            {
-                tempEngLevel = 0;
-            }
-            if (tempEngLevel > 1)
-            {
-                tempEngLevel = 1;
-            }
-
-        }
-        return tempEngLevel;
-    }
-
-    irr::f32 SimulationModel::azimuthToInputEngineMapping(irr::f32 inputEngine) const
-    {
-        if (isAzimuthAsternAllowed()) {
-            return (inputEngine*135);
-        } else {
-            return (inputEngine*270)-135;
-        }
-    }
-
     bool SimulationModel::hasDepthSounder() const
     {
         return ownShip.hasDepthSounder();
@@ -1659,22 +1401,6 @@ SimulationModel::~SimulationModel()
 
     bool SimulationModel::getIsSecondaryControlStbdEngine() const {
         return modelParameters.secondaryControlStbdEngine;
-    }
-
-    bool SimulationModel::getIsSecondaryControlPortSchottel() const {
-        return modelParameters.secondaryControlPortSchottel;
-    }
-
-    bool SimulationModel::getIsSecondaryControlStbdSchottel() const {
-        return modelParameters.secondaryControlStbdSchottel;
-    }
-
-    bool SimulationModel::getIsSecondaryControlPortThrustLever() const {
-        return modelParameters.secondaryControlPortThrustLever;
-    }
-
-    bool SimulationModel::getIsSecondaryControlStbdThrustLever() const {
-        return modelParameters.secondaryControlStbdThrustLever;
     }
 
     bool SimulationModel::getIsSecondaryControlBowThruster() const {
@@ -1941,16 +1667,9 @@ SimulationModel::~SimulationModel()
         //update the camera position
         camera.update(deltaTime);
         }{ IPROF("Update controls visualisation");
-            if (isAzimuthDrive()) {
-                portEngineVisual.update(ownShip.getPortSchottel());
-                stbdEngineVisual.update(ownShip.getStbdSchottel());
-                portAzimuthThrottleVisual.update(45 * getPortAzimuthThrustLever());
-                stbdAzimuthThrottleVisual.update(45 * getStbdAzimuthThrustLever());
-            } else {
-                portEngineVisual.update(45.0 * ownShip.getPortEngine());
-                stbdEngineVisual.update(45.0 * ownShip.getStbdEngine());
-                wheelVisual.update(-6.0 * ownShip.getWheel());
-            }
+	  portEngineVisual.update(45.0 * ownShip.getPortEngine());
+	  stbdEngineVisual.update(45.0 * ownShip.getStbdEngine());
+	  wheelVisual.update(-6.0 * ownShip.getWheel());
         }
         if (radarCalculation.isRadarOn()) {
             { IPROF("Update radar cursor position");
@@ -2004,10 +1723,6 @@ SimulationModel::~SimulationModel()
         guiData->stbdEng = ownShip.getStbdEngine();
         guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
         guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
-        guiData->portAzimuthAngle = ownShip.getPortAzimuthAngle();
-        guiData->stbdAzimuthAngle = ownShip.getStbdAzimuthAngle();
-        guiData->azimuth1Master = ownShip.getAzimuth1Master();
-        guiData->azimuth2Master = ownShip.getAzimuth2Master();
         guiData->bowThruster = ownShip.getBowThruster();
         guiData->sternThruster = ownShip.getSternThruster();
         guiData->depth = ownShip.getDepth();
@@ -2034,19 +1749,6 @@ SimulationModel::~SimulationModel()
         guiData->radarOn = radarCalculation.isRadarOn();
         guiData->pump1On = ownShip.getRudderPumpState(1);
         guiData->pump2On = ownShip.getRudderPumpState(2);
-
-
-// DEE_NOV22 vvvv
-	guiData->schottelPort = ownShip.getPortSchottel();
-	guiData->schottelStbd = ownShip.getStbdSchottel();
-
-	guiData->azimuthEnginePort = azimuthToInputEngineMapping(ownShip.getPortEngine());
-	guiData->azimuthEngineStbd = azimuthToInputEngineMapping(ownShip.getStbdEngine());
-
-	guiData->azimuthClutchPort = ownShip.getPortClutch();
-	guiData->azimuthClutchStbd = ownShip.getStbdClutch();
-
-	guiData->emergencySteering = !(ownShip.getFollowUpRudderWorking());
 
 // DEE_NOV22 ^^^^
 
@@ -2183,10 +1885,6 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataCtrlOverride->overrideMode == 0) setWheel(dataCtrlOverride->overrideData); 
 	else if(dataCtrlOverride->overrideMode == 1) setPortEngine(dataCtrlOverride->overrideData);
 	else if(dataCtrlOverride->overrideMode == 2) setStbdEngine(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 3) setPortSchottel(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 4) setStbdSchottel(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 5) setPortAzimuthThrustLever(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 6) setStbdAzimuthThrustLever(dataCtrlOverride->overrideData);
 	else if(dataCtrlOverride->overrideMode == 7) setBowThruster(dataCtrlOverride->overrideData);
 	else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
 	break;
@@ -2390,10 +2088,6 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         setRudder(dataMasterCmds->controls.rudder);
         setPortEngine(dataMasterCmds->controls.portEng);
 	setStbdEngine(dataMasterCmds->controls.stbdEng);
-	setPortSchottel(dataMasterCmds->controls.portSch);
-	setStbdSchottel(dataMasterCmds->controls.stbdSch);
-	setPortAzimuthThrustLever(dataMasterCmds->controls.portThrust);
-	setStbdAzimuthThrustLever(dataMasterCmds->controls.stbdThrust);
 	setBowThruster(dataMasterCmds->controls.bowThrust);
 	setSternThruster(dataMasterCmds->controls.sternThrust);
 	

@@ -327,19 +327,7 @@ sCtrlsInf Message::GetInfosControls(std::vector<std::string>& aCtrlsData)
 
       if(!mModel->getIsSecondaryControlStbdEngine())
 	controlsInfos.stbdEng = Utilities::lexical_cast<float>(aCtrlsData.at(3));
-  
-      if(!mModel->getIsSecondaryControlPortSchottel())
-	controlsInfos.portSch = Utilities::lexical_cast<float>(aCtrlsData.at(4));
-    
-      if(!mModel->getIsSecondaryControlStbdSchottel())
-	controlsInfos.stbdSch = Utilities::lexical_cast<float>(aCtrlsData.at(5));
-    
-      if(!mModel->getIsSecondaryControlPortThrustLever())
-	controlsInfos.portThrust = Utilities::lexical_cast<float>(aCtrlsData.at(6));
-    
-      if(!mModel->getIsSecondaryControlStbdThrustLever())
-	controlsInfos.stbdThrust = Utilities::lexical_cast<float>(aCtrlsData.at(7));
-    
+      
       if(!mModel->getIsSecondaryControlBowThruster())
       	controlsInfos.bowThrust = Utilities::lexical_cast<float>(aCtrlsData.at(8));
    
@@ -372,12 +360,12 @@ std::string& Message::ControlOverride(void)
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngine()));
       controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlPortSchottel())
+  /*if(mModel->getIsSecondaryControlPortSchottel())
     {
       controlOverride.append("MCCO,3,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
       controlOverride.append("|");
-    }
+      }
   if(mModel->getIsSecondaryControlStbdSchottel())
     {
       controlOverride.append("MCCO,4,");
@@ -395,7 +383,7 @@ std::string& Message::ControlOverride(void)
       controlOverride.append("MCCO,6,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
       controlOverride.append("|");
-    }
+      }*/
   if(mModel->getIsSecondaryControlBowThruster())
     {
       controlOverride.append("MCCO,7,");
@@ -913,14 +901,14 @@ std::string& Message::KeepAlive(void)
   msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngine()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngine()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdSchottel()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPortAzimuthThrustLever()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdSchottel()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortAzimuthThrustLever()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getBowThruster()));
   msg.append(",");
