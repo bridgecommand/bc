@@ -40,7 +40,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
     {
         this->device = device;
         this->model = model;
@@ -75,18 +75,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //default to double engine in gui
         this->singleEngine = singleEngine;
 
-        //set if we have azimuth controls, instead of engine and rudder
-        this->azimuthDrive = azimuthDrive;
-
-        // GUI position modifications if in azimuth drive mode
-        if (azimuthDrive) {
-            //azimuthGUIOffset = 0.05*su;
-            azimuthGUIOffsetL = -0.02*su;
-            azimuthGUIOffsetR = -0.07*su;
-        } else {
-            azimuthGUIOffsetL = 0;
-            azimuthGUIOffsetR = 0;
-        }
+      
+	azimuthGUIOffsetL = 0;
+	azimuthGUIOffsetR = 0;
+      
 
         //Initial settings for NFU buttons
         nfuPortDown = false;
@@ -97,13 +89,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         //Find available 4:3 rectangle to fit in area for large radar display
         irr::s32 availableWidth;
         irr::s32 availableHeight = (0.95-0.01)*sh;
-        if (azimuthDrive) {
-            // leave 0.9*su on both sides
-            availableWidth  = (0.91-0.09)*su;
-        } else {
-            // leave 0.9*su on left, 0.01*su on right
-            availableWidth  = (0.99-0.09)*su;
-        }
+
+	// leave 0.9*su on left, 0.01*su on right
+	availableWidth  = (0.99-0.09)*su;
+       
         if (availableWidth/(float)availableHeight > 4.0/3.0) {
             // Wider than 4:3
             irr::s32 activeWidth = availableHeight * 4.0/3.0;
@@ -180,96 +169,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             sternThrusterScrollbar = 0;
         }
 
-        if (azimuthDrive) {
-            // Azimuth drive
-            portText = 0;
-            portScrollbar = 0;
-            stbdText = 0;
-            stbdScrollbar = 0;
-            wheelScrollbar = 0;
-            nonFollowUpPortButton = 0;
-            nonFollowUpStbdButton = 0;
-            clickForRudderText = 0;
-            clickForEngineText = 0;
-
-
-	    // DEE_NOV22 defines new objects
-
-	    //DEE_NOV22 comment below code by others.  they combine control and indication,  I'm just going to move them up a little to make room for other
-	    //	    indicators.  I'd prefer it to be a simple thrust direction indicator to be honest, 1 is port 2 is stbd
-//            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_1); 
-//            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.105*su,0.8*sh),0.03*su,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
-        
-            azimuth1Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
-            azimuth2Control = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.77*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_2); 
-
-            azimuth1Control->setMax(360); // DEE_NOV22 comment sets maximum value port azimuth indicator
-            azimuth2Control->setMax(360); // DEE_NOV22 comment sets maximum value stbd azimuth indicator
-	
-// DEE_NOV22 vvvv change position of these
-//            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.88*sh,0.045*su,0.90*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
-//            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.095*su,0.88*sh,0.115*su,0.90*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
-
-            azimuth1Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.82*sh,0.045*su,0.84*sh),0,GUI_ID_AZIMUTH_1_MASTER_CHECKBOX);
-            azimuth2Master = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.82*sh,0.975*su,0.84*sh),0,GUI_ID_AZIMUTH_2_MASTER_CHECKBOX);
-
-// DEE_NOV22 ^^^^
-
-            azimuth1Master->setToolTipText(language->translate("azimuthMaster").c_str());
-            azimuth2Master->setToolTipText(language->translate("azimuthMaster").c_str());
-
-// DEE_NOV22 defines how and where indicators are displayed
-
-	    // DEE_NOV22 the schottels ... the bottom most pair of dial
-
-            schottelPort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_PORT); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
-	    schottelPort->setToolTipText(language->translate("Schottel Port").c_str());
-            schottelPort->setMax(360); // DEE_NOV22 sets maximum value port schottel
-
-            schottelStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.89*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_SCHOTTEL_STBD); // DEE_NOV22 visual representation of the physical schottel control todo in time, make it look like a schottel wheel
-	    schottelStbd->setToolTipText(language->translate("Schottel Starboard").c_str());
-            schottelStbd->setMax(360); // DEE_NOV22 sets maximum value stbd schottel
-
-	    // DEE_NOV22 added emergency steering checkox todo background code for this
-
-	    emergencySteering = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.94*sh,0.975*su,0.96*sh),0,GUI_ID_EMERGENCY_STEERING);
-	    emergencySteering->setToolTipText(language->translate("Emergency Steering").c_str());
-
-
-	    // DEE_NOV22 the engine rpm indicators (0..1) the top most pair
-
-            azimuthEnginePort = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.035*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_PORT); // DEE_NOV22 visual representation of the port engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	        azimuthEnginePort->setToolTipText(language->translate("Engine Port").c_str());
-            azimuthEnginePort->setMax(360); // DEE_NOV22 sets maximum value port engine indicator
-
-            azimuthEngineStbd = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.965*su,0.65*sh),0.04*sh,guienv,guienv->getRootGUIElement(),GUI_ID_AZIMUTH_ENGINE_STBD); // DEE_NOV22 visual representation of the starboard engine rpm as a proportion of max revs so 0..1, there is no reverse engine
-	        azimuthEngineStbd->setToolTipText(language->translate("Engine Starboard").c_str());
-            azimuthEngineStbd->setMax(360); // DEE_NOV22 sets maximum value stbd engine indicator
-
-            azimuthClutchPort = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.025*su,0.70*sh,0.045*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_PORT);
-            azimuthClutchStbd = guienv->addCheckBox(false,irr::core::rect<irr::s32>(0.955*su,0.70*sh,0.975*su,0.72*sh),0,GUI_ID_AZIMUTH_CLUTCH_STBD);
-            azimuthClutchPort->setToolTipText(language->translate("Port Clutch").c_str());
-            azimuthClutchStbd->setToolTipText(language->translate("Starboard Clutch").c_str());
-
-
-
-	    // DEE_NOV22 ^^^^
-
-        } else {  // is Not azimuth drive
             azimuth1Control = 0;
             azimuth2Control = 0;
             azimuth1Master = 0;
             azimuth2Master = 0;
-	    // DEE_NOV22 vvvv hide the azimuth drive controls
-	    schottelPort = 0; 
-	    schottelStbd = 0;
-	    azimuthClutchPort = 0; // DEE_NOV22 not sure about this, I think perhaps clutch should be on some non azi engines like CPP vessels
-	    azimuthClutchStbd = 0; // DEE_NOV22 as above
-	    azimuthEnginePort = 0; 
-	    azimuthEngineStbd = 0;
-	    emergencySteering = 0; // though perhaps this would be useful for conventional ships too
-            // DEE_NOV22 ^^^^
-
+	
 
             portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
             portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
@@ -325,7 +229,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             clickForEngineText = guienv->addStaticText(language->translate("startupHelpEngine").c_str(),engineHintPos);
             clickForEngineText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
             clickForEngineText->setOverrideColor(irr::video::SColor(255,255,0,0));
-        }
+	    
 
         //add data display:
         stdDataDisplayPos = irr::core::rect<irr::s32>(0.09*su+azimuthGUIOffsetL,0.71*sh,0.45*su+azimuthGUIOffsetR,0.95*sh); //In normal view
@@ -747,14 +651,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (azimuth1Control) {azimuth1Control->drop();}
         if (azimuth2Control) {azimuth2Control->drop();}
 
-
-	// DEE_NOV22 vvvv
-	if (schottelPort) {schottelPort->drop();}
-	if (schottelStbd) {schottelStbd->drop();}
-	if (azimuthEnginePort) {azimuthEnginePort->drop();}
-	if (azimuthEngineStbd) {azimuthEngineStbd->drop();}
-	// DEE_NOV22 ^^^^
-
         weatherScrollbar->drop();
         visibilityScrollbar->drop();
         rainScrollbar->drop();
@@ -1030,17 +926,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         if (showLinesControlsButton) {showLinesControlsButton->setVisible(false);}
         if (showExtraControlsButton) {showExtraControlsButton->setVisible(false);}
 
-	// DEE_NOV22 vvvv hide these in secondary displays
-        if (azimuthEnginePort) {azimuthEnginePort->setVisible(false);}
-        if (azimuthEngineStbd) {azimuthEngineStbd->setVisible(false);}
-        if (schottelPort) {schottelPort->setVisible(false);}
-        if (schottelStbd) {schottelStbd->setVisible(false);}
-        if (azimuthClutchPort) {azimuthClutchPort->setVisible(false);}
-        if (azimuthClutchStbd) {azimuthClutchStbd->setVisible(false);}
-        if (emergencySteering) {emergencySteering->setVisible(false);}
-
-	// DEE_NOV22 ^^^^
-
         if (stbdText) {stbdText->setVisible(false);}
         if (portText) {portText->setVisible(false);}
         if (wheelScrollbar) {wheelScrollbar->setVisible(false);}
@@ -1111,74 +996,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         spdScrollbar->setPos(Utilities::round(guiData->spd));
         if (portScrollbar) {portScrollbar->setPos(Utilities::round(guiData->portEng * -100));}//Engine units are +- 1, scale to -+100, inverted as astern is at bottom of scroll bar
         if (stbdScrollbar) {stbdScrollbar->setPos(Utilities::round(guiData->stbdEng * -100));}
-
-        if (azimuth1Control) {
-	    // DEE_NOV22 should be read only with the needle showing direction only
-//            azimuth1Control->setMag(Utilities::round(guiData->portEng * 100));
-            azimuth1Control->setMag(Utilities::round(90));
-            azimuth1Control->setPos(Utilities::round(guiData->portAzimuthAngle));
-        }
-
-        if (azimuth2Control) {
-	    // DEE_NOV22 should be read only with the needle showing direction only
-//            azimuth2Control->setMag(Utilities::round(guiData->stbdEng * 100));
-            azimuth2Control->setMag(Utilities::round(90));
-            azimuth2Control->setPos(Utilities::round(guiData->stbdAzimuthAngle));
-        }
-
-	// DEE_NOV22 vvvv sets the displayed data in the GUI it does not receive mouse clicks
-
-	if (schottelPort)
-	{ // refers to the GUI object schottelPort as opposed to the value
-		schottelPort->setMag(Utilities::round(90)); // this is because I want a needle of fixed size
-		schottelPort->setPos(Utilities::round(guiData->schottelPort));
-	} // end if schottelPort 
-
-	if (schottelStbd)
-	{ // refers to the GUI object schottelPort as opposed to the value
-		schottelStbd->setMag(Utilities::round(90)); // this is because I want a needle of fixed size
-		schottelStbd->setPos(Utilities::round(guiData->schottelStbd));
-	} // end if schottelStbd
-
-	if (azimuthEnginePort)
-	{ // refers to the GUI object that represents the engine rpm
-		azimuthEnginePort->setMag(Utilities::round(90)); // fixed length needle
-		azimuthEnginePort->setPos(Utilities::round(guiData->azimuthEnginePort));  // i think this has already been adjusted to be
-									   // * 360, the engine proportion 0..1 
-	}
-
-	if (azimuthEngineStbd)
-	{ // refers to the GUI object that represents the engine rpm
-		azimuthEngineStbd->setMag(Utilities::round(90)); // fixed length needle
-		azimuthEngineStbd->setPos(Utilities::round(guiData->azimuthEngineStbd));  // i think this has already been adjusted to be
-									   // * 360, the engine proportion 0..1 
-	}
-
-
-	if(azimuthClutchPort) 
-	{
-		azimuthClutchPort->setChecked(guiData->azimuthClutchPort);
-	}
-
-	if(azimuthClutchStbd) 
-	{
-		azimuthClutchStbd->setChecked(guiData->azimuthClutchStbd);
-	}
-
-	// DEE_NOV22 ^^^^
-
-
-// DEE_NOV22 would prefer to get rid of all this "master" business never seen it on a ship
-//           as you can steer with one azi dead ahead, steering input with the other
-
-        if (azimuth1Master) {
-            azimuth1Master->setChecked(guiData->azimuth1Master);
-        }
-
-        if (azimuth2Master) {
-            azimuth2Master->setChecked(guiData->azimuth2Master);
-        }
-
         //rudderScrollbar->setPos(Utilities::round(guiData->rudder));
         if (wheelScrollbar) {
             wheelScrollbar->setSecondary(Utilities::round(guiData->rudder));

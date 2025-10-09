@@ -131,76 +131,19 @@ irr::core::stringw getCredits(){
     return creditsString;
 }
 
-JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
+JoystickSetup getJoystickSetup(std::string iniFilename) {
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    if (!(isAzimuthDrive)) {
-        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
-    }
+
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
 
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
 
+    
+    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
 
-    if (isAzimuthDrive) {
-        // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
-
-	// joystick numbers used for azimuth drive controls
-	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
-	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
-	joystickSetup.portSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "portSchottel_joystickNo");
-	joystickSetup.stbdSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdSchottel_joystickNo");
-
-	// axes used for azimuth drive controls
-        joystickSetup.portThrustLever_channel = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel")-1;
-        joystickSetup.stbdThrustLever_channel = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel")-1;
-        joystickSetup.portSchottel_channel = IniFile::iniFileTou32(iniFilename, "portSchottel_channel")-1;
-        joystickSetup.stbdSchottel_channel = IniFile::iniFileTou32(iniFilename, "stbdSchottel_channel")-1;
-
-	// inversion of joystick axes
-	// NB dont use this for schottels like Shetland Traders because only one axis is inverted
-	// to model that use the boat.ini file
-
-        joystickSetup.schottelPortDirection = 1;
-        if (IniFile::iniFileTou32(iniFilename, "invertPortSchottel")==1) {
-            joystickSetup.schottelPortDirection = -1;
-        }
-
-        joystickSetup.schottelStbdDirection = -1;
-        if (IniFile::iniFileTou32(iniFilename, "invertStbdSchottel")==1) {
-            joystickSetup.schottelStbdDirection = -1;
-        }
-
-        joystickSetup.thrustLeverPortDirection = 1;
-        if (IniFile::iniFileTou32(iniFilename, "invertPortThrustLever")==1) {
-            joystickSetup.thrustLeverPortDirection = -1;
-        }
-
-        joystickSetup.thrustLeverStbdDirection = -1;
-        if (IniFile::iniFileTou32(iniFilename, "invertStbdthrustLever")==1) {
-            joystickSetup.thrustLeverStbdDirection = -1;
-        }
-
-	// offset and scaling
-	joystickSetup.schottelPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortSchottelAngle");
-	joystickSetup.schottelStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdSchottelAngle");
-	joystickSetup.schottelPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortSchottelAngle");
-	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "offsetStbdSchottelAngle");
-
-	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortThrustLever");
-	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdThrustLever");
-	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortThrustLever");
-	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTof32(iniFilename, "offsetStbdThrustLever");
-
-
-
-	// DEE 10JAN23 ^^^^
-    } else {
-        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
-    }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
 
@@ -284,11 +227,6 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
 
     joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
     joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
-
-    joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
-    joystickSetup.joystickNoAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth2_master");
-    joystickSetup.joystickButtonAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth1_master")-1;
-    joystickSetup.joystickButtonAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth2_master")-1;
 
     joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
     joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
@@ -438,8 +376,8 @@ int main(int argc, char ** argv)
         #ifdef _WIN32
         ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
         #else
-	    scriptPath = "\"" + scriptPath + "\"";
-        system(scriptPath.c_str());
+	scriptPath = "\"" + scriptPath + "\"";
+	system(scriptPath.c_str());
         #endif
     }
 	
@@ -787,12 +725,9 @@ int main(int argc, char ** argv)
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
-    bool secondaryControlPortSchottel = false;
-    bool secondaryControlStbdSchottel = false;
-    bool secondaryControlPortThrustLever = false;
-    bool secondaryControlStbdThrustLever = false;
     bool secondaryControlBowThruster = false;
     bool secondaryControlSternThruster = false;
+
     if (mode==OperatingMode::Secondary) {
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
             secondaryControlWheel = true;
@@ -802,18 +737,6 @@ int main(int argc, char ** argv)
         } 
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
             secondaryControlStbdEngine = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_schottel") == 1) {
-            secondaryControlPortSchottel = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_schottel") == 1) {
-            secondaryControlStbdSchottel = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_thrust") == 1) {
-            secondaryControlPortThrustLever = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_thrust") == 1) {
-            secondaryControlStbdThrustLever = true;
         }
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
             secondaryControlBowThruster = true;
@@ -852,10 +775,6 @@ int main(int argc, char ** argv)
     modelParameters.secondaryControlWheel = secondaryControlWheel;
     modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
     modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
-    modelParameters.secondaryControlPortSchottel = secondaryControlPortSchottel;
-    modelParameters.secondaryControlStbdSchottel = secondaryControlStbdSchottel;
-    modelParameters.secondaryControlPortThrustLever = secondaryControlPortThrustLever;
-    modelParameters.secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
     modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
     modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
     modelParameters.debugMode = debugMode;
@@ -959,10 +878,6 @@ int main(int argc, char ** argv)
         if (secondaryControlWheel || 
             secondaryControlPortEngine || 
             secondaryControlStbdEngine || 
-            secondaryControlPortSchottel ||
-            secondaryControlStbdSchottel ||
-            secondaryControlPortThrustLever ||
-            secondaryControlStbdThrustLever ||
             secondaryControlBowThruster ||
             secondaryControlSternThruster) {
             hideEngineAndRudder=false;
@@ -971,13 +886,13 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //load joystick setup
-    JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
+    JoystickSetup joystickSetup = getJoystickSetup(iniFilename);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);

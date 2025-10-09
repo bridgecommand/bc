@@ -17,6 +17,8 @@ add_subdirectory(../lib/serial ../../lib/serial)
 include_directories("../lib/asio/include")
 set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
 include_directories(${IRRLICHT_INCLUDE_DIR})
+include_directories("/usr/include/eigen3/")
+
 
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)

@@ -36,6 +36,31 @@ Ship::~Ship()
     //dtor
 }
 
+int Ship::setShipParams(const std::string& aType)
+{
+  int ret = 0;
+
+  /*TODO : Get datas from parameters file*/
+  if("kvlcc2" == aType)
+    {
+      mRho = 1025;
+      mMu0 << 0, 0, 0;
+      mGeoParams = {320, 58, 20.8, 312622, 11.1, 0.81};
+      //mHullDerParams = {0.022,-0.04, 0.002, 0.011, 0.771, -0.315, 0.083, -1.607, 0.379, -0.391, 0.008, -0.137, -0.049, -0.03, -0.294, 0.055, -0.013};
+      //mAddedMassParams = {0.022, 0.223, 0.011};
+      mProp.Init(9.86, 0.22, -0.48, 0.35, 0.293, -0.275, -0.139 /*,1.53*/);
+      //mRudderParams = {15.8, 112.5, -0.5, 0.312, 0.387, -0.464, 1.09, 0.5, -0.71, 1.827, {0.395, 0.64}, 0.0407};
+      // mShipWindParams = {4910, 1624, 750, 375, 160, 0, 1.225, 0 * 15.5 * 0.514, 90};
+    }
+  else
+    {
+      ret = -1;
+    }
+
+  return ret;
+}
+
+
 irr::scene::IMeshSceneNode* Ship::getSceneNode() const
 {
     return (irr::scene::IMeshSceneNode*)ship;
@@ -124,3 +149,18 @@ void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 
 
 
+Propeller& Ship::getProp(void){return mProp;}
+//Hull& Ship::getHull(void){return mHull;}
+//Rudder& Ship::getRudd(void){return mRudd;}
+//Wind& Ship::getWind(void){return mWind;}
+
+sGeoParams& Ship::getGeoParams(void){return mGeoParams;}
+
+double Ship::getRho(void){return mRho;}
+double Ship::getM(void){return mM;}
+double Ship::getMX(void){return mMX;}
+double Ship::getMY(void){return mMY;}
+Eigen::Vector3d& Ship::getMu0(void){return mMu0;}
+Eigen::Vector3d& Ship::getMu(void){return mMu;}
+//Eigen::Vector3d& Ship::getEta(void){return mEta;}
+Eigen::Matrix3d& Ship::getInvMatM(void){return mInvMatM;}
