@@ -26,6 +26,7 @@
 #include "Utilities.hpp"
 #include <cstdlib> //For rand()
 #include <algorithm>
+#include "Solver.hpp"
 
 #ifdef WITH_PROFILING
 #include "iprof.hpp"
@@ -62,7 +63,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
   xPos = model->longToX(ownShipData.initialLong);
   yPos = 0;
   zPos = model->latToZ(ownShipData.initialLat);
-  hdg = ownShipData.initialBearing; // DEE_DEC22  this is initial heading
+  hdg = ownShipData.initialBearing*M_PI/180; // DEE_DEC22  this is initial heading
 
   basePath = "models/Ownship/" + ownShipName + "/";
   std::string userFolder = Utilities::getUserDir();
@@ -82,9 +83,29 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
   std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename, "FileName");
   std::string ownShipFullPath = basePath + ownShipFileName;
 
+  double xG = 0, iZ = 0, jZ = 0;
 
-  setShipParams("kvlcc2");  
+  if(0 == setShipParams("kvlcc2"))
+    {
+      mM = mRho * mGeoParams.volume;
+      mMX = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpX;
+      mMY = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpY;
 
+      xG = mGeoParams.xG;
+      iZ = mM * pow((0.25 * mGeoParams.lPP), 2);
+      jZ = 0.5 * mRho * pow(mGeoParams.lPP, 4) * mGeoParams.d * mAddedMassParams.jpZ;
+
+      mMatM << mM+mMX, 0, 0,
+        0, mM+mMY, xG*mM,
+        0, xG*mM, iZ+(mM*pow(xG, 2))+jZ;
+
+      mInvMatM = mMatM.inverse();
+      mMu = mMu0;
+      mEta << xPos, zPos, hdg;
+
+      //std::cout << "eta : " << mEta << " - mu : " << mMu;
+    }
+  
   shipMass = IniFile::iniFileTof32(shipIniFilename, "Mass"); // DEE_DEC22 supersede this and replace it with displacement
   // calculate mass from Cb * L * B * draught
   // Cb block coefficient typically 0.87
@@ -189,7 +210,6 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     
   // Load the model
   irr::scene::IMesh *shipMesh;
-
 
   // Set mesh vertical correction (world units)
   heightCorrection = yCorrection * scaleFactor;
@@ -491,8 +511,8 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
 
   // Calculate engine speed required - the port and stbd engine speeds get send back to the GUI with updateGuiData.
 
-  model->setPortEngine(requiredEngineProportion(axialSpd)); // Set via model to ensure sound volume is set too
-  model->setStbdEngine(requiredEngineProportion(axialSpd)); // Set via model to ensure sound volume is set too
+  //model->setPortEngine(requiredEngineProportion(axialSpd)); // Set via model to ensure sound volume is set too
+  // model->setStbdEngine(requiredEngineProportion(axialSpd)); // Set via model to ensure sound volume is set too
   // DEE_NOV22 suggest that change in volume of engine noise is appropriate for controllable pitch propellor vessels only
   // DEE_NOV22 where the engine runs at a constant rpm ( so a shaft generator can be run directly off the shaft )
   // DEE_NOV22 the thrust control being as a result of adjustment of the propellor blades.
@@ -1175,8 +1195,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
       irr::f32 temporalThrust = 0; // sum of temporal thrusts
 
       // Conventional controls
-      portThrust = portEngine * maxForce;
-      stbdThrust = stbdEngine * maxForce;
+      portThrust = portEngine * 2;
+      stbdThrust = stbdEngine * 2;
+
+      mProp.SetRevs(portThrust);
 
       if (portThrust < 0)
 	{
@@ -1295,6 +1317,9 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	{
 	  rudderTorque = rudder * speedThroughWater * rudderA + rudder * (portThrust + stbdThrust) * rudderBAstern; // Reduced effect of rudder when engines engaged astern
 	}
+
+      mRudder.SetDelta((rudder*M_PI)/180, deltaTime);
+      
       // Engine
       engineTorque = (portThrust * propellorSpacing - stbdThrust * propellorSpacing) / 2.0; // propspace is spacing between propellors, so halve to get moment arm
  
@@ -1482,11 +1507,25 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   /******************/
 
   // Set position & angles
-  ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));
+  //ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));
+  std::cout << "--> Xeta : " << mEta[0] << std::endl;
+  std::cout << "--> Yeta : " << mEta[1] << std::endl;
+  std::cout << "--> Hdg : " << mEta[2] << std::endl;
+  std::cout << "--> Speed X : " << mMu[0] << std::endl;
+  std::cout << "--> Speed Y : " << mMu[1] << std::endl;
+  std::cout << "--> Speed Z : " << mMu[2] << std::endl;
+  std::cout << "--> Revs : " << mProp.getRevs() << std::endl;
+  std::cout << "--> Rudder : " << mRudder.getDelta() << std::endl;
+  std::cout << "**************" << std::endl;
+  
+  //std::cout << "--> Xpos : " << xPos << std::endl;
+  //std::cout << "--> Y : " << mEta[1] << std::endl;
+  ship->setPosition(irr::core::vector3df(mEta[0], yPos, mEta[1]));
   // DEE_DEC22 vvvv the original remains however this could be a replacement
   //    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
   //    ship->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
-  ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
+  //ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
+  ship->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/M_PI, pitch, roll));
   // DEE_DEC22 ^^^^
 }
 

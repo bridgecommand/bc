@@ -17,8 +17,13 @@ public:
   void SetRevs(const double aNrps);
   
   /*Getter*/
-  Eigen::Vector3d& getPropellerT(void);
-
+  Eigen::Vector3d getT(void) const ;
+  double getDiameter(void) const ;
+  double getWakeFraction(void) const ;
+  double getLongPos(void) const ;
+  double getRevs(void) const ;
+  double getPolynomialCoef(unsigned char aCoefNumber) const ;
+  
 private:
 
   double mDiam; //Propeller diameter

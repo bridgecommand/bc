@@ -13,4 +13,10 @@ typedef struct{
   double cB; //Coefficient Block
 }sGeoParams;
 
+typedef struct{
+  double mpX; //Added masses of x axis direction and y axis direction, respectively
+  double mpY;
+  double jpZ; //Added moment of inertia
+}sAddedMassParams;
+
 #endif

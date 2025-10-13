@@ -22,8 +22,10 @@
 #include "irrlicht.h"
 #include <string>
 #include <Eigen/Dense>
-#include "Propeller.hpp"
 #include "ShipGlobalParams.hpp"
+#include "Propeller.hpp"
+#include "Hull.hpp"
+#include "Rudder.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -55,14 +57,17 @@ public:
   double getMY(void);
   double getMX(void);
   double getRho(void);
-  Eigen::Vector3d& getMu0(void);
+  Eigen::Vector3d getMu0(void);
   Eigen::Matrix3d& getInvMatM(void);
   sGeoParams& getGeoParams(void);
-  Eigen::Vector3d& getMu(void);
+  Eigen::Vector3d getEta(void);
+  Eigen::Vector3d getMu(void);
+  void setEta(Eigen::Vector3d aEta);
+  void setMu(Eigen::Vector3d aMu);
   //Boat parts
-  Propeller& getProp(void);
-  //Hull& getHull(void);
-  //Rudder& getRudd(void);
+  Propeller& getPropeller(void);
+  Hull& getHull(void);
+  Rudder& getRudder(void);
   //Wind& getWind(void);
   
 protected:
@@ -91,13 +96,14 @@ protected:
   Eigen::Matrix3d mInvMatM;
   Eigen::Vector3d mMu0;
   sGeoParams mGeoParams;
+  sAddedMassParams mAddedMassParams;
   //Dynamic params
   Eigen::Vector3d mMu;
   Eigen::Vector3d mEta;
   //Boat parts
   Propeller mProp;
-  //Hull mHull;
-  //Rudder mRudd;
+  Hull mHull;
+  Rudder mRudder;
   //Wind mWind;
 
   

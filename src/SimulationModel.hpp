@@ -48,351 +48,353 @@ class Sound;
 #include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
 #include "Network.hpp"
+#include "Solver.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
 
-    struct ModelParameters{
-        OperatingMode::Mode mode;
-        bool vrMode;
-        irr::f32 viewAngle;
-        irr::f32 lookAngle;
-        irr::f32 cameraMinDistance;
-        irr::f32 cameraMaxDistance;
-        irr::u32 disableShaders;
-        irr::u32 waterSegments;
-        irr::core::vector3di numberOfContactPoints;
-        irr::f32 minContactPointSpacing;
-        irr::f32 contactStiffnessFactor;
-        irr::f32 contactDampingFactor;
-        irr::f32 lineStiffnessFactor;
-        irr::f32 lineDampingFactor;
-        irr::f32 frictionCoefficient;
-        irr::f32 tanhFrictionFactor;
-        irr::u32 limitTerrainResolution;
-        bool secondaryControlWheel;
-        bool secondaryControlPortEngine;
-        bool secondaryControlStbdEngine;
-        bool secondaryControlBowThruster;
-        bool secondaryControlSternThruster;
-        bool debugMode;
-    };
+  struct ModelParameters{
+    OperatingMode::Mode mode;
+    bool vrMode;
+    irr::f32 viewAngle;
+    irr::f32 lookAngle;
+    irr::f32 cameraMinDistance;
+    irr::f32 cameraMaxDistance;
+    irr::u32 disableShaders;
+    irr::u32 waterSegments;
+    irr::core::vector3di numberOfContactPoints;
+    irr::f32 minContactPointSpacing;
+    irr::f32 contactStiffnessFactor;
+    irr::f32 contactDampingFactor;
+    irr::f32 lineStiffnessFactor;
+    irr::f32 lineDampingFactor;
+    irr::f32 frictionCoefficient;
+    irr::f32 tanhFrictionFactor;
+    irr::u32 limitTerrainResolution;
+    bool secondaryControlWheel;
+    bool secondaryControlPortEngine;
+    bool secondaryControlStbdEngine;
+    bool secondaryControlBowThruster;
+    bool secondaryControlSternThruster;
+    bool debugMode;
+  };
     
-    SimulationModel(irr::IrrlichtDevice* dev,
-                    irr::scene::ISceneManager* scene,
-                    GUIMain* gui,
-                    Sound* sound,
-                    ScenarioData scenarioData,
-                    ModelParameters modelParameters);
-    ~SimulationModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    void setSpeed(irr::f32 spd); //Sets the own ship's speed
-    void setHeading(irr::f32 hdg); //Sets the own ship's heading
+  SimulationModel(irr::IrrlichtDevice* dev,
+		  irr::scene::ISceneManager* scene,
+		  GUIMain* gui,
+		  Sound* sound,
+		  ScenarioData scenarioData,
+		  ModelParameters modelParameters);
+  ~SimulationModel();
+  irr::f32 longToX(irr::f32 longitude) const;
+  irr::f32 latToZ(irr::f32 latitude) const;
+  void setSpeed(irr::f32 spd); //Sets the own ship's speed
+  void setHeading(irr::f32 hdg); //Sets the own ship's heading
 
-    irr::f32 getRateOfTurn() const;
-    void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
+  irr::f32 getRateOfTurn() const;
+  void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
 
-    void setRateOfTurn(irr::f32 rateOfTurn);
-    void setPos(irr::f32 positionX, irr::f32 positionZ);
-    void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
-    void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
-    irr::f32 getRudder() const;
-    irr::f32 getWheel() const; // DEE
+  void setRateOfTurn(irr::f32 rateOfTurn);
+  void setPos(irr::f32 positionX, irr::f32 positionZ);
+  void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
+  void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
+  irr::f32 getRudder() const;
+  irr::f32 getWheel() const; // DEE
 
-    void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
-    void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
-    irr::f32 getPortEngine() const; //Range +-1
-    irr::f32 getStbdEngine() const; //Range +-1
-    irr::f32 getPortEngineRPM() const;
-    irr::f32 getStbdEngineRPM() const;
-    void setBowThruster(irr::f32 proportion);
-    void setSternThruster(irr::f32 proportion);
-    void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets rate of change, for joystick button control
-    void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
-    irr::f32 getBowThruster() const;
-    irr::f32 getSternThruster() const;
-    void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
-    bool getRudderPumpState(int whichPump) const;
-    void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
-    void setAccelerator(irr::f32 accelerator); //Set simulation time compression
-    irr::f32 getAccelerator() const;
-    irr::f32 getHeading() const; //Gets the own ship's heading
+  void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
+  void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
+  irr::f32 getPortEngine() const; //Range +-1
+  irr::f32 getStbdEngine() const; //Range +-1
+  irr::f32 getPortEngineRPM() const;
+  irr::f32 getStbdEngineRPM() const;
+  void setBowThruster(irr::f32 proportion);
+  void setSternThruster(irr::f32 proportion);
+  void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets rate of change, for joystick button control
+  void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
+  irr::f32 getBowThruster() const;
+  irr::f32 getSternThruster() const;
+  void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
+  bool getRudderPumpState(int whichPump) const;
+  void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
+  void setAccelerator(irr::f32 accelerator); //Set simulation time compression
+  irr::f32 getAccelerator() const;
+  irr::f32 getHeading() const; //Gets the own ship's heading
 
-    irr::f32 getLat() const;
-    irr::f32 getLong() const;
-    irr::f32 getPosX() const;
-    irr::f32 getPosY() const;
-    irr::f32 getPosZ() const;
-    irr::f32 getCOG() const;
-    irr::f32 getSOG() const; //In metres/second
-    irr::f32 getDepth() const;
-    irr::f32 getLateralSpeed() const;
-    irr::f32 getOwnShipSpeedThroughWater(void);
-    irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
-    irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
+  irr::f32 getLat() const;
+  irr::f32 getLong() const;
+  irr::f32 getPosX() const;
+  irr::f32 getPosY() const;
+  irr::f32 getPosZ() const;
+  irr::f32 getCOG() const;
+  irr::f32 getSOG() const; //In metres/second
+  irr::f32 getDepth() const;
+  irr::f32 getLateralSpeed() const;
+  irr::f32 getOwnShipSpeedThroughWater(void);
+  irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
+  irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
-    irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
+  irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
 
-    //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
-    //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
-    uint64_t getTimestamp() const; //The unix timestamp in s
-    uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
-    irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
-    void     setTimeDelta(irr::f32 scenarioTime);
+  //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
+  //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
+  uint64_t getTimestamp() const; //The unix timestamp in s
+  uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
+  irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
+  void     setTimeDelta(irr::f32 scenarioTime);
 
-    irr::u32 getNumberOfOtherShips() const;
-    irr::u32 getNumberOfBuoys() const;
-    std::string getOtherShipName(int number) const;
-    irr::f32 getOtherShipPosX(int number) const;
-    irr::f32 getOtherShipPosZ(int number) const;
-    irr::f32 getOtherShipLat(int number) const;
-    irr::f32 getOtherShipLong(int number) const;
-    irr::f32 getOtherShipHeading(int number) const;
-    irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
-    irr::u32 getOtherShipMMSI(int number) const;
-    void setOtherShipHeading(int number, irr::f32 hdg);
-    void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
-    void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);
-    void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
-    void setOtherShipMMSI(int number, irr::u32 mmsi);
-    std::vector<Leg> getOtherShipLegs(int number) const;
-    irr::f32 getBuoyPosX(int number) const;
-    irr::f32 getBuoyPosZ(int number) const;
-    void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
-    void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
-    void deleteOtherShipLeg(int shipNumber, int legNumber);
-    void resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm);
-	std::string getOwnShipEngineSound() const;
-	std::string getOwnShipWaveSound() const;
-	std::string getOwnShipHornSound() const;
-    std::string getOwnShipAlarmSound() const;
+  irr::u32 getNumberOfOtherShips() const;
+  irr::u32 getNumberOfBuoys() const;
+  std::string getOtherShipName(int number) const;
+  irr::f32 getOtherShipPosX(int number) const;
+  irr::f32 getOtherShipPosZ(int number) const;
+  irr::f32 getOtherShipLat(int number) const;
+  irr::f32 getOtherShipLong(int number) const;
+  irr::f32 getOtherShipHeading(int number) const;
+  irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
+  irr::u32 getOtherShipMMSI(int number) const;
+  void setOtherShipHeading(int number, irr::f32 hdg);
+  void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
+  void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);
+  void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
+  void setOtherShipMMSI(int number, irr::u32 mmsi);
+  std::vector<Leg> getOtherShipLegs(int number) const;
+  irr::f32 getBuoyPosX(int number) const;
+  irr::f32 getBuoyPosZ(int number) const;
+  void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
+  void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
+  void deleteOtherShipLeg(int shipNumber, int legNumber);
+  void resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm);
+  std::string getOwnShipEngineSound() const;
+  std::string getOwnShipWaveSound() const;
+  std::string getOwnShipHornSound() const;
+  std::string getOwnShipAlarmSound() const;
 
 
-    void setWeather(irr::f32 weather); //Range 0-12.
-    irr::f32 getWeather() const;
-    void setRain(irr::f32 rainIntensity); //Range 0-10
-    irr::f32 getRain() const;
-    void setVisibility(irr::f32 visibilityNm);
-    irr::f32 getVisibility() const;
-    void setWindDirection(irr::f32 windDirection); //Range 0-360.
-    irr::f32 getWindDirection() const;
-    void setWindSpeed(irr::f32 windSpeed); //Nm/h
-    irr::f32 getWindSpeed() const;
-    void setApparentWindDir(irr::f32 apparentWindDir);
-    irr::f32 getApparentWindDir(void) const;
-    void setApparentWindSpd(irr::f32 apparentWindSpd);
-    irr::f32 getApparentWindSpd(void) const;
-    void setStreamOverrideDirection(irr::f32 streamDirection); //Range 0-360.
-    irr::f32 getStreamOverrideDirection() const;
-    void setStreamOverrideSpeed(irr::f32 streamSpeed); //Nm/h
-    irr::f32 getStreamOverrideSpeed() const;
-    void setStreamOverride(bool streamOverride);
-    bool getStreamOverride() const;
-    void setWaterVisible(bool visible);
-    void lookUp();
-    void lookDown();
-    void lookLeft();
-    void lookRight();
-    void setPanSpeed(irr::f32 horizontalPanSpeed);
-    void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
-    void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
-    void lookStepLeft();
-    void lookStepRight();
-    void moveCameraForwards();
-    void moveCameraBackwards();
-    void lookAhead();
-    void lookAstern();
-    void lookPort();
-    void lookStbd();
-    void changeView();
-    void setView(irr::u32 view);
-    irr::u32 getCameraView() const;
-    irr::core::vector3df getCameraBasePosition() const;
-    irr::core::matrix4 getCameraBaseRotation() const;
-    void setFrozenCamera(bool frozen);
-    void toggleFrozenCamera();
-	void setAlarm(bool alarmState);
-    void toggleRadarOn();
-    bool isRadarOn() const;
-    irr::video::SColor getRadarSurroundColour() const;
-	void increaseRadarRange();
-    void decreaseRadarRange();
-    void setRadarGain(irr::f32 value);
-    void setRadarClutter(irr::f32 value);
-    void setRadarRain(irr::f32 value);
-    void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
-    irr::f32 getPIbearing(irr::s32 PIid) const;
-    irr::f32 getPIrange(irr::s32 PIid) const;
-    void increaseRadarEBLRange();
-    void decreaseRadarEBLRange();
-    void increaseRadarEBLBrg();
-    void decreaseRadarEBLBrg();
-    void increaseRadarXCursor();
-    void decreaseRadarXCursor();
-    void increaseRadarYCursor();
-    void decreaseRadarYCursor();
-    void setRadarNorthUp();
-    void setRadarCourseUp();
-    void setRadarHeadUp();
-    void changeRadarColourChoice();
-    int getArpaMode() const;
-    void setArpaMode(int mode);
-    void setArpaListSelection(irr::s32 selection);
-    void setRadarARPARel();
-    void setRadarARPATrue();
-    void setRadarARPAVectors(irr::f32 vectorMinutes);
-    void setRadarDisplayRadius(irr::u32 radiusPx);
-    void addManualPoint(bool newContact);
-    void clearManualPoints();
-    void trackTargetFromCursor();
-    void clearTargetFromCursor();
-    irr::u32 getARPATracksSize() const;
-    ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
-    void setMainCameraActive();
-    void setRadarCameraActive();
-    void updateViewport(irr::f32 aspect);
-    void setMouseDown(bool isMouseDown);
-    void setZoom(bool zoomOn);
-    void setZoom(bool zoomOn, irr::f32 zoomLevel);
-    void setViewAngle(irr::f32 viewAngle);
-    irr::u32 getLoopNumber() const;
-    std::string getSerialisedScenario() const;
-    std::string getScenarioName() const;
-    std::string getWorldName() const;
-    std::string getWorldReadme() const;
-    void releaseManOverboard();
-    void retrieveManOverboard();
-    bool getManOverboardVisible() const;
-    irr::f32 getManOverboardPosX() const;
-    irr::f32 getManOverboardPosZ() const;
-    void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
-    void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
-    bool hasGPS() const;
-    bool isSingleEngine() const;
-    bool hasDepthSounder() const;
-    irr::f32 getMaxSounderDepth() const;
-    bool hasBowThruster() const;
-    bool hasSternThruster() const;
-    bool hasTurnIndicator() const;
-    bool debugModeOn() const;
-    irr::f32 getOwnShipMass() const;
-    irr::f32 getOwnShipMassEstimate() const;
-    irr::f32 getOtherShipMassEstimate(int number) const;
+  void setWeather(irr::f32 weather); //Range 0-12.
+  irr::f32 getWeather() const;
+  void setRain(irr::f32 rainIntensity); //Range 0-10
+  irr::f32 getRain() const;
+  void setVisibility(irr::f32 visibilityNm);
+  irr::f32 getVisibility() const;
+  void setWindDirection(irr::f32 windDirection); //Range 0-360.
+  irr::f32 getWindDirection() const;
+  void setWindSpeed(irr::f32 windSpeed); //Nm/h
+  irr::f32 getWindSpeed() const;
+  void setApparentWindDir(irr::f32 apparentWindDir);
+  irr::f32 getApparentWindDir(void) const;
+  void setApparentWindSpd(irr::f32 apparentWindSpd);
+  irr::f32 getApparentWindSpd(void) const;
+  void setStreamOverrideDirection(irr::f32 streamDirection); //Range 0-360.
+  irr::f32 getStreamOverrideDirection() const;
+  void setStreamOverrideSpeed(irr::f32 streamSpeed); //Nm/h
+  irr::f32 getStreamOverrideSpeed() const;
+  void setStreamOverride(bool streamOverride);
+  bool getStreamOverride() const;
+  void setWaterVisible(bool visible);
+  void lookUp();
+  void lookDown();
+  void lookLeft();
+  void lookRight();
+  void setPanSpeed(irr::f32 horizontalPanSpeed);
+  void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
+  void changeLookPx(irr::s32 deltaX, irr::s32 deltaY);
+  void lookStepLeft();
+  void lookStepRight();
+  void moveCameraForwards();
+  void moveCameraBackwards();
+  void lookAhead();
+  void lookAstern();
+  void lookPort();
+  void lookStbd();
+  void changeView();
+  void setView(irr::u32 view);
+  irr::u32 getCameraView() const;
+  irr::core::vector3df getCameraBasePosition() const;
+  irr::core::matrix4 getCameraBaseRotation() const;
+  void setFrozenCamera(bool frozen);
+  void toggleFrozenCamera();
+  void setAlarm(bool alarmState);
+  void toggleRadarOn();
+  bool isRadarOn() const;
+  irr::video::SColor getRadarSurroundColour() const;
+  void increaseRadarRange();
+  void decreaseRadarRange();
+  void setRadarGain(irr::f32 value);
+  void setRadarClutter(irr::f32 value);
+  void setRadarRain(irr::f32 value);
+  void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
+  irr::f32 getPIbearing(irr::s32 PIid) const;
+  irr::f32 getPIrange(irr::s32 PIid) const;
+  void increaseRadarEBLRange();
+  void decreaseRadarEBLRange();
+  void increaseRadarEBLBrg();
+  void decreaseRadarEBLBrg();
+  void increaseRadarXCursor();
+  void decreaseRadarXCursor();
+  void increaseRadarYCursor();
+  void decreaseRadarYCursor();
+  void setRadarNorthUp();
+  void setRadarCourseUp();
+  void setRadarHeadUp();
+  void changeRadarColourChoice();
+  int getArpaMode() const;
+  void setArpaMode(int mode);
+  void setArpaListSelection(irr::s32 selection);
+  void setRadarARPARel();
+  void setRadarARPATrue();
+  void setRadarARPAVectors(irr::f32 vectorMinutes);
+  void setRadarDisplayRadius(irr::u32 radiusPx);
+  void addManualPoint(bool newContact);
+  void clearManualPoints();
+  void trackTargetFromCursor();
+  void clearTargetFromCursor();
+  irr::u32 getARPATracksSize() const;
+  ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
+  void setMainCameraActive();
+  void setRadarCameraActive();
+  void updateViewport(irr::f32 aspect);
+  void setMouseDown(bool isMouseDown);
+  void setZoom(bool zoomOn);
+  void setZoom(bool zoomOn, irr::f32 zoomLevel);
+  void setViewAngle(irr::f32 viewAngle);
+  irr::u32 getLoopNumber() const;
+  std::string getSerialisedScenario() const;
+  std::string getScenarioName() const;
+  std::string getWorldName() const;
+  std::string getWorldReadme() const;
+  void releaseManOverboard();
+  void retrieveManOverboard();
+  bool getManOverboardVisible() const;
+  irr::f32 getManOverboardPosX() const;
+  irr::f32 getManOverboardPosZ() const;
+  void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
+  void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
+  bool hasGPS() const;
+  bool isSingleEngine() const;
+  bool hasDepthSounder() const;
+  irr::f32 getMaxSounderDepth() const;
+  bool hasBowThruster() const;
+  bool hasSternThruster() const;
+  bool hasTurnIndicator() const;
+  bool debugModeOn() const;
+  irr::f32 getOwnShipMass() const;
+  irr::f32 getOwnShipMassEstimate() const;
+  irr::f32 getOtherShipMassEstimate(int number) const;
 
-    bool getMoveViewWithPrimary() const;
-    void setMoveViewWithPrimary(bool moveView);
+  bool getMoveViewWithPrimary() const;
+  void setMoveViewWithPrimary(bool moveView);
 
-    ModelParameters getModelParameters() const;
+  ModelParameters getModelParameters() const;
 
-    // TODO: Most of these can be replaced with getModelParameters()
-    bool getIsSecondaryControlWheel() const;
-    bool getIsSecondaryControlPortEngine() const;
+  // TODO: Most of these can be replaced with getModelParameters()
+  bool getIsSecondaryControlWheel() const;
+  bool getIsSecondaryControlPortEngine() const;
   bool getIsSecondaryControlStbdEngine() const;
-    bool getIsSecondaryControlBowThruster() const;
-    bool getIsSecondaryControlSternThruster() const;
+  bool getIsSecondaryControlBowThruster() const;
+  bool getIsSecondaryControlSternThruster() const;
 
-    irr::f32 getLineStiffnessFactor() const;
-    irr::f32 getLineDampingFactor() const;
+  irr::f32 getLineStiffnessFactor() const;
+  irr::f32 getLineDampingFactor() const;
 
-	void startHorn();
-	void endHorn();
+  void startHorn();
+  void endHorn();
 
-    irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
+  irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode);
     
-    irr::scene::ISceneNode* getOwnShipSceneNode();
-    irr::scene::ISceneNode* getOtherShipSceneNode(int number);
-    irr::scene::ISceneNode* getBuoySceneNode(int number);
-    irr::scene::ISceneNode* getLandObjectSceneNode(int number);
-    irr::scene::ISceneNode* getTerrainSceneNode(int number);
+  irr::scene::ISceneNode* getOwnShipSceneNode();
+  irr::scene::ISceneNode* getOtherShipSceneNode(int number);
+  irr::scene::ISceneNode* getBuoySceneNode(int number);
+  irr::scene::ISceneNode* getLandObjectSceneNode(int number);
+  irr::scene::ISceneNode* getTerrainSceneNode(int number);
 
-    irr::f32 getTerrainHeight(irr::f32 posX, irr::f32 posZ) const;
+  irr::f32 getTerrainHeight(irr::f32 posX, irr::f32 posZ) const;
 
-    void addLine(); // Add a line, which will be undefined
+  void addLine(); // Add a line, which will be undefined
     
-    Lines* getLines(); // Get pointer to lines object
+  Lines* getLines(); // Get pointer to lines object
 
-    void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
+  void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
   void update();
   void updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd);  
 private:
-    irr::IrrlichtDevice* device;
-    irr::video::IVideoDriver* driver;
-    irr::scene::ISceneManager* smgr;
+  irr::IrrlichtDevice* device;
+  irr::video::IVideoDriver* driver;
+  irr::scene::ISceneManager* smgr;
 
-    ModelParameters modelParameters;
+  ModelParameters modelParameters;
     
-    irr::video::IImage* radarImage; //Basic radar image
-    irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
-    irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
-    irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
-    irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
-    irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
-    //irr::f32 accelerator;
-    irr::f32 tideHeight;
-    irr::f32 weather; //0-12.0
-    irr::f32 rainIntensity; //0-10
-    irr::f32 visibilityRange; //Nm
-    irr::f32 windDirection; //0-360
-    irr::f32 windSpeed; //Nm
-    irr::f32 apparentWindDir;
-    irr::f32 apparentWindSpd;
-    irr::f32 streamOverrideDirection; //0-360
-    irr::f32 streamOverrideSpeed; //Nm
-    bool streamOverride;
-    irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
-    irr::f32 currentZoom; // Zoom currently in use
-    irr::f32 zoomLevel; // Zoom level that should be used if binos are on
-    Terrain terrain;
-    Light light;
-    OwnShip ownShip;
-    OtherShips otherShips;
-    Buoys buoys;
-    LandObjects landObjects;
-    LandLights landLights;
-    Camera camera;
-    Camera radarCamera;
-    Water water;
-    Tide tide;
-    Rain rain;
-    Lines lines;
-    RadarCalculation radarCalculation;
-    RadarScreen radarScreen;
-    ControlVisualiser portEngineVisual;
-    ControlVisualiser stbdEngineVisual;
-    ControlVisualiser portAzimuthThrottleVisual;
-    ControlVisualiser stbdAzimuthThrottleVisual;
-    ControlVisualiser wheelVisual;
-    GUIMain* guiMain;
-	Sound* sound;
-    bool isMouseDown; //Updated by the event receiver, used by radar
-    bool moveViewWithPrimary;
-    ManOverboard manOverboard;
+  irr::video::IImage* radarImage; //Basic radar image
+  irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
+  irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
+  irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
+  irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
+  irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
+  //irr::f32 accelerator;
+  irr::f32 tideHeight;
+  irr::f32 weather; //0-12.0
+  irr::f32 rainIntensity; //0-10
+  irr::f32 visibilityRange; //Nm
+  irr::f32 windDirection; //0-360
+  irr::f32 windSpeed; //Nm
+  irr::f32 apparentWindDir;
+  irr::f32 apparentWindSpd;
+  irr::f32 streamOverrideDirection; //0-360
+  irr::f32 streamOverrideSpeed; //Nm
+  bool streamOverride;
+  irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
+  irr::f32 currentZoom; // Zoom currently in use
+  irr::f32 zoomLevel; // Zoom level that should be used if binos are on
+  Terrain terrain;
+  Light light;
+  Solver mSolver;
+  OwnShip ownShip;
+  OtherShips otherShips;
+  Buoys buoys;
+  LandObjects landObjects;
+  LandLights landLights;
+  Camera camera;
+  Camera radarCamera;
+  Water water;
+  Tide tide;
+  Rain rain;
+  Lines lines;
+  RadarCalculation radarCalculation;
+  RadarScreen radarScreen;
+  ControlVisualiser portEngineVisual;
+  ControlVisualiser stbdEngineVisual;
+  ControlVisualiser portAzimuthThrottleVisual;
+  ControlVisualiser stbdAzimuthThrottleVisual;
+  ControlVisualiser wheelVisual;
+  GUIMain* guiMain;
+  Sound* sound;
+  bool isMouseDown; //Updated by the event receiver, used by radar
+  bool moveViewWithPrimary;
+  ManOverboard manOverboard;
 
-    //Simulation time handling
-    irr::u32 currentTime; //Computer clock time
-    irr::u32 previousTime; //Computer clock time
-    irr::f32 deltaTime;
-    irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
-    uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-    uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
+  //Simulation time handling
+  irr::u32 currentTime; //Computer clock time
+  irr::u32 previousTime; //Computer clock time
+  irr::f32 deltaTime;
+  irr::f32 scenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+  uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+  uint64_t absoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
-    //utility function to check for collision
-    bool checkOwnShipCollision();
+  //utility function to check for collision
+  bool checkOwnShipCollision();
 
-    //Offset position handling
-    irr::core::vector3d<int64_t> offsetPosition;
+  //Offset position handling
+  irr::core::vector3d<int64_t> offsetPosition;
 
-    //store useful information
-    std::string scenarioName;
-    std::string worldName;
-    std::string serialisedScenarioData;
-    std::string worldModelReadmeText;
+  //store useful information
+  std::string scenarioName;
+  std::string worldName;
+  std::string serialisedScenarioData;
+  std::string worldModelReadmeText;
 
-    //Structure to pass data to gui
-    GUIData* guiData;
+  //Structure to pass data to gui
+  GUIData* guiData;
 };
 #endif
