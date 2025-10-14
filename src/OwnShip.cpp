@@ -34,6 +34,10 @@
 #define IPROF(a) //intentionally empty placeholder
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
+
 // using namespace irr;
 
 void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, irr::f32 minContactPointSpacing, irr::f32 contactStiffnessFactor, irr::f32 contactDampingFactor, irr::f32 frictionCoefficient, irr::f32 tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev)
