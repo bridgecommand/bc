@@ -102,7 +102,6 @@ void Rudder::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoP
   Nr = -(xr + mAh * xh) * Fn * cos(mDelta);
 
   mT << Xr, Yr, Nr;
-  
   //std::cout << "****Rudder mT :" << mT << std::endl; 
   return;
 }

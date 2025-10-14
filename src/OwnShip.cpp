@@ -1141,65 +1141,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	  //std::cout << "Sail force Y = " << sailsForceY << std::endl;
 	}
 
-      // Update bow and stern thrusters, if being controlled by joystick buttons
-      bowThruster += deltaTime * bowThrusterRate;
-      if (bowThruster > 1)
-        {
-	  bowThruster = 1;
-        }
-      if (bowThruster < -1)
-        {
-	  bowThruster = -1;
-        }
-      sternThruster += deltaTime * sternThrusterRate;
-      if (sternThruster > 1)
-        {
-	  sternThruster = 1;
-        }
-      if (sternThruster < -1)
-        {
-	  sternThruster = -1;
-        }
-
-      // DEE_DEC2022
-      // portThrust stbdThrust  meaning changed to the magnitude of thrust
-      // portAxialThrust to mean component of thrust along the axis of the vessel
-      // portLateralThrust to mean component of thrust athwartships
-      //
-      // remodel parameters so that the lever arm of forces act about L/2
-      // which is an approximation of the centre of lateral resistance
-      // and the axis of the vessel
-      //
-      // Calculate Mass and Inertia about the vertical axis (Izz) from ini parameters
-      // Cb block coefficient ususally 0.87 for a general cargo ship
-      // draught, bread, length and seawater density to obtain the displacement (mass)
-      // calculate Izz = mass * (length^2 * breadth^2) / 12
-      // for the future modelling of rolling and pitching then we can also calculate
-      // Iyy = mass * (centreGravityTemporal^2 + breadth^2) / 12, for rolling with a guesstimate made of the height of centreGravity
-      // Ixx = mass * (centreGravityTemporal^2 + length^2) / 12, for pitching motion
-
       // Update axialSpd and hdg with rudder and engine controls - assume two engines, should also work with single engine
       irr::f32 portThrust = 0; // DEE_DEC22 changed meaning to scalar not vector
       irr::f32 stbdThrust = 0; // DEE_DEC22 changed meaning to scalar not vector
 
-      // DEE_DEC22 vvvv
-      irr::f32 portAxialThrust = 0;
-      irr::f32 stbdAxialThrust = 0;
-      irr::f32 portLateralThrust = 0;
-      irr::f32 stbdLateralThrust = 0;
-      irr::f32 portTemporalThrust = 0; // probably temporal not needed at present but for future use as trim of outboard engine
-      irr::f32 stbdTemporalThrust = 0; // and for some configuration of sails and kites
-
-      irr::f32 axialThrust = 0;    // sum of axial thrusts
-      irr::f32 lateralThrust = 0;  // sum of lateral thrusts
-      irr::f32 temporalThrust = 0; // sum of temporal thrusts
-
-      // Conventional controls
       portThrust = portEngine * 2;
       stbdThrust = stbdEngine * 2;
 
-      mProp.SetRevs(portThrust);
-
+      
       if (portThrust < 0)
 	{
 	  portThrust *= asternEfficiency;
@@ -1209,200 +1158,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	  stbdThrust *= asternEfficiency;
 	}
 
-      // For conventional engine, all the thrust is axial
-      portAxialThrust = portThrust;
-      stbdAxialThrust = stbdThrust;
-
-      // Ignore stbd slider if single engine (internally modelled as 2 engines, each with half the max force)
-      if (singleEngine)
-        {
-	  stbdThrust = portThrust;
-	  // DEE_DEC22 vvvv
-	  stbdAxialThrust = portAxialThrust;
-	  stbdLateralThrust = portLateralThrust;
-	  // stbdTemporalThrust = portTemporalThrust; // DEE_DEC22 not yet implemented
-	  // DEE_DEC22 ^^^^
-        }
-
-      // DEE_DEC22 vvvv old code deleted not commented out for clarity
-      //		drag	replaced by	axialDrag
-      //		spd	replaced by	axialSpd but spd is updated for the ancestor object
-      //		acceleration	"	axialAcceleration
-      //		groundingDrag	"	groundingAxialDrag
-
-      irr::f32 axialDrag;
-      if (speedThroughWater < 0)
-        { // Compensate for loss of sign when squaring
-	  axialDrag = (- 1 * dynamicsSpeedA * speedThroughWater * speedThroughWater)*0.5*0.003;
-        }
-      else
-        {
-	  axialDrag = (dynamicsSpeedA * speedThroughWater * speedThroughWater)*0.5*0.003 ;
-        }
-      irr::f32 axialAcceleration = (portAxialThrust + stbdAxialThrust + (sailsForceX) - axialDrag - groundingAxialDrag - axialWindDrag) / shipMass;
-      // Check acceleration plausibility (not more than 1g = 9.81ms/2)
-      if (axialAcceleration > 9.81)
-        {
-	  axialAcceleration = 9.81;
-        }
-      else if (axialAcceleration < -9.81)
-        {
-	  axialAcceleration = -9.81;
-        }
-      axialSpd += axialAcceleration * deltaTime;
-      // Also check speed for plausibility, limit to 50m/s
-      if (axialSpd > maxSpeed_mps)
-        {
-	  axialSpd = maxSpeed_mps;
-        }
-      else if (axialSpd < -maxSpeed_mps)
-        {
-	  axialSpd = -maxSpeed_mps;
-        }
-
-      /*std::cout << "portAxialThrust : " << portAxialThrust << std::endl;
-        std::cout << "shipMass : " << shipMass << std::endl;
-        std::cout << "axialAcceleration : " << axialAcceleration << std::endl;
-        std::cout << "deltaTime : " << deltaTime << std::endl;
-        std::cout << "axialSpeed : " << axialSpd << std::endl;
-        std::cout << "speedThroughWater : " << speedThroughWater << std::endl;
-        std::cout << "portEngine : " << portEngine << std::endl;
-        std::cout << "maxForce : " << maxForce << std::endl;*/
-
-
-      // DEE_DEC22 not commenting out old code for clarity
-      // Lateral dynamics
-      lateralThrust = bowThruster * bowThrusterMaxForce + sternThruster * sternThrusterMaxForce;
-   
-      // DEE_DEC22 this does the sway of the vessel when turning it probably models centrifugal drift too
-      irr::f32 lateralDrag;
-      irr::f32 lateralRelSpd = lateralSpd - lateralStream;
-      if (lateralRelSpd < 0)
-        { // Compensate for loss of sign when squaring
-	  lateralDrag = -1 * dynamicsLateralDragA * lateralRelSpd * lateralRelSpd + dynamicsLateralDragB * lateralRelSpd;
-        }
-      else
-        {
-	  lateralDrag = dynamicsLateralDragA * lateralRelSpd * lateralRelSpd + dynamicsLateralDragB * lateralRelSpd;
-        } //  end if lateral drag
-      irr::f32 lateralAcceleration = (lateralThrust  - sailsForceY - lateralDrag - groundingLateralDrag - lateralWindDrag) / shipMass;
-      // std::cout << "Lateral acceleration (m/s2): " << lateralAcceleration << std::endl;
-      // Check acceleration plausibility (not more than 1g = 9.81ms/2)
-      if (lateralAcceleration > 9.81)
-        {
-	  lateralAcceleration = 9.81;
-        }
-      else if (lateralAcceleration < -9.81)
-        {
-	  lateralAcceleration = -9.81;
-        }
-      lateralSpd += lateralAcceleration * deltaTime;
-      // Also check speed for plausibility, limit to 50m/s
-      if (lateralSpd > 50)
-        {
-	  lateralSpd = 50;
-        }
-      else if (lateralSpd < -50)
-        {
-	  lateralSpd = -50;
-        }
-
-      // Turn dynamics
-      // Regular rudder
-      if ((portThrust + stbdThrust) > 0)
-	{
-	  rudderTorque = rudder * speedThroughWater * rudderA + rudder * (portThrust + stbdThrust) * rudderB;
-	}
-      else
-	{
-	  rudderTorque = rudder * speedThroughWater * rudderA + rudder * (portThrust + stbdThrust) * rudderBAstern; // Reduced effect of rudder when engines engaged astern
-	}
-
+      mProp.SetRevs(portThrust);
+      
       mRudder.SetDelta((rudder*M_PI)/180, deltaTime);
       
-      // Engine
-      engineTorque = (portThrust * propellorSpacing - stbdThrust * propellorSpacing) / 2.0; // propspace is spacing between propellors, so halve to get moment arm
- 
-
-      // Prop walk
-      irr::f32 propWalkTorquePort, propWalkTorqueStbd;
-      if (portThrust > 0)
-        {
-	  propWalkTorquePort = 1 * propWalkAhead * (portThrust / maxForce); // Had modification for 'invertspeed'
-        }
-      else
-        {
-	  propWalkTorquePort = 1 * propWalkAstern * (portThrust / maxForce);
-        }
-      if (stbdThrust > 0)
-        {
-	  propWalkTorqueStbd = -1 * propWalkAhead * (stbdThrust / maxForce); // Had modification for 'invertspeed'
-        }
-      else
-        {
-	  propWalkTorqueStbd = -1 * propWalkAstern * (stbdThrust / maxForce);
-        }
-      if (singleEngine)
-        {
-	  // Special case for single engine, as we are just controlling the port engine for the internal model
-	  // 2* because the internal model is two engines with zero spacing and half power each.
-	  propWalkTorque = 2 * propWalkTorquePort;
-        }
-      else
-        {
-	  propWalkTorque = propWalkTorquePort + propWalkTorqueStbd;
-        }
-      // Thrusters
-      irr::f32 thrusterTorque;
-      thrusterTorque = bowThruster * bowThrusterMaxForce * bowThrusterDistance - sternThruster * sternThrusterMaxForce * sternThrusterDistance;
-      // Turn drag
-      if (rateOfTurn < 0)
-        {
-	  dragTorque = -1 * (-1 * dynamicsTurnDragA * rateOfTurn * rateOfTurn + dynamicsTurnDragB * rateOfTurn);
-        }
-      else
-        {
-	  dragTorque = -1 * (dynamicsTurnDragA * rateOfTurn * rateOfTurn + dynamicsTurnDragB * rateOfTurn);
-        }
-      // Turn dynamics
-
-      irr::f32 angularAcceleration = (rudderTorque + engineTorque + propWalkTorque + thrusterTorque + dragTorque - groundingTurnDrag) / Izz;
-
-      rateOfTurn += angularAcceleration * deltaTime; // Rad/s
-      // check plausibility for rate of turn, limit to ~4Pi rad/s
-      if (rateOfTurn > 12)
-        {
-	  rateOfTurn = 12;
-        }
-      else if (rateOfTurn < -12)
-        {
-	  rateOfTurn = -12;
-        }
-
-      // apply buffeting to rate of turn - TODO: Check the integrals from this to work out if the end magnitude is right
-      rateOfTurn += irr::core::DEGTORAD * buffet * weather * cos(scenarioTime * 2 * PI / buffetPeriod) * ((irr::f32)std::rand() / RAND_MAX) * deltaTime; // Rad/s
-
-      // Apply turn
-      hdg += rateOfTurn * deltaTime * irr::core::RADTODEG; // Deg
-
-      // Limit rudder rate of turn
-      irr::f32 MaxRudderInDtime = rudder + rudderMaxSpeed * deltaTime * (rudderPump1Working * 0.5 + rudderPump2Working * 0.5);
-      irr::f32 MinRudderInDtime = rudder - rudderMaxSpeed * deltaTime * (rudderPump1Working * 0.5 + rudderPump2Working * 0.5);
-      if (wheel > MaxRudderInDtime)
-        {
-	  rudder = MaxRudderInDtime; // rudder as far to starboard as time will allow
-        }
-      else
-        {
-	  if (wheel > MinRudderInDtime)
-            {
-	      rudder = wheel; // rudder can turn to the wheel setting
-            }
-	  else
-            {
-	      rudder = MinRudderInDtime; // rudder as far to port as time will allow
-            }
-        }
     }
   else // End of engine mode
     {
@@ -1411,7 +1170,10 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
         {
 	  // Apply rate of turn
 	  hdg += rateOfTurn * deltaTime * irr::core::RADTODEG; // Deg
+
+	  std::cout << "AUTO : positionManuallyUpdated = false" << std::endl;
         }
+      	  std::cout << "AUTO : positionManuallyUpdated = true" << std::endl;
     }
 
   // Normalise heading
@@ -1424,56 +1186,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
       hdg += 360;
     }
 
-  irr::f32 xChange = 0;
-  irr::f32 zChange = 0;
-
-  // move, according to heading and speed
-  if (!positionManuallyUpdated)
-    { // If the position has already been updated, skip (for this loop only)
-      // DEE_DEC22
-      // I am assuming that the datum is the stern of the ship on its centreline, so the gps position should
-      // be corrected to its antenna position on the actual ship. Similar info is transmitted on AIS also
-      // however the AIS may have its own dedicated GPS antenna.  We'll assume it doesnt so need to look at the NEMA code
-
-      xChange = sin(hdg * irr::core::DEGTORAD) * axialSpd * deltaTime + cos(hdg * irr::core::DEGTORAD) * lateralSpd * deltaTime;
-      zChange = cos(hdg * irr::core::DEGTORAD) * axialSpd * deltaTime - sin(hdg * irr::core::DEGTORAD) * lateralSpd * deltaTime;
-    }
-  else
-    {
-      positionManuallyUpdated = false;
-    }
-
-  xPos += xChange;
-  zPos += zChange;
-
-  if (deltaTime > 0)
-    {
-
-      // Speed over ground
-      sog = pow((pow(xChange, 2) + pow(zChange, 2)), 0.5) / deltaTime; // speed over ground in m/s
-
-      // Course over ground
-      if (xChange != 0 || zChange != 0)
-        {
-	  cog = atan2(xChange, zChange) * irr::core::RADTODEG;
-	  while (cog >= 360)
-            {
-	      cog -= 360;
-            }
-	  while (cog < 0)
-            {
-	      cog += 360;
-            }
-        }
-      else
-        {
-	  cog = 0;
-        }
-    } // if paused, leave cog & sog unchanged.
-
-  // std::cout << "CoG: " << cog << " SoG: " << sog << std::endl;
-
-  // Apply up/down motion from waves, with some filtering
   irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   irr::f32 factor = deltaTime / (timeConstant + deltaTime);
   waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * model->getWaveHeight(xPos, zPos); // TODO: Check implementation of simple filter!
