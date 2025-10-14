@@ -1159,7 +1159,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	}
 
       mProp.SetRevs(portThrust);
-      
+      rudder=wheel;
       mRudder.SetDelta((rudder*M_PI)/180, deltaTime);
       
     }
@@ -1228,6 +1228,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   std::cout << "--> Speed Z : " << mMu[2] << std::endl;
   std::cout << "--> Revs : " << mProp.getRevs() << std::endl;
   std::cout << "--> Rudder : " << mRudder.getDelta() << std::endl;
+  std::cout << "--> Wheel : " << wheel << std::endl;
   std::cout << "**************" << std::endl;
   
   //std::cout << "--> Xpos : " << xPos << std::endl;
