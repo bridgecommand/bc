@@ -439,7 +439,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
             otherShipTypeSelector->setVisible(false);
             ownShipTypeSelector->setVisible(true);
             //Find the ship name in the list that matches (if it exists)
-            irr::core::stringw ownShipName = irr::core::stringw(scenarioData.ownShipData.ownShipName.c_str());
+            irr::core::stringw ownShipName = irr::core::stringw(scenarioData.ownShipData.name.c_str());
             for(int i = 0; i < ownShipTypeSelector->getItemCount(); i++) {
                 irr::core::stringw thisName(ownShipTypeSelector->getItem(i));
                 if (thisName.equals_ignore_case(ownShipName)) {ownShipTypeSelector->setSelected(i);}

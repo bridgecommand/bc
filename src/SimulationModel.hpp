@@ -50,43 +50,18 @@ class Sound;
 #include "Network.hpp"
 #include "Solver.hpp"
 
+
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
-
-  struct ModelParameters{
-    OperatingMode::Mode mode;
-    bool vrMode;
-    irr::f32 viewAngle;
-    irr::f32 lookAngle;
-    irr::f32 cameraMinDistance;
-    irr::f32 cameraMaxDistance;
-    irr::u32 disableShaders;
-    irr::u32 waterSegments;
-    irr::core::vector3di numberOfContactPoints;
-    irr::f32 minContactPointSpacing;
-    irr::f32 contactStiffnessFactor;
-    irr::f32 contactDampingFactor;
-    irr::f32 lineStiffnessFactor;
-    irr::f32 lineDampingFactor;
-    irr::f32 frictionCoefficient;
-    irr::f32 tanhFrictionFactor;
-    irr::u32 limitTerrainResolution;
-    bool secondaryControlWheel;
-    bool secondaryControlPortEngine;
-    bool secondaryControlStbdEngine;
-    bool secondaryControlBowThruster;
-    bool secondaryControlSternThruster;
-    bool debugMode;
-  };
     
   SimulationModel(irr::IrrlichtDevice* dev,
 		  irr::scene::ISceneManager* scene,
 		  GUIMain* gui,
 		  Sound* sound,
 		  ScenarioData scenarioData,
-		  ModelParameters modelParameters);
+		  ModelParameters aModelParameters);
   ~SimulationModel();
   irr::f32 longToX(irr::f32 longitude) const;
   irr::f32 latToZ(irr::f32 latitude) const;
@@ -324,7 +299,7 @@ private:
   irr::video::IVideoDriver* driver;
   irr::scene::ISceneManager* smgr;
 
-  ModelParameters modelParameters;
+  ModelParameters mModelParameters;
     
   irr::video::IImage* radarImage; //Basic radar image
   irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay

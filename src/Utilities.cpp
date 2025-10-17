@@ -255,7 +255,7 @@ namespace Utilities
         
         std::string scenarioOwnShipFilename = scenarioPath;
         scenarioOwnShipFilename.append("/ownship.ini");
-        scenarioData.ownShipData.ownShipName    = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
+        scenarioData.ownShipData.name    = IniFile::iniFileToString(scenarioOwnShipFilename,"ShipName");
         scenarioData.ownShipData.initialSpeed   = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialSpeed");
         scenarioData.ownShipData.initialLong    = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLong");
         scenarioData.ownShipData.initialLat     = IniFile::iniFileTof32(scenarioOwnShipFilename,"InitialLat");

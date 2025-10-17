@@ -101,7 +101,7 @@ std::string OwnShipData::serialise(bool withSpaces)
     if (withSpaces) {
         separator = ", ";
     }
-    serialised.append(ownShipName);
+    serialised.append(name);
     serialised.append(separator);
     serialised.append(Utilities::lexical_cast<std::string>(initialSpeed));
     serialised.append(separator);
@@ -117,7 +117,7 @@ void OwnShipData::deserialise(std::string data)
 {
     std::vector<std::string> splitData = Utilities::split(data,',');
     if (splitData.size() == 5) {
-        ownShipName = splitData.at(0);
+        name = splitData.at(0);
         initialSpeed = Utilities::lexical_cast<irr::f32>(splitData.at(1));
         initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
         initialLat = Utilities::lexical_cast<irr::f32>(splitData.at(3));

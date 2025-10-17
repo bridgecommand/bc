@@ -46,7 +46,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  GUIMain* gui,
                                  Sound* sound,
                                  ScenarioData scenarioData,
-                                 ModelParameters modelParameters):
+                                 ModelParameters aModelParameters):
   manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
 {
   //get reference to scene manager
@@ -64,7 +64,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   scenarioName = scenarioData.scenarioName;
 
   // Store model parameters
-  this->modelParameters = modelParameters;
+  this->mModelParameters = aModelParameters;
 
   //Set loop number to zero
   loopNumber = 0;
@@ -135,25 +135,18 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         
 
   //Add terrain: Needs to happen first, so the terrain parameters are available
-  terrain.load(worldPath, smgr, device, modelParameters.limitTerrainResolution);
+  terrain.load(worldPath, smgr, device, mModelParameters.limitTerrainResolution);
 
   //sky box/dome
   Sky sky (smgr);
 
   //Load own ship model.
   // TODO: It would be better to pass in modelParameters directly
-  ownShip.load(scenarioData.ownShipData, 
-	       modelParameters.numberOfContactPoints, 
-	       modelParameters.minContactPointSpacing, 
-	       modelParameters.contactStiffnessFactor, 
-	       modelParameters.contactDampingFactor, 
-	       modelParameters.frictionCoefficient, 
-	       modelParameters.tanhFrictionFactor, 
-	       smgr, 
-	       this, 
-	       &terrain,  
-	       device);
-  if(modelParameters.mode == OperatingMode::Secondary) {
+  ownShip.load(scenarioData.ownShipData, mModelParameters, smgr, this, &terrain, device);
+
+  
+
+  if(mModelParameters.mode == OperatingMode::Secondary) {
     ownShip.setSpeed(0); //Don't start moving if in secondary mode
   }
 
@@ -164,10 +157,10 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
   //add water
   bool waterReflection = true;
-  if (modelParameters.vrMode == true) {
+  if (mModelParameters.vrMode == true) {
     waterReflection = false;
   }
-  water.load(smgr,ownShip.getSceneNode(),weather,modelParameters.disableShaders,waterReflection,modelParameters.waterSegments);
+  water.load(smgr,ownShip.getSceneNode(),weather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
 
   /* To be replaced by getting information and passing into gui load method.
   //Tell gui to hide the second engine scroll bar if we have a single engine
@@ -197,16 +190,16 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
   std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
   irr::f32 angleCorrection = ownShip.getAngleCorrection();
-  camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(modelParameters.viewAngle),modelParameters.lookAngle,angleCorrection);
-  camera.setNearValue(modelParameters.cameraMinDistance);
-  camera.setFarValue(modelParameters.cameraMaxDistance);
+  camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(mModelParameters.viewAngle),mModelParameters.lookAngle,angleCorrection);
+  camera.setNearValue(mModelParameters.cameraMinDistance);
+  camera.setFarValue(mModelParameters.cameraMaxDistance);
 
   //make ambient light
   light.load(smgr,sunRise,sunSet, camera.getSceneNode());
 
 
   //Load other ships
-  otherShips.load(scenarioData.otherShipsData,scenarioTime,modelParameters.mode,smgr,this,device);
+  otherShips.load(scenarioData.otherShipsData,scenarioTime,mModelParameters.mode,smgr,this,device);
 
   //Load buoys
   buoys.load(worldPath, smgr, this,device);
@@ -223,9 +216,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         
 
   //Set up 3d engine/wheel controls/visualisation
-  portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
-  stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
-  wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+  //portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+  //stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
+  //wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
 
   //make a radar screen, setting parent and offset from own ship
   radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
@@ -256,7 +249,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   radarCamera.updateViewport(1.0);
   radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
   radarCamera.setFarValue(1.2*0.5*ownShip.getScreenDisplaySize());
-
+  
   //Hide the man overboard model
   manOverboard.setVisible(false);
 
@@ -680,11 +673,6 @@ irr::f32 SimulationModel::getHeading() const
   return(ownShip.getHeading());
 }
 
-void SimulationModel::setRudder(irr::f32 rudder)
-{
-  //Set the rudder (-ve is port, +ve is stbd)
-  ownShip.setRudder(rudder);
-}
 
 irr::f32 SimulationModel::getRudder() const
 {
@@ -696,7 +684,7 @@ irr::f32 SimulationModel::getRudder() const
 void SimulationModel::setWheel(irr::f32 wheel, bool force)
 {
   //Set the wheel (-ve is port, +ve is stbd)
-  ownShip.setWheel(wheel, force);
+  ownShip.setWheel(wheel);
 }
 
 irr::f32 SimulationModel::getWheel() const
@@ -751,59 +739,6 @@ irr::f32 SimulationModel::getPortEngine() const
 irr::f32 SimulationModel::getStbdEngine() const
 {
   return ownShip.getStbdEngine();
-}
-
-irr::f32 SimulationModel::getPortEngineRPM() const
-{
-  return ownShip.getPortEngineRPM();
-}
-
-irr::f32 SimulationModel::getStbdEngineRPM() const
-{
-  return ownShip.getStbdEngineRPM();
-}
-
-void SimulationModel::setBowThruster(irr::f32 proportion)
-{
-  ownShip.setBowThruster(proportion);
-}
-
-void SimulationModel::setSternThruster(irr::f32 proportion)
-{
-  ownShip.setSternThruster(proportion);
-}
-
-void SimulationModel::setBowThrusterRate(irr::f32 bowThrusterRate){
-  //Sets the rate of increase of bow thruster, used for joystick button control
-  ownShip.setBowThrusterRate(bowThrusterRate);
-}
-
-void SimulationModel::setSternThrusterRate(irr::f32 sternThrusterRate){
-  //Sets the rate of increase of bow thruster, used for joystick button control
-  ownShip.setSternThrusterRate(sternThrusterRate);
-}
-
-irr::f32 SimulationModel::getBowThruster() const
-{
-  return ownShip.getBowThruster();
-}
-
-irr::f32 SimulationModel::getSternThruster() const
-{
-  return ownShip.getSternThruster();
-}
-
-void SimulationModel::setRudderPumpState(int whichPump, bool rudderPumpState) {
-  ownShip.setRudderPumpState(whichPump, rudderPumpState);
-}
-
-bool SimulationModel::getRudderPumpState(int whichPump) const
-{
-  return ownShip.getRudderPumpState(whichPump);
-}
-
-void SimulationModel::setFollowUpRudderWorking(bool followUpRudderWorking) {
-  ownShip.setFollowUpRudderWorking(followUpRudderWorking);
 }
 
 void SimulationModel::setAccelerator(irr::f32 accelerator)
@@ -1001,13 +936,11 @@ void SimulationModel::lookStbd()
 void SimulationModel::changeView()
 {
   camera.changeView();
-  ownShip.setViewVisibility(camera.getView());
 }
 
 void SimulationModel::setView(irr::u32 view)
 {
   camera.setView(view);
-  ownShip.setViewVisibility(camera.getView());
 }
 
 irr::u32 SimulationModel::getCameraView() const
@@ -1212,7 +1145,7 @@ void SimulationModel::setZoom(bool zoomOn) {
   else {
     currentZoom = 1;
   }
-  camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
+  camera.setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / currentZoom);
 }
     
 void SimulationModel::setZoom(bool zoomOn, irr::f32 zoomLevel)
@@ -1223,8 +1156,8 @@ void SimulationModel::setZoom(bool zoomOn, irr::f32 zoomLevel)
 
 void SimulationModel::setViewAngle(irr::f32 viewAngle)
 {
-  modelParameters.viewAngle = viewAngle;
-  camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
+  mModelParameters.viewAngle = viewAngle;
+  camera.setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / currentZoom);
 }
 
 void SimulationModel::setMouseDown(bool isMouseDown)
@@ -1333,15 +1266,6 @@ bool SimulationModel::hasDepthSounder() const
   return ownShip.hasDepthSounder();
 }
 
-bool SimulationModel::hasBowThruster() const
-{
-  return ownShip.hasBowThruster();
-}
-
-bool SimulationModel::hasSternThruster() const
-{
-  return ownShip.hasSternThruster();
-}
 
 bool SimulationModel::hasTurnIndicator() const
 {
@@ -1350,7 +1274,7 @@ bool SimulationModel::hasTurnIndicator() const
 
 bool SimulationModel::debugModeOn() const
 {
-  return modelParameters.debugMode;
+  return mModelParameters.debugMode;
 }
 
 irr::f32 SimulationModel::getOwnShipMass() const
@@ -1389,36 +1313,36 @@ void SimulationModel::setMoveViewWithPrimary(bool moveView) {
   moveViewWithPrimary = moveView;
 }
 
-SimulationModel::ModelParameters SimulationModel::getModelParameters() const {
-  return modelParameters;
+ModelParameters SimulationModel::getModelParameters() const {
+  return mModelParameters;
 }
 
 bool SimulationModel::getIsSecondaryControlWheel() const {
-  return modelParameters.secondaryControlWheel;
+  return mModelParameters.secondaryControlWheel;
 }
 
 bool SimulationModel::getIsSecondaryControlPortEngine() const {
-  return modelParameters.secondaryControlPortEngine;
+  return mModelParameters.secondaryControlPortEngine;
 }
 
 bool SimulationModel::getIsSecondaryControlStbdEngine() const {
-  return modelParameters.secondaryControlStbdEngine;
+  return mModelParameters.secondaryControlStbdEngine;
 }
 
 bool SimulationModel::getIsSecondaryControlBowThruster() const {
-  return modelParameters.secondaryControlBowThruster;
+  return mModelParameters.secondaryControlBowThruster;
 }
 
 bool SimulationModel::getIsSecondaryControlSternThruster() const {
-  return modelParameters.secondaryControlSternThruster;
+  return mModelParameters.secondaryControlSternThruster;
 }
 
 irr::f32 SimulationModel::getLineStiffnessFactor() const {
-  return modelParameters.lineStiffnessFactor;
+  return mModelParameters.lineStiffnessFactor;
 }
 
 irr::f32 SimulationModel::getLineDampingFactor() const {
-  return modelParameters.lineDampingFactor;
+  return mModelParameters.lineDampingFactor;
 }
 
 irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
@@ -1715,8 +1639,8 @@ void SimulationModel::update()
       guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
     }
     guiData->arpaListSelection = radarCalculation.getArpaListSelection();
-
-  }{ IPROF("Collate GUI data ");
+  
+    }{ IPROF("Collate GUI data ");
 
     //Collate data to show in gui
     guiData->lat = getLat();
@@ -1732,8 +1656,6 @@ void SimulationModel::update()
     guiData->stbdEng = ownShip.getStbdEngine();
     guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
     guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
-    guiData->bowThruster = ownShip.getBowThruster();
-    guiData->sternThruster = ownShip.getSternThruster();
     guiData->depth = ownShip.getDepth();
     guiData->weather = weather;
     guiData->rain = rainIntensity;
@@ -1756,8 +1678,8 @@ void SimulationModel::update()
     guiData->collided = collided;
     guiData->headUp = radarCalculation.getHeadUp();
     guiData->radarOn = radarCalculation.isRadarOn();
-    guiData->pump1On = ownShip.getRudderPumpState(1);
-    guiData->pump2On = ownShip.getRudderPumpState(2);
+    //guiData->pump1On = ownShip.getRudderPumpState(1);
+    //guiData->pump2On = ownShip.getRudderPumpState(2);
 
     // DEE_NOV22 ^^^^
 
@@ -1852,28 +1774,28 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	  {
 	    if(dataRudderWorking->rudderFunction==0)
 	      {
-		setRudderPumpState(1,false);
-		setAlarm(true);
+		//setRudderPumpState(1,false);
+		//setAlarm(true);
 	      }
 	    else
 	      {
-		setRudderPumpState(1,true);
-		if(getRudderPumpState(2))
-		  setAlarm(false);
+		//setRudderPumpState(1,true);
+		//if(getRudderPumpState(2))
+		//setAlarm(false);
 	      }
 	  }
 	else if(dataRudderWorking->whichPump==2)
 	  {
 	    if(dataRudderWorking->rudderFunction==0)
 	      {
-	        setRudderPumpState(2,false);
-		setAlarm(true);
+	        //setRudderPumpState(2,false);
+		//setAlarm(true);
 	      }
 	    else
 	      {
-		setRudderPumpState(2,true);
-		if(getRudderPumpState(1))
-		  setAlarm(false);
+		//setRudderPumpState(2,true);
+		//if(getRudderPumpState(1))
+		//setAlarm(false);
 	      }
 	  }
 	break;
@@ -1882,8 +1804,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sRuddFol *dataRudderFollowUp = (sRuddFol*)aDataCmd;
 
-	if (dataRudderFollowUp->rudderFunction==1) setFollowUpRudderWorking(true);
-	else if(dataRudderFollowUp->rudderFunction==0) setFollowUpRudderWorking(false);
+	//if (dataRudderFollowUp->rudderFunction==1) setFollowUpRudderWorking(true);
+	//else if(dataRudderFollowUp->rudderFunction==0) setFollowUpRudderWorking(false);
 
 	break;
       }
@@ -1894,8 +1816,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataCtrlOverride->overrideMode == 0) setWheel(dataCtrlOverride->overrideData); 
 	else if(dataCtrlOverride->overrideMode == 1) setPortEngine(dataCtrlOverride->overrideData);
 	else if(dataCtrlOverride->overrideMode == 2) setStbdEngine(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 7) setBowThruster(dataCtrlOverride->overrideData);
-	else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
+	//else if(dataCtrlOverride->overrideMode == 7) setBowThruster(dataCtrlOverride->overrideData);
+	//else if(dataCtrlOverride->overrideMode == 8) setSternThruster(dataCtrlOverride->overrideData);
 	break;
       }
     case E_CMD_MESSAGE_BRIDGE_COMMAND:
@@ -2094,11 +2016,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 
 	/************************************************************************/
         setWheel(dataMasterCmds->controls.wheel);
-        setRudder(dataMasterCmds->controls.rudder);
+        //setRudder(dataMasterCmds->controls.rudder);
         setPortEngine(dataMasterCmds->controls.portEng);
 	setStbdEngine(dataMasterCmds->controls.stbdEng);
-	setBowThruster(dataMasterCmds->controls.bowThrust);
-	setSternThruster(dataMasterCmds->controls.sternThrust);
+	//setBowThruster(dataMasterCmds->controls.bowThrust);
+	//setSternThruster(dataMasterCmds->controls.sternThrust);
 	
 	break;
       }

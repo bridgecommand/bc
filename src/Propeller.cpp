@@ -3,11 +3,13 @@
 
 Propeller::Propeller(void)
 {
-  Init(0,0,0,0,0,0,0);
+  Init(0,0,0,0,0,0,0,"right",0);
   mT << 0, 0, 0;
+  mNrps = 0;
+  mCurrentRotDir = "stop";
 }
 
-void Propeller::Init(double aDiam, double aTfactor, double aXp, double aW0fraction, double aK0, double aK1, double aK2)
+void Propeller::Init(double aDiam, double aTfactor, double aXp, double aW0fraction, double aK0, double aK1, double aK2, std::string aForwardRotDir, double aBackwardsEff)
 {
   mDiam = aDiam;
   mTfactor = aTfactor;
@@ -16,14 +18,52 @@ void Propeller::Init(double aDiam, double aTfactor, double aXp, double aW0fracti
   mK0 = aK0; 
   mK1 = aK1;
   mK2 = aK2;
-
-  //Debug
-  SetRevs(1.5);
+  mForwardRotDir = aForwardRotDir;
+  mBackwardsEff = aBackwardsEff;
 }
 
 void Propeller::SetRevs(const double aNrps)
 {
-  mNrps = aNrps;
+  if(aNrps < 0)
+    {
+      if(0 == ChangeRotDir("backwards"))
+	mNrps = abs(aNrps);
+      else
+	mNrps = 0;
+    }
+  else if(aNrps > 0)
+    {
+      if(0 == ChangeRotDir("forward"))
+	mNrps = aNrps;
+      else
+	mNrps = 0;
+    }
+  else
+    {
+      ChangeRotDir("stop");
+      mNrps = 0;
+    }
+}
+
+int Propeller::ChangeRotDir(std::string aDir)
+{
+  int err = 0;
+
+      if("forward" == aDir)
+	mCurrentRotDir = mForwardRotDir;
+      else if("backwards" == aDir)
+	{
+	  if("right" == mForwardRotDir)
+	    mCurrentRotDir = "left";
+	  else if("left" == mForwardRotDir)
+	    mCurrentRotDir = "right";
+	  else
+	    mCurrentRotDir = "stop";
+	}
+      else
+	mCurrentRotDir = "stop";
+      
+  return err;
 }
 
 void Propeller::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoParams& aGeo)
@@ -34,7 +74,7 @@ void Propeller::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sG
 
   u = pow((pow(aMu[0], 2) + pow(aMu[1], 2)), 0.5);
 
-  if(0 != aMu[0])
+  if(0 != aMu[0] && 0 != u)
     {
       beta = atan(-(aMu[1])/aMu[0]);
       rp = (aMu[2] * aGeo.lPP)/u;
@@ -43,8 +83,7 @@ void Propeller::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sG
     {
       rp = 0;
       beta = 0;
-    }
-  
+    }  
   
   betap = beta - (mXp * rp);
 
@@ -53,13 +92,17 @@ void Propeller::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sG
 
   if(0 != mNrps)
     jp = up / (mNrps * mDiam);
-  else 
+  else
     jp = 0;
   
   kt = mK0 + (mK1*jp) + (mK2*pow(jp, 2));
   tp = aRho * pow(mNrps, 2) * pow(mDiam, 4) * kt;
   xp = (1-mTfactor) * tp;
 
+  //Add a efficiency factor for backwards
+  if(mForwardRotDir != mCurrentRotDir)
+    xp = xp*(-mBackwardsEff);
+    
   mT << xp, 0, 0;
 
   //std::cout << "***Propeller mT :" << mT << std::endl;
@@ -71,6 +114,8 @@ double Propeller::getDiameter(void) const {return mDiam;}
 double Propeller::getWakeFraction(void) const {return mW0fraction;}
 double Propeller::getLongPos(void) const {return mXp;}
 double Propeller::getRevs(void) const {return mNrps;}
+std::string Propeller::getForwardRotDir(void) const {return mForwardRotDir;}
+std::string Propeller::getCurrentRotDir(void) const {return mCurrentRotDir;}
 
 double Propeller::getPolynomialCoef(unsigned char aCoefNumber) const
 {

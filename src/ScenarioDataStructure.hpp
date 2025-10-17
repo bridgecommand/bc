@@ -26,7 +26,7 @@
 
 class OwnShipData {
     public:
-    std::string ownShipName;    
+    std::string name;    
     irr::f32 initialSpeed, initialLong, initialLat, initialBearing;
     irr::f32 initialX, initialZ; // initialX and initialZ only used for scenario editor
 

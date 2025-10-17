@@ -3,12 +3,12 @@
 
 Rudder::Rudder()
 {
-  Init(0,0,0,0,0,0,0,0,0,0,{0,0},0);
+  Init(0,0,0,0,0,0,0,0,0,0,{0,0},0,0);
   mDelta = 0;
   mT << 0, 0, 0;
 }
 
-void Rudder::Init(double aHr, double aAr, double aXpR, double aAh, double aTr, double aXpH, double aEpsilon, double aKappa, double aLpR, double aLambdaR, std::vector<double> aGammaR, double aRrMax)
+void Rudder::Init(double aHr, double aAr, double aXpR, double aAh, double aTr, double aXpH, double aEpsilon, double aKappa, double aLpR, double aLambdaR, std::vector<double> aGammaR, double aRrMax, double aDeltaMax)
 {
   mHr = aHr;
   mAr = aAr;
@@ -22,11 +22,16 @@ void Rudder::Init(double aHr, double aAr, double aXpR, double aAh, double aTr, d
   mLambdaR = aLambdaR;
   mGammaR = aGammaR;
   mRrMax = aRrMax;
+  mDeltaMax = aDeltaMax;
 }
 
-void Rudder::SetDelta(const double aDelta, const double aDt)
+void Rudder::SetDelta(double aDelta, const double aDt)
 {
   double rrSet = 0;
+
+  if(abs(aDelta) > mDeltaMax)
+    aDelta = (aDelta/abs(aDelta))*mDeltaMax;
+  
   rrSet = (aDelta - mDelta) / aDt;
 
   if(abs(rrSet) > mRrMax) mDelta += ((rrSet/abs(rrSet)) * mRrMax * aDt);
@@ -109,3 +114,4 @@ void Rudder::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoP
 Eigen::Vector3d& Rudder::getT(void){return mT;}
 
 double Rudder::getDelta(void){return mDelta;}
+double Rudder::getDeltaMax(void){return mDeltaMax;}
