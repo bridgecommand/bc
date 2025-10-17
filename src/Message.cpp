@@ -383,7 +383,7 @@ std::string& Message::ControlOverride(void)
       controlOverride.append("MCCO,6,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
       controlOverride.append("|");
-      }*/
+      }*
   if(mModel->getIsSecondaryControlBowThruster())
     {
       controlOverride.append("MCCO,7,");
@@ -395,7 +395,7 @@ std::string& Message::ControlOverride(void)
       controlOverride.append("MCCO,8,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getSternThruster()));
       controlOverride.append("|");
-    }
+      }*/
   return controlOverride;
 }
 
@@ -787,10 +787,10 @@ std::string& Message::KeepAlive(void)
   msg.append(Utilities::lexical_cast<std::string>(mModel->getRudder()));
   msg.append(":");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
-  msg.append(":");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngineRPM()));
-  msg.append(":");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngineRPM()));
+  msg.append(":0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngineRPM()));
+  msg.append(":0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngineRPM()));
   msg.append("#");
 
   //2 Numbers: Number Other, Number buoys, Number MOB #
@@ -909,10 +909,10 @@ std::string& Message::KeepAlive(void)
   //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortAzimuthThrustLever()));
   msg.append(",0");
   //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getBowThruster()));
-  msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getSternThruster()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getBowThruster()));
+  msg.append(",0");
+  //msg.append(Utilities::lexical_cast<std::string>(mModel->getSternThruster()));
 
   return msg;
 }

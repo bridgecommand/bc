@@ -331,12 +331,12 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_BOWTHRUSTER_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
-                model->setBowThruster(value);
+                //model->setBowThruster(value);
             }
             if (id == GUIMain::GUI_ID_STERNTHRUSTER_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
-                model->setSternThruster(value);
+                //model->setSternThruster(value);
             }
 
             if (id == GUIMain::GUI_ID_RADAR_GAIN_SCROLL_BAR)
@@ -592,47 +592,47 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON)
             {
-                model->setRudderPumpState(1, true);
+	      /*model->setRudderPumpState(1, true);
                 if (model->getRudderPumpState(2))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON)
             {
-                model->setRudderPumpState(1, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(1, false);
+	      //model->setAlarm(true);
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON)
             {
-                model->setRudderPumpState(2, true);
+	      /*model->setRudderPumpState(2, true);
                 if (model->getRudderPumpState(1))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON)
             {
-                model->setRudderPumpState(2, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(2, false);
+	      //model->setAlarm(true);
             }
 
             if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON)
             {
-                model->setFollowUpRudderWorking(true);
+	      //model->setFollowUpRudderWorking(true);
             }
 
             if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON)
             {
-                model->setFollowUpRudderWorking(false);
+	      //model->setFollowUpRudderWorking(false);
             }
 
             if (id == GUIMain::GUI_ID_ACK_ALARMS_BUTTON)
             {
-                model->setAlarm(false);
+	      //model->setAlarm(false);
             }
 
             if (id == GUIMain::GUI_ID_ADD_LINE_BUTTON)
@@ -1216,13 +1216,13 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (newJoystickBowThruster < INFINITY && (joystickSetup.updateAllAxes || bowThrusterChanged))
             {
-                model->setBowThruster(newJoystickBowThruster);
+	      //model->setBowThruster(newJoystickBowThruster);
                 previousJoystickBowThruster = newJoystickBowThruster;
             }
 
             if (newJoystickSternThruster < INFINITY && (joystickSetup.updateAllAxes || sternThrusterChanged))
             {
-                model->setSternThruster(newJoystickSternThruster);
+	      //model->setSternThruster(newJoystickSternThruster);
                 previousJoystickSternThruster = newJoystickSternThruster;
             }
 
@@ -1288,11 +1288,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(-0.5);
+	      //model->setBowThrusterRate(-0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0);
+	      //model->setBowThrusterRate(0);
             }
         }
         // Increase bow thrust
@@ -1300,11 +1300,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0.5);
+	      //model->setBowThrusterRate(0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0);
+	      //model->setBowThrusterRate(0);
             }
         }
         // Decrease stern thrust
@@ -1312,11 +1312,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(-0.5);
+	      //model->setSternThrusterRate(-0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0);
+	      //model->setSternThrusterRate(0);
             }
         }
         // Increase stern thrust
@@ -1324,11 +1324,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0.5);
+	      //model->setSternThrusterRate(0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0);
+	      //model->setSternThrusterRate(0);
             }
         }
         // Bearings on
@@ -1423,11 +1423,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump1On, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On, previousButtonState))
             {
-                model->setRudderPumpState(1, true);
+	      /*model->setRudderPumpState(1, true);
                 if (model->getRudderPumpState(2))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
         }
 
@@ -1436,8 +1436,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump1Off, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1Off, previousButtonState))
             {
-                model->setRudderPumpState(1, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(1, false);
+	      //model->setAlarm(true);
             }
         }
 
@@ -1446,10 +1446,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump2On, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2On, previousButtonState))
             {
-                model->setRudderPumpState(2, true);
-                if (model->getRudderPumpState(1))
+	      //model->setRudderPumpState(2, true);
+	      //if (model->getRudderPumpState(1))
                 {
-                    model->setAlarm(false); // Only turn off alarm if other pump is working
+		  //    model->setAlarm(false); // Only turn off alarm if other pump is working
                 }
             }
         }
@@ -1459,8 +1459,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump2Off, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2Off, previousButtonState))
             {
-                model->setRudderPumpState(2, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(2, false);
+	      //model->setAlarm(true);
             }
         }
 
@@ -1469,7 +1469,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOn, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOn, previousButtonState))
             {
-                model->setFollowUpRudderWorking(true);
+	      //model->setFollowUpRudderWorking(true);
             }
         }
 
@@ -1478,7 +1478,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOff, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOff, previousButtonState))
             {
-                model->setFollowUpRudderWorking(false);
+	      //model->setFollowUpRudderWorking(false);
             }
         }
 
@@ -1510,7 +1510,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonAckAlarm, thisButtonState))
             {
-                model->setAlarm(false);
+	      //model->setAlarm(false);
             }
         }
 

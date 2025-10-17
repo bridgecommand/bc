@@ -1,6 +1,10 @@
 #include <cmath>
 #include "Solver.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
+
 Solver::Solver()
 {
   mT << 0, 0, 0;
@@ -101,6 +105,12 @@ void Solver::SolveRk4(Eigen::Vector3d aEta, Eigen::Vector3d aMu, double aDt)
   dy4 = DiffEq(tmp);
   ySol = y + mDt * (dy1 + 2*dy2 + 2*dy3 + dy4)/6;
 
+  if(ySol[2] > (2*M_PI))
+    ySol[2] = ySol[2] - (2*M_PI);
+
+   if(ySol[2] < 0)
+    ySol[2] = ySol[2] + (2*M_PI);
+  
   mEta << ySol[0], ySol[1], ySol[2];
   mMu << ySol[3], ySol[4], ySol[5];
 

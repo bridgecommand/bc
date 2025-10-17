@@ -612,7 +612,7 @@ int main (int argc, char ** argv)
 
         //Make default name the first in the list, in case it isn't set by an update later
         if (ownShipTypes.size() > 0) {
-            scenarioData.ownShipData.ownShipName = ownShipTypes.at(0);
+            scenarioData.ownShipData.name = ownShipTypes.at(0);
         }
         if (otherShipTypes.size() > 0) {
             for (int i=0; i<scenarioData.otherShipsData.size(); i++)
@@ -669,7 +669,7 @@ int main (int argc, char ** argv)
             scenarioData.ownShipData.initialX = controller.longToX(IniFile::iniFileTof32(ownShipIniFilename,"InitialLong"));
             scenarioData.ownShipData.initialZ = controller.latToZ(IniFile::iniFileTof32(ownShipIniFilename,"InitialLat"));
             scenarioData.ownShipData.initialBearing = IniFile::iniFileTof32(ownShipIniFilename,"InitialBearing");
-            scenarioData.ownShipData.ownShipName = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
+            scenarioData.ownShipData.name = IniFile::iniFileToString(ownShipIniFilename,"ShipName");
             scenarioData.ownShipData.initialSpeed = IniFile::iniFileTof32(ownShipIniFilename,"InitialSpeed");
 
             //Load other ship information

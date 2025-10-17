@@ -608,19 +608,6 @@ int main(int argc, char ** argv)
 
     smgr->getParameters()->setAttribute(irr::scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-    #ifdef __APPLE__
-    //Bring window to front
-    //NSWindow* window = reinterpret_cast<NSWindow>(device->getVideoDriver()->getExposedVideoData().HWnd);
-    //Mac OS - cd back to original dir - seems to be changed during createDevice
-    irr::io::IFileSystem* fileSystem = device->getFileSystem();
-    if (fileSystem==0) {
-        std::cerr << "Could not get filesystem:" << std::endl;
-        return(EXIT_FAILURE); //Could not get file system
-
-    }
-    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
-    #endif
-
     //set gui skin and 'flatten' this
     irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
@@ -753,7 +740,7 @@ int main(int argc, char ** argv)
         vr3dMode=true;
     }
     
-    SimulationModel::ModelParameters modelParameters;
+    ModelParameters modelParameters;
     // TODO: most of these intermediate variables can probably be removed.
     modelParameters.mode = mode; 
     modelParameters.vrMode = vr3dMode;
@@ -886,7 +873,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
+    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, false, false, model.hasTurnIndicator(), showCollided, vr3dMode);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -901,11 +888,13 @@ int main(int argc, char ** argv)
     //create NMEA serial port and UDP, linked to model
     NMEA nmeaConning(&model, nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning, device);
     NMEA nmeaOpCpn(&model, nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn, device);
-
+	
 	//Load sound files
 	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
 
+
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
+
 
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
@@ -915,7 +904,7 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterfaceFull();
     }
     
-    if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
+        if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
         model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
         guiMain.hide2dInterface();
@@ -930,7 +919,7 @@ int main(int argc, char ** argv)
     }
     if (radarStartupMode==2) {
         model.setRadarHeadUp();
-    }
+	}
 
     //set up timing for NMEA
 
@@ -945,7 +934,6 @@ int main(int argc, char ** argv)
 //    Profiler renderFinishProfile("Render finish");
 
 	sound.StartSound();
-
 	
     //main loop
     while(device->run())
@@ -980,7 +968,7 @@ int main(int argc, char ** argv)
         }
         bool fullScreenRadar = guiMain.getLargeRadar();
         { IPROF("Render radar");
-        if (model.isRadarOn()) {
+	         if (model.isRadarOn()) {
             //radar view portion
             if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
                 model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
@@ -993,7 +981,7 @@ int main(int argc, char ** argv)
                 smgr->drawAll();
                 model.setWaterVisible(true); //Re-show the water
             }
-        }
+	    }
 
  //       renderRadarProfile.toc();
 

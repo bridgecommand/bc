@@ -332,7 +332,7 @@ int main()
 
             ScenarioData thisPeerData  = masterScenarioData;
 
-            thisPeerData.ownShipData.ownShipName = thisPeerData.otherShipsData.at(thisPeer).shipName;
+            thisPeerData.ownShipData.name = thisPeerData.otherShipsData.at(thisPeer).shipName;
             thisPeerData.ownShipData.initialLat = thisPeerData.otherShipsData.at(thisPeer).initialLat;
             thisPeerData.ownShipData.initialLong = thisPeerData.otherShipsData.at(thisPeer).initialLong;
             if (thisPeerData.otherShipsData.at(thisPeer).legs.size()>0) {

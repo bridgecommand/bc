@@ -561,7 +561,7 @@ void ControllerModel::recalculateLegTimes()
 
 void ControllerModel::changeOwnShipName(std::string name)
 {
-    scenarioData->ownShipData.ownShipName = name;
+    scenarioData->ownShipData.name = name;
 
 }
 
@@ -659,7 +659,7 @@ void ControllerModel::save()
     std::ofstream ownFile;
 
     ownFile.open(ownPath.c_str());
-    ownFile << "ShipName=\"" << scenarioData->ownShipData.ownShipName << "\"" << std::endl;
+    ownFile << "ShipName=\"" << scenarioData->ownShipData.name << "\"" << std::endl;
     ownFile << "InitialLong=" << std::setprecision(8) << xToLong(scenarioData->ownShipData.initialX) << std::endl;
     ownFile << "InitialLat=" << std::setprecision(8) << zToLat(scenarioData->ownShipData.initialZ) << std::endl;
     ownFile << "InitialBearing=" << std::setprecision(8) << scenarioData->ownShipData.initialBearing << std::endl;

@@ -30,11 +30,6 @@
 OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
-    //Initialise speed and heading, normally updated from leg information
-    axialSpd = 0;
-    hdg = 0;
-    rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
-
     this->name = name;
     this->mmsi = mmsi;
 
@@ -95,17 +90,17 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 
     //store length and RCS information for radar etc
     ship->updateAbsolutePosition();
-    length = ship->getTransformedBoundingBox().getExtent().Z;
-    breadth = ship->getTransformedBoundingBox().getExtent().X;
+    mGeoParams.lPP = ship->getTransformedBoundingBox().getExtent().Z;
+    mGeoParams.b = ship->getTransformedBoundingBox().getExtent().X;
     height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
-    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
+    mGeoParams.d = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
     airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
     
-    rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    rcs = 0.005*std::pow(mGeoParams.lPP ,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
     logMessage.append(shipFullPath);
     logMessage.append("' Length (m): ");
-    logMessage.append(std::to_string(length));
+    logMessage.append(std::to_string(mGeoParams.lPP));
     dev->getLogger()->log(logMessage.c_str());
 
     //Add triangle selector and make pickable
@@ -121,9 +116,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight", .5f * height);
 
     //store initial x,y,z positions
-    xPos = location.X;
-    yPos = location.Y;
-    zPos = location.Z;
+    mEta[1] = location.X;
+    double yPos = location.Y;
+    mEta[0] = location.Z;
     //speed and heading will come from leg data
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
@@ -190,29 +185,29 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     if (legs.empty()) {
         //Don't change speed and hdg - may be in secondary mode, where these are set externally
         //Except, use rateOfTurn to update hdg
-        hdg += deltaTime * rateOfTurn; // rateOfTurn in deg/s
+        mEta[2] += deltaTime * rateOfTurn; // rateOfTurn in deg/s
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
 
-        axialSpd = legs[currentLeg].speed*KTS_TO_MPS;
-        hdg = legs[currentLeg].bearing;
+        mMu[0] = legs[currentLeg].speed*KTS_TO_MPS;
+        mEta[2] = legs[currentLeg].bearing;
     }
 
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
-        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
+        mEta[1] = mEta[1] + sin(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
+        mEta[0] = mEta[0] + cos(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
     } else {
         positionManuallyUpdated = false;
     }
-    yPos = tideHeight+heightCorrection;
+    double yPos = tideHeight+heightCorrection;
 
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
-    ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    ship->setPosition(irr::core::vector3df(mEta[1],yPos,mEta[0]));
     // DEE_DEC22 vvvv allows modelling of trim , list and models derived from other coordinate systems
     //ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
-    ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    ship->setRotation(irr::core::vector3df(angleCorrectionPitch, mEta[2]+angleCorrection, angleCorrectionRoll)); //Global vectors
     // DEE_DEC22 ^^^^
 
     //for each light, find range and angle

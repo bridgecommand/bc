@@ -76,30 +76,22 @@ protected:
   irr::scene::IMeshSceneNode* mSailsScene[4];
   unsigned int mSailsCount;
   std::string mSailsType;
-  irr::f32 hdg;
-  irr::f32 xPos;
-  irr::f32 yPos;
-  irr::f32 zPos;
-  irr::f32 axialSpd;
-  irr::f32 length;
-  irr::f32 breadth;
-  irr::f32 draught;
   irr::f32 airDraught;
   irr::f32 heightCorrection;
   irr::f32 angleCorrection;
 
-  double mM;
-  double mMX;
-  double mMY;
-  double mRho;
-  Eigen::Matrix3d mMatM;
-  Eigen::Matrix3d mInvMatM;
-  Eigen::Vector3d mMu0;
-  sGeoParams mGeoParams;
+  double mM; //Mass
+  double mMX; //Mass on Z
+  double mMY; //Mass on X
+  double mRho; //~1024
+  Eigen::Matrix3d mMatM; //Mass matrix
+  Eigen::Matrix3d mInvMatM; //Inverse mass matrix
+  Eigen::Vector3d mMu0; //Initial speed
+  sGeoParams mGeoParams; //
   sAddedMassParams mAddedMassParams;
   //Dynamic params
-  Eigen::Vector3d mMu;
-  Eigen::Vector3d mEta;
+  Eigen::Vector3d mMu; //mMu[0] : Speed on Z ; mMu[1] :  Rate of turn ; mMu[2] : Speed on X (m/s) 
+  Eigen::Vector3d mEta; //mEta[0] : Z position ; mEta[1] : X position ; mEta[2] : Heading
   //Boat parts
   Propeller mProp;
   Hull mHull;

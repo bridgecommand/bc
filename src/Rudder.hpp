@@ -13,15 +13,16 @@ public:
   Rudder();
 
   /*Process*/
-  void Init(double mHr, double aAr, double aXpR, double aAh, double aTr, double aXpH, double aEpsilon, double aKappa, double aLpR, double aLambdaR, std::vector<double> mGammaR, double aRrMax);
+  void Init(double mHr, double aAr, double aXpR, double aAh, double aTr, double aXpH, double aEpsilon, double aKappa, double aLpR, double aLambdaR, std::vector<double> mGammaR, double aRrMax, double aDeltaMax);
   void ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoParams& aGeo, const Propeller& aProp);
 
   /*Setter*/
-  void SetDelta(const double aDelta, const double aDt);
+  void SetDelta(double aDelta, const double aDt);
 
   /*Getter*/
   Eigen::Vector3d& getT(void);
   double getDelta(void);
+  double getDeltaMax(void);
   
 private:
 
@@ -37,6 +38,7 @@ private:
   double mLambdaR; //Rudder aspect ratio
   std::vector<double> mGammaR; //Flow straightening coefficient
   double mRrMax; //Max rudder speed
+  double mDeltaMax; //RUdder angle max
   
   Eigen::Vector3d mT; //Rudder force generated 
   double mDelta; //Rudder angle
