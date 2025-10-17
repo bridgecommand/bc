@@ -75,9 +75,9 @@ public:
   void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
   std::vector<irr::core::vector3df> getCameraViews() const;
   std::vector<bool> getCameraIsHighView() const;
-  irr::core::vector3df getScreenDisplayPosition() const;
-  irr::f32 getScreenDisplaySize() const;
-  irr::f32 getScreenDisplayTilt() const;
+  irr::core::vector3df getRadarPosition() const;
+  irr::f32 getRadarSize() const;
+  irr::f32 getRadarTilt() const;
   std::string getRadarConfigFile() const;
   irr::f32 getDepth() const;
   irr::f32 getAngleCorrection() const;
@@ -95,7 +95,7 @@ public:
   irr::f32 getRateOfTurn() const;
   irr::f32 getPortEngine() const; //-1 to 1
   irr::f32 getStbdEngine() const; //-1 to 1
-  irr::f32 getRudder() const;           //-30 to 30
+
   irr::f32 getWheel() const;            // DEE -30 to +30
   irr::f32 getPitch() const;
   irr::f32 getRoll() const;
@@ -150,12 +150,12 @@ private:
 
   irr::f32 deltaTime;
   irr::f32 mWheel;             //-30 to + 30
-  irr::f32 rudder;            //-30 to + 30
+              //-30 to + 30
   bool singleEngine;
 
-  irr::core::vector3df screenDisplayPosition;
-  irr::f32 screenDisplaySize;
-  irr::f32 screenDisplayTilt;
+  irr::core::vector3df mRadarPos;
+  irr::f32 mRadarSize;
+  irr::f32 mRadarTilt;
   // Dynamics parameters
   double mSpeedThroughWater;
   Sail mSails;

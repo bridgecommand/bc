@@ -162,7 +162,7 @@ void Ship::setMu(Eigen::Vector3d aMu)
 
 Propeller& Ship::getPropeller(void){return mProp;}
 Hull& Ship::getHull(void){return mHull;}
-Rudder& Ship::getRudder(void){return mRudder;}
+Rudder& Ship::getRudder(void) {return mRudder;}
 //Wind& Ship::getWind(void){return mWind;}
 
 sGeoParams& Ship::getGeoParams(void){return mGeoParams;}

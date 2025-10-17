@@ -73,11 +73,11 @@ public:
 
   void setRateOfTurn(irr::f32 rateOfTurn);
   void setPos(irr::f32 positionX, irr::f32 positionZ);
-  void setRudder(irr::f32 rudder); //Set the rudder (-ve is port, +ve is stbd)
-  void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
-  irr::f32 getRudder() const;
-  irr::f32 getWheel() const; // DEE
 
+  void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
+
+  irr::f32 getWheel() const; // DEE
+  double getDeltaRudder();
   void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
   void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
   irr::f32 getPortEngine() const; //Range +-1

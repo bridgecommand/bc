@@ -784,9 +784,9 @@ std::string& Message::KeepAlive(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getCOG()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getRudder()));
-  msg.append(":");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
+  msg.append(":");
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getDeltaRudder()));
   msg.append(":0");
   //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngineRPM()));
   msg.append(":0");
@@ -896,7 +896,7 @@ std::string& Message::KeepAlive(void)
   //12 Controls state (wheel, rudder, port/stbd engine, port/stbd schottel, port/stbd thrust lever, bow/stern thruster)
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getRudder()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getDeltaRudder()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngine()));
   msg.append(",");

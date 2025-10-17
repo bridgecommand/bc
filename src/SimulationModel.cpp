@@ -221,7 +221,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
 
   //make a radar screen, setting parent and offset from own ship
-  radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
+  radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getRadarPosition(), ownShip.getRadarSize(), ownShip.getRadarTilt());
 
   //make radar image - one for the background render, and one with any 2d drawing on top
   //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -241,14 +241,14 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //make radar camera
   std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
   std::vector<bool> radarViewsLookDown; //Not needed for the radar camera, but needed for compatability
-  irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
-  radarViews.push_back(ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
+  irr::f32 radarTilt = ownShip.getRadarTilt();
+  radarViews.push_back(ownShip.getRadarPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*radarTilt)*ownShip.getRadarSize(),-0.5*cos(irr::core::DEGTORAD*radarTilt)*ownShip.getRadarSize()));
   radarViewsLookDown.push_back(false);
   radarCamera.load(smgr, device->getLogger(),ownShip.getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
-  radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
+  radarCamera.setLookUp(-1.0 * radarTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
   radarCamera.updateViewport(1.0);
-  radarCamera.setNearValue(0.8*0.5*ownShip.getScreenDisplaySize());
-  radarCamera.setFarValue(1.2*0.5*ownShip.getScreenDisplaySize());
+  radarCamera.setNearValue(0.8*0.5*ownShip.getRadarSize());
+  radarCamera.setFarValue(1.2*0.5*ownShip.getRadarSize());
   
   //Hide the man overboard model
   manOverboard.setVisible(false);
@@ -674,12 +674,6 @@ irr::f32 SimulationModel::getHeading() const
 }
 
 
-irr::f32 SimulationModel::getRudder() const
-{
-  return ownShip.getRudder();
-}
-
-
 // DEE vvvvvvvvvvv
 void SimulationModel::setWheel(irr::f32 wheel, bool force)
 {
@@ -690,6 +684,11 @@ void SimulationModel::setWheel(irr::f32 wheel, bool force)
 irr::f32 SimulationModel::getWheel() const
 {
   return ownShip.getWheel();
+}
+
+double SimulationModel::getDeltaRudder()
+{
+  return ownShip.getRudder().getDelta();
 }
 
 void SimulationModel::setPortEngine(irr::f32 port)
@@ -1654,7 +1653,7 @@ void SimulationModel::update()
     guiData->spd = ownShip.getSpeedThroughWater();
     guiData->portEng = ownShip.getPortEngine();
     guiData->stbdEng = ownShip.getStbdEngine();
-    guiData->rudder = ownShip.getRudder();  // inner workings of this will be modified in model DEE
+    guiData->rudder = getDeltaRudder();  // inner workings of this will be modified in model DEE
     guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
     guiData->depth = ownShip.getDepth();
     guiData->weather = weather;
