@@ -1490,7 +1490,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUPort, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUPort, previousButtonState))
             {
-                model->setWheel(model->getRudder(), true);
+	      //model->setWheel(model->getRudder(), true);
             }
         }
 
@@ -1502,7 +1502,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUStbd, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUStbd, previousButtonState))
             {
-                model->setWheel(model->getRudder(), true);
+	      //model->setWheel(model->getRudder(), true);
             }
         }
 

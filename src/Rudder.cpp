@@ -117,5 +117,5 @@ void Rudder::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoP
 
 Eigen::Vector3d& Rudder::getT(void){return mT;}
 
-double Rudder::getDelta(void){return mDelta;}
+double Rudder::getDelta(void) const {return mDelta;}
 double Rudder::getDeltaMax(void){return mDeltaMax;}

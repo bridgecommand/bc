@@ -129,7 +129,28 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
       views.push_back(irr::core::vector3df(scaleFactor * camOffsetX, scaleFactor * camOffsetY, scaleFactor * camOffsetZ));
       isHighView.push_back(highView);
     }
-    
+
+ // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
+  mRadarPos.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
+  mRadarPos.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
+  mRadarPos.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
+  mRadarSize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
+  mRadarTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
+  // Default position out of view if not set
+  if (mRadarPos.X == -999.0 && mRadarPos.Y == -999.0 && mRadarPos.Z == -999.0)
+    {
+      mRadarPos.X = 0;
+      mRadarPos.Y = 0;
+      mRadarPos.Y = 500;
+    }
+
+  if (mRadarSize <= 0)
+    {
+      mRadarSize = 1;
+    }
+  mRadarPos = scaleFactor * mRadarPos;
+  mRadarSize = scaleFactor * mRadarSize;
+  
   // Load the model
   irr::scene::IMesh *shipMesh;
 
@@ -271,7 +292,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
   roll = 0;
   waveHeightFiltered = 0;
 
-  rudder = 0;
+
   mWheel = 0;
 
   loadCollision(aSmgr);
@@ -505,15 +526,14 @@ void OwnShip::setWheel(irr::f32 aWheel)
   controlMode = MODE_ENGINE; // Switch to engine and rudder mode
   // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
   mWheel = aWheel;
-  if (mWheel < -(mRudder.getDeltaMax()))
+  if (mWheel < -(mRudder.getDeltaMax())*180/M_PI)
     {
-      mWheel = -(mRudder.getDeltaMax());
+      mWheel = -(mRudder.getDeltaMax()*180/M_PI);
     }
-  if (mWheel > mRudder.getDeltaMax())
+  if (mWheel > mRudder.getDeltaMax()*180/M_PI)
     {
-      mWheel = mRudder.getDeltaMax();
+      mWheel = mRudder.getDeltaMax()*180/M_PI;
     }
-
 }
 
 
@@ -561,10 +581,6 @@ irr::f32 OwnShip::getStbdEngine() const
   return stbdEngine;
 }
 
-irr::f32 OwnShip::getRudder() const
-{
-  return rudder;
-}
 
 irr::f32 OwnShip::getWheel() const
 {
@@ -650,19 +666,19 @@ void OwnShip::setLastDeltaTime(irr::f32 myDeltaTime)
   deltaTime = myDeltaTime;
 }
 
-irr::core::vector3df OwnShip::getScreenDisplayPosition() const
+irr::core::vector3df OwnShip::getRadarPosition() const
 {
-  return screenDisplayPosition;
+  return mRadarPos;
 }
 
-irr::f32 OwnShip::getScreenDisplaySize() const
+irr::f32 OwnShip::getRadarSize() const
 {
-  return screenDisplaySize;
+  return mRadarSize;
 }
 
-irr::f32 OwnShip::getScreenDisplayTilt() const
+irr::f32 OwnShip::getRadarTilt() const
 {
-  return screenDisplayTilt;
+  return mRadarTilt;
 }
 
 void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque)
@@ -744,8 +760,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
       stbdThrust = stbdEngine * 20;
 
       mProp.SetRevs(portThrust);
-      rudder=mWheel;
-      mRudder.SetDelta((rudder*M_PI)/180, deltaTime);
+      mRudder.SetDelta((mWheel*M_PI)/180, deltaTime);
       
     }
   else // End of engine mode
