@@ -184,11 +184,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (event.MouseInput.Wheel < 0)
             {
-                model->setWheel(model->getWheel() + 1.0);
+                model->setWheel(model->getOwnShip()->getWheel() + 1.0);
             }
             if (event.MouseInput.Wheel > 0)
             {
-                model->setWheel(model->getWheel() - 1.0);
+                model->setWheel(model->getOwnShip()->getWheel() - 1.0);
             }
             return true;
         }
@@ -1013,14 +1013,14 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
                 // Keyboard control of engines
                 case irr::KEY_KEY_A:
-		  model->setPortEngine(model->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable
+		  model->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable
 		  break;
 
                 case irr::KEY_KEY_Z:
                     break;
 
                 case irr::KEY_KEY_S:
-                        model->setStbdEngine(model->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+                        model->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_X:
@@ -1028,8 +1028,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
                 case irr::KEY_KEY_D:
-		  model->setStbdEngine(model->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-		  model->setPortEngine(model->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
 		case irr::KEY_KEY_C:

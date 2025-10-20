@@ -197,7 +197,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             nonFollowUpStbdButton = guienv->addButton(irr::core::rect<irr::s32>(0.11*su, 0.96*sh, 0.13*su, 0.99*sh),0,GUI_ID_NFU_STBD_BUTTON,language->translate("NFUStbd").c_str());
 
             //Adapt if single engine:
-            if (1 == model->getNumberProp()) {
+            if (1 == model->getOwnShip()->getNumberProp()) {
                 stbdScrollbar->setVisible(false);
                 stbdText->setVisible(false);
 

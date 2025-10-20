@@ -1537,13 +1537,13 @@ int VRInterface::update() {
 					// TODO: Check sign of this, and if +- 10 degrees is enough overlap
 					if (leftGripEulerAngles.Z * irr::core::RADTODEG > -10) {
 						vrChangingPortEngine = true;
-						portEngineReference = model->getPortEngine();
+						portEngineReference = model->getOwnShip()->getPortEngine();
 					} else {
 						vrChangingPortEngine = false;
 					}
 					if (leftGripEulerAngles.Z * irr::core::RADTODEG < 10) {
 						vrChangingStbdEngine = true;
-						stbdEngineReference = model->getStbdEngine();
+						stbdEngineReference = model->getOwnShip()->getStbdEngine();
 					} else {
 						vrChangingStbdEngine = false;
 					}
@@ -1569,7 +1569,7 @@ int VRInterface::update() {
 				// Reset 'start' position for controller movement if newly pressed down
 				if (!previousSelectState[HAND_RIGHT_INDEX]) {
 					vrRightGripPositionReference = vrRightGripPosition;
-					wheelReference = model->getWheel();
+					wheelReference = model->getOwnShip()->getWheel();
 				}
 				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 				//setWheel clips to valid range, so don't worry about this here

@@ -514,11 +514,6 @@ void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) // Sets the rate of turn (used 
   this->mMu[1] = rateOfTurn;
 }
 
-irr::f32 OwnShip::getRateOfTurn() const
-{
-  return this->mMu[1];
-}
-
 
 void OwnShip::setWheel(irr::f32 aWheel)
 {
@@ -595,17 +590,6 @@ irr::f32 OwnShip::getRoll() const
 {
   return roll;
 }
-
-irr::f32 OwnShip::getCOG() const
-{
-  return mEta[2];
-}
-
-irr::f32 OwnShip::getSOG() const
-{
-  return mMu[0];
-}
-
 
 irr::f32 OwnShip::getShipMass() const
 {

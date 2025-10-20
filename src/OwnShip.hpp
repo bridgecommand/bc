@@ -92,15 +92,12 @@ public:
   void setStbdEngine(irr::f32);                                 // Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
   void setRateOfTurn(irr::f32 rateOfTurn);                      // Sets the rate of turn (used when controlled as secondary)
 
-  irr::f32 getRateOfTurn() const;
   irr::f32 getPortEngine() const; //-1 to 1
   irr::f32 getStbdEngine() const; //-1 to 1
 
   irr::f32 getWheel() const;            // DEE -30 to +30
   irr::f32 getPitch() const;
   irr::f32 getRoll() const;
-  irr::f32 getCOG() const;
-  irr::f32 getSOG() const; // m/s
   irr::f32 getSpeedThroughWater() const; // m/s
   irr::f32 getLateralSpeed() const;
   std::string getBasePath() const;

@@ -144,6 +144,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   // TODO: It would be better to pass in modelParameters directly
   ownShip.load(scenarioData.ownShipData, mModelParameters, smgr, this, &terrain, device);
 
+  //Temp
+  mOwnShip = &ownShip;
   
 
   if(mModelParameters.mode == OperatingMode::Secondary) {
@@ -253,9 +255,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //Hide the man overboard model
   manOverboard.setVisible(false);
 
-  //initialise offset
-  offsetPosition = irr::core::vector3d<int64_t>(0,0,0);
-
   //store time
   previousTime = device->getTimer()->getTime();
 
@@ -292,31 +291,23 @@ void SimulationModel::setSpeed(irr::f32 spd)
 }
 
 irr::f32 SimulationModel::getLat()  const{
-  return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
+  return terrain.zToLat(ownShip.getPosition().Z);
 }
 
 irr::f32 SimulationModel::getLong() const{
-  return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
+  return terrain.xToLong(ownShip.getPosition().X);
 }
 
 irr::f32 SimulationModel::getPosX() const{
-  return ownShip.getPosition().X + offsetPosition.X;
+  return ownShip.getPosition().X;
 }
 
 irr::f32 SimulationModel::getPosY() const {
-  return ownShip.getPosition().Y + offsetPosition.Y;
+  return ownShip.getPosition().Y;
 }
 
 irr::f32 SimulationModel::getPosZ() const{
-  return ownShip.getPosition().Z + offsetPosition.Z;
-}
-
-irr::f32 SimulationModel::getCOG() const{
-  return ownShip.getCOG();
-}
-
-irr::f32 SimulationModel::getSOG() const{
-  return ownShip.getSOG();
+  return ownShip.getPosition().Z;
 }
 
 irr::f32 SimulationModel::getLateralSpeed() const{
@@ -383,11 +374,11 @@ std::string SimulationModel::getOtherShipName(int number) const{
 }
 
 irr::f32 SimulationModel::getOtherShipPosX(int number) const{
-  return otherShips.getPosition(number).X + offsetPosition.X;
+  return otherShips.getPosition(number).X;
 }
 
 irr::f32 SimulationModel::getOtherShipPosZ(int number) const{
-  return otherShips.getPosition(number).Z + offsetPosition.Z;
+  return otherShips.getPosition(number).Z;
 }
 
 irr::f32 SimulationModel::getOtherShipLong(int number) const{
@@ -423,7 +414,7 @@ void SimulationModel::setOtherShipSpeed(int number, irr::f32 speed){
 }
 
 void SimulationModel::setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ){
-  otherShips.setPos(number, positionX - offsetPosition.X, positionZ - offsetPosition.Z);
+  otherShips.setPos(number, positionX, positionZ);
 }
 
 void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
@@ -440,11 +431,11 @@ irr::f32 SimulationModel::getOwnShipSpeedThroughWater(void)
 }
 
 irr::f32 SimulationModel::getBuoyPosX(int number) const{
-  return buoys.getPosition(number).X + offsetPosition.X;
+  return buoys.getPosition(number).X;
 }
 
 irr::f32 SimulationModel::getBuoyPosZ(int number) const{
-  return buoys.getPosition(number).Z + offsetPosition.Z;
+  return buoys.getPosition(number).Z;
 }
 
 void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
@@ -652,11 +643,6 @@ void SimulationModel::setHeading(irr::f32 hdg)
   ownShip.setHeading(hdg);
 }
 
-irr::f32 SimulationModel::getRateOfTurn() const
-{
-  return ownShip.getRateOfTurn();
-}
-
 void SimulationModel::setRateOfTurn(irr::f32 rateOfTurn)
 {
   ownShip.setRateOfTurn(rateOfTurn);
@@ -664,36 +650,14 @@ void SimulationModel::setRateOfTurn(irr::f32 rateOfTurn)
 
 void SimulationModel::setPos(irr::f32 positionX, irr::f32 positionZ)
 {
-  ownShip.setPosition(positionX - offsetPosition.X, positionZ - offsetPosition.Z );
+  ownShip.setPosition(positionX, positionZ);
 }
-
-
-irr::f32 SimulationModel::getHeading() const
-{
-  return(ownShip.getHeading());
-}
-
 
 // DEE vvvvvvvvvvv
 void SimulationModel::setWheel(irr::f32 wheel, bool force)
 {
   //Set the wheel (-ve is port, +ve is stbd)
   ownShip.setWheel(wheel);
-}
-
-irr::f32 SimulationModel::getWheel() const
-{
-  return ownShip.getWheel();
-}
-
-double SimulationModel::getDeltaRudder()
-{
-  return ownShip.getRudder().getDelta();
-}
-
-unsigned char SimulationModel::getNumberProp(void)
-{
-  return ownShip.getNumberProp();
 }
 
 void SimulationModel::setPortEngine(irr::f32 port)
@@ -711,10 +675,10 @@ void SimulationModel::setPortEngine(irr::f32 port)
 
 
   if (ownShip.getNumberProp() > 1) {
-    sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+    sound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
   }
   else {
-    sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+    sound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
   }
 
 }
@@ -727,22 +691,19 @@ void SimulationModel::setStbdEngine(irr::f32 stbd)
   //Set engine sound level
   // DEE_NOV22 same comment as for port engine
   if (ownShip.getNumberProp() > 1) {
-    sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+    sound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
   }
   else {
-    sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+    sound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
   }
 }
 
-irr::f32 SimulationModel::getPortEngine() const
+OwnShip* SimulationModel::getOwnShip(void)
 {
-  return ownShip.getPortEngine();
-
-}
-
-irr::f32 SimulationModel::getStbdEngine() const
-{
-  return ownShip.getStbdEngine();
+  if(NULL != mOwnShip)
+    return mOwnShip;
+  else
+    return NULL;
 }
 
 void SimulationModel::setAccelerator(irr::f32 accelerator)
@@ -1104,7 +1065,7 @@ void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
 
 void SimulationModel::addManualPoint(bool newContact)
 {
-  radarCalculation.addManualPoint(newContact, offsetPosition, ownShip, absoluteTime);
+  radarCalculation.addManualPoint(newContact, ownShip, absoluteTime);
 }
 
 void SimulationModel::clearManualPoints()
@@ -1234,12 +1195,12 @@ bool SimulationModel::getManOverboardVisible() const
 
 irr::f32 SimulationModel::getManOverboardPosX() const
 {
-  return manOverboard.getPosition().X + offsetPosition.X;
+  return manOverboard.getPosition().X ;
 }
 
 irr::f32 SimulationModel::getManOverboardPosZ() const
 {
-  return manOverboard.getPosition().Z + offsetPosition.Z;
+  return manOverboard.getPosition().Z ;
 }
 
 
@@ -1252,7 +1213,7 @@ void SimulationModel::setManOverboardVisible(bool visible)
 void SimulationModel::setManOverboardPos(irr::f32 positionX, irr::f32 positionZ)
 {
   //To be used directly, eg when in secondary display mode only
-  manOverboard.setPosition(irr::core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
+  manOverboard.setPosition(irr::core::vector3df(positionX ,0,positionZ ));
 }
 
 bool SimulationModel::hasGPS() const
@@ -1556,44 +1517,6 @@ void SimulationModel::update()
     //update water position
     water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
-  }{ IPROF("Normalise ");
-    //Normalise positions if required (More than 1000 metres from origin)
-    //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
-    /*if(ownShip.getPosition().getLength() > 1000) {
-      irr::core::vector3df ownShipPos = ownShip.getPosition();
-      irr::s32 deltaX = -1*(irr::s32)ownShip.getEta()[0];//ownShipPos.X;
-      irr::s32 deltaZ = -1*(irr::s32)ownShip.getEta()[1];//ownShipPos.Z;
-      //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
-      deltaX = 500.0*Utilities::round(deltaX/500.0);
-      deltaZ = 500.0*Utilities::round(deltaZ/500.0);
-
-      std::cout << "Normalise !" << std::endl;
-      //Move all objects
-      ownShip.moveNode(deltaX,0,deltaZ);
-      terrain.moveNode(deltaX,0,deltaZ); //SLOW!
-      otherShips.moveNode(deltaX,0,deltaZ);
-      buoys.moveNode(deltaX,0,deltaZ);
-      landObjects.moveNode(deltaX,0,deltaZ);
-      landLights.moveNode(deltaX,0,deltaZ);
-      manOverboard.moveNode(deltaX,0,deltaZ);
-
-      // Also move camera if in 'frozen' mode
-      camera.applyOffset(deltaX,0,deltaZ);
-
-      //Change stored offset
-      offsetPosition.X -= deltaX;
-      offsetPosition.Z -= deltaZ;
-
-      std::string normalisedLogMessage = "Normalised, offset X: ";
-      normalisedLogMessage.append(Utilities::lexical_cast<std::string>(offsetPosition.X));
-      normalisedLogMessage.append(" Z: ");
-      normalisedLogMessage.append(Utilities::lexical_cast<std::string>(offsetPosition.Z));
-      device->getLogger()->log(normalisedLogMessage.c_str());
-
-      //Debugging
-      //std::cout << normalisedLogMessage << std::endl;
-
-      }*/
   }{ IPROF("Update camera pos");
 
     //update the camera position
@@ -1616,7 +1539,7 @@ void SimulationModel::update()
 	radarImageChosen = radarImage;
 	radarImageOverlaidChosen = radarImageOverlaid;
       }
-      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,offsetPosition,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
     }{ IPROF("Update radar screen");
       radarScreen.update(radarImageOverlaidChosen);
     }{ IPROF("Update radar camera");
@@ -1653,7 +1576,7 @@ void SimulationModel::update()
     guiData->spd = ownShip.getSpeedThroughWater();
     guiData->portEng = ownShip.getPortEngine();
     guiData->stbdEng = ownShip.getStbdEngine();
-    guiData->rudder = getDeltaRudder();  // inner workings of this will be modified in model DEE
+    guiData->rudder = mOwnShip->getRudder().getDelta();  // inner workings of this will be modified in model DEE
     guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
     guiData->depth = ownShip.getDepth();
     guiData->weather = weather;

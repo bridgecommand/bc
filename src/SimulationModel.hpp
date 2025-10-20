@@ -68,7 +68,6 @@ public:
   void setSpeed(irr::f32 spd); //Sets the own ship's speed
   void setHeading(irr::f32 hdg); //Sets the own ship's heading
 
-  irr::f32 getRateOfTurn() const;
   void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
 
   void setRateOfTurn(irr::f32 rateOfTurn);
@@ -76,35 +75,17 @@ public:
 
   void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
 
-  irr::f32 getWheel() const; // DEE
-  double getDeltaRudder(void);
-  unsigned char getNumberProp(void);
   void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
   void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
-  irr::f32 getPortEngine() const; //Range +-1
-  irr::f32 getStbdEngine() const; //Range +-1
-  irr::f32 getPortEngineRPM() const;
-  irr::f32 getStbdEngineRPM() const;
-  void setBowThruster(irr::f32 proportion);
-  void setSternThruster(irr::f32 proportion);
-  void setBowThrusterRate(irr::f32 bowThrusterRate); //Sets rate of change, for joystick button control
-  void setSternThrusterRate(irr::f32 sternThrusterRate); //Sets rate of change, for joystick button control
-  irr::f32 getBowThruster() const;
-  irr::f32 getSternThruster() const;
-  void setRudderPumpState(int whichPump, bool rudderPumpState); //Sets how the rudder is responding. Assumed that whichPump can be 1 or 2
-  bool getRudderPumpState(int whichPump) const;
-  void setFollowUpRudderWorking(bool followUpRudderWorking); //Sets if the normal (follow up) rudder is working
+
   void setAccelerator(irr::f32 accelerator); //Set simulation time compression
   irr::f32 getAccelerator() const;
-  irr::f32 getHeading() const; //Gets the own ship's heading
 
   irr::f32 getLat() const;
   irr::f32 getLong() const;
   irr::f32 getPosX() const;
   irr::f32 getPosY() const;
   irr::f32 getPosZ() const;
-  irr::f32 getCOG() const;
-  irr::f32 getSOG() const; //In metres/second
   irr::f32 getDepth() const;
   irr::f32 getLateralSpeed() const;
   irr::f32 getOwnShipSpeedThroughWater(void);
@@ -289,7 +270,8 @@ public:
   void addLine(); // Add a line, which will be undefined
     
   Lines* getLines(); // Get pointer to lines object
-
+  OwnShip* getOwnShip(void);
+  
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
   void update();
@@ -325,6 +307,7 @@ private:
   Terrain terrain;
   Light light;
   Solver mSolver;
+  OwnShip *mOwnShip;
   OwnShip ownShip;
   OtherShips otherShips;
   Buoys buoys;
@@ -360,8 +343,6 @@ private:
   //utility function to check for collision
   bool checkOwnShipCollision();
 
-  //Offset position handling
-  irr::core::vector3d<int64_t> offsetPosition;
 
   //store useful information
   std::string scenarioName;

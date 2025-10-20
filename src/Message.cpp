@@ -345,19 +345,19 @@ std::string& Message::ControlOverride(void)
   if(mModel->getIsSecondaryControlWheel())
     {
       controlOverride.append("MCCO,0,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
       controlOverride.append("|");
     }
   if(mModel->getIsSecondaryControlPortEngine())
     {
       controlOverride.append("MCCO,1,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getPortEngine()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPortEngine()));
       controlOverride.append("|");
     }
   if(mModel->getIsSecondaryControlStbdEngine())
     {
       controlOverride.append("MCCO,2,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngine()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getStbdEngine()));
       controlOverride.append("|");
     }
   /*if(mModel->getIsSecondaryControlPortSchottel())
@@ -684,11 +684,11 @@ std::string& Message::MpFeedBack(void)
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getHeading()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getRateOfTurn()*irr::core::RADTODEG));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()*irr::core::RADTODEG));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getSOG()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeed()));
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getTimeDelta()));
   mpFeedBack.append("#");
@@ -772,21 +772,21 @@ std::string& Message::KeepAlive(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getHeading()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getRateOfTurn()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Pitch
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Roll
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getSOG()*MPS_TO_KTS));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeed()*MPS_TO_KTS));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getCOG()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
   msg.append(":");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getDeltaRudder()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRudder().getDelta()));
   msg.append(":0");
   //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngineRPM()));
   msg.append(":0");
@@ -894,13 +894,13 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
     
   //12 Controls state (wheel, rudder, port/stbd engine, port/stbd schottel, port/stbd thrust lever, bow/stern thruster)
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWheel()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getDeltaRudder()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRudder().getDelta()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngine()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPortEngine()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngine()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getStbdEngine()));
   msg.append(",0");
   //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
   msg.append(",0");
@@ -930,9 +930,9 @@ std::string& Message::KeepAliveShort(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getLat()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getHeading()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getRateOfTurn()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShipSpeedThroughWater()*MPS_TO_KTS));
   msg.append(",");

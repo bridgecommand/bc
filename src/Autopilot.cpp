@@ -59,7 +59,7 @@ bool Autopilot::receiveAPB(APB sentence)
     char directionToTrack = sentence.direction;
 
     irr::f32 bearingToSteer = Angles::normaliseAngle(sentence.heading_to_dest);
-    irr::f32 currentHeading = Angles::normaliseAngle(model->getHeading());
+    irr::f32 currentHeading = Angles::normaliseAngle(model->getOwnShip()->getHeading());
     irr::f32 relativeBearing = bearingToSteer - currentHeading;
     if (relativeBearing >= 180.0) {
         relativeBearing -= 360.0;
@@ -68,7 +68,7 @@ bool Autopilot::receiveAPB(APB sentence)
         relativeBearing += 360.0;
     }
 
-    irr::f32 rot = model->getRateOfTurn() * DEG_IN_RAD;
+    irr::f32 rot = model->getOwnShip()->getRateOfTurn() * DEG_IN_RAD;
     irr::f32 dampening = 1.0;
     if (rot != 0.0) {
         irr::f32 timeUntilOvershoot = relativeBearing / rot;

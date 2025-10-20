@@ -104,21 +104,26 @@ irr::f32 Ship::getEstimatedDisplacement() const
 void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
 {
      //Update the position used, ready for next update. Doesn't actually move the mesh at this point
-     this->mEta[1] = xPos;
-     this->mEta[0] = zPos;
+     mEta[1] = xPos;
+     mEta[0] = zPos;
      positionManuallyUpdated = true;
 }
 
 void Ship::setHeading(irr::f32 hdg)
 {
-    this->mEta[2] = hdg;
+    mEta[2] = hdg;
     controlMode = MODE_AUTO; //Switch to auto mode
 }
 
 void Ship::setSpeed(irr::f32 spd)
 {
-    this->mMu[0] = spd;
+    mMu[0] = spd;
     controlMode = MODE_AUTO; //Switch to auto mode
+}
+
+irr::f32 Ship::getRateOfTurn() const
+{
+  return mMu[1];
 }
 
 irr::f32 Ship::getHeading() const

@@ -655,7 +655,7 @@ void RadarCalculation::changeRadarColourChoice()
     radarScreenStale = true;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     #ifdef WITH_PROFILING
@@ -697,34 +697,29 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
     CursorBrg = irr::core::RADTODEG*std::atan2(cursorRangeXNm,cursorRangeYNm);
     if (headUp) {
         // Adjust angle if needed
-        CursorBrg += ownShip.getHeading();
+        CursorBrg += ownShip.getHeading()*irr::core::RADTODEG;
     }
     CursorBrg = Angles::normaliseAngle(CursorBrg);
     CursorRangeNm = pow(pow(cursorRangeXNm,2)+pow(cursorRangeYNm,2),0.5);
 
     } { IPROF("Scan");
-    scan(offsetPosition, terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
+    scan(terrain, ownShip, buoys, otherShips, weather, rain, tideHeight, deltaTime, absoluteTime); // scan into scanArray[row (angle)][column (step)], and with filtering and amplification into scanArrayAmplified[][]
     } { IPROF("Update ARPA");
-	updateARPA(offsetPosition, ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
+	updateARPA(ownShip, absoluteTime); //From data in arpaContacts, updated in scan()
 	} { IPROF("Render");
-	render(radarImage, radarImageOverlaid, ownShip.getCOG(), ownShip.getSOG()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
+	render(radarImage, radarImageOverlaid, ownShip.getHeading()*irr::core::RADTODEG, ownShip.getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
 	}
 
 }
 
 
-void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
     //IPROF_FUNC;
     const irr::u32 SECONDS_BETWEEN_SCANS = 2;
 
-    irr::core::vector3df position = ownShip.getPosition();
-    //Get absolute position relative to SW corner of world model
-    irr::core::vector3d<int64_t> absolutePosition = offsetPosition;
-    absolutePosition.X += position.X;
-    absolutePosition.Y += position.Y;
-    absolutePosition.Z += position.Z;
+    irr::core::vector3df absolutePosition = ownShip.getPosition();
 
     //Some tuning constants
     irr::f32 radarFactorLand=2.0;
@@ -737,11 +732,11 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
     std::vector<RadarData> radarData;
     //For other ships
     for (std::vector<RadarData>::size_type contactID=1; contactID<=otherShips.getNumber(); contactID++) {
-        radarData.push_back(otherShips.getRadarData(contactID,position));
+        radarData.push_back(otherShips.getRadarData(contactID,absolutePosition));
     }
     //For buoys
     for (std::vector<RadarData>::size_type contactID=1; contactID<=buoys.getNumber(); contactID++) {
-        radarData.push_back(buoys.getRadarData(contactID,position));
+        radarData.push_back(buoys.getRadarData(contactID,absolutePosition));
     }
 
     const irr::f32 RADAR_RPM = 25; //Todo: Make a ship parameter
@@ -765,8 +760,8 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
             irr::f32 localRange = cellLength*currentStep;
             irr::f32 relX = localRange*sin(currentScanAngle*irr::core::DEGTORAD); //Distance from ship
             irr::f32 relZ = localRange*cos(currentScanAngle*irr::core::DEGTORAD);
-            irr::f32 localX = position.X + relX;
-            irr::f32 localZ = position.Z + relZ;
+            irr::f32 localX = absolutePosition.X + relX;
+            irr::f32 localZ = absolutePosition.Z + relZ;
 
             //get extents
             irr::f32 minCellAngle = Angles::normaliseAngle(currentScanAngle - scanAngleStep/2.0);
@@ -1085,7 +1080,7 @@ void RadarCalculation::scan(irr::core::vector3d<int64_t> offsetPosition, const T
 
 }
 
-void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+void RadarCalculation::addManualPoint(bool newContact, const OwnShip& ownShip, uint64_t absoluteTime)
 {
     // Assumes that CursorRangeNm and CursorBrg reflect the current cursor point
     
@@ -1129,12 +1124,8 @@ void RadarCalculation::addManualPoint(bool newContact, irr::core::vector3d<int64
     }
 
     // Set up
-    irr::core::vector3df position = ownShip.getPosition();
+    irr::core::vector3df absolutePosition = ownShip.getPosition();
     // Get absolute position relative to SW corner of world model
-    irr::core::vector3d<int64_t> absolutePosition = offsetPosition;
-    absolutePosition.X += position.X;
-    absolutePosition.Y += position.Y;
-    absolutePosition.Z += position.Z;
 
     //Add this 'scan' (Actually a MARPA Update) 
     ARPAScan newScan;
@@ -1238,25 +1229,20 @@ void RadarCalculation::trackTargetFromCursor()
 
 }
 
-void RadarCalculation::updateARPA(irr::core::vector3d<int64_t> offsetPosition, const OwnShip& ownShip, uint64_t absoluteTime)
+void RadarCalculation::updateARPA(const OwnShip& ownShip, uint64_t absoluteTime)
 {
 
     //IPROF_FUNC;
     //Own ship absolute position
-    irr::core::vector3df position = ownShip.getPosition();
-    //Get absolute position relative to SW corner of world model
-    irr::core::vector3d<int64_t> absolutePosition = offsetPosition;
-    absolutePosition.X += position.X;
-    absolutePosition.Y += position.Y;
-    absolutePosition.Z += position.Z;
+  irr::core::vector3df absolutePosition = ownShip.getPosition();
 
     //Based on scans data in arpaContacts, estimate current speed, heading and position
     for (unsigned int i = 0; i<arpaContacts.size(); i++) {
-        updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc.
+      updateArpaEstimate(arpaContacts.at(i), i, ownShip, absolutePosition, absoluteTime); //This will update the estimate etc.
     } //For loop through arpa contacts
 }
 
-void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3d<int64_t> absolutePosition, uint64_t absoluteTime) 
+void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3df absolutePosition, uint64_t absoluteTime) 
 {
     if (arpaMode < 1 && thisArpaContact.contactType == CONTACT_NORMAL) {
         //Set all contacts to zero (untracked) if normal type if ARPA is off
@@ -1391,8 +1377,8 @@ void RadarCalculation::updateArpaEstimate(ARPAContact& thisArpaContact, int cont
                         thisArpaContact.estimate.absHeading += 360;
                     }
                     //Relative vector:
-                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSOG() * sin((ownShip.getCOG())*irr::core::DEGTORAD);
-                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSOG() * cos((ownShip.getCOG())*irr::core::DEGTORAD); //ownShipSpeed in m/s
+                    thisArpaContact.estimate.relVectorX = thisArpaContact.estimate.absVectorX - ownShip.getSpeed() * sin(ownShip.getHeading());
+                    thisArpaContact.estimate.relVectorZ = thisArpaContact.estimate.absVectorZ - ownShip.getSpeed() * cos(ownShip.getHeading()); //ownShipSpeed in m/s
                     thisArpaContact.estimate.relHeading = std::atan2(thisArpaContact.estimate.relVectorX,thisArpaContact.estimate.relVectorZ)/RAD_IN_DEG;
                     while (thisArpaContact.estimate.relHeading < 0 ) {
                         thisArpaContact.estimate.relHeading += 360;

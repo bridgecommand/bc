@@ -397,22 +397,22 @@ void NMEA::updateNMEA()
     const char *min  = minuteString.c_str();
     const char *sec  =secondsString.c_str();
 
-    irr::f32 rudderAngle = model->getDeltaRudder();
+    irr::f32 rudderAngle = model->getOwnShip()->getRudder().getDelta();
 
     int engineRPM[] = {
-        Utilities::round(model->getStbdEngine()*100), // idx=1, odd (starboard)
-        Utilities::round(model->getPortEngine()*100)  // idx=2, even (port)
+        Utilities::round(model->getOwnShip()->getStbdEngine()*100), // idx=1, odd (starboard)
+        Utilities::round(model->getOwnShip()->getPortEngine()*100)  // idx=2, even (port)
     };
 
     irr::f32 lat = model->getLat();
     irr::f32 lon = model->getLong();
 
-    irr::f32 cog = model->getCOG();
-    irr::f32 sog = model->getSOG()*MPS_TO_KTS;
+    irr::f32 cog = model->getOwnShip()->getHeading();
+    irr::f32 sog = model->getOwnShip()->getSpeed()*MPS_TO_KTS;
     irr::f32 spdWater = model->getOwnShipSpeedThroughWater() * MPS_TO_KTS;
     irr::f32 latSpeed = model->getLateralSpeed();
-    irr::f32 hdg = model->getHeading();
-    irr::f32 rot = model->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
+    irr::f32 hdg = model->getOwnShip()->getHeading();
+    irr::f32 rot = model->getOwnShip()->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
     irr::f32 depth = model->getDepth();
 
