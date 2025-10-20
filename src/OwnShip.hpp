@@ -105,8 +105,6 @@ public:
   irr::f32 getLateralSpeed() const;
   std::string getBasePath() const;
 
-  bool isSingleEngine() const;
-
   irr::f32 getLastDeltaTime();                      // gets the delta time for the last cycle
   void setLastDeltaTime(irr::f32 myDeltaTime);      // sets the delta time for the last cycle
 

@@ -606,10 +606,6 @@ irr::f32 OwnShip::getSOG() const
   return mMu[0];
 }
 
-bool OwnShip::isSingleEngine() const
-{
-  return singleEngine;
-}
 
 irr::f32 OwnShip::getShipMass() const
 {
@@ -827,11 +823,11 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   std::cout << "--> Speed X : " << mMu[0] << std::endl;
   std::cout << "--> Speed Y : " << mMu[1] << std::endl;
   std::cout << "--> Speed Z : " << mMu[2] << std::endl;
-  std::cout << "--> Revs : " << mProp.getRevs() << std::endl;
+  std::cout << "--> Revs : " << mProp[0].getRevs() << std::endl;
   std::cout << "--> Rudder : " << mRudder.getDelta() << std::endl;
   std::cout << "--> Wheel : " << mWheel << std::endl;
-  std::cout << "--> Forward Rotation : " << mProp.getForwardRotDir() << std::endl;
-  std::cout << "--> Current Rotation : " << mProp.getCurrentRotDir() << std::endl;
+  std::cout << "--> Forward Rotation : " << mProp[0].getForwardRotDir() << std::endl;
+  std::cout << "--> Current Rotation : " << mProp[0].getCurrentRotDir() << std::endl;
   std::cout << "**************" << std::endl;
   
   //std::cout << "--> Xpos : " << xPos << std::endl;

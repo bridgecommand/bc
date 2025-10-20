@@ -65,10 +65,12 @@ public:
   void setEta(Eigen::Vector3d aEta);
   void setMu(Eigen::Vector3d aMu);
   //Boat parts
-  Propeller& getPropeller(void);
+  Propeller& getPropeller(std::string aNProp = "mono");
   Hull& getHull(void);
   Rudder& getRudder(void);
   //Wind& getWind(void);
+  unsigned char getNumberProp(void);
+
   
 protected:
 

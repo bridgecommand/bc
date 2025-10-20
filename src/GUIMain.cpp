@@ -40,7 +40,7 @@ GUIMain::GUIMain()
 
 }
 
-void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
+void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode)
     {
         this->device = device;
         this->model = model;
@@ -71,9 +71,6 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         col = guienv->getSkin()->getColor(irr::gui::EGDC_3D_FACE);
         col.setAlpha(200);
         guienv->getSkin()->setColor(irr::gui::EGDC_3D_FACE, col);
-
-        //default to double engine in gui
-        this->singleEngine = singleEngine;
 
       
 	azimuthGUIOffsetL = 0;
@@ -200,7 +197,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
             nonFollowUpStbdButton = guienv->addButton(irr::core::rect<irr::s32>(0.11*su, 0.96*sh, 0.13*su, 0.99*sh),0,GUI_ID_NFU_STBD_BUTTON,language->translate("NFUStbd").c_str());
 
             //Adapt if single engine:
-            if (singleEngine) {
+            if (1 == model->getNumberProp()) {
                 stbdScrollbar->setVisible(false);
                 stbdText->setVisible(false);
 
@@ -745,6 +742,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         binosButton->setPressed(false);
     }
 
+void GUIMain::setSingleEngine()
+{
+  singleEngine = true;
+}
     void GUIMain::setLargeRadar(bool radarState)
     {
         radarLarge = radarState;

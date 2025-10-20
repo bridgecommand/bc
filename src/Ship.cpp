@@ -161,7 +161,14 @@ void Ship::setMu(Eigen::Vector3d aMu)
 }
 
 
-Propeller& Ship::getPropeller(void){return mProp;}
+Propeller& Ship::getPropeller(std::string aNProp)
+{
+  if(aNProp == "mono" || aNProp == "port")
+    return mProp[0];
+  else
+    return mProp[1];
+}
+
 Hull& Ship::getHull(void){return mHull;}
 Rudder& Ship::getRudder(void) {return mRudder;}
 //Wind& Ship::getWind(void){return mWind;}
@@ -175,3 +182,4 @@ Eigen::Vector3d Ship::getMu0(void){return mMu0;}
 Eigen::Vector3d Ship::getMu(void){return mMu;}
 Eigen::Vector3d Ship::getEta(void){return mEta;}
 Eigen::Matrix3d& Ship::getInvMatM(void){return mInvMatM;}
+unsigned char Ship::getNumberProp(void){return mNumberProp;}

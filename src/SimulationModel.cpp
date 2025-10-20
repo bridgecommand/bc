@@ -164,16 +164,16 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
   //To be replaced by getting information and passing into gui load method.
   //Tell gui to hide the second engine scroll bar if we have a single engine
-  if (ownShip.isSingleEngine()) {
-  gui->setSingleEngine();
+  if (1 == ownShip.getNumberProp()) {
+    gui->setSingleEngine();
   }
 
   //Tell gui to hide all ship controls if in secondary mode
-  if (mode == OperatingMode::Secondary) {
-  gui->hideEngineAndRudder();
+  //if (mModelParameters.mode == OperatingMode::Secondary) {
+  //gui->hideEngineAndRudder();
   //      TODO      gui->hideWheel();
   //	DEE_NOV22 todo hide schottels engine indicators etc
-  }
+  //}
 
   //Tell the GUI what instruments to display - currently GPS and depth sounder
   //gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
@@ -691,6 +691,11 @@ double SimulationModel::getDeltaRudder()
   return ownShip.getRudder().getDelta();
 }
 
+unsigned char SimulationModel::getNumberProp(void)
+{
+  return ownShip.getNumberProp();
+}
+
 void SimulationModel::setPortEngine(irr::f32 port)
 {
   //Set the engine, (-ve astern, +ve ahead)
@@ -705,7 +710,7 @@ void SimulationModel::setPortEngine(irr::f32 port)
   // of the engine noise should change with engine rpm
 
 
-  if (ownShip.isSingleEngine()) {
+  if (ownShip.getNumberProp() > 1) {
     sound->setVolumeEngine(fabs(getPortEngine())*0.5);
   }
   else {
@@ -721,7 +726,7 @@ void SimulationModel::setStbdEngine(irr::f32 stbd)
 
   //Set engine sound level
   // DEE_NOV22 same comment as for port engine
-  if (ownShip.isSingleEngine()) {
+  if (ownShip.getNumberProp() > 1) {
     sound->setVolumeEngine(fabs(getPortEngine())*0.5);
   }
   else {
@@ -1253,11 +1258,6 @@ void SimulationModel::setManOverboardPos(irr::f32 positionX, irr::f32 positionZ)
 bool SimulationModel::hasGPS() const
 {
   return ownShip.hasGPS();
-}
-
-bool SimulationModel::isSingleEngine() const
-{
-  return ownShip.isSingleEngine();
 }
 
 bool SimulationModel::hasDepthSounder() const

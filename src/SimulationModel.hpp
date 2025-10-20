@@ -77,7 +77,8 @@ public:
   void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
 
   irr::f32 getWheel() const; // DEE
-  double getDeltaRudder();
+  double getDeltaRudder(void);
+  unsigned char getNumberProp(void);
   void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
   void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
   irr::f32 getPortEngine() const; //Range +-1
@@ -247,7 +248,6 @@ public:
   void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
   void setManOverboardPos(irr::f32 positionX, irr::f32 positionZ);   //To be used directly, eg when in secondary display mode only
   bool hasGPS() const;
-  bool isSingleEngine() const;
   bool hasDepthSounder() const;
   irr::f32 getMaxSounderDepth() const;
   bool hasBowThruster() const;
