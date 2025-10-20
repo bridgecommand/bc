@@ -80,14 +80,14 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
@@ -197,6 +197,7 @@
     <ClCompile Include="..\GUIMain.cpp" />
     <ClCompile Include="..\GUIRectangle.cpp" />
     <ClCompile Include="..\HeadingIndicator.cpp" />
+    <ClCompile Include="..\Hull.cpp" />
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\LandLights.cpp" />
     <ClCompile Include="..\LandObject.cpp" />
@@ -218,9 +219,11 @@
     <ClCompile Include="..\OtherShips.cpp" />
     <ClCompile Include="..\OutlineScrollBar.cpp" />
     <ClCompile Include="..\OwnShip.cpp" />
+    <ClCompile Include="..\Propeller.cpp" />
     <ClCompile Include="..\RadarCalculation.cpp" />
     <ClCompile Include="..\RadarScreen.cpp" />
     <ClCompile Include="..\Rain.cpp" />
+    <ClCompile Include="..\Rudder.cpp" />
     <ClCompile Include="..\Sail.cpp" />
     <ClCompile Include="..\ScenarioChoice.cpp" />
     <ClCompile Include="..\ScenarioDataStructure.cpp" />
@@ -228,6 +231,7 @@
     <ClCompile Include="..\Ship.cpp" />
     <ClCompile Include="..\SimulationModel.cpp" />
     <ClCompile Include="..\Sky.cpp" />
+    <ClCompile Include="..\Solver.cpp" />
     <ClCompile Include="..\Sound.cpp" />
     <ClCompile Include="..\StartupEventReceiver.cpp" />
     <ClCompile Include="..\Terrain.cpp" />
@@ -259,6 +263,7 @@
     <ClInclude Include="..\GUIMain.hpp" />
     <ClInclude Include="..\GUIRectangle.hpp" />
     <ClInclude Include="..\HeadingIndicator.h" />
+    <ClInclude Include="..\Hull.hpp" />
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\LandLights.hpp" />
     <ClInclude Include="..\LandObject.hpp" />
@@ -283,10 +288,12 @@
     <ClInclude Include="..\OutlineScrollBar.h" />
     <ClInclude Include="..\OwnShip.hpp" />
     <ClInclude Include="..\profile.hpp" />
+    <ClInclude Include="..\Propeller.hpp" />
     <ClInclude Include="..\RadarCalculation.hpp" />
     <ClInclude Include="..\RadarData.hpp" />
     <ClInclude Include="..\RadarScreen.hpp" />
     <ClInclude Include="..\Rain.hpp" />
+    <ClInclude Include="..\Rudder.hpp" />
     <ClInclude Include="..\Sail.hpp" />
     <ClInclude Include="..\ScenarioChoice.hpp" />
     <ClInclude Include="..\ScenarioDataStructure.hpp" />
@@ -294,6 +301,7 @@
     <ClInclude Include="..\Ship.hpp" />
     <ClInclude Include="..\SimulationModel.hpp" />
     <ClInclude Include="..\Sky.hpp" />
+    <ClInclude Include="..\Solver.hpp" />
     <ClInclude Include="..\Sound.hpp" />
     <ClInclude Include="..\StartupEventReceiver.hpp" />
     <ClInclude Include="..\Terrain.hpp" />
