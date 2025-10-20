@@ -286,7 +286,6 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
   roll = 0;
   waveHeightFiltered = 0;
 
-
   mWheel = 0;
 
   loadCollision(aSmgr);
@@ -746,14 +745,29 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	  //std::cout << "Sail force Y = " << sailsForceY << std::endl;
 	}
 
-      // Update axialSpd and hdg with rudder and engine controls - assume two engines, should also work with single engine
-      irr::f32 portThrust = 0; // DEE_DEC22 changed meaning to scalar not vector
-      irr::f32 stbdThrust = 0; // DEE_DEC22 changed meaning to scalar not vector
+    
+      if(mNumberProp > 1)
+	{
+	  irr::f32 portThrust = 0; 
+	  irr::f32 stbdThrust = 0;
+	  
+	  portThrust = portEngine * 20;
+	  stbdThrust = stbdEngine * 20;
 
-      portThrust = portEngine * 20;
-      stbdThrust = stbdEngine * 20;
+	  mProp[0].SetRevs(portThrust);
+	  mProp[1].SetRevs(stbdThrust);
+	}
+      else
+	{
+	  irr::f32 monoThrust = 0;
+	  
+	  monoThrust = portEngine * 20;	 
 
-      mProp.SetRevs(portThrust);
+	  mProp[0].SetRevs(monoThrust);
+	}
+
+
+      
       mRudder.SetDelta((mWheel*M_PI)/180, deltaTime);
       
     }

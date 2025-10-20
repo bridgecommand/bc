@@ -162,7 +162,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   }
   water.load(smgr,ownShip.getSceneNode(),weather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
 
-  /* To be replaced by getting information and passing into gui load method.
+  //To be replaced by getting information and passing into gui load method.
   //Tell gui to hide the second engine scroll bar if we have a single engine
   if (ownShip.isSingleEngine()) {
   gui->setSingleEngine();
@@ -176,8 +176,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   }
 
   //Tell the GUI what instruments to display - currently GPS and depth sounder
-  gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
-  */
+  //gui->setInstruments(ownShip.hasDepthSounder(),ownShip.getMaxSounderDepth(),ownShip.hasGPS());
+  
 
   //Load the radar with config parameters
   radarCalculation.load(ownShip.getRadarConfigFile(),device);

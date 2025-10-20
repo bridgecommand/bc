@@ -93,7 +93,8 @@ protected:
   Eigen::Vector3d mMu; //mMu[0] : Speed on Z ; mMu[1] :  Rate of turn ; mMu[2] : Speed on X (m/s) 
   Eigen::Vector3d mEta; //mEta[0] : Z position ; mEta[1] : X position ; mEta[2] : Heading
   //Boat parts
-  Propeller mProp;
+  unsigned char mNumberProp;
+  Propeller mProp[2];
   Hull mHull;
   Rudder mRudder;
   //Wind mWind;
