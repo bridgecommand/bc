@@ -46,10 +46,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  GUIMain* gui,
                                  Sound* sound,
                                  ScenarioData scenarioData,
-                                 ModelParameters aModelParameters):
-  manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
+                                 ModelParameters aModelParameters)
 {
-  //get reference to scene manager
+  mTerrain = new Terrain();
+  mWater = new Water();
+  manOverboard.load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
+  
   device = dev;
   smgr = scene;
   driver = scene->getVideoDriver();
@@ -61,6 +63,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //Store a serialised form of the scenario loaded, as we may want to send this over the network
   serialisedScenarioData = scenarioData.serialise(false);
 
+  
   scenarioName = scenarioData.scenarioName;
 
   // Store model parameters
@@ -133,16 +136,15 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
     }    
   }
         
-
   //Add terrain: Needs to happen first, so the terrain parameters are available
-  terrain.load(worldPath, smgr, device, mModelParameters.limitTerrainResolution);
+  mTerrain->load(worldPath, smgr, device, mModelParameters.limitTerrainResolution);
 
   //sky box/dome
   Sky sky (smgr);
 
   //Load own ship model.
   // TODO: It would be better to pass in modelParameters directly
-  ownShip.load(scenarioData.ownShipData, mModelParameters, smgr, this, &terrain, device);
+  ownShip.load(scenarioData.ownShipData, mModelParameters, smgr, this, mTerrain, device);
 
   //Temp
   mOwnShip = &ownShip;
@@ -155,14 +157,14 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mSolver.Init(&ownShip);
   
   //Load rain
-  rain.load(smgr, camera.getSceneNode(), device, getPosX(), getPosY(), getPosZ(), ownShip.getLength(), ownShip.getBreadth());
+  rain.load(smgr, camera.getSceneNode(), device, mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, ownShip.getLength(), ownShip.getBreadth());
 
   //add water
   bool waterReflection = true;
   if (mModelParameters.vrMode == true) {
     waterReflection = false;
   }
-  water.load(smgr,ownShip.getSceneNode(),weather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
+  mWater->load(smgr,ownShip.getSceneNode(),weather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
 
   //To be replaced by getting information and passing into gui load method.
   //Tell gui to hide the second engine scroll bar if we have a single engine
@@ -207,10 +209,10 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   buoys.load(worldPath, smgr, this,device);
 
   //Load land objects
-  landObjects.load(worldPath, smgr, this, &terrain, device);
+  landObjects.load(worldPath, smgr, this, mTerrain, device);
 
   //Load land lights
-  landLights.load(worldPath, smgr, this, terrain);
+  landLights.load(worldPath, smgr, this, mTerrain);
 
   //Load tidal information
   tide.load(worldPath, scenarioData);
@@ -275,54 +277,13 @@ SimulationModel::~SimulationModel()
   delete guiData;
 }
 
-irr::f32 SimulationModel::longToX(irr::f32 longitude) const
-{
-  return terrain.longToX(longitude); //Cascade to terrain
-}
-
-irr::f32 SimulationModel::latToZ(irr::f32 latitude) const
-{
-  return terrain.latToZ(latitude); //Cascade to terrain
-}
-
 void SimulationModel::setSpeed(irr::f32 spd)
 {
   ownShip.setSpeed(spd);
 }
 
-irr::f32 SimulationModel::getLat()  const{
-  return terrain.zToLat(ownShip.getPosition().Z);
-}
-
-irr::f32 SimulationModel::getLong() const{
-  return terrain.xToLong(ownShip.getPosition().X);
-}
-
-irr::f32 SimulationModel::getPosX() const{
-  return ownShip.getPosition().X;
-}
-
-irr::f32 SimulationModel::getPosY() const {
-  return ownShip.getPosition().Y;
-}
-
-irr::f32 SimulationModel::getPosZ() const{
-  return ownShip.getPosition().Z;
-}
-
-irr::f32 SimulationModel::getLateralSpeed() const{
-  return ownShip.getLateralSpeed();
-}
-irr::f32 SimulationModel::getDepth() const{
-  return ownShip.getDepth();
-}
-
-irr::f32 SimulationModel::getWaveHeight(irr::f32 posX, irr::f32 posZ) const {
-  return water.getWaveHeight(posX,posZ);
-}
-
 irr::core::vector2df SimulationModel::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const {
-  return water.getLocalNormals(relPosX,relPosZ);
+  return mWater->getLocalNormals(relPosX,relPosZ);
 }
 
 irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
@@ -382,11 +343,11 @@ irr::f32 SimulationModel::getOtherShipPosZ(int number) const{
 }
 
 irr::f32 SimulationModel::getOtherShipLong(int number) const{
-  return terrain.xToLong(getOtherShipPosX(number));
+  return mTerrain->xToLong(getOtherShipPosX(number));
 }
 
 irr::f32 SimulationModel::getOtherShipLat(int number) const{
-  return terrain.zToLat(getOtherShipPosZ(number));
+  return mTerrain->zToLat(getOtherShipPosZ(number));
 }
 
 irr::f32 SimulationModel::getOtherShipHeading(int number) const{
@@ -423,11 +384,6 @@ void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
 
 std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
   return otherShips.getLegs(number);
-}
-
-irr::f32 SimulationModel::getOwnShipSpeedThroughWater(void)
-{
-  return ownShip.getSpeedThroughWater();
 }
 
 irr::f32 SimulationModel::getBuoyPosX(int number) const{
@@ -706,6 +662,23 @@ OwnShip* SimulationModel::getOwnShip(void)
     return NULL;
 }
 
+Terrain* SimulationModel::getTerrain(void)
+{
+ if(NULL != mTerrain)
+    return mTerrain;
+  else
+    return NULL;
+}
+
+Water* SimulationModel::getWater(void)
+{
+ if(NULL != mWater)
+    return mWater;
+  else
+    return NULL;
+}
+
+
 void SimulationModel::setAccelerator(irr::f32 accelerator)
 {
   device->getTimer()->setSpeed(accelerator);
@@ -818,7 +791,7 @@ bool SimulationModel::getStreamOverride() const
 
 void SimulationModel::setWaterVisible(bool visible)
 {
-  water.setVisible(visible);
+  mWater->setVisible(visible);
 }
 
 void SimulationModel::lookUp()
@@ -1395,12 +1368,12 @@ irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
 
 irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
 {
-  return terrain.getSceneNode(number);
+  return mTerrain->getSceneNode(number);
 }
 
 irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
 {
-  return terrain.getHeight(posX, posZ);
+  return mTerrain->getHeight(posX, posZ);
 }
 
 void SimulationModel::addLine() // Add a line, which will be undefined
@@ -1515,7 +1488,7 @@ void SimulationModel::update()
 
   }{ IPROF("Update water pos");
     //update water position
-    water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
+    mWater->update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
   }{ IPROF("Update camera pos");
 
@@ -1539,7 +1512,7 @@ void SimulationModel::update()
 	radarImageChosen = radarImage;
 	radarImageOverlaidChosen = radarImageOverlaid;
       }
-      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,terrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,mTerrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
     }{ IPROF("Update radar screen");
       radarScreen.update(radarImageOverlaidChosen);
     }{ IPROF("Update radar camera");
@@ -1564,9 +1537,12 @@ void SimulationModel::update()
   
     }{ IPROF("Collate GUI data ");
 
+    float posZ = ownShip.getPosition().Z;
+    float posX = ownShip.getPosition().X;
+    
     //Collate data to show in gui
-    guiData->lat = getLat();
-    guiData->longitude = getLong();
+    guiData->lat = mTerrain->zToLat(posZ);
+    guiData->longitude = mTerrain->xToLong(posX);
     guiData->hdg = ownShip.getHeading();
         
     irr::core::vector3df cameraForwardVector = camera.getForwardVector(); 
@@ -1578,7 +1554,7 @@ void SimulationModel::update()
     guiData->stbdEng = ownShip.getStbdEngine();
     guiData->rudder = mOwnShip->getRudder().getDelta();  // inner workings of this will be modified in model DEE
     guiData->wheel = ownShip.getWheel();    // inner workings of this will be modified in model DEE
-    guiData->depth = ownShip.getDepth();
+    guiData->depth = ownShip.getDepth(getTerrain());
     guiData->weather = weather;
     guiData->rain = rainIntensity;
     guiData->visibility = visibilityRange;

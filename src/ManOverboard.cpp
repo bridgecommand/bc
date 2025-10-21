@@ -23,8 +23,17 @@
 #include <iostream>
 
 //using namespace irr;
+ManOverboard::ManOverboard()
+{
+  
+}
 
-ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain)
+ManOverboard::~ManOverboard()
+{
+  
+}
+
+void ManOverboard::load(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain)
 {
 
     this->model=model;
@@ -120,7 +129,7 @@ void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 {
     //Move with tide and waves
     irr::core::vector3df pos=getPosition();
-    pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+    pos.Y = tideHeight + model->getWater()->getWaveHeight(pos.X,pos.Z);
 
     //Move with tidal stream (if not aground)
     irr::f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;

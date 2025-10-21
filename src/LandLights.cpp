@@ -38,7 +38,7 @@ LandLights::~LandLights()
     landLights.clear();
 }
 
-void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain)
+void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain *terrain)
 {
     //get light.ini filename
     std::string scenarioLightFilename = worldName;
@@ -50,11 +50,11 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
     for (irr::u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
         if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) == 0 ) {
             //If not a buoy light
-            irr::f32 lightX = model->longToX(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Long",currentLight)));
-            irr::f32 lightZ = model->latToZ(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Lat",currentLight)));
+            irr::f32 lightX = model->getTerrain()->longToX(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Long",currentLight)));
+            irr::f32 lightZ = model->getTerrain()->latToZ(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Lat",currentLight)));
             irr::f32 lightY = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Absolute",currentLight)) != 1) {
-                lightY = lightY + terrain.getHeight(lightX,lightZ);
+                lightY = lightY + terrain->getHeight(lightX,lightZ);
             }
 
             irr::f32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));

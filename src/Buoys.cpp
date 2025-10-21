@@ -58,8 +58,10 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Get buoy type and construct filename
         std::string buoyName = IniFile::iniFileToString(scenarioBuoyFilename,IniFile::enumerate1("Type",currentBuoy));
         //Get buoy position
-        irr::f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
-        irr::f32 buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
+
+	
+ irr::f32 buoyX = model->getTerrain()->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
+        irr::f32 buoyZ = model->getTerrain()->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
 
         //get buoy RCS if set
         irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
@@ -118,7 +120,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
         irr::core::vector3df pos = it->getPosition();
         xPos = pos.X;
         if (it->getFloating()) {
-            yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z) + it->getHeightCorrection();
+	  yPos = tideHeight + model->getWater()->getWaveHeight(pos.X,pos.Z) + it->getHeightCorrection();
         } else {
             yPos = 0 + it->getHeightCorrection();
         }

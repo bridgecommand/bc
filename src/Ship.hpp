@@ -26,6 +26,7 @@
 #include "Propeller.hpp"
 #include "Hull.hpp"
 #include "Rudder.hpp"
+#include "Terrain.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -45,6 +46,8 @@ public:
   irr::f32 getEstimatedDisplacement() const;
   void setHeading(irr::f32 hdg);
   void setSpeed(irr::f32 spd);
+  irr::f32 getSpeedThroughWater() const; // m/s
+  irr::f32 getLateralSpeed() const;
   irr::f32 getHeading() const;
   irr::f32 getRateOfTurn() const;
   irr::f32 getSpeed() const; //m/s
@@ -52,7 +55,7 @@ public:
   void setPosition(irr::f32 xPos, irr::f32 yPos);
   irr::u32 getMMSI() const;
   void setMMSI(irr::u32 mmsi);
-
+  irr::f32 getDepth(Terrain *aTerrain) const;
   int setShipParams(const std::string& aType);
   double getM(void);
   double getMY(void);
@@ -75,7 +78,7 @@ public:
   
 protected:
 
-  irr::scene::IMeshSceneNode* ship; //The scene node for the own ship.
+  irr::scene::IMeshSceneNode* mShipScene; //The scene node for the own ship.
   irr::scene::IMeshSceneNode* mSailsScene[4];
   unsigned int mSailsCount;
   std::string mSailsType;
@@ -83,6 +86,7 @@ protected:
   irr::f32 heightCorrection;
   irr::f32 angleCorrection;
 
+  double mSpeedThroughWater;
   double mM; //Mass
   double mMX; //Mass on Z
   double mMY; //Mass on X

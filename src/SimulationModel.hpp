@@ -63,8 +63,7 @@ public:
 		  ScenarioData scenarioData,
 		  ModelParameters aModelParameters);
   ~SimulationModel();
-  irr::f32 longToX(irr::f32 longitude) const;
-  irr::f32 latToZ(irr::f32 latitude) const;
+
   void setSpeed(irr::f32 spd); //Sets the own ship's speed
   void setHeading(irr::f32 hdg); //Sets the own ship's heading
 
@@ -81,15 +80,6 @@ public:
   void setAccelerator(irr::f32 accelerator); //Set simulation time compression
   irr::f32 getAccelerator() const;
 
-  irr::f32 getLat() const;
-  irr::f32 getLong() const;
-  irr::f32 getPosX() const;
-  irr::f32 getPosY() const;
-  irr::f32 getPosZ() const;
-  irr::f32 getDepth() const;
-  irr::f32 getLateralSpeed() const;
-  irr::f32 getOwnShipSpeedThroughWater(void);
-  irr::f32 getWaveHeight(irr::f32 posX, irr::f32 posZ) const; //Return wave height (not tide) at the world position specified
   irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
 
   irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
@@ -271,7 +261,8 @@ public:
     
   Lines* getLines(); // Get pointer to lines object
   OwnShip* getOwnShip(void);
-  
+  Terrain* getTerrain(void);
+  Water* getWater(void);  
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
 
   void update();
@@ -304,7 +295,7 @@ private:
   irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
   irr::f32 currentZoom; // Zoom currently in use
   irr::f32 zoomLevel; // Zoom level that should be used if binos are on
-  Terrain terrain;
+  Terrain *mTerrain;
   Light light;
   Solver mSolver;
   OwnShip *mOwnShip;
@@ -315,7 +306,7 @@ private:
   LandLights landLights;
   Camera camera;
   Camera radarCamera;
-  Water water;
+  Water *mWater;
   Tide tide;
   Rain rain;
   Lines lines;

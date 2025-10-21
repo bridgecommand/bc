@@ -64,18 +64,18 @@ int Ship::setShipParams(const std::string& aType)
 
 irr::scene::IMeshSceneNode* Ship::getSceneNode() const
 {
-    return (irr::scene::IMeshSceneNode*)ship;
+    return (irr::scene::IMeshSceneNode*)mShipScene;
 }
 
 irr::core::vector3df Ship::getRotation() const
 {
-    return ship->getRotation();
+    return mShipScene->getRotation();
 }
 
 irr::core::vector3df Ship::getPosition() const
 {
-    ship->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return ship->getAbsolutePosition();
+    mShipScene->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
+    return mShipScene->getAbsolutePosition();
 }
 
 irr::f32 Ship::getLength() const
@@ -91,6 +91,25 @@ irr::f32 Ship::getBreadth() const
 irr::f32 Ship::getHeightCorrection() const
 {
     return heightCorrection;
+}
+
+irr::f32 Ship::getDepth(Terrain *aTerrain) const
+{
+  if(NULL != aTerrain)
+    return -1 * aTerrain->getHeight(mEta[1], mEta[0]) + getPosition().Y;
+  else
+    return -1;
+}
+
+
+irr::f32 Ship::getSpeedThroughWater() const
+{
+  return mSpeedThroughWater; // m/s
+}
+
+irr::f32 Ship::getLateralSpeed() const
+{
+  return mMu[2]; 
 }
 
 
@@ -151,7 +170,7 @@ void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     mEta[1] += deltaX;
     double yPos = deltaY;
     mEta[0] += deltaZ;
-    ship->setPosition(irr::core::vector3df(mEta[1],yPos,mEta[0]));
+    mShipScene->setPosition(irr::core::vector3df(mEta[1],yPos,mEta[0]));
 }
 
 

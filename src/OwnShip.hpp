@@ -79,7 +79,6 @@ public:
   irr::f32 getRadarSize() const;
   irr::f32 getRadarTilt() const;
   std::string getRadarConfigFile() const;
-  irr::f32 getDepth() const;
   irr::f32 getAngleCorrection() const;
   bool hasGPS() const;
   bool hasDepthSounder() const;
@@ -98,8 +97,7 @@ public:
   irr::f32 getWheel() const;            // DEE -30 to +30
   irr::f32 getPitch() const;
   irr::f32 getRoll() const;
-  irr::f32 getSpeedThroughWater() const; // m/s
-  irr::f32 getLateralSpeed() const;
+
   std::string getBasePath() const;
 
   irr::f32 getLastDeltaTime();                      // gets the delta time for the last cycle
@@ -152,7 +150,6 @@ private:
   irr::f32 mRadarSize;
   irr::f32 mRadarTilt;
   // Dynamics parameters
-  double mSpeedThroughWater;
   Sail mSails;
 
   irr::f32 turnIndicatorPresent;

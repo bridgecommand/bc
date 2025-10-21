@@ -655,7 +655,7 @@ void RadarCalculation::changeRadarColourChoice()
     radarScreenStale = true;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain *terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     #ifdef WITH_PROFILING
@@ -713,7 +713,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 }
 
 
-void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::scan(const Terrain *terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
     //IPROF_FUNC;
@@ -963,7 +963,7 @@ void RadarCalculation::scan(const Terrain& terrain, const OwnShip& ownShip, cons
             }
 
             //Add land scan
-            irr::f32 terrainHeightAboveSea = terrain.getHeight(localX,localZ) - tideHeight;
+            irr::f32 terrainHeightAboveSea = terrain->getHeight(localX,localZ) - tideHeight;
             irr::f32 radarHeight = terrainHeightAboveSea - dropWithCurvature - radarScannerHeight;
             irr::f32 localSlope = radarHeight/localRange;
             irr::f32 heightAboveLine = radarHeight - scanSlope*localRange; //Find height above previous maximum scan slope

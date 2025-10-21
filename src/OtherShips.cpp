@@ -51,8 +51,8 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Get ship type and construct filename
         std::string otherShipName = otherShipsData.at(i).shipName;
         //Get initial position
-        irr::f32 shipX = model->longToX(otherShipsData.at(i).initialLong);
-        irr::f32 shipZ = model->latToZ(otherShipsData.at(i).initialLat);
+        irr::f32 shipX = model->getTerrain()->longToX(otherShipsData.at(i).initialLong);
+        irr::f32 shipZ = model->getTerrain()->latToZ(otherShipsData.at(i).initialLat);
 
         //Set MMSI
         irr::u32 mmsi = otherShipsData.at(i).mmsi;
@@ -105,11 +105,11 @@ void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tide
         //Apply up/down motion from waves, with some filtering
         irr::f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
         irr::f32 factor = deltaTime/(timeConstant+deltaTime);
-        waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
+        waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWater()->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
 
         //Special case, if paused, just use the actual wave height. A bit of a bodge, but avoids having to store the previous filter value
         if (deltaTime == 0) {
-            waveHeightFiltered = model->getWaveHeight(prevPosition.X,prevPosition.Z);
+            waveHeightFiltered = model->getWater()->getWaveHeight(prevPosition.X,prevPosition.Z);
         }
 
         (*it)->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);

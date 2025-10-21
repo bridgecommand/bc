@@ -89,7 +89,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 
       mInvMatM = mMatM.inverse();
       mMu = mMu0;
-      mEta << mModel->latToZ(aOwnShipData.initialLat), mModel->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*M_PI/180;
+      mEta << mModel->getTerrain()->latToZ(aOwnShipData.initialLat), mModel->getTerrain()->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*M_PI/180;
 
       //std::cout << "eta : " << mEta << " - mu : " << mMu;
     }
@@ -181,7 +181,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 	}
     }
 
-  ship = aSmgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+  mShipScene = aSmgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
   /*Load Sails*/
   mSailsCount = IniFile::iniFileTou32(shipIniFilename, "SailsCount");
@@ -209,13 +209,13 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 	  irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
 	  irr::f32 sailPosZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsZ", i+1));
 
-	  mSailsScene[i]->setParent(ship);
+	  mSailsScene[i]->setParent(mShipScene);
 	  mSailsScene[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
 	  mSailsScene[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
 	  if (mSailsScene[i]->getMaterialCount() > 0)
 	    {
-	      for (irr::u32 mat = 0; mat < ship->getMaterialCount(); mat++)
+	      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 		{
 		  mSailsScene[i]->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
 		  mSailsScene[i]->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -230,33 +230,33 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
   if (mShowDebugData)
     {
       // ship->setDebugDataVisible(irr::scene::EDS_NORMALS|irr::scene::EDS_BBOX_ALL);
-      ship->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
+      mShipScene->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
     }
 
-  ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-  ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); // Normalise normals on scaled meshes, for correct lighting
+  mShipScene->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+  mShipScene->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); // Normalise normals on scaled meshes, for correct lighting
   // Set lighting to use diffuse and ambient, so lighting of untextured models works
-  if (ship->getMaterialCount() > 0)
+  if (mShipScene->getMaterialCount() > 0)
     {
-      for (irr::u32 mat = 0; mat < ship->getMaterialCount(); mat++)
+      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 	{
-	  ship->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
-	  ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+	  mShipScene->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
+	  mShipScene->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
 	}
     }
     
 
-  ship->setName("OwnShip");
+  mShipScene->setName("OwnShip");
 
-  ship->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
-  ship->setPosition(irr::core::vector3df(0, heightCorrection, 0));
-  ship->updateAbsolutePosition();
+  mShipScene->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
+  mShipScene->setPosition(irr::core::vector3df(0, heightCorrection, 0));
+  mShipScene->updateAbsolutePosition();
 
-  //length = ship->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
-  //breadth = ship->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
+  //length = mShipScene->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
+  //breadth = mShipScene->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
 
-  //draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
-  airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
+  //draught = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
+  airDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
 
 
   if (rollPeriod == 0)
@@ -307,17 +307,17 @@ void OwnShip::loadCollision(irr::scene::ISceneManager *aSmgr)
   // Detect sample points for terrain interaction here (think separately about how to do this for 360 models, probably with a separate collision model)
   // Add a triangle selector
 
-  selector = aSmgr->createTriangleSelector(ship->getMesh(), getSceneNode());
+  selector = aSmgr->createTriangleSelector(mShipScene->getMesh(), getSceneNode());
   if (selector)
     {
       mDevice->getLogger()->log("Created triangle selector");
-      ship->setTriangleSelector(selector);
+      mShipScene->setTriangleSelector(selector);
     }
   triangleSelectorEnabled = true;
 
-  ship->updateAbsolutePosition();
+  mShipScene->updateAbsolutePosition();
 
-  irr::core::aabbox3df boundingBox = ship->getTransformedBoundingBox();
+  irr::core::aabbox3df boundingBox = mShipScene->getTransformedBoundingBox();
   irr::f32 minX = boundingBox.MinEdge.X;
   irr::f32 maxX = boundingBox.MaxEdge.X;
   irr::f32 minY = boundingBox.MinEdge.Y;
@@ -442,7 +442,7 @@ void OwnShip::loadCollision(irr::scene::ISceneManager *aSmgr)
     }
 
   // We don't want to do further triangle selection with the ship, so set the selector to null
-  ship->setTriangleSelector(0);
+  mShipScene->setTriangleSelector(0);
   triangleSelectorEnabled = false;
 
   mDevice->getLogger()->log("Own ship points found: ");
@@ -618,13 +618,13 @@ void OwnShip::enableTriangleSelector(bool selectorEnabled)
 
   if (selectorEnabled && !triangleSelectorEnabled)
     {
-      ship->setTriangleSelector(selector);
+      mShipScene->setTriangleSelector(selector);
       triangleSelectorEnabled = true;
     }
 
   if (!selectorEnabled && triangleSelectorEnabled)
     {
-      ship->setTriangleSelector(0);
+      mShipScene->setTriangleSelector(0);
       triangleSelectorEnabled = false;
     }
 }
@@ -697,10 +697,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
       irr::f32 axialWindDrag = -1 * pow(relWindAxial_mps, 2) * sign(relWindAxial_mps) * 0.5 * RHO_AIR * frontalArea;
       irr::f32 lateralWindDrag = -1 * pow(relWindLateral_mps, 2) * sign(relWindLateral_mps) * 0.5 * RHO_AIR * sideArea;
 
+    float posZ = mModel->getOwnShip()->getPosition().Z;
+    float posX = mModel->getOwnShip()->getPosition().X;
+    
       // Find tidal stream, based on our current absolute position
-      irr::core::vector2df stream = mModel->getTidalStream(mModel->getLong(), mModel->getLat(), mModel->getTimestamp());
+    irr::core::vector2df stream = mModel->getTidalStream(mModel->getTerrain()->xToLong(posX), mModel->getTerrain()->zToLat(posZ),mModel->getTimestamp());
       //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
-      irr::f32 streamScaling = fmax(0, fmin(1, getDepth())); // Reduce effect as water gets shallower
+      irr::f32 streamScaling = fmax(0, fmin(1, getDepth(mModel->getTerrain()))); // Reduce effect as water gets shallower
       stream *= streamScaling;
       // Convert this into stream axial and lateral speed
       irr::f32 axialStream = stream.X * sin(mEta[2] * irr::core::DEGTORAD) + stream.Y * cos(mEta[2] * irr::core::DEGTORAD); // Stream in ahead direction
@@ -769,7 +772,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
   irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   irr::f32 factor = deltaTime / (timeConstant + deltaTime);
-  waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mModel->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
+  waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mModel->getWater()->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
   double yPos = tideHeight + heightCorrection + waveHeightFiltered;
 
   // calculate pitch and roll - not linked to water/wave motion
@@ -800,7 +803,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   /******************/
 
   // Set position & angles
-  //ship->setPosition(irr::core::vector3df(xPos, yPos, zPos));
+  //mShipScene->setPosition(irr::core::vector3df(xPos, yPos, zPos));
   std::cout << "--> Xeta : " << mEta[0] << std::endl;
   std::cout << "--> Yeta : " << mEta[1] << std::endl;
   std::cout << "--> Hdg : " << mEta[2]*180/M_PI << std::endl;
@@ -816,28 +819,13 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   
   //std::cout << "--> Xpos : " << xPos << std::endl;
   //std::cout << "--> Y : " << mEta[1] << std::endl;
-  ship->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
+  mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
   // DEE_DEC22 vvvv the original remains however this could be a replacement
-  //    ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
-  //    ship->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
-  //ship->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
-  ship->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/M_PI, pitch, roll));
+  //    mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
+  //    mShipScene->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
+  //mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
+  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/M_PI, pitch, roll));
   // DEE_DEC22 ^^^^
-}
-
-irr::f32 OwnShip::getSpeedThroughWater() const
-{
-  return mSpeedThroughWater; // m/s
-}
-
-irr::f32 OwnShip::getLateralSpeed() const
-{
-  return mMu[2]; 
-}
-
-irr::f32 OwnShip::getDepth() const
-{
-  return -1 * mTerrain->getHeight(mEta[1], mEta[0]) + getPosition().Y;
 }
 
 void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, irr::f32 &turnReaction)
@@ -855,10 +843,10 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
   otherShipCollision = false;
 
   // Normal ship model
-  ship->updateAbsolutePosition();
+  mShipScene->updateAbsolutePosition();
   irr::core::matrix4 rot;
-  rot.setRotationDegrees(ship->getRotation());
-  irr::core::vector3df shipAbsolutePosition = ship->getAbsolutePosition();
+  rot.setRotationDegrees(mShipScene->getRotation());
+  irr::core::vector3df shipAbsolutePosition = mShipScene->getAbsolutePosition();
 
   for (int i = 0; i < contactPoints.size(); i++)
     {
@@ -1074,7 +1062,7 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
   if (mShowDebugData)
     {
       irr::core::position2d<irr::s32> centrePosition2d = mDevice->getSceneManager()->getSceneCollisionManager()->getScreenCoordinatesFrom3DPosition(
-																		    ship->getAbsolutePosition(), mDevice->getSceneManager()->getActiveCamera(), false);
+																		    mShipScene->getAbsolutePosition(), mDevice->getSceneManager()->getActiveCamera(), false);
       mDevice->getVideoDriver()->draw2DPolygon(centrePosition2d, 5, irr::video::SColor(100, 0, 255, 0));
       mDevice->getVideoDriver()->draw2DPolygon(centrePosition2d, 10, irr::video::SColor(100, 0, 255, 0));
       mDevice->getVideoDriver()->draw2DPolygon(centrePosition2d, 15, irr::video::SColor(100, 0, 255, 0));

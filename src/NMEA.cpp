@@ -403,18 +403,21 @@ void NMEA::updateNMEA()
         Utilities::round(model->getOwnShip()->getStbdEngine()*100), // idx=1, odd (starboard)
         Utilities::round(model->getOwnShip()->getPortEngine()*100)  // idx=2, even (port)
     };
+    
+    float posZ = model->getOwnShip()->getPosition().Z;
+    float posX = model->getOwnShip()->getPosition().X;
 
-    irr::f32 lat = model->getLat();
-    irr::f32 lon = model->getLong();
+    irr::f32 lat = model->getTerrain()->zToLat(posZ);
+    irr::f32 lon = model->getTerrain()->xToLong(posX);
 
     irr::f32 cog = model->getOwnShip()->getHeading();
     irr::f32 sog = model->getOwnShip()->getSpeed()*MPS_TO_KTS;
-    irr::f32 spdWater = model->getOwnShipSpeedThroughWater() * MPS_TO_KTS;
-    irr::f32 latSpeed = model->getLateralSpeed();
+    irr::f32 spdWater = model->getOwnShip()->getSpeedThroughWater() * MPS_TO_KTS;
+    irr::f32 latSpeed = model->getOwnShip()->getLateralSpeed();
     irr::f32 hdg = model->getOwnShip()->getHeading();
     irr::f32 rot = model->getOwnShip()->getRateOfTurn()*RAD_PER_S_IN_DEG_PER_MINUTE;
 
-    irr::f32 depth = model->getDepth();
+    irr::f32 depth = model->getOwnShip()->getDepth(model->getTerrain());
 
     irr::f32 windDirection = model->getWindDirection();
     irr::f32 windSpeed = model->getWindSpeed();

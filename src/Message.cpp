@@ -680,9 +680,9 @@ std::string& Message::MpFeedBack(void)
   mpFeedBack.clear();
 
   mpFeedBack = "MPF";
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getPosX()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().X));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().Z));
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   mpFeedBack.append("#");
@@ -768,9 +768,9 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().X));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().Z));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   msg.append(",");
@@ -923,18 +923,23 @@ std::string& Message::KeepAliveShort(void)
 {
   static std::string msg;
 
+  //terrain.zToLat(ownShip.getPosition().Z);
+
+ float posZ = mModel->getOwnShip()->getPosition().Z;
+ float posX = mModel->getOwnShip()->getPosition().X;
+ 
   msg.clear();
   msg = "OS"; //Own ship only
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getLong()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getTerrain()->zToLat(posZ)));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getLat()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getTerrain()->xToLong(posX)));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShipSpeedThroughWater()*MPS_TO_KTS));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeedThroughWater()*MPS_TO_KTS));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
   msg.append(",");
