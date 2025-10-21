@@ -29,7 +29,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (SimulationModel* model, Terrain* terrain, const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (SimulationModel* model, const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -38,7 +38,6 @@ OtherShip::OtherShip (SimulationModel* model, Terrain* terrain, const std::strin
     rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
     this->model = model;
-    this->terrain = terrain;
 
     this->name = name;
     this->mmsi = mmsi;
@@ -215,8 +214,8 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
 
     if (drifting) {
         //Move with tidal stream (if not aground)
-        irr::f32 depth = -1 * terrain->getHeight(xPos, zPos) + yPos;
-        irr::core::vector2df streamVector = model->getTidalStream(terrain->xToLong(xPos), terrain->zToLat(zPos), model->getTimestamp());
+        irr::f32 depth = -1 * model->getTerrain()->getHeight(xPos, zPos) + yPos;
+        irr::core::vector2df streamVector = model->getTidalStream(model->getTerrain()->xToLong(xPos), model->getTerrain()->zToLat(zPos), model->getTimestamp());
 
         // Add component from wind
         irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
