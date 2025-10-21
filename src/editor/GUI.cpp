@@ -93,7 +93,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.13*sh,0.31*su,0.16*sh),shipTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
     // Set if the ship can drift with wind and current
-    isDrifting = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.20*su,0.19*sh), shipTab, GUI_ID_DRIFTING_CHECKBOX); // TODO: add text to describe this
+    isDrifting = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.20*su,0.19*sh), shipTab, GUI_ID_DRIFTING_CHECKBOX);
     guienv->addStaticText(language->translate("allowDrifting").c_str(), irr::core::rect<irr::s32>(0.20 * su, 0.16 * sh, 0.31 * su, 0.19 * sh),false, false, shipTab);
 
     //Add buttons

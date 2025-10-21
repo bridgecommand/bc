@@ -43,7 +43,7 @@ OtherShips::~OtherShips()
 void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
 {
 
-    //Store reference to model and terrain
+    //Store reference to model
     this->model = model;
 
     for(irr::u32 i=0;i<otherShipsData.size();i++)
