@@ -83,7 +83,7 @@ bool Autopilot::receiveAPB(APB sentence)
     irr::f32 wheel = (relativeBearing / 60.0) * 30.0;
 
     // Normal case, just set the wheel
-    model->setWheel(wheel * dampening);
+    model->getOwnShip()->setWheel(wheel * dampening);
 
 
     return false;
@@ -131,8 +131,8 @@ bool Autopilot::receiveRMB(RMB sentence)
     if (leg_progress > 0.75) {
         throttle = max(0.1, throttle * (-3.6 * leg_progress + 3.7));
     }
-    model->setPortEngine(throttle);
-    model->setStbdEngine(throttle);
+    model->getOwnShip()->setPortEngine(throttle);
+    model->getOwnShip()->setStbdEngine(throttle);
     return false;
 }
 

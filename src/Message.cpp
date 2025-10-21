@@ -794,7 +794,7 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //2 Numbers: Number Other, Number buoys, Number MOB #
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getNumberOfOtherShips()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getNumber()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getNumber()));
   msg.append(",");
@@ -804,26 +804,26 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
-  for(int number = 0; number < (int)mModel->getNumberOfOtherShips(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShipPosX(number)));
+  for(int number = 0; number < (int)mModel->getOtherShips()->getNumber(); number++ ) {
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getPosition(number).X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShipPosZ(number)));
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getPosition(number).Y));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShipHeading(number)));
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getHeading(number)));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShipSpeed(number)*MPS_TO_KTS));
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getSpeed(number)*MPS_TO_KTS));
     msg.append(",");
     msg.append("0"); // Rate of turn: This is not currently used in normal mode
     msg.append(",");
     msg.append("0"); //Fixme: Sart enabled
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShipMMSI(number)));
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getMMSI(number)));
     msg.append(",");
 
     //std::cout << "MMSI for other ship " << number << ":" << mModel->getOtherShipMMSI(number) << std::endl;
 
     //Send leg information
-    std::vector<Leg> legs = mModel->getOtherShipLegs(number);
+    std::vector<Leg> legs = mModel->getOtherShips()->getLegs(number);
     msg.append(Utilities::lexical_cast<std::string>(legs.size())); //Number of legs
     msg.append(",");
     //Build leg information, each leg separated by a '/', each value by ':'
@@ -836,7 +836,7 @@ std::string& Message::KeepAlive(void)
       if (it!= (legs.end()-1)) {msg.append("/");}
     }
 
-    if (number < (int)mModel->getNumberOfOtherShips()-1) {msg.append("|");}
+    if (number < (int)mModel->getOtherShips()->getNumber()-1) {msg.append("|");}
   }
   msg.append("#");
 

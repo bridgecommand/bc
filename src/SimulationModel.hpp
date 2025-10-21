@@ -64,19 +64,6 @@ public:
 		  ModelParameters aModelParameters);
   ~SimulationModel();
 
-  void setSpeed(irr::f32 spd); //Sets the own ship's speed
-  void setHeading(irr::f32 hdg); //Sets the own ship's heading
-
-  void setRateofTurn(irr::f32 rudder); //Set the rate of turn (-ve is port, +ve is stbd)
-
-  void setRateOfTurn(irr::f32 rateOfTurn);
-  void setPos(irr::f32 positionX, irr::f32 positionZ);
-
-  void setWheel(irr::f32 wheel, bool force=false); //Set the wheel (-ve is port, +ve is stbd) DEE. If force is true, the wheel change is applied even if the follow up rudder is failed
-
-  void setPortEngine(irr::f32 port); //Set the engine, (-ve astern, +ve ahead), range is +-1
-  void setStbdEngine(irr::f32 stbd); //Set the engine, (-ve astern, +ve ahead), range is +-1
-
   void setAccelerator(irr::f32 accelerator); //Set simulation time compression
   irr::f32 getAccelerator() const;
 
@@ -85,16 +72,6 @@ public:
   irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
   void     setTimeDelta(irr::f32 scenarioTime);
 
-  irr::u32 getNumberOfOtherShips() const;
-
-  std::string getOtherShipName(int number) const;
-  irr::f32 getOtherShipPosX(int number) const;
-  irr::f32 getOtherShipPosZ(int number) const;
-  irr::f32 getOtherShipLat(int number) const;
-  irr::f32 getOtherShipLong(int number) const;
-  irr::f32 getOtherShipHeading(int number) const;
-  irr::f32 getOtherShipSpeed(int number) const; //Speed in m/s
-  irr::u32 getOtherShipMMSI(int number) const;
   void setOtherShipHeading(int number, irr::f32 hdg);
   void setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ);
   void setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn);
@@ -250,6 +227,7 @@ public:
   Water* getWater(void);
   Tide* getTide(void);
   Buoys* getBuoys(void);
+  OtherShips* getOtherShips(void);
   
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
   void update();
@@ -283,8 +261,7 @@ private:
   Light light;
   Solver mSolver;
   OwnShip *mOwnShip;
-  OwnShip ownShip;
-  OtherShips otherShips;
+  OtherShips *mOtherShips;
   Buoys *mBuoys;
   LandObjects landObjects;
   LandLights landLights;

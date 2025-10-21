@@ -944,8 +944,8 @@ void OwnShip::collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralRea
 	      // Calculate velocity of other ship, in our reference frame
 	      if (otherShipID >= 0)
 		{
-		  irr::f32 otherShipHeading = mModel->getOtherShipHeading(otherShipID);
-		  irr::f32 otherShipSpeed = mModel->getOtherShipSpeed(otherShipID);
+		  irr::f32 otherShipHeading = mModel->getOtherShips()->getHeading(otherShipID);
+		  irr::f32 otherShipSpeed = mModel->getOtherShips()->getSpeed(otherShipID);
 		  irr::f32 otherShipRelativeHeading = otherShipHeading - mEta[2];
 
 		  // TODO: Initially ignore rate of turn of other ship, but should be included

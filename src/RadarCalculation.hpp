@@ -156,14 +156,14 @@ class RadarCalculation
         irr::u32 getARPATracksSize() const;
         int getARPAContactIDFromTrackIndex(irr::u32 trackIndex) const;
         ARPAContact getARPAContactFromTrackIndex(irr::u32 trackIndex) const;
-        void addManualPoint(bool newContact, const OwnShip& ownShip, uint64_t absoluteTime);
+        void addManualPoint(bool newContact, const OwnShip *ownShip, uint64_t absoluteTime);
         void clearManualPoints();
         void trackTargetFromCursor();
         void clearTargetFromCursor();
         irr::video::SColor getRadarForegroundColour() const;
         irr::video::SColor getRadarBackgroundColour() const;
         irr::video::SColor getRadarSurroundColour() const;
-        void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain *terrain, const OwnShip& ownShip, const Buoys *buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
+        void update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown);
 
     private:
         irr::IrrlichtDevice* device;
@@ -219,9 +219,9 @@ class RadarCalculation
         irr::u32 currentRadarColourChoice;
 
         std::vector<irr::f32> radarRangeNm;
-        void scan(const Terrain *terrain, const OwnShip& ownShip, const Buoys *buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
-        void updateARPA(const OwnShip& ownShip, uint64_t absoluteTime);
-        void updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip& ownShip, irr::core::vector3df absolutePosition, uint64_t absoluteTime);
+        void scan(const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime);
+        void updateARPA(const OwnShip *ownShip, uint64_t absoluteTime);
+        void updateArpaEstimate(ARPAContact& thisArpaContact, int contactID, const OwnShip *ownShip, irr::core::vector3df absolutePosition, uint64_t absoluteTime);
         irr::f32 radarNoise(irr::f32 radarNoiseLevel, irr::f32 radarSeaClutter, irr::f32 radarRainClutter, irr::f32 weather, irr::f32 radarRange,irr::f32 radarBrgDeg, irr::f32 windDirectionDeg, irr::f32 radarInclinationAngle, irr::f32 rainIntensity);
         void render(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, irr::f32 ownShipHeading, irr::f32 ownShipSpeed);
         irr::f32 rangeAtAngle(irr::f32 checkAngle,irr::f32 centreX, irr::f32 centreZ, irr::f32 heading);

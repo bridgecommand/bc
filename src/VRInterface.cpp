@@ -1553,12 +1553,12 @@ int VRInterface::update() {
 
 				if (vrChangingPortEngine) {
 					//setPortEngine clips to valid range, so don't worry about this here
-					model->setPortEngine(portEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
+				  model->getOwnShip()->setPortEngine(portEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
 					// TODO: Add haptic feedback if passing zero position
 				}
 				if (vrChangingStbdEngine) {
 					//setStbdEngine clips to valid range, so don't worry about this here
-					model->setStbdEngine(stbdEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
+					model->getOwnShip()->setStbdEngine(stbdEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
 					// TODO: Add haptic feedback if passing zero position
 				}
 			}
@@ -1573,7 +1573,7 @@ int VRInterface::update() {
 				}
 				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 				//setWheel clips to valid range, so don't worry about this here
-				model->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
+				model->getOwnShip()->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?
 			}
 		

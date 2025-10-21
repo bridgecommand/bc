@@ -184,11 +184,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (event.MouseInput.Wheel < 0)
             {
-                model->setWheel(model->getOwnShip()->getWheel() + 1.0);
+                model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() + 1.0);
             }
             if (event.MouseInput.Wheel > 0)
             {
-                model->setWheel(model->getOwnShip()->getWheel() - 1.0);
+                model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() - 1.0);
             }
             return true;
         }
@@ -280,33 +280,33 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_HEADING_SCROLL_BAR)
             {
                 scrollBarPosHeading = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos();
-                model->setHeading(scrollBarPosHeading);
+                model->getOwnShip()->setHeading(scrollBarPosHeading);
             }
 
             if (id == GUIMain::GUI_ID_SPEED_SCROLL_BAR)
             {
                 scrollBarPosSpeed = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos();
-                model->setSpeed(scrollBarPosSpeed);
+                model->getOwnShip()->setSpeed(scrollBarPosSpeed);
             }
 
             if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
-                model->setStbdEngine(value);
+                model->getOwnShip()->setStbdEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
                 {
-                    model->setPortEngine(value);
+                    model->getOwnShip()->setPortEngine(value);
                 }
             }
             if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
-                model->setPortEngine(value);
+                model->getOwnShip()->setPortEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
                 {
-                    model->setStbdEngine(value);
+                    model->getOwnShip()->setStbdEngine(value);
                 }
             }
 
@@ -323,7 +323,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // Check if either NFU button is down, in which case force the change (even if the follow up rudder isn't working)
                 bool nfuActive = gui->isNFUActive();
-                model->setWheel(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos(), nfuActive);
+                model->getOwnShip()->setWheel(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             // DEE capture the wheel
 
@@ -1013,14 +1013,14 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
                 // Keyboard control of engines
                 case irr::KEY_KEY_A:
-		  model->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable
 		  break;
 
                 case irr::KEY_KEY_Z:
                     break;
 
                 case irr::KEY_KEY_S:
-                        model->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+                        model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_X:
@@ -1028,8 +1028,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
                 case irr::KEY_KEY_D:
-		  model->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-		  model->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
 		case irr::KEY_KEY_C:
@@ -1209,7 +1209,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (newJoystickRudder < INFINITY && (joystickSetup.updateAllAxes || wheelChanged))
             {
                 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
-                model->setWheel(newJoystickRudder * joystickSetup.rudderDirection);
+                model->getOwnShip()->setWheel(newJoystickRudder * joystickSetup.rudderDirection);
                 //                    model->setRudder(newJoystickRudder);
                 previousJoystickRudder = newJoystickRudder;
             }
@@ -1486,7 +1486,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonNFUPort, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUPort, previousButtonState))
             {
-                model->setWheel(-30, true);
+	      model->getOwnShip()->setWheel(-30);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUPort, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUPort, previousButtonState))
             {
@@ -1498,7 +1498,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonNFUStbd, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUStbd, previousButtonState))
             {
-                model->setWheel(30, true);
+                model->getOwnShip()->setWheel(30);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUStbd, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUStbd, previousButtonState))
             {

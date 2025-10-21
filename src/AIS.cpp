@@ -34,7 +34,7 @@ constexpr const int AIS::mmsis[] = {211032189, 226155323, 232984311, 224513921, 
 
 std::vector<irr::u32> AIS::getReadyShips(SimulationModel* model, irr::u32 now) {
     if (!initialized) {
-        for (irr::u32 i=0; i < model->getNumberOfOtherShips(); i++) {
+      for (irr::u32 i=0; i < model->getOtherShips()->getNumber(); i++) {
             lastUpdates.push_back(i * 600); // offset ship reports in 600 ms increments
         }
         initialized = true;
@@ -51,7 +51,7 @@ std::vector<irr::u32> AIS::getReadyShips(SimulationModel* model, irr::u32 now) {
             elapsed_time = 0;
         }
         irr::u32 reportingInterval;
-        irr::f32 shipSpeed = model->getOtherShipSpeed(ship);
+        irr::f32 shipSpeed = model->getOtherShips()->getSpeed(ship);
 
         // TODO: take into account course changes
         // TODO: take into account transmission range in the case of huge maps
@@ -78,8 +78,8 @@ std::tuple<std::string, int> AIS::generateClassAReport(SimulationModel* model, i
 
     bool done = false;
 
-    irr::u32 heading = (irr::u32) model->getOtherShipHeading(ship);
-    irr::u32 mmsi = model->getOtherShipMMSI(ship);
+    irr::u32 heading = (irr::u32) model->getOtherShips()->getHeading(ship);
+    irr::u32 mmsi = model->getOtherShips()->getMMSI(ship);
 
     if (mmsi == 0) {
         // mmsi is not set, give the ship a vanity mmsi
@@ -87,11 +87,11 @@ std::tuple<std::string, int> AIS::generateClassAReport(SimulationModel* model, i
         // keep incrementing mmsi until it reaches a value that has not been allocated
         // e.g. via scenario config
         bool collision = true;
-        irr::u32 ships = model->getNumberOfOtherShips();
+        irr::u32 ships = model->getOtherShips()->getNumber();
         while (collision) {
             collision = false;
             for (int i=0; i < ships; i++) {
-                if (model->getOtherShipMMSI(i) == mmsi) {
+	      if (model->getOtherShips()->getMMSI(i) == mmsi) {
                     collision = true;
                     break;
                 }
@@ -103,11 +103,15 @@ std::tuple<std::string, int> AIS::generateClassAReport(SimulationModel* model, i
 
     // AIS speed over ground is in 0.1-knot increments, capped to 102.2 knots
     // getOtherShipSpeed returns speed in m/s, multiply by 1.9438445 to get knots
-    irr::u32 speed = std::min<int>((int) 10.0f * MPS_TO_KTS * model->getOtherShipSpeed(ship), 1022);
+    irr::u32 speed = std::min<int>((int) 10.0f * MPS_TO_KTS * model->getOtherShips()->getSpeed(ship), 1022);
 
     // BC internal coordinate system
-    irr::f32 shipLong = model->getOtherShipLong(ship);
-    irr::f32 shipLat  = model->getOtherShipLat(ship);
+
+  float posX = model->getOtherShips()->getPosition(ship).X;
+  float posZ = model->getOtherShips()->getPosition(ship).Z;
+ 
+  irr::f32 shipLong = model->getTerrain()->xToLong(posX);
+  irr::f32 shipLat  = model->getTerrain()->zToLat(posZ);
 
     std::uint32_t timestamp = model->getTimestamp() % 60;
 

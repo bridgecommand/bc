@@ -336,7 +336,7 @@ void NMEA::updateNMEA()
 
     // AIS messages are scheduled based on amount of otherShips and their speed
     // check each frame if a new report should be sent
-    if (model->getNumberOfOtherShips() >= 0) { // only consider AIS if there are other ships
+    if (model->getOtherShips()->getNumber() >= 0) { // only consider AIS if there are other ships
         std::string messageToSend = "";
         // which ships are ready to send?
         std::vector<irr::u32> readyShips = AIS::getReadyShips(model, now);
