@@ -19,6 +19,7 @@
 #include "Utilities.hpp"
 #include "SimulationModel.hpp"
 #include "Constants.hpp"
+#include "Terrain.hpp"
 
 #include <iostream>
 

@@ -200,7 +200,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
 
         //Load other ships
-        otherShips.load(scenarioData.otherShipsData,scenarioTime,modelParameters.mode,smgr,this,device);
+        otherShips.load(scenarioData.otherShipsData,scenarioTime,modelParameters.mode,smgr,this,&terrain,device);
 
         //Load buoys
         buoys.load(worldPath, smgr, this,device);

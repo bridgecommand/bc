@@ -72,13 +72,15 @@ std::string OtherShipData::serialise(bool withSpaces)
             }
         }
     }
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(drifting));
     return serialised;
 }
 
 void OtherShipData::deserialise(std::string data)
 {
     std::vector<std::string> splitData = Utilities::split(data,'|');
-    if (splitData.size() == 5) {
+    if (splitData.size() >= 5) {
         shipName = splitData.at(0);
         mmsi = Utilities::lexical_cast<irr::f32>(splitData.at(1));
         initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
@@ -92,6 +94,11 @@ void OtherShipData::deserialise(std::string data)
             legs.push_back(tempLeg);
         }
     }
+    if (splitData.size() == 6) {
+        // Additional drifting entry
+        drifting = Utilities::lexical_cast<bool>(splitData.at(5));
+    }
+
 }
 
 std::string OwnShipData::serialise(bool withSpaces)

@@ -27,12 +27,15 @@
 #include <cmath>
 #include <vector>
 
+// Forward declarations
+class SimulationModel;
+class Terrain;
 struct RadarData;
 
 class OtherShip : public Ship
 {
     public:
-        OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        OtherShip (SimulationModel* model, Terrain* terrain, const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         ~OtherShip();
 
         irr::f32 getHeight() const;
@@ -51,6 +54,8 @@ class OtherShip : public Ship
     protected:
     private:
 
+        SimulationModel* model;
+        Terrain* terrain;
         std::string name;
         std::vector<Leg> legs;
         std::vector<NavLight*> navLights;
@@ -61,6 +66,7 @@ class OtherShip : public Ship
         std::vector<Leg>::size_type findCurrentLeg(irr::f32 scenarioTime);
         irr::scene::ITriangleSelector* selector;
         bool triangleSelectorEnabled;
+        bool drifting;
 };
 
 #endif

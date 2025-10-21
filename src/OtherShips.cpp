@@ -22,6 +22,7 @@
 #include "RadarData.hpp"
 #include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
+#include "Terrain.hpp"
 
 #include <iostream> //debugging
 
@@ -40,11 +41,12 @@ OtherShips::~OtherShips()
     otherShips.clear();
 }
 
-void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
+void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev)
 {
 
-    //Store reference to model
+    //Store reference to model and terrain
     this->model = model;
+    this->terrain = terrain;
 
     for(irr::u32 i=0;i<otherShipsData.size();i++)
     {
@@ -56,6 +58,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
 
         //Set MMSI
         irr::u32 mmsi = otherShipsData.at(i).mmsi;
+
+        //Set if it's drifting with wind/stream
+        bool drifting = otherShipsData.at(i).drifting;
 
         //Load leg information
         std::vector<Leg> legs;
@@ -89,7 +94,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Create otherShip and load into vector
         std::string internalName = "OtherShip_";
         internalName.append(std::to_string(i));
-        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (model,terrain,otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,drifting,smgr, dev));
     }
 
 }

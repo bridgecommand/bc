@@ -30,13 +30,14 @@ class SimulationModel;
 class OtherShip;
 struct RadarData;
 class OtherShipData;
+class Terrain;
 
 class OtherShips
 {
     public:
         OtherShips();
         ~OtherShips();
-        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
+        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
         void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
@@ -65,6 +66,7 @@ class OtherShips
     private:
         std::vector<OtherShip*> otherShips;
         SimulationModel* model;
+        Terrain* terrain;
 };
 
 #endif
