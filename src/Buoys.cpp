@@ -129,7 +129,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
 
         if (it->getFloating()) {
             irr::f32 angleX, angleZ;
-            irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
+            irr::core::vector2df normals = model->getWater()->getLocalNormals(pos.X,pos.Z);
             angleX = normals.X * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
             angleZ = normals.Y * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
             it->setRotation(irr::core::vector3df(angleX,0,angleZ));

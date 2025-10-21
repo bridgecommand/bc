@@ -50,6 +50,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 {
   mTerrain = new Terrain();
   mWater = new Water();
+  mTide = new Tide();
+  mBuoys = new Buoys();
+  
   manOverboard.load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
   
   device = dev;
@@ -104,7 +107,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   scenarioTime = startTime * SECONDS_IN_HOUR;
 
   //Set initial tide height to zero
-  tideHeight = 0;
+  mTideHeight = 0;
 
   if (worldName == "") {
     //Could not load world name from scenario, so end here
@@ -206,7 +209,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   otherShips.load(scenarioData.otherShipsData,scenarioTime,mModelParameters.mode,smgr,this,device);
 
   //Load buoys
-  buoys.load(worldPath, smgr, this,device);
+  mBuoys->load(worldPath, smgr, this,device);
 
   //Load land objects
   landObjects.load(worldPath, smgr, this, mTerrain, device);
@@ -215,7 +218,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   landLights.load(worldPath, smgr, this, mTerrain);
 
   //Load tidal information
-  tide.load(worldPath, scenarioData);
+  mTide->load(worldPath, scenarioData);
 
         
 
@@ -282,29 +285,6 @@ void SimulationModel::setSpeed(irr::f32 spd)
   ownShip.setSpeed(spd);
 }
 
-irr::core::vector2df SimulationModel::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const {
-  return mWater->getLocalNormals(relPosX,relPosZ);
-}
-
-irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
-        
-  if (streamOverride) {
-    irr::core::vector2df overrideStream;
-    overrideStream.X = sin(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
-    overrideStream.Y = cos(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
-    return overrideStream;
-  } else {
-    return tide.getTidalStream(longitude,latitude,requestTime);
-  }
-}
-
-// void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
-//    //FIXME: Complete
-// }
-
-//void SimulationModel::getDate(irr::u8& day, irr::u8& month, irr::u16& year) const{
-//    //FIXME: Complete
-//}
 
 uint64_t SimulationModel::getTimestamp() const{
   return absoluteTime;
@@ -324,10 +304,6 @@ irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since 
 
 irr::u32 SimulationModel::getNumberOfOtherShips() const {
   return otherShips.getNumber();
-}
-
-irr::u32 SimulationModel::getNumberOfBuoys() const {
-  return buoys.getNumber();
 }
 
 std::string SimulationModel::getOtherShipName(int number) const{
@@ -384,14 +360,6 @@ void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
 
 std::vector<Leg> SimulationModel::getOtherShipLegs(int number) const{
   return otherShips.getLegs(number);
-}
-
-irr::f32 SimulationModel::getBuoyPosX(int number) const{
-  return buoys.getPosition(number).X;
-}
-
-irr::f32 SimulationModel::getBuoyPosZ(int number) const{
-  return buoys.getPosition(number).Z;
 }
 
 void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
@@ -678,6 +646,22 @@ Water* SimulationModel::getWater(void)
     return NULL;
 }
 
+Tide* SimulationModel::getTide(void)
+{
+ if(NULL != mTide)
+    return mTide;
+  else
+    return NULL;
+}
+
+Buoys* SimulationModel::getBuoys(void)
+{
+ if(NULL != mBuoys)
+    return mBuoys;
+  else
+    return NULL;
+}
+
 
 void SimulationModel::setAccelerator(irr::f32 accelerator)
 {
@@ -757,36 +741,6 @@ irr::f32 SimulationModel::getApparentWindDir(void) const
 irr::f32 SimulationModel::getApparentWindSpd(void) const
 {
   return apparentWindSpd;
-}
-
-void SimulationModel::setStreamOverrideDirection(irr::f32 streamDirection) //Range 0-360.
-{
-  this->streamOverrideDirection = streamDirection;
-}
-
-irr::f32 SimulationModel::getStreamOverrideDirection() const
-{
-  return streamOverrideDirection;
-}
-
-void SimulationModel::setStreamOverrideSpeed(irr::f32 streamSpeed) //Nm/h
-{
-  this->streamOverrideSpeed = streamSpeed;
-} 
-
-irr::f32 SimulationModel::getStreamOverrideSpeed() const
-{
-  return streamOverrideSpeed;
-}
-
-void SimulationModel::setStreamOverride(bool streamOverride)
-{
-  this->streamOverride = streamOverride;
-}
-
-bool SimulationModel::getStreamOverride() const
-{
-  return streamOverride;
 }
 
 void SimulationModel::setWaterVisible(bool visible)
@@ -1287,7 +1241,7 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr
   } else if (linesMode == 2) {
     // End - not on own ship
     otherShips.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
-    buoys.enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+    mBuoys->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
     // TODO: Temporarily enable triangle selector for:
     //   Terrain
     //   Land objects
@@ -1356,24 +1310,10 @@ irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
   return otherShips.getSceneNode(number);
 }
 
-irr::scene::ISceneNode* SimulationModel::getBuoySceneNode(int number)
-{
-  return buoys.getSceneNode(number);
-}
 
 irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
 {
   return landObjects.getSceneNode(number);
-}
-
-irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
-{
-  return mTerrain->getSceneNode(number);
-}
-
-irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
-{
-  return mTerrain->getHeight(posX, posZ);
 }
 
 void SimulationModel::addLine() // Add a line, which will be undefined
@@ -1437,8 +1377,8 @@ void SimulationModel::update()
   }{ IPROF("Update tide");
 
     //Update tide height and tidal stream here.
-    tide.update(absoluteTime);
-    tideHeight = tide.getTideHeight();
+    mTide->update(absoluteTime);
+    mTideHeight = mTide->getTideHeight();
 
   }{ IPROF("Update lighting");
 
@@ -1455,11 +1395,11 @@ void SimulationModel::update()
 
   }{ IPROF("Update other ships");
     //update other ship positions etc
-    otherShips.update(deltaTime,scenarioTime,tideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength()); //Update other ship motion (based on leg information), and light visibility.
+    otherShips.update(deltaTime,scenarioTime,mTideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength()); //Update other ship motion (based on leg information), and light visibility.
 
   }{ IPROF("Update buoys");
     //update buoys (for lights, floating, and if collision detection is turned on)
-    buoys.update(deltaTime,scenarioTime,tideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength());
+    mBuoys->update(deltaTime,scenarioTime,mTideHeight,lightLevel,ownShip.getPosition(),ownShip.getLength());
 
   }{ IPROF("Update land lights");
     //Update land lights
@@ -1476,11 +1416,11 @@ void SimulationModel::update()
 
     //std::cout << "eta : " << ownShip.getEta() << " - mu : " << ownShip.getMu();
     //update own ship
-    ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
+    ownShip.update(deltaTime, scenarioTime, mTideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 
   }{ IPROF("Update MOB");
     //update man overboard
-    manOverboard.update(deltaTime, tideHeight);
+    manOverboard.update(deltaTime, mTideHeight);
 
   }{ IPROF("Check for collisions");
     //Check for collisions
@@ -1488,7 +1428,7 @@ void SimulationModel::update()
 
   }{ IPROF("Update water pos");
     //update water position
-    mWater->update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
+    mWater->update(mTideHeight,camera.getPosition(),light.getLightLevel(), weather);
 
   }{ IPROF("Update camera pos");
 
@@ -1512,7 +1452,7 @@ void SimulationModel::update()
 	radarImageChosen = radarImage;
 	radarImageOverlaidChosen = radarImageOverlaid;
       }
-      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,mTerrain,ownShip,buoys,otherShips,weather,rainIntensity,tideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
+      radarCalculation.update(radarImageChosen,radarImageOverlaidChosen,mTerrain,ownShip,mBuoys,otherShips,weather,rainIntensity,mTideHeight,deltaTime,absoluteTime,cursorPositionRadar,isMouseDown);
     }{ IPROF("Update radar screen");
       radarScreen.update(radarImageOverlaidChosen);
     }{ IPROF("Update radar camera");
@@ -1560,9 +1500,9 @@ void SimulationModel::update()
     guiData->visibility = visibilityRange;
     guiData->windDirection = windDirection;
     guiData->windSpeed = windSpeed;
-    guiData->streamDirection = streamOverrideDirection;
-    guiData->streamSpeed = streamOverrideSpeed;
-    guiData->streamOverride = streamOverride;
+    guiData->streamDirection = mTide->getStreamOverrideDirection();
+    guiData->streamSpeed = mTide->getStreamOverrideSpeed();
+    guiData->streamOverride = mTide->getStreamOverride();
     guiData->radarRangeNm = radarCalculation.getRangeNm();
     guiData->radarGain = radarCalculation.getGain();
     guiData->radarClutter = radarCalculation.getClutter();
@@ -1582,7 +1522,7 @@ void SimulationModel::update()
     // DEE_NOV22 ^^^^
 
     // DEE FEB 23 vvv
-    guiData->tideHeight = tideHeight;
+    guiData->tideHeight = mTideHeight;
     // DEE FEB 23 ^^^
 
     // DEE vvvv units are rad per second
@@ -1642,9 +1582,9 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
 	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
 	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
-	if(dataWeather->streamDirection > 0) {setStreamOverrideDirection(dataWeather->streamDirection);}
-	if(dataWeather->streamSpeed > 0) {setStreamOverrideSpeed(dataWeather->streamSpeed);}
-	if(dataWeather->streamOverrideInt > 0) {setStreamOverride(dataWeather->streamOverrideInt);}
+	if(dataWeather->streamDirection > 0) {mTide->setStreamOverrideDirection(dataWeather->streamDirection);}
+	if(dataWeather->streamSpeed > 0) {mTide->setStreamOverrideSpeed(dataWeather->streamSpeed);}
+	if(dataWeather->streamOverrideInt > 0) {mTide->setStreamOverride(dataWeather->streamOverrideInt);}
 
 	break;
       }
@@ -1810,7 +1750,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineStartType == 3)
 			  {
 			    // Buoy
-			    startParent = getBuoySceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = getBuoys()->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			else if(dataMasterCmds->lines.lineStartType == 4)
 			  {
@@ -1820,7 +1760,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if (dataMasterCmds->lines.lineStartType == 5)
 			  {
 			    // Terrain			   
-			    startParent = getTerrainSceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = getTerrain()->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			
 			if(dataMasterCmds->lines.lineEndType == 1)
@@ -1836,7 +1776,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineEndType == 3)
 			  {
 			    // Buoy
-			    endParent = getBuoySceneNode(dataMasterCmds->lines.lineEndID);
+			    endParent = getBuoys()->getSceneNode(dataMasterCmds->lines.lineEndID);
 			  }
 			else if(dataMasterCmds->lines.lineEndType == 4)
 			  {
@@ -1846,7 +1786,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if (dataMasterCmds->lines.lineEndType == 5)
 			  {
 			    // Terrain
-			    endParent = getTerrainSceneNode(dataMasterCmds->lines.lineEndID);			    
+			    endParent = getTerrain()->getSceneNode(dataMasterCmds->lines.lineEndID);			    
 			  }
 
 			// Make child sphere nodes based on these (in the right position), then pass in to create the lines
@@ -1905,9 +1845,9 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	setRain(dataMasterCmds->weather.rain);
 	setWindSpeed(dataMasterCmds->weather.windSpeed);
 	setWindDirection(dataMasterCmds->weather.windDirection);
-	setStreamOverrideDirection(dataMasterCmds->weather.streamDirection);
-	setStreamOverrideSpeed(dataMasterCmds->weather.streamSpeed);
-	setStreamOverride(dataMasterCmds->weather.streamOverrideInt);
+	mTide->setStreamOverrideDirection(dataMasterCmds->weather.streamDirection);
+	mTide->setStreamOverrideSpeed(dataMasterCmds->weather.streamSpeed);
+	mTide->setStreamOverride(dataMasterCmds->weather.streamOverrideInt);
 	
 	/************************************************************************/
 	setView(dataMasterCmds->view.view);

@@ -133,7 +133,7 @@ void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
 
     //Move with tidal stream (if not aground)
     irr::f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
-    irr::core::vector2df mobVector = model->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
+    irr::core::vector2df mobVector = model->getTide()->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
     
     // Add component from wind
     irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;

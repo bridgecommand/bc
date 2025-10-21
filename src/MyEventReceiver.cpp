@@ -270,7 +270,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) 
             {
-                model->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
+                model->getTide()->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
         }
 
@@ -373,11 +373,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR)
             {
-                model->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getTide()->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR)
             {
-                model->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getTide()->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }   
             if (id == GUIMain::GUI_ID_MAGNIFICATION_SCROLL_BAR)
             {   
@@ -1742,8 +1742,8 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 
                     // Create a 'contact node' at the terrain height below the anchor point
                     irr::core::vector3df intersection = contactNode->getAbsolutePosition();
-                    intersection.Y = model->getTerrainHeight(intersection.X, intersection.Z);
-                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrainSceneNode(0);
+                    intersection.Y = model->getTerrain()->getHeight(intersection.X, intersection.Z);
+                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrain()->getSceneNode(0);
 
                     // Add a 'sphere' scene node, with selectedSceneNode as parent.
                     // Find local coordinates from the global one

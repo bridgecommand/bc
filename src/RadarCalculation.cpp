@@ -655,7 +655,7 @@ void RadarCalculation::changeRadarColourChoice()
     radarScreenStale = true;
 }
 
-void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain *terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
+void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImage * radarImageOverlaid, const Terrain *terrain, const OwnShip& ownShip, const Buoys *buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, irr::core::vector2di mouseRelPosition, bool isMouseDown)
 {
 
     #ifdef WITH_PROFILING
@@ -713,7 +713,7 @@ void RadarCalculation::update(irr::video::IImage * radarImage, irr::video::IImag
 }
 
 
-void RadarCalculation::scan(const Terrain *terrain, const OwnShip& ownShip, const Buoys& buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
+void RadarCalculation::scan(const Terrain *terrain, const OwnShip& ownShip, const Buoys *buoys, const OtherShips& otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime)
 {
 
     //IPROF_FUNC;
@@ -735,8 +735,8 @@ void RadarCalculation::scan(const Terrain *terrain, const OwnShip& ownShip, cons
         radarData.push_back(otherShips.getRadarData(contactID,absolutePosition));
     }
     //For buoys
-    for (std::vector<RadarData>::size_type contactID=1; contactID<=buoys.getNumber(); contactID++) {
-        radarData.push_back(buoys.getRadarData(contactID,absolutePosition));
+    for (std::vector<RadarData>::size_type contactID=1; contactID<=buoys->getNumber(); contactID++) {
+        radarData.push_back(buoys->getRadarData(contactID,absolutePosition));
     }
 
     const irr::f32 RADAR_RPM = 25; //Todo: Make a ship parameter

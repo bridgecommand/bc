@@ -701,7 +701,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
     float posX = mModel->getOwnShip()->getPosition().X;
     
       // Find tidal stream, based on our current absolute position
-    irr::core::vector2df stream = mModel->getTidalStream(mModel->getTerrain()->xToLong(posX), mModel->getTerrain()->zToLat(posZ),mModel->getTimestamp());
+    irr::core::vector2df stream = mModel->getTide()->getTidalStream(mModel->getTerrain()->xToLong(posX), mModel->getTerrain()->zToLat(posZ),mModel->getTimestamp());
       //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
       irr::f32 streamScaling = fmax(0, fmin(1, getDepth(mModel->getTerrain()))); // Reduce effect as water gets shallower
       stream *= streamScaling;

@@ -796,7 +796,7 @@ std::string& Message::KeepAlive(void)
   //2 Numbers: Number Other, Number buoys, Number MOB #
   msg.append(Utilities::lexical_cast<std::string>(mModel->getNumberOfOtherShips()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getNumberOfBuoys()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getNumber()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getManOverboardVisible()? 1 : 0));
   msg.append(",");
@@ -841,11 +841,11 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //4 Each Buoy
-  for(int number = 0; number < (int)mModel->getNumberOfBuoys(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoyPosX(number)));
+  for(int number = 0; number < (int)mModel->getBuoys()->getNumber(); number++ ) {
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getPosition(number).X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoyPosZ(number)));
-    if (number < (int)mModel->getNumberOfBuoys()-1) {msg.append("|");}
+    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getPosition(number).Z));
+    if (number < (int)mModel->getBuoys()->getNumber()-1) {msg.append("|");}
   }
   msg.append("#");
 
@@ -870,11 +870,11 @@ std::string& Message::KeepAlive(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideDirection()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverrideDirection()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverrideSpeed()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverrideSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getStreamOverride()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverride()));
 
   msg.append("#");
 

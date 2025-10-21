@@ -80,19 +80,13 @@ public:
   void setAccelerator(irr::f32 accelerator); //Set simulation time compression
   irr::f32 getAccelerator() const;
 
-  irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
-
-  irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Tidal stream in m/s for the specified absolute position
-
-  //void getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const;
-  //void getDate(irr::u8& day, irr::u8& month, irr::u16& year) const;
   uint64_t getTimestamp() const; //The unix timestamp in s
   uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
   irr::f32 getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
   void     setTimeDelta(irr::f32 scenarioTime);
 
   irr::u32 getNumberOfOtherShips() const;
-  irr::u32 getNumberOfBuoys() const;
+
   std::string getOtherShipName(int number) const;
   irr::f32 getOtherShipPosX(int number) const;
   irr::f32 getOtherShipPosZ(int number) const;
@@ -107,8 +101,7 @@ public:
   void setOtherShipSpeed(int number, irr::f32 speed); //Speed in m/s
   void setOtherShipMMSI(int number, irr::u32 mmsi);
   std::vector<Leg> getOtherShipLegs(int number) const;
-  irr::f32 getBuoyPosX(int number) const;
-  irr::f32 getBuoyPosZ(int number) const;
+
   void changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
   void addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance);
   void deleteOtherShipLeg(int shipNumber, int legNumber);
@@ -133,12 +126,7 @@ public:
   irr::f32 getApparentWindDir(void) const;
   void setApparentWindSpd(irr::f32 apparentWindSpd);
   irr::f32 getApparentWindSpd(void) const;
-  void setStreamOverrideDirection(irr::f32 streamDirection); //Range 0-360.
-  irr::f32 getStreamOverrideDirection() const;
-  void setStreamOverrideSpeed(irr::f32 streamSpeed); //Nm/h
-  irr::f32 getStreamOverrideSpeed() const;
-  void setStreamOverride(bool streamOverride);
-  bool getStreamOverride() const;
+
   void setWaterVisible(bool visible);
   void lookUp();
   void lookDown();
@@ -251,20 +239,19 @@ public:
     
   irr::scene::ISceneNode* getOwnShipSceneNode();
   irr::scene::ISceneNode* getOtherShipSceneNode(int number);
-  irr::scene::ISceneNode* getBuoySceneNode(int number);
-  irr::scene::ISceneNode* getLandObjectSceneNode(int number);
-  irr::scene::ISceneNode* getTerrainSceneNode(int number);
 
-  irr::f32 getTerrainHeight(irr::f32 posX, irr::f32 posZ) const;
+  irr::scene::ISceneNode* getLandObjectSceneNode(int number);
 
   void addLine(); // Add a line, which will be undefined
     
   Lines* getLines(); // Get pointer to lines object
   OwnShip* getOwnShip(void);
   Terrain* getTerrain(void);
-  Water* getWater(void);  
+  Water* getWater(void);
+  Tide* getTide(void);
+  Buoys* getBuoys(void);
+  
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
-
   void update();
   void updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd);  
 private:
@@ -281,7 +268,7 @@ private:
   irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
   irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
   //irr::f32 accelerator;
-  irr::f32 tideHeight;
+  irr::f32 mTideHeight;
   irr::f32 weather; //0-12.0
   irr::f32 rainIntensity; //0-10
   irr::f32 visibilityRange; //Nm
@@ -289,9 +276,6 @@ private:
   irr::f32 windSpeed; //Nm
   irr::f32 apparentWindDir;
   irr::f32 apparentWindSpd;
-  irr::f32 streamOverrideDirection; //0-360
-  irr::f32 streamOverrideSpeed; //Nm
-  bool streamOverride;
   irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
   irr::f32 currentZoom; // Zoom currently in use
   irr::f32 zoomLevel; // Zoom level that should be used if binos are on
@@ -301,13 +285,13 @@ private:
   OwnShip *mOwnShip;
   OwnShip ownShip;
   OtherShips otherShips;
-  Buoys buoys;
+  Buoys *mBuoys;
   LandObjects landObjects;
   LandLights landLights;
   Camera camera;
   Camera radarCamera;
   Water *mWater;
-  Tide tide;
+  Tide *mTide;
   Rain rain;
   Lines lines;
   RadarCalculation radarCalculation;
