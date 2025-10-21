@@ -472,6 +472,17 @@ void ControllerModel::setMMSI(irr::s32 ship, int mmsi)
     }   
 }
 
+void ControllerModel::setDrifting(irr::s32 ship, bool drifting)
+{
+    //If other ship:
+    if (ship > 0) {
+        int otherShipIndex = ship - 1;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            scenarioData->otherShipsData.at(otherShipIndex).drifting = drifting;
+        }
+    }
+}
+
 void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
 {
     //If other ship:

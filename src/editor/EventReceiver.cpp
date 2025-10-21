@@ -134,6 +134,14 @@
 
             }
 
+            if (event.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED) {
+                if (id == GUIMain::GUI_ID_DRIFTING_CHECKBOX) {
+                    if (gui->getSelectedShip() > 0) {
+                        model->setDrifting(gui->getSelectedShip(), ((irr::gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked());
+                    }
+                }
+            }
+
             if (event.GUIEvent.EventType==irr::gui::EGET_COMBO_BOX_CHANGED || event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_CHANGED) {
                 if (id==GUIMain::GUI_ID_SHIP_COMBOBOX) {
                     model->updateSelectedShip( ((irr::gui::IGUIComboBox*)event.GUIEvent.Caller)->getSelected());
