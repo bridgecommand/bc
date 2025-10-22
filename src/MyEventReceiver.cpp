@@ -535,7 +535,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->addManualPoint(false);
+		  model->getRadarCalculation()->addManualPoint(false, model->getOwnShip(), model->getTimestamp());
                 }
                 // Don't do anything in full ARPA mode (as updated automatically)
             }
@@ -544,7 +544,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->addManualPoint(true);
+                    model->getRadarCalculation()->addManualPoint(true, model->getOwnShip(), model->getTimestamp());
                 }
                 else if (model->getRadarCalculation()->getArpaMode() == 1)
                 {
@@ -955,7 +955,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     model->setAccelerator(3600.0);
                     break;
                 case irr::KEY_KEY_H:
-                    model->startHorn();
+		  model->getSound()->startHorn();
                     break;
 
                 case irr::KEY_KEY_W:
@@ -1058,7 +1058,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
     {
         if (event.KeyInput.Key == irr::KEY_KEY_H)
         {
-            model->endHorn();
+            model->getSound()->endHorn();
         }
     }
 
@@ -1245,11 +1245,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonHorn, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonHorn, previousButtonState))
             {
-                model->startHorn();
+                model->getSound()->startHorn();
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonHorn, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonHorn, previousButtonState))
             {
-                model->endHorn();
+                model->getSound()->endHorn();
             }
         }
         // Change view
@@ -1723,7 +1723,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 irr::f32 nominalMass = model->getOwnShip()->getEstimatedDisplacement();
                 if (nodeType == 2) {
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
-                    nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
+		  nominalMass = fmin(model->getOtherShips()->getEstimatedDisplacement(nodeID), nominalMass);
                 }
                 model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID, 1.0, false, -1);
                 // Finished

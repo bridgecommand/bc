@@ -890,7 +890,7 @@ int main(int argc, char ** argv)
     NMEA nmeaOpCpn(&model, nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn, device);
 	
 	//Load sound files
-	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
+    sound.load(model.getOwnShip()->getBasePath());
 
 
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));

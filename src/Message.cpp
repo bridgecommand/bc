@@ -317,21 +317,21 @@ sCtrlsInf Message::GetInfosControls(std::vector<std::string>& aCtrlsData)
   sCtrlsInf controlsInfos = {0}; 
   if(aCtrlsData.size() == 10)
     {
-      if(!mModel->getIsSecondaryControlWheel())
+      if(!mModel->getModelParameters().secondaryControlWheel)
 	controlsInfos.wheel = Utilities::lexical_cast<float>(aCtrlsData.at(0));
     
       controlsInfos.rudder = Utilities::lexical_cast<float>(aCtrlsData.at(1));
       
-      if(!mModel->getIsSecondaryControlPortEngine())
+      if(!mModel->getModelParameters().secondaryControlPortEngine)
 	controlsInfos.portEng = Utilities::lexical_cast<float>(aCtrlsData.at(2));
 
-      if(!mModel->getIsSecondaryControlStbdEngine())
+      if(!mModel->getModelParameters().secondaryControlStbdEngine)
 	controlsInfos.stbdEng = Utilities::lexical_cast<float>(aCtrlsData.at(3));
       
-      if(!mModel->getIsSecondaryControlBowThruster())
+      if(!mModel->getModelParameters().secondaryControlBowThruster)
       	controlsInfos.bowThrust = Utilities::lexical_cast<float>(aCtrlsData.at(8));
    
-      if(!mModel->getIsSecondaryControlSternThruster())
+      if(!mModel->getModelParameters().secondaryControlSternThruster)
 	controlsInfos.sternThrust = Utilities::lexical_cast<float>(aCtrlsData.at(9));
     }
   return controlsInfos;
@@ -342,19 +342,19 @@ std::string& Message::ControlOverride(void)
   static std::string controlOverride;
   controlOverride.clear();
 
-  if(mModel->getIsSecondaryControlWheel())
+  if(mModel->getModelParameters().secondaryControlWheel)
     {
       controlOverride.append("MCCO,0,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
       controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlPortEngine())
+  if(mModel->getModelParameters().secondaryControlPortEngine)
     {
       controlOverride.append("MCCO,1,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPortEngine()));
       controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlStbdEngine())
+  if(mModel->getModelParameters().secondaryControlStbdEngine)
     {
       controlOverride.append("MCCO,2,");
       controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getStbdEngine()));

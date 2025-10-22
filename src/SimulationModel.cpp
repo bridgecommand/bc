@@ -44,7 +44,7 @@
 SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  irr::scene::ISceneManager* scene,
                                  GUIMain* gui,
-                                 Sound* sound,
+                                 Sound* aSound,
                                  ScenarioData scenarioData,
                                  ModelParameters aModelParameters)
 {
@@ -67,7 +67,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   smgr = scene;
   driver = scene->getVideoDriver();
   guiMain = gui;
-  this->sound = sound;
+  mSound = aSound;
   isMouseDown = false;
   moveViewWithPrimary = true;
 
@@ -78,7 +78,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mScenarioName = scenarioData.scenarioName;
 
   // Store model parameters
-  this->mModelParameters = aModelParameters;
+  mModelParameters = aModelParameters;
 
   //Set loop number to zero
   loopNumber = 0;
@@ -285,205 +285,7 @@ SimulationModel::~SimulationModel()
   delete guiData;
 }
 
-uint64_t SimulationModel::getTimestamp() const{
-  return mAbsoluteTime;
-}
 
-uint64_t SimulationModel::getTimeOffset() const { //The timestamp at the start of the first day of the scenario
-  return scenarioOffsetTime;
-}
-
-void SimulationModel::setTimeDelta(float mScenarioTime) {
-  this->mScenarioTime = mScenarioTime;
-}
-
-float SimulationModel::getTimeDelta() const { //The change in time (s) since the start of the start day of the scenario
-  return mScenarioTime;
-}
-
-std::string SimulationModel::getOwnShipEngineSound() const {
-
-  //Check existence of sound file in base path, and if not fall back to default.
-  std::string soundPath = mOwnShip->getBasePath();
-
-  { //Create local scope for file
-    soundPath.append("/Engine.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Check for lower case version
-  {
-    soundPath = mOwnShip->getBasePath();
-    soundPath.append("/engine.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Fall back to default, again checking both upper and lower case
-
-  {
-    soundPath = "sounds/Engine.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  {
-    soundPath = "sounds/engine.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //In case nothing found
-  return "";
-
-}
-
-std::string SimulationModel::getOwnShipWaveSound() const {
-
-  //Check existence of sound file in base path, and if not fall back to default.
-  std::string soundPath = mOwnShip->getBasePath();
-
-  { //Create local scope for file
-    soundPath.append("/Bwave.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Check for lower case version
-  {
-    soundPath = mOwnShip->getBasePath();
-    soundPath.append("/bwave.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Fall back to default, again checking both upper and lower case
-
-  {
-    soundPath = "sounds/Bwave.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  {
-    soundPath = "sounds/bwave.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //In case nothing found
-  return "";
-
-}
-
-std::string SimulationModel::getOwnShipHornSound() const {
-
-  //Check existence of sound file in base path, and if not fall back to default.
-  std::string soundPath = mOwnShip->getBasePath();
-
-  { //Create local scope for file
-    soundPath.append("/Horn.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Check for lower case version
-  {
-    soundPath = mOwnShip->getBasePath();
-    soundPath.append("/horn.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Fall back to default, again checking both upper and lower case
-
-  {
-    soundPath = "sounds/Horn.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  {
-    soundPath = "sounds/horn.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //In case nothing found
-  return "";
-
-}
-
-std::string SimulationModel::getOwnShipAlarmSound() const {
-
-  //Check existence of sound file in base path, and if not fall back to default.
-  std::string soundPath = mOwnShip->getBasePath();
-
-  { //Create local scope for file
-    soundPath.append("/Alarm.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Check for lower case version
-  {
-    soundPath = mOwnShip->getBasePath();
-    soundPath.append("/alarm.wav");
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //Fall back to default, again checking both upper and lower case
-
-  {
-    soundPath = "sounds/Alarm.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  {
-    soundPath = "sounds/alarm.wav";
-    std::ifstream file(soundPath.c_str());
-    if (file.good()) {
-      return soundPath;
-    }
-  }
-
-  //In case nothing found
-  return "";
-
-}
 
 OwnShip* SimulationModel::getOwnShip(void)
 {
@@ -581,6 +383,14 @@ Rain* SimulationModel::getRain(void)
     return NULL;
 }
 
+Sound* SimulationModel::getSound(void)
+{
+ if(NULL != mSound)
+    return mSound;
+  else
+    return NULL;
+}
+
 
 void SimulationModel::setAccelerator(float accelerator)
 {
@@ -592,6 +402,7 @@ float SimulationModel::getAccelerator() const
   return device->getTimer()->getSpeed();
 }
 
+/*Wether, Wind, Rain, Visibility*/
 void SimulationModel::setWeather(float aWeather){mWeather = aWeather;}
 float SimulationModel::getWeather() const {return mWeather;}
 void SimulationModel::setRain(float aRainIntensity){mRainIntensity = aRainIntensity;}
@@ -607,19 +418,14 @@ void SimulationModel::setApparentWindSpd(float aApparentWindSpd){mApparentWindSp
 float SimulationModel::getApparentWindDir(void) const{return mApparentWindDir;}
 float SimulationModel::getApparentWindSpd(void) const{return mApparentWindSpd;}
 
-void SimulationModel::setAlarm(bool alarmState)
-{
-  if (alarmState) {
-    sound->setVolumeAlarm(1.0);
-  } else {
-    sound->setVolumeAlarm(0.0);
-  }
-}
+/*Time*/
+unsigned long long SimulationModel::getTimestamp() const {return mAbsoluteTime;}
+unsigned long long SimulationModel::getTimeOffset() const {return scenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
+void SimulationModel::setTimeDelta(float aScenarioTime){mScenarioTime = aScenarioTime;}
+float SimulationModel::getTimeDelta() const {return mScenarioTime;} //The change in time (s) since the start of the start day of the scenario
 
-void SimulationModel::addManualPoint(bool newContact)
-{
-  mRadarCalculation->addManualPoint(newContact, mOwnShip, mAbsoluteTime);
-}
+/*Models Params*/
+ModelParameters& SimulationModel::getModelParameters(void){return mModelParameters;}
 
 void SimulationModel::setZoom(bool zoomOn) {
   if (zoomOn) {
@@ -731,24 +537,6 @@ void SimulationModel::setManOverboardPos(float positionX, float positionZ)
 }
 
 
-bool SimulationModel::debugModeOn() const
-{
-  return mModelParameters.debugMode;
-}
-
-
-float SimulationModel::getOtherShipMassEstimate(int number) const
-{
-  return mOtherShips->getEstimatedDisplacement(number);
-}
-
-void SimulationModel::startHorn() {
-  sound->setVolumeHorn(1.0);
-}
-
-void SimulationModel::endHorn() {
-  sound->setVolumeHorn(0.0);
-}
 
 bool SimulationModel::getMoveViewWithPrimary() const {
   return moveViewWithPrimary;
@@ -758,37 +546,6 @@ void SimulationModel::setMoveViewWithPrimary(bool moveView) {
   moveViewWithPrimary = moveView;
 }
 
-ModelParameters SimulationModel::getModelParameters() const {
-  return mModelParameters;
-}
-
-bool SimulationModel::getIsSecondaryControlWheel() const {
-  return mModelParameters.secondaryControlWheel;
-}
-
-bool SimulationModel::getIsSecondaryControlPortEngine() const {
-  return mModelParameters.secondaryControlPortEngine;
-}
-
-bool SimulationModel::getIsSecondaryControlStbdEngine() const {
-  return mModelParameters.secondaryControlStbdEngine;
-}
-
-bool SimulationModel::getIsSecondaryControlBowThruster() const {
-  return mModelParameters.secondaryControlBowThruster;
-}
-
-bool SimulationModel::getIsSecondaryControlSternThruster() const {
-  return mModelParameters.secondaryControlSternThruster;
-}
-
-float SimulationModel::getLineStiffnessFactor() const {
-  return mModelParameters.lineStiffnessFactor;
-}
-
-float SimulationModel::getLineDampingFactor() const {
-  return mModelParameters.lineDampingFactor;
-}
 
 irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode) {
 
@@ -856,11 +613,6 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<flo
   // buoys and otherShips will be reset when their update() method is called
 
   return contactPointNode;
-}
-
-irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
-{
-  return mOtherShips->getSceneNode(number);
 }
 
 
@@ -963,9 +715,9 @@ void SimulationModel::update()
     mOwnShip->update(deltaTime, mScenarioTime, mTideHeight, mWeather, mLines->getOverallForceLocal(), mLines->getOverallTorqueLocal());
 
     if (mOwnShip->getNumberProp() > 1)
-      sound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
+      mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
     else 
-      sound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
+      mSound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
   
   }{ IPROF("Update MOB");
     //update man overboard
@@ -1294,12 +1046,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineStartType == 2)
 			  {
 			    // Other ship
-			    startParent = getOtherShipSceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = mOtherShips->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			else if(dataMasterCmds->lines.lineStartType == 3)
 			  {
 			    // Buoy
-			    startParent = getBuoys()->getSceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = mBuoys->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			else if(dataMasterCmds->lines.lineStartType == 4)
 			  {
@@ -1309,7 +1061,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if (dataMasterCmds->lines.lineStartType == 5)
 			  {
 			    // Terrain			   
-			    startParent = getTerrain()->getSceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = mTerrain->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			
 			if(dataMasterCmds->lines.lineEndType == 1)
@@ -1320,12 +1072,12 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineEndType == 2)
 			  {
 			    // Other ship
-			    endParent = getOtherShipSceneNode(dataMasterCmds->lines.lineEndID);
+			    endParent = mOtherShips->getSceneNode(dataMasterCmds->lines.lineEndID);
 			  }
 			else if(dataMasterCmds->lines.lineEndType == 3)
 			  {
 			    // Buoy
-			    endParent = getBuoys()->getSceneNode(dataMasterCmds->lines.lineEndID);
+			    endParent = mBuoys->getSceneNode(dataMasterCmds->lines.lineEndID);
 			  }
 			else if(dataMasterCmds->lines.lineEndType == 4)
 			  {
@@ -1335,7 +1087,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if (dataMasterCmds->lines.lineEndType == 5)
 			  {
 			    // Terrain
-			    endParent = getTerrain()->getSceneNode(dataMasterCmds->lines.lineEndID);			    
+			    endParent = mTerrain->getSceneNode(dataMasterCmds->lines.lineEndID);			    
 			  }
 
 			// Make child sphere nodes based on these (in the right position), then pass in to create the lines

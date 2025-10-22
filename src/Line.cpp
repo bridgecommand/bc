@@ -365,7 +365,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                 }
 
                 // Calculate the stiffness based force
-                forceMagnitude = lineExtension * lineStiffness * model->getLineStiffnessFactor();;
+                forceMagnitude = lineExtension * lineStiffness * model->getModelParameters().lineStiffnessFactor;
 
                 // Add damping (50% of critical) here
                 if (deltaTime > 0 && shipNominalMass > 0 && lineStiffness > 0) {
@@ -374,7 +374,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
                         // Do not add damping if in multiplayer mode, and line is attached to another ship
                         irr::f32 lineExtensionSpeed = lineExtensionChange / deltaTime;
                         irr::f32 criticalDamping = 2*sqrt(lineStiffness * shipNominalMass);
-                        forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping * model->getLineDampingFactor();
+                        forceMagnitude += lineExtensionSpeed * 0.5 * criticalDamping * model->getModelParameters().lineDampingFactor;
                     }
                 }
 

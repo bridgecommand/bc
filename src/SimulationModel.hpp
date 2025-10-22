@@ -28,7 +28,7 @@
 class ScenarioData;
 class GUIMain;
 class GUIData;
-class Sound;
+
 
 #include "Terrain.hpp"
 #include "Light.hpp"
@@ -49,6 +49,7 @@ class Sound;
 #include "OperatingModeEnum.hpp"
 #include "Network.hpp"
 #include "Solver.hpp"
+#include "Sound.hpp"
 
 
 class SimulationModel //Start of the 'Model' part of MVC
@@ -67,16 +68,10 @@ public:
   void setAccelerator(float accelerator); //Set simulation time compression
   float getAccelerator() const;
 
-  uint64_t getTimestamp() const; //The unix timestamp in s
-  uint64_t getTimeOffset() const; //The timestamp at the start of the first day of the scenario
+  unsigned long long getTimestamp() const; //The unix timestamp in s
+  unsigned long long getTimeOffset() const; //The timestamp at the start of the first day of the scenario
   float getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
-  void     setTimeDelta(float scenarioTime);
-
-  std::string getOwnShipEngineSound() const;
-  std::string getOwnShipWaveSound() const;
-  std::string getOwnShipHornSound() const;
-  std::string getOwnShipAlarmSound() const;
-
+  void  setTimeDelta(float scenarioTime);
 
   void setWeather(float aWeather); 
   float getWeather() const;
@@ -93,10 +88,6 @@ public:
   void setApparentWindSpd(float aApparentWindSpd);
   float getApparentWindSpd(void) const;
 
-  void setAlarm(bool alarmState);
-
-  void addManualPoint(bool newContact);
-  
   void setMouseDown(bool isMouseDown);
   void setZoom(bool zoomOn);
   void setZoom(bool zoomOn, float zoomLevel);
@@ -114,30 +105,15 @@ public:
   void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
   void setManOverboardPos(float positionX, float positionZ);   //To be used directly, eg when in secondary display mode only
   bool debugModeOn() const;
-  float getOtherShipMassEstimate(int number) const;
 
   bool getMoveViewWithPrimary() const;
   void setMoveViewWithPrimary(bool moveView);
 
-  ModelParameters getModelParameters() const;
+  ModelParameters& getModelParameters();
 
-  // TODO: Most of these can be replaced with getModelParameters()
-  bool getIsSecondaryControlWheel() const;
-  bool getIsSecondaryControlPortEngine() const;
-  bool getIsSecondaryControlStbdEngine() const;
-  bool getIsSecondaryControlBowThruster() const;
-  bool getIsSecondaryControlSternThruster() const;
-
-  float getLineStiffnessFactor() const;
-  float getLineDampingFactor() const;
-
-  void startHorn();
-  void endHorn();
 
   irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode);
     
-  irr::scene::ISceneNode* getOtherShipSceneNode(int number);
-
   irr::scene::ISceneNode* getLandObjectSceneNode(int number);
 
 
@@ -153,6 +129,7 @@ public:
   RadarCalculation* getRadarCalculation(void);
   RadarScreen* getRadarScreen(void);
   Camera* getRadarCamera(void);
+  Sound* getSound(void);
   
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
   void update();
@@ -202,6 +179,7 @@ private:
   Camera *mRadarCamera;
   Lines *mLines;  
   Rain *mRain;
+  Sound* mSound;
   
   ControlVisualiser portEngineVisual;
   ControlVisualiser stbdEngineVisual;
@@ -209,7 +187,7 @@ private:
   ControlVisualiser stbdAzimuthThrottleVisual;
   ControlVisualiser wheelVisual;
   GUIMain* guiMain;
-  Sound* sound;
+  
   bool isMouseDown; //Updated by the event receiver, used by radar
   bool moveViewWithPrimary;
   ManOverboard manOverboard;
@@ -219,8 +197,8 @@ private:
   irr::u32 previousTime; //Computer clock time
   float deltaTime;
   float mScenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
-  uint64_t scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-  uint64_t mAbsoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
+  unsigned long long scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+  unsigned long long mAbsoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
 
   //utility function to check for collision
   bool checkOwnShipCollision();

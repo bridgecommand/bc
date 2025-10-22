@@ -48,7 +48,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
   mModel = aModel;
   mDevice = aDev;
   mModelParams = aModelParams;
-  mShowDebugData = aModel->debugModeOn();
+  mShowDebugData = aModel->getModelParameters().debugMode;
 
   // Load from ownShip.ini file
   std::string ownShipName = aOwnShipData.name;
