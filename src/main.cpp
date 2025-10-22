@@ -873,7 +873,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, false, false, model.hasTurnIndicator(), showCollided, vr3dMode);
+    guiMain.load(device, &language, &logMessages, &model, hideEngineAndRudder, model.getOwnShip()->hasDepthSounder(),model.getOwnShip()->getMaxSounderDepth(),model.getOwnShip()->hasGPS(), showTideHeight, false, false, model.getOwnShip()->hasTurnIndicator(), showCollided, vr3dMode);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
@@ -906,7 +906,7 @@ int main(int argc, char ** argv)
     
         if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
-        model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
+        model.getRadarCalculation()->setRadarDisplayRadius(guiMain.getRadarPixelRadius());
         guiMain.hide2dInterface();
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
@@ -977,7 +977,7 @@ int main(int argc, char ** argv)
                 } else {
                     driver->setViewPort(guiMain.getSmallRadarRect());
                 }
-                model.setRadarCameraActive();
+                model.getRadarCamera()->setActive();
                 smgr->drawAll();
                 model.getWater()->setVisible(true); //Re-show the water
             }

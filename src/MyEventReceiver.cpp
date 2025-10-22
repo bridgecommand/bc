@@ -640,7 +640,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_ADD_LINE_BUTTON)
             {
                 linesMode = 1;
-                model->addLine();
+                model->getLines()->addLine(model);
                 gui->setLinesControlsText("Click in 3d view to set start position for line (on own ship)"); // TODO: Add translation
             }
 
@@ -1720,7 +1720,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 
             if (linesMode == 2)
             {
-                irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                irr::f32 nominalMass = model->getOwnShip()->getEstimatedDisplacement();
                 if (nodeType == 2) {
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
                     nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
@@ -1740,7 +1740,7 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 // special case for 'anchoring', set end node at sea bed under the starting node
                 if (gui->getAnchorLine()) {
                     
-                    irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                    irr::f32 nominalMass = model->getOwnShip()->getEstimatedDisplacement();
 
                     // Create a 'contact node' at the terrain height below the anchor point
                     irr::core::vector3df intersection = contactNode->getAbsolutePosition();

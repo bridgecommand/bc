@@ -328,7 +328,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
         lineEnd->updateAbsolutePosition();
 
         // Make sure own ship is up to date
-        model->getOwnShipSceneNode()->updateAbsolutePosition();
+        model->getOwnShip()->getSceneNode()->updateAbsolutePosition();
 
         irr::core::vector3df startPosAbs = lineStart->getAbsolutePosition();
         irr::core::vector3df endPosAbs = lineEnd->getAbsolutePosition();
@@ -414,7 +414,7 @@ void Line::update(irr::f32 deltaTime) // Calculate the force and torque acting o
         // Transform positions to the own ship (start) local coordinate system
         irr::core::vector3df lineStartLocal;
         irr::core::vector3df lineEndLocal;
-        irr::core::matrix4 worldToLocal = model->getOwnShipSceneNode()->getAbsoluteTransformation();
+        irr::core::matrix4 worldToLocal = model->getOwnShip()->getSceneNode()->getAbsoluteTransformation();
         worldToLocal.makeInverse();
 
         if ((startNodeType == 1) || (endNodeType == 1)) {

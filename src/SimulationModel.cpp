@@ -56,6 +56,10 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mOwnShip = new OwnShip();
   mCamera = new Camera();
   mRadarCalculation = new RadarCalculation();
+  mRadarScreen = new RadarScreen();
+  mRadarCamera = new Camera();
+  mLines = new Lines();
+  mRain = new Rain();
   
   manOverboard.load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
   
@@ -161,7 +165,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mSolver.Init(mOwnShip);
   
   //Load rain
-  rain.load(smgr, mCamera->getSceneNode(), device, mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mOwnShip->getLength(), mOwnShip->getBreadth());
+  mRain->load(smgr, mCamera->getSceneNode(), device, mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mOwnShip->getLength(), mOwnShip->getBreadth());
 
   //add water
   bool waterReflection = true;
@@ -229,7 +233,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //wheelVisual.load(smgr, mOwnShip->getSceneNode(), mOwnShip->getWheelControlPosition(), mOwnShip->getWheelControlScale() / mOwnShip->getScaleFactor(), 2, 1); // 1 = wheel
 
   //make a radar screen, setting parent and offset from own ship
-  radarScreen.load(smgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
+  mRadarScreen->load(smgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
 
   //make radar image - one for the background render, and one with any 2d drawing on top
   //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -252,11 +256,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   float radarTilt = mOwnShip->getRadarTilt();
   radarViews.push_back(mOwnShip->getRadarPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*radarTilt)*mOwnShip->getRadarSize(),-0.5*cos(irr::core::DEGTORAD*radarTilt)*mOwnShip->getRadarSize()));
   radarViewsLookDown.push_back(false);
-  radarCamera.load(smgr, device->getLogger(),mOwnShip->getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
-  radarCamera.setLookUp(-1.0 * radarTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
-  radarCamera.updateViewport(1.0);
-  radarCamera.setNearValue(0.8*0.5*mOwnShip->getRadarSize());
-  radarCamera.setFarValue(1.2*0.5*mOwnShip->getRadarSize());
+  mRadarCamera->load(smgr, device->getLogger(),mOwnShip->getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
+  mRadarCamera->setLookUp(-1.0 * radarTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
+  mRadarCamera->updateViewport(1.0);
+  mRadarCamera->setNearValue(0.8*0.5*mOwnShip->getRadarSize());
+  mRadarCamera->setFarValue(1.2*0.5*mOwnShip->getRadarSize());
   
   //Hide the man overboard model
   manOverboard.setVisible(false);
@@ -545,6 +549,38 @@ RadarCalculation* SimulationModel::getRadarCalculation(void)
     return NULL;
 }
 
+RadarScreen* SimulationModel::getRadarScreen(void)
+{
+ if(NULL != mRadarScreen)
+    return mRadarScreen;
+  else
+    return NULL;
+}
+
+Camera* SimulationModel::getRadarCamera(void)
+{
+ if(NULL != mRadarCamera)
+    return mRadarCamera;
+  else
+    return NULL;
+}
+
+Lines* SimulationModel::getLines(void)
+{
+ if(NULL != mLines)
+    return mLines;
+  else
+    return NULL;
+}
+
+Rain* SimulationModel::getRain(void)
+{
+ if(NULL != mRain)
+    return mRain;
+  else
+    return NULL;
+}
+
 
 void SimulationModel::setAccelerator(float accelerator)
 {
@@ -578,17 +614,6 @@ void SimulationModel::setAlarm(bool alarmState)
   } else {
     sound->setVolumeAlarm(0.0);
   }
-}
-
-void SimulationModel::setRadarCameraActive()
-{
-  radarCamera.setActive();
-}
-  
-void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
-{
-  mRadarCalculation->setRadarDisplayRadius(radiusPx);
-  radarScreen.setRadarDisplayRadius(radiusPx);
 }
 
 void SimulationModel::addManualPoint(bool newContact)
@@ -705,45 +730,16 @@ void SimulationModel::setManOverboardPos(float positionX, float positionZ)
   manOverboard.setPosition(irr::core::vector3df(positionX ,0,positionZ ));
 }
 
-bool SimulationModel::hasGPS() const
-{
-  return mOwnShip->hasGPS();
-}
-
-bool SimulationModel::hasDepthSounder() const
-{
-  return mOwnShip->hasDepthSounder();
-}
-
-
-bool SimulationModel::hasTurnIndicator() const
-{
-  return mOwnShip->hasTurnIndicator();
-}
 
 bool SimulationModel::debugModeOn() const
 {
   return mModelParameters.debugMode;
 }
 
-float SimulationModel::getOwnShipMass() const
-{
-  return mOwnShip->getShipMass();
-}
-
-float SimulationModel::getOwnShipMassEstimate() const
-{
-  return mOwnShip->getEstimatedDisplacement();
-}
 
 float SimulationModel::getOtherShipMassEstimate(int number) const
 {
   return mOtherShips->getEstimatedDisplacement(number);
-}
-
-float SimulationModel::getMaxSounderDepth() const
-{
-  return mOwnShip->getMaxSounderDepth();
 }
 
 void SimulationModel::startHorn() {
@@ -862,11 +858,6 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<flo
   return contactPointNode;
 }
 
-irr::scene::ISceneNode* SimulationModel::getOwnShipSceneNode()
-{
-  return (irr::scene::ISceneNode*)mOwnShip->getSceneNode();
-}
-
 irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
 {
   return mOtherShips->getSceneNode(number);
@@ -876,16 +867,6 @@ irr::scene::ISceneNode* SimulationModel::getOtherShipSceneNode(int number)
 irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
 {
   return landObjects.getSceneNode(number);
-}
-
-void SimulationModel::addLine() // Add a line, which will be undefined
-{
-  lines.addLine(this);
-}
-
-Lines* SimulationModel::getLines() // Get pointer to lines object
-{
-  return &lines;
 }
 
 void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
@@ -934,8 +915,9 @@ void SimulationModel::update()
 
 
     //Ensure we have the right radar screen resolution
-    setRadarDisplayRadius(guiMain->getRadarPixelRadius());
-
+    mRadarCalculation->setRadarDisplayRadius(guiMain->getRadarPixelRadius());
+    mRadarScreen->setRadarDisplayRadius(guiMain->getRadarPixelRadius());
+    
   }{ IPROF("Update tide");
 
     //Update tide height and tidal stream here.
@@ -953,7 +935,7 @@ void SimulationModel::update()
   }{ IPROF("Update rain");
     //update rain
     //rain.setIntensity(rainIntensity);
-    rain.update(mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, getRain());
+    mRain->update(mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mRainIntensity);
 
   }{ IPROF("Update other ships");
     //update other ship positions etc
@@ -969,7 +951,7 @@ void SimulationModel::update()
 
   } { IPROF("Update lines");
     //update all lines, ready to be used for own ship force
-    lines.update(deltaTime);
+    mLines->update(deltaTime);
   }{ IPROF("Update own ship");
 
     mSolver.SolveRk4(mOwnShip->getEta(), mOwnShip->getMu(), deltaTime);
@@ -978,7 +960,7 @@ void SimulationModel::update()
 
     //std::cout << "eta : " << mOwnShip->getEta() << " - mu : " << mOwnShip->getMu();
     //update own ship
-    mOwnShip->update(deltaTime, mScenarioTime, mTideHeight, mWeather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
+    mOwnShip->update(deltaTime, mScenarioTime, mTideHeight, mWeather, mLines->getOverallForceLocal(), mLines->getOverallTorqueLocal());
 
     if (mOwnShip->getNumberProp() > 1)
       sound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
@@ -1021,12 +1003,12 @@ void SimulationModel::update()
       }
       mRadarCalculation->update(radarImageChosen,radarImageOverlaidChosen,mTerrain,mOwnShip,mBuoys,mOtherShips,mWeather,mRainIntensity,mTideHeight,deltaTime,mAbsoluteTime,cursorPositionRadar,isMouseDown);
     }{ IPROF("Update radar screen");
-      radarScreen.update(radarImageOverlaidChosen);
+      mRadarScreen->update(radarImageOverlaidChosen);
     }{ IPROF("Update radar camera");
-      radarCamera.update();
+      mRadarCamera->update();
     }
   } else {
-    radarScreen.getSceneNode()->setVisible(false);
+    mRadarScreen->getSceneNode()->setVisible(false);
   }
   { IPROF("Check if paused ");
     //check if paused
@@ -1307,7 +1289,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			if(dataMasterCmds->lines.lineStartType == 1)
 			  {
 			    // Own ship
-			    startParent = getOwnShipSceneNode();
+			    startParent = mOwnShip->getSceneNode();
 			  }
 			else if(dataMasterCmds->lines.lineStartType == 2)
 			  {
@@ -1333,7 +1315,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			if(dataMasterCmds->lines.lineEndType == 1)
 			  {
 			    // Own ship
-			    endParent = getOwnShipSceneNode();
+			    endParent = mOwnShip->getSceneNode();
 			  }
 			else if(dataMasterCmds->lines.lineEndType == 2)
 			  {

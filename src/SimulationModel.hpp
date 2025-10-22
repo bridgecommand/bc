@@ -94,9 +94,7 @@ public:
   float getApparentWindSpd(void) const;
 
   void setAlarm(bool alarmState);
-  void setRadarCameraActive(void);
 
-  void setRadarDisplayRadius(irr::u32 radiusPx);
   void addManualPoint(bool newContact);
   
   void setMouseDown(bool isMouseDown);
@@ -115,15 +113,7 @@ public:
   float getManOverboardPosZ() const;
   void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
   void setManOverboardPos(float positionX, float positionZ);   //To be used directly, eg when in secondary display mode only
-  bool hasGPS() const;
-  bool hasDepthSounder() const;
-  float getMaxSounderDepth() const;
-  bool hasBowThruster() const;
-  bool hasSternThruster() const;
-  bool hasTurnIndicator() const;
   bool debugModeOn() const;
-  float getOwnShipMass() const;
-  float getOwnShipMassEstimate() const;
   float getOtherShipMassEstimate(int number) const;
 
   bool getMoveViewWithPrimary() const;
@@ -146,14 +136,13 @@ public:
 
   irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode);
     
-  irr::scene::ISceneNode* getOwnShipSceneNode();
   irr::scene::ISceneNode* getOtherShipSceneNode(int number);
 
   irr::scene::ISceneNode* getLandObjectSceneNode(int number);
 
-  void addLine(); // Add a line, which will be undefined
-    
-  Lines* getLines(); // Get pointer to lines object
+
+  Rain* getRain(void); 
+  Lines* getLines(void); 
   OwnShip* getOwnShip(void);
   Terrain* getTerrain(void);
   Water* getWater(void);
@@ -162,6 +151,8 @@ public:
   OtherShips* getOtherShips(void);
   Camera* getCamera(void);
   RadarCalculation* getRadarCalculation(void);
+  RadarScreen* getRadarScreen(void);
+  Camera* getRadarCamera(void);
   
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
   void update();
@@ -193,7 +184,7 @@ private:
   float currentZoom; // Zoom currently in use
   float zoomLevel; // Zoom level that should be used if binos are on
 
-  Camera radarCamera;
+  
   LandObjects landObjects;
   LandLights landLights;
   Light light;
@@ -207,11 +198,11 @@ private:
   Tide *mTide;
   Terrain *mTerrain;
   RadarCalculation *mRadarCalculation;
+  RadarScreen *mRadarScreen;
+  Camera *mRadarCamera;
+  Lines *mLines;  
+  Rain *mRain;
   
-  Rain rain;
-  Lines lines;
-  
-  RadarScreen radarScreen;
   ControlVisualiser portEngineVisual;
   ControlVisualiser stbdEngineVisual;
   ControlVisualiser portAzimuthThrottleVisual;
