@@ -798,7 +798,7 @@ std::string& Message::KeepAlive(void)
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getNumber()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getManOverboardVisible()? 1 : 0));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getVisible()? 1 : 0));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getNumberOfLines()));
   msg.append("#");
@@ -850,9 +850,9 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //5 MOB
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getManOverboardPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getPosX()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getManOverboardPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getPosZ()));
   msg.append("#");
 
   //6 Loop

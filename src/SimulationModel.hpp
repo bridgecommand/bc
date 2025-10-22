@@ -97,14 +97,6 @@ public:
   std::string getScenarioName() const;
   std::string getWorldName() const;
   std::string getWorldReadme() const;
-  void releaseManOverboard();
-  void retrieveManOverboard();
-  bool getManOverboardVisible() const;
-  float getManOverboardPosX() const;
-  float getManOverboardPosZ() const;
-  void setManOverboardVisible(bool visible); //To be used directly, eg when in secondary display mode only
-  void setManOverboardPos(float positionX, float positionZ);   //To be used directly, eg when in secondary display mode only
-  bool debugModeOn() const;
 
   bool getMoveViewWithPrimary() const;
   void setMoveViewWithPrimary(bool moveView);
@@ -130,6 +122,7 @@ public:
   RadarScreen* getRadarScreen(void);
   Camera* getRadarCamera(void);
   Sound* getSound(void);
+  ManOverboard* getMoB(void);
   
   void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
   void update();
@@ -180,6 +173,8 @@ private:
   Lines *mLines;  
   Rain *mRain;
   Sound* mSound;
+  ManOverboard *mManOverboard;
+
   
   ControlVisualiser portEngineVisual;
   ControlVisualiser stbdEngineVisual;
@@ -190,7 +185,6 @@ private:
   
   bool isMouseDown; //Updated by the event receiver, used by radar
   bool moveViewWithPrimary;
-  ManOverboard manOverboard;
 
   //Simulation time handling
   irr::u32 currentTime; //Computer clock time

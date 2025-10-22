@@ -913,7 +913,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     model->getCamera()->lookStbd();
                     break;
                 case irr::KEY_KEY_M:
-                    model->retrieveManOverboard();
+		  model->getMoB()->retrieveManOverboard();
                     break;
                 default:
                     // don't do anything
@@ -1010,7 +1010,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
                 case irr::KEY_KEY_M:
-                    model->releaseManOverboard();
+		  model->getMoB()->releaseManOverboard(model->getOwnShip()->getPosition(), model->getOwnShip()->getBreadth(), model->getOwnShip()->getHeading());
                     break;
 
                 // Keyboard control of engines

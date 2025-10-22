@@ -60,8 +60,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mRadarCamera = new Camera();
   mLines = new Lines();
   mRain = new Rain();
+  mManOverboard = new ManOverboard();
   
-  manOverboard.load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
+  mManOverboard->load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
   
   device = dev;
   smgr = scene;
@@ -263,7 +264,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mRadarCamera->setFarValue(1.2*0.5*mOwnShip->getRadarSize());
   
   //Hide the man overboard model
-  manOverboard.setVisible(false);
+  mManOverboard->setVisible(false);
 
   //store time
   previousTime = device->getTimer()->getTime();
@@ -391,6 +392,13 @@ Sound* SimulationModel::getSound(void)
     return NULL;
 }
 
+ManOverboard* SimulationModel::getMoB(void)
+{
+ if(NULL != mManOverboard)
+    return mManOverboard;
+  else
+    return NULL;
+}
 
 void SimulationModel::setAccelerator(float accelerator)
 {
@@ -479,63 +487,6 @@ std::string SimulationModel::getWorldReadme() const
 {
   return worldModelReadmeText;
 }
-
-void SimulationModel::releaseManOverboard()
-{
-  //Only release/update if not already released
-  if (!manOverboard.getVisible()) {
-    manOverboard.setVisible(true);
-    irr::core::vector3df ownShipPos = mOwnShip->getPosition();
-    irr::core::vector3df relativePosition;
-    relativePosition.Y = 0;
-    //Put randomly on port or starboard side of the ship
-    if (rand() > RAND_MAX/2) {
-      relativePosition.X = mOwnShip->getBreadth() *  0.6 * cos(mOwnShip->getHeading()*irr::core::DEGTORAD);
-      relativePosition.Z = mOwnShip->getBreadth() * -0.6 * sin(mOwnShip->getHeading()*irr::core::DEGTORAD);
-      //PositionEntity(mob,EntityX( ship_parent )+(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )-(OwnShipWidth#*0.6)*Sin(angle#), True)
-    } else {
-      relativePosition.X = mOwnShip->getBreadth() * -0.6 * cos(mOwnShip->getHeading()*irr::core::DEGTORAD);
-      relativePosition.Z = mOwnShip->getBreadth() *  0.6 * sin(mOwnShip->getHeading()*irr::core::DEGTORAD);
-      //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
-    }
-    manOverboard.setPosition(ownShipPos + relativePosition);
-  }
-
-}
-
-void SimulationModel::retrieveManOverboard()
-{
-  manOverboard.setVisible(false);
-}
-
-bool SimulationModel::getManOverboardVisible() const
-{
-  return manOverboard.getVisible();
-}
-
-float SimulationModel::getManOverboardPosX() const
-{
-  return manOverboard.getPosition().X ;
-}
-
-float SimulationModel::getManOverboardPosZ() const
-{
-  return manOverboard.getPosition().Z ;
-}
-
-
-void SimulationModel::setManOverboardVisible(bool visible)
-{
-  //To be used directly, eg when in secondary display mode only
-  manOverboard.setVisible(visible);
-}
-
-void SimulationModel::setManOverboardPos(float positionX, float positionZ)
-{
-  //To be used directly, eg when in secondary display mode only
-  manOverboard.setPosition(irr::core::vector3df(positionX ,0,positionZ ));
-}
-
 
 
 bool SimulationModel::getMoveViewWithPrimary() const {
@@ -721,7 +672,7 @@ void SimulationModel::update()
   
   }{ IPROF("Update MOB");
     //update man overboard
-    manOverboard.update(deltaTime, mTideHeight);
+    mManOverboard->update(deltaTime, mTideHeight);
 
   }{ IPROF("Check for collisions");
     //Check for collisions
@@ -893,8 +844,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sMob *dataMob = (sMob*)aDataCmd;
 
-        if(dataMob->mobMode==1) releaseManOverboard();
-	else if(dataMob->mobMode==-1) retrieveManOverboard();
+        if(dataMob->mobMode==1) mManOverboard->releaseManOverboard(mOwnShip->getPosition(), mOwnShip->getBreadth(), mOwnShip->getHeading());
+	else if(dataMob->mobMode==-1) mManOverboard->retrieveManOverboard();
 
 	break;
       }
@@ -992,11 +943,11 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	/************************************************************************/	
 	if(dataMasterCmds->mob.isMob)
 	  {
-	    setManOverboardVisible(true);
-	    setManOverboardPos(dataMasterCmds->mob.posX, dataMasterCmds->mob.posZ);
+	    mManOverboard->setVisible(true);
+	    mManOverboard->setPos(dataMasterCmds->mob.posX, dataMasterCmds->mob.posZ);
 	  }
 	else
-	  setManOverboardVisible(false);
+	  mManOverboard->setVisible(false);
 
 	/************************************************************************/
 	if (dataMasterCmds->lines.lineNbr > 0)
