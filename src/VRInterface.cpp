@@ -1242,8 +1242,8 @@ int VRInterface::update() {
 	}
 
 	// Set controller positions
-	irr::core::vector3df baseViewPosition = model->getCameraBasePosition();
-	irr::core::matrix4 baseViewRotation = model->getCameraBaseRotation();
+	irr::core::vector3df baseViewPosition = model->getCamera()->getBasePosition();
+	irr::core::matrix4 baseViewRotation = model->getCamera()->getBaseRotation();
 	// Transform positions based on orientation of the camera's parent
 	irr::core::vector3df transformedVrLeftGripPosition = vrLeftGripPosition;
 	irr::core::vector3df transformedVrRightGripPosition = vrRightGripPosition;

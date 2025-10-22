@@ -126,7 +126,8 @@ private:
     void handleMooringLines(irr::core::line3df rayForLines);
 
     SimulationModel* model;
-    GUIMain* gui;
+
+  GUIMain* gui;
     VRInterface* vrInterface;
     Network* net;
     bool leftMouseDown;

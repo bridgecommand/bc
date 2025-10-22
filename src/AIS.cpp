@@ -98,7 +98,7 @@ std::tuple<std::string, int> AIS::generateClassAReport(SimulationModel* model, i
             }
             if (collision) mmsi++;
         }
-        model->setOtherShipMMSI(ship, mmsi);
+        model->getOtherShips()->setMMSI(ship, mmsi);
     }
 
     // AIS speed over ground is in 0.1-knot increments, capped to 102.2 knots

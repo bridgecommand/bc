@@ -911,14 +911,14 @@ int main(int argc, char ** argv)
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
         guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
-        model.setArpaMode(2);
+        model.getRadarCalculation()->setArpaMode(2);
     }
     irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {
-        model.setRadarCourseUp();
+        model.getRadarCalculation()->setCourseUp();
     }
     if (radarStartupMode==2) {
-        model.setRadarHeadUp();
+        model.getRadarCalculation()->setHeadUp();
 	}
 
     //set up timing for NMEA
@@ -960,7 +960,7 @@ int main(int argc, char ** argv)
     }
     { IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarSurroundColour());
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarCalculation()->getRadarSurroundColour());
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();
@@ -968,10 +968,10 @@ int main(int argc, char ** argv)
         }
         bool fullScreenRadar = guiMain.getLargeRadar();
         { IPROF("Render radar");
-	         if (model.isRadarOn()) {
+	         if (model.getRadarCalculation()->isRadarOn()) {
             //radar view portion
             if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
-                model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+	      model.getWater()->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
                 if (fullScreenRadar) {
                     driver->setViewPort(guiMain.getLargeRadarRect());
                 } else {
@@ -979,7 +979,7 @@ int main(int argc, char ** argv)
                 }
                 model.setRadarCameraActive();
                 smgr->drawAll();
-                model.setWaterVisible(true); //Re-show the water
+                model.getWater()->setVisible(true); //Re-show the water
             }
 	    }
 
@@ -989,17 +989,17 @@ int main(int argc, char ** argv)
         }{ IPROF("Render");
 
         //3d view portion
-        model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
+	  model.getCamera()->setActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
         // Normal rendering
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
-                model.updateViewport(aspect3d);
+                model.getCamera()->updateViewport(aspect3d);
             }
             else {
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
-                model.updateViewport(aspect);
+                model.getCamera()->updateViewport(aspect);
             }
             
             smgr->drawAll();
@@ -1011,7 +1011,7 @@ int main(int argc, char ** argv)
             
             // Set aspect ratio
             irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
-            model.updateViewport(aspectRatioVR);
+            model.getCamera()->updateViewport(aspectRatioVR);
 
             // Process events
             int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?

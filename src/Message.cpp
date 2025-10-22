@@ -882,7 +882,7 @@ std::string& Message::KeepAlive(void)
   msg.append("0,0,0#"); //Fixme: Mob details
 
   //9 View number
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getCameraView()));
+  msg.append(Utilities::lexical_cast<std::string>(mModel->getCamera()->getView()));
   msg.append("#");
 
   //10 Multiplayer request here (Not used)

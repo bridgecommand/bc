@@ -167,13 +167,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && leftMouseDown)
         {
             // Check if focus in on a gui element
-            irr::gui::IGUIElement *focussedElement;
+            irr::gui::IGUIElement *focussedElement;	    
             focussedElement = device->getGUIEnvironment()->getFocus();
             if (!focussedElement)
             {
                 irr::s32 deltaX = event.MouseInput.X - mouseClickX;
                 irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
-                model->changeLookPx(deltaX, deltaY);
+		float proportionalX = deltaX/(float)device->getVideoDriver()->getScreenSize().Width;
+		float proportionalY = deltaY/(float)device->getVideoDriver()->getScreenSize().Width;
+		model->getCamera()->lookChange(proportionalX,proportionalY);
             }
             // Store for next time
             mouseClickX = event.MouseInput.X;
@@ -220,7 +222,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
                 gui->setARPAList(arpaSelected);
                 // Set selected ID via model.
-                model->setArpaListSelection(arpaSelected);
+                model->getRadarCalculation()->setArpaListSelection(arpaSelected);
             }
         }
 
@@ -238,7 +240,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 gui->setARPAList(arpaSelected);
 
                 // Set selected ID via model.
-                model->setArpaListSelection(arpaSelected);
+                model->getRadarCalculation()->setArpaListSelection(arpaSelected);
             }
         }
 
@@ -341,15 +343,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RADAR_GAIN_SCROLL_BAR)
             {
-                model->setRadarGain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getRadarCalculation()->setGain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_RADAR_CLUTTER_SCROLL_BAR)
             {
-                model->setRadarClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getRadarCalculation()->setClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_RADAR_RAIN_SCROLL_BAR)
             {
-                model->setRadarRain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getRadarCalculation()->setRainClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_WEATHER_SCROLL_BAR)
             {
@@ -427,30 +429,30 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RADAR_ONOFF_BUTTON)
             {
-                model->toggleRadarOn();
+                model->getRadarCalculation()->toggleRadarOn();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_BUTTON)
             {
-                model->increaseRadarRange();
+                model->getRadarCalculation()->increaseRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_BUTTON)
             {
-                model->decreaseRadarRange();
+                model->getRadarCalculation()->decreaseRange();
             }
 
             if (id == GUIMain::GUI_ID_BIG_RADAR_BUTTON)
             {
                 gui->setLargeRadar(true);
-                model->setRadarDisplayRadius(gui->getRadarPixelRadius());
+                model->getRadarCalculation()->setRadarDisplayRadius(gui->getRadarPixelRadius());
                 gui->hide2dInterface();
             }
 
             if (id == GUIMain::GUI_ID_SMALL_RADAR_BUTTON)
             {
                 gui->setLargeRadar(false);
-                model->setRadarDisplayRadius(gui->getRadarPixelRadius());
+                model->getRadarCalculation()->setRadarDisplayRadius(gui->getRadarPixelRadius());
                 gui->show2dInterface();
             }
 
@@ -471,67 +473,67 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_LEFT_BUTTON)
             {
-                model->decreaseRadarEBLBrg();
+                model->getRadarCalculation()->decreaseEBLBrg();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_RIGHT_BUTTON)
             {
-                model->increaseRadarEBLBrg();
+                model->getRadarCalculation()->increaseEBLBrg();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_UP_BUTTON)
             {
-                model->increaseRadarEBLRange();
+                model->getRadarCalculation()->increaseEBLRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_DOWN_BUTTON)
             {
-                model->decreaseRadarEBLRange();
+                model->getRadarCalculation()->decreaseEBLRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_X_BUTTON)
             {
-                model->increaseRadarXCursor();
+	      model->getRadarCalculation()->increaseCursorRangeXNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_X_BUTTON)
             {
-                model->decreaseRadarXCursor();
+                model->getRadarCalculation()->decreaseCursorRangeXNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_Y_BUTTON)
             {
-                model->increaseRadarYCursor();
+	      model->getRadarCalculation()->increaseCursorRangeYNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_Y_BUTTON)
             {
-                model->decreaseRadarYCursor();
+	      model->getRadarCalculation()->decreaseCursorRangeYNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_COLOUR_BUTTON)
             {
-                model->changeRadarColourChoice();
+                model->getRadarCalculation()->changeRadarColourChoice();
             }
 
             // Radar mode buttons
             if (id == GUIMain::GUI_ID_RADAR_NORTH_BUTTON)
             {
-                model->setRadarNorthUp();
+                model->getRadarCalculation()->setNorthUp();
             }
             if (id == GUIMain::GUI_ID_RADAR_COURSE_BUTTON)
             {
-                model->setRadarCourseUp();
+                model->getRadarCalculation()->setCourseUp();
             }
             if (id == GUIMain::GUI_ID_RADAR_HEAD_BUTTON)
             {
-                model->setRadarHeadUp();
+                model->getRadarCalculation()->setHeadUp();
             }
 
             // Manual/MARPA acquire/update
             if (id == GUIMain::GUI_ID_MANUAL_SCAN_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
                     model->addManualPoint(false);
                 }
@@ -540,26 +542,26 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_MANUAL_NEW_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
                     model->addManualPoint(true);
                 }
-                else if (model->getArpaMode() == 1)
+                else if (model->getRadarCalculation()->getArpaMode() == 1)
                 {
-                    model->trackTargetFromCursor();
+                    model->getRadarCalculation()->trackTargetFromCursor();
                 }
                 // TODO: Should we allow user to trigger manual tracking in full ARPA?
             }
 
             if (id == GUIMain::GUI_ID_MANUAL_CLEAR_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->clearManualPoints();
+                    model->getRadarCalculation()->clearManualPoints();
                 }
-                else if (model->getArpaMode() == 1)
+                else if (model->getRadarCalculation()->getArpaMode() == 1)
                 {
-                    model->clearTargetFromCursor();
+                    model->getRadarCalculation()->clearTargetFromCursor();
                 }
                 // TODO: Should we allow user to manually stop tracking in full ARPA?
                 // And should this allow clearing of manual target if acquired in manual mode, but switched to MARPA/ARPA
@@ -649,7 +651,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_CHANGE_VIEW_BUTTON)
             {
-                model->changeView();
+	      model->getCamera()->changeView();
             }
 
         } // Button clicked
@@ -661,7 +663,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // ARPA on/off options
                 irr::s32 boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
-                model->setArpaMode(boxState);
+                model->getRadarCalculation()->setArpaMode(boxState);
 
                 // Set the linked checkbox (big/small radar window)
                 gui->setARPAComboboxes(boxState);
@@ -672,11 +674,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::s32 selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 if (selected == 0)
                 {
-                    model->setRadarARPATrue();
+                    model->getRadarCalculation()->setRadarARPATrue();
                 }
                 else if (selected == 1)
                 {
-                    model->setRadarARPARel();
+                    model->getRadarCalculation()->setRadarARPARel();
                 }
 
                 // Set both linked inputs - brute force
@@ -702,7 +704,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (value > 0 && value <= 60)
             {
-                model->setRadarARPAVectors(value);
+                model->getRadarCalculation()->setRadarARPAVectors(value);
             }
             else
             {
@@ -756,10 +758,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::gui::IGUIElement *piRngBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_RANGE_BOX, true);
                 if (piBrg && piRng && piBrgBig && piRngBig)
                 {
-                    piBrg->setText(f32To3dp(model->getPIbearing(selectedPI), true).c_str());
-                    piBrgBig->setText(f32To3dp(model->getPIbearing(selectedPI), true).c_str());
-                    piRng->setText(f32To3dp(model->getPIrange(selectedPI), true).c_str());
-                    piRngBig->setText(f32To3dp(model->getPIrange(selectedPI), true).c_str());
+                    piBrg->setText(f32To3dp(model->getRadarCalculation()->getPIbearing(selectedPI), true).c_str());
+                    piBrgBig->setText(f32To3dp(model->getRadarCalculation()->getPIbearing(selectedPI), true).c_str());
+                    piRng->setText(f32To3dp(model->getRadarCalculation()->getPIrange(selectedPI), true).c_str());
+                    piRngBig->setText(f32To3dp(model->getRadarCalculation()->getPIrange(selectedPI), true).c_str());
                 }
             }
         }
@@ -823,7 +825,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                         irr::f32 rangeChosen = Utilities::lexical_cast<irr::f32>(rngString);
 
                         // Apply to model
-                        model->setPIData(selectedPI, bearingChosen, rangeChosen);
+                        model->getRadarCalculation()->setPIData(selectedPI, bearingChosen, rangeChosen);
                     }
                 }
             }
@@ -847,15 +849,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Move camera
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->moveCameraForwards();
+                    model->getCamera()->moveForwards();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->moveCameraBackwards();
+                    model->getCamera()->moveBackwards();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->toggleFrozenCamera();
+                    model->getCamera()->toggleFrozen();
                     break;
                 default:
                     // don't do anything
@@ -871,15 +873,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Camera look
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStepLeft();
+                    model->getCamera()->lookStepLeft();
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStepRight();
+                    model->getCamera()->lookStepRight();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->changeView();
+                    model->getCamera()->changeView();
                     model->setMoveViewWithPrimary(false); // Don't allow the view to change automatically after this
                     break;
                 default:
@@ -896,19 +898,19 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Camera look
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookAhead();
+                    model->getCamera()->lookAhead();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookAstern();
+                    model->getCamera()->lookAstern();
                     break;
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookPort();                        // DEENOV22 TODO make all screens lookPort
+                    model->getCamera()->lookPort();                        // DEENOV22 TODO make all screens lookPort
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStbd();
+                    model->getCamera()->lookStbd();
                     break;
                 case irr::KEY_KEY_M:
                     model->retrieveManOverboard();
@@ -975,23 +977,23 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Camera look
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookUp();
+                    model->getCamera()->lookUp();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookDown();
+                    model->getCamera()->lookDown();
                     break;
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookLeft();
+                    model->getCamera()->lookLeft();
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookRight();
+                    model->getCamera()->lookRight();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->changeView();
+                    model->getCamera()->changeView();
                     model->setMoveViewWithPrimary(true); // Allow the view to change automatically after this
                     break;
 
@@ -1255,7 +1257,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonChangeView, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeView, previousButtonState))
             {
-                model->changeView();
+                model->getCamera()->changeView();
                 model->setMoveViewWithPrimary(true); // Allow the view to change automatically after this
             }
         }
@@ -1263,7 +1265,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView, previousButtonState))
             {
-                model->changeView();
+                model->getCamera()->changeView();
                 model->setMoveViewWithPrimary(false); // Don't allow the view to change automatically after this
             }
         }
@@ -1272,7 +1274,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookStepLeft, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepLeft, previousButtonState))
             {
-                model->lookStepLeft();
+                model->getCamera()->lookStepLeft();
             }
         }
         // Look step right
@@ -1280,7 +1282,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookStepRight, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepRight, previousButtonState))
             {
-                model->lookStepRight();
+                model->getCamera()->lookStepRight();
             }
         }
         // Decrease bow thrust
@@ -1371,11 +1373,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookLeft, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookLeft, previousButtonState))
             {
-                model->setPanSpeed(-5);
+                model->getCamera()->setPanSpeed(-5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookLeft, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookLeft, previousButtonState))
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
         }
 
@@ -1384,11 +1386,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookRight, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookRight, previousButtonState))
             {
-                model->setPanSpeed(5);
+                model->getCamera()->setPanSpeed(5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookRight, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookRight, previousButtonState))
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
         }
 
@@ -1397,11 +1399,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookUp, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookUp, previousButtonState))
             {
-                model->setVerticalPanSpeed(5);
+                model->getCamera()->setVerticalPanSpeed(5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookUp, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookUp, previousButtonState))
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
         }
 
@@ -1410,11 +1412,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookDown, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookDown, previousButtonState))
             {
-                model->setVerticalPanSpeed(-5);
+                model->getCamera()->setVerticalPanSpeed(-5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookDown, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookDown, previousButtonState))
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
         }
 
@@ -1523,38 +1525,38 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookLeft && previousJoystickPOV != joystickSetup.joystickPOVLookLeft)
             {
-                model->setPanSpeed(-5);
+                model->getCamera()->setPanSpeed(-5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookLeft && previousJoystickPOV == joystickSetup.joystickPOVLookLeft)
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookRight && previousJoystickPOV != joystickSetup.joystickPOVLookRight)
             {
-                model->setPanSpeed(5);
+                model->getCamera()->setPanSpeed(5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookRight && previousJoystickPOV == joystickSetup.joystickPOVLookRight)
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookUp && previousJoystickPOV != joystickSetup.joystickPOVLookUp)
             {
-                model->setVerticalPanSpeed(5);
+                model->getCamera()->setVerticalPanSpeed(5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookUp && previousJoystickPOV == joystickSetup.joystickPOVLookUp)
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookDown && previousJoystickPOV != joystickSetup.joystickPOVLookDown)
             {
-                model->setVerticalPanSpeed(-5);
+                model->getCamera()->setVerticalPanSpeed(-5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookDown && previousJoystickPOV == joystickSetup.joystickPOVLookDown)
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
             previousJoystickPOV = event.JoystickEvent.POV; // Store for next time
         }
