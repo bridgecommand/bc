@@ -32,7 +32,10 @@ RadarScreen::RadarScreen()
 
 RadarScreen::~RadarScreen()
 {
-    //dtor
+  radarImage->drop(); //We created this with 'create', so drop it when we're finished
+  radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
+  radarImageLarge->drop(); //We created this with 'create', so drop it when we're finished
+  radarImageOverlaidLarge->drop(); //We created this with 'create', so drop it when we're finished
 }
 
 
@@ -41,7 +44,24 @@ void RadarScreen::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* 
     driver = smgr->getVideoDriver(); //store video driver so we can work with textures
 
 
-	irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(size, size));
+  //make radar image - one for the background render, and one with any 2d drawing on top
+  //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
+  irr::u32 radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
+  irr::u32 largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
+  //Find next power of 2 size
+  radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
+  largeRadarTextureSize = std::pow(2,std::ceil(std::log2(largeRadarTextureSize)));
+
+  //In simulationModel, keep track of the used size, and pass this to gui etc.
+  radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+  radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+  radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+  radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+  //Images will be filled with background colour in RadarCalculation
+
+    
+
+    irr::scene::IMesh* radarPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(size, size));
 
     radarScreen = smgr->addMeshSceneNode(radarPlane);
     radarScreen->setMaterialFlag(irr::video::EMF_LIGHTING, false);
@@ -55,7 +75,7 @@ void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
     radarRadiusPx = radiusPx;
 }
 
-void RadarScreen::update(irr::video::IImage* radarImage)
+void RadarScreen::update(void)
 {
     #ifdef WITH_PROFILING
     IPROF_FUNC;
@@ -90,12 +110,12 @@ void RadarScreen::update(irr::video::IImage* radarImage)
     }
     }{ IPROF("Make texture from image");
     //make texture from image and apply to the screen
-    radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImage));
+    radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImageOverlaid));
     }{ IPROF("Scale texture");
     //Scale the texture to get 1:1 image to screen pixel mapping
     irr::f32 radarTextureScaling=1;
-    if (radarImage->getDimension().Width>0) {
-        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImage->getDimension().Width;
+    if (radarImageOverlaid->getDimension().Width>0) {
+        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImageOverlaid->getDimension().Width;
         if (radarTextureScaling > 1) {radarTextureScaling = 1;} //Don't scale if not needed
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.

@@ -138,7 +138,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             rightMouseDown = false;
         }
-        model->setMouseDown(leftMouseDown || rightMouseDown); // Set if either mouse is down
+        model->getRadarCalculation()->setMouseDown(leftMouseDown || rightMouseDown); // Set if either mouse is down
 
         // Mooring lines controls
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)

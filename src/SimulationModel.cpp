@@ -31,22 +31,8 @@
 #include <cmath>
 #include <fstream>
 
-#ifdef WITH_PROFILING
-#include "iprof.hpp"
-#else
-#define IPROF(a) //intentionally empty placeholder
-#endif
 
-//#include <ctime>
-
-//using namespace irr;
-
-SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
-                                 irr::scene::ISceneManager* scene,
-                                 GUIMain* gui,
-                                 Sound* aSound,
-                                 ScenarioData scenarioData,
-                                 ModelParameters aModelParameters)
+SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters)
 {
   mTerrain = new Terrain();
   mWater = new Water();
@@ -61,56 +47,57 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mLines = new Lines();
   mRain = new Rain();
   mManOverboard = new ManOverboard();
+  mGuiData = new GUIData();
+  mLandObjects = new LandObjects();
+  mLandLights = new LandLights();
+  mLight = new Light();
   
-  mManOverboard->load(irr::core::vector3df(0,0,0),scene,dev,this,mTerrain);
+  mManOverboard->load(irr::core::vector3df(0,0,0),aScene,aDev,this,mTerrain);
   
-  device = dev;
-  smgr = scene;
-  driver = scene->getVideoDriver();
-  guiMain = gui;
+  mDevice = aDev;
+  mSmgr = aScene;
+  mDriver = aScene->getVideoDriver();
+  mGuiMain = aGui;
   mSound = aSound;
-  isMouseDown = false;
-  moveViewWithPrimary = true;
+  mMoveViewWithPrimary = true;
 
   //Store a serialised form of the scenario loaded, as we may want to send this over the network
-  serialisedScenarioData = scenarioData.serialise(false);
-
-  
-  mScenarioName = scenarioData.scenarioName;
+  mSerialisedScenarioData = aScenarioData.serialise(false);
+  mScenarioName = aScenarioData.scenarioName;
 
   // Store model parameters
   mModelParameters = aModelParameters;
 
   //Set loop number to zero
-  loopNumber = 0;
+  mLoopNumber = 0;
 
-  worldName = scenarioData.worldName;
-  float startTime = scenarioData.startTime;
-  irr::u32 startDay=scenarioData.startDay;
-  irr::u32 startMonth=scenarioData.startMonth;
-  irr::u32 startYear=scenarioData.startYear;
+  mWorldName = aScenarioData.worldName;
+  float startTime = aScenarioData.startTime;
+  irr::u32 startDay = aScenarioData.startDay;
+  irr::u32 startMonth = aScenarioData.startMonth;
+  irr::u32 startYear = aScenarioData.startYear;
 
   //load the sun times
-  float sunRise = scenarioData.sunRise;
-  float sunSet  = scenarioData.sunSet;
-  if(sunRise==0.0) {sunRise=6;}
-  if(sunSet==0.0) {sunSet=18;}
+  float sunRise = aScenarioData.sunRise;
+  float sunSet  = aScenarioData.sunSet;
+  if(sunRise==0) sunRise=6;
+  if(sunSet==0) sunSet=18;
 
   //load the weather:
   //Fixme: add in wind direction etc
-  mWeather = scenarioData.weather;
-  mRainIntensity = scenarioData.rainIntensity;
-  mVisibilityRange = scenarioData.visibilityRange;
-  if (mVisibilityRange <= 0) {mVisibilityRange = 5*M_IN_NM;} //TODO: Check units
+  mWeather = aScenarioData.weather;
+  mRainIntensity = aScenarioData.rainIntensity;
+  mVisibilityRange = aScenarioData.visibilityRange;
+  if(mVisibilityRange <= 0) mVisibilityRange = 5*M_IN_NM; //TODO: Check units
 
-  mWindDirection = scenarioData.windDirection;
-  mWindSpeed = scenarioData.windSpeed;
+  mWindDirection = aScenarioData.windDirection;
+  mWindSpeed = aScenarioData.windSpeed;
 
   //std::cout << "Wind direction: " << windDirection << " Wind speed: " << windSpeed << std::endl;
 
   //Fixme: Think about time zone handling
   //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
-  scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+  mScenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
 
   //set internal scenario time to start
   mScenarioTime = startTime * SECONDS_IN_HOUR;
@@ -118,7 +105,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   //Set initial tide height to zero
   mTideHeight = 0;
 
-  if (worldName == "") {
+  if (mWorldName == "") {
     //Could not load world name from scenario, so end here
     std::cerr << "World model name not defined" << std::endl;
     exit(EXIT_FAILURE);
@@ -126,7 +113,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
   //construct path to world model
   std::string worldPath = "world/";
-  worldPath.append(worldName);
+  worldPath.append(mWorldName);
 
   //Check if this world model exists in the user dir.
   std::string userFolder = Utilities::getUserDir();
@@ -136,50 +123,44 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
   // Store world model readme.txt file contents here if available
   std::string worldReadmePath = worldPath + "/readme.txt";
-  worldModelReadmeText = "";
+  mWorldModelReadmeText = "";
   if (Utilities::pathExists(worldReadmePath)) {
     std::ifstream file(worldReadmePath.c_str());
     if (file.is_open()) {
       std::string line;
       while (std::getline(file, line)) {
-	worldModelReadmeText.append(line);
-	worldModelReadmeText.append("\n");
+	mWorldModelReadmeText.append(line);
+	mWorldModelReadmeText.append("\n");
       }
     }    
   }
         
   //Add terrain: Needs to happen first, so the terrain parameters are available
-  mTerrain->load(worldPath, smgr, device, mModelParameters.limitTerrainResolution);
+  mTerrain->load(worldPath, mSmgr, mDevice, mModelParameters.limitTerrainResolution);
 
   //sky box/dome
-  Sky sky (smgr);
+  Sky sky(mSmgr);
 
   //Load own ship model.
   // TODO: It would be better to pass in modelParameters directly
-  mOwnShip->load(scenarioData.ownShipData, mModelParameters, smgr, this, mTerrain, device);
-
+  mOwnShip->load(aScenarioData.ownShipData, mModelParameters, mSmgr, this, mTerrain, mDevice);
 
   if(mModelParameters.mode == OperatingMode::Secondary) {
     mOwnShip->setSpeed(0); //Don't start moving if in secondary mode
   }
 
-  mSolver.Init(mOwnShip);
+  mSolver->Init(mOwnShip);
   
   //Load rain
-  mRain->load(smgr, mCamera->getSceneNode(), device, mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mOwnShip->getLength(), mOwnShip->getBreadth());
+  mRain->load(mSmgr, mCamera->getSceneNode(), mDevice, mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mOwnShip->getLength(), mOwnShip->getBreadth());
 
   //add water
   bool waterReflection = true;
-  if (mModelParameters.vrMode == true) {
-    waterReflection = false;
-  }
-  mWater->load(smgr,mOwnShip->getSceneNode(),mWeather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
+  if (mModelParameters.vrMode) waterReflection = false;
+  
+  mWater->load(mSmgr,mOwnShip->getSceneNode(),mWeather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
 
-  //To be replaced by getting information and passing into gui load method.
-  //Tell gui to hide the second engine scroll bar if we have a single engine
-  if (1 == mOwnShip->getNumberProp()) {
-    gui->setSingleEngine();
-  }
+  if (1 == mOwnShip->getNumberProp()) aGui->setSingleEngine();
 
   //Tell gui to hide all ship controls if in secondary mode
   //if (mModelParameters.mode == OperatingMode::Secondary) {
@@ -193,71 +174,50 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   
 
   //Load the radar with config parameters
-  mRadarCalculation->load(mOwnShip->getRadarConfigFile(),device);
+  mRadarCalculation->load(mOwnShip->getRadarConfigFile(),mDevice);
 
   //set camera zoom to 1
-  currentZoom = 1.0;
-  zoomLevel = 7.0; //Default zoom of 7x
+  mCurrentZoom = 1.0;
+  mZoomLevel = 7.0; //Default zoom of 7x
 
   //make a camera, setting parent and offset
   std::vector<irr::core::vector3df> views = mOwnShip->getCameraViews(); //Get the initial camera offset from the own ship model
   std::vector<bool> isHighView = mOwnShip->getCameraIsHighView(); //Are these special 'looking down' views
   float angleCorrection = mOwnShip->getAngleCorrection();
-  mCamera->load(smgr,device->getLogger(),mOwnShip->getSceneNode(),views, isHighView,irr::core::degToRad(mModelParameters.viewAngle),mModelParameters.lookAngle,angleCorrection);
+  mCamera->load(mSmgr,mDevice->getLogger(),mOwnShip->getSceneNode(),views, isHighView,irr::core::degToRad(mModelParameters.viewAngle),mModelParameters.lookAngle,angleCorrection);
   mCamera->setNearValue(mModelParameters.cameraMinDistance);
   mCamera->setFarValue(mModelParameters.cameraMaxDistance);
 
   //make ambient light
-  light.load(smgr,sunRise,sunSet, mCamera->getSceneNode());
-
+  mLight->load(mSmgr,sunRise,sunSet, mCamera->getSceneNode());
 
   //Load other ships
-  mOtherShips->load(scenarioData.otherShipsData,mScenarioTime,mModelParameters.mode,smgr,this,device);
+  mOtherShips->load(aScenarioData.otherShipsData,mScenarioTime,mModelParameters.mode,mSmgr,this,mDevice);
 
   //Load buoys
-  mBuoys->load(worldPath, smgr, this,device);
+  mBuoys->load(worldPath, mSmgr, this,mDevice);
 
   //Load land objects
-  landObjects.load(worldPath, smgr, this, mTerrain, device);
+  mLandObjects->load(worldPath, mSmgr, this, mTerrain, mDevice);
 
   //Load land lights
-  landLights.load(worldPath, smgr, this, mTerrain);
+  mLandLights->load(worldPath, mSmgr, this, mTerrain);
 
   //Load tidal information
-  mTide->load(worldPath, scenarioData);
-
-        
-
-  //Set up 3d engine/wheel controls/visualisation
-  //portEngineVisual.load(smgr, mOwnShip->getSceneNode(), mOwnShip->getPortEngineControlPosition(), 1.0 / mOwnShip->getScaleFactor(), 0, 0); // 0 = regular throttle
-  //stbdEngineVisual.load(smgr, mOwnShip->getSceneNode(), mOwnShip->getStbdEngineControlPosition(), 1.0 / mOwnShip->getScaleFactor(), 0, 0);
-  //wheelVisual.load(smgr, mOwnShip->getSceneNode(), mOwnShip->getWheelControlPosition(), mOwnShip->getWheelControlScale() / mOwnShip->getScaleFactor(), 2, 1); // 1 = wheel
+  mTide->load(worldPath, aScenarioData);
 
   //make a radar screen, setting parent and offset from own ship
-  mRadarScreen->load(smgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
-
-  //make radar image - one for the background render, and one with any 2d drawing on top
-  //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
-  irr::u32 radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
-  irr::u32 largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
-  //Find next power of 2 size
-  radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
-  largeRadarTextureSize = std::pow(2,std::ceil(std::log2(largeRadarTextureSize)));
-
-  //In simulationModel, keep track of the used size, and pass this to gui etc.
-  radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-  radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-  radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-  radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-  //Images will be filled with background colour in RadarCalculation
+  mRadarScreen->load(mSmgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
 
   //make radar camera
   std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
   std::vector<bool> radarViewsLookDown; //Not needed for the radar camera, but needed for compatability
   float radarTilt = mOwnShip->getRadarTilt();
+  
   radarViews.push_back(mOwnShip->getRadarPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*radarTilt)*mOwnShip->getRadarSize(),-0.5*cos(irr::core::DEGTORAD*radarTilt)*mOwnShip->getRadarSize()));
   radarViewsLookDown.push_back(false);
-  mRadarCamera->load(smgr, device->getLogger(),mOwnShip->getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
+
+  mRadarCamera->load(mSmgr, mDevice->getLogger(),mOwnShip->getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
   mRadarCamera->setLookUp(-1.0 * radarTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
   mRadarCamera->updateViewport(1.0);
   mRadarCamera->setNearValue(0.8*0.5*mOwnShip->getRadarSize());
@@ -267,150 +227,119 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
   mManOverboard->setVisible(false);
 
   //store time
-  previousTime = device->getTimer()->getTime();
-
-  guiData = new GUIData;
+  mPreviousTime = mDevice->getTimer()->getTime();
 
   // Initialise as paused to start with
-  guiData->paused = true;
+  mGuiData->paused = true;
 
 } //end of SimulationModel constructor
 
 SimulationModel::~SimulationModel()
 {
-  radarImage->drop(); //We created this with 'create', so drop it when we're finished
-  radarImageOverlaid->drop(); //We created this with 'create', so drop it when we're finished
-  radarImageLarge->drop(); //We created this with 'create', so drop it when we're finished
-  radarImageOverlaidLarge->drop(); //We created this with 'create', so drop it when we're finished
-
-  delete guiData;
+  delete mGuiData;
+  delete mTerrain;
+  delete mWater;
+  delete mTide;
+  delete mBuoys;
+  delete mOtherShips; 
+  delete mOwnShip;
+  delete mCamera;
+  delete mRadarCalculation;
+  delete mRadarScreen;
+  delete mRadarCamera;
+  delete mLines;
+  delete mRain;
+  delete mManOverboard;
+  delete mLandObjects;
+  delete mLandLights;
+  delete mLight;
 }
-
-
 
 OwnShip* SimulationModel::getOwnShip(void)
 {
-  if(NULL != mOwnShip)
-    return mOwnShip;
-  else
-    return NULL;
+  if(NULL != mOwnShip) return mOwnShip;
+  else return NULL;
 }
 
 Terrain* SimulationModel::getTerrain(void)
 {
- if(NULL != mTerrain)
-    return mTerrain;
-  else
-    return NULL;
+  if(NULL != mTerrain) return mTerrain;
+  else return NULL;
 }
 
 Water* SimulationModel::getWater(void)
 {
- if(NULL != mWater)
-    return mWater;
-  else
-    return NULL;
+  if(NULL != mWater) return mWater;
+  else return NULL;
 }
 
 Tide* SimulationModel::getTide(void)
 {
- if(NULL != mTide)
-    return mTide;
-  else
-    return NULL;
+  if(NULL != mTide) return mTide;
+  else return NULL;
 }
 
 Buoys* SimulationModel::getBuoys(void)
 {
- if(NULL != mBuoys)
-    return mBuoys;
-  else
-    return NULL;
+  if(NULL != mBuoys) return mBuoys;
+  else return NULL;
 }
 
 OtherShips* SimulationModel::getOtherShips(void)
 {
- if(NULL != mOtherShips)
-    return mOtherShips;
-  else
-    return NULL;
+  if(NULL != mOtherShips) return mOtherShips;
+  else return NULL;
 }
 
 Camera* SimulationModel::getCamera(void)
 {
- if(NULL != mCamera)
-    return mCamera;
-  else
-    return NULL;
+  if(NULL != mCamera) return mCamera;
+  else return NULL;
 }
 
 RadarCalculation* SimulationModel::getRadarCalculation(void)
 {
- if(NULL != mRadarCalculation)
-    return mRadarCalculation;
-  else
-    return NULL;
+  if(NULL != mRadarCalculation) return mRadarCalculation;
+  else return NULL;
 }
 
 RadarScreen* SimulationModel::getRadarScreen(void)
 {
- if(NULL != mRadarScreen)
-    return mRadarScreen;
-  else
-    return NULL;
+  if(NULL != mRadarScreen) return mRadarScreen;
+  else return NULL;
 }
 
 Camera* SimulationModel::getRadarCamera(void)
 {
- if(NULL != mRadarCamera)
-    return mRadarCamera;
-  else
-    return NULL;
+  if(NULL != mRadarCamera) return mRadarCamera;
+  else return NULL;
 }
 
 Lines* SimulationModel::getLines(void)
 {
- if(NULL != mLines)
-    return mLines;
-  else
-    return NULL;
+  if(NULL != mLines) return mLines;
+  else return NULL;
 }
 
 Rain* SimulationModel::getRain(void)
 {
- if(NULL != mRain)
-    return mRain;
-  else
-    return NULL;
+  if(NULL != mRain) return mRain;
+  else return NULL;
 }
 
 Sound* SimulationModel::getSound(void)
 {
- if(NULL != mSound)
-    return mSound;
-  else
-    return NULL;
+  if(NULL != mSound) return mSound;
+  else return NULL;
 }
 
 ManOverboard* SimulationModel::getMoB(void)
 {
- if(NULL != mManOverboard)
-    return mManOverboard;
-  else
-    return NULL;
+  if(NULL != mManOverboard) return mManOverboard;
+  else return NULL;
 }
 
-void SimulationModel::setAccelerator(float accelerator)
-{
-  device->getTimer()->setSpeed(accelerator);
-}
-
-float SimulationModel::getAccelerator() const
-{
-  return device->getTimer()->getSpeed();
-}
-
-/*Wether, Wind, Rain, Visibility*/
+/*Weather, Wind, Rain, Visibility*/
 void SimulationModel::setWeather(float aWeather){mWeather = aWeather;}
 float SimulationModel::getWeather() const {return mWeather;}
 void SimulationModel::setRain(float aRainIntensity){mRainIntensity = aRainIntensity;}
@@ -428,73 +357,49 @@ float SimulationModel::getApparentWindSpd(void) const{return mApparentWindSpd;}
 
 /*Time*/
 unsigned long long SimulationModel::getTimestamp() const {return mAbsoluteTime;}
-unsigned long long SimulationModel::getTimeOffset() const {return scenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
+unsigned long long SimulationModel::getTimeOffset() const {return mScenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
 void SimulationModel::setTimeDelta(float aScenarioTime){mScenarioTime = aScenarioTime;}
 float SimulationModel::getTimeDelta() const {return mScenarioTime;} //The change in time (s) since the start of the start day of the scenario
+void SimulationModel::setAccelerator(float aAccelerator){mDevice->getTimer()->setSpeed(aAccelerator);}
+float SimulationModel::getAccelerator() const {return mDevice->getTimer()->getSpeed();}
+irr::u32 SimulationModel::getLoopNumber() const {return mLoopNumber;}
 
 /*Models Params*/
 ModelParameters& SimulationModel::getModelParameters(void){return mModelParameters;}
 
-void SimulationModel::setZoom(bool zoomOn) {
-  if (zoomOn) {
-    currentZoom = zoomLevel;
-  }
-  else {
-    currentZoom = 1;
-  }
-  mCamera->setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / currentZoom);
+/*Scenario*/
+std::string SimulationModel::getSerialisedScenario() const {return mSerialisedScenarioData;}
+std::string SimulationModel::getScenarioName() const {return mScenarioName;}
+std::string SimulationModel::getWorldName() const {return mWorldName;}
+std::string SimulationModel::getWorldReadme() const{return mWorldModelReadmeText;}
+
+/*Views*/
+bool SimulationModel::getMoveViewWithPrimary() const {return mMoveViewWithPrimary;}
+void SimulationModel::setMoveViewWithPrimary(bool aMoveView) {mMoveViewWithPrimary = aMoveView;}
+
+void SimulationModel::setZoom(bool aZoomOn)
+{
+  if(aZoomOn) mCurrentZoom = mZoomLevel;
+  else mCurrentZoom = 1;
+  
+  mCamera->setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / mCurrentZoom);
 }
     
-void SimulationModel::setZoom(bool zoomOn, float zoomLevel)
+void SimulationModel::setZoom(bool aZoomOn, float aZoomLevel)
 {
-  this->zoomLevel = zoomLevel;
-  setZoom(zoomOn);
+  mZoomLevel = aZoomLevel;
+  setZoom(aZoomOn);
 }
 
-void SimulationModel::setViewAngle(float viewAngle)
+void SimulationModel::setViewAngle(float aViewAngle)
 {
-  mModelParameters.viewAngle = viewAngle;
-  mCamera->setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / currentZoom);
+  mModelParameters.viewAngle = aViewAngle;
+  mCamera->setHFOV(irr::core::degToRad(mModelParameters.viewAngle) / mCurrentZoom);
 }
 
-void SimulationModel::setMouseDown(bool isMouseDown)
+void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
 {
-  this->isMouseDown = isMouseDown;
-}
-
-
-irr::u32 SimulationModel::getLoopNumber() const
-{
-  return loopNumber;
-}
-
-std::string SimulationModel::getSerialisedScenario() const
-{
-  return serialisedScenarioData;
-}
-
-std::string SimulationModel::getScenarioName() const
-{
-  return mScenarioName;
-}
-
-std::string SimulationModel::getWorldName() const
-{
-  return worldName;
-}
-
-std::string SimulationModel::getWorldReadme() const
-{
-  return worldModelReadmeText;
-}
-
-
-bool SimulationModel::getMoveViewWithPrimary() const {
-  return moveViewWithPrimary;
-}
-
-void SimulationModel::setMoveViewWithPrimary(bool moveView) {
-  moveViewWithPrimary = moveView;
+  mCamera->update(0, quat, pos, lensShift, true);
 }
 
 
@@ -520,12 +425,12 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<flo
   irr::core::triangle3df hitTriangle;
 
   irr::scene::ISceneNode * selectedSceneNode =
-    smgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-									   ray,
-									   intersection, // This will be the position of the collision
-									   hitTriangle, // This will be the triangle hit in the collision
-									   IDFlag_IsPickable, // (bitmask), 0 for all
-									   0); // Check all nodes
+    mSmgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
+									    ray,
+									    intersection, // This will be the position of the collision
+									    hitTriangle, // This will be the triangle hit in the collision
+									    IDFlag_IsPickable, // (bitmask), 0 for all
+									    0); // Check all nodes
 
   irr::scene::ISceneNode* contactPointNode = 0;
 
@@ -550,10 +455,10 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<flo
 					 1.0f/selectedSceneNode->getScale().X);
     }
 
-    contactPointNode = smgr->addSphereSceneNode(0.25f,16,selectedSceneNode,-1,
-						localPosition,
-						irr::core::vector3df(0, 0, 0),
-						sphereScale);
+    contactPointNode = mSmgr->addSphereSceneNode(0.25f,16,selectedSceneNode,-1,
+						 localPosition,
+						 irr::core::vector3df(0, 0, 0),
+						 sphereScale);
 
     // Set name to match parent for convenience
     contactPointNode->setName(selectedSceneNode->getName());
@@ -566,224 +471,139 @@ irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<flo
   return contactPointNode;
 }
 
-
-irr::scene::ISceneNode* SimulationModel::getLandObjectSceneNode(int number)
-{
-  return landObjects.getSceneNode(number);
-}
-
-void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
-{
-  mCamera->update(0, quat, pos, lensShift, true);
-}
-
 void SimulationModel::update()
 {
-
-#ifdef WITH_PROFILING
-  IPROF_FUNC;
-#endif
-  // DEE vvvv debug I think that this is effectively the cycle
-
-  //Declare here, so scope added as part of profiling isn't a problem
-  irr::u32 lightLevel;
-  float elevAngle;
-  irr::core::vector2di cursorPositionRadar;
-  std::vector<float> CPAs;
-  std::vector<float> TCPAs;
-  std::vector<float> headings;
-  std::vector<float> speeds;
   bool paused;
   bool collided;
 
-  { IPROF("Increment time");
+  //get delta time
+  mCurrentTime = mDevice->getTimer()->getTime();
+  mDeltaTime = (mCurrentTime - mPreviousTime)/1000.f;
+  mPreviousTime = mCurrentTime;
 
-    // move time along .. this goes before everything else in the cycle
+  //add this to the scenario time
+  mScenarioTime += mDeltaTime;
+  mAbsoluteTime = Utilities::round(mScenarioTime) + mScenarioOffsetTime;
 
-    //get delta time
-    currentTime = device->getTimer()->getTime();
-    deltaTime = (currentTime - previousTime)/1000.f;
-    //deltaTime = (currentTime - previousTime)/1000.f;
-    previousTime = currentTime;
+  //increment loop number
+  mLoopNumber++;
 
-    //add this to the scenario time
-    mScenarioTime += deltaTime;
-    mAbsoluteTime = Utilities::round(mScenarioTime) + scenarioOffsetTime;
+  //Ensure we have the right radar screen resolution
+  mRadarCalculation->setRadarDisplayRadius(mGuiMain->getRadarPixelRadius());
+  mRadarScreen->setRadarDisplayRadius(mGuiMain->getRadarPixelRadius());
 
-    //increment loop number
-    loopNumber++;
+  //Update tide height and tidal stream here.
+  mTide->update(mAbsoluteTime);
+  mTideHeight = mTide->getTideHeight();
 
-    // end move time along
-  }{ IPROF("Set radar display radius");
+  //update ambient lighting
+  mLight->update(mScenarioTime);
+  //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
+  mDriver->setFog(mLight->getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*mVisibilityRange*M_IN_NM, mVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
 
+  //update rain
+  //rain.setIntensity(rainIntensity);
+  mRain->update(mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mRainIntensity);
 
-    //Ensure we have the right radar screen resolution
-    mRadarCalculation->setRadarDisplayRadius(guiMain->getRadarPixelRadius());
-    mRadarScreen->setRadarDisplayRadius(guiMain->getRadarPixelRadius());
-    
-  }{ IPROF("Update tide");
+  //update other ship positions etc
+  mOtherShips->update(mDeltaTime,mScenarioTime,mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength()); //Update other ship motion (based on leg information), and light visibility.
 
-    //Update tide height and tidal stream here.
-    mTide->update(mAbsoluteTime);
-    mTideHeight = mTide->getTideHeight();
+  //update buoys (for lights, floating, and if collision detection is turned on)
+  mBuoys->update(mDeltaTime,mScenarioTime,mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength());
 
-  }{ IPROF("Update lighting");
+  //Update land lights
+  mLandLights->update(mDeltaTime,mScenarioTime,mLight->getLightLevel());
 
-    //update ambient lighting
-    light.update(mScenarioTime);
-    //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-    driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*mVisibilityRange*M_IN_NM, mVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
-    lightLevel = light.getLightLevel();
+  //update all lines, ready to be used for own ship force
+  mLines->update(mDeltaTime);
 
-  }{ IPROF("Update rain");
-    //update rain
-    //rain.setIntensity(rainIntensity);
-    mRain->update(mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mRainIntensity);
+  //Solver Man 3Ddl
+  mSolver->SolveRk4(mOwnShip->getEta(), mOwnShip->getMu(), mDeltaTime);
+  mOwnShip->setEta(mSolver->getEta());
+  mOwnShip->setMu(mSolver->getMu());
 
-  }{ IPROF("Update other ships");
-    //update other ship positions etc
-    mOtherShips->update(deltaTime,mScenarioTime,mTideHeight,lightLevel,mOwnShip->getPosition(),mOwnShip->getLength()); //Update other ship motion (based on leg information), and light visibility.
+  //update own ship
+  mOwnShip->update(mDeltaTime, mScenarioTime, mTideHeight, mWeather, mLines->getOverallForceLocal(), mLines->getOverallTorqueLocal());
 
-  }{ IPROF("Update buoys");
-    //update buoys (for lights, floating, and if collision detection is turned on)
-    mBuoys->update(deltaTime,mScenarioTime,mTideHeight,lightLevel,mOwnShip->getPosition(),mOwnShip->getLength());
+  if (mOwnShip->getNumberProp() > 1)
+    mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
+  else 
+    mSound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
 
-  }{ IPROF("Update land lights");
-    //Update land lights
-    landLights.update(deltaTime,mScenarioTime,lightLevel);
+  //update man overboard
+  mManOverboard->update(mDeltaTime, mTideHeight);
 
-  } { IPROF("Update lines");
-    //update all lines, ready to be used for own ship force
-    mLines->update(deltaTime);
-  }{ IPROF("Update own ship");
+  //Check for collisions
+  collided = mOwnShip->isBuoyCollision() || mOwnShip->isOtherShipCollision();
 
-    mSolver.SolveRk4(mOwnShip->getEta(), mOwnShip->getMu(), deltaTime);
-    mOwnShip->setEta(mSolver.getEta());
-    mOwnShip->setMu(mSolver.getMu());
+  //update water position
+  mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
-    //std::cout << "eta : " << mOwnShip->getEta() << " - mu : " << mOwnShip->getMu();
-    //update own ship
-    mOwnShip->update(deltaTime, mScenarioTime, mTideHeight, mWeather, mLines->getOverallForceLocal(), mLines->getOverallTorqueLocal());
-
-    if (mOwnShip->getNumberProp() > 1)
-      mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
-    else 
-      mSound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
+  //update the camera position
+  mCamera->update(mDeltaTime);
   
-  }{ IPROF("Update MOB");
-    //update man overboard
-    mManOverboard->update(deltaTime, mTideHeight);
-
-  }{ IPROF("Check for collisions");
-    //Check for collisions
-    collided = checkOwnShipCollision();
-
-  }{ IPROF("Update water pos");
-    //update water position
-    mWater->update(mTideHeight,mCamera->getPosition(),light.getLightLevel(), mWeather);
-
-  }{ IPROF("Update camera pos");
-
-    //update the camera position
-    mCamera->update(deltaTime);
-  }{ IPROF("Update controls visualisation");
-    portEngineVisual.update(45.0 * mOwnShip->getPortEngine());
-    stbdEngineVisual.update(45.0 * mOwnShip->getStbdEngine());
-    wheelVisual.update(-6.0 * mOwnShip->getWheel());
-  }
-  if (mRadarCalculation->isRadarOn()) {
-    { IPROF("Update radar cursor position");
-      //set radar screen position, and update it with a radar image from the radar calculation
-      cursorPositionRadar = guiMain->getCursorPositionRadar();
-    }{ IPROF("Update radar calculation");
-      //Choose which radar images to use, depending on the size of the display being used
-      if (2*guiMain->getRadarPixelRadius() > radarImage->getDimension().Width) {
-	radarImageChosen = radarImageLarge;
-	radarImageOverlaidChosen = radarImageOverlaidLarge;
-      } else {
-	radarImageChosen = radarImage;
-	radarImageOverlaidChosen = radarImageOverlaid;
-      }
-      mRadarCalculation->update(radarImageChosen,radarImageOverlaidChosen,mTerrain,mOwnShip,mBuoys,mOtherShips,mWeather,mRainIntensity,mTideHeight,deltaTime,mAbsoluteTime,cursorPositionRadar,isMouseDown);
-    }{ IPROF("Update radar screen");
-      mRadarScreen->update(radarImageOverlaidChosen);
-    }{ IPROF("Update radar camera");
+  //update radar
+  if(mRadarCalculation->isRadarOn())
+    {
+      mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mDeltaTime, mAbsoluteTime, mGuiMain);
+      mRadarScreen->update();
       mRadarCamera->update();
     }
-  } else {
+  else 
     mRadarScreen->getSceneNode()->setVisible(false);
-  }
-  { IPROF("Check if paused ");
-    //check if paused
-    paused = device->getTimer()->getSpeed()==0.0;
-
-  }{ IPROF("Get radar ARPA data for GUI");
-
-    //get radar ARPA data to show
-    irr::u32 numberOfARPATracks = mRadarCalculation->getARPATracksSize();
-    guiData->arpaContactStates.clear();
-    for(unsigned int i = 0; i<numberOfARPATracks; i++) {
-      guiData->arpaContactStates.push_back(mRadarCalculation->getARPAContactFromTrackIndex(i).estimate);
-    }
-    guiData->arpaListSelection = mRadarCalculation->getArpaListSelection();
   
-    }{ IPROF("Collate GUI data ");
+  //check if paused
+  paused = mDevice->getTimer()->getSpeed()==0.0;
 
-    float posZ = mOwnShip->getPosition().Z;
-    float posX = mOwnShip->getPosition().X;
-    
-    //Collate data to show in gui
-    guiData->lat = mTerrain->zToLat(posZ);
-    guiData->longitude = mTerrain->xToLong(posX);
-    guiData->hdg = mOwnShip->getHeading();
-        
-    irr::core::vector3df cameraForwardVector = mCamera->getForwardVector(); 
-    guiData->viewAngle = atan2(cameraForwardVector.X, cameraForwardVector.Z) * irr::core::RADTODEG;
-    guiData->viewElevationAngle = asin(cameraForwardVector.Y) * irr::core::RADTODEG;
+ 
+  //get radar ARPA data to show
+  mGuiData->arpaContactStates.clear();
+  for(unsigned int i = 0; i<mRadarCalculation->getARPATracksSize(); i++)
+    {
+      mGuiData->arpaContactStates.push_back(mRadarCalculation->getARPAContactFromTrackIndex(i).estimate);
+    }
+  mGuiData->arpaListSelection = mRadarCalculation->getArpaListSelection();
+ 
+  //Collate data to show in gui
+  mGuiData->lat = mTerrain->zToLat(mOwnShip->getPosition().Z);
+  mGuiData->longitude = mTerrain->xToLong(mOwnShip->getPosition().X);
+  mGuiData->hdg = mOwnShip->getHeading();
+  mGuiData->viewAngle = atan2(mCamera->getForwardVector().X, mCamera->getForwardVector().Z) * irr::core::RADTODEG;
+  mGuiData->viewElevationAngle = asin(mCamera->getForwardVector().Y) * irr::core::RADTODEG;
+  mGuiData->spd = mOwnShip->getSpeedThroughWater();
+  mGuiData->portEng = mOwnShip->getPortEngine();
+  mGuiData->stbdEng = mOwnShip->getStbdEngine();
+  mGuiData->rudder = mOwnShip->getRudder().getDelta();  // inner workings of this will be modified in model DEE
+  mGuiData->wheel = mOwnShip->getWheel();    // inner workings of this will be modified in model DEE
+  mGuiData->depth = mOwnShip->getDepth(getTerrain());
+  mGuiData->weather = mWeather;
+  mGuiData->rain = mRainIntensity;
+  mGuiData->visibility = mVisibilityRange;
+  mGuiData->windDirection = mWindDirection;
+  mGuiData->windSpeed = mWindSpeed;
+  mGuiData->streamDirection = mTide->getStreamOverrideDirection();
+  mGuiData->streamSpeed = mTide->getStreamOverrideSpeed();
+  mGuiData->streamOverride = mTide->getStreamOverride();
+  mGuiData->radarRangeNm = mRadarCalculation->getRangeNm();
+  mGuiData->radarGain = mRadarCalculation->getGain();
+  mGuiData->radarClutter = mRadarCalculation->getClutter();
+  mGuiData->radarRain = mRadarCalculation->getRainClutter();
+  mGuiData->guiRadarEBLBrg = mRadarCalculation->getEBLBrg();
+  mGuiData->guiRadarEBLRangeNm = mRadarCalculation->getEBLRangeNm();
+  mGuiData->guiRadarCursorBrg = mRadarCalculation->getCursorBrg();
+  mGuiData->guiRadarCursorRangeNm = mRadarCalculation->getCursorRangeNm();
+  mGuiData->currentTime = Utilities::timestampToString(mAbsoluteTime);
+  mGuiData->paused = paused;
+  mGuiData->collided = collided;
+  mGuiData->headUp = mRadarCalculation->getHeadUp();
+  mGuiData->radarOn = mRadarCalculation->isRadarOn();
+  //mGuiData->pump1On = mOwnShip->getRudderPumpState(1);
+  //mGuiData->pump2On = mOwnShip->getRudderPumpState(2);
+  mGuiData->tideHeight = mTideHeight;
+  mGuiData->RateOfTurn = mOwnShip->getRateOfTurn();
 
-    guiData->spd = mOwnShip->getSpeedThroughWater();
-    guiData->portEng = mOwnShip->getPortEngine();
-    guiData->stbdEng = mOwnShip->getStbdEngine();
-    guiData->rudder = mOwnShip->getRudder().getDelta();  // inner workings of this will be modified in model DEE
-    guiData->wheel = mOwnShip->getWheel();    // inner workings of this will be modified in model DEE
-    guiData->depth = mOwnShip->getDepth(getTerrain());
-    guiData->weather = mWeather;
-    guiData->rain = mRainIntensity;
-    guiData->visibility = mVisibilityRange;
-    guiData->windDirection = mWindDirection;
-    guiData->windSpeed = mWindSpeed;
-    guiData->streamDirection = mTide->getStreamOverrideDirection();
-    guiData->streamSpeed = mTide->getStreamOverrideSpeed();
-    guiData->streamOverride = mTide->getStreamOverride();
-    guiData->radarRangeNm = mRadarCalculation->getRangeNm();
-    guiData->radarGain = mRadarCalculation->getGain();
-    guiData->radarClutter = mRadarCalculation->getClutter();
-    guiData->radarRain = mRadarCalculation->getRainClutter();
-    guiData->guiRadarEBLBrg = mRadarCalculation->getEBLBrg();
-    guiData->guiRadarEBLRangeNm = mRadarCalculation->getEBLRangeNm();
-    guiData->guiRadarCursorBrg = mRadarCalculation->getCursorBrg();
-    guiData->guiRadarCursorRangeNm = mRadarCalculation->getCursorRangeNm();
-    guiData->currentTime = Utilities::timestampToString(mAbsoluteTime);
-    guiData->paused = paused;
-    guiData->collided = collided;
-    guiData->headUp = mRadarCalculation->getHeadUp();
-    guiData->radarOn = mRadarCalculation->isRadarOn();
-    //guiData->pump1On = mOwnShip->getRudderPumpState(1);
-    //guiData->pump2On = mOwnShip->getRudderPumpState(2);
-
-    // DEE_NOV22 ^^^^
-
-    // DEE FEB 23 vvv
-    guiData->tideHeight = mTideHeight;
-    // DEE FEB 23 ^^^
-
-    // DEE vvvv units are rad per second
-    guiData->RateOfTurn = mOwnShip->getRateOfTurn();
-    // DEE ^^^^
-  }{ IPROF("Update gui data");
-    //send data to gui
-    guiMain->updateGuiData(guiData); //Set GUI heading in degrees and speed (in m/s)
-  }
+  mGuiMain->updateGuiData(mGuiData); //Set GUI heading in degrees and speed (in m/s)
+  
 }
 
 void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
@@ -1007,7 +827,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineStartType == 4)
 			  {
 			    // Land object
-			    startParent = getLandObjectSceneNode(dataMasterCmds->lines.lineStartID);
+			    startParent = mLandObjects->getSceneNode(dataMasterCmds->lines.lineStartID);
 			  }
 			else if (dataMasterCmds->lines.lineStartType == 5)
 			  {
@@ -1033,7 +853,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 			else if(dataMasterCmds->lines.lineEndType == 4)
 			  {
 			    // Land object
-			    endParent = getLandObjectSceneNode(dataMasterCmds->lines.lineEndID);
+			    endParent = mLandObjects->getSceneNode(dataMasterCmds->lines.lineEndID);
 			  }
 			else if (dataMasterCmds->lines.lineEndType == 5)
 			  {
@@ -1049,13 +869,13 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 							       1.0f/startParent->getScale().X,
 							       1.0f/startParent->getScale().X);
 			  }
-			irr::scene::ISceneNode* startNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineStartX, dataMasterCmds->lines.lineStartY, dataMasterCmds->lines.lineStartZ),irr::core::vector3df(0, 0, 0),sphereScale);
+			irr::scene::ISceneNode* startNode = mDevice->getSceneManager()->addSphereSceneNode(0.25f,16,startParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineStartX, dataMasterCmds->lines.lineStartY, dataMasterCmds->lines.lineStartZ),irr::core::vector3df(0, 0, 0),sphereScale);
 			sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
 			if(endParent && endParent->getScale().X > 0)
 			  {
 			    sphereScale = irr::core::vector3df(1.0f/endParent->getScale().X,1.0f/endParent->getScale().X,1.0f/endParent->getScale().X);
 			  }
-			irr::scene::ISceneNode* endNode = device->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineEndX, dataMasterCmds->lines.lineEndY, dataMasterCmds->lines.lineEndZ),irr::core::vector3df(0, 0, 0),sphereScale);
+			irr::scene::ISceneNode* endNode = mDevice->getSceneManager()->addSphereSceneNode(0.25f,16,endParent,-1,irr::core::vector3df(dataMasterCmds->lines.lineEndX, dataMasterCmds->lines.lineEndY, dataMasterCmds->lines.lineEndZ),irr::core::vector3df(0, 0, 0),sphereScale);
 
 			// Set name to match parent for convenience
 			if (startParent && startNode) {
@@ -1132,7 +952,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       }
     case E_CMD_MESSAGE_SHUTDOWN:
       {
-	device->closeDevice();
+	mDevice->closeDevice();
 
 	break;
       }
@@ -1177,65 +997,3 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       }
     }
 }
-
-bool SimulationModel::checkOwnShipCollision()
-{
-
-  return (mOwnShip->isBuoyCollision() || mOwnShip->isOtherShipCollision());
-
-  /*
-
-    irr::u32 numberOfOtherShips = otherShips.getNumber();
-    irr::u32 numberOfBuoys = buoys.getNumber();
-
-    irr::core::vector3df thisShipPosition = mOwnShip->getPosition();
-    float thisShipLength = mOwnShip->getLength();
-    float thisShipWidth = mOwnShip->getWidth();
-    float thisShipHeading = mOwnShip->getHeading();
-
-    for (irr::u32 i = 0; i<numberOfOtherShips; i++) {
-    irr::core::vector3df otherPosition = otherShips.getPosition(i);
-    float otherShipLength = otherShips.getLength(i);
-    float otherShipWidth = otherShips.getWidth(i);
-    float otherShipHeading = otherShips.getHeading(i);
-
-    irr::core::vector3df relPosition = otherPosition - thisShipPosition;
-    float distanceToShip = relPosition.getLength();
-    float bearingToOtherShipDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
-
-    //Bearings relative to ship's head (from this ship and from other)
-    float relativeBearingOwnShip = bearingToOtherShipDeg - thisShipHeading;
-    float relativeBearingOtherShip = 180 + bearingToOtherShipDeg - otherShipHeading;
-
-    //Find the minimum distance before a collision occurs
-    float minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
-    float minDistanceOther = 0.5*fabs(otherShipWidth*sin(irr::core::degToRad(relativeBearingOtherShip))) + 0.5*fabs(otherShipLength*cos(irr::core::degToRad(relativeBearingOtherShip)));
-    float minDistance = minDistanceOther + minDistanceOwn;
-
-    if (distanceToShip < minDistance) {
-    return true;
-    }
-    }
-
-    for (irr::u32 i = 0; i<numberOfBuoys; i++) { //Collision with buoy
-    irr::core::vector3df otherPosition = buoys.getPosition(i);
-
-    irr::core::vector3df relPosition = otherPosition - thisShipPosition;
-    float distanceToBuoy = relPosition.getLength();
-    float bearingToBuoyDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
-
-    //Bearings relative to ship's head (from this ship and from other)
-    float relativeBearingOwnShip = bearingToBuoyDeg - thisShipHeading;
-
-    //Find the minimum distance before a collision occurs
-    float minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
-
-    if (distanceToBuoy < minDistanceOwn) {
-    return true;
-    }
-    }
-
-    return false; //If no collision has been found
-  */
-}
-

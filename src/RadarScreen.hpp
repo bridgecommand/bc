@@ -21,23 +21,30 @@
 
 class RadarScreen
 {
-    public:
-        RadarScreen();
-        virtual ~RadarScreen();
+public:
+  RadarScreen();
+  virtual ~RadarScreen();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size, irr::f32 tilt);
-        void setRadarDisplayRadius(irr::u32 radiusPx);
-        void update(irr::video::IImage* radarImage);
-        irr::scene::ISceneNode* getSceneNode() const;
-
-
-    private:
-        irr::video::IVideoDriver* driver;
-        irr::scene::IMeshSceneNode* radarScreen;
-        irr::scene::ISceneNode* parent;
-        irr::core::vector3df offset;
-        irr::u32 radarRadiusPx;
-		irr::f32 tilt;
+  void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size, irr::f32 tilt);
+  void setRadarDisplayRadius(irr::u32 radiusPx);
+  void update(void);
+  irr::scene::ISceneNode* getSceneNode() const;
+  irr::video::IImage* getRadarImage(void) {return radarImage;}
+  irr::video::IImage* getRadarImageOverlaid(void)  {return radarImageOverlaid;}
+  irr::video::IImage* getRadarImageLarge(void) {return radarImageLarge;}
+  irr::video::IImage* getRadarImageOverlaidLarge(void) {return radarImageOverlaidLarge;}
+  
+private:
+  irr::video::IVideoDriver* driver;
+  irr::scene::IMeshSceneNode* radarScreen;
+  irr::scene::ISceneNode* parent;
+  irr::core::vector3df offset;
+  irr::u32 radarRadiusPx;
+  irr::f32 tilt;
+  irr::video::IImage* radarImage; //Basic radar image
+  irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
+  irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
+  irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
 };
 
 #endif

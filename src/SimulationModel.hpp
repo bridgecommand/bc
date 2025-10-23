@@ -29,7 +29,6 @@ class ScenarioData;
 class GUIMain;
 class GUIData;
 
-
 #include "Terrain.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
@@ -51,28 +50,24 @@ class GUIData;
 #include "Solver.hpp"
 #include "Sound.hpp"
 
-
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
     
-  SimulationModel(irr::IrrlichtDevice* dev,
-		  irr::scene::ISceneManager* scene,
-		  GUIMain* gui,
-		  Sound* sound,
-		  ScenarioData scenarioData,
-		  ModelParameters aModelParameters);
+  SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters);
   ~SimulationModel();
 
-  void setAccelerator(float accelerator); //Set simulation time compression
+  /*Time*/
+  void setAccelerator(float aAccelerator); //Set simulation time compression
   float getAccelerator() const;
-
   unsigned long long getTimestamp() const; //The unix timestamp in s
   unsigned long long getTimeOffset() const; //The timestamp at the start of the first day of the scenario
   float getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario
-  void  setTimeDelta(float scenarioTime);
-
+  void  setTimeDelta(float aScenarioTime);
+  irr::u32 getLoopNumber() const;
+  
+  /*Weather*/
   void setWeather(float aWeather); 
   float getWeather() const;
   void setRain(float aRainIntensity); 
@@ -88,27 +83,27 @@ public:
   void setApparentWindSpd(float aApparentWindSpd);
   float getApparentWindSpd(void) const;
 
-  void setMouseDown(bool isMouseDown);
+  /*Views*/
   void setZoom(bool zoomOn);
   void setZoom(bool zoomOn, float zoomLevel);
   void setViewAngle(float viewAngle);
-  irr::u32 getLoopNumber() const;
+  bool getMoveViewWithPrimary() const;
+  void setMoveViewWithPrimary(bool moveView);
+  void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
+  
+  /*Scenario*/
   std::string getSerialisedScenario() const;
   std::string getScenarioName() const;
   std::string getWorldName() const;
   std::string getWorldReadme() const;
 
-  bool getMoveViewWithPrimary() const;
-  void setMoveViewWithPrimary(bool moveView);
-
+  /*Model Params*/
   ModelParameters& getModelParameters();
 
-
+  /*Collision*/
   irr::scene::ISceneNode* getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode);
     
-  irr::scene::ISceneNode* getLandObjectSceneNode(int number);
-
-
+  /*Class pointer*/
   Rain* getRain(void); 
   Lines* getLines(void); 
   OwnShip* getOwnShip(void);
@@ -124,23 +119,21 @@ public:
   Sound* getSound(void);
   ManOverboard* getMoB(void);
   
-  void updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift);
-  void update();
-  void updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd);  
+  /*Update*/
+  void update(void);
+  void updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd);
+  
 private:
-  irr::IrrlichtDevice* device;
-  irr::video::IVideoDriver* driver;
-  irr::scene::ISceneManager* smgr;
 
+  /*Irrlicht handler*/
+  irr::IrrlichtDevice *mDevice;
+  irr::video::IVideoDriver *mDriver;
+  irr::scene::ISceneManager *mSmgr;
+
+  /*Model Params*/
   ModelParameters mModelParameters;
     
-  irr::video::IImage* radarImage; //Basic radar image
-  irr::video::IImage* radarImageOverlaid; //WIth any 2d overlay
-  irr::video::IImage* radarImageLarge; //Basic radar image, for full screen display
-  irr::video::IImage* radarImageOverlaidLarge; //WIth any 2d overlay, for full screen display
-  irr::video::IImage* radarImageChosen; //Should point to one of radarImage or radarImageLarge
-  irr::video::IImage* radarImageOverlaidChosen; //Should point to one of radarImageOverlaid or radarImageOverlaidLarge
-  //float accelerator;
+  /*Weather*/
   float mTideHeight;
   float mWeather; //0-12.0
   float mRainIntensity; //0-10
@@ -150,16 +143,23 @@ private:
   float mApparentWindDir;
   float mApparentWindSpd;
 
-  irr::u32 loopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
-  float currentZoom; // Zoom currently in use
-  float zoomLevel; // Zoom level that should be used if binos are on
-
+  /*Time*/
+  irr::u32 mLoopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
+  irr::u32 mCurrentTime; //Computer clock time
+  irr::u32 mPreviousTime; //Computer clock time
+  float mDeltaTime;
+  float mScenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
+  unsigned long long mScenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
+  unsigned long long mAbsoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
   
-  LandObjects landObjects;
-  LandLights landLights;
-  Light light;
-  Solver mSolver;
+  /*Scenario*/
+  std::string mScenarioName;
+  std::string mWorldName;
+  std::string mSerialisedScenarioData;
+  std::string mWorldModelReadmeText;
 
+  /*Class pointer*/
+  Solver *mSolver;
   OwnShip *mOwnShip;
   OtherShips *mOtherShips;
   Buoys *mBuoys;
@@ -174,37 +174,15 @@ private:
   Rain *mRain;
   Sound* mSound;
   ManOverboard *mManOverboard;
+  GUIData* mGuiData;
+  GUIMain* mGuiMain;
+  LandObjects* mLandObjects;
+  LandLights* mLandLights;
+  Light* mLight;
 
-  
-  ControlVisualiser portEngineVisual;
-  ControlVisualiser stbdEngineVisual;
-  ControlVisualiser portAzimuthThrottleVisual;
-  ControlVisualiser stbdAzimuthThrottleVisual;
-  ControlVisualiser wheelVisual;
-  GUIMain* guiMain;
-  
-  bool isMouseDown; //Updated by the event receiver, used by radar
-  bool moveViewWithPrimary;
-
-  //Simulation time handling
-  irr::u32 currentTime; //Computer clock time
-  irr::u32 previousTime; //Computer clock time
-  float deltaTime;
-  float mScenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
-  unsigned long long scenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-  unsigned long long mAbsoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
-
-  //utility function to check for collision
-  bool checkOwnShipCollision();
-
-
-  //store useful information
-  std::string mScenarioName;
-  std::string worldName;
-  std::string serialisedScenarioData;
-  std::string worldModelReadmeText;
-
-  //Structure to pass data to gui
-  GUIData* guiData;
+  /*Views*/
+  float mCurrentZoom; // Zoom currently in use
+  float mZoomLevel; // Zoom level that should be used if binos are on
+  bool mMoveViewWithPrimary;
 };
 #endif
