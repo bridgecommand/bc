@@ -49,6 +49,7 @@ class GUIData;
 #include "Network.hpp"
 #include "Solver.hpp"
 #include "Sound.hpp"
+#include "Collision.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
@@ -118,6 +119,7 @@ public:
   Camera* getRadarCamera(void);
   Sound* getSound(void);
   ManOverboard* getMoB(void);
+  Collision* getCollision(void);
   
   /*Update*/
   void update(void);
@@ -179,7 +181,8 @@ private:
   LandObjects* mLandObjects;
   LandLights* mLandLights;
   Light* mLight;
-
+  Collision* mCollision;
+  
   /*Views*/
   float mCurrentZoom; // Zoom currently in use
   float mZoomLevel; // Zoom level that should be used if binos are on

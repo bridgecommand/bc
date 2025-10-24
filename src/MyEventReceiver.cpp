@@ -1658,7 +1658,7 @@ void MyEventReceiver::startShutdown()
 void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 {
     if ((linesMode == 1) || (linesMode == 2)) {
-        irr::scene::ISceneNode* contactNode = model->getContactFromRay(rayForLines, linesMode);
+      irr::scene::ISceneNode* contactNode = model->getCollision()->getContactFromRay(rayForLines, linesMode);
 
         if (contactNode)
         {

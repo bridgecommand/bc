@@ -22,7 +22,7 @@
 #include "Sky.hpp"
 #include "Buoys.hpp"
 #include "Sound.hpp"
-
+#include "Collision.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
@@ -51,6 +51,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mLandObjects = new LandObjects();
   mLandLights = new LandLights();
   mLight = new Light();
+  mCollision = new Collision();
   
   mManOverboard->load(irr::core::vector3df(0,0,0),aScene,aDev,this,mTerrain);
   
@@ -206,6 +207,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   //Load tidal information
   mTide->load(worldPath, aScenarioData);
 
+  //Load Collsion detection
+  mCollision->load(mSmgr, mOwnShip->getSceneNode(), mDevice, this, mOwnShip->getHeightCorrection());
+  
   //make a radar screen, setting parent and offset from own ship
   mRadarScreen->load(mSmgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
 
@@ -222,6 +226,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mRadarCamera->updateViewport(1.0);
   mRadarCamera->setNearValue(0.8*0.5*mOwnShip->getRadarSize());
   mRadarCamera->setFarValue(1.2*0.5*mOwnShip->getRadarSize());
+
   
   //Hide the man overboard model
   mManOverboard->setVisible(false);
@@ -253,6 +258,7 @@ SimulationModel::~SimulationModel()
   delete mLandObjects;
   delete mLandLights;
   delete mLight;
+  delete mCollision;
 }
 
 OwnShip* SimulationModel::getOwnShip(void)
@@ -339,6 +345,12 @@ ManOverboard* SimulationModel::getMoB(void)
   else return NULL;
 }
 
+Collision* SimulationModel::getCollision(void)
+{
+  if(NULL != mCollision) return mCollision;
+  else return NULL;
+}
+
 /*Weather, Wind, Rain, Visibility*/
 void SimulationModel::setWeather(float aWeather){mWeather = aWeather;}
 float SimulationModel::getWeather() const {return mWeather;}
@@ -400,75 +412,6 @@ void SimulationModel::setViewAngle(float aViewAngle)
 void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
 {
   mCamera->update(0, quat, pos, lensShift, true);
-}
-
-
-irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<float> ray, irr::s32 linesMode) {
-
-  // Temporarily enable all required triangle selectors
-  if (linesMode == 1) {
-    // Start - on own ship
-    mOwnShip->enableTriangleSelector(true);
-  } else if (linesMode == 2) {
-    // End - not on own ship
-    mOtherShips->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
-    mBuoys->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
-    // TODO: Temporarily enable triangle selector for:
-    //   Terrain
-    //   Land objects
-  } else {
-    // Not start or end, return null;
-    return 0;
-  }
-
-  irr::core::vector3df intersection;
-  irr::core::triangle3df hitTriangle;
-
-  irr::scene::ISceneNode * selectedSceneNode =
-    mSmgr->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-									    ray,
-									    intersection, // This will be the position of the collision
-									    hitTriangle, // This will be the triangle hit in the collision
-									    IDFlag_IsPickable, // (bitmask), 0 for all
-									    0); // Check all nodes
-
-  irr::scene::ISceneNode* contactPointNode = 0;
-
-  if (selectedSceneNode &&
-      (
-       ((linesMode == 1) && (selectedSceneNode == mOwnShip->getSceneNode())) || // Valid start node
-       ((linesMode == 2) && (selectedSceneNode != mOwnShip->getSceneNode()))    // Valid end node
-       )
-      ) {
-
-    // Add a 'sphere' scene node, with selectedSceneNode as parent.
-    // Find local coordinates from the global one
-    irr::core::vector3df localPosition(intersection);
-    irr::core::matrix4 worldToLocal = selectedSceneNode->getAbsoluteTransformation();
-    worldToLocal.makeInverse();
-    worldToLocal.transformVect(localPosition);
-
-    irr::core::vector3df sphereScale = irr::core::vector3df(1.0, 1.0, 1.0);
-    if (selectedSceneNode && selectedSceneNode->getScale().X > 0) {
-      sphereScale = irr::core::vector3df(1.0f/selectedSceneNode->getScale().X,
-					 1.0f/selectedSceneNode->getScale().X,
-					 1.0f/selectedSceneNode->getScale().X);
-    }
-
-    contactPointNode = mSmgr->addSphereSceneNode(0.25f,16,selectedSceneNode,-1,
-						 localPosition,
-						 irr::core::vector3df(0, 0, 0),
-						 sphereScale);
-
-    // Set name to match parent for convenience
-    contactPointNode->setName(selectedSceneNode->getName());
-  }
-
-  // Reset triangle selectors
-  mOwnShip->enableTriangleSelector(false); // Own ship should not need triangle selectors at runtime (todo: for future robustness, check previous state and restore to this)
-  // buoys and otherShips will be reset when their update() method is called
-
-  return contactPointNode;
 }
 
 void SimulationModel::update()
@@ -534,13 +477,26 @@ void SimulationModel::update()
   mManOverboard->update(mDeltaTime, mTideHeight);
 
   //Check for collisions
-  collided = mOwnShip->isBuoyCollision() || mOwnShip->isOtherShipCollision();
+  collided = mCollision->getBuoyCollision() || mCollision->getOtherShipCollision();
 
   //update water position
   mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
   //update the camera position
   mCamera->update(mDeltaTime);
+
+
+ // Check depth and update collision response forces and torque
+      irr::f32 groundingAxialDrag = 0;
+      irr::f32 groundingLateralDrag = 0;
+      irr::f32 groundingTurnDrag = 0;
+      mCollision->DetectAndRespond(groundingAxialDrag, groundingLateralDrag, groundingTurnDrag); // The drag values will get modified by this call
+
+      // Add in response from mooring lines here
+      //groundingAxialDrag -= linesForce.Z;
+      //groundingLateralDrag -= linesForce.X;
+      //groundingTurnDrag -= linesTorque.Y;
+
   
   //update radar
   if(mRadarCalculation->isRadarOn())

@@ -29,16 +29,7 @@
 class OwnShipData;
 class Terrain;
 class Rain;
-
-struct ContactPoint
-{
-  irr::core::vector3df position; // position of the point on the ship's hull/outer surface
-  irr::core::vector3df normal;
-  irr::core::vector3df internalPosition; // Position within the ship, for use as a starting point for ray intersection checks
-  irr::f32 torqueEffect;                 // From cross product, how much a unit force along the contact vector gives a torque around the vertical axis
-  irr::f32 effectiveArea;                // Contact area represented (in m2)
-};
-
+class Collision;
 
 struct ModelParameters
 {
@@ -71,6 +62,9 @@ struct ModelParameters
 class OwnShip : public Ship
 {
 public:
+
+  OwnShip();
+  ~OwnShip();
   void load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::scene::ISceneManager *aSmgr, SimulationModel *aModel, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
   void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
   std::vector<irr::core::vector3df> getCameraViews() const;
@@ -103,8 +97,6 @@ public:
   irr::f32 getLastDeltaTime();                      // gets the delta time for the last cycle
   void setLastDeltaTime(irr::f32 myDeltaTime);      // sets the delta time for the last cycle
 
-  bool isBuoyCollision() const;
-  bool isOtherShipCollision() const;
   irr::f32 getShipMass() const;
   irr::f32 getScaleFactor() const;
 
@@ -112,12 +104,9 @@ public:
 
 protected:
 private:
-  void loadCollision(irr::scene::ISceneManager *smgr);
-  void collisionDetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, irr::f32 &turnReaction);
   irr::f32 requiredEngineProportion(irr::f32 speed);
   irr::f32 sign(irr::f32 inValue) const;
   irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;
-  void addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32 contactArea);
 
   irr::IrrlichtDevice *mDevice;
   std::vector<irr::core::vector3df> views; // The offset of the camera origin from the own ship origin
@@ -159,11 +148,6 @@ private:
   bool depthSounder;
   irr::f32 maxSounderDepth;
 
-  bool buoyCollision;
-  bool otherShipCollision;
-  irr::scene::ITriangleSelector *selector;
-  bool triangleSelectorEnabled; 
-  std::vector<ContactPoint> contactPoints;  
   ModelParameters mModelParams;
   
   // Debugging
