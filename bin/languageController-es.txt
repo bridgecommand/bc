@@ -33,6 +33,8 @@ brightness = "Brillo"
 
 setMMSI = "Configurar MMSI"
 
+allowDrifting = "Habilitar la deriva"
+
 releaseMOB = "Soltar\nMOB"
 retrieveMOB = "Recuperar\nMOB"
 

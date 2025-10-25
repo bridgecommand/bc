@@ -46,7 +46,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  Sound* sound,
                                  ScenarioData scenarioData,
                                  ModelParameters modelParameters):
-    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this,&terrain) //Initialise MOB
+    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -1749,6 +1749,11 @@ SimulationModel::~SimulationModel()
     irr::scene::ISceneNode* SimulationModel::getTerrainSceneNode(int number)
     {
         return terrain.getSceneNode(number);
+    }
+
+    Terrain* SimulationModel::getTerrain()
+    {
+        return &terrain;
     }
 
     irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const

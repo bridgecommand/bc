@@ -472,6 +472,17 @@ void ControllerModel::setMMSI(irr::s32 ship, int mmsi)
     }   
 }
 
+void ControllerModel::setDrifting(irr::s32 ship, bool drifting)
+{
+    //If other ship:
+    if (ship > 0) {
+        int otherShipIndex = ship - 1;
+        if (otherShipIndex < scenarioData->otherShipsData.size()) {
+            scenarioData->otherShipsData.at(otherShipIndex).drifting = drifting;
+        }
+    }
+}
+
 void ControllerModel::addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance)
 {
     //If other ship:
@@ -642,6 +653,9 @@ void ControllerModel::save()
         otherFile << "InitLong(" << i << ")=" << std::setprecision(8) << xToLong(scenarioData->otherShipsData.at(i-1).initialX) << std::endl;
         otherFile << "InitLat(" << i << ")=" << std::setprecision(8) << zToLat(scenarioData->otherShipsData.at(i-1).initialZ) << std::endl;
         otherFile << "mmsi(" << i << ")=" << scenarioData->otherShipsData.at(i-1).mmsi << std::endl;
+        if (scenarioData->otherShipsData.at(i - 1).drifting) {
+            otherFile << "Drifting(" << i << ")=1" << std::endl;
+        }
         //Don't save last leg, as this is an automatically added 'stop' leg.
         otherFile << "Legs(" << i << ")=" << scenarioData->otherShipsData.at(i-1).legs.size() - 1 << std::endl;
 

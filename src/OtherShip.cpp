@@ -21,13 +21,15 @@
 #include "Constants.hpp"
 #include "OtherShip.hpp"
 #include "Utilities.hpp"
+#include "SimulationModel.hpp"
+#include "Terrain.hpp"
 
 #include <iostream>
 #include <algorithm>
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -35,8 +37,11 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     hdg = 0;
     rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
 
+    this->model = model;
+
     this->name = name;
     this->mmsi = mmsi;
+    this->drifting = drifting;
 
     std::string basePath = "Models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
@@ -206,6 +211,30 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         positionManuallyUpdated = false;
     }
     yPos = tideHeight+heightCorrection;
+
+    if (drifting) {
+        //Move with tidal stream (if not aground)
+        irr::f32 depth = -1 * model->getTerrain()->getHeight(xPos, zPos) + yPos;
+        irr::core::vector2df streamVector = model->getTidalStream(model->getTerrain()->xToLong(xPos), model->getTerrain()->zToLat(zPos), model->getTimestamp());
+
+        // Add component from wind
+        irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+        irr::f32 windDirection = model->getWindDirection();
+        // Convert this into wind axial speed and wind lateral speed
+        irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+        irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
+        irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+        // Assume that the drifting vessel moves at 1/10 of the wind speed
+        streamVector.X += windX * 0.1;
+        streamVector.Y += windZ * 0.1;
+
+        // Apply movement vector
+        if (depth > 0) {
+            irr::f32 streamScaling = fmin(1, depth); //Reduce effect as water gets shallower
+            xPos += streamVector.X * deltaTime * streamScaling;
+            zPos += streamVector.Y * deltaTime * streamScaling;
+        }
+    }
 
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));

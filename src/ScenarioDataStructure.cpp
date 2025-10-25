@@ -72,13 +72,15 @@ std::string OtherShipData::serialise(bool withSpaces)
             }
         }
     }
+    serialised.append(separator);
+    serialised.append(Utilities::lexical_cast<std::string>(drifting));
     return serialised;
 }
 
 void OtherShipData::deserialise(std::string data)
 {
     std::vector<std::string> splitData = Utilities::split(data,'|');
-    if (splitData.size() == 5) {
+    if (splitData.size() >= 5) {
         shipName = splitData.at(0);
         mmsi = Utilities::lexical_cast<irr::f32>(splitData.at(1));
         initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
@@ -92,6 +94,11 @@ void OtherShipData::deserialise(std::string data)
             legs.push_back(tempLeg);
         }
     }
+    if (splitData.size() == 6) {
+        // Additional drifting entry (SCN4 only)
+        drifting = Utilities::lexical_cast<bool>(splitData.at(5));
+    }
+
 }
 
 std::string OwnShipData::serialise(bool withSpaces)
@@ -133,7 +140,8 @@ std::string ScenarioData::serialise(bool withSpaces)
     }
     // SCN2 is the same as SCN1, but allows whitespace around the delimiters
     // SCN3 adds wind and tidal override information
-    std::string serialised = "SCN3"; //Scenario data, serialised format 3
+    // SCN4 adds other ship drifting flag
+    std::string serialised = "SCN4"; //Scenario data, serialised format 3
     serialised.append(separator);
     serialised.append(scenarioName);
     serialised.append(separator);
@@ -207,8 +215,9 @@ void ScenarioData::deserialise(std::string data)
             dataPopulated = true; // Currently only used in scenario editor
         }
     } else if (splitData.size() == 16) {
-        if (splitData.at(0) == "SCN3") {
+        if ((splitData.at(0) == "SCN3") || (splitData.at(0) == "SCN4")) {
             // SCN3 allows for tidal information to be overridden from scenario
+            // SCN4 adds drifting flag in other ship data
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
             startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
