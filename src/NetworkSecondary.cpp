@@ -99,7 +99,8 @@ void NetworkSecondary::getScenarioFromNetwork(std::string& dataString) //Not use
             if (receivedString.length() > 4) { //Check if more than 4 chars long, ie we have at least some data
                 if ((receivedString.substr(0,4) == "SCN1") || 
                     (receivedString.substr(0,4) == "SCN2") ||
-                    (receivedString.substr(0,4) == "SCN3")) { //Check if it starts with SCN1, SCN2 or SCN3
+                    (receivedString.substr(0,4) == "SCN3") ||
+                    (receivedString.substr(0,4) == "SCN4")) { //Check if it starts with SCN1-SCN4
                     //If valid, use this string
                     dataString = receivedString;
                 }
