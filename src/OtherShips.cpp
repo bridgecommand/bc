@@ -57,6 +57,9 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Set MMSI
         irr::u32 mmsi = otherShipsData.at(i).mmsi;
 
+        //Set if it's drifting with wind/stream
+        bool drifting = otherShipsData.at(i).drifting;
+
         //Load leg information
         std::vector<Leg> legs;
         irr::f32 legStartTime = scenarioStartTime;
@@ -89,7 +92,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Create otherShip and load into vector
         std::string internalName = "OtherShip_";
         internalName.append(std::to_string(i));
-        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,drifting,model,smgr, dev));
     }
 
 }

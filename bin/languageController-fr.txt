@@ -33,6 +33,8 @@ brightness = "Luminosité"
 
 setMMSI = "Paramétrer MMSI"
 
+allowDrifting = "Activer la dérive"
+
 releaseMOB = "Relâcher\nMOB"
 retrieveMOB = "Récupérer\nMOB"
 

@@ -273,6 +273,12 @@ namespace Utilities
             thisOtherShip.mmsi    = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("MMSI",i));
             thisOtherShip.initialLong = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLong",i));
             thisOtherShip.initialLat  = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate1("InitLat",i));
+            if (IniFile::iniFileTou32(scenarioOtherShipsFilename, IniFile::enumerate1("Drifting", i)) == 1) {
+                thisOtherShip.drifting = true;
+            }
+            else {
+                thisOtherShip.drifting = false;
+            }
 
             irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
             for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){

@@ -33,6 +33,8 @@ brightness = "Brightness"
 
 setMMSI = "Set MMSI"
 
+allowDrifting = "Allow Drifting"
+
 releaseMOB = "Release\nMOB"
 retrieveMOB = "Retrieve\nMOB"
 

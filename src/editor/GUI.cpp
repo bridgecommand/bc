@@ -92,6 +92,10 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     mmsiEdit = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.18*su,0.09*sh,0.31*su,0.12*sh),false,shipTab,GUI_ID_MMSI_EDITBOX);
     setMMSI = guienv->addButton(irr::core::rect<irr::s32>(0.18*su,0.13*sh,0.31*su,0.16*sh),shipTab,GUI_ID_SETMMSI_BUTTON,language->translate("setMMSI").c_str());
 
+    // Set if the ship can drift with wind and current
+    isDrifting = guienv->addCheckBox(false, irr::core::rect<irr::s32>(0.18*su,0.16*sh,0.20*su,0.19*sh), shipTab, GUI_ID_DRIFTING_CHECKBOX);
+    guienv->addStaticText(language->translate("allowDrifting").c_str(), irr::core::rect<irr::s32>(0.20 * su, 0.16 * sh, 0.31 * su, 0.19 * sh),false, false, shipTab);
+
     //Add buttons
     changeLeg       = guienv->addButton(irr::core::rect<irr::s32>(0.03*su, 0.28*sh, 0.23*su, 0.31*sh),shipTab,GUI_ID_CHANGE_BUTTON,language->translate("changeLeg").c_str());
     addShip         = guienv->addButton(irr::core::rect<irr::s32>(0.25*su, 0.28*sh, 0.45*su, 0.31*sh),shipTab, GUI_ID_ADDSHIP_BUTTON,language->translate("addShip").c_str());
@@ -407,8 +411,12 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
     if (editBoxesNeedUpdating) {
         if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size()) {
             mmsiEdit->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).mmsi).c_str());
+            isDrifting->setEnabled(true);
+            isDrifting->setChecked(scenarioData.otherShipsData.at(selectedShip).drifting);
         } else if (selectedShip == -1) {
             mmsiEdit->setText(L"-");
+            isDrifting->setEnabled(false);
+            isDrifting->setChecked(false);
         }
         if (selectedShip >= 0 && selectedShip < scenarioData.otherShipsData.size() && selectedLeg >= 0 && selectedLeg < scenarioData.otherShipsData.at(selectedShip).legs.size()) {
             legCourseEdit  ->setText(irr::core::stringw(scenarioData.otherShipsData.at(selectedShip).legs.at(selectedLeg).bearing).c_str());

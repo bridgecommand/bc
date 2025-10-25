@@ -66,7 +66,8 @@ public:
         GUI_ID_OWNSHIPSELECT_COMBOBOX,
         GUI_ID_OTHERSHIPSELECT_COMBOBOX,
         GUI_ID_WINDDIRECTION_EDITBOX,
-        GUI_ID_WINDSPEED_EDITBOX
+        GUI_ID_WINDSPEED_EDITBOX,
+        GUI_ID_DRIFTING_CHECKBOX
     };
 
     void updateGuiData(ScenarioData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
@@ -126,6 +127,8 @@ private:
     irr::gui::IGUIButton* deleteLeg;
     irr::gui::IGUIButton* moveShip;
     irr::gui::IGUIButton* setMMSI;
+
+    irr::gui::IGUICheckBox* isDrifting;
 
     irr::gui::IGUIComboBox* ownShipTypeSelector;
     irr::gui::IGUIComboBox* otherShipTypeSelector;
