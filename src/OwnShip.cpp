@@ -31,9 +31,6 @@
 #include "Water.hpp"
 #include "Tide.hpp"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif // M_PI
 
 OwnShip::OwnShip()
 {
@@ -50,7 +47,6 @@ OwnShip::~OwnShip()
 void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
 {
   mDevice = aDev;
-
   mTerrain = aTerrain;
   mTide = aTide;
   mWater = aWater;
@@ -96,7 +92,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
       mInvMatM = mMatM.inverse();
       mMu = mMu0;
-      mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*M_PI/180;
+      mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
 
       //std::cout << "eta : " << mEta << " - mu : " << mMu;
     }
@@ -311,13 +307,13 @@ void OwnShip::setWheel(irr::f32 aWheel)
   controlMode = MODE_ENGINE; // Switch to engine and rudder mode
   // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
   mWheel = aWheel;
-  if (mWheel < -(mRudder.getDeltaMax())*180/M_PI)
+  if (mWheel < -(mRudder.getDeltaMax())*180/PI)
     {
-      mWheel = -(mRudder.getDeltaMax()*180/M_PI);
+      mWheel = -(mRudder.getDeltaMax()*180/PI);
     }
-  if (mWheel > mRudder.getDeltaMax()*180/M_PI)
+  if (mWheel > mRudder.getDeltaMax()*180/PI)
     {
-      mWheel = mRudder.getDeltaMax()*180/M_PI;
+      mWheel = mRudder.getDeltaMax()*180/PI;
     }
 }
 
@@ -465,7 +461,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	}
 
       //Apply rudder angle
-      mRudder.SetDelta((mWheel*M_PI)/180, deltaTime);
+      mRudder.SetDelta((mWheel*PI)/180, deltaTime);
       
     }
   else // End of engine mode
@@ -514,7 +510,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   //mShipScene->setPosition(irr::core::vector3df(xPos, yPos, zPos));
   std::cout << "--> Xeta : " << mEta[0] << std::endl;
   std::cout << "--> Yeta : " << mEta[1] << std::endl;
-  std::cout << "--> Hdg : " << mEta[2]*180/M_PI << std::endl;
+  std::cout << "--> Hdg : " << mEta[2]*180/PI << std::endl;
   std::cout << "--> Speed X : " << mMu[0] << std::endl;
   std::cout << "--> Speed Y : " << mMu[1] << std::endl;
   std::cout << "--> Speed Z : " << mMu[2] << std::endl;
@@ -532,7 +528,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   //    mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
   //    mShipScene->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
   //mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
-  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/M_PI, pitch, roll));
+  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, pitch, roll));
   // DEE_DEC22 ^^^^
 }
 
