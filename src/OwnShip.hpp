@@ -18,11 +18,11 @@
 #define __OWNSHIP_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
 #include <vector>
 #include "Sail.hpp"
 #include "Ship.hpp"
 #include "OperatingModeEnum.hpp"
+#include "Time.hpp"
 
 // Forward declarations
 
@@ -30,34 +30,10 @@ class OwnShipData;
 class Terrain;
 class Rain;
 class Collision;
-
-struct ModelParameters
-{
-  OperatingMode::Mode mode;
-  bool vrMode;
-  irr::f32 viewAngle;
-  irr::f32 lookAngle;
-  irr::f32 cameraMinDistance;
-  irr::f32 cameraMaxDistance;
-  irr::u32 disableShaders;
-  irr::u32 waterSegments;
-  irr::core::vector3di numberOfContactPoints;
-  irr::f32 minContactPointSpacing;
-  irr::f32 contactStiffnessFactor;
-  irr::f32 contactDampingFactor;
-  irr::f32 lineStiffnessFactor;
-  irr::f32 lineDampingFactor;
-  irr::f32 frictionCoefficient;
-  irr::f32 tanhFrictionFactor;
-  irr::u32 limitTerrainResolution;
-  bool secondaryControlWheel;
-  bool secondaryControlPortEngine;
-  bool secondaryControlStbdEngine;
-  bool secondaryControlBowThruster;
-  bool secondaryControlSternThruster;
-  bool debugMode;
-};
-
+class Wind;
+class Solver;
+class Tide;
+class Water;
 
 class OwnShip : public Ship
 {
@@ -65,8 +41,8 @@ public:
 
   OwnShip();
   ~OwnShip();
-  void load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::scene::ISceneManager *aSmgr, SimulationModel *aModel, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
-  void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
+  void load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
+  void update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver);
   std::vector<irr::core::vector3df> getCameraViews() const;
   std::vector<bool> getCameraIsHighView() const;
   irr::core::vector3df getRadarPosition() const;
@@ -94,14 +70,9 @@ public:
 
   std::string getBasePath() const;
 
-  irr::f32 getLastDeltaTime();                      // gets the delta time for the last cycle
-  void setLastDeltaTime(irr::f32 myDeltaTime);      // sets the delta time for the last cycle
-
   irr::f32 getShipMass() const;
   irr::f32 getScaleFactor() const;
-
-  void enableTriangleSelector(bool selectorEnabled);
-
+ 
 protected:
 private:
   irr::f32 requiredEngineProportion(irr::f32 speed);
@@ -113,10 +84,12 @@ private:
   std::vector<bool> isHighView;            // Should be the same size as views (todo: Make this into a struct with views)
   std::string radarConfigFile;
   std::string basePath; // The location the model is loaded from
-  Terrain *mTerrain;
-  Rain *rain;
-  SimulationModel *mModel;
 
+  Terrain *mTerrain;
+  Rain *mRain;
+  Tide *mTide;
+  Water *mWater;
+  
   bool mShowDebugData;
   irr::f32 scaleFactor;
   irr::f32 rollPeriod;       // Roll period (s)  DEE this should be dynamically loaded
@@ -129,8 +102,6 @@ private:
   irr::f32 roll;             //(deg)
   irr::f32 portEngine;       //-1 to + 1
   irr::f32 stbdEngine;       //-1 to + 1
-
-  irr::f32 deltaTime;
   irr::f32 mWheel;             //-30 to + 30
               //-30 to + 30
   bool singleEngine;
@@ -139,7 +110,7 @@ private:
   irr::f32 mRadarSize;
   irr::f32 mRadarTilt;
   // Dynamics parameters
-  Sail mSails;
+  
 
   irr::f32 turnIndicatorPresent;
   irr::f32 waveHeightFiltered; // 1st order transfer filtered response to waves
@@ -148,7 +119,6 @@ private:
   bool depthSounder;
   irr::f32 maxSounderDepth;
 
-  ModelParameters mModelParams;
   
   // Debugging
   std::vector<irr::scene::IMeshSceneNode *> contactDebugPoints;

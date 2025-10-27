@@ -27,6 +27,7 @@
 #include "Hull.hpp"
 #include "Rudder.hpp"
 #include "Terrain.hpp"
+#include "Sail.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -74,14 +75,18 @@ public:
   Rudder& getRudder(void);
   //Wind& getWind(void);
   unsigned char getNumberProp(void);
-
+  Sail& getSail(void);
+  unsigned char getSailCount(void);
   
 protected:
 
+  
   irr::scene::IMeshSceneNode* mShipScene; //The scene node for the own ship.
   irr::scene::IMeshSceneNode* mSailsScene[4];
-  unsigned int mSailsCount;
+  unsigned char mSailsCount;
   std::string mSailsType;
+  Sail mSails;
+
   irr::f32 airDraught;
   irr::f32 heightCorrection;
   irr::f32 angleCorrection;

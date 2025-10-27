@@ -18,20 +18,19 @@
 #define __AUTOPILOT_HPP_INCLUDED__
 
 #include "NMEASentences.hpp"
-#include "SimulationModel.hpp"
 #include "irrTypes.h"
 #include <array>
 
 class Autopilot
 {
     public:
-        Autopilot(SimulationModel*);
+        Autopilot(void*);
         ~Autopilot();
         bool receiveAPB(APB);
         bool receiveRMB(RMB);
     private:
         bool AUTOPILOT_ENABLED;
-        SimulationModel* model;
+        void* model;
         std::array<irr::f32, 2> currentWaypointPos;
         std::string currentWaypointId;
         irr::f32 crossTrackError;

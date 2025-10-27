@@ -20,6 +20,7 @@
 #include "irrlicht.h"
 #include <string>
 #include <vector>
+#include "Time.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -64,7 +65,7 @@ class Lines
         irr::f32 getLineNominalShipMass(int lineID, bool networkLine = false);
         void setLineNominalShipMass(int lineID, irr::f32 lineNominalShipMass, bool networkLine = false);
         
-        void update(irr::f32 deltaTime);
+        void update(sTime& aTime);
         irr::core::vector3df getOverallForceLocal(); // Find sum of forces on own ship in local coordinate system, call after update()
         irr::core::vector3df getOverallTorqueLocal(); // Find sum of torques on own ship in local coordinate system, call after update()
 

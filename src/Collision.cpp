@@ -1,6 +1,7 @@
 #include "Collision.hpp"
 #include "SimulationModel.hpp"
 #include "Utilities.hpp"
+#include "Constants.hpp"
 
 void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNode *aShipScene, irr::IrrlichtDevice *aDev, SimulationModel *aModel, float aHeightCorr)
 {

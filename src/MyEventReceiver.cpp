@@ -14,23 +14,24 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include "SimulationModel.hpp"
 #include "MyEventReceiver.hpp"
-
 #include <string>
 #include "GUIMain.hpp"
-#include "SimulationModel.hpp"
 #include "Lines.hpp"
 #include "Utilities.hpp"
 #include "AzimuthDial.h"
 #include "VRInterface.hpp"
 #include "Constants.hpp"
 #include "Message.hpp"
+#include "Network.hpp"
 
 // using namespace irr;
 
-MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
+MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, void *aModel, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
 {
-    this->model = model; // Link to the model
+
+  mModel = aModel; // Link to the model
     this->gui = gui;     // Link to GUI
     this->vrInterface = vrInterface; // Link to VR interface
     scrollBarPosSpeed = 0;
@@ -85,6 +86,8 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
 
 bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 {
+
+    SimulationModel *model = (SimulationModel*)mModel;
 
     // std::cout << "Any event in receiver" << std::endl;
     // From log
@@ -367,11 +370,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR)
             {
-                model->setWindDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getWind()->setTrueDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR)
             {
-                model->setWindSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getWind()->setTrueSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR)
             {
@@ -400,7 +403,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (id == GUIMain::GUI_ID_CLOSE_BOX)
             {
-	      std::string shut = Message::ShutDown();
+	      std::string shut = "";//Message::ShutDown();
 	      net->SendMessage(shut, true);
 	      device->closeDevice(); // Confirm shutdown.
             }
@@ -1645,6 +1648,8 @@ bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) co
 
 void MyEventReceiver::startShutdown()
 {
+  SimulationModel *model = (SimulationModel*)mModel;
+  
     model->setAccelerator(0.0);
     device->sleep(500);
     if (!shutdownDialogActive)
@@ -1657,6 +1662,8 @@ void MyEventReceiver::startShutdown()
 
 void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 {
+  SimulationModel *model = (SimulationModel*)mModel;
+  
     if ((linesMode == 1) || (linesMode == 2)) {
       irr::scene::ISceneNode* contactNode = model->getCollision()->getContactFromRay(rayForLines, linesMode);
 

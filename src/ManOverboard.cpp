@@ -106,8 +106,10 @@ void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
   man->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
 
-void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
+void ManOverboard::update(sTime& aTime, irr::f32 tideHeight)
 {
+  float deltaTime = aTime.deltaTime;
+  
   //Move with tide and waves
   irr::core::vector3df pos=getPosition();
   pos.Y = tideHeight + model->getWater()->getWaveHeight(pos.X,pos.Z);
@@ -117,8 +119,8 @@ void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
   irr::core::vector2df mobVector = model->getTide()->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
     
   // Add component from wind
-  irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
-  irr::f32 windDirection = model->getWindDirection();
+  irr::f32 windSpeed = model->getWind()->getTrueSpeed() * KTS_TO_MPS;
+  irr::f32 windDirection = model->getWind()->getTrueDirection();
   // Convert this into wind axial speed and wind lateral speed
   irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
   irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);

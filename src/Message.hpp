@@ -3,14 +3,14 @@
 
 #include <string>
 #include "MessageMisc.hpp"
-#include "SimulationModel.hpp"
 #include "Constants.hpp"
 
 class Message
 {
- public:
+
+public:
   
-  Message(SimulationModel* aModel);
+  Message(void* aModel);
   Message();
   ~Message();
   eCmdMsg Parse(const char *aData, size_t aDataSize, void** aCmdData);
@@ -27,7 +27,9 @@ class Message
   static std::string& ShutDown(void);
   std::string& MpFeedBack(void);
   std::string& ControlOverride(void);
+
 private:
+
   sUpLeg* UpdateLeg(std::string aCmd);
   sDelLeg* DeleteLeg(std::string aCmd);
   sRepoShip* RepositionShip(std::string aCmd);
@@ -46,9 +48,11 @@ private:
   sWeatherInf GetInfosWeather(std::vector<std::string>& aWeatherData);
   sViewInf GetInfosView(std::vector<std::string>& aViewData);
   sCtrlsInf GetInfosControls(std::vector<std::string>& aCtrlsData);
-  SimulationModel* mModel; /*Only for getter*/
+  void* mModel; //Only for getter
+  
   
 };
+
 
 typedef struct{
   std::string header;

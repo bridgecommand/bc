@@ -20,14 +20,12 @@
 #include "irrlicht.h"
 #include <string>
 #include <vector>
-#include "Network.hpp"
 
 //forward declarations
 class GUIMain;
-class SimulationModel;
 class Lines;
 class VRInterface;
-
+class Network;
 
 //Data about joystick setup
 class JoystickSetup {
@@ -111,7 +109,7 @@ class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-  MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, Network* network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
+  MyEventReceiver(irr::IrrlichtDevice* dev, void* aModel, GUIMain* gui, Network* network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -125,7 +123,7 @@ private:
     bool IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const;
     void handleMooringLines(irr::core::line3df rayForLines);
 
-    SimulationModel* model;
+  void* mModel;
 
   GUIMain* gui;
     VRInterface* vrInterface;

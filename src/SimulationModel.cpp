@@ -15,7 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "SimulationModel.hpp"
-
+#include "ModelParams.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "GUIMain.hpp"
 #include "Terrain.hpp"
@@ -31,6 +31,10 @@
 #include <cmath>
 #include <fstream>
 
+SimulationModel::SimulationModel()
+{
+
+}
 
 SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters)
 {
@@ -52,6 +56,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mLandLights = new LandLights();
   mLight = new Light();
   mCollision = new Collision();
+  mSolver = new Solver();
+  mWind = new Wind();
   
   mManOverboard->load(irr::core::vector3df(0,0,0),aScene,aDev,this,mTerrain);
   
@@ -70,7 +76,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mModelParameters = aModelParameters;
 
   //Set loop number to zero
-  mLoopNumber = 0;
+  mTime.loopNumber = 0;
 
   mWorldName = aScenarioData.worldName;
   float startTime = aScenarioData.startTime;
@@ -91,17 +97,17 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mVisibilityRange = aScenarioData.visibilityRange;
   if(mVisibilityRange <= 0) mVisibilityRange = 5*M_IN_NM; //TODO: Check units
 
-  mWindDirection = aScenarioData.windDirection;
-  mWindSpeed = aScenarioData.windSpeed;
+  mWind->setTrueDirection(aScenarioData.windDirection);
+  mWind->setTrueSpeed(aScenarioData.windSpeed);
 
   //std::cout << "Wind direction: " << windDirection << " Wind speed: " << windSpeed << std::endl;
 
   //Fixme: Think about time zone handling
   //Fixme: Note that if the time_t isn't long enough, 2038 problem exists
-  mScenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
+  mTime.scenarioOffsetTime = Utilities::dmyToTimestamp(startDay,startMonth,startYear);//Time in seconds to start of scenario day (unix timestamp for 0000h on day scenario starts)
 
   //set internal scenario time to start
-  mScenarioTime = startTime * SECONDS_IN_HOUR;
+  mTime.scenarioTime = startTime * SECONDS_IN_HOUR;
 
   //Set initial tide height to zero
   mTideHeight = 0;
@@ -144,7 +150,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
 
   //Load own ship model.
   // TODO: It would be better to pass in modelParameters directly
-  mOwnShip->load(aScenarioData.ownShipData, mModelParameters, mSmgr, this, mTerrain, mDevice);
+  mOwnShip->load(aScenarioData.ownShipData, mWater, mTide, mTerrain, mDevice);
 
   if(mModelParameters.mode == OperatingMode::Secondary) {
     mOwnShip->setSpeed(0); //Don't start moving if in secondary mode
@@ -193,7 +199,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mLight->load(mSmgr,sunRise,sunSet, mCamera->getSceneNode());
 
   //Load other ships
-  mOtherShips->load(aScenarioData.otherShipsData,mScenarioTime,mModelParameters.mode,mSmgr,this,mDevice);
+  mOtherShips->load(aScenarioData.otherShipsData,mTime.scenarioTime,mModelParameters.mode,mSmgr,this,mDevice);
 
   //Load buoys
   mBuoys->load(worldPath, mSmgr, this,mDevice);
@@ -206,6 +212,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
 
   //Load tidal information
   mTide->load(worldPath, aScenarioData);
+
+  //Wind
+  mWind->load(mOwnShip);
 
   //Load Collsion detection
   mCollision->load(mSmgr, mOwnShip->getSceneNode(), mDevice, this, mOwnShip->getHeightCorrection());
@@ -232,7 +241,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mManOverboard->setVisible(false);
 
   //store time
-  mPreviousTime = mDevice->getTimer()->getTime();
+  mTime.previousTime = mDevice->getTimer()->getTime();
 
   // Initialise as paused to start with
   mGuiData->paused = true;
@@ -259,6 +268,7 @@ SimulationModel::~SimulationModel()
   delete mLandLights;
   delete mLight;
   delete mCollision;
+  delete mWind;
 }
 
 OwnShip* SimulationModel::getOwnShip(void)
@@ -351,6 +361,12 @@ Collision* SimulationModel::getCollision(void)
   else return NULL;
 }
 
+Wind* SimulationModel::getWind(void)
+{
+  if(NULL != mWind) return mWind;
+  else return NULL;
+}
+
 /*Weather, Wind, Rain, Visibility*/
 void SimulationModel::setWeather(float aWeather){mWeather = aWeather;}
 float SimulationModel::getWeather() const {return mWeather;}
@@ -358,23 +374,15 @@ void SimulationModel::setRain(float aRainIntensity){mRainIntensity = aRainIntens
 float SimulationModel::getRain() const {return mRainIntensity;}
 void SimulationModel::setVisibility(float aVisibilityNm){mVisibilityRange = aVisibilityNm;}
 float SimulationModel::getVisibility() const{return mVisibilityRange;}
-void SimulationModel::setWindDirection(float aWindDirection){mWindDirection = aWindDirection;}
-float SimulationModel::getWindDirection() const{return mWindDirection;}
-void SimulationModel::setWindSpeed(float aWindSpeed){mWindSpeed = aWindSpeed;}
-float SimulationModel::getWindSpeed() const{return mWindSpeed;}
-void SimulationModel::setApparentWindDir(float aApparentWindDir){mApparentWindDir = aApparentWindDir;}
-void SimulationModel::setApparentWindSpd(float aApparentWindSpd){mApparentWindSpd = aApparentWindSpd;}
-float SimulationModel::getApparentWindDir(void) const{return mApparentWindDir;}
-float SimulationModel::getApparentWindSpd(void) const{return mApparentWindSpd;}
 
 /*Time*/
-unsigned long long SimulationModel::getTimestamp() const {return mAbsoluteTime;}
-unsigned long long SimulationModel::getTimeOffset() const {return mScenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
-void SimulationModel::setTimeDelta(float aScenarioTime){mScenarioTime = aScenarioTime;}
-float SimulationModel::getTimeDelta() const {return mScenarioTime;} //The change in time (s) since the start of the start day of the scenario
+unsigned long long SimulationModel::getTimestamp() const {return mTime.absoluteTime;}
+unsigned long long SimulationModel::getTimeOffset() const {return mTime.scenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
+void SimulationModel::setTimeDelta(float aScenarioTime){mTime.scenarioTime = aScenarioTime;}
+float SimulationModel::getTimeDelta() const {return mTime.scenarioTime;} //The change in time (s) since the start of the start day of the scenario
 void SimulationModel::setAccelerator(float aAccelerator){mDevice->getTimer()->setSpeed(aAccelerator);}
 float SimulationModel::getAccelerator() const {return mDevice->getTimer()->getSpeed();}
-irr::u32 SimulationModel::getLoopNumber() const {return mLoopNumber;}
+irr::u32 SimulationModel::getLoopNumber() const {return mTime.loopNumber;}
 
 /*Models Params*/
 ModelParameters& SimulationModel::getModelParameters(void){return mModelParameters;}
@@ -411,7 +419,8 @@ void SimulationModel::setViewAngle(float aViewAngle)
 
 void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
 {
-  mCamera->update(0, quat, pos, lensShift, true);
+  sTime tFake = {0};
+  mCamera->update(tFake, quat, pos, lensShift, true);
 }
 
 void SimulationModel::update()
@@ -419,28 +428,25 @@ void SimulationModel::update()
   bool paused;
   bool collided;
 
-  //get delta time
-  mCurrentTime = mDevice->getTimer()->getTime();
-  mDeltaTime = (mCurrentTime - mPreviousTime)/1000.f;
-  mPreviousTime = mCurrentTime;
-
-  //add this to the scenario time
-  mScenarioTime += mDeltaTime;
-  mAbsoluteTime = Utilities::round(mScenarioTime) + mScenarioOffsetTime;
-
-  //increment loop number
-  mLoopNumber++;
+  //Time management
+  mTime.currentTime = mDevice->getTimer()->getTime();
+  mTime.deltaTime = (mTime.currentTime - mTime.previousTime)/1000.f;
+  mTime.previousTime = mTime.currentTime;
+  mTime.scenarioTime += mTime.deltaTime;
+  mTime.absoluteTime = Utilities::round(mTime.scenarioTime) + mTime.scenarioOffsetTime;
+  mTime.loopNumber++;
 
   //Ensure we have the right radar screen resolution
   mRadarCalculation->setRadarDisplayRadius(mGuiMain->getRadarPixelRadius());
   mRadarScreen->setRadarDisplayRadius(mGuiMain->getRadarPixelRadius());
 
   //Update tide height and tidal stream here.
-  mTide->update(mAbsoluteTime);
+  mTide->update(mTime);
   mTideHeight = mTide->getTideHeight();
 
   //update ambient lighting
-  mLight->update(mScenarioTime);
+  mLight->update(mTime);
+  
   //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
   mDriver->setFog(mLight->getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*mVisibilityRange*M_IN_NM, mVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
 
@@ -449,24 +455,25 @@ void SimulationModel::update()
   mRain->update(mOwnShip->getPosition().X, mOwnShip->getPosition().Y, mOwnShip->getPosition().Z, mRainIntensity);
 
   //update other ship positions etc
-  mOtherShips->update(mDeltaTime,mScenarioTime,mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength()); //Update other ship motion (based on leg information), and light visibility.
+  mOtherShips->update(mTime, mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength()); //Update other ship motion (based on leg information), and light visibility.
 
+  //Wind update
+  mWind->update();
+  
   //update buoys (for lights, floating, and if collision detection is turned on)
-  mBuoys->update(mDeltaTime,mScenarioTime,mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength());
+  mBuoys->update(mTime, mTideHeight,mLight->getLightLevel(),mOwnShip->getPosition(),mOwnShip->getLength());
 
   //Update land lights
-  mLandLights->update(mDeltaTime,mScenarioTime,mLight->getLightLevel());
+  mLandLights->update(mTime, mLight->getLightLevel());
 
   //update all lines, ready to be used for own ship force
-  mLines->update(mDeltaTime);
+  mLines->update(mTime);
 
   //Solver Man 3Ddl
-  mSolver->SolveRk4(mOwnShip->getEta(), mOwnShip->getMu(), mDeltaTime);
-  mOwnShip->setEta(mSolver->getEta());
-  mOwnShip->setMu(mSolver->getMu());
+  mSolver->SolveRk4(mTime, mOwnShip->getEta(), mOwnShip->getMu());
 
   //update own ship
-  mOwnShip->update(mDeltaTime, mScenarioTime, mTideHeight, mWeather, mLines->getOverallForceLocal(), mLines->getOverallTorqueLocal());
+  mOwnShip->update(mTime, mTideHeight, mWeather, mWind, mSolver);
 
   if (mOwnShip->getNumberProp() > 1)
     mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
@@ -474,7 +481,7 @@ void SimulationModel::update()
     mSound->setVolumeEngine((fabs(mOwnShip->getPortEngine()) + fabs(mOwnShip->getStbdEngine()))*0.5);
 
   //update man overboard
-  mManOverboard->update(mDeltaTime, mTideHeight);
+  mManOverboard->update(mTime, mTideHeight);
 
   //Check for collisions
   collided = mCollision->getBuoyCollision() || mCollision->getOtherShipCollision();
@@ -483,27 +490,28 @@ void SimulationModel::update()
   mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
   //update the camera position
-  mCamera->update(mDeltaTime);
+  mCamera->update(mTime);
 
 
- // Check depth and update collision response forces and torque
-      irr::f32 groundingAxialDrag = 0;
-      irr::f32 groundingLateralDrag = 0;
-      irr::f32 groundingTurnDrag = 0;
-      mCollision->DetectAndRespond(groundingAxialDrag, groundingLateralDrag, groundingTurnDrag); // The drag values will get modified by this call
+  // Check depth and update collision response forces and torque
+  irr::f32 groundingAxialDrag = 0;
+  irr::f32 groundingLateralDrag = 0;
+  irr::f32 groundingTurnDrag = 0;
+  mCollision->DetectAndRespond(groundingAxialDrag, groundingLateralDrag, groundingTurnDrag); // The drag values will get modified by this call
 
-      // Add in response from mooring lines here
-      //groundingAxialDrag -= linesForce.Z;
-      //groundingLateralDrag -= linesForce.X;
-      //groundingTurnDrag -= linesTorque.Y;
+  // Add in response from mooring lines here
+  //groundingAxialDrag -= linesForce.Z;
+  //groundingLateralDrag -= linesForce.X;
+  //groundingTurnDrag -= linesTorque.Y;
 
   
   //update radar
   if(mRadarCalculation->isRadarOn())
     {
-      mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mDeltaTime, mAbsoluteTime, mGuiMain);
+      mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mTime.deltaTime, mTime.absoluteTime, mGuiMain);
       mRadarScreen->update();
-      mRadarCamera->update();
+      sTime tFake = {0};
+      mRadarCamera->update(tFake);
     }
   else 
     mRadarScreen->getSceneNode()->setVisible(false);
@@ -535,8 +543,8 @@ void SimulationModel::update()
   mGuiData->weather = mWeather;
   mGuiData->rain = mRainIntensity;
   mGuiData->visibility = mVisibilityRange;
-  mGuiData->windDirection = mWindDirection;
-  mGuiData->windSpeed = mWindSpeed;
+  mGuiData->windDirection = mWind->getTrueDirection();
+  mGuiData->windSpeed = mWind->getTrueSpeed();
   mGuiData->streamDirection = mTide->getStreamOverrideDirection();
   mGuiData->streamSpeed = mTide->getStreamOverrideSpeed();
   mGuiData->streamOverride = mTide->getStreamOverride();
@@ -548,7 +556,7 @@ void SimulationModel::update()
   mGuiData->guiRadarEBLRangeNm = mRadarCalculation->getEBLRangeNm();
   mGuiData->guiRadarCursorBrg = mRadarCalculation->getCursorBrg();
   mGuiData->guiRadarCursorRangeNm = mRadarCalculation->getCursorRangeNm();
-  mGuiData->currentTime = Utilities::timestampToString(mAbsoluteTime);
+  mGuiData->currentTime = Utilities::timestampToString(mTime.absoluteTime);
   mGuiData->paused = paused;
   mGuiData->collided = collided;
   mGuiData->headUp = mRadarCalculation->getHeadUp();
@@ -569,13 +577,13 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
     case E_CMD_MESSAGE_UPDATE_LEG:
       {
 	sUpLeg *dataUpdateLeg = (sUpLeg*)aDataCmd;
-	mOtherShips->changeLeg(dataUpdateLeg->shipNo, dataUpdateLeg->legNo, dataUpdateLeg->bearing, dataUpdateLeg->speed, dataUpdateLeg->dist, mScenarioTime);
+	mOtherShips->changeLeg(dataUpdateLeg->shipNo, dataUpdateLeg->legNo, dataUpdateLeg->bearing, dataUpdateLeg->speed, dataUpdateLeg->dist, mTime.scenarioTime);
 	break;
       }
     case E_CMD_MESSAGE_DELETE_LEG:
       {
 	sDelLeg *dataDeleteLeg = (sDelLeg*)aDataCmd;
-	mOtherShips->deleteLeg(dataDeleteLeg->shipNo, dataDeleteLeg->legNo, mScenarioTime);
+	mOtherShips->deleteLeg(dataDeleteLeg->shipNo, dataDeleteLeg->legNo, mTime.scenarioTime);
 	break;
       }
     case E_CMD_MESSAGE_REPOSITION_SHIP:
@@ -595,7 +603,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataResetLegs->shipNo >= 0)
 	  {
 	    mOtherShips->setPos(dataResetLegs->shipNo, dataResetLegs->posX, dataResetLegs->posZ);
-	    mOtherShips->resetLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1, mScenarioTime);
+	    mOtherShips->resetLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1, mTime.scenarioTime);
 	    //1Nm Hard-coded
 	  }
 	
@@ -608,8 +616,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         if(dataWeather->weather >= 0) {setWeather(dataWeather->weather);}
 	if(dataWeather->rain >= 0) {setRain(dataWeather->rain);}
 	if(dataWeather->visibility > 0) {setVisibility(dataWeather->visibility);}
-	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
-	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
+	if(dataWeather->windSpeed > 0) {mWind->setTrueSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {mWind->setTrueDirection(dataWeather->windDirection);}
 	if(dataWeather->streamDirection > 0) {mTide->setStreamOverrideDirection(dataWeather->streamDirection);}
 	if(dataWeather->streamSpeed > 0) {mTide->setStreamOverrideSpeed(dataWeather->streamSpeed);}
 	if(dataWeather->streamOverrideInt > 0) {mTide->setStreamOverride(dataWeather->streamOverrideInt);}
@@ -871,8 +879,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
         setWeather(dataMasterCmds->weather.weather);
 	setVisibility(dataMasterCmds->weather.visibility);
 	setRain(dataMasterCmds->weather.rain);
-	setWindSpeed(dataMasterCmds->weather.windSpeed);
-	setWindDirection(dataMasterCmds->weather.windDirection);
+	mWind->setTrueSpeed(dataMasterCmds->weather.windSpeed);
+	mWind->setTrueDirection(dataMasterCmds->weather.windDirection);
 	mTide->setStreamOverrideDirection(dataMasterCmds->weather.streamDirection);
 	mTide->setStreamOverrideSpeed(dataMasterCmds->weather.streamSpeed);
 	mTide->setStreamOverride(dataMasterCmds->weather.streamOverrideInt);
@@ -941,8 +949,8 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sWeather *dataWeather = (sWeather*)aDataCmd;
 
-	if(dataWeather->windSpeed > 0) {setWindSpeed(dataWeather->windSpeed);}
-	if(dataWeather->windDirection > 0) {setWindDirection(dataWeather->windDirection);}
+	if(dataWeather->windSpeed > 0) {mWind->setTrueSpeed(dataWeather->windSpeed);}
+	if(dataWeather->windDirection > 0) {mWind->setTrueDirection(dataWeather->windDirection);}
 
 	break;
       }

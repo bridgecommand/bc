@@ -18,7 +18,7 @@
 #define __CAMERA_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
+#include "Time.hpp"
 #include <vector>
 
 class Camera
@@ -63,7 +63,7 @@ public:
   void setFrozen(bool frozen);
   void toggleFrozen();
   void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-  void update(irr::f32 deltaTime=0, irr::core::quaternion quat=irr::core::quaternion(0,0,0,1), irr::core::vector3df pos=irr::core::vector3df(0,0,0), irr::core::vector2df lensShift=irr::core::vector2df(0,0), bool vrMode = false);
+  void update(sTime& aTime, irr::core::quaternion quat=irr::core::quaternion(0,0,0,1), irr::core::vector3df pos=irr::core::vector3df(0,0,0), irr::core::vector2df lensShift=irr::core::vector2df(0,0), bool vrMode = false);
 
 private:
   irr::scene::ICameraSceneNode* camera;

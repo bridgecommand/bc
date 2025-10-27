@@ -62,6 +62,17 @@ int Ship::setShipParams(const std::string& aType)
 }
 
 
+unsigned char Ship::getSailCount(void)
+{
+  return mSailsCount;
+}
+
+Sail& Ship::getSail(void)
+{
+  return mSails;
+}
+
+
 irr::scene::IMeshSceneNode* Ship::getSceneNode() const
 {
     return (irr::scene::IMeshSceneNode*)mShipScene;

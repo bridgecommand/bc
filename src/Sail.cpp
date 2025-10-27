@@ -1,4 +1,5 @@
 #include "Sail.hpp"
+#include "Constants.hpp"
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -112,19 +113,19 @@ int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, st
 
 size_t FindClosestIndex(const std::vector<float>& aValue, float aTarget)
 {
-    size_t best = 0;
-    float minDiff = std::abs(aValue[0] - aTarget);
+  size_t best = 0;
+  float minDiff = std::abs(aValue[0] - aTarget);
 
-    for(size_t i = 1; i < aValue.size(); ++i)
-      {
-        float diff = std::abs(aValue[i] - aTarget);
-        if(diff < minDiff)
-	  {
-            minDiff = diff;
-            best = i;
-	  }
+  for(size_t i = 1; i < aValue.size(); ++i)
+    {
+      float diff = std::abs(aValue[i] - aTarget);
+      if(diff < minDiff)
+	{
+	  minDiff = diff;
+	  best = i;
+	}
     }
-    return best;
+  return best;
 }
 
 
@@ -149,4 +150,31 @@ float Sail::GetForce(char aAxe, float aStwValue, float aTwsValue, float aTwaValu
     }
       
   return force;
+}
+
+void Sail::SetSTW(double aSpeedThroughWater)
+{
+  mSpeedThroughWater = aSpeedThroughWater;
+}
+
+void Sail::SetWind(double aTrueWindSpeed, double aApparentWindDir)
+{
+  mTrueWindSpeed = aTrueWindSpeed;
+  mApparentWindDir = aApparentWindDir;
+}
+
+
+void Sail::ComputeT(void)
+{
+  float sailsForceX = 0, sailsForceY = 0;
+
+  sailsForceX = GetForce('X', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
+  sailsForceY = GetForce('Y', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
+
+  mT << sailsForceX, sailsForceX, 0;
+}
+
+Eigen::Vector3d& Sail::getT(void)
+{
+  return mT;
 }

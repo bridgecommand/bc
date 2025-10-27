@@ -18,6 +18,7 @@
 #define __MANOVERBOARD_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "Time.hpp"
 
 //Forward declarations
 class SimulationModel;
@@ -32,7 +33,7 @@ public:
   irr::core::vector3df getPosition() const;
   
   void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-  void update(irr::f32 deltaTime, irr::f32 tideHeight);
+  void update(sTime& aTime, irr::f32 tideHeight);
   irr::scene::ISceneNode* getSceneNode() const;
 
   void releaseManOverboard(irr::core::vector3df aOwnShipPos, float aBreadth, float aHeading);

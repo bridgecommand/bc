@@ -419,10 +419,10 @@ void NMEA::updateNMEA()
 
     irr::f32 depth = model->getOwnShip()->getDepth(model->getTerrain());
 
-    irr::f32 windDirection = model->getWindDirection();
-    irr::f32 windSpeed = model->getWindSpeed();
-    irr::f32 apparentWindDir = model->getApparentWindDir() * irr::core::RADTODEG;
-    irr::f32 apparentWindSpd = model->getApparentWindSpd();
+    irr::f32 windDirection = model->getWind()->getTrueDirection();
+    irr::f32 windSpeed = model->getWind()->getTrueSpeed();
+    irr::f32 apparentWindDir = model->getWind()->getApparentDir() * irr::core::RADTODEG;
+    irr::f32 apparentWindSpd = model->getWind()->getApparentSpd();
     
     char eastWest = easting[lon < 0];
     char northSouth = northing[lat < 0];

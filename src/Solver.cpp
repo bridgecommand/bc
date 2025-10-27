@@ -63,9 +63,13 @@ Eigen::VectorXd Solver::DiffEq(const Eigen::VectorXd& aVectEtaMu)
   mShip->getRudder().ComputeT(vMu, mShip->getRho(), mShip->getGeoParams(), mShip->getPropeller());
 
   mT << mShip->getHull().getT() + mShip->getPropeller().getT() + mShip->getRudder().getT();
+  
+  if(mShip->getSailCount() > 0)
+    {
+      mShip->getSail().ComputeT();
+      mT += mShip->getSail().getT();
+    }
 
-  //mShip.getWind().ComputeT(vMu, vEta, mShip.getGeoParams(), mShip.getShipWindParams());
-  //mT += mShip.getWind().getWindT();
   
   vMuP = mShip->getInvMatM() * (mT - (matC * vMu));
   
@@ -80,8 +84,10 @@ void Solver::SetDeltaT(double aDt)
   mDt = aDt;
 }
 
-void Solver::SolveRk4(Eigen::Vector3d aEta, Eigen::Vector3d aMu, double aDt)
+void Solver::SolveRk4(sTime& aTime, Eigen::Vector3d aEta, Eigen::Vector3d aMu)
 {
+  float aDt = aTime.deltaTime;
+  
   Eigen::VectorXd y(VECTOR_SIZE_DIFF_EQ);
   Eigen::VectorXd tmp(VECTOR_SIZE_DIFF_EQ);
   Eigen::VectorXd dy1(VECTOR_SIZE_DIFF_EQ);

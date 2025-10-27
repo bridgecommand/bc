@@ -96,7 +96,10 @@ void Tide::load(const std::string& worldName, const ScenarioData& scenarioData) 
 
 }
 
-void Tide::update(uint64_t absoluteTime) {
+void Tide::update(sTime& aTime)
+{
+  float absoluteTime = aTime.absoluteTime;
+  
   //update tideHeight for current time (unix epoch time in s)
   tideHeight=calcTideHeight(absoluteTime);
 

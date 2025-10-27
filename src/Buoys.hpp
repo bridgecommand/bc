@@ -18,7 +18,7 @@
 #define __BUOYS_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
+#include "Time.hpp"
 #include <vector>
 #include <string>
 
@@ -34,7 +34,7 @@ class Buoys
         Buoys();
         virtual ~Buoys();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
+        void update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
         irr::core::vector3df getPosition(int number) const;

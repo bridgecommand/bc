@@ -94,8 +94,11 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
 
 }
 
-void OtherShips::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+void OtherShips::update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
+  float deltaTime = aTime.deltaTime;
+  float scenarioTime = aTime.scenarioTime;
+  
     for(std::vector<OtherShip*>::iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
 
         //Find local wave height

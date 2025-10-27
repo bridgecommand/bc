@@ -18,7 +18,7 @@
 #define __TIDE_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
+#include "Time.hpp"
 #include <vector>
 #include <string>
 #include <stdint.h> //for uint64_t
@@ -60,7 +60,7 @@ public:
   Tide();
   virtual ~Tide();
   void load(const std::string& worldName, const ScenarioData& scenarioData);
-  void update(uint64_t absoluteTime);
+  void update(sTime& aTime);
   irr::f32 getTideHeight() const; //To be called after update(time)
   irr::core::vector2df getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const; //Does not need update() to be called before this
 

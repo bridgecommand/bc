@@ -1,7 +1,10 @@
 #include <iostream>
 #include <vector>
 #include "Message.hpp"
+#include "SimulationModel.hpp"
+#include "ModelParams.hpp"
 #include "Utilities.hpp"
+
 
 sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController},
 					     {"BC", &Message::ParseMasterCommand},
@@ -10,9 +13,10 @@ sParseHeader tParseHeader[MAX_HEADER_MSG] = {{"MC", &Message::ParseMapController
 					     {"SD", &Message::ParseShutDown},
 					     {"MH", &Message::ParseMultiPlayer},
 					     {"WI", &Message::ParseWindInjection}
-					    };
+};
 
-Message::Message(SimulationModel* aModel)
+
+Message::Message(void* aModel)
 {
   mModel = aModel;
 }
@@ -165,21 +169,23 @@ sTimeInf Message::GetTimeInfos(std::vector<std::string>& aTimeData)
   static float previousTimeError = 0;
   sTimeInf timeInfos = {0};
 
+  SimulationModel *pModel = pModel;
+
   if(aTimeData.size() > 2)
     {
-      timeError = Utilities::lexical_cast<float>(aTimeData.at(2)) - mModel->getTimeDelta(); //How far we are behind the master
+      timeError = Utilities::lexical_cast<float>(aTimeData.at(2)) - pModel->getTimeDelta(); //How far we are behind the master
       float baseAccelerator = Utilities::lexical_cast<float>(aTimeData.at(3)); //The master accelerator setting
 
       if(fabs(timeError) > 1)
 	{
-      timeInfos.setTimeD = true;
+	  timeInfos.setTimeD = true;
 	  timeInfos.timeD = Utilities::lexical_cast<float>(aTimeData.at(2));
 	  accelAdjustment = 0;	  
 	}
       else
 	{ 
-      timeInfos.setTimeD = false;
-      //Adjust accelerator to maintain time alignment
+	  timeInfos.setTimeD = false;
+	  //Adjust accelerator to maintain time alignment
 	  accelAdjustment += timeError*0.01; //Integral only at the moment
 	  //Check for zero crossing, and reset
 	  if(previousTimeError * timeError < 0)
@@ -302,12 +308,14 @@ sWeatherInf Message::GetInfosWeather(std::vector<std::string>& aWeatherData)
 sViewInf Message::GetInfosView(std::vector<std::string>& aViewData)
 {
   sViewInf viewInfos = {0};
+  SimulationModel *pModel = pModel;
+  
   if(aViewData.size() == 1)
     {
-       if(mModel->getMoveViewWithPrimary())
-       {
-           viewInfos.view = Utilities::lexical_cast<float>(aViewData.at(0));
-       }
+      if(pModel->getMoveViewWithPrimary())
+	{
+	  viewInfos.view = Utilities::lexical_cast<float>(aViewData.at(0));
+	}
     }
   return viewInfos;
 }
@@ -315,23 +323,25 @@ sViewInf Message::GetInfosView(std::vector<std::string>& aViewData)
 sCtrlsInf Message::GetInfosControls(std::vector<std::string>& aCtrlsData)
 {
   sCtrlsInf controlsInfos = {0}; 
+  SimulationModel *pModel = pModel;
+ 
   if(aCtrlsData.size() == 10)
     {
-      if(!mModel->getModelParameters().secondaryControlWheel)
+      if(!pModel->getModelParameters().secondaryControlWheel)
 	controlsInfos.wheel = Utilities::lexical_cast<float>(aCtrlsData.at(0));
     
       controlsInfos.rudder = Utilities::lexical_cast<float>(aCtrlsData.at(1));
       
-      if(!mModel->getModelParameters().secondaryControlPortEngine)
+      if(!pModel->getModelParameters().secondaryControlPortEngine)
 	controlsInfos.portEng = Utilities::lexical_cast<float>(aCtrlsData.at(2));
 
-      if(!mModel->getModelParameters().secondaryControlStbdEngine)
+      if(!pModel->getModelParameters().secondaryControlStbdEngine)
 	controlsInfos.stbdEng = Utilities::lexical_cast<float>(aCtrlsData.at(3));
       
-      if(!mModel->getModelParameters().secondaryControlBowThruster)
+      if(!pModel->getModelParameters().secondaryControlBowThruster)
       	controlsInfos.bowThrust = Utilities::lexical_cast<float>(aCtrlsData.at(8));
    
-      if(!mModel->getModelParameters().secondaryControlSternThruster)
+      if(!pModel->getModelParameters().secondaryControlSternThruster)
 	controlsInfos.sternThrust = Utilities::lexical_cast<float>(aCtrlsData.at(9));
     }
   return controlsInfos;
@@ -341,63 +351,65 @@ std::string& Message::ControlOverride(void)
 {
   static std::string controlOverride;
   controlOverride.clear();
-
-  if(mModel->getModelParameters().secondaryControlWheel)
+  SimulationModel *pModel = pModel;
+  
+  if(pModel->getModelParameters().secondaryControlWheel)
     {
       controlOverride.append("MCCO,0,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getWheel()));
       controlOverride.append("|");
     }
-  if(mModel->getModelParameters().secondaryControlPortEngine)
+  if(pModel->getModelParameters().secondaryControlPortEngine)
     {
       controlOverride.append("MCCO,1,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPortEngine()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPortEngine()));
       controlOverride.append("|");
     }
-  if(mModel->getModelParameters().secondaryControlStbdEngine)
+  if(pModel->getModelParameters().secondaryControlStbdEngine)
     {
       controlOverride.append("MCCO,2,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getStbdEngine()));
+      controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getStbdEngine()));
       controlOverride.append("|");
     }
-  /*if(mModel->getIsSecondaryControlPortSchottel())
+  /*if(pModel->getIsSecondaryControlPortSchottel())
     {
-      controlOverride.append("MCCO,3,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
-      controlOverride.append("|");
-      }
-  if(mModel->getIsSecondaryControlStbdSchottel())
-    {
-      controlOverride.append("MCCO,4,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdSchottel()));
-      controlOverride.append("|");
+    controlOverride.append("MCCO,3,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getPortSchottel()));
+    controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlPortThrustLever())
+    if(pModel->getIsSecondaryControlStbdSchottel())
     {
-      controlOverride.append("MCCO,5,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getPortAzimuthThrustLever()));
-      controlOverride.append("|");
+    controlOverride.append("MCCO,4,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getStbdSchottel()));
+    controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlStbdThrustLever())
+    if(pModel->getIsSecondaryControlPortThrustLever())
     {
-      controlOverride.append("MCCO,6,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
-      controlOverride.append("|");
-      }*
-  if(mModel->getIsSecondaryControlBowThruster())
-    {
-      controlOverride.append("MCCO,7,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getBowThruster()));
-      controlOverride.append("|");
+    controlOverride.append("MCCO,5,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getPortAzimuthThrustLever()));
+    controlOverride.append("|");
     }
-  if(mModel->getIsSecondaryControlSternThruster())
+    if(pModel->getIsSecondaryControlStbdThrustLever())
     {
-      controlOverride.append("MCCO,8,");
-      controlOverride.append(Utilities::lexical_cast<std::string>(mModel->getSternThruster()));
-      controlOverride.append("|");
-      }*/
+    controlOverride.append("MCCO,6,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getStbdAzimuthThrustLever()));
+    controlOverride.append("|");
+    }*
+    if(pModel->getIsSecondaryControlBowThruster())
+    {
+    controlOverride.append("MCCO,7,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getBowThruster()));
+    controlOverride.append("|");
+    }
+    if(pModel->getIsSecondaryControlSternThruster())
+    {
+    controlOverride.append("MCCO,8,");
+    controlOverride.append(Utilities::lexical_cast<std::string>(pModel->getSternThruster()));
+    controlOverride.append("|");
+    }*/
   return controlOverride;
 }
+
 
 eCmdMsg Message::ParseOwnShip(std::string& aMsg, void** aCmdData)
 {
@@ -449,6 +461,7 @@ eCmdMsg Message::ParseShutDown(std::string& aMsg, void** aCmdData)
   return E_CMD_MESSAGE_SHUTDOWN;
 }
 
+
 eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 {
   std::vector<std::string> mcRec = Utilities::split(aMsg,'#');
@@ -461,53 +474,53 @@ eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 
 	  if(itCmd.length() > 2)
 	    {
-	      if(itCmd.substr(0,2).compare("CL") == 0 || /*Change Leg*/
-		 itCmd.substr(0,2).compare("AL") == 0)   /*Add Leg*/
+	      if(itCmd.substr(0,2).compare("CL") == 0 || //Change Leg
+		 itCmd.substr(0,2).compare("AL") == 0)   //Add Leg
 		{
 		  *aCmdData = (void*)UpdateLeg(itCmd);
 		  return E_CMD_MESSAGE_UPDATE_LEG;
 		}
-	      else if(itCmd.substr(0,2).compare("DL") == 0) /*Delete Leg*/
+	      else if(itCmd.substr(0,2).compare("DL") == 0) //Delete Leg
 		{
 		  *aCmdData = (void*)DeleteLeg(itCmd); 		      
 		  return E_CMD_MESSAGE_DELETE_LEG;
 		}
-	      else if(itCmd.substr(0,2).compare("RS") == 0) /*Reposition Ship*/
+	      else if(itCmd.substr(0,2).compare("RS") == 0) //Reposition Ship
 		{			
 		  *aCmdData = (void*)RepositionShip(itCmd);
 		  return E_CMD_MESSAGE_REPOSITION_SHIP;
 		}
-	      else if(itCmd.substr(0,2).compare("RL") == 0) /*Reset Legs*/
+	      else if(itCmd.substr(0,2).compare("RL") == 0) //Reset Legs
 		{
 		  *aCmdData = (void*)ResetLegs(itCmd);
 		  return E_CMD_MESSAGE_RESET_LEGS;
 		}
-	      else if(itCmd.substr(0,2).compare("SW") == 0) /*Set Weather*/
+	      else if(itCmd.substr(0,2).compare("SW") == 0) //Set Weather
 		{
 		  *aCmdData = (void*)SetWeather(itCmd);
 		  return E_CMD_MESSAGE_SET_WEATHER;
 		}
-	      else if(itCmd.substr(0,2).compare("MO") == 0) /*Man Overboard*/
+	      else if(itCmd.substr(0,2).compare("MO") == 0) //Man Overboard
 		{		      
 		  *aCmdData = (void*)ManOverboard(itCmd);
 		  return E_CMD_MESSAGE_MAN_OVERBOARD;
 		}
-	      else if(itCmd.substr(0,2).compare("MM") == 0) /*Set MMSI*/
+	      else if(itCmd.substr(0,2).compare("MM") == 0) //Set MMSI
 		{			
 		  *aCmdData = (void*)SetMMSI(itCmd);
 		  return E_CMD_MESSAGE_SET_MMSI;
 		}
-	      else if(itCmd.substr(0,2).compare("RW") == 0) /*Rudder Working*/
+	      else if(itCmd.substr(0,2).compare("RW") == 0) //Rudder Working
 		{
 		  *aCmdData = (void*)RudderWorking(itCmd);
 		  return E_CMD_MESSAGE_RUDDER_WORKING;
 		}
-	      else if(itCmd.substr(0,2).compare("RF") == 0) /*Rudder Follow up*/
+	      else if(itCmd.substr(0,2).compare("RF") == 0) //Rudder Follow up
 		{
 		  *aCmdData = (void*)RudderFollowUp(itCmd);
 		  return E_CMD_MESSAGE_RUDDER_FOLLOW_UP;
 		}
-	      else if(itCmd.substr(0,2).compare("CO") == 0) /*Controls Override*/
+	      else if(itCmd.substr(0,2).compare("CO") == 0) //Controls Override
 		{
 		  *aCmdData = (void*)CtrlOverride(itCmd);
 		  return E_CMD_MESSAGE_CONTROLS_OVERRIDE;
@@ -520,62 +533,62 @@ eCmdMsg Message::ParseMapController(std::string& aMsg, void** aCmdData)
 
 eCmdMsg Message::ParseMultiPlayer(std::string& aMsg, void** aCmdData)
 {
-    static sMasterCmdsInf masterCmdsData;
-    std::vector<std::string> bcRec = Utilities::split(aMsg, '#');
+  static sMasterCmdsInf masterCmdsData;
+  std::vector<std::string> bcRec = Utilities::split(aMsg, '#');
 
-    if (MAX_RECORD_BC_MSG == bcRec.size())
+  if (MAX_RECORD_BC_MSG == bcRec.size())
     {
-        /*Time Infos*/
-        std::vector<std::string> timeData = Utilities::split(bcRec.at(0), ',');
-        masterCmdsData.time = GetTimeInfos(timeData);
+      //Time Infos
+      std::vector<std::string> timeData = Utilities::split(bcRec.at(0), ',');
+      masterCmdsData.time = GetTimeInfos(timeData);
 
-        std::vector<std::string> numberData = Utilities::split(bcRec.at(2), ',');
-        if (numberData.size() == 4)
-        {
-            /*Other Ships Infos*/
-            unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
+      std::vector<std::string> numberData = Utilities::split(bcRec.at(2), ',');
+      if (numberData.size() == 4)
+	{
+	  //Other Ships Infos
+	  unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
 
-            if (numberOthers > 0)
-            {
-                std::vector<std::string> otherShipsData = Utilities::split(bcRec.at(3), '|');
-                masterCmdsData.otherShips.ships = new sShipInf[numberOthers];
-                GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
-            }
+	  if (numberOthers > 0)
+	    {
+	      std::vector<std::string> otherShipsData = Utilities::split(bcRec.at(3), '|');
+	      masterCmdsData.otherShips.ships = new sShipInf[numberOthers];
+	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
+	    }
 
-            /*Buoys*/
-            //Not recovered
+	  //Buoys
+	  //Not recovered
 
-            /*MOB*/
-            unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
-            if (numberMOB)
-            {
-                std::vector<std::string> mobData = Utilities::split(bcRec.at(5), ',');
-                masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
-            }
+	  //MOB
+	  unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
+	  if (numberMOB)
+	    {
+	      std::vector<std::string> mobData = Utilities::split(bcRec.at(5), ',');
+	      masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
+	    }
 
-            /*Lines*/
-            unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
-            std::vector<std::string> linesData = Utilities::split(bcRec.at(11), '|');
-            masterCmdsData.lines = GetInfosLines(linesData, numberLines);
-        }
+	  //Lines
+	  unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
+	  std::vector<std::string> linesData = Utilities::split(bcRec.at(11), '|');
+	  masterCmdsData.lines = GetInfosLines(linesData, numberLines);
+	}
 
-        /*Weather*/
-        std::vector<std::string> weatherData = Utilities::split(bcRec.at(7), ',');
-        masterCmdsData.weather = GetInfosWeather(weatherData);
+      //Weather
+      std::vector<std::string> weatherData = Utilities::split(bcRec.at(7), ',');
+      masterCmdsData.weather = GetInfosWeather(weatherData);
 
-        /*Views*/
-        std::vector<std::string> viewData = Utilities::split(bcRec.at(9), ',');
-        masterCmdsData.view = GetInfosView(viewData);
+      //Views
+      std::vector<std::string> viewData = Utilities::split(bcRec.at(9), ',');
+      masterCmdsData.view = GetInfosView(viewData);
 
-        /*Controls*/
-        std::vector<std::string> controlsData = Utilities::split(bcRec.at(12), ',');
-        masterCmdsData.controls = GetInfosControls(controlsData);
+      //Controls
+      std::vector<std::string> controlsData = Utilities::split(bcRec.at(12), ',');
+      masterCmdsData.controls = GetInfosControls(controlsData);
 
-        *aCmdData = (void*)&masterCmdsData;
+      *aCmdData = (void*)&masterCmdsData;
 
-        return E_CMD_MESSAGE_MULTIPLAYER_COMMAND;
+      return E_CMD_MESSAGE_MULTIPLAYER_COMMAND;
     }
-    return E_CMD_MESSAGE_UNKNOWN;
+  return E_CMD_MESSAGE_UNKNOWN;
 }
 
 eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
@@ -585,18 +598,18 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
   
   if(MAX_RECORD_BC_MSG == bcRec.size())
     {
-      /*Time Infos*/
+      //Time Infos
       std::vector<std::string> timeData = Utilities::split(bcRec.at(0),',');
       masterCmdsData.time = GetTimeInfos(timeData);
 
-      /*Own Ship Infos*/
+      //Own Ship Infos
       std::vector<std::string> positionData = Utilities::split(bcRec.at(1),',');
       masterCmdsData.ownShip = GetInfosOwnShip(positionData);
       
       std::vector<std::string> numberData = Utilities::split(bcRec.at(2),',');
       if(numberData.size() == 4)
 	{
-	  /*Other Ships Infos*/
+	  //Other Ships Infos
 	  unsigned int numberOthers = Utilities::lexical_cast<unsigned int>(numberData.at(0));
       
 	  if(numberOthers > 0)
@@ -606,10 +619,10 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 	      GetInfosOtherShips(otherShipsData, numberOthers, masterCmdsData.otherShips);
 	    }
 	  
-	  /*Buoys*/
+	  //Buoys
 	  //Not recovered
 
-	  /*MOB*/
+	  //MOB
 	  unsigned int numberMOB = Utilities::lexical_cast<unsigned int>(numberData.at(2));
 	  if(numberMOB)
 	    {
@@ -617,21 +630,21 @@ eCmdMsg Message::ParseMasterCommand(std::string& aMsg, void** aCmdData)
 	      masterCmdsData.mob = GetInfosMob(mobData, numberMOB);
 	    }	  
 	  
-	  /*Lines*/
+	  //Lines
 	  unsigned int numberLines = Utilities::lexical_cast<unsigned int>(numberData.at(3));
 	  std::vector<std::string> linesData = Utilities::split(bcRec.at(11),'|');
 	  masterCmdsData.lines = GetInfosLines(linesData, numberLines);
 	}
 
-      /*Weather*/
+      //Weather
       std::vector<std::string> weatherData = Utilities::split(bcRec.at(7),',');
       masterCmdsData.weather = GetInfosWeather(weatherData);
 
-      /*Views*/
+      //Views
       std::vector<std::string> viewData = Utilities::split(bcRec.at(9),',');
       masterCmdsData.view = GetInfosView(viewData);
 
-      /*Controls*/
+      //Controls
       std::vector<std::string> controlsData = Utilities::split(bcRec.at(12),',');
       masterCmdsData.controls = GetInfosControls(controlsData);
 
@@ -649,7 +662,7 @@ eCmdMsg Message::Parse(const char *aData, size_t aDataSize, void** aCmdData)
   std::string message = inRawData;
   unsigned int idMessage = 0;
 
-  /*Map Controller message*/
+  //Map Controller message
   if(inRawData.substr(0,2).compare(tParseHeader[0].header)==0)
     {
       std::vector<std::string> inData = Utilities::split(inRawData,'|');
@@ -678,19 +691,20 @@ std::string& Message::MpFeedBack(void)
 {
   static std::string mpFeedBack;
   mpFeedBack.clear();
+  SimulationModel *pModel = (SimulationModel*)mModel;
 
   mpFeedBack = "MPF";
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().X));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().X));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().Z));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().Z));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()*irr::core::RADTODEG));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRateOfTurn()*irr::core::RADTODEG));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeed()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getSpeed()));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(mModel->getTimeDelta()));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getTimeDelta()));
   mpFeedBack.append("#");
 
   mpFeedBack.append(MakeLines());
@@ -702,50 +716,51 @@ std::string& Message::MakeLines(void)
 {
   static std::string msg;
   msg.clear();
+  SimulationModel *pModel = (SimulationModel*)mModel;
     
-  for(int number = 0; number < (int)(mModel->getLines()->getNumberOfLines()); number++ )
+  for(int number = 0; number < (int)(pModel->getLines()->getNumberOfLines()); number++ )
     {
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineStartX(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineStartX(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineStartY(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineStartY(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineStartZ(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineStartZ(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineEndX(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineEndX(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineEndY(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineEndY(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineEndZ(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineEndZ(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineStartType(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineStartType(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineEndType(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineEndType(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineStartID(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineStartID(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineEndID(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineEndID(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineNominalLength(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineNominalLength(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineBreakingTension(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineBreakingTension(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineBreakingStrain(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineBreakingStrain(number)));
       msg.append(",");
-      msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getLineNominalShipMass(number)));
+      msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getLineNominalShipMass(number)));
       msg.append(",");
-      if (mModel->getLines()->getKeepSlack(number)) {
+      if (pModel->getLines()->getKeepSlack(number)) {
 	msg.append("1");
       } else {
 	msg.append("0");
       }
       msg.append(",");
-      if (mModel->getLines()->getHeaveIn(number)) {
+      if (pModel->getLines()->getHeaveIn(number)) {
 	msg.append("1");
       } else {
 	msg.append("0");
       }
         
-      if (number < (int)mModel->getLines()->getNumberOfLines()-1) {msg.append("|");}
+      if (number < (int)pModel->getLines()->getNumberOfLines()-1) {msg.append("|");}
     }
   return msg;
 }
@@ -754,76 +769,77 @@ std::string& Message::MakeLines(void)
 std::string& Message::KeepAlive(void)
 {
   static std::string msg;
-
+  SimulationModel *pModel = pModel;
+  
   msg.clear();
   msg = "BC";
   //0 Time:
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTimestamp())); //Current timestamp
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTimestamp())); //Current timestamp
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTimeOffset())); //Timestamp of start of first day of scenario
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTimeOffset())); //Timestamp of start of first day of scenario
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTimeDelta())); //Time from start day of scenario
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTimeDelta())); //Time from start day of scenario
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getAccelerator())); //Current accelerator
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getAccelerator())); //Current accelerator
   msg.append("#");
 
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().X));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().X));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPosition().Z));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().Z));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRateOfTurn()));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Pitch
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(0)); //Fixme: Roll
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeed()*MPS_TO_KTS));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getSpeed()*MPS_TO_KTS));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getWheel()));
   msg.append(":");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRudder().getDelta()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRudder().getDelta()));
   msg.append(":0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortEngineRPM()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getPortEngineRPM()));
   msg.append(":0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdEngineRPM()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getStbdEngineRPM()));
   msg.append("#");
 
   //2 Numbers: Number Other, Number buoys, Number MOB #
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getNumber()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getNumber()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getNumber()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getNumber()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getVisible()? 1 : 0));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getVisible()? 1 : 0));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getLines()->getNumberOfLines()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getLines()->getNumberOfLines()));
   msg.append("#");
 
   //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
-  for(int number = 0; number < (int)mModel->getOtherShips()->getNumber(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getPosition(number).X));
+  for(int number = 0; number < (int)pModel->getOtherShips()->getNumber(); number++ ) {
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getPosition(number).Y));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).Y));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getHeading(number)));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getHeading(number)));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getSpeed(number)*MPS_TO_KTS));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getSpeed(number)*MPS_TO_KTS));
     msg.append(",");
     msg.append("0"); // Rate of turn: This is not currently used in normal mode
     msg.append(",");
     msg.append("0"); //Fixme: Sart enabled
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getOtherShips()->getMMSI(number)));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getMMSI(number)));
     msg.append(",");
 
-    //std::cout << "MMSI for other ship " << number << ":" << mModel->getOtherShipMMSI(number) << std::endl;
+    //std::cout << "MMSI for other ship " << number << ":" << pModel->getOtherShipMMSI(number) << std::endl;
 
     //Send leg information
-    std::vector<Leg> legs = mModel->getOtherShips()->getLegs(number);
+    std::vector<Leg> legs = pModel->getOtherShips()->getLegs(number);
     msg.append(Utilities::lexical_cast<std::string>(legs.size())); //Number of legs
     msg.append(",");
     //Build leg information, each leg separated by a '/', each value by ':'
@@ -836,45 +852,45 @@ std::string& Message::KeepAlive(void)
       if (it!= (legs.end()-1)) {msg.append("/");}
     }
 
-    if (number < (int)mModel->getOtherShips()->getNumber()-1) {msg.append("|");}
+    if (number < (int)pModel->getOtherShips()->getNumber()-1) {msg.append("|");}
   }
   msg.append("#");
 
   //4 Each Buoy
-  for(int number = 0; number < (int)mModel->getBuoys()->getNumber(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getPosition(number).X));
+  for(int number = 0; number < (int)pModel->getBuoys()->getNumber(); number++ ) {
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(mModel->getBuoys()->getPosition(number).Z));
-    if (number < (int)mModel->getBuoys()->getNumber()-1) {msg.append("|");}
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).Z));
+    if (number < (int)pModel->getBuoys()->getNumber()-1) {msg.append("|");}
   }
   msg.append("#");
 
   //5 MOB
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosX()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getMoB()->getPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosZ()));
   msg.append("#");
 
   //6 Loop
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getLoopNumber()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getLoopNumber()));
   msg.append("#");
 
   //7 Weather: Weather, Fog range, wind dirn, rain #
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWeather()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWeather()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getVisibility()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getVisibility()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWind()->getTrueDirection()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getRain()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getRain()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWind()->getTrueSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverrideDirection()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTide()->getStreamOverrideDirection()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverrideSpeed()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTide()->getStreamOverrideSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTide()->getStreamOverride()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTide()->getStreamOverride()));
 
   msg.append("#");
 
@@ -882,7 +898,7 @@ std::string& Message::KeepAlive(void)
   msg.append("0,0,0#"); //Fixme: Mob details
 
   //9 View number
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getCamera()->getView()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getCamera()->getView()));
   msg.append("#");
 
   //10 Multiplayer request here (Not used)
@@ -894,25 +910,25 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
     
   //12 Controls state (wheel, rudder, port/stbd engine, port/stbd schottel, port/stbd thrust lever, bow/stern thruster)
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getWheel()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getWheel()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRudder().getDelta()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRudder().getDelta()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getPortEngine()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPortEngine()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getStbdEngine()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getStbdEngine()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortSchottel()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getPortSchottel()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdSchottel()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getStbdSchottel()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getPortAzimuthThrustLever()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getPortAzimuthThrustLever()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getStbdAzimuthThrustLever()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getStbdAzimuthThrustLever()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getBowThruster()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getBowThruster()));
   msg.append(",0");
-  //msg.append(Utilities::lexical_cast<std::string>(mModel->getSternThruster()));
+  //msg.append(Utilities::lexical_cast<std::string>(pModel->getSternThruster()));
 
   return msg;
 }
@@ -922,32 +938,31 @@ std::string& Message::KeepAlive(void)
 std::string& Message::KeepAliveShort(void)
 {
   static std::string msg;
+  SimulationModel *pModel = (SimulationModel*)mModel;
 
-  //terrain.zToLat(ownShip.getPosition().Z);
-
- float posZ = mModel->getOwnShip()->getPosition().Z;
- float posX = mModel->getOwnShip()->getPosition().X;
+  float posZ = pModel->getOwnShip()->getPosition().Z;
+  float posX = pModel->getOwnShip()->getPosition().X;
  
   msg.clear();
   msg = "OS"; //Own ship only
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTerrain()->zToLat(posZ)));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTerrain()->zToLat(posZ)));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getTerrain()->xToLong(posX)));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getTerrain()->xToLong(posX)));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getHeading()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getRateOfTurn()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRateOfTurn()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getOwnShip()->getSpeedThroughWater()*MPS_TO_KTS));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getSpeedThroughWater()*MPS_TO_KTS));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindDirection()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWind()->getTrueDirection()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getWindSpeed()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWind()->getTrueSpeed()));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(fabs(mModel->getApparentWindDir()) * irr::core::RADTODEG));
+  msg.append(Utilities::lexical_cast<std::string>(fabs(pModel->getWind()->getApparentDir()) * irr::core::RADTODEG));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(mModel->getApparentWindSpd()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getWind()->getApparentSpd()));
 
   return msg;
 }
@@ -960,3 +975,4 @@ std::string& Message::ShutDown(void)
   msg = "SD"; 
   return msg;
 }
+

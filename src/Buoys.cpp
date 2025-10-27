@@ -15,7 +15,6 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Buoys.hpp"
-
 #include "Buoy.hpp"
 #include "NavLight.hpp"
 #include "IniFile.hpp"
@@ -113,8 +112,11 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+void Buoys::update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
+  float deltaTime = aTime.deltaTime;
+  float scenarioTime = aTime.scenarioTime;
+  
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::f32 xPos, yPos, zPos;
         irr::core::vector3df pos = it->getPosition();

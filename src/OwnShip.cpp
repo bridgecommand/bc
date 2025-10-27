@@ -18,7 +18,6 @@
 #include "OwnShip.hpp"
 #include "Sail.hpp"
 #include "Constants.hpp"
-#include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "Terrain.hpp"
 #include "IniFile.hpp"
@@ -28,7 +27,9 @@
 #include <algorithm>
 #include "Solver.hpp"
 #include "Collision.hpp"
-
+#include "Wind.hpp"
+#include "Water.hpp"
+#include "Tide.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -46,14 +47,15 @@ OwnShip::~OwnShip()
 }
 
 
-void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::scene::ISceneManager *aSmgr, SimulationModel *aModel, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
+void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
 {
-  
-  mTerrain = aTerrain;
-  mModel = aModel;
   mDevice = aDev;
-  mModelParams = aModelParams;
-  mShowDebugData = aModel->getModelParameters().debugMode;
+
+  mTerrain = aTerrain;
+  mTide = aTide;
+  mWater = aWater;
+  
+  irr::scene::ISceneManager* smgr = mDevice->getSceneManager();
   
   // Load from ownShip.ini file
   std::string ownShipName = aOwnShipData.name;
@@ -94,7 +96,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 
       mInvMatM = mMatM.inverse();
       mMu = mMu0;
-      mEta << mModel->getTerrain()->latToZ(aOwnShipData.initialLat), mModel->getTerrain()->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*M_PI/180;
+      mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*M_PI/180;
 
       //std::cout << "eta : " << mEta << " - mu : " << mMu;
     }
@@ -135,7 +137,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
       isHighView.push_back(highView);
     }
 
- // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
+  // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
   mRadarPos.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
   mRadarPos.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
   mRadarPos.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
@@ -162,7 +164,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
   // Set mesh vertical correction (world units)
   heightCorrection = yCorrection * scaleFactor;
 
-  shipMesh = aSmgr->getMesh(ownShipFullPath.c_str());
+  shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
   // Make mesh scene node
   if (shipMesh == 0)
@@ -170,7 +172,7 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
       // Failed to load mesh - load with dummy and continue
       mDevice->getLogger()->log("Failed to load own ship model:");
       mDevice->getLogger()->log(ownShipFullPath.c_str());
-      shipMesh = aSmgr->addSphereMesh("Dummy name");
+      shipMesh = smgr->addSphereMesh("Dummy name");
     }
 
   // If any part is partially transparent, make it fully transparent (for bridge windows etc!)
@@ -181,12 +183,12 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 	  if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255)
 	    {
 	      // Hide this mesh buffer by scaling to zero size
-	      aSmgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb), irr::core::vector3df(0, 0, 0));
+	      smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb), irr::core::vector3df(0, 0, 0));
 	    }
 	}
     }
 
-  mShipScene = aSmgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
+  mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
   /*Load Sails*/
   mSailsCount = IniFile::iniFileTou32(shipIniFilename, "SailsCount");
@@ -207,8 +209,8 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
       for (int i = 0; i < mSailsCount; i++)
 	{
 
-	  sailMesh[i] = aSmgr->getMesh(meshFile.c_str());
-	  mSailsScene[i] = aSmgr->addMeshSceneNode(sailMesh[i]);
+	  sailMesh[i] = smgr->getMesh(meshFile.c_str());
+	  mSailsScene[i] = smgr->addMeshSceneNode(sailMesh[i]);
 
 	  irr::f32 sailPosX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsX", i+1));
 	  irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
@@ -231,12 +233,6 @@ void OwnShip::load(OwnShipData aOwnShipData, ModelParameters aModelParams, irr::
 
     }   
 
-  // For debugging:
-  if (mShowDebugData)
-    {
-      // ship->setDebugDataVisible(irr::scene::EDS_NORMALS|irr::scene::EDS_BBOX_ALL);
-      mShipScene->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
-    }
 
   mShipScene->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
   mShipScene->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); // Normalise normals on scaled meshes, for correct lighting
@@ -402,17 +398,6 @@ irr::f32 OwnShip::getScaleFactor() const
   return scaleFactor;
 }
 
-
-irr::f32 OwnShip::getLastDeltaTime()
-{
-  return deltaTime;
-}
-
-void OwnShip::setLastDeltaTime(irr::f32 myDeltaTime)
-{
-  deltaTime = myDeltaTime;
-}
-
 irr::core::vector3df OwnShip::getRadarPosition() const
 {
   return mRadarPos;
@@ -428,40 +413,22 @@ irr::f32 OwnShip::getRadarTilt() const
   return mRadarTilt;
 }
 
-void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::f32 weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque)
+void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver)
 {
-
-  setLastDeltaTime(deltaTime);
-
+  float posZ = getPosition().Z;
+  float posX = getPosition().X;
+  float deltaTime = aTime.deltaTime;
+  
+  setEta(aSolver->getEta());
+  setMu(aSolver->getMu());
+  
   if (controlMode == MODE_ENGINE)
     {
-     
-      // std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
-
-      // Add drag from wind and stream
-      irr::f32 windSpeed = mModel->getWindSpeed() * KTS_TO_MPS;
-      irr::f32 windDirection = mModel->getWindDirection();
-      // Convert this into wind axial speed and wind lateral speed
-      irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
-      irr::f32 relativeWindFlowDirection = windFlowDirection - mEta[2];
-      irr::f32 axialWind = windSpeed * cos(relativeWindFlowDirection * irr::core::DEGTORAD);
-      irr::f32 lateralWind = windSpeed * sin(relativeWindFlowDirection * irr::core::DEGTORAD);
-
-      irr::f32 relWindAxial_mps = (axialWind - mMu[0]) * KTS_TO_MPS;
-      irr::f32 relWindLateral_mps = (lateralWind - mMu[2]) * KTS_TO_MPS;
-      irr::f32 frontalArea = mGeoParams.b * airDraught;
-      irr::f32 sideArea = mGeoParams.lPP * airDraught;
-
-      irr::f32 axialWindDrag = -1 * pow(relWindAxial_mps, 2) * sign(relWindAxial_mps) * 0.5 * RHO_AIR * frontalArea;
-      irr::f32 lateralWindDrag = -1 * pow(relWindLateral_mps, 2) * sign(relWindLateral_mps) * 0.5 * RHO_AIR * sideArea;
-
-    float posZ = getPosition().Z;
-    float posX = getPosition().X;
-    
+       
       // Find tidal stream, based on our current absolute position
-    irr::core::vector2df stream = mModel->getTide()->getTidalStream(mModel->getTerrain()->xToLong(posX), mModel->getTerrain()->zToLat(posZ),mModel->getTimestamp());
+      irr::core::vector2df stream = mTide->getTidalStream(mTerrain->xToLong(posX), mTerrain->zToLat(posZ), aTime.absoluteTime);
       //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
-      irr::f32 streamScaling = fmax(0, fmin(1, getDepth(mModel->getTerrain()))); // Reduce effect as water gets shallower
+      irr::f32 streamScaling = fmax(0, fmin(1, getDepth(mTerrain))); // Reduce effect as water gets shallower
       stream *= streamScaling;
       // Convert this into stream axial and lateral speed
       irr::f32 axialStream = stream.X * sin(mEta[2] * irr::core::DEGTORAD) + stream.Y * cos(mEta[2] * irr::core::DEGTORAD); // Stream in ahead direction
@@ -469,30 +436,14 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
       mSpeedThroughWater = mMu[0] - axialStream;
 
-      irr::f32 alpha = (windDirection - mEta[2]);
-      alpha = alpha * irr::core::DEGTORAD;
-
-      irr::f32 apparentWindSpd = sqrt(pow(mSpeedThroughWater, 2) + pow((windSpeed * MPS_TO_KTS), 2) + (2 * mSpeedThroughWater * (windSpeed * MPS_TO_KTS) * cos(alpha)));
-      //irr::f32 apparentWindDir = acos((speedThroughWater + ((windSpeed * MPS_TO_KTS) * cos(alpha))) / apparentWindSpd);
-
-      irr::f32 apparentWindDir = atan2(windSpeed * MPS_TO_KTS * sin(alpha), mSpeedThroughWater + windSpeed * MPS_TO_KTS * cos(alpha));
-
-      mModel->setApparentWindDir(apparentWindDir);
-      mModel->setApparentWindSpd(apparentWindSpd);
-
-      float sailsForceX = 0, sailsForceY = 0;
-      if(windDirection > 180)
-	windDirection = 180-(windDirection-180);
-
+      //Update sails
       if (mSailsCount > 0)
 	{
-	  sailsForceX = mSails.GetForce('X', mSpeedThroughWater, windSpeed * MPS_TO_KTS, (apparentWindDir * irr::core::RADTODEG));
-	  sailsForceY = mSails.GetForce('Y', mSpeedThroughWater, windSpeed * MPS_TO_KTS, (apparentWindDir * irr::core::RADTODEG));
-	  //std::cout << "Sail force X = " << sailsForceX << std::endl;
-	  //std::cout << "Sail force Y = " << sailsForceY << std::endl;
-	}
+	  mSails.SetSTW(mSpeedThroughWater);
+	  mSails.SetWind(aWind->getTrueSpeed(), aWind->getApparentDir());
+	}     
 
-    
+      //Apply engine power 
       if(mNumberProp > 1)
 	{
 	  irr::f32 portThrust = 0; 
@@ -513,8 +464,7 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 	  mProp[0].SetRevs(monoThrust);
 	}
 
-
-      
+      //Apply rudder angle
       mRudder.SetDelta((mWheel*M_PI)/180, deltaTime);
       
     }
@@ -530,17 +480,17 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
 
   irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   irr::f32 factor = deltaTime / (timeConstant + deltaTime);
-  waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mModel->getWater()->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
+  waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
   double yPos = tideHeight + heightCorrection + waveHeightFiltered;
 
   // calculate pitch and roll - not linked to water/wave motion
   if (pitchPeriod > 0)
     {
-      pitch = weather * pitchAngle * sin(scenarioTime * 2 * PI / pitchPeriod);
+      pitch = weather * pitchAngle * sin(aTime.scenarioTime * 2 * PI / pitchPeriod);
     }
   if (rollPeriod > 0)
     {
-      roll = weather * rollAngle * sin(scenarioTime * 2 * PI / rollPeriod);
+      roll = weather * rollAngle * sin(aTime.scenarioTime * 2 * PI / rollPeriod);
     }
 
 
@@ -585,7 +535,6 @@ void OwnShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHei
   mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/M_PI, pitch, roll));
   // DEE_DEC22 ^^^^
 }
-
 
 irr::f32 OwnShip::getAngleCorrection() const
 {

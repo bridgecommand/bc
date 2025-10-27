@@ -29,6 +29,7 @@ class ScenarioData;
 class GUIMain;
 class GUIData;
 
+#include "MessageMisc.hpp"
 #include "Terrain.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
@@ -46,16 +47,19 @@ class GUIData;
 #include "ControlVisualiser.hpp"
 #include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
-#include "Network.hpp"
 #include "Solver.hpp"
 #include "Sound.hpp"
 #include "Collision.hpp"
+#include "Wind.hpp"
+#include "Time.hpp"
+#include "ModelParams.hpp"
 
 class SimulationModel //Start of the 'Model' part of MVC
 {
 
 public:
-    
+
+  SimulationModel();
   SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters);
   ~SimulationModel();
 
@@ -75,14 +79,6 @@ public:
   float getRain() const;
   void setVisibility(float aVisibilityNm);
   float getVisibility() const;
-  void setWindDirection(float aWindDirection);
-  float getWindDirection() const;
-  void setWindSpeed(float aWindSpeed); 
-  float getWindSpeed() const;
-  void setApparentWindDir(float aApparentWindDir);
-  float getApparentWindDir(void) const;
-  void setApparentWindSpd(float aApparentWindSpd);
-  float getApparentWindSpd(void) const;
 
   /*Views*/
   void setZoom(bool zoomOn);
@@ -120,6 +116,7 @@ public:
   Sound* getSound(void);
   ManOverboard* getMoB(void);
   Collision* getCollision(void);
+  Wind* getWind(void);
   
   /*Update*/
   void update(void);
@@ -140,19 +137,9 @@ private:
   float mWeather; //0-12.0
   float mRainIntensity; //0-10
   float mVisibilityRange; //Nm
-  float mWindDirection; //0-360
-  float mWindSpeed; //Nm
-  float mApparentWindDir;
-  float mApparentWindSpd;
 
   /*Time*/
-  irr::u32 mLoopNumber; //u32 should be up to 4,294,967,295, so over 2 years at 60 fps
-  irr::u32 mCurrentTime; //Computer clock time
-  irr::u32 mPreviousTime; //Computer clock time
-  float mDeltaTime;
-  float mScenarioTime; //Simulation internal time, starting at zero at 0000h on start day of simulation
-  unsigned long long mScenarioOffsetTime; //Simulation day's start time from unix epoch (1 Jan 1970)
-  unsigned long long mAbsoluteTime; //Unix timestamp for current time, including start day. Calculated from scenarioTime and scenarioOffsetTime
+  sTime mTime;
   
   /*Scenario*/
   std::string mScenarioName;
@@ -182,6 +169,7 @@ private:
   LandLights* mLandLights;
   Light* mLight;
   Collision* mCollision;
+  Wind* mWind;
   
   /*Views*/
   float mCurrentZoom; // Zoom currently in use
