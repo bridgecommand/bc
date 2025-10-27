@@ -169,7 +169,7 @@ sTimeInf Message::GetTimeInfos(std::vector<std::string>& aTimeData)
   static float previousTimeError = 0;
   sTimeInf timeInfos = {0};
 
-  SimulationModel *pModel = pModel;
+  SimulationModel *pModel = (SimulationModel*)mModel;
 
   if(aTimeData.size() > 2)
     {
@@ -308,7 +308,7 @@ sWeatherInf Message::GetInfosWeather(std::vector<std::string>& aWeatherData)
 sViewInf Message::GetInfosView(std::vector<std::string>& aViewData)
 {
   sViewInf viewInfos = {0};
-  SimulationModel *pModel = pModel;
+  SimulationModel *pModel = (SimulationModel*)mModel;
   
   if(aViewData.size() == 1)
     {
@@ -323,7 +323,7 @@ sViewInf Message::GetInfosView(std::vector<std::string>& aViewData)
 sCtrlsInf Message::GetInfosControls(std::vector<std::string>& aCtrlsData)
 {
   sCtrlsInf controlsInfos = {0}; 
-  SimulationModel *pModel = pModel;
+  SimulationModel *pModel = (SimulationModel*)mModel;
  
   if(aCtrlsData.size() == 10)
     {
@@ -351,7 +351,7 @@ std::string& Message::ControlOverride(void)
 {
   static std::string controlOverride;
   controlOverride.clear();
-  SimulationModel *pModel = pModel;
+  SimulationModel *pModel = (SimulationModel*)mModel;
   
   if(pModel->getModelParameters().secondaryControlWheel)
     {
@@ -769,7 +769,7 @@ std::string& Message::MakeLines(void)
 std::string& Message::KeepAlive(void)
 {
   static std::string msg;
-  SimulationModel *pModel = pModel;
+  SimulationModel *pModel = (SimulationModel*)mModel;
   
   msg.clear();
   msg = "BC";

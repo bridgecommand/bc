@@ -20,12 +20,13 @@
 #include "irrlicht.h"
 #include <string>
 #include <vector>
+#include "Network.hpp"
 
 //forward declarations
 class GUIMain;
 class Lines;
 class VRInterface;
-class Network;
+
 
 //Data about joystick setup
 class JoystickSetup {

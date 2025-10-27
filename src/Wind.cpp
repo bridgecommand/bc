@@ -1,4 +1,5 @@
 #include "Wind.hpp"
+#include "OwnShip.hpp"
 #include "Constants.hpp"
 
 Wind::Wind()

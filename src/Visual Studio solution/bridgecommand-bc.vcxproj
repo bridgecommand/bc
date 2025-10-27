@@ -191,6 +191,7 @@
     <ClCompile Include="..\Buoy.cpp" />
     <ClCompile Include="..\Buoys.cpp" />
     <ClCompile Include="..\Camera.cpp" />
+    <ClCompile Include="..\Collision.cpp" />
     <ClCompile Include="..\ControlVisualiser.cpp" />
     <ClCompile Include="..\DefaultEventReceiver.cpp" />
     <ClCompile Include="..\FFTWave.cpp" />
@@ -242,6 +243,7 @@
     <ClCompile Include="..\VRInterface.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
+    <ClCompile Include="..\Wind.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AIS.hpp" />
@@ -256,6 +258,7 @@
     <ClInclude Include="..\Buoy.hpp" />
     <ClInclude Include="..\Buoys.hpp" />
     <ClInclude Include="..\Camera.hpp" />
+    <ClInclude Include="..\Collision.hpp" />
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\ControlVisualiser.hpp" />
     <ClInclude Include="..\DefaultEventReceiver.hpp" />
@@ -276,6 +279,7 @@
     <ClInclude Include="..\ManOverboard.hpp" />
     <ClInclude Include="..\Message.hpp" />
     <ClInclude Include="..\MessageMisc.hpp" />
+    <ClInclude Include="..\ModelParams.hpp" />
     <ClInclude Include="..\MovingWater.hpp" />
     <ClInclude Include="..\MyEventReceiver.hpp" />
     <ClInclude Include="..\NavLight.hpp" />
@@ -306,6 +310,7 @@
     <ClInclude Include="..\StartupEventReceiver.hpp" />
     <ClInclude Include="..\Terrain.hpp" />
     <ClInclude Include="..\Tide.hpp" />
+    <ClInclude Include="..\Time.hpp" />
     <ClInclude Include="..\Update.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\ExitMessage.hpp" />
@@ -313,6 +318,7 @@
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />
+    <ClInclude Include="..\Wind.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resources\icon\icon.rc" />

@@ -2,7 +2,7 @@
 #ifndef __WIND_HPP_INCLUDED__
 #define __WIND_HPP_INCLUDED__
 
-#include "OwnShip.hpp"
+class OwnShip;
 
 
 class Wind

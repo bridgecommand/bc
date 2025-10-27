@@ -24,7 +24,7 @@
 #include "VRInterface.hpp"
 #include "Constants.hpp"
 #include "Message.hpp"
-#include "Network.hpp"
+
 
 // using namespace irr;
 
