@@ -368,7 +368,7 @@ int VRInterface::load(SimulationModel* model) {
 	instance_create_info.enabledApiLayerNames = NULL;
 	instance_create_info.applicationInfo.applicationVersion = 1;
 	instance_create_info.applicationInfo.engineVersion = 0;
-	instance_create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
+	instance_create_info.applicationInfo.apiVersion = XR_API_VERSION_1_0;
 	strncpy(instance_create_info.applicationInfo.applicationName, "Bridge Command",
 		XR_MAX_APPLICATION_NAME_SIZE);
 	strncpy(instance_create_info.applicationInfo.engineName, "Irrlicht Custom", XR_MAX_ENGINE_NAME_SIZE);

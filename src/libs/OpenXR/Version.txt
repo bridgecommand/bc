@@ -1,2 +1,7 @@
+Current:
+https://github.com/KhronosGroup/OpenXR-SDK
+a664705dee0b1041096d1e21b539bf9fb2489f00 (release 1.1.52 2025-09-19)
+
+Previously:
 https://github.com/KhronosGroup/OpenXR-SDK
 49e81bbd919af7c0cf513517a730d12253c28902 (release-1.0.32.1)

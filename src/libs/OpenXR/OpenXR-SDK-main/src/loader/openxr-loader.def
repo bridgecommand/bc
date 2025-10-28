@@ -1,4 +1,4 @@
-; Copyright (c) 2019-2023, The Khronos Group Inc.
+; Copyright (c) 2019-2025 The Khronos Group Inc.
 ;
 ; SPDX-License-Identifier: Apache-2.0 OR MIT
 
@@ -59,3 +59,5 @@ EXPORTS
     xrGetInputSourceLocalizedName
     xrApplyHapticFeedback
     xrStopHapticFeedback
+    ; entry points added in 1.1
+    xrLocateSpaces
