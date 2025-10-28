@@ -328,6 +328,54 @@ irr::f32 RadarCalculation::getRainClutter() const
     return radarRainClutterReduction;
 }
 
+void RadarCalculation::increaseClutter(irr::f32 value)
+{
+    radarSeaClutterReduction += value;
+    if (radarSeaClutterReduction > 100) {
+        radarSeaClutterReduction = 100;
+    }
+}
+
+void RadarCalculation::decreaseClutter(irr::f32 value)
+{
+    radarSeaClutterReduction -= value;
+    if (radarSeaClutterReduction < 0) {
+        radarSeaClutterReduction = 0;
+    }
+}
+
+void RadarCalculation::increaseRainClutter(irr::f32 value)
+{
+    radarRainClutterReduction += value;
+    if (radarRainClutterReduction > 100) {
+        radarRainClutterReduction = 100;
+    }
+}
+
+void RadarCalculation::decreaseRainClutter(irr::f32 value)
+{
+    radarRainClutterReduction -= value;
+    if (radarRainClutterReduction < 0) {
+        radarRainClutterReduction = 0;
+    }
+}
+
+void RadarCalculation::increaseGain(irr::f32 value)
+{
+    radarGain += value;
+    if (radarGain > 100) {
+        radarGain = 100;
+    }
+}
+
+void RadarCalculation::decreaseGain(irr::f32 value)
+{
+    radarGain -= value;
+    if (radarGain < 0) {
+        radarGain = 0;
+    }
+}
+
 irr::f32 RadarCalculation::getEBLRangeNm() const
 {
     return EBLRangeNm;

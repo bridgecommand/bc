@@ -1243,6 +1243,36 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRainClutter(value);
     }
 
+    void SimulationModel::increaseRadarGain(irr::f32 value)
+    {
+        radarCalculation.increaseGain(value);
+    }
+
+    void SimulationModel::decreaseRadarGain(irr::f32 value)
+    {
+        radarCalculation.decreaseGain(value);
+    }
+
+    void SimulationModel::increaseRadarClutter(irr::f32 value)
+    {
+        radarCalculation.increaseClutter(value);
+    }
+
+    void SimulationModel::decreaseRadarClutter(irr::f32 value)
+    {
+        radarCalculation.decreaseClutter(value);
+    }
+
+    void SimulationModel::increaseRadarRain(irr::f32 value)
+    {
+        radarCalculation.increaseRainClutter(value);
+    }
+
+    void SimulationModel::decreaseRadarRain(irr::f32 value)
+    {
+        radarCalculation.decreaseRainClutter(value);
+    }
+    
     void SimulationModel::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
     {
         radarCalculation.setPIData(PIid, PIbearing, PIrange);
