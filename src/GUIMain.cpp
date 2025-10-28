@@ -464,8 +464,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
 
         //Add extra controls for view (zoom etc)
         irr::gui::IGUITab* extraControlsTabView = extraControlsTabControl->addTab(language->translate("view").c_str());
-        guienv->addStaticText(language->translate("magnification").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-        magnificationScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.045 * su, 0.09 * sh), 0.03 * su, guienv, extraControlsTabView, GUI_ID_MAGNIFICATION_SCROLL_BAR);
+        
+        guienv->addStaticText(language->translate("3dView").c_str(), irr::core::rect<irr::s32>(0.005 * su, 0.02 * sh, 0.085 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        show3d = guienv->addCheckBox(true, irr::core::rect<irr::s32>(0.038 * su, 0.080 * sh, 0.052 * su, 0.100 * sh), extraControlsTabView);
+        
+        guienv->addStaticText(language->translate("magnification").c_str(), irr::core::rect<irr::s32>(0.085 * su, 0.02 * sh, 0.165 * su, 0.05 * sh), false, true, extraControlsTabView)->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        magnificationScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.125 * su, 0.09 * sh), 0.03 * su, guienv, extraControlsTabView, GUI_ID_MAGNIFICATION_SCROLL_BAR);
         magnificationScrollbar->setMax(200); //Divide by 10 to get magnification
         magnificationScrollbar->setMin(10);
         magnificationScrollbar->setSmallStep(5);
@@ -815,6 +819,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
     {
         showInterface = false;
         updateVisibility();
+    }
+
+    bool GUIMain::getShow3d() const
+    {
+        return show3d->isChecked();
     }
 
     void GUIMain::showBearings()

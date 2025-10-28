@@ -1185,9 +1185,9 @@ int main(int argc, char ** argv)
                 model.updateViewport(aspect);
             }
             
-            smgr->drawAll();
-            
-            
+            if (guiMain.getShow3d()) {
+                smgr->drawAll();
+            }
         }
 
         if (vr3dMode && vrSuccess == 0) {

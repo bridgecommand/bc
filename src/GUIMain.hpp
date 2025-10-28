@@ -207,6 +207,7 @@ public:
     void toggleShow2dInterface();
     void show2dInterface();
     void hide2dInterface();
+    bool getShow3d() const;
     void zoomOn();
     void zoomOff();
     void toggleBearings();
@@ -321,6 +322,7 @@ private:
     irr::gui::HeadingIndicator* headingIndicator;
 
     irr::gui::IGUIScrollBar* magnificationScrollbar;
+    irr::gui::IGUICheckBox* show3d;
 
     irr::gui::IGUIButton* showInterfaceButton;
     irr::gui::IGUIButton* hideInterfaceButton;
