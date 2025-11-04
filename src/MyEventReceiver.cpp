@@ -1860,7 +1860,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         // Radar control buttons
         if (thisJoystick == joystickSetup.joystickNoIncreaseClutterSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, previousButtonState))
             {
                 model->increaseRadarClutter(10);
             }
@@ -1868,7 +1868,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoDecreaseClutterSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, previousButtonState))
             {
                 model->decreaseRadarClutter(10);
             }
@@ -1876,7 +1876,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoIncreaseGainSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, previousButtonState))
             {
                 model->increaseRadarGain(10);
             }
@@ -1884,7 +1884,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoDecreaseGainSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, previousButtonState))
             {
                 model->decreaseRadarGain(10);
             }
@@ -1892,7 +1892,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoIncreaseRainSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, previousButtonState))
             {
                 model->increaseRadarRain(10);
             }
@@ -1900,7 +1900,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoDecreaseRainSetting)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, previousButtonState))
             {
                 model->decreaseRadarRain(10);
             }
@@ -1908,7 +1908,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoIncreaseRange)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRange, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRange, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseRange, previousButtonState))
             {
                 model->increaseRadarRange();
             }
@@ -1916,7 +1916,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
         if (thisJoystick == joystickSetup.joystickNoDecreaseRange)
         {
-            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRange, thisButtonState))
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRange, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseRange, previousButtonState))
             {
                 model->decreaseRadarRange();
             }
