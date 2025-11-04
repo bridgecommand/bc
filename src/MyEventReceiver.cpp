@@ -1862,7 +1862,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, previousButtonState))
             {
-                model->increaseRadarClutter(10);
+                model->increaseRadarClutter(5);
             }
         }
 
@@ -1870,7 +1870,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, previousButtonState))
             {
-                model->decreaseRadarClutter(10);
+                model->decreaseRadarClutter(5);
             }
         }
 
@@ -1878,7 +1878,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, previousButtonState))
             {
-                model->increaseRadarGain(10);
+                model->increaseRadarGain(5);
             }
         }
 
@@ -1886,7 +1886,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, previousButtonState))
             {
-                model->decreaseRadarGain(10);
+                model->decreaseRadarGain(5);
             }
         }
 
@@ -1894,7 +1894,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, previousButtonState))
             {
-                model->increaseRadarRain(10);
+                model->increaseRadarRain(5);
             }
         }
 
@@ -1902,7 +1902,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, previousButtonState))
             {
-                model->decreaseRadarRain(10);
+                model->decreaseRadarRain(5);
             }
         }
 
