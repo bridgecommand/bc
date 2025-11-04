@@ -288,23 +288,23 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     // Radar controls by button
     joystickSetup.joystickNoIncreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_clutter");
     joystickSetup.joystickNoDecreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_clutter");
-    joystickSetup.joystickButtonIncreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_clutter");
-    joystickSetup.joystickButtonDecreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_clutter");
+    joystickSetup.joystickButtonIncreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_clutter") - 1;
+    joystickSetup.joystickButtonDecreaseClutterSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_clutter") - 1;
     
     joystickSetup.joystickNoIncreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_gain");
     joystickSetup.joystickNoDecreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_gain");
-    joystickSetup.joystickButtonIncreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_gain");
-    joystickSetup.joystickButtonDecreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_gain");
+    joystickSetup.joystickButtonIncreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_gain") - 1;
+    joystickSetup.joystickButtonDecreaseGainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_gain") - 1;
 
     joystickSetup.joystickNoIncreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_rain");
     joystickSetup.joystickNoDecreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_rain");
-    joystickSetup.joystickButtonIncreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_rain");
-    joystickSetup.joystickButtonDecreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_rain");
+    joystickSetup.joystickButtonIncreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_rain") - 1;
+    joystickSetup.joystickButtonDecreaseRainSetting = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_rain") - 1;
 
     joystickSetup.joystickNoDecreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_radar_range");
     joystickSetup.joystickNoIncreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_no_increase_radar_range");
-    joystickSetup.joystickButtonDecreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_range");
-    joystickSetup.joystickButtonIncreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_range");
+    joystickSetup.joystickButtonDecreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_radar_range") - 1;
+    joystickSetup.joystickButtonIncreaseRange = IniFile::iniFileTou32(iniFilename, "joystick_button_increase_radar_range") - 1;
     // End of Radar controls by button
 
     joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
