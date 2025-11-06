@@ -1857,6 +1857,72 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
         }
 
+        // Radar control buttons
+        if (thisJoystick == joystickSetup.joystickNoIncreaseClutterSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseClutterSetting, previousButtonState))
+            {
+                model->increaseRadarClutter(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoDecreaseClutterSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseClutterSetting, previousButtonState))
+            {
+                model->decreaseRadarClutter(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoIncreaseGainSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseGainSetting, previousButtonState))
+            {
+                model->increaseRadarGain(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoDecreaseGainSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseGainSetting, previousButtonState))
+            {
+                model->decreaseRadarGain(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoIncreaseRainSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseRainSetting, previousButtonState))
+            {
+                model->increaseRadarRain(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoDecreaseRainSetting)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseRainSetting, previousButtonState))
+            {
+                model->decreaseRadarRain(5);
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoIncreaseRange)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonIncreaseRange, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseRange, previousButtonState))
+            {
+                model->increaseRadarRange();
+            }
+        }
+
+        if (thisJoystick == joystickSetup.joystickNoDecreaseRange)
+        {
+            if (IsButtonPressed(joystickSetup.joystickButtonDecreaseRange, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseRange, previousButtonState))
+            {
+                model->decreaseRadarRange();
+            }
+        }
+        // End of radar control buttons
+
         // DEE 10JAN23 .... Ive never seen the master concept implemented on azimuth drives in real life as in practice you can steer
         // 			perfectly well with just one drive on passage.  Whilst Maneouvering or steaming in confined waters then
         // 			both drives are needed to operate independently.

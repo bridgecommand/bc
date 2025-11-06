@@ -258,6 +258,12 @@ public:
     void setRadarGain(irr::f32 value);
     void setRadarClutter(irr::f32 value);
     void setRadarRain(irr::f32 value);
+    void increaseRadarGain(irr::f32 value);
+    void decreaseRadarGain(irr::f32 value);
+    void increaseRadarClutter(irr::f32 value);
+    void decreaseRadarClutter(irr::f32 value);
+    void increaseRadarRain(irr::f32 value);
+    void decreaseRadarRain(irr::f32 value);
     void setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange);
     irr::f32 getPIbearing(irr::s32 PIid) const;
     irr::f32 getPIrange(irr::s32 PIid) const;

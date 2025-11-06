@@ -161,6 +161,24 @@ public:
     irr::u16 joystickPOVLookRight;
     irr::u16 joystickPOVLookUp;
     irr::u16 joystickPOVLookDown;
+
+    irr::u16 joystickButtonIncreaseClutterSetting;
+    irr::u16 joystickButtonDecreaseClutterSetting;
+    irr::u16 joystickButtonIncreaseGainSetting;
+    irr::u16 joystickButtonDecreaseGainSetting;
+    irr::u16 joystickButtonIncreaseRainSetting;
+    irr::u16 joystickButtonDecreaseRainSetting;
+    irr::u16 joystickButtonDecreaseRange;
+    irr::u16 joystickButtonIncreaseRange;
+
+    irr::u16 joystickNoIncreaseClutterSetting;
+    irr::u16 joystickNoDecreaseClutterSetting;
+    irr::u16 joystickNoIncreaseGainSetting;
+    irr::u16 joystickNoDecreaseGainSetting;
+    irr::u16 joystickNoIncreaseRainSetting;
+    irr::u16 joystickNoDecreaseRainSetting;
+    irr::u16 joystickNoDecreaseRange;
+    irr::u16 joystickNoIncreaseRange;
 };
 
 class MyEventReceiver : public irr::IEventReceiver

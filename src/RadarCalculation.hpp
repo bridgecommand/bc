@@ -120,6 +120,12 @@ class RadarCalculation
         void setGain(irr::f32 value);
         void setClutter(irr::f32 value);
         void setRainClutter(irr::f32 value);
+        void increaseClutter(irr::f32 value);
+        void decreaseClutter(irr::f32 value);
+        void increaseRainClutter(irr::f32 value);
+        void decreaseRainClutter(irr::f32 value);
+        void increaseGain(irr::f32 value);
+        void decreaseGain(irr::f32 value);
         irr::f32 getGain() const;
         irr::f32 getClutter() const;
         irr::f32 getRainClutter() const;
