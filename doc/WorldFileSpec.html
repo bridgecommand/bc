@@ -192,8 +192,7 @@ value moving the 'buoy' higher. Again this is useful for adjusting the height of
 <h5>landobject.ini</h5>
 
 <p>The analog of <i>buoy.ini</i>, but for fixed objects, either on land or ground based object at sea
-(breakwaters etc). Contains 1 general variable, and a set of 5 to 6
-variables for each land object defined. </p>
+(breakwaters etc).</p>
 <p><i>Number</i> sets the number of objects to be defined.This can be zero, in which
     case no land objects are defined, and nothing further is required in
     this file.</p>
@@ -205,6 +204,11 @@ variables for each land object defined. </p>
 <li><i>Rotation(#)</i> allows for the model to be rotated about its vertical axis. Specified in degrees. An anticlockwise rotation, as viewed from the top, is positive.</li>
 <li><i>HeightCorrection(#)</i> allows for the model to be moved up or down. so it sits properly on the land. A positive value moves the object upwards, and is in metres.</li>
 <li>Optional setting <i>Absolute(#)</i>. If this set to 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level.</li>
+<li>Optional setting <i>Morph(#)</i>. If this is set to 1, then the object will be 'morphed' to fit the local terrain height, so the different objects in the model are moved relative to the local gound level, and flat objects are made to follow the local terrain shape. This can be used for large, mostly flat 3d models representing multiple buildings over a large area.
+<ul>
+<li>Note: The options <i>Absolute</i> and <i>Morph</i> should not be used together. If <i>Morph</i> is enabled, <i>Absolute</i> will be ignored</li>
+</ul>
+</li>
 <li>Optional setting <i>Collision(#)</i>. If this is set to 1, then collision modelling with the own ship will be enabled for this object.</li>
 <li>Optional setting <i>Radar(#)</i>. If this is set to 1, then the object will be included in the radar scan.</li>
 </ul>

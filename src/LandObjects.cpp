@@ -53,9 +53,17 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
         irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
         irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
-        //Check if land object is given in absolute height, or relative to terrain.
-        if (IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Absolute",currentObject))!=1) {
-            objectY += terrain->getHeight(objectX,objectZ);
+        
+        //Check if we should 'morph' the model to fit the land (mostly for OSM2World models)
+        bool morph = false;
+        if (IniFile::iniFileTou32(scenarioLandObjectFilename, IniFile::enumerate1("Morph", currentObject)) == 1) {
+            morph = true;
+        } else {
+            // Don't allow both 'absolute' and 'morph'.
+            //Check if land object is given in absolute height, or relative to terrain.
+            if (IniFile::iniFileTou32(scenarioLandObjectFilename, IniFile::enumerate1("Absolute", currentObject)) != 1) {
+                objectY += terrain->getHeight(objectX, objectZ);
+            }
         }
 
         //Get rotation
@@ -70,7 +78,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Create land object and load into vector
         std::string internalName = "LandObject_";
         internalName.append(std::to_string(currentObject-1)); // -1 as we want index from 0
-        landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,terrain,smgr,dev));
+        landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,morph,terrain,smgr,dev));
 
     }
 }

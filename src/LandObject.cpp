@@ -24,7 +24,7 @@
 
 //using namespace irr;
 
-LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     device = dev;
@@ -86,12 +86,84 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     landObject->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     landObject->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
+    // Force recalculation of transformation matrix
+    landObject->updateAbsolutePosition();
+
+    // Morph
+    if (morph) {
+        
+        const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
+        const irr::f32 nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
+        
+        irr::scene::IMesh* mesh = landObject->getMesh();
+        for (int bufferId = 0; bufferId < mesh->getMeshBufferCount(); bufferId++) {
+            const irr::scene::IMeshBuffer* const mb = mesh->getMeshBuffer(bufferId);
+            if (mb->getVertexType() == irr::video::EVT_STANDARD) {
+                const irr::u32 vtxCnt = mb->getVertexCount();
+                irr::video::S3DVertex* v = (irr::video::S3DVertex*)mb->getVertices();
+                for (int vertexId = 0; vertexId < vtxCnt; vertexId++) {
+                    // Find global location for each vertex, using transformation matrix
+                    // Local coordinate
+                    irr::core::vector3df localCoord(v[vertexId].Pos.X, v[vertexId].Pos.Y, v[vertexId].Pos.Z);
+
+                    // Bounding box coordinate
+                    irr::core::vector3df localBoundingBoxCentre = mb->getBoundingBox().getCenter();
+
+                    // Get transformation matrix and inverse
+                    irr::core::matrix4 localToWorld = landObject->getAbsoluteTransformation();
+                    irr::core::matrix4 worldToLocal;
+                    localToWorld.getInverse(worldToLocal);
+
+                    // Find world location for this local point
+                    irr::core::vector3df worldCoord(v[vertexId].Pos.X, v[vertexId].Pos.Y, v[vertexId].Pos.Z);
+                    localToWorld.transformVect(worldCoord);
+
+                    // Find world location of this bounding box
+                    irr::core::vector3df worldBoundingBoxCentre = localBoundingBoxCentre;
+                    localToWorld.transformVect(worldBoundingBoxCentre);
+
+                    // Find terrain height here
+                    irr::f32 terrainY;
+
+                    // Choose if we modify vertex based on the terrain at the centre of the bounding box, or move locally
+                    // Default to 'morph' locally, unless height is more than 5x the maximum of the width or length
+                    bool fullMorph = true;
+                    irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
+                    if (boundingBoxExtent.Y > tallHeightRatio * std::max(boundingBoxExtent.X, boundingBoxExtent.Z)) {
+                        fullMorph = false;
+                    }
+
+                    if (fullMorph) {
+                        // Local height
+                        terrainY = terrain->getHeight(worldCoord.X, worldCoord.Z);
+                    }
+                    else {
+                        // Bounding box centre height
+                        terrainY = terrain->getHeight(worldBoundingBoxCentre.X, worldBoundingBoxCentre.Z);
+                    }
+
+                    // Modify world location of coordinate. Don't reduce height unless the meshbuffer is almost flat
+                    if ((terrainY > 0) || (boundingBoxExtent.Y <= nearlyFlatHeight)) {
+                        worldCoord.Y += terrainY;
+                    }
+
+                    // Transform back to model coordinate
+                    irr::core::vector3df newLocalCoord = worldCoord;
+                    worldToLocal.transformVect(newLocalCoord);
+
+                    // Apply vertical correction
+                    v[vertexId].Pos.Y = newLocalCoord.Y;
+                }
+            }
+        }
+        mesh->setDirty();
+    }
+
     landObject->setName(internalName.c_str());
 
     //===========================================
     //Get contact points for radar detection here
     if (radarObject) {
-        landObject->updateAbsolutePosition();
 
         irr::core::aabbox3df boundingBox = landObject->getTransformedBoundingBox();
         irr::f32 minX = boundingBox.MinEdge.X;
