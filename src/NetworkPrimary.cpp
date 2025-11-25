@@ -284,7 +284,7 @@ void NetworkPrimary::receiveNetwork()
                                             int streamOverrideInt = Utilities::lexical_cast<irr::f32>(parts.at(8));
                                             if (weather >= 0) {model->setWeather(weather);}
                                             if (rain >=0) {model->setRain(rain);}
-                                            if (visibility>0) {model->setVisibility(visibility);}
+                                            if (visibility>=0) {model->setVisibility(visibility);}
                                             if (windSpeed>=0) {model->setWindSpeed(windSpeed);}
                                             model->setWindDirection(windDirection);
                                             if (streamSpeed>=0) {model->setStreamOverrideSpeed(streamSpeed);}

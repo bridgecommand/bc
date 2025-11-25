@@ -85,7 +85,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         weather = scenarioData.weather;
         rainIntensity = scenarioData.rainIntensity;
         visibilityRange = scenarioData.visibilityRange;
-        if (visibilityRange <= 0) {visibilityRange = 5*M_IN_NM;} //TODO: Check units
+        if (visibilityRange < 0) {visibilityRange = 5;} //Default value
 
         windDirection = scenarioData.windDirection;
         windSpeed = scenarioData.windSpeed;
@@ -1860,7 +1860,12 @@ SimulationModel::~SimulationModel()
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*visibilityRange*M_IN_NM, visibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+        irr::f32 appliedVisibilityRange = visibilityRange;
+        // Lower bound of visibility of 0.01 Nm
+        if (appliedVisibilityRange < 0.01) {
+            appliedVisibilityRange = 0.01;
+        }
+        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01* appliedVisibilityRange*M_IN_NM, appliedVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         lightLevel = light.getLightLevel();
 
         }{ IPROF("Update rain");

@@ -166,7 +166,7 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     visibility->addItem(L"2.0");visibility->addItem(L"1.5");visibility->addItem(L"1.0");
     visibility->addItem(L"0.9");visibility->addItem(L"0.8");visibility->addItem(L"0.7");
     visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
-    visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");
+    visibility->addItem(L"0.3"); visibility->addItem(L"0.2"); visibility->addItem(L"0.1"); visibility->addItem(L"0");
 
     // Wind
     guienv->addStaticText(language->translate("windDirection").c_str(),irr::core::rect<irr::s32>(0.010*su,0.01*sh,0.115*su,0.04*sh),false,false,weatherTab);
@@ -343,7 +343,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
     if (oldScenarioInfo.visibilityRange != scenarioData.visibilityRange) {
         irr::s32 selectedVis;
         if (scenarioData.visibilityRange<=1) {
-            selectedVis = Utilities::round(-10.0*scenarioData.visibilityRange + 28.0); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+            selectedVis = Utilities::round(-10.0*scenarioData.visibilityRange + 28.0); //Equation of relation between visibility and items in visibility list where in the 0 to 1.0 range, with a spacing of 0.1)
         } else {
             selectedVis = Utilities::round(-2.0*scenarioData.visibilityRange + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
         }

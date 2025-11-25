@@ -419,7 +419,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_VISIBILITY_SCROLL_BAR)
             {
-                model->setVisibility(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 10.0); // Scroll bar 1-101, vis 0.1-10.1
+                model->setVisibility(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 10.0); // Scroll bar 0-100, vis near 0 to 10 nm
             }
             if (id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR)
             {
