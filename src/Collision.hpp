@@ -3,8 +3,12 @@
 
 #include "irrlicht.h"
 #include <vector>
+#include "ModelParams.hpp"
 
-class SimulationModel;
+class Terrain;
+class OtherShips;
+class OwnShip;
+class Buoys;
 
 struct ContactPoint
 {
@@ -20,7 +24,7 @@ class Collision
 {
 public:
 
-  void load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNode *aShipScene, irr::IrrlichtDevice *aDev, SimulationModel *aModel, float aHeightCorr);
+  void load(irr::scene::IMeshSceneNode *aShipScene, Terrain *aTerrain, OtherShips *aOtherShips, OwnShip *aOwnShip, Buoys *aBuoys, ModelParameters aModelParameters, irr::IrrlichtDevice *aDev);
   void addContactPointFromRay(irr::core::line3d<irr::f32> aRay, irr::f32 aContactArea);
   void enableTriangleSelector(bool aSelectorEnabled);
   void DetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, irr::f32 &turnReaction);
@@ -30,16 +34,20 @@ public:
   
 private:
 
-  irr::scene::ISceneManager *mSmgr;
   irr::IrrlichtDevice *mDevice;
   irr::scene::IMeshSceneNode *mShipScene;
   irr::scene::ITriangleSelector *mSelector;
   bool mTriangleSelectorEnabled; 
   std::vector<ContactPoint> contactPoints;  
-  SimulationModel *mModel;
   bool mBuoyCollision;
   bool mOtherShipCollision;
-  float mHeightCorr;
+  irr::scene::ISceneManager *mSmgr;
+  Terrain   *mTerrain;
+  OtherShips *mOtherShips;
+  OwnShip *mOwnShip;
+  Buoys *mBuoys;
+  ModelParameters mModelParameters;
+
 
 };
 

@@ -23,7 +23,8 @@
 #include <string>
 
 //Forward declarations
-class SimulationModel;
+class Water;
+class Terrain;
 class Buoy;
 class NavLight;
 struct RadarData;
@@ -33,7 +34,7 @@ class Buoys
     public:
         Buoys();
         virtual ~Buoys();
-        void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
+        void load(const std::string& aWorldName,Terrain *aTerrain, Water *aWater, irr::IrrlichtDevice* aDev);
         void update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
         RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
         irr::u32 getNumber() const;
@@ -45,7 +46,7 @@ class Buoys
     private:
         std::vector<Buoy> buoys;
         std::vector<NavLight*> buoysLights;
-        SimulationModel* model; //Store reference to model
+        Water* mWater;
 };
 
 #endif

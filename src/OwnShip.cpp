@@ -15,6 +15,9 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 // Extends from the general 'Ship' class
+#include <cstdlib> //For rand()
+#include <algorithm>
+
 #include "OwnShip.hpp"
 #include "Sail.hpp"
 #include "Constants.hpp"
@@ -23,8 +26,6 @@
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
-#include <cstdlib> //For rand()
-#include <algorithm>
 #include "Solver.hpp"
 #include "Collision.hpp"
 #include "Wind.hpp"
@@ -110,7 +111,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   // Scale
   scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
   irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename, "YCorrection");
-  angleCorrection = IniFile::iniFileTof32(shipIniFilename, "AngleCorrection");
+  mAngleCorrection = IniFile::iniFileTof32(shipIniFilename, "AngleCorrection");
   // DEE_DEC22 vvvv
   angleCorrectionRoll = 0;  // default value
   angleCorrectionPitch = 0; // default value
@@ -158,7 +159,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   irr::scene::IMesh *shipMesh;
 
   // Set mesh vertical correction (world units)
-  heightCorrection = yCorrection * scaleFactor;
+  mHeightCorrection = yCorrection * scaleFactor;
 
   shipMesh = smgr->getMesh(ownShipFullPath.c_str());
 
@@ -246,14 +247,14 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   mShipScene->setName("OwnShip");
 
   mShipScene->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
-  mShipScene->setPosition(irr::core::vector3df(0, heightCorrection, 0));
+  mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
 
   //length = mShipScene->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
   //breadth = mShipScene->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
 
   //draught = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
-  airDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
+  mAirDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
 
 
   if (rollPeriod == 0)
@@ -477,7 +478,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   irr::f32 factor = deltaTime / (timeConstant + deltaTime);
   waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
-  double yPos = tideHeight + heightCorrection + waveHeightFiltered;
+  double yPos = tideHeight + mHeightCorrection + waveHeightFiltered;
 
   // calculate pitch and roll - not linked to water/wave motion
   if (pitchPeriod > 0)
@@ -507,8 +508,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   /******************/
 
   // Set position & angles
-  //mShipScene->setPosition(irr::core::vector3df(xPos, yPos, zPos));
-  std::cout << "--> Xeta : " << mEta[0] << std::endl;
+  /*  std::cout << "--> Xeta : " << mEta[0] << std::endl;
   std::cout << "--> Yeta : " << mEta[1] << std::endl;
   std::cout << "--> Hdg : " << mEta[2]*180/PI << std::endl;
   std::cout << "--> Speed X : " << mMu[0] << std::endl;
@@ -519,22 +519,15 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   std::cout << "--> Wheel : " << mWheel << std::endl;
   std::cout << "--> Forward Rotation : " << mProp[0].getForwardRotDir() << std::endl;
   std::cout << "--> Current Rotation : " << mProp[0].getCurrentRotDir() << std::endl;
-  std::cout << "**************" << std::endl;
-  
-  //std::cout << "--> Xpos : " << xPos << std::endl;
-  //std::cout << "--> Y : " << mEta[1] << std::endl;
+  std::cout << "**************" << std::endl;*/
   mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
-  // DEE_DEC22 vvvv the original remains however this could be a replacement
-  //    mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg+angleCorrection,angleCorrectionPitch+pitch,angleCorrectionRoll+roll)); // attempt 1
-  //    mShipScene->setRotation(irr::core::vector3df(angleCorrectionPitch+pitch, hdg+angleCorrection,angleCorrectionRoll+roll));
-  //mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(hdg + angleCorrection, pitch, roll)); // this is the original
   mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, pitch, roll));
-  // DEE_DEC22 ^^^^
+  
 }
 
 irr::f32 OwnShip::getAngleCorrection() const
 {
-  return angleCorrection;
+  return mAngleCorrection;
 }
 
 bool OwnShip::hasGPS() const

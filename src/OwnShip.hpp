@@ -17,8 +17,8 @@
 #ifndef __OWNSHIP_HPP_INCLUDED__
 #define __OWNSHIP_HPP_INCLUDED__
 
-#include "irrlicht.h"
 #include <vector>
+#include "irrlicht.h"
 #include "Sail.hpp"
 #include "Ship.hpp"
 #include "OperatingModeEnum.hpp"

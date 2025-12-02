@@ -14,13 +14,15 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include <iostream>
 #include "ManOverboard.hpp"
 #include "IniFile.hpp"
 #include "Utilities.hpp"
-#include "SimulationModel.hpp"
 #include "Constants.hpp"
-
-#include <iostream>
+#include "Water.hpp"
+#include "Wind.hpp"
+#include "Tide.hpp"
+#include "Terrain.hpp"
 
 //using namespace irr;
 ManOverboard::ManOverboard()
@@ -33,12 +35,17 @@ ManOverboard::~ManOverboard()
   
 }
 
-void ManOverboard::load(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain)
+void ManOverboard::load(const irr::core::vector3df& aLocation, Terrain* aTerrain, Water* aWater, Wind* aWind, Tide* aTide, irr::IrrlichtDevice* aDev)
 {
+  
+  mTerrain=aTerrain;
+  mWater=aWater;
+  mWind=aWind;
+  mTide=aTide;
 
-  this->model=model;
-  this->terrain=terrain;
+  irr::scene::ISceneManager* smgr = aDev->getSceneManager();
 
+  
   std::string basePath = "models/ManOverboard/";
   std::string userFolder = Utilities::getUserDir();
   //Read model from user dir if it exists there.
@@ -64,11 +71,11 @@ void ManOverboard::load(const irr::core::vector3df& location, irr::scene::IScene
   //add to scene node
   if (mobMesh==0) {
     //Failed to load mesh - load with dummy and continue
-    dev->getLogger()->log("Failed to load man overboard model:");
-    dev->getLogger()->log(mobFullPath.c_str());
+    aDev->getLogger()->log("Failed to load man overboard model:");
+    aDev->getLogger()->log(mobFullPath.c_str());
     man = smgr->addCubeSceneNode(0.1);
   } else {
-    man = smgr->addMeshSceneNode( mobMesh, 0, -1, location );
+    man = smgr->addMeshSceneNode( mobMesh, 0, -1, aLocation );
   }
 
   //Set lighting to use diffuse and ambient, so lighting of untextured models works
@@ -109,18 +116,19 @@ void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
 void ManOverboard::update(sTime& aTime, irr::f32 tideHeight)
 {
   float deltaTime = aTime.deltaTime;
+  float absoluteTime = aTime.absoluteTime;
   
   //Move with tide and waves
   irr::core::vector3df pos=getPosition();
-  pos.Y = tideHeight + model->getWater()->getWaveHeight(pos.X,pos.Z);
+  pos.Y = tideHeight + mWater->getWaveHeight(pos.X,pos.Z);
 
   //Move with tidal stream (if not aground)
-  irr::f32 depth = -1*terrain->getHeight(pos.X,pos.Z)+pos.Y;
-  irr::core::vector2df mobVector = model->getTide()->getTidalStream(terrain->xToLong(pos.X),terrain->zToLat(pos.Z),model->getTimestamp());
+  irr::f32 depth = -1*mTerrain->getHeight(pos.X,pos.Z)+pos.Y;
+  irr::core::vector2df mobVector = mTide->getTidalStream(mTerrain->xToLong(pos.X),mTerrain->zToLat(pos.Z), absoluteTime);
     
   // Add component from wind
-  irr::f32 windSpeed = model->getWind()->getTrueSpeed() * KTS_TO_MPS;
-  irr::f32 windDirection = model->getWind()->getTrueDirection();
+  irr::f32 windSpeed = mWind->getTrueSpeed() * KTS_TO_MPS;
+  irr::f32 windDirection = mWind->getTrueDirection();
   // Convert this into wind axial speed and wind lateral speed
   irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
   irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);

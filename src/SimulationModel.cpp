@@ -14,6 +14,9 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include <cmath>
+#include <fstream>
+
 #include "SimulationModel.hpp"
 #include "ModelParams.hpp"
 #include "ScenarioDataStructure.hpp"
@@ -28,15 +31,13 @@
 #include "Utilities.hpp"
 #include "MessageMisc.hpp"
 
-#include <cmath>
-#include <fstream>
 
 SimulationModel::SimulationModel()
 {
 
 }
 
-SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters)
+SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters)
 {
   mTerrain = new Terrain();
   mWater = new Water();
@@ -59,11 +60,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mSolver = new Solver();
   mWind = new Wind();
   
-  mManOverboard->load(irr::core::vector3df(0,0,0),aScene,aDev,this,mTerrain);
-  
   mDevice = aDev;
-  mSmgr = aScene;
-  mDriver = aScene->getVideoDriver();
+  mSmgr = mDevice->getSceneManager();;
+  mDriver = mDevice->getVideoDriver();
   mGuiMain = aGui;
   mSound = aSound;
   mMoveViewWithPrimary = true;
@@ -199,16 +198,16 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   mLight->load(mSmgr,sunRise,sunSet, mCamera->getSceneNode());
 
   //Load other ships
-  mOtherShips->load(aScenarioData.otherShipsData,mTime.scenarioTime,mModelParameters.mode,mSmgr,this,mDevice);
+  mOtherShips->load(aScenarioData.otherShipsData,mTime.scenarioTime,mTerrain,mWater,mModelParameters.mode,mDevice);
 
   //Load buoys
-  mBuoys->load(worldPath, mSmgr, this,mDevice);
+  mBuoys->load(worldPath, mTerrain, mWater, mDevice);
 
   //Load land objects
-  mLandObjects->load(worldPath, mSmgr, this, mTerrain, mDevice);
+  mLandObjects->load(worldPath, mTerrain, mDevice);
 
   //Load land lights
-  mLandLights->load(worldPath, mSmgr, this, mTerrain);
+  mLandLights->load(worldPath, mTerrain, mDevice);
 
   //Load tidal information
   mTide->load(worldPath, aScenarioData);
@@ -216,8 +215,11 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneMa
   //Wind
   mWind->load(mOwnShip);
 
+  //MoB
+  mManOverboard->load(irr::core::vector3df(0,0,0),mTerrain, mWater, mWind, mTide, mDevice);
+  
   //Load Collsion detection
-  mCollision->load(mSmgr, mOwnShip->getSceneNode(), mDevice, this, mOwnShip->getHeightCorrection());
+  mCollision->load(mOwnShip->getSceneNode(), mTerrain, mOtherShips, mOwnShip, mBuoys, mModelParameters, mDevice);
   
   //make a radar screen, setting parent and offset from own ship
   mRadarScreen->load(mSmgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());

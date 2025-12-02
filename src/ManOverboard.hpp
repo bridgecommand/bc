@@ -21,15 +21,17 @@
 #include "Time.hpp"
 
 //Forward declarations
-class SimulationModel;
 class Terrain;
+class Tide;
+class Wind;
+class Water;
 
 class ManOverboard
 {
 public:
   ManOverboard();
   ~ManOverboard();
-  void load(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain);
+  void load(const irr::core::vector3df& aLocation, Terrain* aTerrain, Water* aWater, Wind* aWind, Tide* aTide, irr::IrrlichtDevice* aDev);
   irr::core::vector3df getPosition() const;
   
   void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
@@ -48,8 +50,10 @@ public:
 protected:
 private:
   irr::scene::IMeshSceneNode* man; //The scene node for the man overboard model.
-  SimulationModel* model;
-  Terrain* terrain;
+  Terrain *mTerrain;
+  Water *mWater;
+  Wind *mWind;
+  Tide *mTide;
 };
 
 #endif

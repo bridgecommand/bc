@@ -60,7 +60,7 @@ class SimulationModel //Start of the 'Model' part of MVC
 public:
 
   SimulationModel();
-  SimulationModel(irr::IrrlichtDevice* aDev, irr::scene::ISceneManager* aScene, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters);
+  SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound* aSound, ScenarioData aScenarioData, ModelParameters aModelParameters);
   ~SimulationModel();
 
   /*Time*/

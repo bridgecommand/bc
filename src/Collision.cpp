@@ -1,9 +1,12 @@
 #include "Collision.hpp"
-#include "SimulationModel.hpp"
 #include "Utilities.hpp"
 #include "Constants.hpp"
+#include "OwnShip.hpp"
+#include "Terrain.hpp"
+#include "OtherShips.hpp"
+#include "Buoys.hpp"
 
-void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNode *aShipScene, irr::IrrlichtDevice *aDev, SimulationModel *aModel, float aHeightCorr)
+void Collision::load(irr::scene::IMeshSceneNode *aShipScene, Terrain *aTerrain, OtherShips *aOtherShips, OwnShip *aOwnShip, Buoys *aBuoys, ModelParameters aModelParameters, irr::IrrlichtDevice *aDev)
 {
   mBuoyCollision = false;
   mOtherShipCollision = false;
@@ -12,11 +15,15 @@ void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNod
   // Add a triangle selector
   mShipScene = aShipScene;
   mDevice = aDev;
-  mModel = aModel;
-  mHeightCorr = aHeightCorr;
-  mSmgr = aSmgr;
+  mSmgr = mDevice->getSceneManager();
+  mTerrain = aTerrain;
+  mOtherShips = aOtherShips;
+  mOwnShip = aOwnShip;
+  mBuoys = aBuoys;
+  mModelParameters = aModelParameters;
   
-  mSelector = aSmgr->createTriangleSelector(mShipScene->getMesh(), mShipScene);
+  
+  mSelector = mSmgr->createTriangleSelector(mShipScene->getMesh(), mShipScene);
   if (mSelector)
     {
       mDevice->getLogger()->log("Created triangle selector");
@@ -35,21 +42,21 @@ void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNod
   irr::f32 maxZ = boundingBox.MaxEdge.Z;
 
   // Find if we need more contact points to maintain minContactPointSpacing
-  if (mModel->getModelParameters().minContactPointSpacing > 0)
+  if (mModelParameters.minContactPointSpacing > 0)
     {
-      mModel->getModelParameters().numberOfContactPoints.X = std::max(mModel->getModelParameters().numberOfContactPoints.X, (int)ceil((maxX - minX) / mModel->getModelParameters().minContactPointSpacing));
-      mModel->getModelParameters().numberOfContactPoints.Y = std::max(mModel->getModelParameters().numberOfContactPoints.Y, (int)ceil((maxY - minY) / mModel->getModelParameters().minContactPointSpacing));
-      mModel->getModelParameters().numberOfContactPoints.Z = std::max(mModel->getModelParameters().numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / mModel->getModelParameters().minContactPointSpacing));
+      mModelParameters.numberOfContactPoints.X = std::max(mModelParameters.numberOfContactPoints.X, (int)ceil((maxX - minX) / mModelParameters.minContactPointSpacing));
+      mModelParameters.numberOfContactPoints.Y = std::max(mModelParameters.numberOfContactPoints.Y, (int)ceil((maxY - minY) / mModelParameters.minContactPointSpacing));
+      mModelParameters.numberOfContactPoints.Z = std::max(mModelParameters.numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / mModelParameters.minContactPointSpacing));
     }
 
   // Grid from below looking up
-  for (int i = 0; i < mModel->getModelParameters().numberOfContactPoints.X; i++)
+  for (int i = 0; i < mModelParameters.numberOfContactPoints.X; i++)
     {
-      for (int j = 0; j < mModel->getModelParameters().numberOfContactPoints.Z; j++)
+      for (int j = 0; j < mModelParameters.numberOfContactPoints.Z; j++)
         {
 
-	  irr::f32 xSpacing = (maxX - minX) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.X - 1);
-	  irr::f32 zSpacing = (maxZ - minZ) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.Z - 1);
+	  irr::f32 xSpacing = (maxX - minX) / (irr::f32)(mModelParameters.numberOfContactPoints.X - 1);
+	  irr::f32 zSpacing = (maxZ - minZ) / (irr::f32)(mModelParameters.numberOfContactPoints.Z - 1);
 
 	  irr::f32 xTestPos = minX + (irr::f32)i * xSpacing;
 	  irr::f32 zTestPos = minZ + (irr::f32)j * zSpacing;
@@ -67,13 +74,13 @@ void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNod
     }
 
   // Grid from ahead/astern
-  for (int i = 0; i < mModel->getModelParameters().numberOfContactPoints.X; i++)
+  for (int i = 0; i < mModelParameters.numberOfContactPoints.X; i++)
     {
-      for (int j = 0; j < mModel->getModelParameters().numberOfContactPoints.Y; j++)
+      for (int j = 0; j < mModelParameters.numberOfContactPoints.Y; j++)
         {
 
-	  irr::f32 xSpacing = (maxX - minX) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.X - 1);
-	  irr::f32 ySpacing = (maxY - minY) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.Y - 1);
+	  irr::f32 xSpacing = (maxX - minX) / (irr::f32)(mModelParameters.numberOfContactPoints.X - 1);
+	  irr::f32 ySpacing = (maxY - minY) / (irr::f32)(mModelParameters.numberOfContactPoints.Y - 1);
 
 	  irr::f32 xTestPos = minX + (irr::f32)i * xSpacing;
 	  irr::f32 yTestPos = minY + (irr::f32)j * ySpacing;
@@ -95,13 +102,13 @@ void Collision::load(irr::scene::ISceneManager *aSmgr, irr::scene::IMeshSceneNod
     }
 
   // Grid from side to side
-  for (int i = 0; i < mModel->getModelParameters().numberOfContactPoints.Z; i++)
+  for (int i = 0; i < mModelParameters.numberOfContactPoints.Z; i++)
     {
-      for (int j = 0; j < mModel->getModelParameters().numberOfContactPoints.Y; j++)
+      for (int j = 0; j < mModelParameters.numberOfContactPoints.Y; j++)
         {
 
-	  irr::f32 zSpacing = (maxZ - minZ) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.Z - 1);
-	  irr::f32 ySpacing = (maxY - minY) / (irr::f32)(mModel->getModelParameters().numberOfContactPoints.Y - 1);
+	  irr::f32 zSpacing = (maxZ - minZ) / (irr::f32)(mModelParameters.numberOfContactPoints.Z - 1);
+	  irr::f32 ySpacing = (maxY - minY) / (irr::f32)(mModelParameters.numberOfContactPoints.Y - 1);
 
 	  irr::f32 zTestPos = minZ + (irr::f32)i * zSpacing;
 	  irr::f32 yTestPos = minY + (irr::f32)j * ySpacing;
@@ -145,7 +152,7 @@ void Collision::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32
       ContactPoint contactPoint;
       contactPoint.position = intersection;
       contactPoint.normal = hitTriangle.getNormal().normalize();
-      contactPoint.position.Y -= mHeightCorr; // Adjust for height correction
+      contactPoint.position.Y -= mOwnShip->getHeightCorrection(); // Adjust for height correction
 
       // Check if the normal is pointing 'towards' the incoming ray used to find the contact point, i.e. if it is pointing in roughly the right direction
       // 0.707 is approximately cos(45deg), so should be within +- 45 degrees of the incoming ray.
@@ -167,7 +174,7 @@ void Collision::addContactPointFromRay(irr::core::line3d<irr::f32> ray, irr::f32
 	  if (selectedSceneNode)
             {
 	      contactPoint.internalPosition = intersection;
-	      contactPoint.internalPosition.Y -= mHeightCorr; // Adjust for height correction
+	      contactPoint.internalPosition.Y -= mOwnShip->getHeightCorrection(); // Adjust for height correction
 
 	      // Adjust internal position, so it's only 1/2 way to the opposite boundary of the model
 	      contactPoint.internalPosition = 0.5 * contactPoint.internalPosition + 0.5 * contactPoint.position;
@@ -241,7 +248,7 @@ void Collision::DetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, 
       irr::f32 localIntersection = 0; // Ready to use
 
       // Find depth below the contact point
-      irr::f32 localDepth = -1 * mModel->getTerrain()->getHeight(pointPosition.X, pointPosition.Z) + pointPosition.Y;
+      irr::f32 localDepth = -1 * mTerrain->getHeight(pointPosition.X, pointPosition.Z) + pointPosition.Y;
 
       // Contact model (proof of principle!)
       if (localDepth < 0)
@@ -319,9 +326,9 @@ void Collision::DetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, 
 	      // Calculate velocity of other ship, in our reference frame
 	      if (otherShipID >= 0)
 		{
-		  irr::f32 otherShipHeading = mModel->getOtherShips()->getHeading(otherShipID);
-		  irr::f32 otherShipSpeed = mModel->getOtherShips()->getSpeed(otherShipID);
-		  irr::f32 otherShipRelativeHeading = otherShipHeading - mModel->getOwnShip()->getLateralSpeed();
+		  irr::f32 otherShipHeading = mOtherShips->getHeading(otherShipID);
+		  irr::f32 otherShipSpeed = mOtherShips->getSpeed(otherShipID);
+		  irr::f32 otherShipRelativeHeading = otherShipHeading - mOwnShip->getLateralSpeed();
 
 		  // TODO: Initially ignore rate of turn of other ship, but should be included
 		  remotePointAxialSpeed = otherShipSpeed * cos(irr::core::DEGTORAD * otherShipRelativeHeading);
@@ -347,15 +354,15 @@ void Collision::DetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, 
 	  irr::f32 contactArea = contactPoints.at(i).effectiveArea;
 
 	  // Define stiffness & damping
-	  irr::f32 contactStiffness = mModel->getModelParameters().contactStiffnessFactor * contactArea;                         // N/m per m2 * area
-	  irr::f32 contactDamping = mModel->getModelParameters().contactDampingFactor * 2.0 * sqrt(contactStiffness * mModel->getOwnShip()->getM()); // Critical damping, assuming that only one point is in contact, and that mass of own ship is the smaller in two body contact...
+	  irr::f32 contactStiffness = mModelParameters.contactStiffnessFactor * contactArea;                         // N/m per m2 * area
+	  irr::f32 contactDamping = mModelParameters.contactDampingFactor * 2.0 * sqrt(contactStiffness * mOwnShip->getM()); // Critical damping, assuming that only one point is in contact, and that mass of own ship is the smaller in two body contact...
 
 	  // Local speed at this point (TODO, include y component from pitch and roll?)
 	  //  Relative to the speed of the point we're in contact with
 	  irr::core::vector3df localSpeedVector;
-	  localSpeedVector.X = mModel->getOwnShip()->getLateralSpeed() + mModel->getOwnShip()->getRateOfTurn() * contactPoints.at(i).position.Z - remotePointLateralSpeed;
+	  localSpeedVector.X = mOwnShip->getLateralSpeed() + mOwnShip->getRateOfTurn() * contactPoints.at(i).position.Z - remotePointLateralSpeed;
 	  localSpeedVector.Y = 0;
-	  localSpeedVector.Z = mModel->getOwnShip()->getSpeed() - mModel->getOwnShip()->getRateOfTurn() * contactPoints.at(i).position.X - remotePointAxialSpeed;
+	  localSpeedVector.Z = mOwnShip->getSpeed() - mOwnShip->getRateOfTurn() * contactPoints.at(i).position.X - remotePointAxialSpeed;
 
 	  // Find the speed component, tangential to the contact plane (for friction)
 	  irr::core::vector3df tangentialSpeedComponent;
@@ -387,7 +394,7 @@ void Collision::DetectAndRespond(irr::f32 &reaction, irr::f32 &lateralReaction, 
 
 	  // Friction response. Use tanh function for better stability at low speed
 	  irr::f32 frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalisedTangentialSpeedComponent)).Y; // Effect of unit friction force on ship's turning. TODO: Check this, I think it's correct
-	  irr::f32 frictionCoeff = mModel->getModelParameters().frictionCoefficient * tanh(mModel->getModelParameters().tanhFrictionFactor * tangentialSpeedAmplitude);
+	  irr::f32 frictionCoeff = mModelParameters.frictionCoefficient * tanh(mModelParameters.tanhFrictionFactor * tangentialSpeedAmplitude);
 	  turnReaction += combinedStiffnessDamping * frictionCoeff * frictionTorqueFactor;
 	  reaction += combinedStiffnessDamping * frictionCoeff * normalisedTangentialSpeedComponent.Z;
 	  lateralReaction += combinedStiffnessDamping * frictionCoeff * normalisedTangentialSpeedComponent.X;
@@ -455,8 +462,8 @@ irr::scene::ISceneNode* Collision::getContactFromRay(irr::core::line3d<float> ra
     enableTriangleSelector(true);
   } else if (linesMode == 2) {
     // End - not on own ship
-    mModel->getOtherShips()->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
-    mModel->getBuoys()->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+    mOtherShips->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
+    mBuoys->enableAllTriangleSelectors(); //This will be reset next time otherShips.update is called
     // TODO: Temporarily enable triangle selector for:
     //   Terrain
     //   Land objects

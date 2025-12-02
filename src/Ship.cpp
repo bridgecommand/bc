@@ -16,9 +16,7 @@
 
 //Parent class for own and other ships - not used un-extended
 #include "Ship.hpp"
-
 #include "Constants.hpp"
-#include "SimulationModel.hpp"
 #include "IniFile.hpp"
 
 //using namespace irr;
@@ -101,7 +99,7 @@ irr::f32 Ship::getBreadth() const
 
 irr::f32 Ship::getHeightCorrection() const
 {
-    return heightCorrection;
+    return mHeightCorrection;
 }
 
 irr::f32 Ship::getDepth(Terrain *aTerrain) const

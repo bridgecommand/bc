@@ -14,7 +14,9 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-//Extends from the general 'Ship' class
+#include <iostream>
+#include <algorithm>
+
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "RadarData.hpp"
@@ -22,10 +24,6 @@
 #include "OtherShip.hpp"
 #include "Utilities.hpp"
 
-#include <iostream>
-#include <algorithm>
-
-//using namespace irr;
 
 OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
@@ -59,7 +57,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     irr::f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
 
     irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
-    angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
+    mAngleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
     // DEE_DEC22 vvvv
     angleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
     angleCorrectionRoll = IniFile::iniFileTof32(iniFilename,"AngleCorrectionRoll");
@@ -72,7 +70,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
     //Set mesh vertical correction (world units)
-    heightCorrection = yCorrection*scaleFactor;
+    mHeightCorrection = yCorrection*scaleFactor;
 
     //add to scene node
 	if (shipMesh==0) {
@@ -83,7 +81,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     }
     mShipScene = smgr->addMeshSceneNode( shipMesh, 0, -1);
     mShipScene->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    mShipScene->setPosition(irr::core::vector3df(0,heightCorrection,0));
+    mShipScene->setPosition(irr::core::vector3df(0,mHeightCorrection,0));
 
     mShipScene->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
     mShipScene->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
@@ -94,7 +92,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     mGeoParams.b = mShipScene->getTransformedBoundingBox().getExtent().X;
     height = mShipScene->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     mGeoParams.d = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
-    airDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
+    mAirDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
     
     rcs = 0.005*std::pow(mGeoParams.lPP ,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
@@ -200,14 +198,14 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     } else {
         positionManuallyUpdated = false;
     }
-    double yPos = tideHeight+heightCorrection;
+    double yPos = tideHeight+mHeightCorrection;
 
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
     mShipScene->setPosition(irr::core::vector3df(mEta[1],yPos,mEta[0]));
     // DEE_DEC22 vvvv allows modelling of trim , list and models derived from other coordinate systems
     //ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
-    mShipScene->setRotation(irr::core::vector3df(angleCorrectionPitch, mEta[2]+angleCorrection, angleCorrectionRoll)); //Global vectors
+    mShipScene->setRotation(irr::core::vector3df(angleCorrectionPitch, mEta[2]+mAngleCorrection, angleCorrectionRoll)); //Global vectors
     // DEE_DEC22 ^^^^
 
     //for each light, find range and angle

@@ -19,9 +19,10 @@
 #ifndef __SHIP_HPP_INCLUDED__
 #define __SHIP_HPP_INCLUDED__
 
-#include "irrlicht.h"
+
 #include <string>
 #include <Eigen/Dense>
+#include "irrlicht.h"
 #include "ShipGlobalParams.hpp"
 #include "Propeller.hpp"
 #include "Hull.hpp"
@@ -29,8 +30,6 @@
 #include "Terrain.hpp"
 #include "Sail.hpp"
 
-//Forward declarations
-class SimulationModel;
 
 class Ship
 {
@@ -80,18 +79,28 @@ public:
   
 protected:
 
-  
-  irr::scene::IMeshSceneNode* mShipScene; //The scene node for the own ship.
+  //Mesh Boat
+  irr::scene::IMeshSceneNode* mShipScene; 
+
+  //Mesh Sails
   irr::scene::IMeshSceneNode* mSailsScene[4];
+
+  //Mesh Correction
+  irr::f32 mHeightCorrection;
+  irr::f32 mAngleCorrection;
+  
+  //Sail management
   unsigned char mSailsCount;
   std::string mSailsType;
-  Sail mSails;
 
-  irr::f32 airDraught;
-  irr::f32 heightCorrection;
-  irr::f32 angleCorrection;
+  //TODO : Add to GeoParams
+  irr::f32 mAirDraught;
 
-  double mSpeedThroughWater;
+  //Global Ship params
+  sGeoParams mGeoParams; 
+  sAddedMassParams mAddedMassParams;
+
+  //Computed values
   double mM; //Mass
   double mMX; //Mass on Z
   double mMY; //Mass on X
@@ -99,23 +108,22 @@ protected:
   Eigen::Matrix3d mMatM; //Mass matrix
   Eigen::Matrix3d mInvMatM; //Inverse mass matrix
   Eigen::Vector3d mMu0; //Initial speed
-  sGeoParams mGeoParams; //
-  sAddedMassParams mAddedMassParams;
   //Dynamic params
   Eigen::Vector3d mMu; //mMu[0] : Speed on Z ; mMu[1] :  Rate of turn ; mMu[2] : Speed on X (m/s) 
   Eigen::Vector3d mEta; //mEta[0] : Z position ; mEta[1] : X position ; mEta[2] : Heading
+  double mSpeedThroughWater;
+
   //Boat parts
   unsigned char mNumberProp;
   Propeller mProp[2];
   Hull mHull;
   Rudder mRudder;
-  //Wind mWind;
+  Sail mSails;
 
   
-  // DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
   irr::f32 angleCorrectionRoll;
   irr::f32 angleCorrectionPitch;
-  // DEE_DEC22
+
   int controlMode;
   bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
   irr::u32 mmsi;

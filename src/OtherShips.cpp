@@ -14,16 +14,16 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include <iostream> //debugging
 #include "OtherShips.hpp"
-
 #include "Constants.hpp"
 #include "OtherShip.hpp"
 #include "IniFile.hpp"
 #include "RadarData.hpp"
-#include "SimulationModel.hpp"
 #include "ScenarioDataStructure.hpp"
+#include "Water.hpp"
+#include "Terrain.hpp"
 
-#include <iostream> //debugging
 
 //using namespace irr;
 
@@ -40,36 +40,37 @@ OtherShips::~OtherShips()
     otherShips.clear();
 }
 
-void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
+void OtherShips::load(std::vector<OtherShipData> aOtherShipsData, irr::f32 aScenarioStartTime, Terrain *aTerrain, Water *aWater, OperatingMode::Mode aMode, irr::IrrlichtDevice* aDev)
 {
+  irr::scene::ISceneManager* smgr = aDev->getSceneManager();
 
-    //Store reference to model
-    this->model = model;
-
-    for(irr::u32 i=0;i<otherShipsData.size();i++)
+  mTerrain = aTerrain;
+  mWater = aWater;
+  
+    for(irr::u32 i=0;i<aOtherShipsData.size();i++)
     {
         //Get ship type and construct filename
-        std::string otherShipName = otherShipsData.at(i).shipName;
+        std::string otherShipName = aOtherShipsData.at(i).shipName;
         //Get initial position
-        irr::f32 shipX = model->getTerrain()->longToX(otherShipsData.at(i).initialLong);
-        irr::f32 shipZ = model->getTerrain()->latToZ(otherShipsData.at(i).initialLat);
+        irr::f32 shipX = mTerrain->longToX(aOtherShipsData.at(i).initialLong);
+        irr::f32 shipZ = mTerrain->latToZ(aOtherShipsData.at(i).initialLat);
 
         //Set MMSI
-        irr::u32 mmsi = otherShipsData.at(i).mmsi;
+        irr::u32 mmsi = aOtherShipsData.at(i).mmsi;
 
         //Load leg information
         std::vector<Leg> legs;
-        irr::f32 legStartTime = scenarioStartTime;
-        if (mode==OperatingMode::Normal) { //Only load leg information in normal mode
-            for(irr::u32 j=0; j<otherShipsData.at(i).legs.size(); j++){
+        irr::f32 legStartTime = aScenarioStartTime;
+        if (aMode==OperatingMode::Normal) { //Only load leg information in normal mode
+            for(irr::u32 j=0; j<aOtherShipsData.at(i).legs.size(); j++){
                 //go through each leg (if any), and load
                 Leg currentLeg;
-                currentLeg.bearing = otherShipsData.at(i).legs.at(j).bearing;
-                currentLeg.speed = otherShipsData.at(i).legs.at(j).speed;
+                currentLeg.bearing = aOtherShipsData.at(i).legs.at(j).bearing;
+                currentLeg.speed = aOtherShipsData.at(i).legs.at(j).speed;
                 currentLeg.startTime = legStartTime;
 
                 //Use distance to calculate startTime of next leg, and stored for later reference.
-                irr::f32 distance = otherShipsData.at(i).legs.at(j).distance;
+                irr::f32 distance = aOtherShipsData.at(i).legs.at(j).distance;
                 currentLeg.distance = distance;
 
                 legs.push_back(currentLeg);
@@ -89,7 +90,7 @@ void OtherShips::load(std::vector<OtherShipData> otherShipsData, irr::f32 scenar
         //Create otherShip and load into vector
         std::string internalName = "OtherShip_";
         internalName.append(std::to_string(i));
-        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, dev));
+        otherShips.push_back(new OtherShip (otherShipName,internalName,mmsi,irr::core::vector3df(shipX,0.0f,shipZ),legs,smgr, aDev));
     }
 
 }
@@ -108,11 +109,11 @@ void OtherShips::update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, 
         //Apply up/down motion from waves, with some filtering
         irr::f32 timeConstant = 0.5;//Time constant in s; TODO: Make dependent on vessel size
         irr::f32 factor = deltaTime/(timeConstant+deltaTime);
-        waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*model->getWater()->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
+        waveHeightFiltered = (1-factor) * waveHeightFiltered + factor*mWater->getWaveHeight(prevPosition.X,prevPosition.Z); //TODO: Check implementation of simple filter!
 
         //Special case, if paused, just use the actual wave height. A bit of a bodge, but avoids having to store the previous filter value
         if (deltaTime == 0) {
-            waveHeightFiltered = model->getWater()->getWaveHeight(prevPosition.X,prevPosition.Z);
+            waveHeightFiltered = mWater->getWaveHeight(prevPosition.X,prevPosition.Z);
         }
 
         (*it)->update(deltaTime, scenarioTime, tideHeight+waveHeightFiltered, lightLevel);
