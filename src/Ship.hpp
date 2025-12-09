@@ -29,7 +29,7 @@
 #include "Rudder.hpp"
 #include "Terrain.hpp"
 #include "Sail.hpp"
-
+#include "Engine.hpp"
 
 class Ship
 {
@@ -119,7 +119,7 @@ protected:
   Hull mHull;
   Rudder mRudder;
   Sail mSails;
-
+  Engine mEngine[2];
   
   irr::f32 angleCorrectionRoll;
   irr::f32 angleCorrectionPitch;

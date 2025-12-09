@@ -50,6 +50,7 @@ int Ship::setShipParams(const std::string& aType)
       mProp[0].Init(9.86, 0.22, -0.48, 0.35, 0.293, -0.275, -0.139, "right", 0.67);
       mRudder.Init(15.8, 112.5, -0.5, 0.312, 0.387, -0.464, 1.09, 0.5, -0.71, 1.827, {0.395, 0.64}, 0.0407, 0.61);
       // mShipWindParams = {4910, 1624, 750, 375, 160, 0, 1.225, 0 * 15.5 * 0.514, 90};
+      mEngine[0].Init("Caterpillar", "9M32C", 4500, 170, 177);
     }
   else
     {

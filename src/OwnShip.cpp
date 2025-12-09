@@ -446,8 +446,8 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	  irr::f32 portThrust = 0; 
 	  irr::f32 stbdThrust = 0;
 	  
-	  portThrust = portEngine * 20;
-	  stbdThrust = stbdEngine * 20;
+	  portThrust = portEngine*mEngine[0].getRpmMax()/60;
+	  stbdThrust = stbdEngine*mEngine[1].getRpmMax()/60;
 
 	  mProp[0].SetRevs(portThrust);
 	  mProp[1].SetRevs(stbdThrust);
@@ -456,7 +456,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	{
 	  irr::f32 monoThrust = 0;
 	  
-	  monoThrust = portEngine * 20;	 
+	  monoThrust = portEngine*mEngine[0].getRpmMax()/60;	 
 
 	  mProp[0].SetRevs(monoThrust);
 	}
