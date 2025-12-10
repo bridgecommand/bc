@@ -22,6 +22,19 @@ void Propeller::Init(double aDiam, double aTfactor, double aXp, double aW0fracti
   mBackwardsEff = aBackwardsEff;
 }
 
+void Propeller::PrintParams(void)
+{
+  std::cout << "::::::Propeller Parameters::::::" << std::endl;
+  std::cout << "Propeller diameter : " << mDiam << std::endl;
+  std::cout << "Thrust deduction factor : " << mTfactor << std::endl;
+  std::cout << "Longitudinal position of the propeller : " << mXp << std::endl;
+  std::cout << "Nominal wake fraction : " << mW0fraction << std::endl;
+  std::cout << "Polynomial coefficients : " << mK0 << " ; " << mK1 << " ; " << mK2 << std::endl; 
+  std::cout << "Forward Rotation Direction : " << mForwardRotDir << std::endl;
+  std::cout << "Backwards efficiency : " << mBackwardsEff << std::endl;
+  std::cout << "::::::::::::" << std::endl;
+}
+
 void Propeller::SetRevs(const double aNrps)
 {
   if(aNrps < 0)

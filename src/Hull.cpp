@@ -29,7 +29,30 @@ void Hull::Init(double aXp0, double aXpVV, double aXpVR, double aXpRR, double aX
   mNpVRR = aNpVRR;
   mNpRRR = aNpRRR;
 }
-  
+
+void Hull::PrintParams(void)
+{
+  std::cout << "::::::Hull Parameters::::::" << std::endl;
+  std::cout << "Xp0 : " << mXp0 << std::endl;
+  std::cout << "XpVV : " << mXpVV << std::endl;
+  std::cout << "XpVR : " << mXpVR << std::endl; 
+  std::cout << "XpRR : " << mXpRR << std::endl;
+  std::cout << "XpVVVV : " << mXpVVVV << std::endl;
+  std::cout << "YpV : " << mYpV << std::endl;
+  std::cout << "YpR : " << mYpR << std::endl;
+  std::cout << "YpVVV : " << mYpVVV << std::endl;
+  std::cout << "YpVVR : " << mYpVVR << std::endl;
+  std::cout << "YpVRR : " << mYpVRR << std::endl;
+  std::cout << "YpRRR : " << mYpRRR << std::endl;
+  std::cout << "NpV : " << mNpV << std::endl;
+  std::cout << "NpR : " << mNpR << std::endl;
+  std::cout << "NpVVV : " << mNpVVV << std::endl;
+  std::cout << "NpVVR : " << mNpVVR << std::endl;
+  std::cout << "NpVRR : " << mNpVRR << std::endl;
+  std::cout << "NpRRR : " << mNpRRR << std::endl;
+  std::cout << "::::::::::::" << std::endl;
+}
+
 
 void Hull::ComputeT(const Eigen::Vector3d& aMu, const double aRho, const sGeoParams& aGeo)
 {

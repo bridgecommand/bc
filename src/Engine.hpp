@@ -2,6 +2,7 @@
 #define ENGINE_HPP
 
 #include <string>
+#include <iostream>
 
 class Engine
 {
@@ -14,6 +15,7 @@ public:
 
   void Init(std::string aBrand, std::string aType, unsigned int aPower, float aRpmMax, float aFuelCons);
   float getRpmMax(void);
+  void PrintParams(void);
   
 private:
 

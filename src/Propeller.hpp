@@ -26,6 +26,7 @@ public:
   double getPolynomialCoef(unsigned char aCoefNumber) const ;
   std::string getForwardRotDir(void) const ;
   std::string getCurrentRotDir(void) const ;
+  void PrintParams(void);
   
 private:
 

@@ -17,6 +17,9 @@
 // Extends from the general 'Ship' class
 #include <cstdlib> //For rand()
 #include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 
 #include "OwnShip.hpp"
 #include "Sail.hpp"
@@ -31,7 +34,6 @@
 #include "Wind.hpp"
 #include "Water.hpp"
 #include "Tide.hpp"
-
 
 OwnShip::OwnShip()
 {
@@ -67,18 +69,28 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
   // Load from boat.ini file if it exists
   std::string shipIniFilename = basePath + "boat.ini";
+  std::string shipJsonFilename = basePath + "boat.json";
 
-  // Construct the radar config file name, to be used later by the radar
-  radarConfigFile = basePath + "radar.ini";
-
-  // get the model file
-  std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename, "FileName");
-  std::string ownShipFullPath = basePath + ownShipFileName;
-
-  double xG = 0, iZ = 0, jZ = 0;
-
-  if(0 == setShipParams("kvlcc2"))
+  int retShipPrms = -1;
+  Json::Value rootJson;
+  std::filesystem::path boatJson = shipJsonFilename;  
+  if(std::filesystem::exists(boatJson))
     {
+      std::cout << "Json file exists : " <<  shipJsonFilename << std::endl;
+      std::ifstream streamJson(boatJson);                
+      streamJson >> rootJson;
+
+      retShipPrms = setShipParams(rootJson);
+    }
+  else
+    {
+      retShipPrms = setShipParams((std::string)"kvlcc2");
+    }
+  
+  if(0 == retShipPrms)
+    {
+      double xG = 0, iZ = 0, jZ = 0;
+      
       mM = mRho * mGeoParams.volume;
       mMX = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpX;
       mMY = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpY;
@@ -97,7 +109,9 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
       //std::cout << "eta : " << mEta << " - mu : " << mMu;
     }
-  
+
+  // Construct the radar config file name, to be used later by the radar
+  radarConfigFile = basePath + "radar.ini";
   
   rollPeriod = IniFile::iniFileTof32(shipIniFilename, "RollPeriod");
   rollAngle = 2 * IniFile::iniFileTof32(shipIniFilename, "Swell");  
@@ -154,6 +168,10 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
     }
   mRadarPos = scaleFactor * mRadarPos;
   mRadarSize = scaleFactor * mRadarSize;
+
+  // get the model file
+  std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename, "FileName");
+  std::string ownShipFullPath = basePath + ownShipFileName;
   
   // Load the model
   irr::scene::IMesh *shipMesh;

@@ -19,6 +19,7 @@ public:
 
   /*Getter*/
   Eigen::Vector3d& getT(void);
+  void PrintParams(void);
   
 private: 
 

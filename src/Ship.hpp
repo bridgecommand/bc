@@ -22,6 +22,7 @@
 
 #include <string>
 #include <Eigen/Dense>
+#include <json/json.h>
 #include "irrlicht.h"
 #include "ShipGlobalParams.hpp"
 #include "Propeller.hpp"
@@ -57,6 +58,7 @@ public:
   void setMMSI(irr::u32 mmsi);
   irr::f32 getDepth(Terrain *aTerrain) const;
   int setShipParams(const std::string& aType);
+  int setShipParams(const Json::Value& aJsonRoot);
   double getM(void);
   double getMY(void);
   double getMX(void);
@@ -76,6 +78,8 @@ public:
   unsigned char getNumberProp(void);
   Sail& getSail(void);
   unsigned char getSailCount(void);
+  void PrintGeoParams(void);
+  void PrintAddedMassParams(void);
   
 protected:
 

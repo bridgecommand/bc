@@ -29,6 +29,26 @@ void Rudder::Init(double aHr, double aAr, double aXpR, double aAh, double aTr, d
   mDeltaMax = aDeltaMax;
 }
 
+void Rudder::PrintParams(void)
+{
+  std::cout << "::::::Rudder Parameters::::::" << std::endl;
+  std::cout << "Span lenght : " << mHr << std::endl;
+  std::cout << "Area of mobile part : " << mAr << std::endl;
+  std::cout << "Rudder longitudinal coordinate ratio : " << mXpR << std::endl;
+  std::cout << "Rudder force increase factor : " << mAh << std::endl;
+  std::cout << "Steering resistance deduction factor : " << mTr << std::endl;
+  std::cout << "Longitudinal coordinate of acting point of the additional lateral force component induced by steering : " << mXpH << std::endl;
+  std::cout << "Ratio of wake fraction at propeller and rudder positions : " << mEpsilon << std::endl;
+  std::cout << "Experimental constant for expressing uR : " << mKappa << std::endl;
+  std::cout << "Effective longitudinal coordinate of rudder position in formula of bR ratio : " << mLpR << std::endl;
+  std::cout << "Rudder aspect ratio :" << mLambdaR << std::endl;
+  std::cout << "Flow straightening coefficient : " << mGammaR[0] << " ; " << mGammaR[1] << std::endl;
+  std::cout << "Max rudder speed : " << mRrMax << std::endl;
+  std::cout << "Rudder angle max : " << mDeltaMax << std::endl;
+  std::cout << "::::::::::::" << std::endl;
+}
+
+
 void Rudder::SetDelta(double aDelta, const double aDt)
 {
   double rrSet = 0;
