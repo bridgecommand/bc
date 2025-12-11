@@ -27,6 +27,9 @@ Ship::Ship()
   controlMode = MODE_AUTO;
   positionManuallyUpdated = false; //Used to track if position has been manually updated, and shouldn't have position update applied this loop
   mmsi = 0;
+  mRho = 1025;
+  mMu0 << 0, 0, 0;
+
 }
 
 Ship::~Ship()
@@ -127,7 +130,6 @@ int Ship::setShipParams(const Json::Value& aJsonRoot)
 			  aJsonRoot["engine"]["fuelCons"].asFloat()		  
 			  );
 	  mEngine[i].PrintParams();
-
 	}
 
       //Rudder
@@ -159,8 +161,6 @@ int Ship::setShipParams(const std::string& aType)
   /*TODO : Get datas from parameters file*/
   if("kvlcc2" == aType)
     {
-      mRho = 1025;
-      mMu0 << 0, 0, 0;
       mGeoParams = {320, 58, 20.8, 312622, 11.1, 0.81};
       mHull.Init(0.022,-0.04, 0.002, 0.011, 0.771, -0.315, 0.083, -1.607, 0.379, -0.391, 0.008, -0.137, -0.049, -0.03, -0.294, 0.055, -0.013);
       mAddedMassParams = {0.022, 0.223, 0.011};
