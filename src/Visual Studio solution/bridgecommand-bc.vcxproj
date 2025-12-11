@@ -80,17 +80,17 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
@@ -162,6 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -194,6 +196,7 @@
     <ClCompile Include="..\Collision.cpp" />
     <ClCompile Include="..\ControlVisualiser.cpp" />
     <ClCompile Include="..\DefaultEventReceiver.cpp" />
+    <ClCompile Include="..\Engine.cpp" />
     <ClCompile Include="..\FFTWave.cpp" />
     <ClCompile Include="..\GUIMain.cpp" />
     <ClCompile Include="..\GUIRectangle.cpp" />
@@ -262,6 +265,7 @@
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\ControlVisualiser.hpp" />
     <ClInclude Include="..\DefaultEventReceiver.hpp" />
+    <ClInclude Include="..\Engine.hpp" />
     <ClInclude Include="..\FFTWave.hpp" />
     <ClInclude Include="..\GUIMain.hpp" />
     <ClInclude Include="..\GUIRectangle.hpp" />
