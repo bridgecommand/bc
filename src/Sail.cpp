@@ -8,14 +8,25 @@ Sail::Sail(void)
 {
   mDimCountX = 0;
   mDimCountY = 0;
+  mSailsCount = 0;
+  mSailsType = "";
+  mSailsSize = "";
+  memset(mSailsPos, 0, sizeof(mSailsPos));
+  mSailVarY = 0;
+  mSailVarX = 0;
+  mStw = {0};
+  mTws = {0};
+  mTwa = {0};
+  mSpeedThroughWater = 0;
+  mTrueWindSpeed = 0;
+  mApparentWindDir = 0;
+  mT << 0, 0, 0;
 }
 
 Sail::Sail(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
 {
-  mDimCountX = 0;
-  mDimCountY = 0;
-
-  Open(aPolarFile, aVarNameX, aVarNameY);
+  Sail();
+  OpenPolar(aPolarFile, aVarNameX, aVarNameY);
 }
 
 Sail::~Sail()
@@ -23,7 +34,7 @@ Sail::~Sail()
   nc_close(mIdPolarFile);
 }
 
-int Sail::Open(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
+int Sail::OpenPolar(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
 {
   if(!aPolarFile.empty() && !aVarNameX.empty() && !aVarNameY.empty())
     {
@@ -65,7 +76,7 @@ int Sail::Open(const std::string aPolarFile, std::string aVarNameX, std::string 
   return -1;
 }
 
-int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, std::string aWindAngleVarName)
+int Sail::InitPolar(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, std::string aWindAngleVarName)
 {
   int err = -1;
   
@@ -110,7 +121,56 @@ int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, st
   return err;
 }
 
+void Sail::Init(int aSailsCount, std::string aSailsType, std::string aSailsSize, float (*aSailsPos)[3])
+{
+  mSailsCount = aSailsCount;
+  mSailsType = aSailsType;
+  mSailsSize = aSailsSize;
 
+  for(unsigned char i=0;i<mSailsCount;i++)
+    {
+      mSailsPos[i][0] = aSailsPos[i][0];
+      mSailsPos[i][1] = aSailsPos[i][1];
+      mSailsPos[i][2] = aSailsPos[i][2];
+    }
+}
+
+void Sail::SetMeshScene(irr::scene::IMeshSceneNode *aMeshScene)
+{
+  static int gCountMeshScene = 0;
+
+  if(gCountMeshScene < SAILS_MAX)
+    mSailsScene[gCountMeshScene] = aMeshScene;
+  
+  gCountMeshScene++;
+  
+}
+
+irr::scene::IMeshSceneNode* Sail::GetMeshScene(unsigned char aIndex)
+{
+  return mSailsScene[aIndex];
+}
+
+unsigned char Sail::GetCount(void)
+{
+  return mSailsCount;
+}
+
+std::string Sail::GetType(void)
+{
+  return Sail::mSailsType;
+}
+
+std::string Sail::GetSize(void)
+{
+  return mSailsSize;
+}
+
+float (*Sail::GetPos(void))[3]
+{
+  return mSailsPos;
+}
+  
 size_t FindClosestIndex(const std::vector<float>& aValue, float aTarget)
 {
   size_t best = 0;

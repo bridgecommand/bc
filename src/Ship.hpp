@@ -77,7 +77,6 @@ public:
   //Wind& getWind(void);
   unsigned char getNumberProp(void);
   Sail& getSail(void);
-  unsigned char getSailCount(void);
   void PrintGeoParams(void);
   void PrintAddedMassParams(void);
   
@@ -86,17 +85,10 @@ protected:
   //Mesh Boat
   irr::scene::IMeshSceneNode* mShipScene; 
 
-  //Mesh Sails
-  irr::scene::IMeshSceneNode* mSailsScene[4];
-
   //Mesh Correction
   irr::f32 mHeightCorrection;
   irr::f32 mAngleCorrection;
   
-  //Sail management
-  unsigned char mSailsCount;
-  std::string mSailsType;
-
   //TODO : Add to GeoParams
   irr::f32 mAirDraught;
 

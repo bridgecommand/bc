@@ -111,15 +111,15 @@ int Ship::setShipParams(const Json::Value& aJsonRoot)
       for(unsigned char i=0;i<mNumberProp;i++)
 	{
 	  mProp[i].Init(aJsonRoot["propeller"]["diameter"].asFloat(),
-		     aJsonRoot["propeller"]["thrustFactor"].asFloat(),
-		     aJsonRoot["propeller"]["longPosition"].asFloat(),
-		     aJsonRoot["propeller"]["nominalWake"].asFloat(),
-		     aJsonRoot["propeller"]["k0"].asFloat(),
-		     aJsonRoot["propeller"]["k1"].asFloat(),
-		     aJsonRoot["propeller"]["k2"].asFloat(),
-		     aJsonRoot["propeller"]["forwardRotDir"].asString(),
-		     aJsonRoot["propeller"]["backwardEff"].asFloat()
-		 );
+			aJsonRoot["propeller"]["thrustFactor"].asFloat(),
+			aJsonRoot["propeller"]["longPosition"].asFloat(),
+			aJsonRoot["propeller"]["nominalWake"].asFloat(),
+			aJsonRoot["propeller"]["k0"].asFloat(),
+			aJsonRoot["propeller"]["k1"].asFloat(),
+			aJsonRoot["propeller"]["k2"].asFloat(),
+			aJsonRoot["propeller"]["forwardRotDir"].asString(),
+			aJsonRoot["propeller"]["backwardEff"].asFloat()
+			);
 	  mProp[i].PrintParams();
 
 	  //Engine 
@@ -146,9 +146,25 @@ int Ship::setShipParams(const Json::Value& aJsonRoot)
 		   {aJsonRoot["rudder"]["flowCoef"][0].asFloat(), aJsonRoot["rudder"]["flowCoef"][1].asFloat()},
 		   aJsonRoot["rudder"]["maxSpeed"].asFloat(),
 		   aJsonRoot["rudder"]["maxAngle"].asFloat()
-		 );
+		   );
       mRudder.PrintParams();
+
+      //Sail
+      int sailNumber = aJsonRoot["sail"]["number"].asInt();
+      float sailPos[SAILS_MAX][3] = {0};
       
+      for(unsigned char i=0;i<sailNumber;i++)
+	{
+	  sailPos[i][0] = aJsonRoot["sail"]["pos"][i][0].asFloat();
+	  sailPos[i][1] = aJsonRoot["sail"]["pos"][i][1].asFloat();
+	  sailPos[i][2] = aJsonRoot["sail"]["pos"][i][2].asFloat();
+	}
+	    
+      mSails.Init(sailNumber,
+		  aJsonRoot["sail"]["type"].asString(),
+		  aJsonRoot["sail"]["size"].asString(),
+		  sailPos
+		  );
     }
 
   return ret;
@@ -176,12 +192,6 @@ int Ship::setShipParams(const std::string& aType)
     }
 
   return ret;
-}
-
-
-unsigned char Ship::getSailCount(void)
-{
-  return mSailsCount;
 }
 
 Sail& Ship::getSail(void)

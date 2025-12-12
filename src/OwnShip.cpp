@@ -79,11 +79,11 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
       std::cout << "Json file exists : " <<  shipJsonFilename << std::endl;
       std::ifstream streamJson(boatJson);                
       streamJson >> rootJson;
-
       retShipPrms = setShipParams(rootJson);
     }
   else
     {
+      //default
       retShipPrms = setShipParams((std::string)"kvlcc2");
     }
   
@@ -206,47 +206,37 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
   /*Load Sails*/
-  mSailsCount = IniFile::iniFileTou32(shipIniFilename, "SailsCount");
-  irr::scene::IMesh* sailMesh[4] = {NULL}; //4 sails max for now 
-        
-
-  if (mSailsCount > 0)
-    {
+  if(mSails.GetCount() > 0)
+    { 
+      irr::scene::IMesh* sailMesh[SAILS_MAX] = {NULL}; //4 sails max for now 
       //Load sail parameters
-      mSails.Open(basePath + "/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
-      mSails.Init("STW_kt", "TWS_kt", "TWA_deg");
+      mSails.OpenPolar(basePath + "/nc/polar.nc", "TotalSails_X", "TotalSails_Y");
+      mSails.InitPolar("STW_kt", "TWS_kt", "TWA_deg");
+      std::string meshFile = basePath + "../../Sails/" + mSails.GetType() + "/" + mSails.GetSize() + "/" + "sail.obj";
 
-	  
-      mSailsType = IniFile::iniFileToString(shipIniFilename, "SailsType");
-      std::string sailsSize = IniFile::iniFileToString(shipIniFilename, "SailsSize");
-      std::string meshFile = basePath + "../../Sails/" + mSailsType + "/" + sailsSize + "/" + "sail.obj";
-
-      for (int i = 0; i < mSailsCount; i++)
+        std::cout << "***********OK*************" << std::endl;
+      for (int i = 0; i < mSails.GetCount(); i++)
 	{
-
 	  sailMesh[i] = smgr->getMesh(meshFile.c_str());
-	  mSailsScene[i] = smgr->addMeshSceneNode(sailMesh[i]);
+	  mSails.SetMeshScene(smgr->addMeshSceneNode(sailMesh[i]));
 
-	  irr::f32 sailPosX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsX", i+1));
-	  irr::f32 sailPosY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsY", i+1));
-	  irr::f32 sailPosZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("SailsZ", i+1));
+	          std::cout << "***********OK2*************" << std::endl;
+	  mSails.GetMeshScene(i)->setParent(mShipScene);
+	  mSails.GetMeshScene(i)->setPosition(irr::core::vector3df(mSails.GetPos()[i][0], mSails.GetPos()[i][1], mSails.GetPos()[i][2])); 
+	  mSails.GetMeshScene(i)->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
-	  mSailsScene[i]->setParent(mShipScene);
-	  mSailsScene[i]->setPosition(irr::core::vector3df(sailPosX, sailPosY, sailPosZ)); 
-	  mSailsScene[i]->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
-
-	  if (mSailsScene[i]->getMaterialCount() > 0)
+	  if (mSails.GetMeshScene(i)->getMaterialCount() > 0)
 	    {
 	      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 		{
-		  mSailsScene[i]->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
-		  mSailsScene[i]->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+		  mSails.GetMeshScene(i)->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
+		  mSails.GetMeshScene(i)->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
 		}
 	    }
 
 	}
 
-    }   
+    }
 
 
   mShipScene->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
@@ -452,7 +442,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
       mSpeedThroughWater = mMu[0] - axialStream;
 
       //Update sails
-      if (mSailsCount > 0)
+      if (mSails.GetCount() > 0)
 	{
 	  mSails.SetSTW(mSpeedThroughWater);
 	  mSails.SetWind(aWind->getTrueSpeed(), aWind->getApparentDir());
@@ -510,16 +500,16 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 
 
   /*Sails dyn*/
-  if (mSailsType == "Rotor")
+  if (mSails.GetType() == "Rotor")
     {
       static float angle = 0.0;
 
       angle += 20;
       irr::core::vector3df rotation(0, angle, 0);
 
-      for (int i = 0; i < mSailsCount; i++)
+      for (int i = 0; i < mSails.GetCount(); i++)
         {
-	  mSailsScene[i]->setRotation(rotation);
+	  mSails.GetMeshScene(i)->setRotation(rotation);
 
         }
     }
