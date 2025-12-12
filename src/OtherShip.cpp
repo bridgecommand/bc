@@ -92,7 +92,6 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     mGeoParams.b = mShipScene->getTransformedBoundingBox().getExtent().X;
     height = mShipScene->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
     mGeoParams.d = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
-    mAirDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
     
     rcs = 0.005*std::pow(mGeoParams.lPP ,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";

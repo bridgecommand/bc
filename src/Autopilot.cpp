@@ -19,7 +19,6 @@
 #include "Constants.hpp"
 #include "IniFile.hpp"
 #include "NMEASentences.hpp"
-#include "SimulationModel.hpp"
 #include "Utilities.hpp"
 #include "irrTypes.h"
 #include <algorithm>
@@ -28,9 +27,14 @@
 
 using namespace std;
 
-Autopilot::Autopilot(void* aModel)
+Autopilot::Autopilot()
 {
-  this->model = model;
+
+}
+
+Autopilot::Autopilot(OwnShip *aOwnShip)
+{
+  mOwnShip = aOwnShip;
   currentWaypointPos = {INVALID_LAT, INVALID_LONG};
   currentWaypointId = "";
   currentLegLen = 0;
@@ -48,7 +52,6 @@ Autopilot::Autopilot(void* aModel)
 
 bool Autopilot::receiveAPB(APB sentence)
 {
-  SimulationModel *pModel = (SimulationModel*)model;
   // determine where to steer to depending on APB
   if (!AUTOPILOT_ENABLED) return false;
 
@@ -60,7 +63,7 @@ bool Autopilot::receiveAPB(APB sentence)
   char directionToTrack = sentence.direction;
 
   irr::f32 bearingToSteer = Angles::normaliseAngle(sentence.heading_to_dest);
-  irr::f32 currentHeading = Angles::normaliseAngle(pModel->getOwnShip()->getHeading());
+  irr::f32 currentHeading = Angles::normaliseAngle(mOwnShip->getHeading());
   irr::f32 relativeBearing = bearingToSteer - currentHeading;
   if (relativeBearing >= 180.0) {
     relativeBearing -= 360.0;
@@ -69,7 +72,7 @@ bool Autopilot::receiveAPB(APB sentence)
     relativeBearing += 360.0;
   }
 
-  irr::f32 rot = pModel->getOwnShip()->getRateOfTurn() * DEG_IN_RAD;
+  irr::f32 rot = mOwnShip->getRateOfTurn() * DEG_IN_RAD;
   irr::f32 dampening = 1.0;
   if (rot != 0.0) {
     irr::f32 timeUntilOvershoot = relativeBearing / rot;
@@ -84,7 +87,7 @@ bool Autopilot::receiveAPB(APB sentence)
   irr::f32 wheel = (relativeBearing / 60.0) * 30.0;
 
   // Normal case, just set the wheel
-  pModel->getOwnShip()->setWheel(wheel * dampening);
+  mOwnShip->setWheel(wheel * dampening);
 
 
   return false;
@@ -92,7 +95,6 @@ bool Autopilot::receiveAPB(APB sentence)
 
 bool Autopilot::receiveRMB(RMB sentence)
 {
-  SimulationModel *pModel = (SimulationModel*)model;
   // determine how much to accelerate/decelerate based on RMB
   if (!AUTOPILOT_ENABLED) return false;
    
@@ -133,8 +135,8 @@ bool Autopilot::receiveRMB(RMB sentence)
   if (leg_progress > 0.75) {
     throttle = max(0.1, throttle * (-3.6 * leg_progress + 3.7));
   }
-  pModel->getOwnShip()->setPortEngine(throttle);
-  pModel->getOwnShip()->setStbdEngine(throttle);
+  mOwnShip->setPortEngine(throttle);
+  mOwnShip->setStbdEngine(throttle);
   return false;
 }
 

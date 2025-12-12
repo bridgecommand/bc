@@ -851,9 +851,14 @@ int main(int argc, char ** argv)
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmeaConning(&model, nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning, device);
-    NMEA nmeaOpCpn(&model, nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn, device);
-	
+    NMEA nmeaConning(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+    NMEA nmeaOpCpn(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+
+
+    nmeaConning.Init(nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning);
+    nmeaOpCpn.Init(nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn);
+
+    
 	//Load sound files
     sound.load(model.getOwnShip()->getBasePath());
 
@@ -911,13 +916,13 @@ int main(int argc, char ** argv)
 	{ IPROF("NMEA");
 
 	  if (!nmeaUDPListenPortConning.empty()) nmeaConning.receive();
-      if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA();
+	  if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA(model.getTime());
       if (!nmeaComPortConning.empty())  nmeaConning.sendNMEASerial();
       if (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty()) nmeaConning.sendNMEAUDP();
       nmeaConning.clearQueue();   
 
       if (!nmeaUDPListenPortOpCpn.empty()) nmeaOpCpn.receive();
-      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA();
+      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA(model.getTime());
       if (!nmeaComPortOpCpn.empty())  nmeaOpCpn.sendNMEASerial();
       if (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty()) nmeaOpCpn.sendNMEAUDP();
       nmeaOpCpn.clearQueue();

@@ -66,6 +66,8 @@ public:
   /*Time*/
   void setAccelerator(float aAccelerator); //Set simulation time compression
   float getAccelerator() const;
+  sTime& getTime() ;
+  unsigned int getCurrentTime() const ;
   unsigned long long getTimestamp() const; //The unix timestamp in s
   unsigned long long getTimeOffset() const; //The timestamp at the start of the first day of the scenario
   float getTimeDelta() const; //The change in time (s) since the start of the start day of the scenario

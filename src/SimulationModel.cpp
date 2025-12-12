@@ -378,6 +378,8 @@ void SimulationModel::setVisibility(float aVisibilityNm){mVisibilityRange = aVis
 float SimulationModel::getVisibility() const{return mVisibilityRange;}
 
 /*Time*/
+sTime& SimulationModel::getTime() {return mTime;}
+unsigned int SimulationModel::getCurrentTime() const {return mTime.currentTime;}
 unsigned long long SimulationModel::getTimestamp() const {return mTime.absoluteTime;}
 unsigned long long SimulationModel::getTimeOffset() const {return mTime.scenarioOffsetTime;} //The timestamp at the start of the first day of the scenario
 void SimulationModel::setTimeDelta(float aScenarioTime){mTime.scenarioTime = aScenarioTime;}

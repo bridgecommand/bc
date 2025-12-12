@@ -170,7 +170,48 @@ float (*Sail::GetPos(void))[3]
 {
   return mSailsPos;
 }
+
+void Sail::UpdateMesh(void)
+{
+  if(GetType() == "Rotor")
+    {
+      static float angle = 0.0;
+
+      angle += 20;
+      irr::core::vector3df rotation(0, angle, 0);
+
+      for (int i = 0; i < GetCount(); i++)
+        {
+	  GetMeshScene(i)->setRotation(rotation);
+        }
+    }
+  else
+    {
+      //TODO for other kind of sails
+    }
+}
+
+void Sail::PrintParams(void)
+{
+  std::cout << "::::::Sail Parameters::::::" << std::endl;
+  std::cout << "Number : " << mSailsCount << std::endl;
+  std::cout << "Type : " << mSailsType << std::endl;
+  std::cout << "Size : " << mSailsSize << std::endl;
+
+  std::cout << "Position on boat : " << std::endl;
+  for(unsigned char i=0;i<mSailsCount;i++)
+    {
+      std::cout << "Sail n°1 : " << std::endl;
+      std::cout << "--> X : " << mSailsPos[i][0] << std::endl;
+      std::cout << "--> Y : " << mSailsPos[i][1] << std::endl;
+      std::cout << "--> Z : " << mSailsPos[i][2] << std::endl;
+      std::cout << "-----------" << std::endl;
+    }
   
+  std::cout << "::::::::::::" << std::endl;
+}
+
+
 size_t FindClosestIndex(const std::vector<float>& aValue, float aTarget)
 {
   size_t best = 0;

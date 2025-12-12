@@ -214,18 +214,16 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
       mSails.InitPolar("STW_kt", "TWS_kt", "TWA_deg");
       std::string meshFile = basePath + "../../Sails/" + mSails.GetType() + "/" + mSails.GetSize() + "/" + "sail.obj";
 
-        std::cout << "***********OK*************" << std::endl;
       for (int i = 0; i < mSails.GetCount(); i++)
 	{
 	  sailMesh[i] = smgr->getMesh(meshFile.c_str());
 	  mSails.SetMeshScene(smgr->addMeshSceneNode(sailMesh[i]));
-
-	          std::cout << "***********OK2*************" << std::endl;
+	          
 	  mSails.GetMeshScene(i)->setParent(mShipScene);
 	  mSails.GetMeshScene(i)->setPosition(irr::core::vector3df(mSails.GetPos()[i][0], mSails.GetPos()[i][1], mSails.GetPos()[i][2])); 
 	  mSails.GetMeshScene(i)->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true);
 
-	  if (mSails.GetMeshScene(i)->getMaterialCount() > 0)
+	  if(mSails.GetMeshScene(i)->getMaterialCount() > 0)
 	    {
 	      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 		{
@@ -233,9 +231,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 		  mSails.GetMeshScene(i)->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
 		}
 	    }
-
 	}
-
     }
 
 
@@ -257,12 +253,6 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   mShipScene->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
-
-  //length = mShipScene->getTransformedBoundingBox().getExtent().Z; // Store length for basic collision calculation
-  //breadth = mShipScene->getTransformedBoundingBox().getExtent().X;  // Store length for basic collision calculation
-
-  //draught = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
-  mAirDraught = mShipScene->getTransformedBoundingBox().MaxEdge.Y;
 
 
   if (rollPeriod == 0)
@@ -428,8 +418,7 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   setMu(aSolver->getMu());
   
   if (controlMode == MODE_ENGINE)
-    {
-       
+    {       
       // Find tidal stream, based on our current absolute position
       irr::core::vector2df stream = mTide->getTidalStream(mTerrain->xToLong(posX), mTerrain->zToLat(posZ), aTime.absoluteTime);
       //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
@@ -500,34 +489,8 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 
 
   /*Sails dyn*/
-  if (mSails.GetType() == "Rotor")
-    {
-      static float angle = 0.0;
+  mSails.UpdateMesh();
 
-      angle += 20;
-      irr::core::vector3df rotation(0, angle, 0);
-
-      for (int i = 0; i < mSails.GetCount(); i++)
-        {
-	  mSails.GetMeshScene(i)->setRotation(rotation);
-
-        }
-    }
-  /******************/
-
-  // Set position & angles
-  /*  std::cout << "--> Xeta : " << mEta[0] << std::endl;
-  std::cout << "--> Yeta : " << mEta[1] << std::endl;
-  std::cout << "--> Hdg : " << mEta[2]*180/PI << std::endl;
-  std::cout << "--> Speed X : " << mMu[0] << std::endl;
-  std::cout << "--> Speed Y : " << mMu[1] << std::endl;
-  std::cout << "--> Speed Z : " << mMu[2] << std::endl;
-  std::cout << "--> Revs : " << mProp[0].getRevs() << std::endl;
-  std::cout << "--> Rudder : " << mRudder.getDelta() << std::endl;
-  std::cout << "--> Wheel : " << mWheel << std::endl;
-  std::cout << "--> Forward Rotation : " << mProp[0].getForwardRotDir() << std::endl;
-  std::cout << "--> Current Rotation : " << mProp[0].getCurrentRotDir() << std::endl;
-  std::cout << "**************" << std::endl;*/
   mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
   mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, pitch, roll));
   

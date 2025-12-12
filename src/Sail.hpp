@@ -26,6 +26,8 @@ class Sail
   std::string GetType(void);
   std::string GetSize(void);
   float (*GetPos(void))[3];
+  void PrintParams(void);
+  void UpdateMesh(void);
   
   /*Polar file*/
   int OpenPolar(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY);

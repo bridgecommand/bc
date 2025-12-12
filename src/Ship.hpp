@@ -89,9 +89,6 @@ protected:
   irr::f32 mHeightCorrection;
   irr::f32 mAngleCorrection;
   
-  //TODO : Add to GeoParams
-  irr::f32 mAirDraught;
-
   //Global Ship params
   sGeoParams mGeoParams; 
   sAddedMassParams mAddedMassParams;
