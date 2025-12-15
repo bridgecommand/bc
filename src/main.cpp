@@ -838,7 +838,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, hideEngineAndRudder, model.getOwnShip()->hasDepthSounder(),model.getOwnShip()->getMaxSounderDepth(),model.getOwnShip()->hasGPS(), showTideHeight, false, false, model.getOwnShip()->hasTurnIndicator(), showCollided, vr3dMode);
+    guiMain.load(device, model.getOwnShip(), model.getLines(), &language, &logMessages, hideEngineAndRudder, showTideHeight, false, false, showCollided, vr3dMode);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());

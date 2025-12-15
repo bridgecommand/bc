@@ -17,21 +17,19 @@
 #ifndef __GUIMAIN_HPP_INCLUDED__
 #define __GUIMAIN_HPP_INCLUDED__
 
+#include <vector>
+#include <string>
 #include "irrlicht.h"
 #include "IGUIButton.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
-//#include "RateOfTurnIndicator.h" // DEE addition
 #include "OutlineScrollBar.h"
 #include "AzimuthDial.h"
 #include "GUIRectangle.hpp"
 #include "RadarCalculation.hpp"
-#include <vector>
-#include <string>
-
-// Forward declarations
-class SimulationModel;
+#include "OwnShip.hpp"
+#include "Lines.hpp"
 
 struct GUIData {
     irr::f32 lat;
@@ -81,7 +79,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode);
+  void load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines, Lang* language, std::vector<std::string>* logMessages, bool controlsHidden, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool showCollided, bool vr3dMode);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -376,7 +374,8 @@ private:
 
     Lang* language;
     std::vector<std::string>* logMessages;
-    SimulationModel* model;
+  OwnShip *mOwnShip;
+  Lines *mLines;
 
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;
