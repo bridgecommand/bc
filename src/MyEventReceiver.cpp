@@ -1022,7 +1022,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 		  break;
 
                 case irr::KEY_KEY_Z:
-		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable
                     break;
 
                 case irr::KEY_KEY_S:
@@ -1030,7 +1030,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
                 case irr::KEY_KEY_X:
-		  
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_D:

@@ -404,7 +404,7 @@ void NMEA::updateNMEA(sTime& aTime)
   const char *min  = minuteString.c_str();
   const char *sec  =secondsString.c_str();
 
-  irr::f32 rudderAngle = mOwnShip->getRudder().getDelta();
+  irr::f32 rudderAngle = mOwnShip->getRudder().getDelta()*180/PI;
 
   int engineRPM[] = {
     Utilities::round(mOwnShip->getStbdEngine()*100), // idx=1, odd (starboard)

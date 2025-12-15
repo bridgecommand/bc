@@ -316,6 +316,12 @@ void OwnShip::setWheel(irr::f32 aWheel)
     }
 }
 
+/*void OwnShip::setRudder(irr::f32 aDelta)
+{
+  controlMode = MODE_ENGINE;
+  mRudder.SetDelta(aDelta);
+  }*/
+
 
 void OwnShip::setPortEngine(irr::f32 port)
 {

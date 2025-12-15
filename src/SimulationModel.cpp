@@ -541,7 +541,7 @@ void SimulationModel::update()
   mGuiData->spd = mOwnShip->getSpeedThroughWater();
   mGuiData->portEng = mOwnShip->getPortEngine();
   mGuiData->stbdEng = mOwnShip->getStbdEngine();
-  mGuiData->rudder = mOwnShip->getRudder().getDelta();  // inner workings of this will be modified in model DEE
+  mGuiData->rudder = mOwnShip->getRudder().getDelta()*180/PI;  // inner workings of this will be modified in model DEE
   mGuiData->wheel = mOwnShip->getWheel();    // inner workings of this will be modified in model DEE
   mGuiData->depth = mOwnShip->getDepth(getTerrain());
   mGuiData->weather = mWeather;
@@ -894,7 +894,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 
 	/************************************************************************/
         mOwnShip->setWheel(dataMasterCmds->controls.wheel);
-        //setRudder(dataMasterCmds->controls.rudder);
+        //mOwnShip->setRudder(dataMasterCmds->controls.rudder);
         mOwnShip->setPortEngine(dataMasterCmds->controls.portEng);
 	mOwnShip->setStbdEngine(dataMasterCmds->controls.stbdEng);
 	//setBowThruster(dataMasterCmds->controls.bowThrust);

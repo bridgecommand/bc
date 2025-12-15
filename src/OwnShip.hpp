@@ -54,9 +54,8 @@ public:
   bool hasDepthSounder() const;
   bool hasTurnIndicator() const;
   irr::f32 getMaxSounderDepth() const;
-  void setRudder(irr::f32);                 // Set the rudder (-ve is port, +ve is stbd). Clamps to +-30
   void setWheel(irr::f32 aWheel);      // Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
-
+  //void setRudder(irr::f32 aDelta);
   void setPortEngine(irr::f32);                                 // Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
   void setStbdEngine(irr::f32);                                 // Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
   void setRateOfTurn(irr::f32 rateOfTurn);                      // Sets the rate of turn (used when controlled as secondary)
