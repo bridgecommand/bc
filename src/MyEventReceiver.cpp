@@ -403,7 +403,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (id == GUIMain::GUI_ID_CLOSE_BOX)
             {
-	      std::string shut = "";//Message::ShutDown();
+	      std::string shut = Message::ShutDown();
 	      net->SendMessage(shut, true);
 	      device->closeDevice(); // Confirm shutdown.
             }
@@ -1038,15 +1038,19 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
 		case irr::KEY_KEY_C:
-                  
+
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_V:
-             
+
+		   model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() - 1);
                     break;
 
                 case irr::KEY_KEY_B:
-                    break;
+		   model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() + 1);
+		  break;
                 
 
                 default:
