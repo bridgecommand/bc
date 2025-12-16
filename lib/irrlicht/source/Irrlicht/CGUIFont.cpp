@@ -78,7 +78,7 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 			if (core::stringw(L"Texture") == xml->getNodeName())
 			{
 				// add a texture
-				core::stringc fn = xml->getAttributeValue(L"filename");
+				io::path fn = xml->getAttributeValue(L"filename");
 				u32 i = (u32)xml->getAttributeValueAsInt(L"index");
 				core::stringw alpha = xml->getAttributeValue(L"hasAlpha");
 
@@ -103,7 +103,7 @@ bool CGUIFont::load(io::IXMLReader* xml, const io::path& directory)
 				else
 				{
 					// colorkey texture rather than alpha channel?
-					if (alpha == core::stringw("false"))
+					if (alpha == core::stringw(L"false"))
 						Driver->makeColorKeyTexture(SpriteBank->getTexture(i), core::position2di(0,0));
 				}
 			}

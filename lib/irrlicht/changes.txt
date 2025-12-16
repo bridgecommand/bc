@@ -1,6 +1,13 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+<<<<<<< .mine
+||||||| .r6723
+- Add flag irr::gui::EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS. Keeping old behavior, but it can be disabled now.
+=======
+- string::insert now expects template type instead of always char. Breaks compiling code when it was previously used with stringw's. Use wchar_t's now to insert into those.
+- Add flag irr::gui::EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS. Keeping old behavior, but it can be disabled now.
+>>>>>>> .r6729
 - Switch input key interpretation on Windows from ToAsciiEx to ToUnicode.
   *** This means the official end of Windows 98 support for Irrlicht as ToUnicode doesn't exits before Windows 2000
   Last svn version with Windows 98 support is [r6708].

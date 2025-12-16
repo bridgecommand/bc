@@ -311,7 +311,7 @@ public:
 	\return An interpolated vector.  This vector is not modified. */
 	vector2d<T> getInterpolated(const vector2d<T>& other, f64 d) const
 	{
-		const f64 inv = 1.0f - d;
+		const f64 inv = 1.0 - d;
 		return vector2d<T>((T)(other.X*inv + X*d), (T)(other.Y*inv + Y*d));
 	}
 
@@ -324,9 +324,9 @@ public:
 	vector2d<T> getInterpolated_quadratic(const vector2d<T>& v2, const vector2d<T>& v3, f64 d) const
 	{
 		// this*(1-d)*(1-d) + 2 * v2 * (1-d) + v3 * d * d;
-		const f64 inv = 1.0f - d;
+		const f64 inv = 1.0 - d;
 		const f64 mul0 = inv * inv;
-		const f64 mul1 = 2.0f * d * inv;
+		const f64 mul1 = 2.0 * d * inv;
 		const f64 mul2 = d * d;
 
 		return vector2d<T> ( (T)(X * mul0 + v2.X * mul1 + v3.X * mul2),
