@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include <cassert>
+#include <tuple>
 #include "AIS.hpp"
 #include "Constants.hpp"
 #include "OtherShips.hpp"
