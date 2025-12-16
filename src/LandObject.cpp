@@ -27,6 +27,9 @@
 LandObject::LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
+    const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
+    const irr::f32 nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
+    
     device = dev;
     
     std::string basePath = "Models/LandObject/" + name + "/";
@@ -60,7 +63,24 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
         dev->getLogger()->log(objectFullPath.c_str());
         landObject = smgr->addCubeSceneNode(0.1, 0, -1, location);
     } else {
-        landObject = smgr->addMeshSceneNode( objectMesh, 0, -1, location);
+        if (morph) {
+            // Remove nearly flat mesh buffers
+            irr::scene::SMesh* updatedMesh = new irr::scene::SMesh();
+            irr::core::vector3df boundingBoxExtent = objectMesh->getBoundingBox().getExtent();
+            for (int bufferId =  0; bufferId < objectMesh->getMeshBufferCount(); bufferId++) {
+                irr::scene::IMeshBuffer* mb = objectMesh->getMeshBuffer(bufferId);
+                if (boundingBoxExtent.Y > nearlyFlatHeight) {
+                    updatedMesh->addMeshBuffer(mb);
+                }
+            }
+            // TODO for future: Use OctreeSceneNode, but probably need to modify mesh before creating Octree (currently modify after scene node is created)
+            //landObject = smgr->addOctreeSceneNode(updatedMesh);
+            //landObject->setPosition(location);
+            landObject = smgr->addMeshSceneNode(updatedMesh, 0, -1, location);
+            updatedMesh->drop();
+        } else {
+            landObject = smgr->addMeshSceneNode(objectMesh, 0, -1, location);
+        }
     }
 
     //Set ID as a flag if we should model collisions with this, also used to get radar points
@@ -91,13 +111,11 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
 
     // Morph
     if (morph) {
-        
-        const irr::f32 tallHeightRatio = 5.0;  // Minimum ratio of height to max of width, length for an object to be considered 'tall'
-        const irr::f32 nearlyFlatHeight = 1.0; // Max height in model units for a 'flat' object
-        
         irr::scene::IMesh* mesh = landObject->getMesh();
         for (int bufferId = 0; bufferId < mesh->getMeshBufferCount(); bufferId++) {
             const irr::scene::IMeshBuffer* const mb = mesh->getMeshBuffer(bufferId);
+            irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
+
             if (mb->getVertexType() == irr::video::EVT_STANDARD) {
                 const irr::u32 vtxCnt = mb->getVertexCount();
                 irr::video::S3DVertex* v = (irr::video::S3DVertex*)mb->getVertices();
@@ -128,7 +146,6 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                     // Choose if we modify vertex based on the terrain at the centre of the bounding box, or move locally
                     // Default to 'morph' locally, unless height is more than 5x the maximum of the width or length
                     bool fullMorph = true;
-                    irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
                     if (boundingBoxExtent.Y > tallHeightRatio * std::max(boundingBoxExtent.X, boundingBoxExtent.Z)) {
                         fullMorph = false;
                     }
@@ -143,6 +160,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                     }
 
                     // Modify world location of coordinate. Don't reduce height unless the meshbuffer is almost flat
+                    // Note that we now remove nearly flat buffers, so this check may not be needed any more
                     if ((terrainY > 0) || (boundingBoxExtent.Y <= nearlyFlatHeight)) {
                         worldCoord.Y += terrainY;
                     }
