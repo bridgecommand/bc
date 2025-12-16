@@ -1655,8 +1655,6 @@ void MyEventReceiver::startShutdown()
 {
   SimulationModel *model = (SimulationModel*)mModel;
   
-    model->setAccelerator(0.0);
-    device->sleep(500);
     if (!shutdownDialogActive)
     {
         device->getGUIEnvironment()->getRootGUIElement()->setVisible(true);
