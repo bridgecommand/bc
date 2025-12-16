@@ -46,9 +46,9 @@ const irr::f32 DEG_IN_RAD = 180.0 / PI;
 const irr::f32 RAD_PER_S_IN_DEG_PER_MINUTE = 180.0/PI * 60 ;
 
 //general definitions
-const std::string LONGNAME = "Bridge Command 5.10.3";
-const std::string VERSION = "5.10";
-const std::string LONGVERSION = "5.10.3";
-const std::string SOMOSVERSION = "SOMOS";
+const std::string LONGNAME = "BridgeCommand-SOMOS";
+const std::string SHORTNAME = "BC-SOMOS";
+const std::string VERSION = "2.0";
+const std::string LEGACYVERSION = "5.10.3";
 
 #endif

@@ -251,7 +251,7 @@ int main (int argc, char ** argv)
 {
 
   if ((argc>1)&&(strcmp(argv[1],"--version")==0)) {
-    std::cout << LONGVERSION + "-" + SOMOSVERSION  << std::endl;
+    std::cout << VERSION   << std::endl;
     exit(EXIT_SUCCESS);
   }
 
@@ -422,11 +422,11 @@ int main (int argc, char ** argv)
   leave->setImage(driver->getTexture("media/leave.png"));
   leave->setUseAlphaChannel();
 
-  std::string version = "v" + LONGVERSION + "-" + SOMOSVERSION;
+  std::string version = SHORTNAME + "_v" + VERSION;
   irr::core::stringw wVer(version.c_str());
 
-  y1 = y2 + bR; y2 = y1 + bH; device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(180+wVer.size(), y1, x2, y2), true);
-
+  y1 = y2 + bR; y2 = y1 + bH;
+  device->getGUIEnvironment()->addStaticText(wVer.c_str(), irr::core::rect<irr::s32>(170+wVer.size(), y1, x2, y2), true);
   device->getGUIEnvironment()->setFocus(launchBC);
 
   Receiver receiver;
