@@ -22,6 +22,7 @@
 #include "RadarData.hpp"
 #include "Water.hpp"
 #include "Terrain.hpp"
+#include "Time.hpp"
 
 //using namespace irr;
 

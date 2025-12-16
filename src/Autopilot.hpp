@@ -17,21 +17,20 @@
 #ifndef __AUTOPILOT_HPP_INCLUDED__
 #define __AUTOPILOT_HPP_INCLUDED__
 
-#include "OwnShip.hpp"
-#include "NMEASentences.hpp"
 #include <array>
+#include "NMEASentences.hpp"
 
 class Autopilot
 {
 public:
   Autopilot();
-  Autopilot(OwnShip *aOwnShip);
+  Autopilot(void *aOwnShip);
   ~Autopilot();
   bool receiveAPB(APB);
   bool receiveRMB(RMB);
 private:
 
-  OwnShip *mOwnShip;
+  void *mOwnShip;
   bool AUTOPILOT_ENABLED;
   std::array<float, 2> currentWaypointPos;
   std::string currentWaypointId;

@@ -18,37 +18,35 @@
 #define __BUOY_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
 #include <string>
-#include <cmath>
 
 struct RadarData;
 
 class Buoy
 {
     public:
-        Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, float radarCrossSection, bool floating, float heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~Buoy();
         irr::core::vector3df getPosition() const;
         void setPosition(irr::core::vector3df position);
         void setRotation(irr::core::vector3df rotation);
-        irr::f32 getLength() const;
-        irr::f32 getHeight() const;
-        irr::f32 getRCS() const;
-        irr::f32 getHeightCorrection() const;
+        float getLength() const;
+        float getHeight() const;
+        float getRCS() const;
+        float getHeightCorrection() const;
         bool getFloating() const;
         RadarData getRadarData(irr::core::vector3df scannerPosition) const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         irr::scene::ISceneNode* getSceneNode() const;
         void enableTriangleSelector(bool selectorEnabled);
     protected:
     private:
         irr::scene::IMeshSceneNode* buoy; //The scene node for the buoy.
         irr::scene::ITriangleSelector* selector; //The triangle selector for the buoy. We will set and unset this depending on the distance from the ownship for speed
-        irr::f32 length; //For radar calculation
-        irr::f32 height; //For radar calculation
-        irr::f32 heightCorrection;
-        irr::f32 rcs;
+        float length; //For radar calculation
+        float height; //For radar calculation
+        float heightCorrection;
+        float rcs;
         bool floating; //Does the buoy move with water (normally true, false for a post etc)
         bool triangleSelectorEnabled; //Keep track of this so we don't keep re-setting the selector
 };

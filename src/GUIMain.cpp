@@ -26,7 +26,6 @@
 #include "Constants.hpp"
 #include "Utilities.hpp"
 #include "ScrollDial.h"
-#include "AzimuthDial.h"
 #include "OwnShip.hpp"
 #include "Lines.hpp"
 
@@ -162,13 +161,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines
     sternThrusterScrollbar->setToolTipText(language->translate("sternThruster").c_str());
   } else {
     sternThrusterScrollbar = 0;
-  }
-
-  azimuth1Control = 0;
-  azimuth2Control = 0;
-  azimuth1Master = 0;
-  azimuth2Master = 0;
-	
+  }	
 
   portText = guienv->addStaticText(language->translate("portEngine").c_str(),irr::core::rect<irr::s32>(0.005*su, 0.61*sh, 0.045*su, 0.67*sh));
   portText->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
@@ -291,7 +284,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines
   //weatherScrollbar = guienv->addScrollBar(false,irr::core::rect<irr::s32>(0.417*su, 0.79*sh, 0.440*su, 0.94*sh), 0, GUI_ID_WEATHER_SCROLL_BAR);
   guienv->addStaticText(language->translate("weather").c_str(),irr::core::rect<irr::s32>(0.005*su,0.02*sh,0.085*su,0.05*sh),false,true,extraControlsTabWeather)->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
   weatherScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.045*su,0.09*sh),0.03*su,guienv,extraControlsTabWeather,GUI_ID_WEATHER_SCROLL_BAR);
-  //weatherScrollbar = new irr::gui::AzimuthDial(irr::core::vector2d<irr::s32>(0.03*su,0.09*sh),0.02*su,guienv,extraControlsWindow,GUI_ID_WEATHER_SCROLL_BAR);
+
   weatherScrollbar->setMax(120); //Divide by 10 to get weather
   weatherScrollbar->setMin(0);
   weatherScrollbar->setSmallStep(5);
@@ -643,9 +636,6 @@ GUIMain::~GUIMain()
   if (bowThrusterScrollbar) {bowThrusterScrollbar->drop();}
   if (sternThrusterScrollbar) {sternThrusterScrollbar->drop();}
 
-  if (azimuth1Control) {azimuth1Control->drop();}
-  if (azimuth2Control) {azimuth2Control->drop();}
-
   weatherScrollbar->drop();
   visibilityScrollbar->drop();
   rainScrollbar->drop();
@@ -917,8 +907,6 @@ void GUIMain::hideInSecondary() {
   //Hide user inputs if in secondary mode
   if (stbdScrollbar) {stbdScrollbar->setVisible(false);}
   if (portScrollbar) {portScrollbar->setVisible(false);}
-  if (azimuth1Control) {azimuth1Control->setVisible(false);}
-  if (azimuth2Control) {azimuth2Control->setVisible(false);}
   if (azimuth1Master) {azimuth1Master->setVisible(false);}
   if (azimuth2Master) {azimuth2Master->setVisible(false);}
 

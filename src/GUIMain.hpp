@@ -25,7 +25,6 @@
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
 #include "OutlineScrollBar.h"
-#include "AzimuthDial.h"
 #include "GUIRectangle.hpp"
 #include "RadarCalculation.hpp"
 #include "OwnShip.hpp"
@@ -230,15 +229,8 @@ private:
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
-    irr::gui::AzimuthDial* azimuth1Control;
-    irr::gui::AzimuthDial* azimuth2Control;
-
     irr::gui::IGUICheckBox* azimuth1Master;
     irr::gui::IGUICheckBox* azimuth2Master;
-
-    // DEE_NOV22 vvvv
-    irr::gui::AzimuthDial* azimuthEnginePort;
-    irr::gui::AzimuthDial* azimuthEngineStbd;
 
     // DEE_NOV22 ^^^^
 

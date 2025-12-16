@@ -17,16 +17,13 @@
 #ifndef __AIS_HPP_INCLUDED__
 #define __AIS_HPP_INCLUDED__
 
-#include <tuple>
 #include <string>
 #include <vector>
-#include "OtherShips.hpp"
-#include "Terrain.hpp"
 
 class AIS {
     public: 
-        static std::tuple<std::string, int> generateClassAReport(OtherShips *aOtherShips, Terrain *aTerrain, unsigned long long aTimeStamp, unsigned int);
-        static std::vector<unsigned int> getReadyShips(OtherShips *aOtherShips, unsigned int);
+        static std::tuple<std::string, int> generateClassAReport(void *aOtherShips, void *aTerrain, unsigned long long aTimeStamp, unsigned int);
+        static std::vector<unsigned int> getReadyShips(void *aOtherShips, unsigned int);
 
     private:
         static const int mmsis[];

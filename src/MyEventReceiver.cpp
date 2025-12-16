@@ -20,7 +20,6 @@
 #include "GUIMain.hpp"
 #include "Lines.hpp"
 #include "Utilities.hpp"
-#include "AzimuthDial.h"
 #include "VRInterface.hpp"
 #include "Constants.hpp"
 #include "Message.hpp"
