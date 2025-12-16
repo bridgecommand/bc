@@ -512,8 +512,8 @@ void SimulationModel::update()
   //update radar
   if(mRadarCalculation->isRadarOn())
     {
-      mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mTime.deltaTime, mTime.absoluteTime, mGuiMain);
-      mRadarScreen->update();
+      irr::video::IImage *imChosen = mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mTime.deltaTime, mTime.absoluteTime, mGuiMain);
+      mRadarScreen->update(imChosen);
       sTime tFake = {0};
       mRadarCamera->update(tFake);
     }

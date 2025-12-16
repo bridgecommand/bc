@@ -166,7 +166,7 @@ public:
   irr::video::SColor getRadarBackgroundColour() const;
   irr::video::SColor getRadarSurroundColour() const;
   void setMouseDown(bool aIsMouseDown);
-  void update(RadarScreen *aRadarScreen, const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, GUIMain* aGuiMain);
+  irr::video::IImage *update(RadarScreen *aRadarScreen, const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, GUIMain* aGuiMain);
 
 private:
   irr::IrrlichtDevice* device;

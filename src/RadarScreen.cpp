@@ -75,7 +75,7 @@ void RadarScreen::setRadarDisplayRadius(irr::u32 radiusPx)
     radarRadiusPx = radiusPx;
 }
 
-void RadarScreen::update(void)
+void RadarScreen::update(irr::video::IImage *aImageChosen)
 {
     #ifdef WITH_PROFILING
     IPROF_FUNC;
@@ -110,12 +110,12 @@ void RadarScreen::update(void)
     }
     }{ IPROF("Make texture from image");
     //make texture from image and apply to the screen
-    radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage",radarImageOverlaid));
+    radarScreen->setMaterialTexture(0,driver->addTexture("RadarImage", aImageChosen));
     }{ IPROF("Scale texture");
     //Scale the texture to get 1:1 image to screen pixel mapping
     irr::f32 radarTextureScaling=1;
     if (radarImageOverlaid->getDimension().Width>0) {
-        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / radarImageOverlaid->getDimension().Width;
+        radarTextureScaling = (irr::f32)radarRadiusPx * 2.0 / aImageChosen->getDimension().Width;
         if (radarTextureScaling > 1) {radarTextureScaling = 1;} //Don't scale if not needed
     }
     radarScreen->getMaterial(0).getTextureMatrix(0).setTextureScale(radarTextureScaling,radarTextureScaling); //Use this to scale to the correct size: Ratio between radarImage size and the screen pixel diameter.

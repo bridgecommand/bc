@@ -659,7 +659,7 @@ void RadarCalculation::changeRadarColourChoice()
 
 void RadarCalculation::setMouseDown(bool aIsMouseDown){mIsMouseDown = aIsMouseDown;}
 
-void RadarCalculation::update(RadarScreen *aRadarScreen, const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, GUIMain* aGuiMain)
+irr::video::IImage *RadarCalculation::update(RadarScreen *aRadarScreen, const Terrain *terrain, const OwnShip *ownShip, const Buoys *buoys, const OtherShips *otherShips, irr::f32 weather, irr::f32 rain, irr::f32 tideHeight, irr::f32 deltaTime, uint64_t absoluteTime, GUIMain* aGuiMain)
 {
 
 #ifdef WITH_PROFILING
@@ -668,7 +668,8 @@ void RadarCalculation::update(RadarScreen *aRadarScreen, const Terrain *terrain,
 
   irr::video::IImage *radarImage;
   irr::video::IImage *radarImageOverlaid;
-  
+
+
   //Choose which radar images to use, depending on the size of the display being used
   if (2*aGuiMain->getRadarPixelRadius() > aRadarScreen->getRadarImage()->getDimension().Width)
     {
@@ -731,6 +732,7 @@ void RadarCalculation::update(RadarScreen *aRadarScreen, const Terrain *terrain,
     render(radarImage, radarImageOverlaid, ownShip->getHeading()*irr::core::RADTODEG, ownShip->getSpeed()); //From scanArrayAmplified[row (angle)][column (step)], render to radarImage
   }
 
+  return radarImageOverlaid;
 }
 
 
