@@ -78,5 +78,38 @@
 	    [ 0, 0, 0 ],
 	    [ 0, 0, 0 ]
 	]
+    },
+    "depthSounder": {
+	"number": 1, 
+	"maxDepth": 200 
+    },
+    "gps": {
+	"number": 1 
+    },
+    "rotIndicator": {
+	"number": 1 
+    },
+    "radar": {
+	"number": 1,
+	"pos": [ 0, 0, 0 ],
+	"size": 1,
+	"tilt": 0
+    },
+    "mesh": {
+	"name": "CopenhagenFerry.obj",
+	"scaleFactor": 1,
+	"yCorrection": -5.8,
+	"angleCorrection": 0,
+	"views":
+	[
+	    [ 0, 25, 70, 0 ],
+	    [ 50, 40, 0, 0 ],
+	    [ -50, 40, 0, 0 ],
+	    [ 0, 50, -50, 0 ],
+	    [ 0, 200, 0, 1 ]
+	]
     }
+    
+
+    
 }

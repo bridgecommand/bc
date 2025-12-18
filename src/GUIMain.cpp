@@ -40,13 +40,13 @@ void GUIMain::load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines
   mLines = aLines;
 	
   this->device = device;
-  this->hasDepthSounder = mOwnShip->hasDepthSounder();
-  this->maxSounderDepth = mOwnShip->getMaxSounderDepth();
-  this->hasGPS = mOwnShip->hasGPS();
+  this->hasDepthSounder = mOwnShip->HasDepthSounder();
+  this->maxSounderDepth = mOwnShip->GetMaxSounderDepth();
+  this->hasGPS = mOwnShip->HasGPS();
   this->showTideHeight = showTideHeight;
   this->showCollided = showCollided;
   this->hasBowThruster = hasBowThruster;
-  this->hasRateOfTurnIndicator = mOwnShip->hasTurnIndicator();
+  this->hasRateOfTurnIndicator = mOwnShip->HasRoTIndicator();
   this->controlsHidden = controlsHidden;
 
   this->hasSternThruster = hasSternThruster;

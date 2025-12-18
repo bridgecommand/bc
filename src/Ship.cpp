@@ -27,8 +27,19 @@ Ship::Ship()
   controlMode = MODE_AUTO;
   positionManuallyUpdated = false; //Used to track if position has been manually updated, and shouldn't have position update applied this loop
   mmsi = 0;
-  mRho = 1025;
+
   mMu0 << 0, 0, 0;
+  mM = 0; 
+  mMX = 0; 
+  mMY = 0; 
+  mMatM << 0, 0, 0, 0, 0, 0, 0, 0, 0; 
+  mInvMatM << 0, 0, 0, 0, 0, 0, 0, 0, 0;  
+  mMu << 0, 0, 0; 
+  mEta << 0, 0, 0;
+  mSpeedThroughWater = 0;
+
+  mGeoParams = {0}; 
+  mAddedMassParams = {0};
 
 }
 
@@ -58,7 +69,7 @@ void Ship::PrintAddedMassParams(void)
   std::cout << "::::::::::::" << std::endl;
 }
 
-int Ship::setShipParams(const Json::Value& aJsonRoot)
+int Ship::InitShipParams(const Json::Value& aJsonRoot)
 {
   int ret = 0;
   
@@ -68,8 +79,6 @@ int Ship::setShipParams(const Json::Value& aJsonRoot)
     }
   else
     {
-      //Init Speed
-      mMu0 << aJsonRoot["initialSpeed"][0].asFloat(), aJsonRoot["initialSpeed"][1].asFloat(), aJsonRoot["initialSpeed"][2].asFloat();
       //Geo Params
       mGeoParams.lPP = aJsonRoot["geoParams"]["length"].asFloat();
       mGeoParams.b = aJsonRoot["geoParams"]["breadth"].asFloat();
@@ -165,12 +174,14 @@ int Ship::setShipParams(const Json::Value& aJsonRoot)
 		  aJsonRoot["sail"]["size"].asString(),
 		  sailPos
 		  );
+      
+      mSails.PrintParams();
     }
 
   return ret;
 }
 
-int Ship::setShipParams(const std::string& aType)
+int Ship::InitShipParams(const std::string& aType)
 {
   int ret = 0;
 
@@ -198,7 +209,6 @@ Sail& Ship::getSail(void)
 {
   return mSails;
 }
-
 
 irr::scene::IMeshSceneNode* Ship::getSceneNode() const
 {
@@ -238,7 +248,6 @@ irr::f32 Ship::getDepth(Terrain *aTerrain) const
   else
     return -1;
 }
-
 
 irr::f32 Ship::getSpeedThroughWater() const
 {
@@ -331,12 +340,11 @@ Propeller& Ship::getPropeller(std::string aNProp)
     return mProp[1];
 }
 
+
 Hull& Ship::getHull(void){return mHull;}
 Rudder& Ship::getRudder(void) {return mRudder;}
-//Wind& Ship::getWind(void){return mWind;}
 
 sGeoParams& Ship::getGeoParams(void){return mGeoParams;}
-double Ship::getRho(void){return mRho;}
 double Ship::getM(void){return mM;}
 double Ship::getMX(void){return mMX;}
 double Ship::getMY(void){return mMY;}

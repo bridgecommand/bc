@@ -24,7 +24,7 @@
 #include "OperatingModeEnum.hpp"
 #include "Time.hpp"
 
-// Forward declarations
+#define MESH_VIEWS_MAX (5)
 
 class OwnShipData;
 class Terrain;
@@ -41,8 +41,10 @@ public:
 
   OwnShip();
   ~OwnShip();
-  void load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
-  void update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver);
+  void Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
+  void Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver);
+  void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot);
+
   std::vector<irr::core::vector3df> getCameraViews() const;
   std::vector<bool> getCameraIsHighView() const;
   irr::core::vector3df getRadarPosition() const;
@@ -50,10 +52,6 @@ public:
   irr::f32 getRadarTilt() const;
   std::string getRadarConfigFile() const;
   irr::f32 getAngleCorrection() const;
-  bool hasGPS() const;
-  bool hasDepthSounder() const;
-  bool hasTurnIndicator() const;
-  irr::f32 getMaxSounderDepth() const;
   void setWheel(irr::f32 aWheel);      // Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
   //void setRudder(irr::f32 aDelta);
   void setPortEngine(irr::f32);                                 // Set the engine, (-ve astern, +ve ahead), range is +-1. This method limits the range applied
@@ -67,20 +65,29 @@ public:
   irr::f32 getPitch() const;
   irr::f32 getRoll() const;
 
+  //Devices
+  bool HasGPS(void) const;
+  bool HasDepthSounder(void) const;
+  float GetMaxSounderDepth(void) const;
+  bool HasRoTIndicator() const ;  
+
+  void PrintDevices(void);
+
+  
   std::string getBasePath() const;
 
   irr::f32 getShipMass() const;
-  irr::f32 getScaleFactor() const;
+
  
 protected:
 private:
   irr::f32 requiredEngineProportion(irr::f32 speed);
-  irr::f32 sign(irr::f32 inValue) const;
-  irr::f32 sign(irr::f32 inValue, irr::f32 threshold) const;
 
   irr::IrrlichtDevice *mDevice;
-  std::vector<irr::core::vector3df> views; // The offset of the camera origin from the own ship origin
-  std::vector<bool> isHighView;            // Should be the same size as views (todo: Make this into a struct with views)
+  std::vector<irr::core::vector3df> mViews; 
+  std::vector<bool> mIsHighView;
+
+  
   std::string radarConfigFile;
   std::string basePath; // The location the model is loaded from
 
@@ -90,7 +97,7 @@ private:
   Water *mWater;
   
   bool mShowDebugData;
-  irr::f32 scaleFactor;
+  
   irr::f32 rollPeriod;       // Roll period (s)  DEE this should be dynamically loaded
   irr::f32 rollAngle;        // Roll Angle (deg)
   irr::f32 pitchPeriod;      // Roll period (s)
@@ -105,18 +112,19 @@ private:
               //-30 to + 30
   bool singleEngine;
 
-  irr::core::vector3df mRadarPos;
-  irr::f32 mRadarSize;
-  irr::f32 mRadarTilt;
   // Dynamics parameters
-  
 
-  irr::f32 turnIndicatorPresent;
-  irr::f32 waveHeightFiltered; // 1st order transfer filtered response to waves
-  // General settings
-  bool gps;
-  bool depthSounder;
-  irr::f32 maxSounderDepth;
+  //Devices
+  bool mHasGps;
+  bool mHasDepthSounder;
+  float mMaxSounderDepth;
+  float mHasRoTIndicator;
+  irr::core::vector3df mRadarPos;
+  float mRadarSize;
+  float mRadarTilt;
+
+  
+  float waveHeightFiltered; // 1st order transfer filtered response to waves
 
   
   // Debugging

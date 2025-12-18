@@ -37,7 +37,24 @@
 
 OwnShip::OwnShip()
 {
+  mViews.resize(MESH_VIEWS_MAX);
+  mIsHighView.resize(MESH_VIEWS_MAX);
+  
+  mHasGps = false;
+  mHasDepthSounder = false;
+  mMaxSounderDepth = 0;
+  mHasRoTIndicator = false;
 
+  mHasDepthSounder = false;
+  mMaxSounderDepth = 0;
+  mHasGps = false;
+  mHasRoTIndicator = false;
+   
+  mRadarPos.X = 0;
+  mRadarPos.Y = 0;
+  mRadarPos.Z = 0;
+  mRadarSize = 0;
+  mRadarTilt = 0;
 
 }
 
@@ -46,163 +63,133 @@ OwnShip::~OwnShip()
 
 }
 
-
-void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
+void OwnShip::PrintDevices(void)
 {
+  std::cout << "::::::Devices Parameters::::::" << std::endl;
+  std::cout << "Depth Sounder : " << mHasDepthSounder << " - Max Depth : " << mMaxSounderDepth << std::endl;
+  std::cout << "Gps : " << mHasGps << std::endl;
+  std::cout << "Turn Indicator : " << mHasRoTIndicator << std::endl;
+  std::cout << "Radar : Pos X: " << mRadarPos.X << " Y: " << mRadarPos.Y << " Z: " << mRadarPos.Z << " | Size: " << mRadarSize << " | Tilt: " << mRadarTilt << std::endl;
+  std::cout << "::::::::::::" << std::endl;
+}
+
+void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot)
+{
+  double xG = 0, iZ = 0, jZ = 0;
+      
+  mM = RHO_SW * mGeoParams.volume;
+  mMX = 0.5 * RHO_SW * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpX;
+  mMY = 0.5 * RHO_SW * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpY;
+
+  xG = mGeoParams.xG;
+  iZ = mM * pow((0.25 * mGeoParams.lPP), 2);
+  jZ = 0.5 * RHO_SW * pow(mGeoParams.lPP, 4) * mGeoParams.d * mAddedMassParams.jpZ;
+
+  mMatM << mM+mMX, 0, 0,
+    0, mM+mMY, xG*mM,
+    0, xG*mM, iZ+(mM*pow(xG, 2))+jZ;
+
+  mInvMatM = mMatM.inverse();
+  mMu = mMu0;
+  mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
+
+  //Init Speed
+  mMu0 << aJsonRoot["initialSpeed"][0].asFloat(), aJsonRoot["initialSpeed"][1].asFloat(), aJsonRoot["initialSpeed"][2].asFloat();
+
+  //Mesh
+  mScaleFactor = aJsonRoot["mesh"]["scaleFactor"].asFloat();
+  float yCorrection = aJsonRoot["mesh"]["yCorrection"].asFloat();
+  mAngleCorrection = aJsonRoot["mesh"]["angleCorrection"].asFloat();
+  mHeightCorrection = yCorrection * mScaleFactor;
+
+  //Views
+  for (unsigned char i=0; i<MESH_VIEWS_MAX; i++)
+    {
+      mViews[i][0] = mScaleFactor * aJsonRoot["mesh"]["views"][i][0].asFloat();
+      mViews[i][1] = mScaleFactor * aJsonRoot["mesh"]["views"][i][1].asFloat();
+      mViews[i][2] = mScaleFactor * aJsonRoot["mesh"]["views"][i][2].asFloat();
+      mIsHighView[i] = mScaleFactor * aJsonRoot["mesh"]["views"][i][3].asFloat();
+    }
+  
+  //Devices
+  //DepthSounder
+  if(1 == aJsonRoot["depthSounder"]["number"].asInt())
+    mHasDepthSounder = true;
+  else
+    mHasDepthSounder = false;
+
+  if(mHasDepthSounder)
+    mMaxSounderDepth = aJsonRoot["depthSounder"]["maxDepth"].asFloat();
+  //GPS
+  if(1 == aJsonRoot["gps"]["number"].asInt())
+    mHasGps = true;
+  else
+    mHasGps = false;
+  if(1 == aJsonRoot["rotIndicator"]["number"].asInt())
+    mHasRoTIndicator = true;
+  else
+    mHasRoTIndicator = false;
+  // Radar 
+  mRadarPos.X = aJsonRoot["radar"]["pos"][0].asFloat();
+  mRadarPos.Y = aJsonRoot["radar"]["pos"][1].asFloat();
+  mRadarPos.Z = aJsonRoot["radar"]["pos"][2].asFloat();
+  mRadarSize = aJsonRoot["radar"]["size"].asFloat();
+  mRadarTilt = aJsonRoot["radar"]["tilt"].asFloat();
+  mRadarPos = mScaleFactor * mRadarPos;
+  mRadarSize = mScaleFactor * mRadarSize;
+
+  if(0 == mRadarSize)
+    mRadarSize = 1;
+    
+  PrintDevices();
+  
+}
+
+void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
+{
+  int retShipPrms = -1;
+  Json::Value rootJson;
+  irr::scene::IMesh *shipMesh;
+  
   mDevice = aDev;
   mTerrain = aTerrain;
   mTide = aTide;
   mWater = aWater;
   
   irr::scene::ISceneManager* smgr = mDevice->getSceneManager();
-  
-  // Load from ownShip.ini file
   std::string ownShipName = aOwnShipData.name;
 
   basePath = "models/Ownship/" + ownShipName + "/";
   std::string userFolder = Utilities::getUserDir();
-  // Read model from user dir if it exists there.
-  if (Utilities::pathExists(userFolder + basePath))
-    {
+
+  if(std::filesystem::exists(userFolder + basePath))
       basePath = userFolder + basePath;
-    }
 
   // Load from boat.ini file if it exists
-  std::string shipIniFilename = basePath + "boat.ini";
   std::string shipJsonFilename = basePath + "boat.json";
+   
+  angleCorrectionRoll = 0;  // default value
+  angleCorrectionPitch = 0; // default value
 
-  int retShipPrms = -1;
-  Json::Value rootJson;
   std::filesystem::path boatJson = shipJsonFilename;  
   if(std::filesystem::exists(boatJson))
     {
-      std::cout << "Json file exists : " <<  shipJsonFilename << std::endl;
       std::ifstream streamJson(boatJson);                
       streamJson >> rootJson;
-      retShipPrms = setShipParams(rootJson);
+      retShipPrms = InitShipParams(rootJson);
     }
   else
-    {
-      //default
-      retShipPrms = setShipParams((std::string)"kvlcc2");
-    }
+    retShipPrms = InitShipParams((std::string)"kvlcc2");
   
   if(0 == retShipPrms)
-    {
-      double xG = 0, iZ = 0, jZ = 0;
-      
-      mM = mRho * mGeoParams.volume;
-      mMX = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpX;
-      mMY = 0.5 * mRho * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpY;
-
-      xG = mGeoParams.xG;
-      iZ = mM * pow((0.25 * mGeoParams.lPP), 2);
-      jZ = 0.5 * mRho * pow(mGeoParams.lPP, 4) * mGeoParams.d * mAddedMassParams.jpZ;
-
-      mMatM << mM+mMX, 0, 0,
-        0, mM+mMY, xG*mM,
-        0, xG*mM, iZ+(mM*pow(xG, 2))+jZ;
-
-      mInvMatM = mMatM.inverse();
-      mMu = mMu0;
-      mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
-
-      //std::cout << "eta : " << mEta << " - mu : " << mMu;
-    }
-
-  // Construct the radar config file name, to be used later by the radar
-  radarConfigFile = basePath + "radar.ini";
+      InitOwnShipParams(aOwnShipData, rootJson);
   
-  rollPeriod = IniFile::iniFileTof32(shipIniFilename, "RollPeriod");
-  rollAngle = 2 * IniFile::iniFileTof32(shipIniFilename, "Swell");  
-  pitchPeriod = IniFile::iniFileTof32(shipIniFilename, "PitchPeriod");
-  pitchAngle = 0.5 * IniFile::iniFileTof32(shipIniFilename, "Swell");  // Max pitch Angle (deg @weather=1)
-  buffet = IniFile::iniFileTof32(shipIniFilename, "Buffet");
-  depthSounder = (IniFile::iniFileTou32(shipIniFilename, "HasDepthSounder") == 1);
-  maxSounderDepth = IniFile::iniFileTof32(shipIniFilename, "MaxDepth");
-  gps = (IniFile::iniFileTou32(shipIniFilename, "HasGPS") == 1);
-
-  // Scale
-  scaleFactor = IniFile::iniFileTof32(shipIniFilename, "ScaleFactor");
-  irr::f32 yCorrection = IniFile::iniFileTof32(shipIniFilename, "YCorrection");
-  mAngleCorrection = IniFile::iniFileTof32(shipIniFilename, "AngleCorrection");
-  // DEE_DEC22 vvvv
-  angleCorrectionRoll = 0;  // default value
-  angleCorrectionPitch = 0; // default value
-  angleCorrectionRoll = IniFile::iniFileTof32(shipIniFilename, "AngleCorrectionRoll");
-  angleCorrectionPitch = IniFile::iniFileTof32(shipIniFilename, "AngleCorrectionPitch");
-
-  irr::u32 numberOfViews = IniFile::iniFileTof32(shipIniFilename, "Views");
-  if (numberOfViews == 0)
-    {
-      std::cerr << "Own ship: View positions can't be loaded. Please check ini file " << shipIniFilename << std::endl;
-      exit(EXIT_FAILURE);
-    }
-  for (irr::u32 i = 1; i <= numberOfViews; i++)
-    {
-      irr::f32 camOffsetX = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewX", i));
-      irr::f32 camOffsetY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewY", i));
-      irr::f32 camOffsetZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewZ", i));
-      bool highView = IniFile::iniFileTou32(shipIniFilename, IniFile::enumerate1("ViewHigh", i)) == 1;
-      views.push_back(irr::core::vector3df(scaleFactor * camOffsetX, scaleFactor * camOffsetY, scaleFactor * camOffsetZ));
-      isHighView.push_back(highView);
-    }
-
-  // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
-  mRadarPos.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
-  mRadarPos.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
-  mRadarPos.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
-  mRadarSize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
-  mRadarTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
-  // Default position out of view if not set
-  if (mRadarPos.X == -999.0 && mRadarPos.Y == -999.0 && mRadarPos.Z == -999.0)
-    {
-      mRadarPos.X = 0;
-      mRadarPos.Y = 0;
-      mRadarPos.Y = 500;
-    }
-
-  if (mRadarSize <= 0)
-    {
-      mRadarSize = 1;
-    }
-  mRadarPos = scaleFactor * mRadarPos;
-  mRadarSize = scaleFactor * mRadarSize;
-
   // get the model file
-  std::string ownShipFileName = IniFile::iniFileToString(shipIniFilename, "FileName");
+  std::string ownShipFileName = rootJson["mesh"]["name"].asString();
   std::string ownShipFullPath = basePath + ownShipFileName;
   
   // Load the model
-  irr::scene::IMesh *shipMesh;
-
-  // Set mesh vertical correction (world units)
-  mHeightCorrection = yCorrection * scaleFactor;
-
   shipMesh = smgr->getMesh(ownShipFullPath.c_str());
-
-  // Make mesh scene node
-  if (shipMesh == 0)
-    {
-      // Failed to load mesh - load with dummy and continue
-      mDevice->getLogger()->log("Failed to load own ship model:");
-      mDevice->getLogger()->log(ownShipFullPath.c_str());
-      shipMesh = smgr->addSphereMesh("Dummy name");
-    }
-
-  // If any part is partially transparent, make it fully transparent (for bridge windows etc!)
-  if (IniFile::iniFileTou32(shipIniFilename, "MakeTransparent") == 1)
-    {
-      for (irr::u32 mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
-	{
-	  if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255)
-	    {
-	      // Hide this mesh buffer by scaling to zero size
-	      smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb), irr::core::vector3df(0, 0, 0));
-	    }
-	}
-    }
-
   mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
   /*Load Sails*/
@@ -250,7 +237,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
   mShipScene->setName("OwnShip");
 
-  mShipScene->setScale(irr::core::vector3df(scaleFactor, scaleFactor, scaleFactor));
+  mShipScene->setScale(irr::core::vector3df(mScaleFactor, mScaleFactor, mScaleFactor));
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
 
@@ -269,18 +256,6 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   // Default buffet Period DEE_DEC22 to do make this a function of Izz and weather strength perhaps direction too
   buffetPeriod = 8; // Yaw period (s)
 
-  // Default for maxSounderDepth
-  if (maxSounderDepth < 1)
-    {
-      maxSounderDepth = 100;
-    } // Default
-
-
-  mDevice->getLogger()->log("Length, breadth, draught are calculated from bounding box as (m):");
-  mDevice->getLogger()->log(irr::core::stringw(mGeoParams.lPP).c_str());
-  mDevice->getLogger()->log(irr::core::stringw(mGeoParams.b).c_str());
-  mDevice->getLogger()->log(irr::core::stringw(mGeoParams.d).c_str());
-
   controlMode = MODE_ENGINE;
 
   // set initial pitch and roll
@@ -292,129 +267,7 @@ void OwnShip::load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
 }
 
-
-
-void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) // Sets the rate of turn (used when controlled as secondary)
-{
-  controlMode = MODE_AUTO; // Switch to controlled mode
-  this->mMu[1] = rateOfTurn;
-}
-
-
-void OwnShip::setWheel(irr::f32 aWheel)
-{
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
-  // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
-  mWheel = aWheel;
-  if (mWheel < -(mRudder.getDeltaMax())*180/PI)
-    {
-      mWheel = -(mRudder.getDeltaMax()*180/PI);
-    }
-  if (mWheel > mRudder.getDeltaMax()*180/PI)
-    {
-      mWheel = mRudder.getDeltaMax()*180/PI;
-    }
-}
-
-/*void OwnShip::setRudder(irr::f32 aDelta)
-{
-  controlMode = MODE_ENGINE;
-  mRudder.SetDelta(aDelta);
-  }*/
-
-
-void OwnShip::setPortEngine(irr::f32 port)
-{
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
-
-
-  portEngine = port; //+-1
-  if (portEngine > 1)
-    {
-      portEngine = 1;
-    }
-  if (portEngine < -1)
-    {
-      portEngine = -1;
-    }
-
-} // end setPortEngine
-
-void OwnShip::setStbdEngine(irr::f32 stbd)
-{
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
-
-  stbdEngine = stbd; //+-1
-  if (stbdEngine > 1)
-    {
-      stbdEngine = 1;
-    }
-  if (stbdEngine < -1)
-    {
-      stbdEngine = -1;
-    }
-
-} // end setStbdEngine
-
-
-irr::f32 OwnShip::getPortEngine() const
-{
-  return portEngine;
-}
-
-irr::f32 OwnShip::getStbdEngine() const
-{
-  return stbdEngine;
-}
-
-
-irr::f32 OwnShip::getWheel() const
-{
-  return mWheel;
-}
-
-irr::f32 OwnShip::getPitch() const
-{
-  return pitch;
-}
-
-irr::f32 OwnShip::getRoll() const
-{
-  return roll;
-}
-
-irr::f32 OwnShip::getShipMass() const
-{
-  return mM;
-}
-
-std::string OwnShip::getBasePath() const
-{
-  return basePath;
-
-}
-
-irr::f32 OwnShip::getScaleFactor() const
-{
-  return scaleFactor;
-}
-
-irr::core::vector3df OwnShip::getRadarPosition() const
-{
-  return mRadarPos;
-}
-
-irr::f32 OwnShip::getRadarSize() const
-{
-  return mRadarSize;
-}
-
-irr::f32 OwnShip::getRadarTilt() const
-{
-  return mRadarTilt;
-}
-
-void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver)
+void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver)
 {
   float posZ = getPosition().Z;
   float posX = getPosition().X;
@@ -502,39 +355,136 @@ void OwnShip::update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   
 }
 
+
+void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) // Sets the rate of turn (used when controlled as secondary)
+{
+  controlMode = MODE_AUTO; // Switch to controlled mode
+  this->mMu[1] = rateOfTurn;
+}
+
+
+void OwnShip::setWheel(irr::f32 aWheel)
+{
+  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+  // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
+  mWheel = aWheel;
+  if (mWheel < -(mRudder.getDeltaMax())*180/PI)
+    {
+      mWheel = -(mRudder.getDeltaMax()*180/PI);
+    }
+  if (mWheel > mRudder.getDeltaMax()*180/PI)
+    {
+      mWheel = mRudder.getDeltaMax()*180/PI;
+    }
+}
+
+/*void OwnShip::setRudder(irr::f32 aDelta)
+  {
+  controlMode = MODE_ENGINE;
+  mRudder.SetDelta(aDelta);
+  }*/
+
+
+void OwnShip::setPortEngine(irr::f32 port)
+{
+  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+
+
+  portEngine = port; //+-1
+  if (portEngine > 1)
+    {
+      portEngine = 1;
+    }
+  if (portEngine < -1)
+    {
+      portEngine = -1;
+    }
+
+} // end setPortEngine
+
+void OwnShip::setStbdEngine(irr::f32 stbd)
+{
+  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+
+  stbdEngine = stbd; //+-1
+  if (stbdEngine > 1)
+    {
+      stbdEngine = 1;
+    }
+  if (stbdEngine < -1)
+    {
+      stbdEngine = -1;
+    }
+
+} // end setStbdEngine
+
+
+irr::f32 OwnShip::getPortEngine() const
+{
+  return portEngine;
+}
+
+irr::f32 OwnShip::getStbdEngine() const
+{
+  return stbdEngine;
+}
+
+
+irr::f32 OwnShip::getWheel() const
+{
+  return mWheel;
+}
+
+irr::f32 OwnShip::getPitch() const
+{
+  return pitch;
+}
+
+irr::f32 OwnShip::getRoll() const
+{
+  return roll;
+}
+
+irr::f32 OwnShip::getShipMass() const
+{
+  return mM;
+}
+
+std::string OwnShip::getBasePath() const
+{
+  return basePath;
+
+}
+
+irr::core::vector3df OwnShip::getRadarPosition() const
+{
+  return mRadarPos;
+}
+
+irr::f32 OwnShip::getRadarSize() const
+{
+  return mRadarSize;
+}
+
+irr::f32 OwnShip::getRadarTilt() const
+{
+  return mRadarTilt;
+}
+
+
 irr::f32 OwnShip::getAngleCorrection() const
 {
   return mAngleCorrection;
 }
 
-bool OwnShip::hasGPS() const
-{
-  return gps;
-}
-
-bool OwnShip::hasDepthSounder() const
-{
-  return depthSounder;
-}
-
-bool OwnShip::hasTurnIndicator() const
-{
-  return turnIndicatorPresent;
-}
-
-irr::f32 OwnShip::getMaxSounderDepth() const
-{
-  return maxSounderDepth;
-}
-
 std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
 {
-  return views;
+  return mViews;
 }
 
 std::vector<bool> OwnShip::getCameraIsHighView() const
 {
-  return isHighView;
+  return mIsHighView;
 }
 
 std::string OwnShip::getRadarConfigFile() const
@@ -542,33 +492,7 @@ std::string OwnShip::getRadarConfigFile() const
   return radarConfigFile;
 }
 
-irr::f32 OwnShip::sign(irr::f32 inValue) const
-{
-  if (inValue > 0)
-    {
-      return 1.0;
-    }
-  if (inValue < 0)
-    {
-      return -1.0;
-    }
-  return 0.0;
-}
-
-irr::f32 OwnShip::sign(irr::f32 inValue, irr::f32 threshold) const
-{
-  if (threshold <= 0)
-    {
-      return sign(inValue);
-    }
-
-  if (inValue > threshold)
-    {
-      return 1.0;
-    }
-  if (inValue < -1 * threshold)
-    {
-      return -1.0;
-    }
-  return inValue / threshold;
-}
+bool OwnShip::HasGPS() const {return mHasGps;}
+bool OwnShip::HasDepthSounder() const {return mHasDepthSounder;}
+float OwnShip::GetMaxSounderDepth() const {return mMaxSounderDepth;}
+bool OwnShip::HasRoTIndicator() const {return mHasRoTIndicator;}

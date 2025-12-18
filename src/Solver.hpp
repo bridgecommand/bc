@@ -27,7 +27,6 @@ public:
   
   /*Setter*/
   void SetDeltaT(double aDt);
-
   
 private:
 
@@ -38,9 +37,7 @@ private:
   Eigen::Vector3d mEta; //Pos vector
   Eigen::Vector3d mMu; //Speed vector
 
-  Ship* mShip;
-  
-  
+  Ship* mShip;  
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include <cmath>
+#include "Constants.hpp"
 #include "Solver.hpp"
 
 #ifndef M_PI
@@ -58,9 +59,9 @@ Eigen::VectorXd Solver::DiffEq(const Eigen::VectorXd& aVectEtaMu)
   matC << 0, -(mShip->getM() + mShip->getMY())*vMu[2], -xG*mShip->getM()*vMu[2],
     (mShip->getM() + mShip->getMX())*vMu[2], 0, 0, xG*mShip->getM()*vMu[2], 0, 0;
   
-  mShip->getHull().ComputeT(vMu, mShip->getRho(), mShip->getGeoParams());
-  mShip->getPropeller().ComputeT(vMu, mShip->getRho(), mShip->getGeoParams());
-  mShip->getRudder().ComputeT(vMu, mShip->getRho(), mShip->getGeoParams(), mShip->getPropeller());
+  mShip->getHull().ComputeT(vMu, RHO_SW, mShip->getGeoParams());
+  mShip->getPropeller().ComputeT(vMu, RHO_SW, mShip->getGeoParams());
+  mShip->getRudder().ComputeT(vMu, RHO_SW, mShip->getGeoParams(), mShip->getPropeller());
 
   mT << mShip->getHull().getT() + mShip->getPropeller().getT() + mShip->getRudder().getT();
   

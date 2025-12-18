@@ -149,7 +149,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
 
   //Load own ship model.
   // TODO: It would be better to pass in modelParameters directly
-  mOwnShip->load(aScenarioData.ownShipData, mWater, mTide, mTerrain, mDevice);
+  mOwnShip->Load(aScenarioData.ownShipData, mWater, mTide, mTerrain, mDevice);
 
   if(mModelParameters.mode == OperatingMode::Secondary) {
     mOwnShip->setSpeed(0); //Don't start moving if in secondary mode
@@ -167,17 +167,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
   mWater->load(mSmgr,mOwnShip->getSceneNode(),mWeather,mModelParameters.disableShaders,waterReflection,mModelParameters.waterSegments);
 
   if (1 == mOwnShip->getNumberProp()) aGui->setSingleEngine();
-
-  //Tell gui to hide all ship controls if in secondary mode
-  //if (mModelParameters.mode == OperatingMode::Secondary) {
-  //gui->hideEngineAndRudder();
-  //      TODO      gui->hideWheel();
-  //	DEE_NOV22 todo hide schottels engine indicators etc
-  //}
-
-  //Tell the GUI what instruments to display - currently GPS and depth sounder
-  //gui->setInstruments(mOwnShip->hasDepthSounder(),mOwnShip->getMaxSounderDepth(),mOwnShip->hasGPS());
-  
 
   //Load the radar with config parameters
   mRadarCalculation->load(mOwnShip->getRadarConfigFile(),mDevice);
@@ -222,6 +211,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
   mCollision->load(mOwnShip->getSceneNode(), mTerrain, mOtherShips, mOwnShip, mBuoys, mModelParameters, mDevice);
   
   //make a radar screen, setting parent and offset from own ship
+  std::cout << "Radar Position : " << mOwnShip->getRadarPosition()[0] << " : " << mOwnShip->getRadarPosition()[1]  << " : "<< mOwnShip->getRadarPosition()[2]<< std::endl;
+  std::cout << "Radar Size : " << mOwnShip->getRadarSize() << std::endl;
+  std::cout << "Radar Tilt : " << mOwnShip->getRadarTilt() << std::endl;
   mRadarScreen->load(mSmgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
 
   //make radar camera
@@ -477,7 +469,7 @@ void SimulationModel::update()
   mSolver->SolveRk4(mTime, mOwnShip->getEta(), mOwnShip->getMu());
 
   //update own ship
-  mOwnShip->update(mTime, mTideHeight, mWeather, mWind, mSolver);
+  mOwnShip->Update(mTime, mTideHeight, mWeather, mWind, mSolver);
 
   if (mOwnShip->getNumberProp() > 1)
     mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
