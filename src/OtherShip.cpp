@@ -29,7 +29,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
 {
 
     this->name = name;
-    this->mmsi = mmsi;
+    mMsi = mmsi;
 
     std::string basePath = "models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();

@@ -43,7 +43,7 @@ public:
   ~OwnShip();
   void Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
   void Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver);
-  void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot);
+  void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot);
 
   std::vector<irr::core::vector3df> getCameraViews() const;
   std::vector<bool> getCameraIsHighView() const;
@@ -72,7 +72,7 @@ public:
   bool HasRoTIndicator() const ;  
 
   void PrintDevices(void);
-
+  void PrintMeshInfos(void);
   
   std::string getBasePath() const;
 
@@ -88,7 +88,7 @@ private:
   std::vector<bool> mIsHighView;
 
   
-  std::string radarConfigFile;
+  std::string mRadarConfigFile;
   std::string basePath; // The location the model is loaded from
 
   Terrain *mTerrain;

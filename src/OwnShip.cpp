@@ -49,13 +49,16 @@ OwnShip::OwnShip()
   mMaxSounderDepth = 0;
   mHasGps = false;
   mHasRoTIndicator = false;
-   
+
+  mRadarConfigFile = "";
   mRadarPos.X = 0;
   mRadarPos.Y = 0;
   mRadarPos.Z = 0;
   mRadarSize = 0;
   mRadarTilt = 0;
 
+  mWheel=0;
+  
 }
 
 OwnShip::~OwnShip()
@@ -73,10 +76,35 @@ void OwnShip::PrintDevices(void)
   std::cout << "::::::::::::" << std::endl;
 }
 
-void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot)
+void OwnShip::PrintMeshInfos(void)
+{
+  std::cout << "::::::Mesh File Infos::::::" << std::endl;
+  std::cout << "Name : " << mMeshFileName << std::endl;
+  std::cout << "Full path mesh : " << mMeshFullPath << std::endl;
+  std::cout << "Scale factor : " << mScaleFactor << std::endl;
+  std::cout << "Angle correction : " << mAngleCorrection << std::endl;
+  std::cout << "Height correction : " << mHeightCorrection << std::endl; 
+
+  for (unsigned char i=0; i<MESH_VIEWS_MAX; i++)
+    {
+      std::cout << "View " << i << " :" << std::endl;
+      std::cout << "  -> X : " << mViews[i][0] << std::endl;
+      std::cout << "  -> Y : " << mViews[i][1] << std::endl;
+      std::cout << "  -> Z : " << mViews[i][2] << std::endl;
+      std::cout << "  -> isHighView : " << mIsHighView[i]  << std::endl;
+      std::cout << "--------" << std::endl;
+    }
+
+  std::cout << "::::::::::::" << std::endl;
+}
+
+void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
 {
   double xG = 0, iZ = 0, jZ = 0;
-      
+
+  //Init Speed
+  mMu0 << aJsonRoot["initialSpeed"][0].asFloat(), aJsonRoot["initialSpeed"][1].asFloat(), aJsonRoot["initialSpeed"][2].asFloat();
+  
   mM = RHO_SW * mGeoParams.volume;
   mMX = 0.5 * RHO_SW * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpX;
   mMY = 0.5 * RHO_SW * pow(mGeoParams.lPP, 2) * mGeoParams.d * mAddedMassParams.mpY;
@@ -91,10 +119,8 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot
 
   mInvMatM = mMatM.inverse();
   mMu = mMu0;
-  mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
 
-  //Init Speed
-  mMu0 << aJsonRoot["initialSpeed"][0].asFloat(), aJsonRoot["initialSpeed"][1].asFloat(), aJsonRoot["initialSpeed"][2].asFloat();
+  mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
 
   //Mesh
   mScaleFactor = aJsonRoot["mesh"]["scaleFactor"].asFloat();
@@ -140,9 +166,9 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value& aJsonRoot
 
   if(0 == mRadarSize)
     mRadarSize = 1;
-    
+
   PrintDevices();
-  
+  PrintMeshInfos();
 }
 
 void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
@@ -177,21 +203,22 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
       std::ifstream streamJson(boatJson);                
       streamJson >> rootJson;
       retShipPrms = InitShipParams(rootJson);
+      
+      // get the model file
+      mMeshFileName = rootJson["mesh"]["name"].asString();
+      mMeshFullPath = basePath + mMeshFileName;
+      streamJson.close();
+      // Load the model
+      shipMesh = smgr->getMesh(mMeshFullPath.c_str());
+      mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
     }
   else
     retShipPrms = InitShipParams((std::string)"kvlcc2");
   
   if(0 == retShipPrms)
       InitOwnShipParams(aOwnShipData, rootJson);
-  
-  // get the model file
-  std::string ownShipFileName = rootJson["mesh"]["name"].asString();
-  std::string ownShipFullPath = basePath + ownShipFileName;
-  
-  // Load the model
-  shipMesh = smgr->getMesh(ownShipFullPath.c_str());
-  mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
 
+  
   /*Load Sails*/
   if(mSails.GetCount() > 0)
     { 
@@ -241,6 +268,9 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
 
+
+  rollAngle = 0.1;
+  buffet = 0.3;
 
   if (rollPeriod == 0)
     {
@@ -313,7 +343,6 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	  irr::f32 monoThrust = 0;
 	  
 	  monoThrust = portEngine*mEngine[0].getRpmMax()/60;	 
-
 	  mProp[0].SetRevs(monoThrust);
 	}
 
@@ -489,7 +518,7 @@ std::vector<bool> OwnShip::getCameraIsHighView() const
 
 std::string OwnShip::getRadarConfigFile() const
 {
-  return radarConfigFile;
+  return mRadarConfigFile;
 }
 
 bool OwnShip::HasGPS() const {return mHasGps;}

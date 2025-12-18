@@ -88,6 +88,8 @@ public:
 protected:
 
   //Mesh Boat
+  std::string mMeshFileName;
+  std::string mMeshFullPath;
   irr::scene::IMeshSceneNode* mShipScene; 
 
   //Mesh Correction
@@ -119,13 +121,15 @@ protected:
   Sail mSails;
   Engine mEngine[2];
 
+  //Devices
+  unsigned int mMsi;
   
   float angleCorrectionRoll;
   float angleCorrectionPitch;
 
   int controlMode;
   bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
-  irr::u32 mmsi;
+
   enum CONTROL_MODE
     {
       MODE_AUTO = 0,

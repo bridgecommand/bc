@@ -211,9 +211,6 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
   mCollision->load(mOwnShip->getSceneNode(), mTerrain, mOtherShips, mOwnShip, mBuoys, mModelParameters, mDevice);
   
   //make a radar screen, setting parent and offset from own ship
-  std::cout << "Radar Position : " << mOwnShip->getRadarPosition()[0] << " : " << mOwnShip->getRadarPosition()[1]  << " : "<< mOwnShip->getRadarPosition()[2]<< std::endl;
-  std::cout << "Radar Size : " << mOwnShip->getRadarSize() << std::endl;
-  std::cout << "Radar Tilt : " << mOwnShip->getRadarTilt() << std::endl;
   mRadarScreen->load(mSmgr,mOwnShip->getSceneNode(), mOwnShip->getRadarPosition(), mOwnShip->getRadarSize(), mOwnShip->getRadarTilt());
 
   //make radar camera
