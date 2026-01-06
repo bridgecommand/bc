@@ -58,6 +58,19 @@ OwnShip::OwnShip()
   mRadarTilt = 0;
 
   mWheel=0;
+
+    
+  mRollPeriod = 0;       
+  mRollAngle = 0;        
+  mPitchPeriod = 0;      
+  mPitchAngle = 0;       
+  mBuffetPeriod = 0;     
+  mBuffet = 0;           
+  mPitch = 0;            
+  mRoll = 0;             
+  mPortEngine = 0;       
+  mStbdEngine = 0;       
+
   
 }
 
@@ -268,36 +281,28 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
 
+  mRollAngle = 0.1;
+  mBuffet = 0.3;
 
-  rollAngle = 0.1;
-  buffet = 0.3;
-
-  if (rollPeriod == 0)
+  if(mRollPeriod == 0)
     {
-      rollPeriod = 8; // default to a roll period of 8 seconds if unspecified
+      mRollPeriod = 8; // default to a roll period of 8 seconds if unspecified
     }
 
-  if (pitchPeriod == 0)
+  if(mPitchPeriod == 0)
     {
-      pitchPeriod = 12; // default to a roll periof of 12 seconds if unspecified DEE_DEC22 make a function of
+      mPitchPeriod = 12; // default to a roll periof of 12 seconds if unspecified DEE_DEC22 make a function of
       // weather strength direction and Ixx
     }
 
   // Default buffet Period DEE_DEC22 to do make this a function of Izz and weather strength perhaps direction too
-  buffetPeriod = 8; // Yaw period (s)
+  mBuffetPeriod = 8; // Yaw period (s)
 
-  controlMode = MODE_ENGINE;
-
-  // set initial pitch and roll
-  pitch = 0;
-  roll = 0;
-  waveHeightFiltered = 0;
-
-  mWheel = 0;
+  mControlMode = MODE_ENGINE;
 
 }
 
-void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver)
+void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver)
 {
   float posZ = getPosition().Z;
   float posX = getPosition().X;
@@ -306,7 +311,7 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   setEta(aSolver->getEta());
   setMu(aSolver->getMu());
   
-  if (controlMode == MODE_ENGINE)
+  if (mControlMode == MODE_ENGINE)
     {       
       // Find tidal stream, based on our current absolute position
       irr::core::vector2df stream = mTide->getTidalStream(mTerrain->xToLong(posX), mTerrain->zToLat(posZ), aTime.absoluteTime);
@@ -332,8 +337,8 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	  irr::f32 portThrust = 0; 
 	  irr::f32 stbdThrust = 0;
 	  
-	  portThrust = portEngine*mEngine[0].getRpmMax()/60;
-	  stbdThrust = stbdEngine*mEngine[1].getRpmMax()/60;
+	  portThrust = mPortEngine*mEngine[0].getRpmMax()/60;
+	  stbdThrust = mStbdEngine*mEngine[1].getRpmMax()/60;
 
 	  mProp[0].SetRevs(portThrust);
 	  mProp[1].SetRevs(stbdThrust);
@@ -342,7 +347,7 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 	{
 	  irr::f32 monoThrust = 0;
 	  
-	  monoThrust = portEngine*mEngine[0].getRpmMax()/60;	 
+	  monoThrust = mPortEngine*mEngine[0].getRpmMax()/60;	 
 	  mProp[0].SetRevs(monoThrust);
 	}
 
@@ -362,17 +367,17 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
 
   irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   irr::f32 factor = deltaTime / (timeConstant + deltaTime);
-  waveHeightFiltered = (1 - factor) * waveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
-  double yPos = tideHeight + mHeightCorrection + waveHeightFiltered;
+  mWaveHeightFiltered = (1 - factor) * mWaveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
+  double yPos = aTideHeight + mHeightCorrection + mWaveHeightFiltered;
 
   // calculate pitch and roll - not linked to water/wave motion
-  if (pitchPeriod > 0)
+  if(mPitchPeriod > 0)
     {
-      pitch = weather * pitchAngle * sin(aTime.scenarioTime * 2 * PI / pitchPeriod);
+      mPitch = aWeather * mPitchAngle * sin(aTime.scenarioTime * 2 * PI / mPitchPeriod);
     }
-  if (rollPeriod > 0)
+  if(mRollPeriod > 0)
     {
-      roll = weather * rollAngle * sin(aTime.scenarioTime * 2 * PI / rollPeriod);
+      mRoll = aWeather * mRollAngle * sin(aTime.scenarioTime * 2 * PI / mRollPeriod);
     }
 
 
@@ -380,21 +385,21 @@ void OwnShip::Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *
   mSails.UpdateMesh();
 
   mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
-  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, pitch, roll));
+  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, mPitch, mRoll));
   
 }
 
 
 void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) // Sets the rate of turn (used when controlled as secondary)
 {
-  controlMode = MODE_AUTO; // Switch to controlled mode
+  mControlMode = MODE_AUTO; // Switch to controlled mode
   this->mMu[1] = rateOfTurn;
 }
 
 
 void OwnShip::setWheel(irr::f32 aWheel)
 {
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+  mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
   // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
   mWheel = aWheel;
   if (mWheel < -(mRudder.getDeltaMax())*180/PI)
@@ -414,35 +419,35 @@ void OwnShip::setWheel(irr::f32 aWheel)
   }*/
 
 
-void OwnShip::setPortEngine(irr::f32 port)
+void OwnShip::setPortEngine(irr::f32 aPort)
 {
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+  mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
 
-  portEngine = port; //+-1
-  if (portEngine > 1)
+  mPortEngine = aPort; //+-1
+  if (mPortEngine > 1)
     {
-      portEngine = 1;
+      mPortEngine = 1;
     }
-  if (portEngine < -1)
+  if (mPortEngine < -1)
     {
-      portEngine = -1;
+      mPortEngine = -1;
     }
 
 } // end setPortEngine
 
-void OwnShip::setStbdEngine(irr::f32 stbd)
+void OwnShip::setStbdEngine(irr::f32 aStbd)
 {
-  controlMode = MODE_ENGINE; // Switch to engine and rudder mode
+  mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
-  stbdEngine = stbd; //+-1
-  if (stbdEngine > 1)
+  mStbdEngine = aStbd; //+-1
+  if (mStbdEngine > 1)
     {
-      stbdEngine = 1;
+      mStbdEngine = 1;
     }
-  if (stbdEngine < -1)
+  if (mStbdEngine < -1)
     {
-      stbdEngine = -1;
+      mStbdEngine = -1;
     }
 
 } // end setStbdEngine
@@ -450,12 +455,12 @@ void OwnShip::setStbdEngine(irr::f32 stbd)
 
 irr::f32 OwnShip::getPortEngine() const
 {
-  return portEngine;
+  return mPortEngine;
 }
 
 irr::f32 OwnShip::getStbdEngine() const
 {
-  return stbdEngine;
+  return mStbdEngine;
 }
 
 
@@ -466,12 +471,12 @@ irr::f32 OwnShip::getWheel() const
 
 irr::f32 OwnShip::getPitch() const
 {
-  return pitch;
+  return mPitch;
 }
 
 irr::f32 OwnShip::getRoll() const
 {
-  return roll;
+  return mRoll;
 }
 
 irr::f32 OwnShip::getShipMass() const

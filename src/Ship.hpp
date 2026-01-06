@@ -32,6 +32,12 @@
 #include "Sail.hpp"
 #include "Engine.hpp"
 
+enum eControlMode
+  {
+    MODE_AUTO = 0,
+    MODE_ENGINE = 1
+  };
+
 class Ship
 {
 public:
@@ -127,14 +133,9 @@ protected:
   float angleCorrectionRoll;
   float angleCorrectionPitch;
 
-  int controlMode;
+  eControlMode mControlMode;
   bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
 
-  enum CONTROL_MODE
-    {
-      MODE_AUTO = 0,
-      MODE_ENGINE = 1
-    };
 };
 
 #endif // __SHIP_HPP_INCLUDED__

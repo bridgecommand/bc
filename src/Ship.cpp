@@ -24,7 +24,7 @@
 Ship::Ship()
 {
   //Default to run on defined spd and hdg
-  controlMode = MODE_AUTO;
+  mControlMode = MODE_AUTO;
   positionManuallyUpdated = false; //Used to track if position has been manually updated, and shouldn't have position update applied this loop
   mMsi = 0;
 
@@ -278,13 +278,13 @@ void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
 void Ship::setHeading(irr::f32 hdg)
 {
   mEta[2] = hdg;
-  controlMode = MODE_AUTO; //Switch to auto mode
+  mControlMode = MODE_AUTO; //Switch to auto mode
 }
 
 void Ship::setSpeed(irr::f32 spd)
 {
   mMu[0] = spd;
-  controlMode = MODE_AUTO; //Switch to auto mode
+  mControlMode = MODE_AUTO; //Switch to auto mode
 }
 
 irr::f32 Ship::getRateOfTurn() const

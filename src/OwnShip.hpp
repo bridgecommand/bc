@@ -42,7 +42,7 @@ public:
   OwnShip();
   ~OwnShip();
   void Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
-  void Update(sTime& aTime, irr::f32 tideHeight, irr::f32 weather, Wind *aWind, Solver *aSolver);
+  void Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver);
   void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot);
 
   std::vector<irr::core::vector3df> getCameraViews() const;
@@ -98,19 +98,19 @@ private:
   
   bool mShowDebugData;
   
-  irr::f32 rollPeriod;       // Roll period (s)  DEE this should be dynamically loaded
-  irr::f32 rollAngle;        // Roll Angle (deg)
-  irr::f32 pitchPeriod;      // Roll period (s)
-  irr::f32 pitchAngle;       // Roll Angle (deg)
-  irr::f32 buffetPeriod;     // Yaw period (s)
-  irr::f32 buffet;           // How much ship is buffeted by waves (undefined units)
-  irr::f32 pitch;            //(deg)
-  irr::f32 roll;             //(deg)
-  irr::f32 portEngine;       //-1 to + 1
-  irr::f32 stbdEngine;       //-1 to + 1
+  irr::f32 mRollPeriod;       // Roll period (s)  DEE this should be dynamically loaded
+  irr::f32 mRollAngle;        // Roll Angle (deg)
+  irr::f32 mPitchPeriod;      // Roll period (s)
+  irr::f32 mPitchAngle;       // Roll Angle (deg)
+  irr::f32 mBuffetPeriod;     // Yaw period (s)
+  irr::f32 mBuffet;           // How much ship is buffeted by waves (undefined units)
+  irr::f32 mPitch;            //(deg)
+  irr::f32 mRoll;             //(deg)
+  irr::f32 mPortEngine;       //-1 to + 1
+  irr::f32 mStbdEngine;       //-1 to + 1
   irr::f32 mWheel;             //-30 to + 30
               //-30 to + 30
-  bool singleEngine;
+  bool mSingleEngine;
 
   // Dynamics parameters
 
@@ -124,7 +124,7 @@ private:
   float mRadarTilt;
 
   
-  float waveHeightFiltered; // 1st order transfer filtered response to waves
+  float mWaveHeightFiltered; // 1st order transfer filtered response to waves
 
   
   // Debugging
