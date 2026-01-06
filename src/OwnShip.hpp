@@ -86,7 +86,7 @@ private:
   irr::IrrlichtDevice *mDevice;
   std::vector<irr::core::vector3df> mViews; 
   std::vector<bool> mIsHighView;
-
+  bool mIsTransparent;
   
   std::string mRadarConfigFile;
   std::string basePath; // The location the model is loaded from

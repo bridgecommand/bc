@@ -58,7 +58,7 @@ OwnShip::OwnShip()
   mRadarTilt = 0;
 
   mWheel=0;
-
+  mIsTransparent = false;
     
   mRollPeriod = 0;       
   mRollAngle = 0;        
@@ -136,6 +136,11 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
   mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
 
   //Mesh
+  if(1 == aJsonRoot["mesh"]["makeTransparent"].asInt())
+    mIsTransparent = true;
+  else
+    mIsTransparent = false;
+  
   mScaleFactor = aJsonRoot["mesh"]["scaleFactor"].asFloat();
   float yCorrection = aJsonRoot["mesh"]["yCorrection"].asFloat();
   mAngleCorrection = aJsonRoot["mesh"]["angleCorrection"].asFloat();
@@ -273,14 +278,24 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 	  mShipScene->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
 	}
     }
-    
 
+  if(mIsTransparent)
+    {
+      for (irr::u32 mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
+	{
+	  if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255)
+	    {
+	      // Hide this mesh buffer by scaling to zero size
+	      smgr->getMeshManipulator()->scale(shipMesh->getMeshBuffer(mb), irr::core::vector3df(0, 0, 0));
+	    }
+	}
+    }
+  
   mShipScene->setName("OwnShip");
 
   mShipScene->setScale(irr::core::vector3df(mScaleFactor, mScaleFactor, mScaleFactor));
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
-
   mRollAngle = 0.1;
   mBuffet = 0.3;
 

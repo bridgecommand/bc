@@ -68,12 +68,12 @@
 	"fuelCons": 177 
     },
     "sail": {
-	"number": 1, 
-	"type": "Rotor", 
-	"size": "30x5",
+	"number": 0, 
+	"type": "", 
+	"size": "",
 	"pos":
 	[
-	    [ 0.5, 26.5, 3 ],
+	    [ 0, 0, 0 ],
 	    [ 0, 0, 0 ],
 	    [ 0, 0, 0 ],
 	    [ 0, 0, 0 ]
@@ -96,18 +96,17 @@
 	"tilt": 0
     },
     "mesh": {
-	"name": "CopenhagenFerry.obj",
-	"makeTransparent" : 0, 
-	"scaleFactor": 1,
-	"yCorrection": -5.8,
+	"name": "boat.x",
+	"makeTransparent" : 1,
+	"scaleFactor": 0.3048,
+	"yCorrection": -18,
 	"angleCorrection": 0,
 	"views":
 	[
-	    [ 0, 25, 70, 0 ],
-	    [ 50, 40, 0, 0 ],
-	    [ -50, 40, 0, 0 ],
-	    [ 0, 50, -50, 0 ],
-	    [ 0, 200, 0, 1 ]
+	    [ 0, 100.5, 185.5, 0 ],
+	    [ 50, 99.3, 182.8, 0 ],
+	    [ -50, 99.3, 182.8, 0 ],
+	    [ 0, 900, -50, 1 ]
 	]
     }
     
