@@ -101,6 +101,7 @@
 	"scaleFactor": 0.3048,
 	"yCorrection": -18,
 	"angleCorrection": 0,
+	"numberOfViews": 4,
 	"views":
 	[
 	    [ 0, 100.5, 185.5, 0 ],

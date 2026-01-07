@@ -147,7 +147,12 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
   mHeightCorrection = yCorrection * mScaleFactor;
 
   //Views
-  for (unsigned char i=0; i<MESH_VIEWS_MAX; i++)
+  int nbrOfViews = aJsonRoot["mesh"]["numberOfViews"].asInt();
+
+  if(nbrOfViews > MESH_VIEWS_MAX)
+    nbrOfViews = MESH_VIEWS_MAX;
+  
+  for (unsigned char i=0; i<nbrOfViews; i++)
     {
       mViews[i][0] = mScaleFactor * aJsonRoot["mesh"]["views"][i][0].asFloat();
       mViews[i][1] = mScaleFactor * aJsonRoot["mesh"]["views"][i][1].asFloat();
