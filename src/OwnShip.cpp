@@ -231,7 +231,7 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
       mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
     }
   else
-    retShipPrms = InitShipParams((std::string)"kvlcc2");
+    return;
   
   if(0 == retShipPrms)
       InitOwnShipParams(aOwnShipData, rootJson);
