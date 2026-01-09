@@ -16,7 +16,7 @@
 
 // This file is mostly derived from https://gitlab.freedesktop.org/monado/demos/openxr-simple-example/ at 94f1a764dd736b23657ff01464ec1518771e8cdc
 
-//#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
+#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include <iostream>
 #include <cstdarg>
