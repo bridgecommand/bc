@@ -18,77 +18,77 @@
 #define __CAMERA_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
+#include "Time.hpp"
 #include <vector>
 
 class Camera
 {
-    public:
-        Camera();
-        virtual ~Camera();
+public:
+  Camera();
+  virtual ~Camera();
 
-        void load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection);
-        irr::scene::ISceneNode* getSceneNode() const;
-        irr::core::vector3df getPosition() const;
-        irr::core::vector3df getBasePosition() const;
-        irr::core::matrix4 getBaseRotation() const;
-        void setHFOV(irr::f32 hFOV);
-        void updateViewport(irr::f32 aspect);
-        void setActive();
-        void lookUp();
-        void lookDown();
-        void setPanSpeed(irr::f32 horizontalPanSpeed);
-        void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
-		void setLookUp(irr::f32 angle);
-        void lookLeft();
-        void lookRight();
-        void lookChange(irr::f32 deltaX, irr::f32 deltaY); //As a proportion of screen width
-        void lookStepLeft();
-        void lookStepRight();
-        void moveForwards();
-        void moveBackwards();
-        void lookAhead();
-        void lookAstern();
-        void lookPort();
-        void lookStbd();
-        irr::f32 getLook() const;
-        irr::f32 getLookUp() const;
-        irr::core::vector3df getForwardVector() const;
-        void highView(bool highViewRequired);
-        void changeView();
-        void setView(irr::u32 view);
-        irr::u32 getView() const;
-        void setNearValue(irr::f32 zn);
-        void setFarValue(irr::f32 zf);
-        void setFrozen(bool frozen);
-        void toggleFrozen();
-        void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime=0, irr::core::quaternion quat=irr::core::quaternion(0,0,0,1), irr::core::vector3df pos=irr::core::vector3df(0,0,0), irr::core::vector2df lensShift=irr::core::vector2df(0,0), bool vrMode = false);
+  void load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection);
+  irr::scene::ISceneNode* getSceneNode() const;
+  irr::core::vector3df getPosition() const;
+  irr::core::vector3df getBasePosition() const;
+  irr::core::matrix4 getBaseRotation() const;
+  void setHFOV(irr::f32 hFOV);
+  void updateViewport(irr::f32 aspect);
+  void setActive();
+  void lookUp();
+  void lookDown();
+  void setPanSpeed(irr::f32 horizontalPanSpeed);
+  void setVerticalPanSpeed(irr::f32 verticalPanSpeed);
+  void setLookUp(irr::f32 angle);
+  void lookLeft();
+  void lookRight();
+  void lookChange(irr::f32 deltaX, irr::f32 deltaY); //As a proportion of screen width
+  void lookStepLeft();
+  void lookStepRight();
+  void moveForwards();
+  void moveBackwards();
+  void lookAhead();
+  void lookAstern();
+  void lookPort();
+  void lookStbd();
+  irr::f32 getLook() const;
+  irr::f32 getLookUp() const;
+  irr::core::vector3df getForwardVector() const;
+  void highView(bool highViewRequired);
+  void changeView();
+  void setView(irr::u32 view);
+  irr::u32 getView() const;
+  void setNearValue(irr::f32 zn);
+  void setFarValue(irr::f32 zf);
+  void setFrozen(bool frozen);
+  void toggleFrozen();
+  void applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+  void update(sTime& aTime, irr::core::quaternion quat=irr::core::quaternion(0,0,0,1), irr::core::vector3df pos=irr::core::vector3df(0,0,0), irr::core::vector2df lensShift=irr::core::vector2df(0,0), bool vrMode = false);
 
-    private:
-        irr::scene::ICameraSceneNode* camera;
-        irr::scene::ISceneNode* parent;
-        irr::core::vector3df parentPosition;
-        irr::core::matrix4 parentAngles;
-        bool frozen;
-        irr::ILogger* logger;
-        irr::u32 currentView;
-        std::vector<irr::core::vector3df> views;
-        std::vector<bool> isHighView; //Should be the same size as views (todo: Make this into a struct with views)
-        irr::f32 angleCorrection;
-        irr::f32 lookAngle; //In degrees
-        irr::f32 lookUpAngle;
-        irr::f32 minLookUpAngle;
-        irr::f32 maxLookUpAngle;
-        irr::s32 horizontalPanSpeed; //Degrees per second
-        irr::s32 verticalPanSpeed; //Degrees per second
-        irr::f32 hFOV;//horizontal field of view (radians)
-        irr::core::vector3df sideViewVector; // Side vector
-        irr::core::vector3df frv;
+private:
+  irr::scene::ICameraSceneNode* camera;
+  irr::scene::ISceneNode* parent;
+  irr::core::vector3df parentPosition;
+  irr::core::matrix4 parentAngles;
+  bool frozen;
+  irr::ILogger* logger;
+  irr::u32 currentView;
+  std::vector<irr::core::vector3df> views;
+  std::vector<bool> isHighView; //Should be the same size as views (todo: Make this into a struct with views)
+  irr::f32 angleCorrection;
+  irr::f32 lookAngle; //In degrees
+  irr::f32 lookUpAngle;
+  irr::f32 minLookUpAngle;
+  irr::f32 maxLookUpAngle;
+  irr::s32 horizontalPanSpeed; //Degrees per second
+  irr::s32 verticalPanSpeed; //Degrees per second
+  irr::f32 hFOV;//horizontal field of view (radians)
+  irr::core::vector3df sideViewVector; // Side vector
+  irr::core::vector3df frv;
 
-        bool isHighViewActive;
-        irr::f32 previousLookAngle;
-        irr::f32 previousLookUpAngle;
+  bool isHighViewActive;
+  irr::f32 previousLookAngle;
+  irr::f32 previousLookUpAngle;
 };
 
 #endif

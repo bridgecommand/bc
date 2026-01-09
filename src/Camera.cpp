@@ -355,8 +355,10 @@ void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
     }
 }
 
-void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
+void Camera::update(sTime& aTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
 {
+
+  float deltaTime = aTime.deltaTime;
      //link camera rotation to shipNode
         //Adjust camera angle if panning
         lookAngle += horizontalPanSpeed * deltaTime;

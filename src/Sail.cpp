@@ -1,4 +1,5 @@
 #include "Sail.hpp"
+#include "Constants.hpp"
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -7,14 +8,25 @@ Sail::Sail(void)
 {
   mDimCountX = 0;
   mDimCountY = 0;
+  mSailsCount = 0;
+  mSailsType = "";
+  mSailsSize = "";
+  memset(mSailsPos, 0, sizeof(mSailsPos));
+  mSailVarY = 0;
+  mSailVarX = 0;
+  mStw = {0};
+  mTws = {0};
+  mTwa = {0};
+  mSpeedThroughWater = 0;
+  mTrueWindSpeed = 0;
+  mApparentWindDir = 0;
+  mT << 0, 0, 0;
 }
 
 Sail::Sail(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
 {
-  mDimCountX = 0;
-  mDimCountY = 0;
-
-  Open(aPolarFile, aVarNameX, aVarNameY);
+  Sail();
+  OpenPolar(aPolarFile, aVarNameX, aVarNameY);
 }
 
 Sail::~Sail()
@@ -22,7 +34,7 @@ Sail::~Sail()
   nc_close(mIdPolarFile);
 }
 
-int Sail::Open(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
+int Sail::OpenPolar(const std::string aPolarFile, std::string aVarNameX, std::string aVarNameY)
 {
   if(!aPolarFile.empty() && !aVarNameX.empty() && !aVarNameY.empty())
     {
@@ -64,7 +76,7 @@ int Sail::Open(const std::string aPolarFile, std::string aVarNameX, std::string 
   return -1;
 }
 
-int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, std::string aWindAngleVarName)
+int Sail::InitPolar(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, std::string aWindAngleVarName)
 {
   int err = -1;
   
@@ -109,22 +121,112 @@ int Sail::Init(std::string aSpeedWaterVarName, std::string aWindSpeedVarName, st
   return err;
 }
 
+void Sail::Init(int aSailsCount, std::string aSailsType, std::string aSailsSize, float (*aSailsPos)[3])
+{
+  mSailsCount = aSailsCount;
+  mSailsType = aSailsType;
+  mSailsSize = aSailsSize;
+
+  for(unsigned char i=0;i<mSailsCount;i++)
+    {
+      mSailsPos[i][0] = aSailsPos[i][0];
+      mSailsPos[i][1] = aSailsPos[i][1];
+      mSailsPos[i][2] = aSailsPos[i][2];
+    }
+}
+
+void Sail::SetMeshScene(irr::scene::IMeshSceneNode *aMeshScene)
+{
+  static int gCountMeshScene = 0;
+
+  if(gCountMeshScene < SAILS_MAX)
+    mSailsScene[gCountMeshScene] = aMeshScene;
+  
+  gCountMeshScene++;
+  
+}
+
+irr::scene::IMeshSceneNode* Sail::GetMeshScene(unsigned char aIndex)
+{
+  return mSailsScene[aIndex];
+}
+
+unsigned char Sail::GetCount(void)
+{
+  return mSailsCount;
+}
+
+std::string Sail::GetType(void)
+{
+  return Sail::mSailsType;
+}
+
+std::string Sail::GetSize(void)
+{
+  return mSailsSize;
+}
+
+float (*Sail::GetPos(void))[3]
+{
+  return mSailsPos;
+}
+
+void Sail::UpdateMesh(void)
+{
+  if(GetType() == "Rotor")
+    {
+      static float angle = 0.0;
+
+      angle += 20;
+      irr::core::vector3df rotation(0, angle, 0);
+
+      for (int i = 0; i < GetCount(); i++)
+        {
+	  GetMeshScene(i)->setRotation(rotation);
+        }
+    }
+  else
+    {
+      //TODO for other kind of sails
+    }
+}
+
+void Sail::PrintParams(void)
+{
+  std::cout << "::::::Sail Parameters::::::" << std::endl;
+  std::cout << "Number : " << mSailsCount << std::endl;
+  std::cout << "Type : " << mSailsType << std::endl;
+  std::cout << "Size : " << mSailsSize << std::endl;
+
+  std::cout << "Position on boat : " << std::endl;
+  for(unsigned char i=0;i<mSailsCount;i++)
+    {
+      std::cout << "Sail n°1 : " << std::endl;
+      std::cout << "--> X : " << mSailsPos[i][0] << std::endl;
+      std::cout << "--> Y : " << mSailsPos[i][1] << std::endl;
+      std::cout << "--> Z : " << mSailsPos[i][2] << std::endl;
+      std::cout << "-----------" << std::endl;
+    }
+  
+  std::cout << "::::::::::::" << std::endl;
+}
+
 
 size_t FindClosestIndex(const std::vector<float>& aValue, float aTarget)
 {
-    size_t best = 0;
-    float minDiff = std::abs(aValue[0] - aTarget);
+  size_t best = 0;
+  float minDiff = std::abs(aValue[0] - aTarget);
 
-    for(size_t i = 1; i < aValue.size(); ++i)
-      {
-        float diff = std::abs(aValue[i] - aTarget);
-        if(diff < minDiff)
-	  {
-            minDiff = diff;
-            best = i;
-	  }
+  for(size_t i = 1; i < aValue.size(); ++i)
+    {
+      float diff = std::abs(aValue[i] - aTarget);
+      if(diff < minDiff)
+	{
+	  minDiff = diff;
+	  best = i;
+	}
     }
-    return best;
+  return best;
 }
 
 
@@ -149,4 +251,31 @@ float Sail::GetForce(char aAxe, float aStwValue, float aTwsValue, float aTwaValu
     }
       
   return force;
+}
+
+void Sail::SetSTW(double aSpeedThroughWater)
+{
+  mSpeedThroughWater = aSpeedThroughWater;
+}
+
+void Sail::SetWind(double aTrueWindSpeed, double aApparentWindDir)
+{
+  mTrueWindSpeed = aTrueWindSpeed;
+  mApparentWindDir = aApparentWindDir;
+}
+
+
+void Sail::ComputeT(void)
+{
+  float sailsForceX = 0, sailsForceY = 0;
+
+  sailsForceX = GetForce('X', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
+  sailsForceY = GetForce('Y', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
+
+  mT << sailsForceX, sailsForceX, 0;
+}
+
+Eigen::Vector3d& Sail::getT(void)
+{
+  return mT;
 }

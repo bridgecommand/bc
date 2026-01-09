@@ -202,11 +202,11 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 				else
 				if (event.GUIEvent.Caller == OKButton )
 				{
-					if ( FileDirectory != L"" )
+					if ( !FileDirectory.empty() )
 					{
 						sendSelectedEvent( EGET_DIRECTORY_SELECTED );
 					}
-					if ( FileName != L"" )
+					if ( !FileName.empty() )
 					{
 						sendSelectedEvent( EGET_FILE_SELECTED );
 						remove();

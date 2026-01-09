@@ -1,8 +1,8 @@
 
 cmake_minimum_required(VERSION 3.10)
-project(bridgecommand)
+project(bridgecommand-somos)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -17,6 +17,11 @@ add_subdirectory(../lib/serial ../../lib/serial)
 include_directories("../lib/asio/include")
 set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
 include_directories(${IRRLICHT_INCLUDE_DIR})
+include_directories("/usr/include/eigen3/")
+
+find_package(PkgConfig)
+pkg_check_modules(JSONCPP jsoncpp)
+include_directories(${JSONCPP_INCLUDE_DIRS})
 
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
@@ -52,4 +57,5 @@ target_link_libraries(bridgecommand-bc PRIVATE
         GL
         OpenXR::openxr_loader
 	netcdf
+	${JSONCPP_LIBRARIES}
     )

@@ -258,10 +258,10 @@ namespace core
 					&& core::iszero(cp1n.Y, (f64)ROUNDING_ERROR_f32)
 					&& core::iszero(cp1n.Z, (f64)ROUNDING_ERROR_f32) )
 				{
-					res = 0.f;
+					res = 0.0;
 				}
 			}
-			return (res >= 0.0f);
+			return (res >= 0.0);
 		}
 	};
 

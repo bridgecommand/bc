@@ -14,23 +14,23 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
+#include "SimulationModel.hpp"
 #include "MyEventReceiver.hpp"
-
 #include <string>
 #include "GUIMain.hpp"
-#include "SimulationModel.hpp"
 #include "Lines.hpp"
 #include "Utilities.hpp"
-#include "AzimuthDial.h"
 #include "VRInterface.hpp"
 #include "Constants.hpp"
 #include "Message.hpp"
 
+
 // using namespace irr;
 
-MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *model, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
+MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, void *aModel, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
 {
-    this->model = model; // Link to the model
+
+  mModel = aModel; // Link to the model
     this->gui = gui;     // Link to GUI
     this->vrInterface = vrInterface; // Link to VR interface
     scrollBarPosSpeed = 0;
@@ -43,8 +43,6 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
     net = network;
     
     lastShownJoystickStatus = device->getTimer()->getRealTime() - 5000;      // Show joystick raw data every 5s in log
-    lastTimeAzimuth1MasterChanged = device->getTimer()->getRealTime() - 500; // Allow azimuth master to change every 500ms (debounce)
-    lastTimeAzimuth2MasterChanged = device->getTimer()->getRealTime() - 500; // Allow azimuth master to change every 500ms (debounce)
 
     // set up joystick if present, and inform user what's available
     dev->activateJoysticks(joystickInfo);
@@ -68,21 +66,10 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
     this->joystickSetup = joystickSetup;
 
     // Indicate that previous joystick information hasn't been initialised
-    previousJoystickPort = INFINITY; // DEE 10JAN26 note ... port thrust lever in azimuth drive
-    previousJoystickStbd = INFINITY; // DEE 10JAN26 note ... stbd thrust lever in azimuth drive
     previousJoystickRudder = INFINITY;
     previousJoystickBowThruster = INFINITY;
     previousJoystickSternThruster = INFINITY;
-    // DEE 10JAN23 vvvv
-    //        previousJoystickAzimuthAngPort = INFINITY;
-    //        previousJoystickAzimuthAngStbd = INFINITY;
-    previousJoystickSchottelPort = INFINITY;
-    previousJoystickSchottelStbd = INFINITY;
-    previousJoystickThrustLeverPort = INFINITY;
-    previousJoystickThrustLeverStbd = INFINITY;
-
-    // DEE 10JAN23 ^^^^
-
+  
     previousJoystickPOVInitialised = false;
 
     this->logMessages = logMessages;
@@ -98,6 +85,8 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
 
 bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 {
+
+    SimulationModel *model = (SimulationModel*)mModel;
 
     // std::cout << "Any event in receiver" << std::endl;
     // From log
@@ -151,7 +140,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             rightMouseDown = false;
         }
-        model->setMouseDown(leftMouseDown || rightMouseDown); // Set if either mouse is down
+        model->getRadarCalculation()->setMouseDown(leftMouseDown || rightMouseDown); // Set if either mouse is down
 
         // Mooring lines controls
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN)
@@ -180,13 +169,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && leftMouseDown)
         {
             // Check if focus in on a gui element
-            irr::gui::IGUIElement *focussedElement;
+            irr::gui::IGUIElement *focussedElement;	    
             focussedElement = device->getGUIEnvironment()->getFocus();
             if (!focussedElement)
             {
                 irr::s32 deltaX = event.MouseInput.X - mouseClickX;
                 irr::s32 deltaY = event.MouseInput.Y - mouseClickY;
-                model->changeLookPx(deltaX, deltaY);
+		float proportionalX = deltaX/(float)device->getVideoDriver()->getScreenSize().Width;
+		float proportionalY = deltaY/(float)device->getVideoDriver()->getScreenSize().Width;
+		model->getCamera()->lookChange(proportionalX,proportionalY);
             }
             // Store for next time
             mouseClickX = event.MouseInput.X;
@@ -197,11 +188,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (event.MouseInput.Wheel < 0)
             {
-                model->setWheel(model->getWheel() + 1.0);
+                model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() + 1.0);
             }
             if (event.MouseInput.Wheel > 0)
             {
-                model->setWheel(model->getWheel() - 1.0);
+                model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() - 1.0);
             }
             return true;
         }
@@ -233,7 +224,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
                 gui->setARPAList(arpaSelected);
                 // Set selected ID via model.
-                model->setArpaListSelection(arpaSelected);
+                model->getRadarCalculation()->setArpaListSelection(arpaSelected);
             }
         }
 
@@ -251,13 +242,13 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 gui->setARPAList(arpaSelected);
 
                 // Set selected ID via model.
-                model->setArpaListSelection(arpaSelected);
+                model->getRadarCalculation()->setArpaListSelection(arpaSelected);
             }
         }
 
         if (event.GUIEvent.EventType == irr::gui::EGET_CHECKBOX_CHANGED)
         {
-            if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX)
+	  /*            if (id == GUIMain::GUI_ID_AZIMUTH_1_MASTER_CHECKBOX)
             {
                 model->setAzimuth1Master(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
@@ -265,7 +256,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_AZIMUTH_2_MASTER_CHECKBOX)
             {
                 model->setAzimuth2Master(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
-            }
+		}*/
 
             if (id == GUIMain::GUI_ID_KEEP_SLACK_LINE_CHECKBOX)
             {
@@ -283,7 +274,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) 
             {
-                model->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
+                model->getTide()->setStreamOverride(((irr::gui::IGUICheckBox *)event.GUIEvent.Caller)->isChecked());
             }
         }
 
@@ -293,33 +284,33 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (id == GUIMain::GUI_ID_HEADING_SCROLL_BAR)
             {
                 scrollBarPosHeading = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos();
-                model->setHeading(scrollBarPosHeading);
+                model->getOwnShip()->setHeading(scrollBarPosHeading);
             }
 
             if (id == GUIMain::GUI_ID_SPEED_SCROLL_BAR)
             {
                 scrollBarPosSpeed = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos();
-                model->setSpeed(scrollBarPosSpeed);
+                model->getOwnShip()->setSpeed(scrollBarPosSpeed);
             }
 
             if (id == GUIMain::GUI_ID_STBD_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
-                model->setStbdEngine(value);
+                model->getOwnShip()->setStbdEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
                 {
-                    model->setPortEngine(value);
+                    model->getOwnShip()->setPortEngine(value);
                 }
             }
             if (id == GUIMain::GUI_ID_PORT_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / -100.0; // Convert to from +-100 to +-1, and invert up/down
-                model->setPortEngine(value);
+                model->getOwnShip()->setPortEngine(value);
                 // If right mouse button, set the other engine as well
                 if (rightMouseDown)
                 {
-                    model->setStbdEngine(value);
+                    model->getOwnShip()->setStbdEngine(value);
                 }
             }
 
@@ -336,78 +327,33 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // Check if either NFU button is down, in which case force the change (even if the follow up rudder isn't working)
                 bool nfuActive = gui->isNFUActive();
-                model->setWheel(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos(), nfuActive);
+                model->getOwnShip()->setWheel(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             // DEE capture the wheel
 
-            // DEE_NOV22 this deals with capturing input from the Azimuth gui
-            // JP: Removed GUI inputs from GUI_ID_AZIMUTH_1 and GUI_ID_AZIMUTH_2, as I think these are intended to be display only, not for input?
-            // DEE_NOV22 ^^^^ end of the inputs from the azimth GUI
-
-            // DEE_NOV22 vvvv controls for mouse inputs to the engine rpm indicators and the schottels
-
-            if (id == GUIMain::GUI_ID_SCHOTTEL_PORT)
-            {
-                // DEE_NOV22 only really want this to respond to left mouse click , no master mode
-                // as in practice if you want to steer with only one schottel, you just
-                // leave the other dead ahead, for small steering corrections then that
-                // is adequate
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
-                // not intersted in magnitude
-                model->setPortSchottel(angle);
-            } // end if schottel port
-
-            if (id == GUIMain::GUI_ID_SCHOTTEL_STBD)
-            {
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
-                // not intersted in magnitude
-                model->setStbdSchottel(angle);
-            } // end if schottel stbd
-
-            if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_PORT)
-            {
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
-                                                                                               // we arent interested in the getMag
-                                                                                               // DEE_Boxing_Day_2022 vvvv
-
-                model->setPortAzimuthThrustLever(model->inputToAzimuthEngineMapping(angle));
-                //  DEE_Boxing_Day_2022 ^^^^
-            } // end if engine port
-
-            if (id == GUIMain::GUI_ID_AZIMUTH_ENGINE_STBD)
-            {
-                // DEE_Boxing_Day_2022 vvvv
-                irr::f32 angle = (((irr::gui::AzimuthDial *)event.GUIEvent.Caller)->getPos()); // Range 0-360
-                                                                                               // we arent interested in the getMag
-                                                                                               // DEE_Boxing_Day_2022 vvvv
-                model->setStbdAzimuthThrustLever(model->inputToAzimuthEngineMapping(angle));
-                // DEE_Boxing_Day_2022 ^^^^
-            } // end if engine port
-
-            // DEAL WITH THRUSTER SCROLL BARS HERE - ALSO WITH JOYSTICK
-
+          
             if (id == GUIMain::GUI_ID_BOWTHRUSTER_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
-                model->setBowThruster(value);
+                //model->setBowThruster(value);
             }
             if (id == GUIMain::GUI_ID_STERNTHRUSTER_SCROLL_BAR)
             {
                 irr::f32 value = ((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from +-100 to +-1
-                model->setSternThruster(value);
+                //model->setSternThruster(value);
             }
 
             if (id == GUIMain::GUI_ID_RADAR_GAIN_SCROLL_BAR)
             {
-                model->setRadarGain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getRadarCalculation()->setGain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_RADAR_CLUTTER_SCROLL_BAR)
             {
-                model->setRadarClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getRadarCalculation()->setClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_RADAR_RAIN_SCROLL_BAR)
             {
-                model->setRadarRain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getRadarCalculation()->setRainClutter(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_WEATHER_SCROLL_BAR)
             {
@@ -423,19 +369,19 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             }
             if (id == GUIMain::GUI_ID_WINDDIRECTION_SCROLL_BAR)
             {
-                model->setWindDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getWind()->setTrueDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_WINDSPEED_SCROLL_BAR)
             {
-                model->setWindSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+	      model->getWind()->setTrueSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_STREAMDIRECTION_SCROLL_BAR)
             {
-                model->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getTide()->setStreamOverrideDirection(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
             if (id == GUIMain::GUI_ID_STREAMSPEED_SCROLL_BAR)
             {
-                model->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
+                model->getTide()->setStreamOverrideSpeed(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }   
             if (id == GUIMain::GUI_ID_MAGNIFICATION_SCROLL_BAR)
             {   
@@ -485,30 +431,30 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RADAR_ONOFF_BUTTON)
             {
-                model->toggleRadarOn();
+                model->getRadarCalculation()->toggleRadarOn();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_BUTTON)
             {
-                model->increaseRadarRange();
+                model->getRadarCalculation()->increaseRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_BUTTON)
             {
-                model->decreaseRadarRange();
+                model->getRadarCalculation()->decreaseRange();
             }
 
             if (id == GUIMain::GUI_ID_BIG_RADAR_BUTTON)
             {
                 gui->setLargeRadar(true);
-                model->setRadarDisplayRadius(gui->getRadarPixelRadius());
+                model->getRadarCalculation()->setRadarDisplayRadius(gui->getRadarPixelRadius());
                 gui->hide2dInterface();
             }
 
             if (id == GUIMain::GUI_ID_SMALL_RADAR_BUTTON)
             {
                 gui->setLargeRadar(false);
-                model->setRadarDisplayRadius(gui->getRadarPixelRadius());
+                model->getRadarCalculation()->setRadarDisplayRadius(gui->getRadarPixelRadius());
                 gui->show2dInterface();
             }
 
@@ -529,95 +475,95 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_LEFT_BUTTON)
             {
-                model->decreaseRadarEBLBrg();
+                model->getRadarCalculation()->decreaseEBLBrg();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_RIGHT_BUTTON)
             {
-                model->increaseRadarEBLBrg();
+                model->getRadarCalculation()->increaseEBLBrg();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_UP_BUTTON)
             {
-                model->increaseRadarEBLRange();
+                model->getRadarCalculation()->increaseEBLRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_EBL_DOWN_BUTTON)
             {
-                model->decreaseRadarEBLRange();
+                model->getRadarCalculation()->decreaseEBLRange();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_X_BUTTON)
             {
-                model->increaseRadarXCursor();
+	      model->getRadarCalculation()->increaseCursorRangeXNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_X_BUTTON)
             {
-                model->decreaseRadarXCursor();
+                model->getRadarCalculation()->decreaseCursorRangeXNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_INCREASE_Y_BUTTON)
             {
-                model->increaseRadarYCursor();
+	      model->getRadarCalculation()->increaseCursorRangeYNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_DECREASE_Y_BUTTON)
             {
-                model->decreaseRadarYCursor();
+	      model->getRadarCalculation()->decreaseCursorRangeYNm();
             }
 
             if (id == GUIMain::GUI_ID_RADAR_COLOUR_BUTTON)
             {
-                model->changeRadarColourChoice();
+                model->getRadarCalculation()->changeRadarColourChoice();
             }
 
             // Radar mode buttons
             if (id == GUIMain::GUI_ID_RADAR_NORTH_BUTTON)
             {
-                model->setRadarNorthUp();
+                model->getRadarCalculation()->setNorthUp();
             }
             if (id == GUIMain::GUI_ID_RADAR_COURSE_BUTTON)
             {
-                model->setRadarCourseUp();
+                model->getRadarCalculation()->setCourseUp();
             }
             if (id == GUIMain::GUI_ID_RADAR_HEAD_BUTTON)
             {
-                model->setRadarHeadUp();
+                model->getRadarCalculation()->setHeadUp();
             }
 
             // Manual/MARPA acquire/update
             if (id == GUIMain::GUI_ID_MANUAL_SCAN_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->addManualPoint(false);
+		  model->getRadarCalculation()->addManualPoint(false, model->getOwnShip(), model->getTimestamp());
                 }
                 // Don't do anything in full ARPA mode (as updated automatically)
             }
 
             if (id == GUIMain::GUI_ID_MANUAL_NEW_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->addManualPoint(true);
+                    model->getRadarCalculation()->addManualPoint(true, model->getOwnShip(), model->getTimestamp());
                 }
-                else if (model->getArpaMode() == 1)
+                else if (model->getRadarCalculation()->getArpaMode() == 1)
                 {
-                    model->trackTargetFromCursor();
+                    model->getRadarCalculation()->trackTargetFromCursor();
                 }
                 // TODO: Should we allow user to trigger manual tracking in full ARPA?
             }
 
             if (id == GUIMain::GUI_ID_MANUAL_CLEAR_BUTTON)
             {
-                if (model->getArpaMode() == 0)
+                if (model->getRadarCalculation()->getArpaMode() == 0)
                 {
-                    model->clearManualPoints();
+                    model->getRadarCalculation()->clearManualPoints();
                 }
-                else if (model->getArpaMode() == 1)
+                else if (model->getRadarCalculation()->getArpaMode() == 1)
                 {
-                    model->clearTargetFromCursor();
+                    model->getRadarCalculation()->clearTargetFromCursor();
                 }
                 // TODO: Should we allow user to manually stop tracking in full ARPA?
                 // And should this allow clearing of manual target if acquired in manual mode, but switched to MARPA/ARPA
@@ -650,53 +596,53 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_1_WORKING_BUTTON)
             {
-                model->setRudderPumpState(1, true);
+	      /*model->setRudderPumpState(1, true);
                 if (model->getRudderPumpState(2))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_1_FAILED_BUTTON)
             {
-                model->setRudderPumpState(1, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(1, false);
+	      //model->setAlarm(true);
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_2_WORKING_BUTTON)
             {
-                model->setRudderPumpState(2, true);
+	      /*model->setRudderPumpState(2, true);
                 if (model->getRudderPumpState(1))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
 
             if (id == GUIMain::GUI_ID_RUDDERPUMP_2_FAILED_BUTTON)
             {
-                model->setRudderPumpState(2, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(2, false);
+	      //model->setAlarm(true);
             }
 
             if (id == GUIMain::GUI_ID_FOLLOWUP_WORKING_BUTTON)
             {
-                model->setFollowUpRudderWorking(true);
+	      //model->setFollowUpRudderWorking(true);
             }
 
             if (id == GUIMain::GUI_ID_FOLLOWUP_FAILED_BUTTON)
             {
-                model->setFollowUpRudderWorking(false);
+	      //model->setFollowUpRudderWorking(false);
             }
 
             if (id == GUIMain::GUI_ID_ACK_ALARMS_BUTTON)
             {
-                model->setAlarm(false);
+	      //model->setAlarm(false);
             }
 
             if (id == GUIMain::GUI_ID_ADD_LINE_BUTTON)
             {
                 linesMode = 1;
-                model->addLine();
+                model->getLines()->addLine(model);
                 gui->setLinesControlsText("Click in 3d view to set start position for line (on own ship)"); // TODO: Add translation
             }
 
@@ -707,7 +653,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (id == GUIMain::GUI_ID_CHANGE_VIEW_BUTTON)
             {
-                model->changeView();
+	      model->getCamera()->changeView();
             }
 
         } // Button clicked
@@ -719,7 +665,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 // ARPA on/off options
                 irr::s32 boxState = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
-                model->setArpaMode(boxState);
+                model->getRadarCalculation()->setArpaMode(boxState);
 
                 // Set the linked checkbox (big/small radar window)
                 gui->setARPAComboboxes(boxState);
@@ -730,11 +676,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::s32 selected = ((irr::gui::IGUIComboBox *)event.GUIEvent.Caller)->getSelected();
                 if (selected == 0)
                 {
-                    model->setRadarARPATrue();
+                    model->getRadarCalculation()->setRadarARPATrue();
                 }
                 else if (selected == 1)
                 {
-                    model->setRadarARPARel();
+                    model->getRadarCalculation()->setRadarARPARel();
                 }
 
                 // Set both linked inputs - brute force
@@ -760,7 +706,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
 
             if (value > 0 && value <= 60)
             {
-                model->setRadarARPAVectors(value);
+                model->getRadarCalculation()->setRadarARPAVectors(value);
             }
             else
             {
@@ -814,10 +760,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 irr::gui::IGUIElement *piRngBig = device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUIMain::GUI_ID_BIG_PI_RANGE_BOX, true);
                 if (piBrg && piRng && piBrgBig && piRngBig)
                 {
-                    piBrg->setText(f32To3dp(model->getPIbearing(selectedPI), true).c_str());
-                    piBrgBig->setText(f32To3dp(model->getPIbearing(selectedPI), true).c_str());
-                    piRng->setText(f32To3dp(model->getPIrange(selectedPI), true).c_str());
-                    piRngBig->setText(f32To3dp(model->getPIrange(selectedPI), true).c_str());
+                    piBrg->setText(f32To3dp(model->getRadarCalculation()->getPIbearing(selectedPI), true).c_str());
+                    piBrgBig->setText(f32To3dp(model->getRadarCalculation()->getPIbearing(selectedPI), true).c_str());
+                    piRng->setText(f32To3dp(model->getRadarCalculation()->getPIrange(selectedPI), true).c_str());
+                    piRngBig->setText(f32To3dp(model->getRadarCalculation()->getPIrange(selectedPI), true).c_str());
                 }
             }
         }
@@ -881,7 +827,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                         irr::f32 rangeChosen = Utilities::lexical_cast<irr::f32>(rngString);
 
                         // Apply to model
-                        model->setPIData(selectedPI, bearingChosen, rangeChosen);
+                        model->getRadarCalculation()->setPIData(selectedPI, bearingChosen, rangeChosen);
                     }
                 }
             }
@@ -905,15 +851,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Move camera
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->moveCameraForwards();
+                    model->getCamera()->moveForwards();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->moveCameraBackwards();
+                    model->getCamera()->moveBackwards();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->toggleFrozenCamera();
+                    model->getCamera()->toggleFrozen();
                     break;
                 default:
                     // don't do anything
@@ -929,15 +875,15 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Camera look
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStepLeft();
+                    model->getCamera()->lookStepLeft();
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStepRight();
+                    model->getCamera()->lookStepRight();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->changeView();
+                    model->getCamera()->changeView();
                     model->setMoveViewWithPrimary(false); // Don't allow the view to change automatically after this
                     break;
                 default:
@@ -954,22 +900,22 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 // Camera look
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookAhead();
+                    model->getCamera()->lookAhead();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookAstern();
+                    model->getCamera()->lookAstern();
                     break;
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookPort();                        // DEENOV22 TODO make all screens lookPort
+                    model->getCamera()->lookPort();                        // DEENOV22 TODO make all screens lookPort
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookStbd();
+                    model->getCamera()->lookStbd();
                     break;
                 case irr::KEY_KEY_M:
-                    model->retrieveManOverboard();
+		  model->getMoB()->retrieveManOverboard();
                     break;
                 default:
                     // don't do anything
@@ -1011,97 +957,45 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     model->setAccelerator(3600.0);
                     break;
                 case irr::KEY_KEY_H:
-                    model->startHorn();
+		  model->getSound()->startHorn();
                     break;
-
-                    // DEE_NOV22 vvvvv
-
-                    // only assign these key bindings if this is an Azimuth Drive
-
-                    // Purpose of this code is to allow keyboard control of the azipods
-                    // they should be ineffective if the ship does not have azipods however
-                    // I shall put this in the model object
-
-                    // ultimately there should be a choice of Non followup mode and Follow up mode
-                    // so they keys control the movement of the schottels in follow up mode
-                    // the pod's azimuth then chases the commanded azimuth
-                    // and the engine chases each thrust lever and clutches in and out automatically when thresholds are reached
-                    // there can be no direct engine in reverse
-
-                    // todo also need to model the shetland trader type case of when going forward they act as a steering wheel
-                    // rather than a tiller, which could be the normal case
-
-                    // key map for this currently is as follows
-                    // Port Azipod : A pod anticlockwise , D pod clockwise, W thrust lever forward, S thrust lever backwards
-                    // Starboard Azipod : J pod anticlockwise, L pod clockwise, I thrust lever forward, K thrust lever backwards
-
-                    // the if ASDs are left in the below controls so that the keys can be assigned to something else on a
-                    // non azipod ship in the future
 
                 case irr::KEY_KEY_W:
-                    if (model->isAzimuthDrive())
-                    {
-                        // Port Azipod Thrust lever increase
-                        model->btnIncrementPortThrustLever();
-                    }
                     break;
 
-                    // KEY_KEY_S ... decrement port thrust is further down the code as it has a duplicate use
 
                 case irr::KEY_KEY_J:
-                    if (model->isAzimuthDrive())
-                    {
-                        // Starboard Schottel anticlockwise decrement
-                        model->btnDecrementStbdSchottel();
-                    }
                     break;
 
                 case irr::KEY_KEY_L:
-                    if (model->isAzimuthDrive())
-                    {
-                        // Starboard Azipod Schottel clockwise increment
-                        model->btnIncrementStbdSchottel();
-                    }
                     break;
 
                 case irr::KEY_KEY_I:
-                    if (model->isAzimuthDrive())
-                    {
-                        // Starboard Azipod Thurst lever increase
-                        model->btnIncrementStbdThrustLever();
-                    }
                     break;
 
                 case irr::KEY_KEY_K:
-                    if (model->isAzimuthDrive())
-                    {
-                        // Starboard Azipod Thrust lever decrease
-                        model->btnDecrementStbdThrustLever();
-                    }
                     break;
-
-                    // DEE_NOV22 ^^^^^
 
                 // Camera look
                 case irr::KEY_UP:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookUp();
+                    model->getCamera()->lookUp();
                     break;
                 case irr::KEY_DOWN:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookDown();
+                    model->getCamera()->lookDown();
                     break;
                 case irr::KEY_LEFT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookLeft();
+                    model->getCamera()->lookLeft();
                     break;
                 case irr::KEY_RIGHT:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->lookRight();
+                    model->getCamera()->lookRight();
                     break;
                 case irr::KEY_SPACE:
                     device->getGUIEnvironment()->setFocus(0); // Remove focus if space key is pressed, otherwise we get weird effects when the user changes view (as space bar toggles focussed GUI element)
-                    model->changeView();
+                    model->getCamera()->changeView();
                     model->setMoveViewWithPrimary(true); // Allow the view to change automatically after this
                     break;
 
@@ -1118,120 +1012,46 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                     break;
 
                 case irr::KEY_KEY_M:
-                    model->releaseManOverboard();
+		  model->getMoB()->releaseManOverboard(model->getOwnShip()->getPosition(), model->getOwnShip()->getBreadth(), model->getOwnShip()->getHeading());
                     break;
 
                 // Keyboard control of engines
                 case irr::KEY_KEY_A:
-                    // DEE_NOV22 vvvv
-                    if (model->isAzimuthDrive())
-                    {
-                        // if vessel is Azimuth drive then turn Port Schottel anticlockwise decrement
-                        model->btnDecrementPortSchottel();
-                    }
-                    else
-                    {
-                        // DEE_NOV_22 ^^^^
-                        // (if not Azimuth Drive) Increase port engine revs:
-                        model->setPortEngine(model->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-                        // DEE_NOV22 vvvv
-                    }
-                    // DEE_NOV22 ^^^^
-                    break;
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable
+		  break;
 
                 case irr::KEY_KEY_Z:
-                    // Decrease port engine revs:
-                    // DEE_NOV22 vvvv disable this function if azimuth drive
-                    if (!(model->isAzimuthDrive()))
-                    {
-                        model->setPortEngine(model->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
-                    }
-                    // DEE_NOV22 ^^^^
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable
                     break;
 
                 case irr::KEY_KEY_S:
-                    // DEE_NOV22 vvvv
-                    if (model->isAzimuthDrive())
-                    {
-                        // as Azimuth drive then Port thrust lever decrease
-                        model->btnDecrementPortThrustLever();
-                    }
-                    else
-                    {
-                        // this is an non azimuth drive vessel to interpret S as Increase stpd engine revs
-                        // DEE_NOV22 ^^^^
-                        // Increase stbd engine revs:
-                        model->setStbdEngine(model->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-                    }                                                       // DEE_NOV22 end if isAzimuthDrive and indentations
+                        model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_X:
-
-                    // DEE_NOV22 vvvv only enable this response if it is not an azimuth drive
-                    if (!(model->isAzimuthDrive()))
-                    {
-                        // Decrease stbd engine revs:
-                        model->setStbdEngine(model->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
-                    }
-                    // DEE_NOV22 ^^^^
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
                 case irr::KEY_KEY_D:
-                    // DEE_NOV22 vvvv in the case of the ship being Azimuth Drive
-                    if (model->isAzimuthDrive())
-                    {
-                        // as Azimuth drive then Port Azipod Schottel clockwise
-                        model->btnIncrementPortSchottel();
-                    }
-                    else
-                    {
-                        // DEE_NOV22 ^^^^
-                        // else the ship is normally propelled indents made to code below DEE_NOV22 ^^^^
-                        // Increase stbd and port engine revs:
-                        model->setStbdEngine(model->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-                        model->setPortEngine(model->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
-                    }                                                       // end if DEE_NOV22
-                    break;
-                case irr::KEY_KEY_C:
-                    // DEE_NOV22 vvvv only if not azimuth drive
-                    if (!(model->isAzimuthDrive()))
-                    {
-                        // DEE_NOV22 ^^^^ indentations added below
-                        // Decrease stbd engine revs:
-                        model->setStbdEngine(model->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
-                        model->setPortEngine(model->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
-                        // DEE_NOV22 vvvv
-                    }
-                    // DEE_NOV22 ^^^^
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() + 0.1); // setPortEngine clamps the setting to the allowable range
                     break;
 
-                    // DEE vvvv key rudder to port changed to rudder wheel to port
+		case irr::KEY_KEY_C:
+
+		  model->getOwnShip()->setStbdEngine(model->getOwnShip()->getStbdEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
+		  model->getOwnShip()->setPortEngine(model->getOwnShip()->getPortEngine() - 0.1); // setPortEngine clamps the setting to the allowable range
+                    break;
+
                 case irr::KEY_KEY_V:
 
-                    // DEE_NOV22 vvvv the 'wheel' should be enabled only when not an azimuth drive
-                    if (!(model->isAzimuthDrive()))
-                    {
-                        //                               model->setRudder(model->getRudder()-5);
-                        model->setWheel(model->getWheel() - 1);
-                    }
-                    // DEE_NOV22 ^^^^ indentations added to original code
+		   model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() - 1);
                     break;
-                    // DEE ^^^^
 
-                    // DEE vvvv key rudder to starboard changed to key wheel to starboard
                 case irr::KEY_KEY_B:
-                    // DEE_NOV22 vvvv
-                    if (!(model->isAzimuthDrive()))
-                    {
-                        // DEE_NOV22 ^^^^
-
-                        //                                model->setRudder(model->getRudder()+5);
-                        model->setWheel(model->getWheel() + 1);
-                        // DEE_NOV22 vvvv
-                    }
-                    // DEE_NOV22 ^^^^
-                    break;
-                    // DEE ^^^^
+		   model->getOwnShip()->setWheel(model->getOwnShip()->getWheel() + 1);
+		  break;
+                
 
                 default:
                     // don't do anything
@@ -1245,7 +1065,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
     {
         if (event.KeyInput.Key == irr::KEY_KEY_H)
         {
-            model->endHorn();
+            model->getSound()->endHorn();
         }
     }
 
@@ -1300,18 +1120,6 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         irr::f32 newJoystickStbd = previousJoystickStbd;
         irr::f32 newJoystickRudder = previousJoystickRudder;
 
-        // DEE 10JAN23 vvvv Azimuth drive physical controls
-        // for disambuigity then define a separate variable for thrust levers, as they control the engine but are not the engine
-        irr::f32 newJoystickThrustLeverPort = previousJoystickThrustLeverPort;
-        irr::f32 newJoystickThrustLeverStbd = previousJoystickThrustLeverStbd;
-        // DEE 10JAN23 ^^^^
-
-        // DEE 10JAN23 vvvv
-        //            irr::f32 newJoystickAzimuthAngPort = previousJoystickAzimuthAngPort;
-        //            irr::f32 newJoystickAzimuthAngStbd = previousJoystickAzimuthAngStbd;
-        irr::f32 newJoystickSchottelPort = previousJoystickSchottelPort;
-        irr::f32 newJoystickSchottelStbd = previousJoystickSchottelStbd;
-        // DEE 10JAN23 ^^^^
         irr::f32 newJoystickBowThruster = previousJoystickBowThruster;
         irr::f32 newJoystickSternThruster = previousJoystickSternThruster;
 
@@ -1347,71 +1155,6 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 }
             }
 
-            // DEE 10 Jan 23 vvvv TODO change this to control port schottel not the azimuth, let ownship.cpp take care of the follow up
-
-            //		if (thisJoystick == joystickSetup.azimuth1JoystickNo && thisAxis == joystickSetup.azimuth1JoystickAxis) {
-            //                    newJoystickAzimuthAngPort = 180*event.JoystickEvent.Axis[joystickSetup.azimuth1JoystickAxis]/32768.0;
-            // If previous value is Inf, store current value in previous and current, otherwise only in current
-            //                    if (previousJoystickAzimuthAngPort==INFINITY) {
-            //                        previousJoystickAzimuthAngPort = newJoystickAzimuthAngPort;
-            //                    }
-            //                }
-            //                if (thisJoystick == joystickSetup.azimuth2JoystickNo && thisAxis == joystickSetup.azimuth2JoystickAxis) {
-            //                    newJoystickAzimuthAngStbd = 180*event.JoystickEvent.Axis[joystickSetup.azimuth2JoystickAxis]/32768.0;
-            // If previous value is Inf, store current value in previous and current, otherwise only in current
-            //                    if (previousJoystickAzimuthAngStbd==INFINITY) {
-            //                        previousJoystickAzimuthAngStbd = newJoystickAzimuthAngStbd;
-            //                    }
-            //                }
-
-            // TODO 10JAN23 apply scaling and offset to these
-
-            // DEE 10JAN23 Port Thrust Lever for Azimuth Drive
-            if (thisJoystick == joystickSetup.portThrustLever_joystickNo && thisAxis == joystickSetup.portThrustLever_channel)
-            {
-                newJoystickThrustLeverPort = joystickSetup.thrustLeverPortDirection * (joystickSetup.thrustLeverPortOffset + (joystickSetup.thrustLeverPortScaling * event.JoystickEvent.Axis[joystickSetup.portThrustLever_channel] / 32768.0));
-                // If previous value is Inf, store current value in previous and current, otherwise only in current
-                if (previousJoystickThrustLeverPort == INFINITY)
-                {
-                    previousJoystickThrustLeverPort = newJoystickThrustLeverPort;
-                }
-            }
-
-            // DEE 10JAN23 Stbd Thrust Lever for Azimuth Drive
-            if (thisJoystick == joystickSetup.stbdThrustLever_joystickNo && thisAxis == joystickSetup.stbdThrustLever_channel)
-            {
-                newJoystickThrustLeverStbd = joystickSetup.thrustLeverStbdDirection * (joystickSetup.thrustLeverStbdOffset + (joystickSetup.thrustLeverStbdScaling * event.JoystickEvent.Axis[joystickSetup.stbdThrustLever_channel] / 32768.0));
-                // If previous value is Inf, store current value in previous and current, otherwise only in current
-                if (previousJoystickThrustLeverStbd == INFINITY)
-                {
-                    previousJoystickThrustLeverStbd = newJoystickThrustLeverStbd;
-                }
-            }
-
-            // DEE 10JAN23 Port Schottel for Azimuth Drive NB changed 180 to 360
-            if (thisJoystick == joystickSetup.portSchottel_joystickNo && thisAxis == joystickSetup.portSchottel_channel)
-            {
-                newJoystickSchottelPort = joystickSetup.schottelPortDirection * (joystickSetup.schottelPortOffset + 180.0 * joystickSetup.schottelPortScaling * (event.JoystickEvent.Axis[joystickSetup.portSchottel_channel] / 32768.0));
-                // If previous value is Inf, store current value in previous and current, otherwise only in current
-                if (previousJoystickSchottelPort == INFINITY)
-                {
-                    previousJoystickSchottelPort = newJoystickSchottelPort;
-                }
-            }
-
-            // DEE 10JAN23 Stbd Schottel for Azimuth Drive
-            if (thisJoystick == joystickSetup.stbdSchottel_joystickNo && thisAxis == joystickSetup.stbdSchottel_channel)
-            {
-                newJoystickSchottelStbd = joystickSetup.schottelStbdDirection * (joystickSetup.schottelStbdOffset + 180.0 * joystickSetup.schottelStbdScaling * (event.JoystickEvent.Axis[joystickSetup.stbdSchottel_channel] / 32768.0));
-                // If previous value is Inf, store current value in previous and current, otherwise only in current
-                if (previousJoystickSchottelStbd == INFINITY)
-                {
-                    previousJoystickSchottelStbd = newJoystickSchottelStbd;
-                }
-            }
-            // TODO 10JAN23 To JAMES check apply scaling and offsets to these as I wrote it on holiday in tenerife and I dont have my rudimentary physical controls with me
-
-            // DEE 10Jan23 ^^^^
 
             if (thisJoystick == joystickSetup.bowThrusterJoystickNo && thisAxis == joystickSetup.bowThrusterJoystickAxis)
             {
@@ -1444,12 +1187,6 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         //	    irr::f32 azimuth1AngChange = fabs(newJoystickAzimuthAngPort - previousJoystickAzimuthAngPort);
         //          irr::f32 azimuth2AngChange = fabs(newJoystickAzimuthAngStbd - previousJoystickAzimuthAngStbd);
 
-        bool thrustLeverPortChanged = fabs(newJoystickThrustLeverPort - previousJoystickThrustLeverPort) > 0.01;
-        bool thrustLeverStbdChanged = fabs(newJoystickThrustLeverStbd - previousJoystickThrustLeverStbd) > 0.01;
-        bool schottelPortChanged = fabs(newJoystickSchottelPort - previousJoystickSchottelPort) > 0.01;
-        bool schottelStbdChanged = fabs(newJoystickSchottelStbd - previousJoystickSchottelStbd) > 0.01;
-        // DEE 10JAN23 ^^^^
-
         // DEE
         //            irr::f32 rudderChange = fabs(newJoystickRudder - previousJoystickRudder);
         bool bowThrusterChanged = fabs(newJoystickBowThruster - previousJoystickBowThruster) > 0.01;
@@ -1457,9 +1194,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         // DEE
         //            if (portChange > 0.01 || stbdChange > 0.01 || rudderChange > 0.01 || bowThrusterChange > 0.01 || sternThrusterChange > 0.01 )
         if (portChanged || stbdChanged || wheelChanged ||
-            bowThrusterChanged || sternThrusterChanged ||
-            schottelPortChanged || schottelStbdChanged || 
-            thrustLeverPortChanged || thrustLeverStbdChanged)
+            bowThrusterChanged || sternThrusterChanged)
         {
             joystickChanged = true;
         }
@@ -1471,101 +1206,32 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (newJoystickPort < INFINITY && (joystickSetup.updateAllAxes || portChanged))
             { // refers to the port engine control
                 irr::f32 mappedValue = lookup1D(newJoystickPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                // DEE 10JAN23 vvvv
-                // if this an azidrive then change thrust lever.  In fact in the future I suggest that all engines are controlled via thrust lever
-                // as the bigger the engine, then the longer the spool up time is.
-
-                if (!(model->isAzimuthDrive()))
-                {
-                    model->setPortEngine(mappedValue);
-                } // fi
                 previousJoystickPort = newJoystickPort;
             }
 
             if (newJoystickStbd < INFINITY && (joystickSetup.updateAllAxes || stbdChanged))
             { // refers to the starboard engine control
                 irr::f32 mappedValue = lookup1D(newJoystickStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                if (!(model->isAzimuthDrive()))
-                {
-                    model->setStbdEngine(mappedValue);
-                }
                 previousJoystickStbd = newJoystickStbd;
             }
-
-            // Azimuth drive specific
-            // prefer to separate off the azimuth drive code from the conventional code for clarity and ease of future modification
-            //
-            if (model->isAzimuthDrive())
-            {
-
-                // Port Thrust Lever
-                if (newJoystickThrustLeverPort < INFINITY && (joystickSetup.updateAllAxes || thrustLeverPortChanged))
-                {
-
-                    irr::f32 mappedValue = lookup1D(newJoystickThrustLeverPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    if (model->isAzimuthAsternAllowed()) {
-                        model->setPortAzimuthThrustLever(newJoystickThrustLeverPort);
-                    } else {
-                        // the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
-                        // we can ammend this to
-                        // mappedValue = (mappedValue*0.5)+0.5;
-                        model->setPortAzimuthThrustLever(0.5 + newJoystickThrustLeverPort * 0.5);
-                    }
-                    previousJoystickThrustLeverPort = newJoystickThrustLeverPort;
-                }
-
-                // Stbd Thrust Lever
-                if (newJoystickThrustLeverStbd < INFINITY && (joystickSetup.updateAllAxes || thrustLeverStbdChanged))
-                {
-                    irr::f32 mappedValue = lookup1D(newJoystickThrustLeverStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
-                    if (model->isAzimuthAsternAllowed()) {
-                        model->setStbdAzimuthThrustLever(newJoystickThrustLeverStbd);
-                    } else {
-                        // the above does range -1 to 1 as output, however we want a range 0..1, dont want to change the mappings so
-                        // we can ammend this to
-                        // mappedValue = (mappedValue*0.5)+0.5;
-                        model->setStbdAzimuthThrustLever(0.5 + newJoystickThrustLeverStbd * 0.5);
-                    }
-                    previousJoystickThrustLeverStbd = newJoystickThrustLeverStbd;
-                }
-
-                // Port Schottel
-                if (newJoystickSchottelPort < INFINITY && (joystickSetup.updateAllAxes || schottelPortChanged))
-                {
-                    model->setPortSchottel(newJoystickSchottelPort);
-                    previousJoystickSchottelPort = newJoystickSchottelPort;
-                }
-
-                // Stbd Schottel
-                if (newJoystickSchottelStbd < INFINITY && (joystickSetup.updateAllAxes || schottelStbdChanged))
-                {
-                    model->setStbdSchottel(newJoystickSchottelStbd);
-                    previousJoystickSchottelStbd = newJoystickSchottelStbd;
-                }
-
-                // DEE note perhaps the "master" should be implemented in here
-
-            } // end if is azimuth drive
-
-            // DEE 10JAN23 ^^^^ end of joystick engine controls
 
             if (newJoystickRudder < INFINITY && (joystickSetup.updateAllAxes || wheelChanged))
             {
                 // DEE if the joystick rudder control is used then make it change the wheel not the rudder
-                model->setWheel(newJoystickRudder * joystickSetup.rudderDirection);
+                model->getOwnShip()->setWheel(newJoystickRudder * joystickSetup.rudderDirection);
                 //                    model->setRudder(newJoystickRudder);
                 previousJoystickRudder = newJoystickRudder;
             }
 
             if (newJoystickBowThruster < INFINITY && (joystickSetup.updateAllAxes || bowThrusterChanged))
             {
-                model->setBowThruster(newJoystickBowThruster);
+	      //model->setBowThruster(newJoystickBowThruster);
                 previousJoystickBowThruster = newJoystickBowThruster;
             }
 
             if (newJoystickSternThruster < INFINITY && (joystickSetup.updateAllAxes || sternThrusterChanged))
             {
-                model->setSternThruster(newJoystickSternThruster);
+	      //model->setSternThruster(newJoystickSternThruster);
                 previousJoystickSternThruster = newJoystickSternThruster;
             }
 
@@ -1586,11 +1252,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonHorn, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonHorn, previousButtonState))
             {
-                model->startHorn();
+                model->getSound()->startHorn();
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonHorn, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonHorn, previousButtonState))
             {
-                model->endHorn();
+                model->getSound()->endHorn();
             }
         }
         // Change view
@@ -1598,7 +1264,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonChangeView, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeView, previousButtonState))
             {
-                model->changeView();
+                model->getCamera()->changeView();
                 model->setMoveViewWithPrimary(true); // Allow the view to change automatically after this
             }
         }
@@ -1606,7 +1272,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonChangeAndLockView, previousButtonState))
             {
-                model->changeView();
+                model->getCamera()->changeView();
                 model->setMoveViewWithPrimary(false); // Don't allow the view to change automatically after this
             }
         }
@@ -1615,7 +1281,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookStepLeft, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepLeft, previousButtonState))
             {
-                model->lookStepLeft();
+                model->getCamera()->lookStepLeft();
             }
         }
         // Look step right
@@ -1623,7 +1289,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookStepRight, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookStepRight, previousButtonState))
             {
-                model->lookStepRight();
+                model->getCamera()->lookStepRight();
             }
         }
         // Decrease bow thrust
@@ -1631,11 +1297,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(-0.5);
+	      //model->setBowThrusterRate(-0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0);
+	      //model->setBowThrusterRate(0);
             }
         }
         // Increase bow thrust
@@ -1643,11 +1309,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0.5);
+	      //model->setBowThrusterRate(0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseBowThrust, previousButtonState))
             {
-                model->setBowThrusterRate(0);
+	      //model->setBowThrusterRate(0);
             }
         }
         // Decrease stern thrust
@@ -1655,11 +1321,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(-0.5);
+	      //model->setSternThrusterRate(-0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonDecreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0);
+	      //model->setSternThrusterRate(0);
             }
         }
         // Increase stern thrust
@@ -1667,11 +1333,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0.5);
+	      //model->setSternThrusterRate(0.5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonIncreaseSternThrust, previousButtonState))
             {
-                model->setSternThrusterRate(0);
+	      //model->setSternThrusterRate(0);
             }
         }
         // Bearings on
@@ -1714,11 +1380,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookLeft, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookLeft, previousButtonState))
             {
-                model->setPanSpeed(-5);
+                model->getCamera()->setPanSpeed(-5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookLeft, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookLeft, previousButtonState))
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
         }
 
@@ -1727,11 +1393,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookRight, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookRight, previousButtonState))
             {
-                model->setPanSpeed(5);
+                model->getCamera()->setPanSpeed(5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookRight, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookRight, previousButtonState))
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
         }
 
@@ -1740,11 +1406,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookUp, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookUp, previousButtonState))
             {
-                model->setVerticalPanSpeed(5);
+                model->getCamera()->setVerticalPanSpeed(5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookUp, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookUp, previousButtonState))
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
         }
 
@@ -1753,11 +1419,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonLookDown, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonLookDown, previousButtonState))
             {
-                model->setVerticalPanSpeed(-5);
+                model->getCamera()->setVerticalPanSpeed(-5);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonLookDown, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonLookDown, previousButtonState))
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
         }
 
@@ -1766,11 +1432,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump1On, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On, previousButtonState))
             {
-                model->setRudderPumpState(1, true);
+	      /*model->setRudderPumpState(1, true);
                 if (model->getRudderPumpState(2))
                 {
                     model->setAlarm(false); // Only turn off alarm if other pump is working
-                }
+		    }*/
             }
         }
 
@@ -1779,8 +1445,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump1Off, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1Off, previousButtonState))
             {
-                model->setRudderPumpState(1, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(1, false);
+	      //model->setAlarm(true);
             }
         }
 
@@ -1789,10 +1455,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump2On, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2On, previousButtonState))
             {
-                model->setRudderPumpState(2, true);
-                if (model->getRudderPumpState(1))
+	      //model->setRudderPumpState(2, true);
+	      //if (model->getRudderPumpState(1))
                 {
-                    model->setAlarm(false); // Only turn off alarm if other pump is working
+		  //    model->setAlarm(false); // Only turn off alarm if other pump is working
                 }
             }
         }
@@ -1802,8 +1468,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump2Off, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump2Off, previousButtonState))
             {
-                model->setRudderPumpState(2, false);
-                model->setAlarm(true);
+	      //model->setRudderPumpState(2, false);
+	      //model->setAlarm(true);
             }
         }
 
@@ -1812,7 +1478,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOn, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOn, previousButtonState))
             {
-                model->setFollowUpRudderWorking(true);
+	      //model->setFollowUpRudderWorking(true);
             }
         }
 
@@ -1821,7 +1487,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonFollowUpOff, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonFollowUpOff, previousButtonState))
             {
-                model->setFollowUpRudderWorking(false);
+	      //model->setFollowUpRudderWorking(false);
             }
         }
 
@@ -1829,11 +1495,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonNFUPort, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUPort, previousButtonState))
             {
-                model->setWheel(-30, true);
+	      model->getOwnShip()->setWheel(-30);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUPort, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUPort, previousButtonState))
             {
-                model->setWheel(model->getRudder(), true);
+	      //model->setWheel(model->getRudder(), true);
             }
         }
 
@@ -1841,11 +1507,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonNFUStbd, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonNFUStbd, previousButtonState))
             {
-                model->setWheel(30, true);
+                model->getOwnShip()->setWheel(30);
             }
             if (!IsButtonPressed(joystickSetup.joystickButtonNFUStbd, thisButtonState) && IsButtonPressed(joystickSetup.joystickButtonNFUStbd, previousButtonState))
             {
-                model->setWheel(model->getRudder(), true);
+	      //model->setWheel(model->getRudder(), true);
             }
         }
 
@@ -1853,42 +1519,10 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonAckAlarm, thisButtonState))
             {
-                model->setAlarm(false);
+	      //model->setAlarm(false);
             }
         }
 
-        // DEE 10JAN23 .... Ive never seen the master concept implemented on azimuth drives in real life as in practice you can steer
-        // 			perfectly well with just one drive on passage.  Whilst Maneouvering or steaming in confined waters then
-        // 			both drives are needed to operate independently.
-        // 			When under autopilot, then the autopilot can be set to control port stbd or both azidrives.
-        // 		    Is it worth the effort of implementing master for drives ?
-        if (thisJoystick == joystickSetup.joystickNoAzimuth1Master)
-        {
-            if (IsButtonPressed(joystickSetup.joystickButtonAzimuth1Master, thisButtonState))
-            {
-                // debounce:
-                if (device->getTimer()->getRealTime() - lastTimeAzimuth1MasterChanged > 500)
-                {
-                    // Allow azimuth master to change every 500ms (debounce)
-                    model->setAzimuth1Master(!model->getAzimuth1Master());
-                    lastTimeAzimuth1MasterChanged = device->getTimer()->getRealTime();
-                }
-            }
-        }
-
-        if (thisJoystick == joystickSetup.joystickNoAzimuth2Master)
-        {
-            if (IsButtonPressed(joystickSetup.joystickButtonAzimuth2Master, thisButtonState))
-            {
-                // debounce:
-                if (device->getTimer()->getRealTime() - lastTimeAzimuth2MasterChanged > 500)
-                {
-                    // Allow azimuth master to change every 500ms (debounce)
-                    model->setAzimuth2Master(!model->getAzimuth2Master());
-                    lastTimeAzimuth2MasterChanged = device->getTimer()->getRealTime();
-                }
-            }
-        }
 
         // Store previous settings
         joystickPreviousButtonStates.at(thisJoystick) = event.JoystickEvent.ButtonStates;
@@ -1898,38 +1532,38 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookLeft && previousJoystickPOV != joystickSetup.joystickPOVLookLeft)
             {
-                model->setPanSpeed(-5);
+                model->getCamera()->setPanSpeed(-5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookLeft && previousJoystickPOV == joystickSetup.joystickPOVLookLeft)
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookRight && previousJoystickPOV != joystickSetup.joystickPOVLookRight)
             {
-                model->setPanSpeed(5);
+                model->getCamera()->setPanSpeed(5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookRight && previousJoystickPOV == joystickSetup.joystickPOVLookRight)
             {
-                model->setPanSpeed(0);
+                model->getCamera()->setPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookUp && previousJoystickPOV != joystickSetup.joystickPOVLookUp)
             {
-                model->setVerticalPanSpeed(5);
+                model->getCamera()->setVerticalPanSpeed(5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookUp && previousJoystickPOV == joystickSetup.joystickPOVLookUp)
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
 
             if (event.JoystickEvent.POV == joystickSetup.joystickPOVLookDown && previousJoystickPOV != joystickSetup.joystickPOVLookDown)
             {
-                model->setVerticalPanSpeed(-5);
+                model->getCamera()->setVerticalPanSpeed(-5);
             }
             if (event.JoystickEvent.POV != joystickSetup.joystickPOVLookDown && previousJoystickPOV == joystickSetup.joystickPOVLookDown)
             {
-                model->setVerticalPanSpeed(0);
+                model->getCamera()->setVerticalPanSpeed(0);
             }
             previousJoystickPOV = event.JoystickEvent.POV; // Store for next time
         }
@@ -2018,8 +1652,8 @@ bool MyEventReceiver::IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) co
 
 void MyEventReceiver::startShutdown()
 {
-    model->setAccelerator(0.0);
-    device->sleep(500);
+  SimulationModel *model = (SimulationModel*)mModel;
+  
     if (!shutdownDialogActive)
     {
         device->getGUIEnvironment()->getRootGUIElement()->setVisible(true);
@@ -2030,8 +1664,10 @@ void MyEventReceiver::startShutdown()
 
 void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 {
+  SimulationModel *model = (SimulationModel*)mModel;
+  
     if ((linesMode == 1) || (linesMode == 2)) {
-        irr::scene::ISceneNode* contactNode = model->getContactFromRay(rayForLines, linesMode);
+      irr::scene::ISceneNode* contactNode = model->getCollision()->getContactFromRay(rayForLines, linesMode);
 
         if (contactNode)
         {
@@ -2093,10 +1729,10 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
 
             if (linesMode == 2)
             {
-                irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                irr::f32 nominalMass = model->getOwnShip()->getEstimatedDisplacement();
                 if (nodeType == 2) {
                     // If connecting to another ship, find the minimum mass to use as the nominal mass for estimating default line properties
-                    nominalMass = fmin(model->getOtherShipMassEstimate(nodeID), nominalMass);
+		  nominalMass = fmin(model->getOtherShips()->getEstimatedDisplacement(nodeID), nominalMass);
                 }
                 model->getLines()->setLineEnd(contactNode, nominalMass, nodeType, nodeID, 1.0, false, -1);
                 // Finished
@@ -2113,12 +1749,12 @@ void MyEventReceiver::handleMooringLines(irr::core::line3df rayForLines)
                 // special case for 'anchoring', set end node at sea bed under the starting node
                 if (gui->getAnchorLine()) {
                     
-                    irr::f32 nominalMass = model->getOwnShipMassEstimate();
+                    irr::f32 nominalMass = model->getOwnShip()->getEstimatedDisplacement();
 
                     // Create a 'contact node' at the terrain height below the anchor point
                     irr::core::vector3df intersection = contactNode->getAbsolutePosition();
-                    intersection.Y = model->getTerrainHeight(intersection.X, intersection.Z);
-                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrainSceneNode(0);
+                    intersection.Y = model->getTerrain()->getHeight(intersection.X, intersection.Z);
+                    irr::scene::ISceneNode* terrainSceneNode = model->getTerrain()->getSceneNode(0);
 
                     // Add a 'sphere' scene node, with selectedSceneNode as parent.
                     // Find local coordinates from the global one

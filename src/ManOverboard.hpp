@@ -18,28 +18,42 @@
 #define __MANOVERBOARD_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "Time.hpp"
 
 //Forward declarations
-class SimulationModel;
 class Terrain;
+class Tide;
+class Wind;
+class Water;
 
 class ManOverboard
 {
-    public:
-        ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model, Terrain* terrain);
-        irr::core::vector3df getPosition() const;
-        void setVisible(bool isVisible);
-        bool getVisible() const;
-        void setPosition(irr::core::vector3df position);
-        void setRotation(irr::core::vector3df rotation);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime, irr::f32 tideHeight);
-        irr::scene::ISceneNode* getSceneNode() const;
-    protected:
-    private:
-        irr::scene::IMeshSceneNode* man; //The scene node for the man overboard model.
-        SimulationModel* model;
-        Terrain* terrain;
+public:
+  ManOverboard();
+  ~ManOverboard();
+  void load(const irr::core::vector3df& aLocation, Terrain* aTerrain, Water* aWater, Wind* aWind, Tide* aTide, irr::IrrlichtDevice* aDev);
+  irr::core::vector3df getPosition() const;
+  
+  void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+  void update(sTime& aTime, irr::f32 tideHeight);
+  irr::scene::ISceneNode* getSceneNode() const;
+
+  void releaseManOverboard(irr::core::vector3df aOwnShipPos, float aBreadth, float aHeading);
+  void retrieveManOverboard();
+  bool getVisible() const;
+  float getPosX() const;
+  float getPosZ() const;
+  void setVisible(bool visible); 
+  void setPos(float positionX, float positionZ);   
+
+
+protected:
+private:
+  irr::scene::IMeshSceneNode* man; //The scene node for the man overboard model.
+  Terrain *mTerrain;
+  Water *mWater;
+  Wind *mWind;
+  Tide *mTide;
 };
 
 #endif

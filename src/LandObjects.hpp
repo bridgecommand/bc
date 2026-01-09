@@ -18,12 +18,9 @@
 #define __LANDOBJECTS_HPP_INCLUDED__
 
 #include "irrlicht.h"
-
 #include <vector>
 #include <string>
 
-//Forward declarations
-class SimulationModel;
 class Terrain;
 class LandObject;
 
@@ -32,7 +29,7 @@ class LandObjects
     public:
         LandObjects();
         virtual ~LandObjects();
-        void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, Terrain* terrain, irr::IrrlichtDevice* dev);
+        void load(const std::string& aWorldName, Terrain* aTerrain, irr::IrrlichtDevice* aDev);
         irr::u32 getNumber() const;
         void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
         irr::scene::ISceneNode* getSceneNode(int number);

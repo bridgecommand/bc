@@ -15,13 +15,14 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Buoys.hpp"
-
 #include "Buoy.hpp"
 #include "NavLight.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "RadarData.hpp"
-#include "SimulationModel.hpp"
+#include "Water.hpp"
+#include "Terrain.hpp"
+#include "Time.hpp"
 
 //using namespace irr;
 
@@ -38,16 +39,18 @@ Buoys::~Buoys()
     buoysLights.clear();
 }
 
-void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev)
+void Buoys::load(const std::string& aWorldName, Terrain *aTerrain, Water *aWater, irr::IrrlichtDevice* aDev)
 {
-    this->model = model;
 
-    //get buoy.ini filename
-    std::string scenarioBuoyFilename = worldName;
+  mWater = aWater;
+  irr::scene::ISceneManager* smgr = aDev->getSceneManager();
+
+  //get buoy.ini filename
+    std::string scenarioBuoyFilename = aWorldName;
     scenarioBuoyFilename.append("/buoy.ini");
 
     //get light.ini filename
-    std::string scenarioLightFilename = worldName;
+    std::string scenarioLightFilename = aWorldName;
     scenarioLightFilename.append("/light.ini");
 
     //Find number of buoys
@@ -58,8 +61,10 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Get buoy type and construct filename
         std::string buoyName = IniFile::iniFileToString(scenarioBuoyFilename,IniFile::enumerate1("Type",currentBuoy));
         //Get buoy position
-        irr::f32 buoyX = model->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
-        irr::f32 buoyZ = model->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
+
+	
+ irr::f32 buoyX = aTerrain->longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
+        irr::f32 buoyZ = aTerrain->latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
 
         //get buoy RCS if set
         irr::f32 rcs = IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("RCS",currentBuoy));
@@ -75,7 +80,7 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
         //Create buoy and load into vector
         std::string internalName = "Buoy_";
         internalName.append(std::to_string(currentBuoy-1)); // -1 as we want index from 0
-        buoys.push_back(Buoy (buoyName.c_str(),internalName,worldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,dev));
+        buoys.push_back(Buoy (buoyName.c_str(),internalName,aWorldName,irr::core::vector3df(buoyX,0.0f,buoyZ),rcs,floating,heightCorrection,smgr,aDev));
 
         //Find scene node
         irr::scene::ISceneNode* buoyNode = buoys.back().getSceneNode();
@@ -111,14 +116,17 @@ void Buoys::load(const std::string& worldName, irr::scene::ISceneManager* smgr, 
     }
 }
 
-void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
+void Buoys::update(sTime& aTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength)
 {
+  float deltaTime = aTime.deltaTime;
+  float scenarioTime = aTime.scenarioTime;
+  
     for(std::vector<Buoy>::iterator it = buoys.begin(); it != buoys.end(); ++it) {
         irr::f32 xPos, yPos, zPos;
         irr::core::vector3df pos = it->getPosition();
         xPos = pos.X;
         if (it->getFloating()) {
-            yPos = tideHeight + model->getWaveHeight(pos.X,pos.Z) + it->getHeightCorrection();
+	  yPos = tideHeight + mWater->getWaveHeight(pos.X,pos.Z) + it->getHeightCorrection();
         } else {
             yPos = 0 + it->getHeightCorrection();
         }
@@ -127,7 +135,7 @@ void Buoys::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeigh
 
         if (it->getFloating()) {
             irr::f32 angleX, angleZ;
-            irr::core::vector2df normals = model->getLocalNormals(pos.X,pos.Z);
+            irr::core::vector2df normals = mWater->getLocalNormals(pos.X,pos.Z);
             angleX = normals.X * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
             angleZ = normals.Y * irr::core::RADTODEG;//Assume small angle, so just convert rad to deg
             it->setRotation(irr::core::vector3df(angleX,0,angleZ));

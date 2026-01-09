@@ -56,18 +56,7 @@
 #endif // _WIN32
 
 #include "VRInterface.hpp"
-
 #include "profile.hpp"
-
-//Mac OS:
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#endif
-
-// This disables to console window showing, disable for debugging
-#ifdef _MSC_VER
-//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-#endif
 
 #ifdef _WIN32
 //From https://superkogito.github.io/blog/LoopMonitorsDetailsInCplusplus.html
@@ -131,76 +120,19 @@ irr::core::stringw getCredits(){
     return creditsString;
 }
 
-JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
+JoystickSetup getJoystickSetup(std::string iniFilename) {
     //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
     JoystickSetup joystickSetup;
-    if (!(isAzimuthDrive)) {
-        joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "port_throttle_channel")-1;
-        joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbd_throttle_channel")-1;
-    }
+
     joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
 
     joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
     joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
 
+    
+    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
 
-    if (isAzimuthDrive) {
-        // DEE 10JAN23 vvvv Azimuth drive specific code moved to here
-
-	// joystick numbers used for azimuth drive controls
-	joystickSetup.portThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "portThrustLever_joystickNo");
-	joystickSetup.stbdThrustLever_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdhrustLever_joystickNo");
-	joystickSetup.portSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "portSchottel_joystickNo");
-	joystickSetup.stbdSchottel_joystickNo = IniFile::iniFileTou32(iniFilename, "stbdSchottel_joystickNo");
-
-	// axes used for azimuth drive controls
-        joystickSetup.portThrustLever_channel = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel")-1;
-        joystickSetup.stbdThrustLever_channel = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel")-1;
-        joystickSetup.portSchottel_channel = IniFile::iniFileTou32(iniFilename, "portSchottel_channel")-1;
-        joystickSetup.stbdSchottel_channel = IniFile::iniFileTou32(iniFilename, "stbdSchottel_channel")-1;
-
-	// inversion of joystick axes
-	// NB dont use this for schottels like Shetland Traders because only one axis is inverted
-	// to model that use the boat.ini file
-
-        joystickSetup.schottelPortDirection = 1;
-        if (IniFile::iniFileTou32(iniFilename, "invertPortSchottel")==1) {
-            joystickSetup.schottelPortDirection = -1;
-        }
-
-        joystickSetup.schottelStbdDirection = -1;
-        if (IniFile::iniFileTou32(iniFilename, "invertStbdSchottel")==1) {
-            joystickSetup.schottelStbdDirection = -1;
-        }
-
-        joystickSetup.thrustLeverPortDirection = 1;
-        if (IniFile::iniFileTou32(iniFilename, "invertPortThrustLever")==1) {
-            joystickSetup.thrustLeverPortDirection = -1;
-        }
-
-        joystickSetup.thrustLeverStbdDirection = -1;
-        if (IniFile::iniFileTou32(iniFilename, "invertStbdthrustLever")==1) {
-            joystickSetup.thrustLeverStbdDirection = -1;
-        }
-
-	// offset and scaling
-	joystickSetup.schottelPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortSchottelAngle");
-	joystickSetup.schottelStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdSchottelAngle");
-	joystickSetup.schottelPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortSchottelAngle");
-	joystickSetup.schottelStbdOffset = IniFile::iniFileTou32(iniFilename, "offsetStbdSchottelAngle");
-
-	joystickSetup.thrustLeverPortScaling = IniFile::iniFileTof32(iniFilename, "scalingPortThrustLever");
-	joystickSetup.thrustLeverStbdScaling = IniFile::iniFileTof32(iniFilename, "scalingStbdThrustLever");
-	joystickSetup.thrustLeverPortOffset = IniFile::iniFileTof32(iniFilename, "offsetPortThrustLever");
-	joystickSetup.thrustLeverStbdOffset = IniFile::iniFileTof32(iniFilename, "offsetStbdThrustLever");
-
-
-
-	// DEE 10JAN23 ^^^^
-    } else {
-        joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-        joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
-    }
     joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
 
@@ -284,11 +216,6 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
 
     joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
     joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
-
-    joystickSetup.joystickNoAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth1_master");
-    joystickSetup.joystickNoAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_no_toggle_azimuth2_master");
-    joystickSetup.joystickButtonAzimuth1Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth1_master")-1;
-    joystickSetup.joystickButtonAzimuth2Master=IniFile::iniFileTou32(iniFilename, "joystick_button_toggle_azimuth2_master")-1;
 
     joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
     joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
@@ -384,25 +311,6 @@ int main(int argc, char ** argv)
 
     if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
   
-    //Mac OS:
-	#ifdef __APPLE__
-    //Find starting folder
-    char exePath[1024];
-    uint32_t pathSize = sizeof(exePath);
-    std::string exeFolderPath = "";
-    if (_NSGetExecutablePath(exePath, &pathSize) == 0) {
-        std::string exePathString(exePath);
-        size_t pos = exePathString.find_last_of("\\/");
-        if (std::string::npos != pos) {
-            exeFolderPath = exePathString.substr(0, pos);
-        }
-    }
-    //change up from BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS to BridgeCommand.app/Contents/Resources
-    exeFolderPath.append("/../../../../Resources");
-    //change to this path now, so ini file is read
-    chdir(exeFolderPath.c_str());
-    //Note, we use this again after the createDevice call
-	#endif
 
     //User read/write location - look in here first and the exe folder second for files
     std::string userFolder = Utilities::getUserDir();
@@ -438,8 +346,8 @@ int main(int argc, char ** argv)
         #ifdef _WIN32
         ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
         #else
-	    scriptPath = "\"" + scriptPath + "\"";
-        system(scriptPath.c_str());
+	scriptPath = "\"" + scriptPath + "\"";
+	system(scriptPath.c_str());
         #endif
     }
 	
@@ -670,19 +578,6 @@ int main(int argc, char ** argv)
 
     smgr->getParameters()->setAttribute(irr::scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-    #ifdef __APPLE__
-    //Bring window to front
-    //NSWindow* window = reinterpret_cast<NSWindow>(device->getVideoDriver()->getExposedVideoData().HWnd);
-    //Mac OS - cd back to original dir - seems to be changed during createDevice
-    irr::io::IFileSystem* fileSystem = device->getFileSystem();
-    if (fileSystem==0) {
-        std::cerr << "Could not get filesystem:" << std::endl;
-        return(EXIT_FAILURE); //Could not get file system
-
-    }
-    fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
-    #endif
-
     //set gui skin and 'flatten' this
     irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
@@ -787,12 +682,9 @@ int main(int argc, char ** argv)
     bool secondaryControlWheel = false;
     bool secondaryControlPortEngine = false;
     bool secondaryControlStbdEngine = false;
-    bool secondaryControlPortSchottel = false;
-    bool secondaryControlStbdSchottel = false;
-    bool secondaryControlPortThrustLever = false;
-    bool secondaryControlStbdThrustLever = false;
     bool secondaryControlBowThruster = false;
     bool secondaryControlSternThruster = false;
+
     if (mode==OperatingMode::Secondary) {
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
             secondaryControlWheel = true;
@@ -802,18 +694,6 @@ int main(int argc, char ** argv)
         } 
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
             secondaryControlStbdEngine = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_schottel") == 1) {
-            secondaryControlPortSchottel = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_schottel") == 1) {
-            secondaryControlStbdSchottel = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_thrust") == 1) {
-            secondaryControlPortThrustLever = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_thrust") == 1) {
-            secondaryControlStbdThrustLever = true;
         }
         if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
             secondaryControlBowThruster = true;
@@ -830,7 +710,7 @@ int main(int argc, char ** argv)
         vr3dMode=true;
     }
     
-    SimulationModel::ModelParameters modelParameters;
+    ModelParameters modelParameters;
     // TODO: most of these intermediate variables can probably be removed.
     modelParameters.mode = mode; 
     modelParameters.vrMode = vr3dMode;
@@ -852,10 +732,6 @@ int main(int argc, char ** argv)
     modelParameters.secondaryControlWheel = secondaryControlWheel;
     modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
     modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
-    modelParameters.secondaryControlPortSchottel = secondaryControlPortSchottel;
-    modelParameters.secondaryControlStbdSchottel = secondaryControlStbdSchottel;
-    modelParameters.secondaryControlPortThrustLever = secondaryControlPortThrustLever;
-    modelParameters.secondaryControlStbdThrustLever = secondaryControlStbdThrustLever;
     modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
     modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
     modelParameters.debugMode = debugMode;
@@ -899,12 +775,7 @@ int main(int argc, char ** argv)
 
     std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
 
-    SimulationModel model(device,
-        smgr,
-        &guiMain,
-        &sound,
-        scenarioData,
-        modelParameters);
+    SimulationModel model(device, &guiMain, &sound, scenarioData, modelParameters);
 
     bEnd = true;
     taskWaitingNet.join();
@@ -959,10 +830,6 @@ int main(int argc, char ** argv)
         if (secondaryControlWheel || 
             secondaryControlPortEngine || 
             secondaryControlStbdEngine || 
-            secondaryControlPortSchottel ||
-            secondaryControlStbdSchottel ||
-            secondaryControlPortThrustLever ||
-            secondaryControlStbdThrustLever ||
             secondaryControlBowThruster ||
             secondaryControlSternThruster) {
             hideEngineAndRudder=false;
@@ -971,26 +838,33 @@ int main(int argc, char ** argv)
         }
     }
 
-    guiMain.load(device, &language, &logMessages, &model, model.isSingleEngine(), model.isAzimuthDrive(),hideEngineAndRudder,model.hasDepthSounder(),model.getMaxSounderDepth(),model.hasGPS(), showTideHeight, model.hasBowThruster(), model.hasSternThruster(), model.hasTurnIndicator(), showCollided, vr3dMode);
+    guiMain.load(device, model.getOwnShip(), model.getLines(), &language, &logMessages, hideEngineAndRudder, showTideHeight, false, false, showCollided, vr3dMode);
 
     //load realistic water
     //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
     //load joystick setup
-    JoystickSetup joystickSetup = getJoystickSetup(iniFilename, model.isAzimuthDrive());
+    JoystickSetup joystickSetup = getJoystickSetup(iniFilename);
 
     //create event receiver, linked to model
     MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
     device->setEventReceiver(&receiver);
 
     //create NMEA serial port and UDP, linked to model
-    NMEA nmeaConning(&model, nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning, device);
-    NMEA nmeaOpCpn(&model, nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn, device);
+    NMEA nmeaConning(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+    NMEA nmeaOpCpn(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
 
+
+    nmeaConning.Init(nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning);
+    nmeaOpCpn.Init(nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn);
+
+    
 	//Load sound files
-	sound.load(model.getOwnShipEngineSound(), model.getOwnShipWaveSound(), model.getOwnShipHornSound(), model.getOwnShipAlarmSound());
+    sound.load(model.getOwnShip()->getBasePath());
+
 
     sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
+
 
     //Set up initial options
     if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
@@ -1000,22 +874,22 @@ int main(int argc, char ** argv)
         guiMain.hide2dInterfaceFull();
     }
     
-    if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
+        if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
         guiMain.setLargeRadar(true);
-        model.setRadarDisplayRadius(guiMain.getRadarPixelRadius());
+        model.getRadarCalculation()->setRadarDisplayRadius(guiMain.getRadarPixelRadius());
         guiMain.hide2dInterface();
     }
     if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
         guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
-        model.setArpaMode(2);
+        model.getRadarCalculation()->setArpaMode(2);
     }
     irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {
-        model.setRadarCourseUp();
+        model.getRadarCalculation()->setCourseUp();
     }
     if (radarStartupMode==2) {
-        model.setRadarHeadUp();
-    }
+        model.getRadarCalculation()->setHeadUp();
+	}
 
     //set up timing for NMEA
 
@@ -1030,7 +904,6 @@ int main(int argc, char ** argv)
 //    Profiler renderFinishProfile("Render finish");
 
 	sound.StartSound();
-
 	
     //main loop
     while(device->run())
@@ -1043,13 +916,13 @@ int main(int argc, char ** argv)
 	{ IPROF("NMEA");
 
 	  if (!nmeaUDPListenPortConning.empty()) nmeaConning.receive();
-      if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA();
+	  if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA(model.getTime());
       if (!nmeaComPortConning.empty())  nmeaConning.sendNMEASerial();
       if (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty()) nmeaConning.sendNMEAUDP();
       nmeaConning.clearQueue();   
 
       if (!nmeaUDPListenPortOpCpn.empty()) nmeaOpCpn.receive();
-      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA();
+      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA(model.getTime());
       if (!nmeaComPortOpCpn.empty())  nmeaOpCpn.sendNMEASerial();
       if (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty()) nmeaOpCpn.sendNMEAUDP();
       nmeaOpCpn.clearQueue();
@@ -1057,7 +930,7 @@ int main(int argc, char ** argv)
     }
     { IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
-        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarSurroundColour());
+        driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarCalculation()->getRadarSurroundColour());
 //        renderSetupProfile.toc();
 
 //        renderRadarProfile.tic();
@@ -1065,20 +938,20 @@ int main(int argc, char ** argv)
         }
         bool fullScreenRadar = guiMain.getLargeRadar();
         { IPROF("Render radar");
-        if (model.isRadarOn()) {
+	         if (model.getRadarCalculation()->isRadarOn()) {
             //radar view portion
             if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
-                model.setWaterVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+	      model.getWater()->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
                 if (fullScreenRadar) {
                     driver->setViewPort(guiMain.getLargeRadarRect());
                 } else {
                     driver->setViewPort(guiMain.getSmallRadarRect());
                 }
-                model.setRadarCameraActive();
+                model.getRadarCamera()->setActive();
                 smgr->drawAll();
-                model.setWaterVisible(true); //Re-show the water
+                model.getWater()->setVisible(true); //Re-show the water
             }
-        }
+	    }
 
  //       renderRadarProfile.toc();
 
@@ -1086,17 +959,17 @@ int main(int argc, char ** argv)
         }{ IPROF("Render");
 
         //3d view portion
-        model.setMainCameraActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
+	  model.getCamera()->setActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
         // Normal rendering
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
-                model.updateViewport(aspect3d);
+                model.getCamera()->updateViewport(aspect3d);
             }
             else {
                 driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
-                model.updateViewport(aspect);
+                model.getCamera()->updateViewport(aspect);
             }
             
             smgr->drawAll();
@@ -1108,7 +981,7 @@ int main(int argc, char ** argv)
             
             // Set aspect ratio
             irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
-            model.updateViewport(aspectRatioVR);
+            model.getCamera()->updateViewport(aspectRatioVR);
 
             // Process events
             int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?

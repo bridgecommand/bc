@@ -17,21 +17,19 @@
 #ifndef __GUIMAIN_HPP_INCLUDED__
 #define __GUIMAIN_HPP_INCLUDED__
 
+#include <vector>
+#include <string>
 #include "irrlicht.h"
 #include "IGUIButton.h"
 #include "Lang.hpp"
 #include "OperatingModeEnum.hpp"
 #include "HeadingIndicator.h"
-//#include "RateOfTurnIndicator.h" // DEE addition
 #include "OutlineScrollBar.h"
-#include "AzimuthDial.h"
 #include "GUIRectangle.hpp"
 #include "RadarCalculation.hpp"
-#include <vector>
-#include <string>
+#include "Lines.hpp"
+#include "OwnShip.hpp"
 
-// Forward declarations
-class SimulationModel;
 
 struct GUIData {
     irr::f32 lat;
@@ -46,10 +44,6 @@ struct GUIData {
     irr::f32 bowThruster;
     irr::f32 sternThruster;
     irr::f32 wheel;
-    irr::f32 portAzimuthAngle;
-    irr::f32 stbdAzimuthAngle;
-    bool azimuth1Master;
-    bool azimuth2Master;
     irr::f32 RateOfTurn;
     irr::f32 depth;
     irr::f32 weather;
@@ -77,20 +71,6 @@ struct GUIData {
     bool headUp;
     bool pump1On;
     bool pump2On;
-// DEE_NOV22 Azimuth Drive related gui items
-    irr::f32 schottelPort; // angle of the schottels +ve clockwise 0 dead ahead
-    irr::f32 schottelStbd;
-    irr::f32 thrustLeverPort; // thrust levers (0..1) leave this in here for future graphical lever
-    irr::f32 thrustLeverStbd;
-    irr::f32 azimuthEnginePort;
-    irr::f32 azimuthEngineStbd;
-    irr::f32 emergencySteering;
-    bool azimuthClutchPort;  // Clutches true for engaged false for disengaged
-    bool azimuthClutchStbd;
-
-    // the angle of each azimuth drive and each engine level is defined elsewhere
-    // DEE_NOV22 some indication and or switch from normal steering to non follow up emergency steering
-
     irr::f32 tideHeight; // DEE FEB 23
 };
 
@@ -99,7 +79,7 @@ class GUIMain //Create, build and update GUI
 public:
     GUIMain();
     ~GUIMain();
-    void load(irr::IrrlichtDevice* device, Lang* language, std::vector<std::string>* logMessages, SimulationModel* model, bool singleEngine, bool azimuthDrive, bool controlsHidden, bool hasDepthSounder, irr::f32 maxSounderDepth, bool hasGPS, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool hasRateOfTurnIndicator, bool showCollided, bool vr3dMode);
+  void load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines, Lang* language, std::vector<std::string>* logMessages, bool controlsHidden, bool showTideHeight, bool hasBowThruster, bool hasSternThruster, bool showCollided, bool vr3dMode);
 
     enum GUI_ELEMENTS// Define some values that we'll use to identify individual GUI controls.
     {
@@ -111,15 +91,6 @@ public:
         GUI_ID_AZIMUTH_2,
         GUI_ID_AZIMUTH_1_MASTER_CHECKBOX,
         GUI_ID_AZIMUTH_2_MASTER_CHECKBOX,
-// DEE_NOV22 vvvv
-	GUI_ID_SCHOTTEL_PORT,
-	GUI_ID_SCHOTTEL_STBD,
-	GUI_ID_AZIMUTH_ENGINE_PORT,
-	GUI_ID_AZIMUTH_ENGINE_STBD,
-	GUI_ID_AZIMUTH_CLUTCH_PORT,
-	GUI_ID_AZIMUTH_CLUTCH_STBD,
-	GUI_ID_EMERGENCY_STEERING,
-// DEE_NOV22 ^^^^
         GUI_ID_RUDDER_SCROLL_BAR,
 // DEE vvvv
 	GUI_ID_WHEEL_SCROLL_BAR,
@@ -259,21 +230,8 @@ private:
     irr::gui::IGUIStaticText* radarText;
     irr::gui::IGUIScrollBar* rateofturnScrollbar;
 
-    irr::gui::AzimuthDial* azimuth1Control;
-    irr::gui::AzimuthDial* azimuth2Control;
-
     irr::gui::IGUICheckBox* azimuth1Master;
     irr::gui::IGUICheckBox* azimuth2Master;
-
-    // DEE_NOV22 vvvv
-    irr::gui::AzimuthDial* azimuthEnginePort;
-    irr::gui::AzimuthDial* azimuthEngineStbd;
-    irr::gui::AzimuthDial* schottelPort;
-    irr::gui::AzimuthDial* schottelStbd;
-    irr::gui::IGUICheckBox* azimuthClutchPort;
-    irr::gui::IGUICheckBox* azimuthClutchStbd;
-    irr::gui::IGUICheckBox* emergencySteering;
-
 
     // DEE_NOV22 ^^^^
 
@@ -393,7 +351,6 @@ private:
     std::vector<ARPAEstimatedState> arpaContactStates;
     std::string guiTime;
     bool singleEngine;
-    bool azimuthDrive;
     bool hasBowThruster;
     bool hasSternThruster;
     bool hasRateOfTurnIndicator;
@@ -410,7 +367,8 @@ private:
 
     Lang* language;
     std::vector<std::string>* logMessages;
-    SimulationModel* model;
+  OwnShip *mOwnShip;
+  Lines *mLines;
 
     //Different locations for heading indicator depending on GUI visibility
     irr::core::rect<irr::s32> stdHdgIndicatorPos;

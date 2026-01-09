@@ -540,7 +540,10 @@ void Lines::setLineNominalShipMass(int lineID, irr::f32 lineNominalShipMass, boo
     }
 }
 
-void Lines::update(irr::f32 deltaTime) {
+void Lines::update(sTime& aTime) {
+
+  float deltaTime = aTime.deltaTime;
+  
     for(std::vector<Line>::iterator it = lines.begin(); it != lines.end(); ++it) {
         it->update(deltaTime);
     }

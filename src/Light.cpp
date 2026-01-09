@@ -58,8 +58,10 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
 
 }
 
-void Light::update(irr::f32 scenarioTime)
+void Light::update(sTime& aTime)
 {
+    float scenarioTime = aTime.scenarioTime;
+    
     //convert scenario time (in seconds) into hours
     irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
 

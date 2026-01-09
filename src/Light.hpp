@@ -18,6 +18,7 @@
 #define __LIGHT_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include "Time.hpp"
 
 class Light
 {
@@ -25,7 +26,7 @@ class Light
         Light();
         virtual ~Light();
         void load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent);
-        void update(irr::f32 scenarioTime);
+        void update(sTime& aTime);
         irr::video::SColor getLightSColor() const;
         irr::u32 getLightLevel() const;
 

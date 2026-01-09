@@ -17,19 +17,17 @@
 #ifndef __AIS_HPP_INCLUDED__
 #define __AIS_HPP_INCLUDED__
 
-#include "SimulationModel.hpp"
-#include <tuple>
 #include <string>
 #include <vector>
 
 class AIS {
     public: 
-        static std::tuple<std::string, int> generateClassAReport(SimulationModel*, irr::u32);
-        static std::vector<irr::u32> getReadyShips(SimulationModel*, irr::u32);
+        static std::tuple<std::string, int> generateClassAReport(void *aOtherShips, void *aTerrain, unsigned long long aTimeStamp, unsigned int);
+        static std::vector<unsigned int> getReadyShips(void *aOtherShips, unsigned int);
 
     private:
         static const int mmsis[];
-        static std::vector<irr::u32> lastUpdates; 
+        static std::vector<unsigned int> lastUpdates; 
         static int currentShip;
         static bool initialized;
         static std::vector<bool> classAReport;

@@ -22,7 +22,6 @@
 #include <enet/enet.h>
 #include "irrlicht.h"
 #include "OperatingModeEnum.hpp"
-#include "Message.hpp"
 
 class Message;
 

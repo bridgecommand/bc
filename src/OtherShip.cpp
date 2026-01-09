@@ -14,7 +14,9 @@
      with this program; if not, write to the Free Software Foundation, Inc.,
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
-//Extends from the general 'Ship' class
+#include <iostream>
+#include <algorithm>
+
 #include "IniFile.hpp"
 #include "Angles.hpp"
 #include "RadarData.hpp"
@@ -22,21 +24,12 @@
 #include "OtherShip.hpp"
 #include "Utilities.hpp"
 
-#include <iostream>
-#include <algorithm>
-
-//using namespace irr;
 
 OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
-    //Initialise speed and heading, normally updated from leg information
-    axialSpd = 0;
-    hdg = 0;
-    rateOfTurn = 0; // Not normally used, but used to smooth behaviour in multiplayer
-
     this->name = name;
-    this->mmsi = mmsi;
+    mMsi = mmsi;
 
     std::string basePath = "models/Othership/" + name + "/";
     std::string userFolder = Utilities::getUserDir();
@@ -64,10 +57,10 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     irr::f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
 
     irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
-    angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
+    mAngleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
     // DEE_DEC22 vvvv
-    angleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
-    angleCorrectionRoll = IniFile::iniFileTof32(iniFilename,"AngleCorrectionRoll");
+    mAngleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
+    mAngleCorrectionRoll = IniFile::iniFileTof32(iniFilename,"AngleCorrectionRoll");
     // DEE_DEC22 ^^^^
 
 
@@ -77,7 +70,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     irr::scene::IAnimatedMesh* shipMesh = smgr->getMesh(shipFullPath.c_str());
 
     //Set mesh vertical correction (world units)
-    heightCorrection = yCorrection*scaleFactor;
+    mHeightCorrection = yCorrection*scaleFactor;
 
     //add to scene node
 	if (shipMesh==0) {
@@ -86,55 +79,54 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
         dev->getLogger()->log(shipFullPath.c_str());
         shipMesh = smgr->addSphereMesh("Dummy");
     }
-    ship = smgr->addMeshSceneNode( shipMesh, 0, -1);
-    ship->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
-    ship->setPosition(irr::core::vector3df(0,heightCorrection,0));
+    mShipScene = smgr->addMeshSceneNode( shipMesh, 0, -1);
+    mShipScene->setScale(irr::core::vector3df(scaleFactor,scaleFactor,scaleFactor));
+    mShipScene->setPosition(irr::core::vector3df(0,mHeightCorrection,0));
 
-	ship->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
-	ship->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
+    mShipScene->setMaterialFlag(irr::video::EMF_FOG_ENABLE, true);
+    mShipScene->setMaterialFlag(irr::video::EMF_NORMALIZE_NORMALS, true); //Normalise normals on scaled meshes, for correct lighting
 
     //store length and RCS information for radar etc
-    ship->updateAbsolutePosition();
-    length = ship->getTransformedBoundingBox().getExtent().Z;
-    breadth = ship->getTransformedBoundingBox().getExtent().X;
-    height = ship->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
-    draught = -1 * ship->getTransformedBoundingBox().MinEdge.Y;
-    airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
+    mShipScene->updateAbsolutePosition();
+    mGeoParams.lPP = mShipScene->getTransformedBoundingBox().getExtent().Z;
+    mGeoParams.b = mShipScene->getTransformedBoundingBox().getExtent().X;
+    height = mShipScene->getTransformedBoundingBox().getExtent().Y * 0.75; //Assume 3/4 of the mesh is above water
+    mGeoParams.d = -1 * mShipScene->getTransformedBoundingBox().MinEdge.Y;
     
-    rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    rcs = 0.005*std::pow(mGeoParams.lPP ,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
     std::string logMessage = "Loading '";
     logMessage.append(shipFullPath);
     logMessage.append("' Length (m): ");
-    logMessage.append(std::to_string(length));
+    logMessage.append(std::to_string(mGeoParams.lPP));
     dev->getLogger()->log(logMessage.c_str());
 
     //Add triangle selector and make pickable
-    ship->setID(IDFlag_IsPickable);
-    selector=smgr->createTriangleSelector(shipMesh,ship);
+    mShipScene->setID(IDFlag_IsPickable);
+    selector=smgr->createTriangleSelector(shipMesh, mShipScene);
     //This is applied depending on distance to own ship, for speed
     triangleSelectorEnabled=false;
     
-    ship->setName(internalName.c_str());
+    mShipScene->setName(internalName.c_str());
 
     // Todo: Note in documentation that to avoid blocking, use a value of 0.1, as 0 will go to default
     //FIXME: Note in documentation that this is height above waterline in model units
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight", .5f * height);
 
     //store initial x,y,z positions
-    xPos = location.X;
-    yPos = location.Y;
-    zPos = location.Z;
+    mEta[1] = location.X;
+    double yPos = location.Y;
+    mEta[0] = location.Z;
     //speed and heading will come from leg data
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
-	if(ship->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
-            if (ship->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
-                ship->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
+	if(mShipScene->getMaterialCount()>0) {
+        for(irr::u32 mat=0;mat<mShipScene->getMaterialCount();mat++) {
+            if (mShipScene->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
+                mShipScene->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
                 // Only allow rendering with transparency if required to avoid Z order problems
-                ship->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+                mShipScene->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
             }
-            ship->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
+            mShipScene->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
 
@@ -166,7 +158,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
+            navLights.push_back(new NavLight (mShipScene,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
         }
     }
 
@@ -190,29 +182,29 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
     if (legs.empty()) {
         //Don't change speed and hdg - may be in secondary mode, where these are set externally
         //Except, use rateOfTurn to update hdg
-        hdg += deltaTime * rateOfTurn; // rateOfTurn in deg/s
+        mEta[2] += deltaTime * rateOfTurn; // rateOfTurn in deg/s
     } else {
         //Work out which leg we're on
         std::vector<Leg>::size_type currentLeg = findCurrentLeg(scenarioTime);
 
-        axialSpd = legs[currentLeg].speed*KTS_TO_MPS;
-        hdg = legs[currentLeg].bearing;
+        mMu[0] = legs[currentLeg].speed*KTS_TO_MPS;
+        mEta[2] = legs[currentLeg].bearing;
     }
 
     if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        xPos = xPos + sin(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
-        zPos = zPos + cos(hdg*irr::core::DEGTORAD)*axialSpd*deltaTime;
+        mEta[1] = mEta[1] + sin(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
+        mEta[0] = mEta[0] + cos(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
     } else {
         positionManuallyUpdated = false;
     }
-    yPos = tideHeight+heightCorrection;
+    double yPos = tideHeight+mHeightCorrection;
 
     //Set position & speed by calling ship methods
     //setPosition(irr::core::vector3df(xPos,yPos,zPos));
-    ship->setPosition(irr::core::vector3df(xPos,yPos,zPos));
+    mShipScene->setPosition(irr::core::vector3df(mEta[1],yPos,mEta[0]));
     // DEE_DEC22 vvvv allows modelling of trim , list and models derived from other coordinate systems
     //ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
-    ship->setRotation(irr::core::vector3df(angleCorrectionPitch, hdg+angleCorrection, angleCorrectionRoll)); //Global vectors
+    mShipScene->setRotation(irr::core::vector3df(mAngleCorrectionPitch, mEta[2]+mAngleCorrection, mAngleCorrectionRoll)); //Global vectors
     // DEE_DEC22 ^^^^
 
     //for each light, find range and angle
@@ -454,12 +446,12 @@ void OtherShip::enableTriangleSelector(bool selectorEnabled)
     //Only re-set if we need to change the state
     
     if (selectorEnabled && !triangleSelectorEnabled) {
-        ship->setTriangleSelector(selector);
+        mShipScene->setTriangleSelector(selector);
         triangleSelectorEnabled = true;
     } 
     
     if (!selectorEnabled && triangleSelectorEnabled) {
-        ship->setTriangleSelector(0);
+        mShipScene->setTriangleSelector(0);
         triangleSelectorEnabled = false;
     }
 

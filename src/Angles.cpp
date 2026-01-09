@@ -15,14 +15,11 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Angles.hpp"
-#include <algorithm>
-#include <iostream>
-#include <cstdint>
 
 //From OpenCV via http://stackoverflow.com/a/20723890
 int Angles::localisinf(double x)
 {
-    union { uint64_t u; double f; } ieee754;
+  union { unsigned long long u; double f; } ieee754;
     ieee754.f = x;
     return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) == 0x7ff00000 &&
            ( (unsigned)ieee754.u == 0 );
@@ -30,7 +27,7 @@ int Angles::localisinf(double x)
 
 int Angles::localisnan(double x)
 {
-    union { uint64_t u; double f; } ieee754;
+  union { unsigned long long u; double f; } ieee754;
     ieee754.f = x;
     return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) +
            ( (unsigned)ieee754.u != 0 ) > 0x7ff00000;
@@ -46,7 +43,7 @@ bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df sta
            ((angle.Y * endAng.X-angle.X * endAng.Y) * (startAng.Y*endAng.X-startAng.X*endAng.Y) >= 0); //Is direction from checked to end and start to end the same?
 }
 
-bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
+bool Angles::isAngleBetween(float angle, float startAng, float endAng) {
 
     //Return false if any is not a normal number (e.g. NaN)
     if (localisinf(angle) || localisnan(angle) || localisinf(startAng) || localisnan(startAng) || localisinf(endAng) || localisnan(endAng)) {
@@ -73,7 +70,7 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
     }
 }
 
-irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
+float Angles::normaliseAngle(float angle) { //ensure angle is in range 0-360
 
     //Return unchanged if NaN etc.
     if (localisinf(angle) || localisnan(angle)) {
@@ -91,7 +88,7 @@ irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-3
     return angle;
 }
 
-irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pitch, irr::f32 roll)
+irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(float yaw, float pitch, float roll)
 //Convert yaw,pitch,roll (in degrees) into irrlicht 'euler angles' in degrees, as used by setRotation,
 //essentially changing the order the transformations are applied in.
 {

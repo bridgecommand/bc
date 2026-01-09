@@ -80,17 +80,17 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
@@ -162,6 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -185,18 +187,20 @@
     <ClCompile Include="..\AIS.cpp" />
     <ClCompile Include="..\Angles.cpp" />
     <ClCompile Include="..\Autopilot.cpp" />
-    <ClCompile Include="..\AzimuthDial.cpp" />
     <ClCompile Include="..\BCTerrainSceneNode.cpp" />
     <ClCompile Include="..\BCTerrainTriangleSelector.cpp" />
     <ClCompile Include="..\Buoy.cpp" />
     <ClCompile Include="..\Buoys.cpp" />
     <ClCompile Include="..\Camera.cpp" />
+    <ClCompile Include="..\Collision.cpp" />
     <ClCompile Include="..\ControlVisualiser.cpp" />
     <ClCompile Include="..\DefaultEventReceiver.cpp" />
+    <ClCompile Include="..\Engine.cpp" />
     <ClCompile Include="..\FFTWave.cpp" />
     <ClCompile Include="..\GUIMain.cpp" />
     <ClCompile Include="..\GUIRectangle.cpp" />
     <ClCompile Include="..\HeadingIndicator.cpp" />
+    <ClCompile Include="..\Hull.cpp" />
     <ClCompile Include="..\IniFile.cpp" />
     <ClCompile Include="..\LandLights.cpp" />
     <ClCompile Include="..\LandObject.cpp" />
@@ -218,9 +222,11 @@
     <ClCompile Include="..\OtherShips.cpp" />
     <ClCompile Include="..\OutlineScrollBar.cpp" />
     <ClCompile Include="..\OwnShip.cpp" />
+    <ClCompile Include="..\Propeller.cpp" />
     <ClCompile Include="..\RadarCalculation.cpp" />
     <ClCompile Include="..\RadarScreen.cpp" />
     <ClCompile Include="..\Rain.cpp" />
+    <ClCompile Include="..\Rudder.cpp" />
     <ClCompile Include="..\Sail.cpp" />
     <ClCompile Include="..\ScenarioChoice.cpp" />
     <ClCompile Include="..\ScenarioDataStructure.cpp" />
@@ -228,6 +234,7 @@
     <ClCompile Include="..\Ship.cpp" />
     <ClCompile Include="..\SimulationModel.cpp" />
     <ClCompile Include="..\Sky.cpp" />
+    <ClCompile Include="..\Solver.cpp" />
     <ClCompile Include="..\Sound.cpp" />
     <ClCompile Include="..\StartupEventReceiver.cpp" />
     <ClCompile Include="..\Terrain.cpp" />
@@ -238,12 +245,12 @@
     <ClCompile Include="..\VRInterface.cpp" />
     <ClCompile Include="..\Water.cpp" />
     <ClCompile Include="..\iprof.cpp" />
+    <ClCompile Include="..\Wind.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AIS.hpp" />
     <ClInclude Include="..\Angles.hpp" />
     <ClInclude Include="..\Autopilot.hpp" />
-    <ClInclude Include="..\AzimuthDial.h" />
     <ClInclude Include="..\BCDynamicMeshBuffer.h" />
     <ClInclude Include="..\BCIndexBuffer.h" />
     <ClInclude Include="..\BCTerrainSceneNode.h" />
@@ -252,13 +259,16 @@
     <ClInclude Include="..\Buoy.hpp" />
     <ClInclude Include="..\Buoys.hpp" />
     <ClInclude Include="..\Camera.hpp" />
+    <ClInclude Include="..\Collision.hpp" />
     <ClInclude Include="..\Constants.hpp" />
     <ClInclude Include="..\ControlVisualiser.hpp" />
     <ClInclude Include="..\DefaultEventReceiver.hpp" />
+    <ClInclude Include="..\Engine.hpp" />
     <ClInclude Include="..\FFTWave.hpp" />
     <ClInclude Include="..\GUIMain.hpp" />
     <ClInclude Include="..\GUIRectangle.hpp" />
     <ClInclude Include="..\HeadingIndicator.h" />
+    <ClInclude Include="..\Hull.hpp" />
     <ClInclude Include="..\IniFile.hpp" />
     <ClInclude Include="..\LandLights.hpp" />
     <ClInclude Include="..\LandObject.hpp" />
@@ -271,6 +281,7 @@
     <ClInclude Include="..\ManOverboard.hpp" />
     <ClInclude Include="..\Message.hpp" />
     <ClInclude Include="..\MessageMisc.hpp" />
+    <ClInclude Include="..\ModelParams.hpp" />
     <ClInclude Include="..\MovingWater.hpp" />
     <ClInclude Include="..\MyEventReceiver.hpp" />
     <ClInclude Include="..\NavLight.hpp" />
@@ -283,10 +294,12 @@
     <ClInclude Include="..\OutlineScrollBar.h" />
     <ClInclude Include="..\OwnShip.hpp" />
     <ClInclude Include="..\profile.hpp" />
+    <ClInclude Include="..\Propeller.hpp" />
     <ClInclude Include="..\RadarCalculation.hpp" />
     <ClInclude Include="..\RadarData.hpp" />
     <ClInclude Include="..\RadarScreen.hpp" />
     <ClInclude Include="..\Rain.hpp" />
+    <ClInclude Include="..\Rudder.hpp" />
     <ClInclude Include="..\Sail.hpp" />
     <ClInclude Include="..\ScenarioChoice.hpp" />
     <ClInclude Include="..\ScenarioDataStructure.hpp" />
@@ -294,10 +307,12 @@
     <ClInclude Include="..\Ship.hpp" />
     <ClInclude Include="..\SimulationModel.hpp" />
     <ClInclude Include="..\Sky.hpp" />
+    <ClInclude Include="..\Solver.hpp" />
     <ClInclude Include="..\Sound.hpp" />
     <ClInclude Include="..\StartupEventReceiver.hpp" />
     <ClInclude Include="..\Terrain.hpp" />
     <ClInclude Include="..\Tide.hpp" />
+    <ClInclude Include="..\Time.hpp" />
     <ClInclude Include="..\Update.hpp" />
     <ClInclude Include="..\Utilities.hpp" />
     <ClInclude Include="..\ExitMessage.hpp" />
@@ -305,6 +320,7 @@
     <ClInclude Include="..\Water.hpp" />
     <ClInclude Include="..\iprof.hpp" />
     <ClInclude Include="..\hitime.hpp" />
+    <ClInclude Include="..\Wind.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resources\icon\icon.rc" />
