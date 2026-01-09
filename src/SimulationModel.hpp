@@ -17,20 +17,19 @@
 #ifndef __SIMULATIONMODEL_HPP_INCLUDED__
 #define __SIMULATIONMODEL_HPP_INCLUDED__
 
-#include <iostream> //For debugging
+#include <iostream>
 #include <string>
 #include <vector>
-#include <stdint.h> //for uint64_t
-
+#include <stdint.h> 
 #include "irrlicht.h"
-
-//Forward declarations
-class ScenarioData;
-class GUIMain;
-class GUIData;
-
+#include "ModelParams.hpp"
+#include "Time.hpp"
 #include "MessageMisc.hpp"
+#include "Collision.hpp"
+
 #include "Terrain.hpp"
+#include "Sky.hpp"
+#include "Sound.hpp"
 #include "Light.hpp"
 #include "Water.hpp"
 #include "Rain.hpp"
@@ -48,11 +47,14 @@ class GUIData;
 #include "Lines.hpp"
 #include "OperatingModeEnum.hpp"
 #include "Solver.hpp"
-#include "Sound.hpp"
-#include "Collision.hpp"
 #include "Wind.hpp"
-#include "Time.hpp"
-#include "ModelParams.hpp"
+
+
+
+//Forward declarations
+class ScenarioData;
+class GUIMain;
+class GUIData;
 
 class SimulationModel //Start of the 'Model' part of MVC
 {

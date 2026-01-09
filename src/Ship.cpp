@@ -41,6 +41,8 @@ Ship::Ship()
   mGeoParams = {0}; 
   mAddedMassParams = {0};
 
+  mAngleCorrectionRoll = 0;
+  mAngleCorrectionPitch = 0;
 }
 
 Ship::~Ship()

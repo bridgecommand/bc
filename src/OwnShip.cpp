@@ -26,7 +26,6 @@
 #include "Constants.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "Terrain.hpp"
-#include "IniFile.hpp"
 #include "Angles.hpp"
 #include "Utilities.hpp"
 #include "Solver.hpp"
@@ -50,7 +49,6 @@ OwnShip::OwnShip()
   mHasGps = false;
   mHasRoTIndicator = false;
 
-  mRadarConfigFile = "";
   mRadarPos.X = 0;
   mRadarPos.Y = 0;
   mRadarPos.Z = 0;
@@ -70,7 +68,6 @@ OwnShip::OwnShip()
   mRoll = 0;             
   mPortEngine = 0;       
   mStbdEngine = 0;       
-
   
 }
 
@@ -194,7 +191,7 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
   PrintMeshInfos();
 }
 
-void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
+int OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev)
 {
   int retShipPrms = -1;
   Json::Value rootJson;
@@ -214,13 +211,9 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   if(std::filesystem::exists(userFolder + basePath))
       basePath = userFolder + basePath;
 
-  // Load from boat.ini file if it exists
-  std::string shipJsonFilename = basePath + "boat.json";
-   
-  angleCorrectionRoll = 0;  // default value
-  angleCorrectionPitch = 0; // default value
-
-  std::filesystem::path boatJson = shipJsonFilename;  
+  std::string shipJsonFilename = basePath + "boat.json";   
+  std::filesystem::path boatJson = shipJsonFilename;
+  
   if(std::filesystem::exists(boatJson))
     {
       std::ifstream streamJson(boatJson);                
@@ -236,11 +229,13 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
       mShipScene = smgr->addMeshSceneNode(shipMesh, 0, IDFlag_IsPickable, irr::core::vector3df(0, 0, 0));
     }
   else
-    return;
+    return -1;
   
   if(0 == retShipPrms)
       InitOwnShipParams(aOwnShipData, rootJson);
-
+  else
+    return -2;
+  
   
   /*Load Sails*/
   if(mSails.GetCount() > 0)
@@ -262,7 +257,7 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
 	  if(mSails.GetMeshScene(i)->getMaterialCount() > 0)
 	    {
-	      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
+	      for (unsigned int mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 		{
 		  mSails.GetMeshScene(i)->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
 		  mSails.GetMeshScene(i)->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -277,7 +272,7 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
   // Set lighting to use diffuse and ambient, so lighting of untextured models works
   if (mShipScene->getMaterialCount() > 0)
     {
-      for (irr::u32 mat = 0; mat < mShipScene->getMaterialCount(); mat++)
+      for (unsigned int mat = 0; mat < mShipScene->getMaterialCount(); mat++)
 	{
 	  mShipScene->getMaterial(mat).MaterialType = irr::video::EMT_LIGHTMAP;
 	  mShipScene->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -286,7 +281,7 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
 
   if(mIsTransparent)
     {
-      for (irr::u32 mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
+      for (unsigned int mb = 0; mb < shipMesh->getMeshBufferCount(); mb++)
 	{
 	  if (shipMesh->getMeshBuffer(mb)->getMaterial().DiffuseColor.getAlpha() < 255)
 	    {
@@ -297,32 +292,29 @@ void OwnShip::Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain
     }
   
   mShipScene->setName("OwnShip");
-
   mShipScene->setScale(irr::core::vector3df(mScaleFactor, mScaleFactor, mScaleFactor));
   mShipScene->setPosition(irr::core::vector3df(0, mHeightCorrection, 0));
   mShipScene->updateAbsolutePosition();
+
+  //Define Constants --> TODO:Process it in different way
   mRollAngle = 0.1;
   mBuffet = 0.3;
 
   if(mRollPeriod == 0)
-    {
-      mRollPeriod = 8; // default to a roll period of 8 seconds if unspecified
-    }
+      mRollPeriod = 8;
 
   if(mPitchPeriod == 0)
-    {
-      mPitchPeriod = 12; // default to a roll periof of 12 seconds if unspecified DEE_DEC22 make a function of
-      // weather strength direction and Ixx
-    }
+      mPitchPeriod = 12;
 
-  // Default buffet Period DEE_DEC22 to do make this a function of Izz and weather strength perhaps direction too
-  mBuffetPeriod = 8; // Yaw period (s)
+  mBuffetPeriod = 8;
 
+  
   mControlMode = MODE_ENGINE;
 
+  return 0;
 }
 
-void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver)
+void OwnShip::Update(sTime& aTime, float aTideHeight, float aWeather, Wind *aWind, Solver *aSolver)
 {
   float posZ = getPosition().Z;
   float posX = getPosition().X;
@@ -336,11 +328,11 @@ void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind
       // Find tidal stream, based on our current absolute position
       irr::core::vector2df stream = mTide->getTidalStream(mTerrain->xToLong(posX), mTerrain->zToLat(posZ), aTime.absoluteTime);
       //std::cout << "Tidal stream x:" << stream.X << ", z:" << stream.Y << std::endl;
-      irr::f32 streamScaling = fmax(0, fmin(1, getDepth(mTerrain))); // Reduce effect as water gets shallower
+      float streamScaling = fmax(0, fmin(1, getDepth(mTerrain))); // Reduce effect as water gets shallower
       stream *= streamScaling;
       // Convert this into stream axial and lateral speed
-      irr::f32 axialStream = stream.X * sin(mEta[2] * irr::core::DEGTORAD) + stream.Y * cos(mEta[2] * irr::core::DEGTORAD); // Stream in ahead direction
-      irr::f32 lateralStream = stream.X * cos(mEta[2] * irr::core::DEGTORAD) - stream.Y * sin(mEta[2] * irr::core::DEGTORAD);// Stream in stbd direction
+      float axialStream = stream.X * sin(mEta[2] * irr::core::DEGTORAD) + stream.Y * cos(mEta[2] * irr::core::DEGTORAD); // Stream in ahead direction
+      float lateralStream = stream.X * cos(mEta[2] * irr::core::DEGTORAD) - stream.Y * sin(mEta[2] * irr::core::DEGTORAD);// Stream in stbd direction
 
       mSpeedThroughWater = mMu[0] - axialStream;
 
@@ -354,8 +346,8 @@ void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind
       //Apply engine power 
       if(mNumberProp > 1)
 	{
-	  irr::f32 portThrust = 0; 
-	  irr::f32 stbdThrust = 0;
+	  float portThrust = 0; 
+	  float stbdThrust = 0;
 	  
 	  portThrust = mPortEngine*mEngine[0].getRpmMax()/60;
 	  stbdThrust = mStbdEngine*mEngine[1].getRpmMax()/60;
@@ -365,7 +357,7 @@ void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind
 	}
       else
 	{
-	  irr::f32 monoThrust = 0;
+	  float monoThrust = 0;
 	  
 	  monoThrust = mPortEngine*mEngine[0].getRpmMax()/60;	 
 	  mProp[0].SetRevs(monoThrust);
@@ -385,8 +377,8 @@ void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind
         }
     }
 
-  irr::f32 timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
-  irr::f32 factor = deltaTime / (timeConstant + deltaTime);
+  float timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
+  float factor = deltaTime / (timeConstant + deltaTime);
   mWaveHeightFiltered = (1 - factor) * mWaveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
   double yPos = aTideHeight + mHeightCorrection + mWaveHeightFiltered;
 
@@ -400,27 +392,24 @@ void OwnShip::Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind
       mRoll = aWeather * mRollAngle * sin(aTime.scenarioTime * 2 * PI / mRollPeriod);
     }
 
-
   /*Sails dyn*/
   mSails.UpdateMesh();
 
+  /*Update OwnShip position/rotation*/
   mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
-  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, mPitch, mRoll));
-  
+  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, mPitch, mRoll));  
 }
 
-
-void OwnShip::setRateOfTurn(irr::f32 rateOfTurn) // Sets the rate of turn (used when controlled as secondary)
+void OwnShip::setRateOfTurn(float rateOfTurn)
 {
   mControlMode = MODE_AUTO; // Switch to controlled mode
-  this->mMu[1] = rateOfTurn;
+  mMu[1] = rateOfTurn;
 }
 
-
-void OwnShip::setWheel(irr::f32 aWheel)
+void OwnShip::setWheel(float aWheel)
 {
   mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
-  // Set the wheel (-ve is port, +ve is stbd), unless follow up rudder isn't working (overrideable with 'force')
+
   mWheel = aWheel;
   if (mWheel < -(mRudder.getDeltaMax())*180/PI)
     {
@@ -432,120 +421,52 @@ void OwnShip::setWheel(irr::f32 aWheel)
     }
 }
 
-/*void OwnShip::setRudder(irr::f32 aDelta)
+/*void OwnShip::setRudder(float aDelta)
   {
   controlMode = MODE_ENGINE;
   mRudder.SetDelta(aDelta);
   }*/
 
 
-void OwnShip::setPortEngine(irr::f32 aPort)
+void OwnShip::setPortEngine(float aPort)
 {
   mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
+  mPortEngine = aPort;
+  
+  if(mPortEngine > 1)
+    mPortEngine = 1;
 
-  mPortEngine = aPort; //+-1
-  if (mPortEngine > 1)
-    {
-      mPortEngine = 1;
-    }
-  if (mPortEngine < -1)
-    {
-      mPortEngine = -1;
-    }
+  if(mPortEngine < -1)
+    mPortEngine = -1;    
+} 
 
-} // end setPortEngine
-
-void OwnShip::setStbdEngine(irr::f32 aStbd)
+void OwnShip::setStbdEngine(float aStbd)
 {
   mControlMode = MODE_ENGINE; // Switch to engine and rudder mode
 
-  mStbdEngine = aStbd; //+-1
-  if (mStbdEngine > 1)
-    {
-      mStbdEngine = 1;
-    }
-  if (mStbdEngine < -1)
-    {
-      mStbdEngine = -1;
-    }
-
-} // end setStbdEngine
-
-
-irr::f32 OwnShip::getPortEngine() const
-{
-  return mPortEngine;
+  mStbdEngine = aStbd;
+  
+  if(mStbdEngine > 1)    
+    mStbdEngine = 1;
+    
+  if(mStbdEngine < -1)
+    mStbdEngine = -1;
 }
 
-irr::f32 OwnShip::getStbdEngine() const
-{
-  return mStbdEngine;
-}
-
-
-irr::f32 OwnShip::getWheel() const
-{
-  return mWheel;
-}
-
-irr::f32 OwnShip::getPitch() const
-{
-  return mPitch;
-}
-
-irr::f32 OwnShip::getRoll() const
-{
-  return mRoll;
-}
-
-irr::f32 OwnShip::getShipMass() const
-{
-  return mM;
-}
-
-std::string OwnShip::getBasePath() const
-{
-  return basePath;
-
-}
-
-irr::core::vector3df OwnShip::getRadarPosition() const
-{
-  return mRadarPos;
-}
-
-irr::f32 OwnShip::getRadarSize() const
-{
-  return mRadarSize;
-}
-
-irr::f32 OwnShip::getRadarTilt() const
-{
-  return mRadarTilt;
-}
-
-
-irr::f32 OwnShip::getAngleCorrection() const
-{
-  return mAngleCorrection;
-}
-
-std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
-{
-  return mViews;
-}
-
-std::vector<bool> OwnShip::getCameraIsHighView() const
-{
-  return mIsHighView;
-}
-
-std::string OwnShip::getRadarConfigFile() const
-{
-  return mRadarConfigFile;
-}
-
+float OwnShip::getPortEngine() const {return mPortEngine;}
+float OwnShip::getStbdEngine() const {return mStbdEngine;}
+float OwnShip::getWheel() const {return mWheel;}
+float OwnShip::getPitch() const {return mPitch;}
+float OwnShip::getRoll() const {return mRoll;}
+float OwnShip::getShipMass() const {return mM;}
+std::string OwnShip::getBasePath() const {return basePath;}
+irr::core::vector3df OwnShip::getRadarPosition() const {return mRadarPos;}
+float OwnShip::getRadarSize() const {return mRadarSize;}
+float OwnShip::getRadarTilt() const {return mRadarTilt;}
+float OwnShip::getAngleCorrection() const {return mAngleCorrection;}
+std::vector<irr::core::vector3df> OwnShip::getCameraViews() const {return mViews;}
+std::vector<bool> OwnShip::getCameraIsHighView() const {return mIsHighView;}
 bool OwnShip::HasGPS() const {return mHasGps;}
 bool OwnShip::HasDepthSounder() const {return mHasDepthSounder;}
 float OwnShip::GetMaxSounderDepth() const {return mMaxSounderDepth;}

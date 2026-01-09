@@ -27,8 +27,9 @@
 #include "OutlineScrollBar.h"
 #include "GUIRectangle.hpp"
 #include "RadarCalculation.hpp"
-#include "OwnShip.hpp"
 #include "Lines.hpp"
+#include "OwnShip.hpp"
+
 
 struct GUIData {
     irr::f32 lat;

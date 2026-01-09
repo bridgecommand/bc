@@ -118,7 +118,9 @@ protected:
   Eigen::Vector3d mMu; //mMu[0] : Speed on Z ; mMu[1] :  Rate of turn ; mMu[2] : Speed on X (m/s) 
   Eigen::Vector3d mEta; //mEta[0] : Z position ; mEta[1] : X position ; mEta[2] : Heading
   double mSpeedThroughWater;
-
+  float mAngleCorrectionRoll;
+  float mAngleCorrectionPitch;
+  
   //Boat parts
   unsigned char mNumberProp;
   Propeller mProp[2];
@@ -129,11 +131,10 @@ protected:
 
   //Devices
   unsigned int mMsi;
-  
-  float angleCorrectionRoll;
-  float angleCorrectionPitch;
 
+  //Control
   eControlMode mControlMode;
+  
   bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
 
 };

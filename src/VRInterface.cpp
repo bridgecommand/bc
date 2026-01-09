@@ -16,12 +16,14 @@
 
 // This file is mostly derived from https://gitlab.freedesktop.org/monado/demos/openxr-simple-example/ at 94f1a764dd736b23657ff01464ec1518771e8cdc
 
-#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
+//#define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
-#include "VRInterface.hpp"
-#include "Constants.hpp"
 #include <iostream>
 #include <cstdarg>
+
+#include "SimulationModel.hpp"
+#include "VRInterface.hpp"
+#include "Constants.hpp"
 
 // Constructor
 VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI) {
@@ -140,11 +142,11 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 VRInterface::~VRInterface() {
 }
 
-int VRInterface::load(SimulationModel* model) {
+int VRInterface::load(void* aModel) {
 #if defined _WIN64 || defined __linux__
 	
 	// Store simulation model pointer
-	this->model = model;
+	mModel = aModel;
 
 	// Load required OpenGL extensions
 	#if defined _WIN32
@@ -1021,6 +1023,8 @@ int VRInterface::update() {
 		return 0;
 	}
 
+	SimulationModel *pModel = (SimulationModel*)mModel;
+
 	// --- Wait for our turn to do head-pose dependent computation and render a frame
 	XrFrameState frame_state;
 	frame_state.type = XR_TYPE_FRAME_STATE;
@@ -1236,14 +1240,14 @@ int VRInterface::update() {
 	}
 	// Reset time compression to real time if paused, and HUD has been turned off
 	if (previousShowHUD && !showHUD) {
-		if (model->getAccelerator() == 0) {
-			model->setAccelerator(1.0);
+		if (pModel->getAccelerator() == 0) {
+			pModel->setAccelerator(1.0);
 		}
 	}
 
 	// Set controller positions
-	irr::core::vector3df baseViewPosition = model->getCamera()->getBasePosition();
-	irr::core::matrix4 baseViewRotation = model->getCamera()->getBaseRotation();
+	irr::core::vector3df baseViewPosition = pModel->getCamera()->getBasePosition();
+	irr::core::matrix4 baseViewRotation = pModel->getCamera()->getBaseRotation();
 	// Transform positions based on orientation of the camera's parent
 	irr::core::vector3df transformedVrLeftGripPosition = vrLeftGripPosition;
 	irr::core::vector3df transformedVrRightGripPosition = vrRightGripPosition;
@@ -1332,7 +1336,7 @@ int VRInterface::update() {
 		
 		// Find lens shift, as left and right FOV may not be symmetrical
 		// TODO: Probably doesn't need calculating each frame
-		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
+		pModel->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
 		float tanLeft = tan(views[i].fov.angleLeft);
 		float tanRight = tan(views[i].fov.angleRight);
 		float tanUp = tan(views[i].fov.angleUp);
@@ -1342,7 +1346,7 @@ int VRInterface::update() {
 		irr::core::vector2df lensShift = irr::core::vector2df(horizontalShift, verticalShift);
 		
 		// Send this to the camera
-		model->updateCameraVRPos(quat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
+		pModel->updateCameraVRPos(quat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
 
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
@@ -1537,13 +1541,13 @@ int VRInterface::update() {
 					// TODO: Check sign of this, and if +- 10 degrees is enough overlap
 					if (leftGripEulerAngles.Z * irr::core::RADTODEG > -10) {
 						vrChangingPortEngine = true;
-						portEngineReference = model->getOwnShip()->getPortEngine();
+						portEngineReference = pModel->getOwnShip()->getPortEngine();
 					} else {
 						vrChangingPortEngine = false;
 					}
 					if (leftGripEulerAngles.Z * irr::core::RADTODEG < 10) {
 						vrChangingStbdEngine = true;
-						stbdEngineReference = model->getOwnShip()->getStbdEngine();
+						stbdEngineReference = pModel->getOwnShip()->getStbdEngine();
 					} else {
 						vrChangingStbdEngine = false;
 					}
@@ -1553,12 +1557,12 @@ int VRInterface::update() {
 
 				if (vrChangingPortEngine) {
 					//setPortEngine clips to valid range, so don't worry about this here
-				  model->getOwnShip()->setPortEngine(portEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
+				  pModel->getOwnShip()->setPortEngine(portEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
 					// TODO: Add haptic feedback if passing zero position
 				}
 				if (vrChangingStbdEngine) {
 					//setStbdEngine clips to valid range, so don't worry about this here
-					model->getOwnShip()->setStbdEngine(stbdEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
+					pModel->getOwnShip()->setStbdEngine(stbdEngineReference + 10 * leftHandDeltaZ); // TODO: Make sensitivity a parameter?
 					// TODO: Add haptic feedback if passing zero position
 				}
 			}
@@ -1569,11 +1573,11 @@ int VRInterface::update() {
 				// Reset 'start' position for controller movement if newly pressed down
 				if (!previousSelectState[HAND_RIGHT_INDEX]) {
 					vrRightGripPositionReference = vrRightGripPosition;
-					wheelReference = model->getOwnShip()->getWheel();
+					wheelReference = pModel->getOwnShip()->getWheel();
 				}
 				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 				//setWheel clips to valid range, so don't worry about this here
-				model->getOwnShip()->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
+				pModel->getOwnShip()->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?
 			}
 		

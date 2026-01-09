@@ -41,7 +41,7 @@ public:
 
   OwnShip();
   ~OwnShip();
-  void Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
+  int Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
   void Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver);
   void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot);
 
@@ -50,7 +50,6 @@ public:
   irr::core::vector3df getRadarPosition() const;
   irr::f32 getRadarSize() const;
   irr::f32 getRadarTilt() const;
-  std::string getRadarConfigFile() const;
   irr::f32 getAngleCorrection() const;
   void setWheel(irr::f32 aWheel);      // Set the wheel (-ve is port, +ve is stbd). Clamps to +-30 DEE. Set force to true to apply even if follow up rudder has failed
   //void setRudder(irr::f32 aDelta);
@@ -88,7 +87,6 @@ private:
   std::vector<bool> mIsHighView;
   bool mIsTransparent;
   
-  std::string mRadarConfigFile;
   std::string basePath; // The location the model is loaded from
 
   Terrain *mTerrain;

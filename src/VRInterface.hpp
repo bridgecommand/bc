@@ -18,7 +18,6 @@
 #define __VRINTERFACE_HPP_INCLUDED__
 
 #include "irrlicht.h"
-#include "SimulationModel.hpp"
 #include <cstdint> // For int64_t
 
 #if defined _WIN64
@@ -63,7 +62,7 @@ class VRInterface {
 public:
     VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI);
     ~VRInterface();
-    int load(SimulationModel* model);
+    int load(void* aModel);
     void unload();
     float getAspectRatio() const;
     bool isVRActive() const;
@@ -140,7 +139,7 @@ private:
     bool run_framecycle;  // for some session states skip the frame cycle
     bool vrActive; // If VR has been successfully loaded
 
-    SimulationModel* model; // Store pointer to model
+    void* mModel; // Store pointer to model
 
     // Vars to track position and orientation of controllers
     irr::core::vector3df vrLeftGripPosition;

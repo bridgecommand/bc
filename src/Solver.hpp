@@ -4,7 +4,7 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include "ShipGlobalParams.hpp"
-#include "OwnShip.hpp"
+#include "Ship.hpp"
 #include "Time.hpp"
 
 #define VECTOR_SIZE_DIFF_EQ (6)

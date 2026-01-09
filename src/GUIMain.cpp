@@ -26,8 +26,6 @@
 #include "Constants.hpp"
 #include "Utilities.hpp"
 #include "ScrollDial.h"
-#include "OwnShip.hpp"
-#include "Lines.hpp"
 
 GUIMain::GUIMain()
 {

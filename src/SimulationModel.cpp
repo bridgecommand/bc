@@ -18,18 +18,11 @@
 #include <fstream>
 
 #include "SimulationModel.hpp"
-#include "ModelParams.hpp"
 #include "ScenarioDataStructure.hpp"
 #include "GUIMain.hpp"
-#include "Terrain.hpp"
-#include "Sky.hpp"
-#include "Buoys.hpp"
-#include "Sound.hpp"
-#include "Collision.hpp"
 #include "IniFile.hpp"
 #include "Constants.hpp"
 #include "Utilities.hpp"
-#include "MessageMisc.hpp"
 
 
 SimulationModel::SimulationModel()
@@ -169,7 +162,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
   if (1 == mOwnShip->getNumberProp()) aGui->setSingleEngine();
 
   //Load the radar with config parameters
-  mRadarCalculation->load(mOwnShip->getRadarConfigFile(),mDevice);
+  mRadarCalculation->load("", mDevice);
 
   //set camera zoom to 1
   mCurrentZoom = 1.0;
