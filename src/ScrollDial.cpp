@@ -379,6 +379,34 @@ s32 ScrollDial::getPos() const
 	return Pos;
 }
 
+//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+/** Ignored */
+void ScrollDial::setDrawBackground(bool draw)
+{
+
+}
+
+//! Checks if a background is drawn
+/** Ignored */
+bool ScrollDial::isDrawBackgroundEnabled() const
+{
+	return false;
+}
+
+//! Access the up (vertical) or left (horizontal) button
+/** \return null, as no button exists for this type of scroll bar */
+IGUIButton* ScrollDial::getUpLeftButton() const
+{
+	return 0;
+}
+
+//! Access the right (vertical) or down (horizontal) button
+/** \return null, as no button exists for this type of scroll bar */
+IGUIButton* ScrollDial::getDownRightButton() const
+{
+	return 0;
+}
+
 /*
 //! refreshes the position and text on child buttons
 void ScrollDial::refreshControls()

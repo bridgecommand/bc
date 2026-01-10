@@ -71,6 +71,7 @@ namespace scene
 		virtual void render();
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual IMesh* getMesh(void);
+		virtual void setMesh(IMesh* mesh, bool copyMeshMaterials = true);
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh=0, s32 id=-1, bool zfailmethod=true, f32 infinity=1000.0f);
 		virtual void setReadOnlyMaterials(bool readonly);
 		virtual bool isReadOnlyMaterials() const;

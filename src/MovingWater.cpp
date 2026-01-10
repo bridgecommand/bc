@@ -658,6 +658,11 @@ IMesh* MovingWaterSceneNode::getMesh(void)
     return mesh;
 }
 
+void MovingWaterSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
+{
+    // Don't do anything here, the mesh is created manually
+}
+
 IShadowVolumeSceneNode* MovingWaterSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh, irr::s32 id, bool zfailmethod, irr::f32 infinity)
 {
     //std::cerr << "In addShadowVolumeSceneNode()" << std::endl;

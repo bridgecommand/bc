@@ -72,6 +72,20 @@ namespace gui
 		//! updates the rectangle
 		virtual void updateAbsolutePosition();
 
+		//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+		/** Ignored */
+		virtual void setDrawBackground(bool draw);
+
+		//! Checks if a background is drawn
+		/** Ignored */
+		virtual bool isDrawBackgroundEnabled() const;
+
+		//! Access the up (vertical) or left (horizontal) button
+		virtual IGUIButton* getUpLeftButton() const;
+
+		//! Access the right (vertical) or down (horizontal) button
+		virtual IGUIButton* getDownRightButton() const;
+
 		//! Writes attributes of the element.
 		//virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
