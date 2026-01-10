@@ -120,7 +120,7 @@ namespace scene
 		virtual bool isReadOnlyMaterials() const IRR_OVERRIDE;
 
 		//! Sets a new mesh
-		virtual void setMesh(IAnimatedMesh* mesh) IRR_OVERRIDE;
+		virtual void setMesh(IAnimatedMesh* mesh, bool copyMeshMaterials) IRR_OVERRIDE;
 
 		//! Returns the current mesh
 		virtual IAnimatedMesh* getMesh(void) IRR_OVERRIDE { return Mesh; }

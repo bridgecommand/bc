@@ -151,7 +151,7 @@ public:
 
 	//! Adds a spin box to the environment
 	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
-		bool border=false,IGUIElement* parent=0, s32 id=-1) IRR_OVERRIDE;
+		bool border=false,IGUIElement* parent=0, s32 id=-1, bool hasButtons=true) IRR_OVERRIDE;
 
 	//! Adds a tab control to the environment.
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
@@ -269,6 +269,18 @@ public:
 	//! Get the way the gui does handle focus changes
 	virtual u32 getFocusBehavior() const IRR_OVERRIDE;
 
+	//! Set a delay in milliseconds to show/hide menus
+	virtual void setMenuShowDelay(irr::u32 msDelay) IRR_OVERRIDE
+	{
+		MenuShowDelay = msDelay;
+	}
+
+	//! Get a delay in milliseconds when to showing/hiding menus
+	virtual irr::u32 getMenuShowDelay() const IRR_OVERRIDE
+	{
+		return MenuShowDelay;
+	}
+
 	//! Adds a IGUIElement to deletion queue.
 	virtual void addToDeletionQueue(IGUIElement* element) IRR_OVERRIDE;
 
@@ -328,6 +340,7 @@ private:
 	IEventReceiver* UserReceiver;
 	IOSOperator* Operator;
 	u32 FocusFlags;
+	u32 MenuShowDelay;
 	core::array<IGUIElement*> DeletionQueue;
 
 	static const io::path DefaultFontName;

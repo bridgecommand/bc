@@ -193,7 +193,7 @@ namespace scene
 		virtual bool isReadOnlyMaterials() const = 0;
 
 		//! Sets a new mesh
-		virtual void setMesh(IAnimatedMesh* mesh) = 0;
+		virtual void setMesh(IAnimatedMesh* mesh, bool copyMeshMaterials=true) = 0;
 
 		//! Returns the current mesh
 		virtual IAnimatedMesh* getMesh(void) = 0;

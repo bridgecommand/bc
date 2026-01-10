@@ -9,6 +9,7 @@
 #include "IGUIEnvironment.h"
 #include "IGUIButton.h"
 #include "IGUIFont.h"
+#include "IGUIWindow.h"
 #include "CGUIButton.h"
 
 namespace irr
@@ -26,37 +27,47 @@ CGUIToolBar::CGUIToolBar(IGUIEnvironment* environment, IGUIElement* parent, s32 
 
 	// calculate position and find other menubars
 	s32 y = 0;
+	s32 x = 0;
 	s32 parentwidth = 100;
 
 	if (parent)
 	{
-		parentwidth = Parent->getAbsolutePosition().getWidth();
-		s32 parentheight = Parent->getAbsolutePosition().getHeight();
+		core::rect<s32> rectParent = parent->getRelativePosition();
+		if ( parent && parent->hasType(EGUIET_WINDOW) )
+		{
+			core::rect<s32> clientRectParent = static_cast<IGUIWindow*>(parent)->getClientRect();
+			x = clientRectParent.UpperLeftCorner.X;
+			y = clientRectParent.UpperLeftCorner.Y;
+			rectParent = clientRectParent;
+		}
+
+		parentwidth = rectParent.getWidth();
+		s32 parentheight = rectParent.getHeight();
 
 		const core::list<IGUIElement*>& children = parent->getChildren();
 		core::list<IGUIElement*>::ConstIterator it = children.begin();
 		for (; it != children.end(); ++it)
 		{
 			const IGUIElement* e = *it;
+			if ( e == this )	// element already added at this point (in IGUIElement constructor)
+				continue;
 			if (	e->hasType(EGUIET_CONTEXT_MENU) 
 				||	e->hasType(EGUIET_MENU) 
 				||	e->hasType(EGUIET_TOOL_BAR)  )
 			{
-				core::rect<s32> r = e->getAbsolutePosition();
-				if (r.UpperLeftCorner.X == 0 && r.UpperLeftCorner.Y <= y &&
-					r.LowerRightCorner.X == parentwidth 
+				core::rect<s32> r = e->getRelativePosition();
+				if (r.UpperLeftCorner.X <= x && r.UpperLeftCorner.Y <= y &&
+					r.LowerRightCorner.X >= parentwidth 
 					&& parentheight > r.LowerRightCorner.Y 	)
+				{
 					y = r.LowerRightCorner.Y;
-			}
-			else
-			{
-				e->getType();
+				}
 			}
 		}
 	}
 
 	core::rect<s32> rr;
-	rr.UpperLeftCorner.X = 0;
+	rr.UpperLeftCorner.X = x;
 	rr.UpperLeftCorner.Y = y;
 	s32 height = Environment->getSkin()->getSize ( EGDS_MENU_HEIGHT );
 
@@ -69,7 +80,7 @@ CGUIToolBar::CGUIToolBar(IGUIEnvironment* environment, IGUIElement* parent, s32 
 			height = t;
 	}*/
 
-	rr.LowerRightCorner.X = parentwidth;
+	rr.LowerRightCorner.X = x+parentwidth;
 	rr.LowerRightCorner.Y = rr.UpperLeftCorner.Y + height;
 	setRelativePosition(rr);
 }

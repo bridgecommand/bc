@@ -49,20 +49,11 @@ private:
 	{
 		core::stringc Name;
 		E_PLY_PROPERTY_TYPE Type;
-		union
+		struct SPLYListProperty
 		{
-			u8  Int8;
-			u16 Int16;
-			u32 Int32;
-			f32 Float32;
-			f64 Double;
-			struct SPLYListProperty
-			{
-				E_PLY_PROPERTY_TYPE CountType;
-				E_PLY_PROPERTY_TYPE ItemType;
-			} List;
-
-		} Data;
+			E_PLY_PROPERTY_TYPE CountType;
+			E_PLY_PROPERTY_TYPE ItemType;
+		} List;
 
 		inline u32 size() const
 		{

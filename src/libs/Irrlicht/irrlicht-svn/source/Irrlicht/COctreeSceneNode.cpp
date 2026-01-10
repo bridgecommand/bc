@@ -650,8 +650,9 @@ void COctreeSceneNode::deleteTree()
 		Mesh->drop();
 }
 
-void COctreeSceneNode::setMesh(IMesh* mesh)
+void COctreeSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
 {
+	// TODO: copyMeshMaterials ignored for now, createTree has another note about materials, read that first
 	createTree(mesh);
 }
 

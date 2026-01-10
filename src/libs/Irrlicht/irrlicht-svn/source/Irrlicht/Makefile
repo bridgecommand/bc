@@ -94,15 +94,17 @@ sharedlib sharedlib_osx: CPPFLAGS += -fPIC
 sharedlib: LDFLAGS += -fPIC
 
 #multilib handling
-ifeq ($(HOSTTYPE), x86_64)
-LIBSELECT=64
+BITS := $(shell getconf LONG_BIT)
+ifneq ($(BITS), 32)
+	LIBSELECT := $(BITS)
 endif
 
 #Linux specific options
 staticlib sharedlib install: SYSTEM = Linux
 STATIC_LIB = libIrrlicht.a
 LIB_PATH = ../../lib/$(SYSTEM)
-INSTALL_DIR = /usr/local/lib
+PREFIX ?= /usr/local
+INSTALL_DIR ?= $(PREFIX)/lib$(LIBSELECT)
 sharedlib install: SHARED_LIB = libIrrlicht.so
 sharedlib: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 staticlib sharedlib: CXXINCS += -I/usr/X11R6/include
@@ -198,7 +200,7 @@ help:
 	@echo "Available targets for Irrlicht"
 	@echo " sharedlib: Build shared library Irrlicht.so for Linux"
 	@echo " staticlib: Build static library Irrlicht.a for Linux"
-	@echo " install: Copy shared library to /usr/local/lib"
+	@echo " install: Copy shared library to $(INSTALL_DIR)"
 	@echo ""
 	@echo " sharedlib_win32: Build shared library Irrlicht.dll for Windows"
 	@echo " staticlib_win32: Build static library Irrlicht.a for Windows"

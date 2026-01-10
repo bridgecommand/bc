@@ -24,7 +24,7 @@ namespace scene
 			const core::vector3df& position,
 			const core::vector3df& rotation,
 			const core::vector3df& scale)
-			: ISceneNode(parent, mgr, id, position, rotation, scale) {};
+			: ISceneNode(parent, mgr, id, position, rotation, scale) {}
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const IRR_OVERRIDE { return ESNT_VOLUME_LIGHT; }

@@ -97,7 +97,39 @@ namespace scene
 
 		//! Drawn after transparent effect nodes. For custom gui's. Unsorted (in order nodes registered themselves). 
 		ESNRP_GUI = 128
+	};
 
+	//! Enumeration for sorting transparent nodes
+	/** Sorting used for nodes with ESNRP_TRANSPARENT or ESNRP_AUTOMATIC+transparency.
+	Also used for ESNRP_TRANSPARENT_EFFECT nodes (in an independent array)
+	Transparent nodes are always drawn back to front based on distance to camera.
+	This enum controls which points are used for the distance. */
+	enum E_TRANSPARENT_NODE_SORTING
+	{
+		//! Don't sort, but  draw in the order in which nodes registered themselves for rendering
+		//! By default this is the order in which nodes are in the scenegraph
+		//! Which can be used to do some custom sorting via scene-graph (mainly useful if you only have to that once)
+		ETNS_NONE,
+
+		//! Distance from node origin to camera position
+		ETNS_ORIGIN,
+
+		//! Distance from node center to camera position
+		ETNS_CENTER,
+
+		//! Distance from the nearest of the 2 transformed bounding-box extend corners to camera
+		ETNS_BBOX_EXTENTS,
+
+		//! Distance from node origin to camera plane
+		ETNS_PLANE_ORIGIN,
+
+		//! Distance from node center to camera plane
+		//! With orthographic cameras there's a high chance you might prefer this one
+		ETNS_PLANE_CENTER,
+
+		//! Default sorting Irrlicht uses currently
+		//! This may change in the future
+		ETNS_DEFAULT = ETNS_CENTER
 	};
 
 	class IAnimatedMesh;
@@ -1120,6 +1152,11 @@ namespace scene
 		//! Get the current color of shadows.
 		virtual video::SColor getShadowColor() const = 0;
 
+		//! Shadow nodes drawing into the stencil buffer need that shadow to be drawn afterwards
+		//* This is usually used internally by CShadowVolumeSceneNodes. 
+		// Nothing to do for users unless they implement their own shadow nodes */
+		virtual void requestDrawShadowPassStencilShadow() = 0;
+
 		//! Create a shadow volume scene node to be used with custom nodes
 		/** Use this if you implement your own SceneNodes and need shadow volumes in them.
 		Otherwise you should generally use addShadowVolumeSceneNode functions from IMeshSceneNode or IAnimatedMeshSceneNode.*/
@@ -1620,7 +1657,7 @@ namespace scene
 		using ISceneManager::saveScene().
 		\param filename Name of the file to load from.
 		\param userDataSerializer If you want to load user data
-		possibily saved in that file for some scene nodes in the file,
+		saved in that file for some scene nodes in the file,
 		implement the ISceneUserDataSerializer interface and provide it
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
@@ -1675,6 +1712,12 @@ namespace scene
 
 		//! Set current render pass.
 		virtual void setCurrentRenderPass(E_SCENE_NODE_RENDER_PASS nextPass) =0;
+
+		//! Get current node sorting algorithm used for transparent nodes
+		virtual E_TRANSPARENT_NODE_SORTING getTransparentNodeSorting() const = 0;
+
+		//! Set the node sorting algorithm used for transparent nodes
+		virtual void setTransparentNodeSorting(E_TRANSPARENT_NODE_SORTING sorting) = 0;
 
 		//! Get an instance of a geometry creator.
 		/** The geometry creator provides some helper methods to create various types of

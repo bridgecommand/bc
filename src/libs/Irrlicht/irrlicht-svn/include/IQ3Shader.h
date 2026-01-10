@@ -184,6 +184,8 @@ namespace quake3
 			case 2:
 				ret = false;
 				break;
+			default:
+				break;
 		}
 		return ret;
 	}
@@ -207,6 +209,8 @@ namespace quake3
 				break;
 			case 1:
 				ret = video::ECFN_EQUAL;
+				break;
+			default:
 				break;
 		}
 		return ret;
@@ -274,6 +278,8 @@ namespace quake3
 						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
+					default:
+						break;
 				} break;
 
 			case video::EBF_ONE:
@@ -292,6 +298,8 @@ namespace quake3
 						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
+					default:
+						break;
 				} break;
 
 			case video::EBF_SRC_ALPHA:
@@ -303,6 +311,8 @@ namespace quake3
 						blendfunc.param0 = 1.f/255.f;
 						blendfunc.isTransparent = 1;
 						resolved = 1;
+						break;
+					default:
 						break;
 				} break;
 
@@ -340,7 +350,8 @@ namespace quake3
 				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
-
+			default:
+				break;
 		}
 
 		// use the generic blender
@@ -543,12 +554,11 @@ namespace quake3
 		core::stringc content;
 
 		SVariable ( const c8 * n, const c8 *c = 0 ) : name ( n ), content (c) {}
-		virtual ~SVariable () {}
 
 		void clear ()
 		{
-			name = "";
-			content = "";
+			name.clear(false);
+			content.clear(false);
 		}
 
 		s32 isValid () const
@@ -573,7 +583,6 @@ namespace quake3
 	struct SVarGroup
 	{
 		SVarGroup () { Variable.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE ); }
-		virtual ~SVarGroup () {}
 
 		u32 isDefined ( const c8 * name, const c8 * content = 0 ) const
 		{

@@ -55,8 +55,21 @@ namespace gui
 
 		//! sets the current position of the scrollbar
 		virtual void setPos(s32 pos) = 0;
-	};
 
+		//! Sets whether to draw a background color (EGDC_SCROLLBAR)
+		/** By default enabled */
+		virtual void setDrawBackground(bool draw) = 0;
+
+		//! Checks if a background is drawn
+		/** \return true if background drawing is enabled, false otherwise */
+		virtual bool isDrawBackgroundEnabled() const = 0;
+
+		//! Access the up (vertical) or left (horizontal) button
+		virtual IGUIButton* getUpLeftButton() const = 0;
+
+		//! Access the right (vertical) or down (horizontal) button
+		virtual IGUIButton* getDownRightButton() const = 0;
+	};
 
 } // end namespace gui
 } // end namespace irr

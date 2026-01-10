@@ -319,13 +319,12 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 		// calculate bounding boxes
 		if (header.numVertices)
 		{
-			core::aabbox3d<f32> box;
 			core::vector3df pos;
 			pos.X = f32(mesh->FrameList[i] [0].Pos.X) * mesh->FrameTransforms[i].scale.X + mesh->FrameTransforms[i].translate.X;
 			pos.Y = f32(mesh->FrameList[i] [0].Pos.Y) * mesh->FrameTransforms[i].scale.Y + mesh->FrameTransforms[i].translate.Y;
 			pos.Z = f32(mesh->FrameList[i] [0].Pos.Z) * mesh->FrameTransforms[i].scale.Z + mesh->FrameTransforms[i].translate.Z;
 
-			box.reset(pos);
+			core::aabbox3d<f32> box(pos);
 
 			for (s32 j=1; j<header.numTriangles*3; ++j)
 			{

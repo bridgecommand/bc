@@ -85,7 +85,7 @@ private:
 
 	struct SMaterialGroup
 	{
-		SMaterialGroup() : faceCount(0), faces(0) {};
+		SMaterialGroup() : faceCount(0), faces(0) {}
 
 		SMaterialGroup(const SMaterialGroup& o)
 		{

@@ -407,7 +407,7 @@ void CGUIColorSelectDialog::draw()
 
 		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
-			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
+			font->draw(Text, rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
 			&AbsoluteClippingRect);
 	}
 

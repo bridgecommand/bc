@@ -81,7 +81,7 @@ namespace os
 	{
 	public:
 
-		//! returns the current time in milliseconds
+		//! returns the current virtual time in milliseconds
 		static u32 getTime();
 
 		//! get current time and date in calendar form

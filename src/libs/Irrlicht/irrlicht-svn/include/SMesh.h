@@ -18,7 +18,7 @@ namespace scene
 	struct SMesh : public IMesh
 	{
 		//! constructor
-		SMesh()
+		SMesh() : BoundingBox(1,-1)
 		{
 			#ifdef _DEBUG
 			setDebugName("SMesh");
@@ -87,7 +87,7 @@ namespace scene
 			for (u32 i=0; i<MeshBuffers.size(); ++i)
 			{
 				const core::aabbox3df& bb = MeshBuffers[i]->getBoundingBox();
-				if ( !bb.isEmpty() )
+				if ( bb.isValid() )
 				{
 					if ( !hasMeshBufferBBox )
 					{
@@ -98,12 +98,11 @@ namespace scene
 					{
 						BoundingBox.addInternalBox(bb);
 					}
-
 				}
 			}
 
 			if ( !hasMeshBufferBBox )
-				BoundingBox.reset(0.0f, 0.0f, 0.0f);
+				BoundingBox = core::aabbox3df(1,-1);
 		}
 
 		//! adds a MeshBuffer

@@ -62,7 +62,7 @@ namespace scene
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) IRR_OVERRIDE;
 
 		//! Sets a new mesh to display
-		virtual void setMesh(IMesh* mesh) IRR_OVERRIDE {}
+		virtual void setMesh(IMesh* mesh, bool copyMeshMaterials) IRR_OVERRIDE {}
 
 		//! Returns the current mesh
 		virtual IMesh* getMesh(void) IRR_OVERRIDE { return Mesh; }

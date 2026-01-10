@@ -30,9 +30,9 @@ namespace video
 		"; c4: Eye position \n"\
 		"; c8-11: Transposed worldViewProj matrix (Projection * View * World) \n"\
 		"; c12: Light01 position \n"\
-		"; c13: x,y,z: Light01 color; .w: 1/LightRadius² \n"\
+		"; c13: x,y,z: Light01 color; .w: 1/(LightRadius*LightRadius) \n"\
 		"; c14: Light02 position \n"\
-		"; c15: x,y,z: Light02 color; .w: 1/LightRadius² \n"\
+		"; c15: x,y,z: Light02 color; .w: 1/(LightRadius*LightRadius) \n"\
 		"vs.1.1\n"\
 		"dcl_position  v0              ; position \n"\
 		"dcl_normal    v1              ; normal \n"\
@@ -84,15 +84,15 @@ namespace video
 		"mad oT4.xyz, r10.xyz, c95, c95 ; move eye vector from -1..1 into 0..1 \n"\
 		"\n"\
 		" ; calculate attenuation of light 1 \n"\
-		"dp3 r2.x, r2.xyz, r2.xyz      ; r2.x = r2.x² + r2.y² + r2.z² \n"\
-		"mul r2.x, r2.x, c13.w         ; r2.x * attenutation \n"\
-		"rsq r2, r2.x                  ; r2.xyzw = 1/sqrt(r2.x * attenutation)\n"\
+		"dp3 r2.x, r2.xyz, r2.xyz      ; r2.x = r2.x*r2.x + r2.y*r2.y + r2.z*r2.z \n"\
+		"mul r2.x, r2.x, c13.w         ; r2.x * attenuation \n"\
+		"rsq r2, r2.x                  ; r2.xyzw = 1/sqrt(r2.x * attenuation)\n"\
 		"mul oD0, r2, c13              ; resulting light color = lightcolor * attenuation \n"\
 		"\n"\
 		" ; calculate attenuation of light 2 \n"\
-		"dp3 r3.x, r3.xyz, r3.xyz      ; r3.x = r3.x² + r3.y² + r3.z² \n"\
-		"mul r3.x, r3.x, c15.w         ; r2.x * attenutation \n"\
-		"rsq r3, r3.x                  ; r2.xyzw = 1/sqrt(r2.x * attenutation)\n"\
+		"dp3 r3.x, r3.xyz, r3.xyz      ; r3.x = r3.x*r3.x + r3.y*r3.y + r3.z*r3.z \n"\
+		"mul r3.x, r3.x, c15.w         ; r2.x * attenuation \n"\
+		"rsq r3, r3.x                  ; r2.xyzw = 1/sqrt(r2.x * attenuation)\n"\
 		"mul oD1, r3, c15              ; resulting light color = lightcolor * attenuation \n"\
 		"\n"\
 		"mov oT0.xy, v3.xy             ; move out texture coordinates 1\n"\

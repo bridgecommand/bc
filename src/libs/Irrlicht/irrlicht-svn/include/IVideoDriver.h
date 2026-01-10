@@ -594,8 +594,12 @@ namespace video
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
 		\param area: Rectangle defining the new area of rendering
-		operations. */
-		virtual void setViewPort(const core::rect<s32>& area) =0;
+		operations. 
+		\param clipToRenderTarget When true the function ensures the area won't
+		be outside the current render-target. The only driver that can handle 
+		unclipped areas outside the rt so far is OpenGL. For other drivers you 
+		should keep this set to true. */
+		virtual void setViewPort(const core::rect<s32>& area, bool clipToRenderTarget=true) =0;
 
 		//! Gets the area of the current viewport.
 		/** \return Rectangle of the current viewport. */
@@ -1208,8 +1212,10 @@ namespace video
 		for writing the image.
 		\param image Image to write.
 		\param filename Name of the file to write.
-		\param param Control parameter for the backend (e.g. compression
-		level).
+		\param param Control parameter for the backend. Meaning depends on format:
+		0 is always some default
+		For jpg it's otherwise the quality level in range 1-100 (0=default is 75)
+		For png it's the compression level in range 1-10 (0=default is converted to Z_DEFAULT_COMPRESSION)
 		\return True on successful write. */
 		virtual bool writeImageToFile(IImage* image, const io::path& filename, u32 param = 0) = 0;
 
@@ -1219,8 +1225,10 @@ namespace video
 		\param image Image to write.
 		\param file  An already open io::IWriteFile object. The name
 		will be used to determine the appropriate image writer to use.
-		\param param Control parameter for the backend (e.g. compression
-		level).
+		\param param Control parameter for the backend. Meaning depends on format:
+		0 is always some default
+		For jpg it's otherwise the quality level in range 1-100 (0=default is 75)
+		For png it's the compression level in range 1-10 (0=default is converted to Z_DEFAULT_COMPRESSION)
 		\return True on successful write. */
 		virtual bool writeImageToFile(IImage* image, io::IWriteFile* file, u32 param =0) =0;
 
@@ -1399,7 +1407,11 @@ namespace video
 		virtual scene::IMeshManipulator* getMeshManipulator() =0;
 
 		//! Clear the color, depth and/or stencil buffers.
-		virtual void clearBuffers(u16 flag, SColor color = SColor(255,0,0,0), f32 depth = 1.f, u8 stencil = 0) = 0;
+		/** \param clearFlag A combination of the E_CLEAR_BUFFER_FLAG bit-flags. 
+		\param clearColor The clear color for the color buffer.
+		\param clearDepth The clear value for the depth buffer.
+		\param clearStencil The clear value for the stencil buffer.	*/
+		virtual void clearBuffers(u16 clearFlag, SColor clearColor = SColor(255,0,0,0), f32 clearDepth = 1.f, u8 clearStencil = 0) = 0;
 
 		//! Clear the color, depth and/or stencil buffers.
 		IRR_DEPRECATED void clearBuffers(bool backBuffer, bool depthBuffer, bool stencilBuffer, SColor color)

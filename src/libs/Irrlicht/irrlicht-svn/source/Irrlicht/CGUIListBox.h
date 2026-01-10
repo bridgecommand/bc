@@ -33,7 +33,7 @@ namespace gui
 		//! returns amount of list items
 		virtual u32 getItemCount() const IRR_OVERRIDE;
 
-		//! returns string of a list item. the id may be a value from 0 to itemCount-1
+		//! returns string of a list item. The id may be a value from 0 to itemCount-1
 		virtual const wchar_t* getListItem(u32 id) const IRR_OVERRIDE;
 
 		//! clears the list
@@ -107,7 +107,7 @@ namespace gui
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index) IRR_OVERRIDE;
 
-		//! clear item color at index for given colortype
+		//! clear item color at index for given color type
 		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) IRR_OVERRIDE;
 
 		//! has the item at index its color overwritten?
@@ -131,6 +131,15 @@ namespace gui
 		//! Access the vertical scrollbar
 		virtual IGUIScrollBar* getVerticalScrollBar() const IRR_OVERRIDE;
 
+		//! Sets a skin independent font.
+		virtual void setOverrideFont(IGUIFont* font=0) IRR_OVERRIDE;
+
+		//! Gets the override font (if any)
+		virtual IGUIFont* getOverrideFont(void) const IRR_OVERRIDE;
+
+		//! Get the font which is used for drawing
+		virtual IGUIFont* getActiveFont() const IRR_OVERRIDE;
+
 	private:
 
 		struct ListItem
@@ -151,7 +160,7 @@ namespace gui
 			ListItemOverrideColor OverrideColors[EGUI_LBC_COUNT];
 		};
 
-		void recalculateItemHeight();
+		void recalculateItemHeight(bool forceRecalculation=false);
 		void selectNew(s32 ypos, bool onlyHover=false);
 		void recalculateScrollPos();
 		void updateScrollBarSize(s32 size);
@@ -169,9 +178,10 @@ namespace gui
 		s32 ItemHeightOverride;
 		s32 TotalItemHeight;
 		s32 ItemsIconWidth;
-		gui::IGUIFont* Font;
-		gui::IGUISpriteBank* IconBank;
-		gui::IGUIScrollBar* ScrollBar;
+		IGUIFont* Font;
+		IGUIFont* OverrideFont;
+		IGUISpriteBank* IconBank;
+		IGUIScrollBar* ScrollBar;
 		u32 SelectTime;
 		u32 LastKeyTime;
 		core::stringw KeyBuffer;

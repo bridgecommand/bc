@@ -36,10 +36,10 @@ public:
 	virtual void unlock() IRR_OVERRIDE;
 
 	//! returns unoptimized surface
-	virtual CImage* getImage();
+	virtual CImage* getImage() const;
 
 	//! returns texture surface
-	virtual CImage* getTexture();
+	virtual CImage* getTexture() const;
 
 	virtual void regenerateMipMapLevels(void* data = 0, u32 layer = 0) IRR_OVERRIDE;
 

@@ -22,7 +22,10 @@ public:
 	//! constructor from raw image data
 	/** \param useForeignMemory: If true, the image will use the data pointer
 	directly and own it from now on, which means it will also try to delete [] the
-	data when the image will be destructed. If false, the memory will by copied. */
+	data when the image will be destructed. If false, the memory will by copied. 
+	\param deleteMemory When useForeignMemory is true it allows using that memory without
+	ever trying to delete it. When useForeignMemory is false then deleteMemory is
+	automatically true. */
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
 		bool ownForeignMemory = true, bool deleteMemory = true);
 

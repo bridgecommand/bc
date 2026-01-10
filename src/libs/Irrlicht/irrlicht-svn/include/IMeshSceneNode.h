@@ -15,7 +15,7 @@ namespace scene
 class IShadowVolumeSceneNode;
 class IMesh;
 
-//! Option for nodes how to register themeselves at the SceneManager
+//! Option for nodes how to register themselves at the SceneManager
 enum ENodeRegistration
 {
 	//! Each node registers once and renders all it's mesh-buffers
@@ -28,7 +28,6 @@ enum ENodeRegistration
 	//! It can avoid texture-switches, but adds nodes to sort and more matrix transformations are set.
 	ENR_PER_MESH_BUFFER
 };
-
 
 //! A scene node displaying a static mesh
 class IMeshSceneNode : public ISceneNode
@@ -47,8 +46,15 @@ public:
 	{}
 
 	//! Sets a new mesh to display or update mesh when it changed
-	/** \param mesh Mesh to display. */
-	virtual void setMesh(IMesh* mesh) = 0;
+	/** \param mesh Mesh to display. 
+	\param copyMeshMaterials Copy the mesh materials to the node when true.
+	When false don't touch existing node materials. Note that setting
+	this to false is risky when the number of meshbuffers and 
+	already existing node materials isn't identical. Only set 
+	to false when you are certain you need this. 
+	Also it seems materials are currently never serialized, so if you 
+	ever deserialize the node it will copy the materials again.	*/
+	virtual void setMesh(IMesh* mesh, bool copyMeshMaterials=true) = 0;
 
 	//! Get the currently defined mesh for display.
 	/** \return Pointer to mesh which is displayed by this node. */

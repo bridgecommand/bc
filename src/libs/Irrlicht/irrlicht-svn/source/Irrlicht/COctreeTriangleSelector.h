@@ -61,7 +61,6 @@ private:
 
 
 	void constructOctree(SOctreeNode* node);
-	void deleteEmptyNodes(SOctreeNode* node);
 	void getTrianglesFromOctree(SOctreeNode* node, s32& trianglesWritten,
 			s32 maximumSize, const core::aabbox3d<f32>& box,
 			const core::matrix4* transform,

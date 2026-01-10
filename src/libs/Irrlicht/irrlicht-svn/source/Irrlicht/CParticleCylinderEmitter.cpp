@@ -40,7 +40,7 @@ CParticleCylinderEmitter::CParticleCylinderEmitter(
 }
 
 
-//! Prepares an array with new particles to emitt into the system
+//! Prepares an array with new particles to emit into the system
 //! and returns how much new particles there are.
 s32 CParticleCylinderEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray)
 {

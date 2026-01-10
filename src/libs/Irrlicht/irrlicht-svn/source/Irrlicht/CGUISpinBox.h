@@ -23,7 +23,7 @@ namespace gui
 
 		//! constructor
 		CGUISpinBox(const wchar_t* text, bool border, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle);
+			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle, bool hasButtons);
 
 		//! destructor
 		virtual ~CGUISpinBox();

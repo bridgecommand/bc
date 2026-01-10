@@ -41,7 +41,7 @@ private:
     inline void writeVector3(io::IWriteFile* file, const core::vector3df& vec);
     inline void writeQuaternion(io::IWriteFile* file, const core::quaternion& quat);
     inline void writeColor(io::IWriteFile* file, const video::SColorf& color);
-    void writeSizeFrom(io::IWriteFile* file, const u32 from, const u32 adressToWrite);
+    void writeSizeFrom(io::IWriteFile* file, const u32 from, const u32 addressToWrite);
 };
 
 } // end namespace

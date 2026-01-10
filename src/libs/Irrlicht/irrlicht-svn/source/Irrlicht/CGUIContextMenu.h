@@ -37,6 +37,18 @@ namespace gui
 		//! get current behavior when the menu will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const IRR_OVERRIDE;
 
+		//! When true menu is closed when the item check changes
+		virtual void setCloseOnCheck(bool doCloseOnCheck) IRR_OVERRIDE
+		{
+			CloseOnCheck = doCloseOnCheck;
+		}
+
+		//! Get current setting for behaviour when checking items
+		virtual bool getCloseOnCheck() const IRR_OVERRIDE
+		{
+			return CloseOnCheck;
+		}
+
 		//! Returns amount of menu items
 		virtual u32 getItemCount() const IRR_OVERRIDE;
 
@@ -109,7 +121,7 @@ namespace gui
 		//! Adds a sub menu from an element that already exists.
 		virtual void setSubMenu(u32 index, CGUIContextMenu* menu);
 
-		//! When an eventparent is set it receives events instead of the usual parent element
+		//! When an event parent is set it receives events instead of the usual parent element
 		virtual void setEventParent(IGUIElement *parent) IRR_OVERRIDE;
 
 		//! Writes attributes of the element.
@@ -121,7 +133,7 @@ namespace gui
 	protected:
 
 		void closeAllSubMenus();
-		bool hasOpenSubMenu() const;
+		bool hasOpenSubMenu(irr::u32 *indexResult=0) const;
 
 		struct SItem
 		{
@@ -139,12 +151,16 @@ namespace gui
 		virtual void recalculateSize();
 
 		//! returns true, if an element was highlighted
-		virtual bool highlight(const core::position2d<s32>& p, bool canOpenSubMenu);
+		virtual bool highlight(const core::position2d<s32>& p);
+
+		//! Decide if sub menus should be open or closed
+		virtual void updateOpenSubMenus(irr::u32 menuDelayMs);
 
 		//! sends a click Returns:
-		//! 0 if click went outside of the element,
-		//! 1 if a valid button was clicked,
-		//! 2 if a nonclickable element was clicked
+		//! 0 if click went outside of the element
+		//! 1 if a valid, uncheckable item was clicked
+		//! 2 if a valid, checkable item was clicked
+		//! 3 if a non-clickable element was clicked
 		virtual u32 sendClick(const core::position2d<s32>& p);
 
 		//! returns the item highlight-area
@@ -159,6 +175,7 @@ namespace gui
 		IGUIElement* EventParent;
 		IGUIFont *LastFont;
 		ECONTEXT_MENU_CLOSE CloseHandling;
+		bool CloseOnCheck;
 		s32 HighLighted;
 		u32 ChangeTime;
 		bool AllowFocus;

@@ -70,7 +70,7 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 		return -1;
 
 	/* test dds header */
-	if( *((s32*) dds->Magic) != *((s32*) "DDS ") )
+	if( *((const s32*) dds->Magic) != *((const s32*) "DDS ") )
 		return -1;
 	if( DDSLittleLong( dds->Size ) != 124 )
 		return -1;
@@ -93,15 +93,15 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 	/* test it */
 	if( fourCC == 0 )
 		*pf = DDS_PF_ARGB8888;
-	else if( fourCC == *((u32*) "DXT1") )
+	else if( fourCC == *((const u32*) "DXT1") )
 		*pf = DDS_PF_DXT1;
-	else if( fourCC == *((u32*) "DXT2") )
+	else if( fourCC == *((const u32*) "DXT2") )
 		*pf = DDS_PF_DXT2;
-	else if( fourCC == *((u32*) "DXT3") )
+	else if( fourCC == *((const u32*) "DXT3") )
 		*pf = DDS_PF_DXT3;
-	else if( fourCC == *((u32*) "DXT4") )
+	else if( fourCC == *((const u32*) "DXT4") )
 		*pf = DDS_PF_DXT4;
-	else if( fourCC == *((u32*) "DXT5") )
+	else if( fourCC == *((const u32*) "DXT5") )
 		*pf = DDS_PF_DXT5;
 	else
 		*pf = DDS_PF_UNKNOWN;

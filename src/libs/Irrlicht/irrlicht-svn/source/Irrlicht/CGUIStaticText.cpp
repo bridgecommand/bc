@@ -99,7 +99,7 @@ void CGUIStaticText::draw()
 						font->getDimension(Text.c_str()).Width;
 				}
 
-				font->draw(Text.c_str(), frameRect, 
+				font->draw(Text, frameRect, 
 					getActiveColor(),
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}
@@ -128,7 +128,7 @@ void CGUIStaticText::draw()
 							font->getDimension(BrokenText[i].c_str()).Width;
 					}
 
-					font->draw(BrokenText[i].c_str(), r,
+					font->draw(BrokenText[i], r,
 						getActiveColor(),
 						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 

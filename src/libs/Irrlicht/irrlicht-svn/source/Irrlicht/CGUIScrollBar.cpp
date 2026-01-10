@@ -23,7 +23,7 @@ CGUIScrollBar::CGUIScrollBar(bool horizontal, IGUIEnvironment* environment,
 	DownButton(0), Dragging(false), Horizontal(horizontal),
 	DraggedBySlider(false), TrayClick(false), Pos(0), DrawPos(0),
 	DrawHeight(0), Min(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0),
-	LastChange(0)
+	LastChange(0), DrawBackground(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIScrollBar");
@@ -289,7 +289,8 @@ void CGUIScrollBar::draw()
 	SliderRect = AbsoluteRect;
 
 	// draws the background
-	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
+	if ( DrawBackground )
+		skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 
 	if ( core::isnotzero ( range() ) )
 	{
@@ -540,6 +541,7 @@ void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addInt ("Max",			Max);
 	out->addInt ("SmallStep",	SmallStep);
 	out->addInt ("LargeStep",	LargeStep);
+	out->addBool("DrawBackground", DrawBackground);
 	// CurrentIconColor - not serialized as continuously updated
 }
 
@@ -556,6 +558,7 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 	setSmallStep(in->getAttributeAsInt("SmallStep", SmallStep));
 	setLargeStep(in->getAttributeAsInt("LargeStep", LargeStep));
 	// CurrentIconColor - not serialized as continuously updated
+	setDrawBackground(in->getAttributeAsBool("DrawBackground", DrawBackground));
 
 	refreshControls();
 }
@@ -565,4 +568,3 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-

@@ -30,8 +30,8 @@ struct SBurningShaderLight
 	//s32 HardwareLightIndex;
 	sVec4 pos;	//light position input
 	sVec4 pos4; //light position Model*View (Identity*View)
-	//sVec4 pos4n; //Norm direction to infinite light  = Normalize( Position ) 
-	//sVec4 halfVector; //Norm( VP_inf_norm + <0,0,1> ) 
+	//sVec4 pos4n; //Norm direction to infinite light  = Normalize( Position )
+	//sVec4 halfVector; //Norm( VP_inf_norm + <0,0,1> )
 
 	E_LIGHT_TYPE Type;
 	f32 linearAttenuation;
@@ -127,7 +127,7 @@ enum eBurningCullFlag
 	CULL_EPSILON_001 = 981668463, /*0.001f*/
 	CULL_EPSILON_00001 = 925353388, /* 0.00001f*/
 	CULL_EPSILON_01 = 0x3e000000 /*0.125f*/
-	
+
 };
 
 enum eBurningStencilOp
@@ -296,13 +296,13 @@ public:
 
 	//! sets the Texture
 	virtual void setTextureParam(const size_t stage, video::CSoftwareTexture2* texture, s32 lodFactor);
-	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) {};
+	virtual void drawTriangle(const s4DVertex* burning_restrict a, const s4DVertex* burning_restrict b, const s4DVertex* burning_restrict c) {}
 	virtual void drawLine(const s4DVertex* a, const s4DVertex* b);
 	virtual void drawPoint(const s4DVertex* a);
 
 	void drawWireFrameTriangle(s4DVertex* a, s4DVertex* b, s4DVertex* c);
 
-	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) {};
+	virtual void OnSetMaterialBurning(const SBurningShaderMaterial& material) {}
 
 	void setEdgeTest(const int wireFrame, const int pointCloud)
 	{
@@ -316,7 +316,7 @@ public:
 	void setStencilOp(eBurningStencilOp sfail, eBurningStencilOp dpfail, eBurningStencilOp dppass);
 
 	//IShaderConstantSetCallBack
-	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData) IRR_OVERRIDE {};
+	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData) IRR_OVERRIDE {}
 	virtual void OnSetMaterial(const SMaterial& material) IRR_OVERRIDE { }
 
 	//IMaterialRenderer

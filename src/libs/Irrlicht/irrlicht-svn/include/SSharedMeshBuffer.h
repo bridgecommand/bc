@@ -19,6 +19,7 @@ namespace scene
 		SSharedMeshBuffer() 
 			: IMeshBuffer()
 			, Vertices(0), ChangedID_Vertex(1), ChangedID_Index(1)
+			, BoundingBox(1,-1)
 			, MappingHintVertex(EHM_NEVER), MappingHintIndex(EHM_NEVER)
 			, PrimitiveType(EPT_TRIANGLES)
 		{
@@ -28,7 +29,11 @@ namespace scene
 		}
 
 		//! constructor
-		SSharedMeshBuffer(core::array<video::S3DVertex> *vertices) : IMeshBuffer(), Vertices(vertices), ChangedID_Vertex(1), ChangedID_Index(1), MappingHintVertex(EHM_NEVER), MappingHintIndex(EHM_NEVER)
+		SSharedMeshBuffer(core::array<video::S3DVertex> *vertices) 
+			: IMeshBuffer(), Vertices(vertices), ChangedID_Vertex(1), ChangedID_Index(1)
+			, BoundingBox(1,-1)
+			, MappingHintVertex(EHM_NEVER), MappingHintIndex(EHM_NEVER)
+			, PrimitiveType(EPT_TRIANGLES)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
@@ -120,7 +125,7 @@ namespace scene
 		virtual void recalculateBoundingBox() IRR_OVERRIDE
 		{
 			if (!Vertices || Vertices->empty() || Indices.empty())
-				BoundingBox.reset(0,0,0);
+				BoundingBox = core::aabbox3df(1,-1);
 			else
 			{
 				BoundingBox.reset((*Vertices)[Indices[0]].Pos);

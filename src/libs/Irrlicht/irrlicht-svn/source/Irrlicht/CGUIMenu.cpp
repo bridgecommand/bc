@@ -42,8 +42,9 @@ void CGUIMenu::draw()
 	if ( !skin )
 		return;
 
-	IGUIFont* font = skin->getFont(EGDF_MENU);
+	updateOpenSubMenus(0);
 
+	IGUIFont* font = skin->getFont(EGDF_MENU);
 	if (font != LastFont)
 	{
 		if (LastFont)
@@ -88,7 +89,7 @@ void CGUIMenu::draw()
 				c = EGDC_GRAY_TEXT;
 
 			if (font)
-				font->draw(Items[i].Text.c_str(), rect,
+				font->draw(Items[i].Text, rect,
 					skin->getColor(c), true, true, &AbsoluteClippingRect);
 		}
 	}
@@ -139,7 +140,7 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 				{
 					shouldCloseSubMenu = false;
 				}
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
+				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y));
 				if ( shouldCloseSubMenu )
 				{
                     Environment->removeFocus(this);
@@ -153,7 +154,7 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 				if (!AbsoluteClippingRect.isPointInside(p))
 				{
 					s32 t = sendClick(p);
-					if ((t==0 || t==1) && Environment->hasFocus(this))
+					if ((t==0 || t==1 || (t==2 && CloseOnCheck)) && Environment->hasFocus(this))
 						Environment->removeFocus(this);
 				}
 
@@ -163,7 +164,7 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 				if (Environment->hasFocus(this) && HighLighted >= 0)
 				{
 				    s32 oldHighLighted = HighLighted;
-					highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), true);
+					highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 					if ( HighLighted < 0 )
                         HighLighted = oldHighLighted;   // keep last hightlight active when moving outside the area
 				}

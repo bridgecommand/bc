@@ -51,7 +51,7 @@ namespace gui
 		//! returns amount of list items
 		virtual u32 getItemCount() const = 0;
 
-		//! returns string of a list item. the may id be a value from 0 to itemCount-1
+		//! returns string for a list item. The id may be a value from 0 to itemCount-1
 		virtual const wchar_t* getListItem(u32 id) const = 0;
 
 		//! adds an list item with an icon
@@ -111,7 +111,7 @@ namespace gui
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index) = 0;
 
-		//! clear item color at index for given colortype
+		//! clear item color at index for given color type
 		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) = 0;
 
 		//! has the item at index its color overwritten?
@@ -126,7 +126,8 @@ namespace gui
 		//! Swap the items at the given indices
 		virtual void swapItems(u32 index1, u32 index2) = 0;
 
-		//! set global itemHeight
+		//! Set fixed itemHeight
+		//! Reset to automatic height (based on font) with 0
 		virtual void setItemHeight( s32 height ) = 0;
 
 		//! Sets whether to draw the background
@@ -134,6 +135,19 @@ namespace gui
 
 		//! Access the vertical scrollbar
 		virtual IGUIScrollBar* getVerticalScrollBar() const = 0;
+
+		//! Sets a skin independent font.
+		/** \param font: New font to set or 0 to use the skin-font. */
+		virtual void setOverrideFont(IGUIFont* font=0) = 0;
+
+		//! Gets the override font (if any)
+		/** \return The override font (may be 0) */
+		virtual IGUIFont* getOverrideFont(void) const = 0;
+
+		//! Get the font which is used for drawing
+		/** This is the override font when one is set and the
+		font of the skin otherwise. */
+		virtual IGUIFont* getActiveFont() const = 0;
 };
 
 

@@ -178,7 +178,7 @@ void CGUICheckBox::draw()
 			IGUIFont* font = skin->getFont();
 			if (font)
 			{
-				font->draw(Text.c_str(), checkRect,
+				font->draw(Text, checkRect,
 						skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &AbsoluteClippingRect);
 			}
 		}

@@ -146,8 +146,8 @@ private:
 
 	struct OgreTextureAlias
 	{
-		OgreTextureAlias() {};
-		OgreTextureAlias(const core::stringc& a, const core::stringc& b) : Texture(a), Alias(b) {};
+		OgreTextureAlias() {}
+		OgreTextureAlias(const core::stringc& a, const core::stringc& b) : Texture(a), Alias(b) {}
 		core::stringc Texture;
 		core::stringc Alias;
 	};

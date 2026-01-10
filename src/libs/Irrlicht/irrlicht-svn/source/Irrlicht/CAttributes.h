@@ -47,11 +47,11 @@ public:
 	//! Returns the type string of the attribute
 	//! \param attributeName: String for the attribute type
 	//! \param defaultNotFound Value returned when attributeName was not found
-	virtual const wchar_t* getAttributeTypeString(const c8* attributeName, const wchar_t* defaultNotFound = L"unknown") const IRR_OVERRIDE;
+	virtual const wchar_t* getAttributeTypeString(const c8* attributeName, const wchar_t* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Returns the type string of the attribute by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual const wchar_t* getAttributeTypeString(s32 index, const wchar_t* defaultNotFound = L"unknown") const IRR_OVERRIDE;
+	virtual const wchar_t* getAttributeTypeString(s32 index, const wchar_t* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Returns if an attribute with a name exists
 	virtual bool existsAttribute(const c8* attributeName) const IRR_OVERRIDE;
@@ -88,11 +88,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual s32 getAttributeAsInt(const c8* attributeName, irr::s32 defaultNotFound=0) const IRR_OVERRIDE;
+	virtual s32 getAttributeAsInt(const c8* attributeName, irr::s32 defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as integer value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual s32 getAttributeAsInt(s32 index) const IRR_OVERRIDE;
+	virtual s32 getAttributeAsInt(s32 index, irr::s32 defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as integer value
 	virtual void setAttribute(s32 index, s32 value) IRR_OVERRIDE;
@@ -113,11 +113,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual f32 getAttributeAsFloat(const c8* attributeName, irr::f32 defaultNotFound=0.f) const IRR_OVERRIDE;
+	virtual f32 getAttributeAsFloat(const c8* attributeName, irr::f32 defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as float value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual f32 getAttributeAsFloat(s32 index) const IRR_OVERRIDE;
+	virtual f32 getAttributeAsFloat(s32 index, irr::f32 defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as float value
 	virtual void setAttribute(s32 index, f32 value) IRR_OVERRIDE;
@@ -141,7 +141,7 @@ public:
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or defaultNotFound if attribute is not set.
-	virtual core::stringc getAttributeAsString(const c8* attributeName, const core::stringc& defaultNotFound=core::stringc()) const IRR_OVERRIDE;
+	virtual core::stringc getAttributeAsString(const c8* attributeName, const core::stringc& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as string.
 	//! \param attributeName: Name of the attribute to get.
@@ -150,7 +150,7 @@ public:
 
 	//! Returns attribute value as string by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::stringc getAttributeAsString(s32 index) const IRR_OVERRIDE;
+	virtual core::stringc getAttributeAsString(s32 index, const core::stringc& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
@@ -171,7 +171,7 @@ public:
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or defaultNotFound if attribute is not set.
-	virtual core::stringw getAttributeAsStringW(const c8* attributeName, const core::stringw& defaultNotFound = core::stringw()) const IRR_OVERRIDE;
+	virtual core::stringw getAttributeAsStringW(const c8* attributeName, const core::stringw& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as string.
 	//! \param attributeName: Name of the attribute to get.
@@ -180,7 +180,7 @@ public:
 
 	//! Returns attribute value as string by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::stringw getAttributeAsStringW(s32 index) const IRR_OVERRIDE;
+	virtual core::stringw getAttributeAsStringW(s32 index, const core::stringw& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
@@ -229,11 +229,11 @@ public:
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or defaultNotFound if attribute is not set.
-	virtual core::array<core::stringw> getAttributeAsArray(const c8* attributeName, const core::array<core::stringw>& defaultNotFound = core::array<core::stringw>()) const IRR_OVERRIDE;
+	virtual core::array<core::stringw> getAttributeAsArray(const c8* attributeName, const core::array<core::stringw>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Returns attribute value as an array of wide strings by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::array<core::stringw> getAttributeAsArray(s32 index) const IRR_OVERRIDE;
+	virtual core::array<core::stringw> getAttributeAsArray(s32 index, const core::array<core::stringw>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as an array of wide strings
 	virtual void setAttribute(s32 index, const core::array<core::stringw>& value) IRR_OVERRIDE;
@@ -254,11 +254,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual bool getAttributeAsBool(const c8* attributeName, bool defaultNotFound=false) const IRR_OVERRIDE;
+	virtual bool getAttributeAsBool(const c8* attributeName, bool defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as boolean value
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual bool getAttributeAsBool(s32 index) const IRR_OVERRIDE;
+	virtual bool getAttributeAsBool(s32 index, bool defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as boolean value
 	virtual void setAttribute(s32 index, bool value) IRR_OVERRIDE;
@@ -282,7 +282,7 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual const c8* getAttributeAsEnumeration(const c8* attributeName, const c8* defaultNotFound = 0) const IRR_OVERRIDE;
+	virtual const c8* getAttributeAsEnumeration(const c8* attributeName, const c8* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as enumeration
 	//! \param attributeName: Name of the attribute to get.
@@ -328,11 +328,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual video::SColor getAttributeAsColor(const c8* attributeName, const video::SColor& defaultNotFound = video::SColor(0)) const IRR_OVERRIDE;
+	virtual video::SColor getAttributeAsColor(const c8* attributeName, const video::SColor& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as color
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::SColor getAttributeAsColor(s32 index) const IRR_OVERRIDE;
+	virtual video::SColor getAttributeAsColor(s32 index, const video::SColor& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as color
 	virtual void setAttribute(s32 index, video::SColor color) IRR_OVERRIDE;
@@ -353,11 +353,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual video::SColorf getAttributeAsColorf(const c8* attributeName, const video::SColorf& defaultNotFound = video::SColorf(0)) const IRR_OVERRIDE;
+	virtual video::SColorf getAttributeAsColorf(const c8* attributeName, const video::SColorf& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as floating point color
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::SColorf getAttributeAsColorf(s32 index) const IRR_OVERRIDE;
+	virtual video::SColorf getAttributeAsColorf(s32 index, const video::SColorf& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as floating point color
 	virtual void setAttribute(s32 index, video::SColorf color) IRR_OVERRIDE;
@@ -379,11 +379,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::vector3df getAttributeAsVector3d(const c8* attributeName, const core::vector3df& defaultNotFound=core::vector3df(0,0,0)) const IRR_OVERRIDE;
+	virtual core::vector3df getAttributeAsVector3d(const c8* attributeName, const core::vector3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as 3d vector
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector3df getAttributeAsVector3d(s32 index) const IRR_OVERRIDE;
+	virtual core::vector3df getAttributeAsVector3d(s32 index, const core::vector3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as vector
 	virtual void setAttribute(s32 index, const core::vector3df& v) IRR_OVERRIDE;
@@ -405,11 +405,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName, const core::vector2df& defaultNotFound=core::vector2df(0,0)) const IRR_OVERRIDE;
+	virtual core::vector2df getAttributeAsVector2d(const c8* attributeName, const core::vector2df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as 3d vector
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::vector2df getAttributeAsVector2d(s32 index) const IRR_OVERRIDE;
+	virtual core::vector2df getAttributeAsVector2d(s32 index, const core::vector2df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as vector
 	virtual void setAttribute(s32 index, const core::vector2df& v) IRR_OVERRIDE;
@@ -431,11 +431,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::position2di getAttributeAsPosition2d(const c8* attributeName, const core::position2di& defaultNotFound=core::position2di(0,0)) const IRR_OVERRIDE;
+	virtual core::position2di getAttributeAsPosition2d(const c8* attributeName, const core::position2di& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as position
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::position2di getAttributeAsPosition2d(s32 index) const IRR_OVERRIDE;
+	virtual core::position2di getAttributeAsPosition2d(s32 index, const core::position2di& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as 2d position
 	virtual void setAttribute(s32 index, const core::position2di& v) IRR_OVERRIDE;
@@ -456,11 +456,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::rect<s32> getAttributeAsRect(const c8* attributeName, const core::rect<s32>& defaultNotFound = core::rect<s32>()) const IRR_OVERRIDE;
+	virtual core::rect<s32> getAttributeAsRect(const c8* attributeName, const core::rect<s32>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as rectangle
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::rect<s32> getAttributeAsRect(s32 index) const IRR_OVERRIDE;
+	virtual core::rect<s32> getAttributeAsRect(s32 index, const core::rect<s32>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as rectangle
 	virtual void setAttribute(s32 index, const core::rect<s32>& v) IRR_OVERRIDE;
@@ -482,11 +482,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::dimension2d<u32> getAttributeAsDimension2d(const c8* attributeName, const core::dimension2d<u32>& defaultNotFound = core::dimension2d<u32>()) const IRR_OVERRIDE;
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(const c8* attributeName, const core::dimension2d<u32>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as dimension2d
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index) const IRR_OVERRIDE;
+	virtual core::dimension2d<u32> getAttributeAsDimension2d(s32 index, const core::dimension2d<u32>& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as dimension2d
 	virtual void setAttribute(s32 index, const core::dimension2d<u32>& v) IRR_OVERRIDE;
@@ -508,11 +508,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::matrix4 getAttributeAsMatrix(const c8* attributeName, const core::matrix4& defaultNotFound=core::matrix4()) const IRR_OVERRIDE;
+	virtual core::matrix4 getAttributeAsMatrix(const c8* attributeName, const core::matrix4& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as matrix
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::matrix4 getAttributeAsMatrix(s32 index) const IRR_OVERRIDE;
+	virtual core::matrix4 getAttributeAsMatrix(s32 index, const core::matrix4& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as matrix
 	virtual void setAttribute(s32 index, const core::matrix4& v) IRR_OVERRIDE;
@@ -532,11 +532,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::quaternion getAttributeAsQuaternion(const c8* attributeName, const core::quaternion& defaultNotFound=core::quaternion(0,1,0, 0)) const IRR_OVERRIDE;
+	virtual core::quaternion getAttributeAsQuaternion(const c8* attributeName, const core::quaternion& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as quaternion
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::quaternion getAttributeAsQuaternion(s32 index) const IRR_OVERRIDE;
+	virtual core::quaternion getAttributeAsQuaternion(s32 index, const core::quaternion& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as quaternion
 	virtual void setAttribute(s32 index, const core::quaternion& v) IRR_OVERRIDE;
@@ -557,11 +557,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::aabbox3df getAttributeAsBox3d(const c8* attributeName, const core::aabbox3df& defaultNotFound=core::aabbox3df(0,0,0, 0,0,0)) const IRR_OVERRIDE;
+	virtual core::aabbox3df getAttributeAsBox3d(const c8* attributeName, const core::aabbox3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as axis aligned bounding box
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::aabbox3df getAttributeAsBox3d(s32 index) const IRR_OVERRIDE;
+	virtual core::aabbox3df getAttributeAsBox3d(s32 index, const core::aabbox3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as axis aligned bounding box
 	virtual void setAttribute(s32 index, const core::aabbox3df& v) IRR_OVERRIDE;
@@ -582,11 +582,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::plane3df getAttributeAsPlane3d(const c8* attributeName, const core::plane3df& defaultNotFound=core::plane3df(0,0,0, 0,1,0)) const IRR_OVERRIDE;
+	virtual core::plane3df getAttributeAsPlane3d(const c8* attributeName, const core::plane3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as 3d plane
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::plane3df getAttributeAsPlane3d(s32 index) const IRR_OVERRIDE;
+	virtual core::plane3df getAttributeAsPlane3d(s32 index, const core::plane3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as 3d plane
 	virtual void setAttribute(s32 index, const core::plane3df& v) IRR_OVERRIDE;
@@ -608,11 +608,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::triangle3df getAttributeAsTriangle3d(const c8* attributeName, const core::triangle3df& defaultNotFound = core::triangle3df(core::vector3df(0,0,0), core::vector3df(0,0,0), core::vector3df(0,0,0))) const IRR_OVERRIDE;
+	virtual core::triangle3df getAttributeAsTriangle3d(const c8* attributeName, const core::triangle3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as 3d triangle
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::triangle3df getAttributeAsTriangle3d(s32 index) const IRR_OVERRIDE;
+	virtual core::triangle3df getAttributeAsTriangle3d(s32 index, const core::triangle3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as 3d triangle
 	virtual void setAttribute(s32 index, const core::triangle3df& v) IRR_OVERRIDE;
@@ -634,11 +634,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::line2df getAttributeAsLine2d(const c8* attributeName, const core::line2df& defaultNotFound = core::line2df(0,0, 0,0)) const IRR_OVERRIDE;
+	virtual core::line2df getAttributeAsLine2d(const c8* attributeName, const core::line2df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as a 2d line
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::line2df getAttributeAsLine2d(s32 index) const IRR_OVERRIDE;
+	virtual core::line2df getAttributeAsLine2d(s32 index, const core::line2df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as a 2d line
 	virtual void setAttribute(s32 index, const core::line2df& v) IRR_OVERRIDE;
@@ -660,11 +660,11 @@ public:
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
 	//! \return Returns value of the attribute previously set by setAttribute()
-	virtual core::line3df getAttributeAsLine3d(const c8* attributeName, const core::line3df& defaultNotFound=core::line3df(0,0,0, 0,0,0)) const IRR_OVERRIDE;
+	virtual core::line3df getAttributeAsLine3d(const c8* attributeName, const core::line3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as a 3d line
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual core::line3df getAttributeAsLine3d(s32 index) const IRR_OVERRIDE;
+	virtual core::line3df getAttributeAsLine3d(s32 index, const core::line3df& defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as a 3d line
 	virtual void setAttribute(s32 index, const core::line3df& v) IRR_OVERRIDE;
@@ -685,11 +685,11 @@ public:
 	//! Gets an attribute as texture reference
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
-	virtual video::ITexture* getAttributeAsTexture(const c8* attributeName, video::ITexture* defaultNotFound=0) const IRR_OVERRIDE;
+	virtual video::ITexture* getAttributeAsTexture(const c8* attributeName, video::ITexture* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as texture reference
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual video::ITexture* getAttributeAsTexture(s32 index) const IRR_OVERRIDE;
+	virtual video::ITexture* getAttributeAsTexture(s32 index, video::ITexture* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as texture reference
 	virtual void setAttribute(s32 index, video::ITexture* texture, const io::path& filename = "") IRR_OVERRIDE;
@@ -711,11 +711,11 @@ public:
 	//! Gets an attribute as user pointer
 	//! \param attributeName: Name of the attribute to get.
 	//! \param defaultNotFound Value returned when attributeName was not found
-	virtual void* getAttributeAsUserPointer(const c8* attributeName, void* defaultNotFound = 0) const IRR_OVERRIDE;
+	virtual void* getAttributeAsUserPointer(const c8* attributeName, void* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Gets an attribute as user pointer
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
-	virtual void* getAttributeAsUserPointer(s32 index) const IRR_OVERRIDE;
+	virtual void* getAttributeAsUserPointer(s32 index, void* defaultNotFound) const IRR_OVERRIDE;
 
 	//! Sets an attribute as user pointer
 	virtual void setAttribute(s32 index, void* userPointer) IRR_OVERRIDE;

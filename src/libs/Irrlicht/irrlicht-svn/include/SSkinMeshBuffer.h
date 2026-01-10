@@ -21,6 +21,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! Default constructor
 	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) :
 		ChangedID_Vertex(1), ChangedID_Index(1), VertexType(vt),
+		BoundingBox(1,-1),
 		PrimitiveType(EPT_TRIANGLES),
 		MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER),
 		BoundingBoxNeedsRecalculated(true)
@@ -148,7 +149,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			case video::EVT_STANDARD:
 			{
 				if (Vertices_Standard.empty())
-					BoundingBox.reset(0,0,0);
+					BoundingBox = core::aabbox3df(1,-1);
 				else
 				{
 					BoundingBox.reset(Vertices_Standard[0].Pos);
@@ -160,7 +161,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			case video::EVT_2TCOORDS:
 			{
 				if (Vertices_2TCoords.empty())
-					BoundingBox.reset(0,0,0);
+					BoundingBox = core::aabbox3df(1,-1);
 				else
 				{
 					BoundingBox.reset(Vertices_2TCoords[0].Pos);
@@ -172,7 +173,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			case video::EVT_TANGENTS:
 			{
 				if (Vertices_Tangents.empty())
-					BoundingBox.reset(0,0,0);
+					BoundingBox = core::aabbox3df(1,-1);
 				else
 				{
 					BoundingBox.reset(Vertices_Tangents[0].Pos);

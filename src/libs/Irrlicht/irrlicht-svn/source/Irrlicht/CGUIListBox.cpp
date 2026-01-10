@@ -23,8 +23,8 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip,
 			bool drawBack, bool moveOverSelect)
 : IGUIListBox(environment, parent, id, rectangle), Selected(-1), HoverSelected(-1),
-	ItemHeight(0),ItemHeightOverride(0),
-	TotalItemHeight(0), ItemsIconWidth(0), Font(0), IconBank(0),
+	ItemHeight(0), ItemHeightOverride(0),
+	TotalItemHeight(0), ItemsIconWidth(0), Font(0), OverrideFont(0), IconBank(0),
 	ScrollBar(0), SelectTime(0), LastKeyTime(0), Selecting(false), DrawBack(drawBack),
 	MoveOverSelect(moveOverSelect), AutoScroll(true), HighlightWhenNotFocused(true)
 {
@@ -148,28 +148,56 @@ void CGUIListBox::clear()
 	recalculateItemHeight();
 }
 
-
-void CGUIListBox::recalculateItemHeight()
+void CGUIListBox::setOverrideFont(IGUIFont* font)
 {
-	IGUISkin* skin = Environment->getSkin();
+	if (OverrideFont == font)
+		return;
 
-	if (Font != skin->getFont())
+	if (OverrideFont)
+		OverrideFont->drop();
+
+	OverrideFont = font;
+
+	if (OverrideFont)
+		OverrideFont->grab();
+
+	recalculateItemHeight();
+}
+
+//! Gets the override font (if any)
+IGUIFont * CGUIListBox::getOverrideFont() const
+{
+	return OverrideFont;
+}
+
+//! Get the font which is used right now for drawing
+IGUIFont* CGUIListBox::getActiveFont() const
+{
+	if ( OverrideFont )
+		return OverrideFont;
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+		return skin->getFont();
+	return 0;
+}
+
+void CGUIListBox::recalculateItemHeight(bool forceRecalculation)
+{
+	if ( ItemHeightOverride != 0 || forceRecalculation)
+		ItemHeight = ItemHeightOverride;
+
+	const bool fontChanged = Font != getActiveFont();
+	if( fontChanged )
 	{
 		if (Font)
 			Font->drop();
-
-		Font = skin->getFont();
-		if ( 0 == ItemHeightOverride )
-			ItemHeight = 0;
-
+		Font = getActiveFont();
 		if (Font)
-		{
-			if ( 0 == ItemHeightOverride )
-				ItemHeight = Font->getDimension(L"A").Height + 4;
-
 			Font->grab();
-		}
 	}
+
+	if ( Font && 0 == ItemHeightOverride && (fontChanged || forceRecalculation) )
+		ItemHeight = Font->getDimension(L"A").Height + 4;
 
 	TotalItemHeight = ItemHeight * Items.size();
 	ScrollBar->setMax( core::max_(0, TotalItemHeight - AbsoluteRect.getHeight()) );
@@ -573,14 +601,14 @@ void CGUIListBox::draw()
 
 				if ( i==selected && hl )
 				{
-					Font->draw(Items[i].Text.c_str(), textRect,
+					Font->draw(Items[i].Text, textRect,
 						hasItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) ?
 						getItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_TEXT_HIGHLIGHT),
 						false, true, &clientClip);
 				}
 				else
 				{
-					Font->draw(Items[i].Text.c_str(), textRect,
+					Font->draw(Items[i].Text, textRect,
 						hasItemOverrideColor(i, EGUI_LBC_TEXT) ? getItemOverrideColor(i, EGUI_LBC_TEXT) : getItemDefaultColor(EGUI_LBC_TEXT),
 						false, true, &clientClip);
 				}
@@ -705,9 +733,11 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	IGUIListBox::serializeAttributes(out,options);
 
 	// todo: out->addString	("IconBank",		IconBank->getName?);
-	out->addBool    ("DrawBack",        DrawBack);
-	out->addBool    ("MoveOverSelect",  MoveOverSelect);
-	out->addBool    ("AutoScroll",      AutoScroll);
+	out->addBool    ("DrawBack",           DrawBack);
+	out->addBool    ("MoveOverSelect",     MoveOverSelect);
+	out->addBool    ("AutoScroll",         AutoScroll);
+	if ( ItemHeightOverride != 0 )
+		out->addInt     ("ItemHeightOverride", ItemHeightOverride);
 
 	out->addInt("ItemCount", Items.size());
 	for (u32 i=0;i<Items.size(); ++i)
@@ -743,9 +773,10 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 {
 	clear();
 
-	DrawBack        = in->getAttributeAsBool("DrawBack", DrawBack);
-	MoveOverSelect  = in->getAttributeAsBool("MoveOverSelect", MoveOverSelect);
-	AutoScroll      = in->getAttributeAsBool("AutoScroll", AutoScroll);
+	DrawBack           = in->getAttributeAsBool("DrawBack", DrawBack);
+	MoveOverSelect     = in->getAttributeAsBool("MoveOverSelect", MoveOverSelect);
+	AutoScroll         = in->getAttributeAsBool("AutoScroll", AutoScroll);
+	ItemHeightOverride = in->getAttributeAsInt("ItemHeightOverride", ItemHeightOverride);
 
 	IGUIListBox::deserializeAttributes(in,options);
 
@@ -921,8 +952,8 @@ video::SColor CGUIListBox::getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) con
 //! set global itemHeight
 void CGUIListBox::setItemHeight( s32 height )
 {
-	ItemHeight = height;
-	ItemHeightOverride = 1;
+	ItemHeightOverride = height;
+	recalculateItemHeight(0 == ItemHeightOverride);
 }
 
 

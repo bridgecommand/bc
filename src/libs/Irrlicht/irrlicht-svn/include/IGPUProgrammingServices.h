@@ -37,22 +37,22 @@ public:
 	\param vertexShaderProgram String containing the source of the vertex
 	shader program. This can be 0 if no vertex program shall be used.
 	\param vertexShaderEntryPointName Name of the entry function of the
-	vertexShaderProgram (p.e. "main")
+	vertexShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param vsCompileTarget Vertex shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param pixelShaderProgram String containing the source of the pixel
 	shader program. This can be 0 if no pixel shader shall be used.
 	\param pixelShaderEntryPointName Entry name of the function of the
-	pixelShaderProgram (p.e. "main")
+	pixelShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param psCompileTarget Pixel shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param geometryShaderProgram String containing the source of the
 	geometry shader program. This can be 0 if no geometry shader shall be
 	used.
 	\param geometryShaderEntryPointName Entry name of the function of the
-	geometryShaderProgram (p.e. "main")
+	geometryShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param gsCompileTarget Geometry shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param inType Type of vertices passed to geometry shader
 	\param outType Type of vertices created by geometry shader
 	\param verticesOut Maximal number of vertices created by geometry
@@ -61,7 +61,7 @@ public:
 	IShaderConstantSetCallBack in which you can set the needed vertex,
 	pixel, and geometry shader program constants. Set this to 0 if you
 	don't need this.
-	\param baseMaterial Base material which renderstates will be used to
+	\param baseMaterial Base material which render states will be used to
 	shade the material.
 	\param userData a user data int. This int can be set to any value and
 	will be set as parameter in the callback method when calling
@@ -160,23 +160,23 @@ public:
 	of the vertex shader program. Set to empty string if no vertex shader
 	shall be created.
 	\param vertexShaderEntryPointName Name of the entry function of the
-	vertexShaderProgram  (p.e. "main")
+	vertexShaderProgram  (p.e. "main"). Currently only used in D3D.
 	\param vsCompileTarget Vertex shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param pixelShaderProgramFileName Text file containing the source of
 	the pixel shader program. Set to empty string if no pixel shader shall
 	be created.
 	\param pixelShaderEntryPointName Entry name of the function of the
-	pixelShaderProgram (p.e. "main")
+	pixelShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param psCompileTarget Pixel shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param geometryShaderProgramFileName Name of the source of
 	the geometry shader program. Set to empty string if no geometry shader
 	shall be created.
 	\param geometryShaderEntryPointName Entry name of the function of the
-	geometryShaderProgram (p.e. "main")
+	geometryShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param gsCompileTarget Geometry shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param inType Type of vertices passed to geometry shader
 	\param outType Type of vertices created by geometry shader
 	\param verticesOut Maximal number of vertices created by geometry
@@ -185,7 +185,7 @@ public:
 	IShaderConstantSetCallBack in which you can set the needed vertex,
 	pixel, and geometry shader program constants. Set this to 0 if you
 	don't need this.
-	\param baseMaterial Base material which renderstates will be used to
+	\param baseMaterial Base material which render states will be used to
 	shade the material.
 	\param userData a user data int. This int can be set to any value and
 	will be set as parameter in the callback method when calling
@@ -286,20 +286,20 @@ public:
 	\param vertexShaderEntryPointName Name of the entry function of the
 	vertexShaderProgram
 	\param vsCompileTarget Vertex shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param pixelShaderProgram Text file handle containing the source of
 	the pixel shader program. Set to 0 if no pixel shader shall be created.
 	\param pixelShaderEntryPointName Entry name of the function of the
-	pixelShaderProgram (p.e. "main")
+	pixelShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param psCompileTarget Pixel shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param geometryShaderProgram Text file handle containing the source of
 	the geometry shader program. Set to 0 if no geometry shader shall be
 	created.
 	\param geometryShaderEntryPointName Entry name of the function of the
-	geometryShaderProgram (p.e. "main")
+	geometryShaderProgram (p.e. "main"). Currently only used in D3D.
 	\param gsCompileTarget Geometry shader version the high level shader
-	shall be compiled to.
+	shall be compiled to. Not used in OpenGL.
 	\param inType Type of vertices passed to geometry shader
 	\param outType Type of vertices created by geometry shader
 	\param verticesOut Maximal number of vertices created by geometry
@@ -307,7 +307,7 @@ public:
 	\param callback Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex and
 	pixel shader program constants. Set this to 0 if you don't need this.
-	\param baseMaterial Base material which renderstates will be used to
+	\param baseMaterial Base material which render states will be used to
 	shade the material.
 	\param userData a user data int. This int can be set to any value and
 	will be set as parameter in the callback method when calling
@@ -379,7 +379,7 @@ public:
 	\param callback Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex and
 	pixel shader program constants. Set this to 0 if you don't need this.
-	\param baseMaterial Base material which renderstates will be used to
+	\param baseMaterial Base material which render states will be used to
 	shade the material.
 	\param userData a user data int. This int can be set to any value and
 	will be set as parameter in the callback method when calling

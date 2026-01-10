@@ -28,10 +28,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -53,10 +53,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -179,10 +179,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -247,10 +247,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -286,10 +286,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -357,10 +357,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -428,10 +428,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -470,10 +470,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -597,10 +597,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -653,10 +653,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(1);
 		// texture needs to be flipped for OpenGL
@@ -701,10 +701,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
@@ -763,10 +763,10 @@ public:
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services) IRR_OVERRIDE
 	{
-		if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_DISABLE)
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE_TO_ENABLE);
+		if (Driver->getActivePipelineState() == COpenGLDriver::EOAP_SHADER)
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_SHADER_TO_FIXED);
 		else
-			Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE);
+			Driver->setActivePipelineState(COpenGLDriver::EOAP_FIXED);
 
 		Driver->disableTextures(2);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);

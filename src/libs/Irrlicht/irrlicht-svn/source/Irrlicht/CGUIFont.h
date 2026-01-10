@@ -110,7 +110,11 @@ private:
 	s32				MaxHeight;
 	s32				GlobalKerningWidth, GlobalKerningHeight;
 
-	core::stringw Invisible;
+	core::stringw InvisibleCharacters;
+
+	// Indices and offsets for spritebank. Member instead of local to avoid constant re-allocations
+	core::array<u32> IndicesSB;
+	core::array<core::position2di> OffsetsSB;
 };
 
 } // end namespace gui

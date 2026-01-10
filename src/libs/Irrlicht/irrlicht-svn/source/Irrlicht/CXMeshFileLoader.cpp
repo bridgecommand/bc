@@ -2309,9 +2309,9 @@ u16 CXMeshFileLoader::readBinWord()
 	if (P>=End)
 		return 0;
 #ifdef __BIG_ENDIAN__
-	const u16 tmp = os::Byteswap::byteswap(*(u16 *)P);
+	const u16 tmp = os::Byteswap::byteswap(*(const u16 *)P);
 #else
-	const u16 tmp = *(u16 *)P;
+	const u16 tmp = *(const u16 *)P;
 #endif
 	P += 2;
 	return tmp;
@@ -2323,9 +2323,9 @@ u32 CXMeshFileLoader::readBinDWord()
 	if (P>=End)
 		return 0;
 #ifdef __BIG_ENDIAN__
-	const u32 tmp = os::Byteswap::byteswap(*(u32 *)P);
+	const u32 tmp = os::Byteswap::byteswap(*(const u32 *)P);
 #else
-	const u32 tmp = *(u32 *)P;
+	const u32 tmp = *(const u32 *)P;
 #endif
 	P += 4;
 	return tmp;
@@ -2373,11 +2373,11 @@ f32 CXMeshFileLoader::readFloat()
 #ifdef __BIG_ENDIAN__
 			//TODO: Check if data is properly converted here
 			f32 ctmp[2];
-			ctmp[1] = os::Byteswap::byteswap(*(f32*)P);
-			ctmp[0] = os::Byteswap::byteswap(*(f32*)P+4);
+			ctmp[1] = os::Byteswap::byteswap(*(const f32*)P);
+			ctmp[0] = os::Byteswap::byteswap(*(const f32*)P+4);
 			const f32 tmp = (f32)(*(f64*)(void*)ctmp);
 #else
-			const f32 tmp = (f32)(*(f64 *)P);
+			const f32 tmp = (f32)(*(const f64 *)P);
 #endif
 			P += 8;
 			return tmp;
@@ -2385,9 +2385,9 @@ f32 CXMeshFileLoader::readFloat()
 		else
 		{
 #ifdef __BIG_ENDIAN__
-			const f32 tmp = os::Byteswap::byteswap(*(f32 *)P);
+			const f32 tmp = os::Byteswap::byteswap(*(const f32 *)P);
 #else
-			const f32 tmp = *(f32 *)P;
+			const f32 tmp = *(const f32 *)P;
 #endif
 			P += 4;
 			return tmp;
