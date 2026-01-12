@@ -40,8 +40,8 @@ void Wind::update(void)
   mLateralWindDrag = -1 * pow(relWindLateralMps, 2) * relWindAxialMps/abs(relWindAxialMps) * 0.5 * RHO_AIR * sideArea;
 
   alpha = (mWindDirection - mOwnShip->getHeading()) * PI/180;
-  mApparentWindSpd = sqrt(pow(mOwnShip->getSpeedThroughWater(), 2) + pow((mWindSpeed * MPS_TO_KTS), 2) + (2 * mOwnShip->getSpeedThroughWater() * (mWindSpeed * MPS_TO_KTS) * cos(alpha)));
-  mApparentWindDir = atan2(mWindSpeed * MPS_TO_KTS * sin(alpha), mOwnShip->getSpeedThroughWater() + mWindSpeed * MPS_TO_KTS * cos(alpha));
+  mApparentWindSpd = sqrt(pow(mOwnShip->getSpeedThroughWater(), 2) + pow((mWindSpeed), 2) + (2 * mOwnShip->getSpeedThroughWater() * (mWindSpeed) * cos(alpha)));
+  mApparentWindDir = atan2(mWindSpeed * sin(alpha), mOwnShip->getSpeedThroughWater() + mWindSpeed * cos(alpha));
   
 }
 
