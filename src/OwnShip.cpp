@@ -35,10 +35,7 @@
 #include "Tide.hpp"
 
 OwnShip::OwnShip()
-{
-  mViews.resize(MESH_VIEWS_MAX);
-  mIsHighView.resize(MESH_VIEWS_MAX);
-  
+{  
   mHasGps = false;
   mHasDepthSounder = false;
   mMaxSounderDepth = 0;
@@ -148,7 +145,10 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
 
   if(nbrOfViews > MESH_VIEWS_MAX)
     nbrOfViews = MESH_VIEWS_MAX;
-  
+
+  mViews.resize(nbrOfViews);
+  mIsHighView.resize(nbrOfViews);
+
   for (unsigned char i=0; i<nbrOfViews; i++)
     {
       mViews[i][0] = mScaleFactor * aJsonRoot["mesh"]["views"][i][0].asFloat();
