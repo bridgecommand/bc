@@ -253,10 +253,10 @@ void GUIMain::load(irr::IrrlichtDevice* device, OwnShip *aOwnShip, Lines *aLines
 
   // add indicators for whether the rudder pumps are working
   pump1On = guienv->addStaticText(language->translate("pump1").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.72*sh,0.44*su+azimuthGUIOffsetR,0.745*sh),true,false,0,-1,true);
-  pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.75*sh,0.44*su+azimuthGUIOffsetR,0.775*sh),true,false,0,-1,true);
+  //pump2On = guienv->addStaticText(language->translate("pump2").c_str(),irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR,0.75*sh,0.44*su+azimuthGUIOffsetR,0.775*sh),true,false,0,-1,true);
   ackAlarms = guienv->addButton(irr::core::rect<irr::s32>(0.35*su+azimuthGUIOffsetR, 0.78*sh, 0.44*su+azimuthGUIOffsetR, 0.805*sh),0,GUI_ID_ACK_ALARMS_BUTTON,language->translate("ackAlarms").c_str());
   pump1On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-  pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+  //pump2On->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
   //Add an additional window for controls (will normally be hidden)
   extraControlsWindow=guienv->addWindow(stdDataDisplayPos);
@@ -848,7 +848,7 @@ void GUIMain::updateVisibility(bool bHideFull)
   if (stbdText) {stbdText->setVisible(showInterface && !singleEngine);}
 
   pump1On->setVisible(showInterface);
-  pump2On->setVisible(showInterface);
+  //pump2On->setVisible(showInterface);
   ackAlarms->setVisible(showInterface);
 
   //Items not to show if we're on full screen radar
@@ -1056,16 +1056,16 @@ void GUIMain::updateGuiData(GUIData* guiData)
   setARPAList(guiData->arpaListSelection);
 
   //Update rudder pump indicators
-  if (guiData->pump1On == true) {
+  //if (guiData->pump1On == true) {
     pump1On->setBackgroundColor(irr::video::SColor(255,0,128,0));
-  } else {
+    /*} else {
     pump1On->setBackgroundColor(irr::video::SColor(255,128,0,0));
-  }
-  if (guiData->pump2On == true) {
+    }*/
+    /*if (guiData->pump2On == true) {
     pump2On->setBackgroundColor(irr::video::SColor(255,0,128,0));
   } else {
     pump2On->setBackgroundColor(irr::video::SColor(255,128,0,0));
-  }
+    }*/
 }
 
 void GUIMain::showLogWindow()
