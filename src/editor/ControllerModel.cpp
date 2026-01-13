@@ -30,7 +30,7 @@
 #define MAX_PX_IN_MAP 160000000
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, irr::u32 _zoomLevels)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, std::vector<PositionData>* landObjectsData, irr::u32 _zoomLevels)
 {
 
     this->gui = gui;
@@ -39,6 +39,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMai
     driver = device->getVideoDriver();
 
     this->buoysData = buoysData;
+    this->landObjectsData = landObjectsData;
     this->scenarioData = scenarioData;
     this->worldName = worldName;
 	this->zoomLevels = _zoomLevels;
@@ -311,7 +312,7 @@ void ControllerModel::update()
     tempImage->drop();
 
     //Send the current data to the gui, and update it
-    gui->updateGuiData(*scenarioData,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),*buoysData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
+    gui->updateGuiData(*scenarioData,mapOffsetX,mapOffsetZ,metresPerPx.at(currentZoom),*buoysData,*landObjectsData,displayMapTexture,selectedShip,selectedLeg, terrainLong, terrainLongExtent, terrainXWidth, terrainLat, terrainLatExtent, terrainZWidth);
 }
 
 void ControllerModel::resetOffset()

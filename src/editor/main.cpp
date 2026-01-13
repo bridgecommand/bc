@@ -513,6 +513,7 @@ int main (int argc, char ** argv)
     //Create data structures to hold own ship, other ship and buoy data
     ScenarioData scenarioData;
     std::vector<PositionData> buoysData;
+    std::vector<PositionData> landObjectsData;
 
     //Query which scenario or world to start with
     std::string worldName;
@@ -610,7 +611,7 @@ int main (int argc, char ** argv)
     }
 
     //Main model
-    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, zoomLevels);
+    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, &landObjectsData, zoomLevels);
 
     if (scenarioData.dataPopulated == false) {
         //If an existing scenario, load data into these structures
@@ -802,6 +803,20 @@ int main (int argc, char ** argv)
         thisBuoy.X = controller.longToX(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Long",currentBuoy)));
         thisBuoy.Z = controller.latToZ(IniFile::iniFileTof32(scenarioBuoyFilename,IniFile::enumerate1("Lat",currentBuoy)));
         buoysData.push_back(thisBuoy);
+    }
+
+    std::string scenarioLandObjectFilename = worldPath;
+    scenarioLandObjectFilename.append("/landobject.ini");
+    //Find number of land objects
+    irr::u32 numberOfLandObjects;
+    numberOfLandObjects = IniFile::iniFileTou32(scenarioLandObjectFilename, "Number");
+    for (irr::u32 currentLandObject = 1; currentLandObject <= numberOfLandObjects; currentLandObject++) {
+
+        PositionData thisLandObject;
+        //Get land object position
+        thisLandObject.X = controller.longToX(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Long", currentLandObject)));
+        thisLandObject.Z = controller.latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Lat", currentLandObject)));
+        landObjectsData.push_back(thisLandObject);
     }
 
     //Check if pre-set scenario name will cause an overwrite when saved

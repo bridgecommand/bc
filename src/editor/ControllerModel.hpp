@@ -34,7 +34,7 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, irr::u32 _zoomLevels);
+    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, std::vector<PositionData>* landObjectsData, irr::u32 _zoomLevels);
     ~ControllerModel();
     irr::f32 longToX(irr::f32 longitude) const;
     irr::f32 latToZ(irr::f32 latitude) const;
@@ -79,6 +79,7 @@ private:
 
     //Data shared from main
     std::vector<PositionData>* buoysData;
+    std::vector<PositionData>* landObjectsData;
     ScenarioData* scenarioData;
     std::string worldName;
 
