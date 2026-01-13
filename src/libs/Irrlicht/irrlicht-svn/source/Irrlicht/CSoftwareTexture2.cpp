@@ -381,7 +381,7 @@ void CSoftwareTexture2::calcDerivative()
 	}
 
 	//preCalc mipmap texel center boundaries
-	
+
 	for (size_t i = 0; i < array_size(MipMap); ++i)
 	{
 		CSoftwareTexture2_Bound& b = TexBound[i];
@@ -426,7 +426,7 @@ void CSoftwareTexture2::calcDerivative()
 
 /* Software Render Target 2 */
 
-CSoftwareRenderTarget2::CSoftwareRenderTarget2(CBurningVideoDriver* driver) : 
+CSoftwareRenderTarget2::CSoftwareRenderTarget2(CBurningVideoDriver* driver) :
 #if defined(PATCH_SUPERTUX_8_0_1_with_1_9_0)
 IRenderTarget(0), DepthStencil(0),
 #endif
@@ -751,9 +751,9 @@ void Resample_subSampling(eBlitter op, video::IImage* dst, const core::rect<s32>
 
 					switch (srcFormat)
 					{
-					case video::ECF_A1R5G5B5: sbgra = video::A1R5G5B5toA8R8G8B8(*(u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
-					case video::ECF_R5G6B5: sbgra = video::R5G6B5toA8R8G8B8(*(u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
-					case video::ECF_A8R8G8B8: sbgra = *(u32*)(srcData + (fy * src_clip.x1) * 4 + (fx * 4)); break;
+					case video::ECF_A1R5G5B5: sbgra = video::A1R5G5B5toA8R8G8B8(*(const u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
+					case video::ECF_R5G6B5: sbgra = video::R5G6B5toA8R8G8B8(*(const u16*)(srcData + (fy * src_clip.x1) * 2 + (fx * 2))); break;
+					case video::ECF_A8R8G8B8: sbgra = *(const u32*)(srcData + (fy * src_clip.x1) * 4 + (fx * 4)); break;
 					case video::ECF_R8G8B8:
 					{
 						const u8* p = srcData + (fy * src_clip.x1) * 3 + (fx * 3);

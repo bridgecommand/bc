@@ -124,7 +124,7 @@ static inline float get_unaligned_le_float(const u8 *ptr)
     tmp.u[2] = ptr[1];
     tmp.u[3] = ptr[0];
 #else
-    tmp.f = *(float*)ptr;
+    tmp.f = *(const float*)ptr;
 #endif
     return tmp.f;
 }
@@ -202,8 +202,8 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 	// read header
 
-	const u8 *pPtr = (u8*)((void*)buffer);
-	MS3DHeader *pHeader = (MS3DHeader*)pPtr;
+	const u8 *pPtr = buffer;
+	MS3DHeader *pHeader = (MS3DHeader*)buffer;
 	pPtr += sizeof(MS3DHeader);
 
 	if ( strncmp( pHeader->ID, "MS3D000000", 10 ) != 0 )
@@ -229,7 +229,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	// get pointers to data
 
 	// vertices
-	u16 numVertices = *(u16*)pPtr;
+	u16 numVertices = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numVertices = os::Byteswap::byteswap(numVertices);
 #endif
@@ -261,7 +261,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	}
 
 	// triangles
-	u16 numTriangles = *(u16*)pPtr;
+	u16 numTriangles = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numTriangles = os::Byteswap::byteswap(numTriangles);
 #endif
@@ -301,7 +301,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	}
 
 	// groups
-	u16 numGroups = *(u16*)pPtr;
+	u16 numGroups = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numGroups = os::Byteswap::byteswap(numGroups);
 #endif
@@ -324,7 +324,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		grp.Name = ((const c8*) pPtr) + 1;
 
 		pPtr += 33; // name and 1 byte flags
-		u16 triangleCount = *(u16*)pPtr;
+		u16 triangleCount = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 		triangleCount = os::Byteswap::byteswap(triangleCount);
 #endif
@@ -337,12 +337,12 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #ifdef __BIG_ENDIAN__
 			grp.VertexIds.push_back(os::Byteswap::byteswap(*(u16*)pPtr));
 #else
-			grp.VertexIds.push_back(*(u16*)pPtr);
+			grp.VertexIds.push_back(*(const u16*)pPtr);
 #endif
 			pPtr += sizeof (u16);
 		}
 
-		grp.MaterialIdx = *(u8*)pPtr;
+		grp.MaterialIdx = *(const u8*)pPtr;
 		if (grp.MaterialIdx == 255)
 			grp.MaterialIdx = 0;
 
@@ -358,7 +358,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	}
 
 	// load materials
-	u16 numMaterials = *(u16*)pPtr;
+	u16 numMaterials = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numMaterials = os::Byteswap::byteswap(numMaterials);
 #endif
@@ -446,7 +446,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #endif
 	pPtr += sizeof(int);
 
-	u16 jointCount = *(u16*)pPtr;
+	u16 jointCount = *(const u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	jointCount = os::Byteswap::byteswap(jointCount);
 #endif
@@ -604,7 +604,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 	if (jointCount && (pHeader->Version == 4) && (pPtr < buffer+fileSize))
 	{
-		s32 subVersion = *(s32*)pPtr; // comment subVersion, always 1
+		s32 subVersion = *(const s32*)pPtr; // comment subVersion, always 1
 #ifdef __BIG_ENDIAN__
 		subVersion = os::Byteswap::byteswap(subVersion);
 #endif
@@ -615,7 +615,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #ifdef _IRR_DEBUG_MS3D_LOADER_
 			os::Printer::log("Skipping comment group", core::stringc(j+1).c_str());
 #endif
-			u32 numComments = *(u32*)pPtr;
+			u32 numComments = *(const u32*)pPtr;
 #ifdef __BIG_ENDIAN__
 			numComments = os::Byteswap::byteswap(numComments);
 #endif
@@ -627,7 +627,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 				// read it
 				if (j!=3)
 					pPtr += sizeof(s32); // index
-				s32 commentLength = *(s32*)pPtr;
+				s32 commentLength = *(const s32*)pPtr;
 #ifdef __BIG_ENDIAN__
 				commentLength = os::Byteswap::byteswap(commentLength);
 #endif
@@ -647,7 +647,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 		if (pPtr < buffer+fileSize)
 		{
-			subVersion = *(s32*)pPtr; // vertex subVersion, 1 or 2
+			subVersion = *(const s32*)pPtr; // vertex subVersion, 1 or 2
 #ifdef __BIG_ENDIAN__
 			subVersion = os::Byteswap::byteswap(subVersion);
 #endif
@@ -665,7 +665,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			const char offset = (subVersion==1)?6:10;
 			for (i=0; i<numVertices; ++i)
 			{
-				vertexWeights.push_back(*(MS3DVertexWeights*)pPtr);
+				vertexWeights.push_back(*(const MS3DVertexWeights*)pPtr);
 				pPtr += offset;
 			}
 
@@ -681,7 +681,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 		if (pPtr < buffer+fileSize)
 		{
-			subVersion = *(s32*)pPtr; // joint subVersion, 1 or 2
+			subVersion = *(const s32*)pPtr; // joint subVersion, 1 or 2
 #ifdef __BIG_ENDIAN__
 			subVersion = os::Byteswap::byteswap(subVersion);
 #endif
@@ -702,7 +702,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 		if (pPtr < buffer+fileSize)
 		{
-			subVersion = *(s32*)pPtr; // model subVersion, 1 or 2
+			subVersion = *(const s32*)pPtr; // model subVersion, 1 or 2
 #ifdef __BIG_ENDIAN__
 			subVersion = os::Byteswap::byteswap(subVersion);
 #endif

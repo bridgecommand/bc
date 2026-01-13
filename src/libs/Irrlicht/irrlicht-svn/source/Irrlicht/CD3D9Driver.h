@@ -62,7 +62,7 @@ namespace video
 			f32 clearDepth = 1.f, u8 clearStencil = 0) IRR_OVERRIDE;
 
 		//! sets a viewport
-		virtual void setViewPort(const core::rect<s32>& area) IRR_OVERRIDE;
+		virtual void setViewPort(const core::rect<s32>& area, bool clipToRenderTarget=true) IRR_OVERRIDE;
 
 		struct SHWBufferLink_d3d9 : public SHWBufferLink
 		{

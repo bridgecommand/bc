@@ -52,9 +52,8 @@ namespace gui
 		"windowsMetallic",
 		"burning",
 		"unknown",
-		0,
+		0
 	};
-
 
 	//! Enumeration for skin colors
 	enum EGUI_DEFAULT_COLOR
@@ -143,7 +142,7 @@ namespace gui
 		"Editable",
 		"GrayEditable",
 		"FocusedEditable",
-		0,
+		0
 	};
 
 	//! Enumeration for default sizes.

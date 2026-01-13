@@ -18,7 +18,7 @@ namespace video
 	public:
 
 		//! destructor
-		virtual ~IZBuffer() {};
+		virtual ~IZBuffer() {}
 
 		//! clears the zbuffer
 		virtual void clear() = 0;

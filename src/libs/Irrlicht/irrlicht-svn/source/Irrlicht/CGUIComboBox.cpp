@@ -331,8 +331,8 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 					if (Selected != oldSelected)
 					{
 						sendSelectionChangedEvent();
-						return true;
 					}
+					return true;
 				}
 			default:
 				break;

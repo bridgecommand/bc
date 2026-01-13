@@ -33,7 +33,7 @@ namespace scene
 		virtual void OnAnimate(u32 timeMs) IRR_OVERRIDE;
 
 		//! Update mesh
-		virtual void setMesh(IMesh* mesh) IRR_OVERRIDE;
+		virtual void setMesh(IMesh* mesh, bool copyMeshMaterials) IRR_OVERRIDE;
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const IRR_OVERRIDE { return ESNT_WATER_SURFACE; }

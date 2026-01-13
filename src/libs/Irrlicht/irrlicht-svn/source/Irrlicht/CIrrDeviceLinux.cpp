@@ -748,10 +748,9 @@ bool CIrrDeviceLinux::createInputContext()
 
 	if ( !bestStyle )
 	{
-		XDestroyIC(XInputContext);
-		XInputContext = 0;
-
 		os::Printer::log("XInputMethod has no input style we can use. Falling back to non-i18n input.", ELL_WARNING);
+		XCloseIM(XInputMethod);
+		XInputMethod = 0;
 		setlocale(LC_CTYPE, oldLocale.c_str());
 		return false;
 	}
@@ -763,6 +762,8 @@ bool CIrrDeviceLinux::createInputContext()
 	if (!XInputContext )
 	{
 		os::Printer::log("XInputContext failed to create an input context. Falling back to non-i18n input.", ELL_WARNING);
+		XCloseIM(XInputMethod);
+		XInputMethod = 0;
 		setlocale(LC_CTYPE, oldLocale.c_str());
 		return false;
 	}
@@ -1009,6 +1010,8 @@ bool CIrrDeviceLinux::run()
 				irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 				irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 				irrevent.KeyInput.Key = getKeyCode(event);
+				irrevent.KeyInput.AutoRepeat = false; // TODO: can maybe use XPeekEvent to check if same key got pressed again to get that info
+			    irrevent.KeyInput.Extended = false;
 
 				postEventFromUser(irrevent);
 				break;
@@ -1064,6 +1067,8 @@ bool CIrrDeviceLinux::run()
 					irrevent.KeyInput.Control = (event.xkey.state & ControlMask) != 0;
 					irrevent.KeyInput.Shift = (event.xkey.state & ShiftMask) != 0;
 					irrevent.KeyInput.Key = getKeyCode(event);
+					irrevent.KeyInput.AutoRepeat = false;
+					irrevent.KeyInput.Extended = false;
 
 					postEventFromUser(irrevent);
 				}

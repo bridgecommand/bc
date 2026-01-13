@@ -56,7 +56,7 @@ namespace scene
 		virtual ESCENE_NODE_TYPE getType() const IRR_OVERRIDE { return ESNT_MESH; }
 
 		//! Sets a new mesh
-		virtual void setMesh(IMesh* mesh) IRR_OVERRIDE;
+		virtual void setMesh(IMesh* mesh, bool copyMeshMaterials) IRR_OVERRIDE;
 
 		//! Returns the current mesh
 		virtual IMesh* getMesh(void) IRR_OVERRIDE { return Mesh; }

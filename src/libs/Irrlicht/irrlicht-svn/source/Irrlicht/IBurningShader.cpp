@@ -393,7 +393,7 @@ bool IBurningShader::setShaderConstantID(EBurningUniformFlags flags, s32 index, 
 	BurningUniform& use = UniformInfo[index];
 	use.type = flags;
 
-	const u32* s = (u32*)data;
+	const u32* s = (const u32*)data;
 	u32* d = (u32*)use.data;
 
 	if (!s) u32_count = 0;

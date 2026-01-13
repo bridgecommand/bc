@@ -31,7 +31,7 @@ CMeshSceneNode::CMeshSceneNode(IMesh* mesh, ISceneNode* parent, ISceneManager* m
 	setDebugName("CMeshSceneNode");
 	#endif
 
-	setMesh(mesh);
+	setMesh(mesh, true);
 }
 
 
@@ -198,12 +198,11 @@ void CMeshSceneNode::render()
 		for (u32 i=0; i<BufferRenderNodes.size(); ++i)
 		{
 			CBufferRenderNode* bufRenderNode = BufferRenderNodes[i];
-			if ( bufRenderNode->getDoesParentRender())
+			if ( bufRenderNode->getDoesParentRender()) // this node handling rendering
 			{
 				E_SCENE_NODE_RENDER_PASS bufferRenderPass = bufRenderNode->getRenderPass();
 
 				// render() called without OnRegisterSceneNode, but still wants to render in a specific render stage
-				// Note: Not checking transparency every time, as check got slightly expensive (I think it's prone to cache-misses)
 				if ( bufferRenderPass == ESNRP_NONE && renderPass > ESNRP_NONE )	
 				{
 					if ( driver->needsTransparentRenderPass(getMaterial(i)) )
@@ -216,7 +215,7 @@ void CMeshSceneNode::render()
 					}
 				}
 
-				if ( bufRenderNode->getRenderPass() == renderPass || renderPass == ESNRP_NONE)
+				if ( bufferRenderPass == renderPass || renderPass == ESNRP_NONE)
 					bufRenderNode->renderBuffer(driver);
 			}
 		}
@@ -293,7 +292,7 @@ void CMeshSceneNode::setUsedBufferRenderNodes(irr::u32 num)
 }
 
 //! Sets a new mesh
-void CMeshSceneNode::setMesh(IMesh* mesh)
+void CMeshSceneNode::setMesh(IMesh* mesh, bool copyMeshMaterials)
 {
 	if (mesh)
 	{
@@ -305,9 +304,12 @@ void CMeshSceneNode::setMesh(IMesh* mesh)
 
 		Mesh = mesh;
 
-		// Note: Mesh can change amount of meshbuffers later and we don't handle that so far so that would cause trouble
-		// For now assuming users call setMesh again in that case
-		copyMaterials();
+		if ( copyMeshMaterials )
+		{
+			// Note: Mesh can change amount of meshbuffers later and we don't handle that so far so that would cause trouble
+			// For now assuming users call setMesh again in that case
+			copyMaterials();
+		}
 		setUsedBufferRenderNodes(Mesh ? Mesh->getMeshBufferCount() : 0);
 	}
 }
@@ -390,7 +392,7 @@ void CMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 			newMesh = newAnimatedMesh->getMesh(0);
 
 		if (newMesh)
-			setMesh(newMesh);
+			setMesh(newMesh, true);
 	}
 
 	// optional attribute to assign the hint to the whole mesh

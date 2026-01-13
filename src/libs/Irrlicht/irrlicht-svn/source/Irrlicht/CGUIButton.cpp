@@ -326,7 +326,7 @@ void CGUIButton::draw()
 		}
 
 		if (font)
-			font->draw(Text.c_str(), rect,
+			font->draw(Text, rect,
 				getActiveColor(),
 				true, true, &AbsoluteClippingRect);
 	}

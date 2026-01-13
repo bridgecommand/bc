@@ -33,8 +33,19 @@ namespace scene
 		/** Called each render cycle from Animated Mesh SceneNode render method. */
 		virtual void updateShadowVolumes() IRR_OVERRIDE;
 
+		//! Control if updateShadowVolumes really updates the shadow volumes
+		virtual void setFreeze(ESHADOWVOLUME_FREEZE freeze) IRR_OVERRIDE
+		{
+			Freeze = freeze;
+		}
+
+		virtual ESHADOWVOLUME_FREEZE getFreeze() const IRR_OVERRIDE
+		{
+			return Freeze;
+		}
+
 		//! Set optimization used to create shadow volumes
-		/** Default is ESV_SILHOUETTE_BY_POS. If the shadow 
+		/** Default is ESV_SILHOUETTE_BY_POS. If the shadow
 		looks bad then give ESV_NONE a try (which will be slower). */
 		virtual void setOptimization(ESHADOWVOLUME_OPTIMIZATION optimization) IRR_OVERRIDE;
 
@@ -42,6 +53,18 @@ namespace scene
 		virtual ESHADOWVOLUME_OPTIMIZATION getOptimization() const IRR_OVERRIDE
 		{
 			return Optimization;
+		}
+
+		//! Get number of shadow volumes the node currently has.
+		virtual u32 getNumShadowVolumes() const IRR_OVERRIDE
+		{
+			return ShadowVolumesUsed;
+		}
+
+		//! Get the number of shadow volumes which got drawn in the last render() call
+		virtual u32 getNumRenderedShadowVolumes() const IRR_OVERRIDE
+		{
+			return ShadowVolumesRendered;
 		}
 
 		//! pre render method
@@ -87,10 +110,12 @@ namespace scene
 		u32 IndexCount;
 		u32 VertexCount;
 		u32 ShadowVolumesUsed;
+		u32 ShadowVolumesRendered;
 
 		f32 Infinity;
 		bool UseZFailMethod;
 		ESHADOWVOLUME_OPTIMIZATION Optimization;
+		ESHADOWVOLUME_FREEZE Freeze;
 	};
 
 } // end namespace scene

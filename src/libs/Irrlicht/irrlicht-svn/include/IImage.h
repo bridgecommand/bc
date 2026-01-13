@@ -33,7 +33,12 @@ public:
 #endif
 	{
 		BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
-		Pitch = BytesPerPixel * Size.Width;
+
+		// We want the exact pitch even for compressed formats
+		if ( Size.Height > 0 )
+			Pitch = (irr::u32)(getDataSizeFromFormat(Format, Size.Width, Size.Height) / (size_t)Size.Height);
+		else
+			Pitch = 0;
 	}
 
 	//! destructor
@@ -76,7 +81,11 @@ public:
 		return getBitsPerPixelFromFormat(Format);
 	}
 
-	//! Returns bytes per pixel
+	//! Returns bytes per pixel for uncompressed formats
+	/** Note: With compressed formats this value tends to be wrong.
+	For those you usually have to work with either getBitsPerPixelFromFormat,
+	getBitsPerBlockFromFormat or getPitch. Which one of those you'll need 
+	depends on the use case. */
 	u32 getBytesPerPixel() const
 	{
 		return BytesPerPixel;
@@ -392,27 +401,26 @@ public:
 		case ECF_A8R8G8B8:
 			return 32;
 		case ECF_DXT1:
-			return 16;
+			return 4;
 		case ECF_DXT2:
 		case ECF_DXT3:
 		case ECF_DXT4:
 		case ECF_DXT5:
-			return 32;
+			return 8;
 		case ECF_PVRTC_RGB2:
-			return 12;
 		case ECF_PVRTC_ARGB2:
 		case ECF_PVRTC2_ARGB2:
-			return 16;
+			return 2;
 		case ECF_PVRTC_RGB4:
-			return 24;
 		case ECF_PVRTC_ARGB4:
 		case ECF_PVRTC2_ARGB4:
-			return 32;
+			return 4;
 		case ECF_ETC1:
+			return 4;
 		case ECF_ETC2_RGB:
-			return 24;
+			return 4;
 		case ECF_ETC2_ARGB:
-			return 32;
+			return 8;
 		case ECF_D16:
 			return 16;
 		case ECF_D32:
@@ -441,6 +449,41 @@ public:
 			return 128;
 		default:
 			return 0;
+		}
+	}
+
+	// Some (compressed) formats need to ensure blocks of bits stay together, which may
+	// not be identical to the amount of bits needed for a pixel.
+	// Also a block of bits maybe not be about pixels in a row, but tends
+	// to be about things like 4x4 pixel blocks. The order can even be unrelated to the 
+	// pixel order in some cases.
+	// For uncompressed formats it's the same value as getBitsPerPixelFromFormat
+	static u32 getBitsPerBlockFromFormat(const ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+		case ECF_DXT1:
+			return 64;
+		case ECF_DXT2:
+		case ECF_DXT3:
+		case ECF_DXT4:
+		case ECF_DXT5:
+			return 128;
+		case ECF_PVRTC_RGB2:
+		case ECF_PVRTC_ARGB2:
+		case ECF_PVRTC2_ARGB2:
+		case ECF_PVRTC_RGB4:
+		case ECF_PVRTC_ARGB4:
+		case ECF_PVRTC2_ARGB4:
+			return 64;
+		case ECF_ETC1:
+			return 64;
+		case ECF_ETC2_RGB:
+			return 64;
+		case ECF_ETC2_ARGB:
+			return 128;
+		default:
+			return getBitsPerPixelFromFormat(format);
 		}
 	}
 

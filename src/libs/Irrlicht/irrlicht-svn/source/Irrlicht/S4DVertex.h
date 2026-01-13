@@ -833,7 +833,7 @@ struct SCacheInfo
 };
 
 //must at least hold all possible (clipped) vertices of primitive.
-#define VERTEXCACHE_ELEMENT	16			
+#define VERTEXCACHE_ELEMENT	16
 #define VERTEXCACHE_MISS 0xFFFFFFFF
 struct SVertexShader
 {
@@ -872,8 +872,8 @@ struct SVertexShader
 			i = 0;
 		switch (iType)
 		{
-			case E4IT_16BIT: o = ((u16*)indices)[i]; break;
-			case E4IT_32BIT: o = ((u32*)indices)[i]; break;
+			case E4IT_16BIT: o = ((const u16*)indices)[i]; break;
+			case E4IT_32BIT: o = ((const u32*)indices)[i]; break;
 			default: case E4IT_NONE: o = i; break;
 		}
 		return o;
@@ -925,7 +925,7 @@ struct sScanConvertData
 	u32 right;			// !left
 	u8 _unused_pack[8];
 
-	f32 invDeltaY[4];	// inverse edge delta for screen space sorted triangle 
+	f32 invDeltaY[4];	// inverse edge delta for screen space sorted triangle
 
 	f32 x[2];			// x coordinate
 	f32 slopeX[2];		// x slope along edges

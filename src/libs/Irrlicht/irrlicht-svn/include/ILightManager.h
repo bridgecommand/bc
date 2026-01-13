@@ -22,8 +22,8 @@ namespace scene
 	before or after each scene node is rendered. It is assumed that the
 	ILightManager implementation will store any data that it wishes to
 	retain, i.e. the ISceneManager to which it is assigned, the lightList,
-	the current render pass, and the current scene node. 
-	
+	the current render pass, and the current scene node.
+
 	It can also be useful for shaders as it allows finding out the currently rendered SceneNode.
 	*/
 	class ILightManager : public IReferenceCounted
@@ -38,27 +38,27 @@ namespace scene
 		the light manager may modify. This reference will remain valid
 		until OnPostRender().
 		*/
-		virtual void OnPreRender(core::array<ISceneNode*> & lightList) {};
+		virtual void OnPreRender(core::array<ISceneNode*> & lightList) {}
 
 		//! Called after the last scene node is rendered.
 		/** After this call returns, the lightList passed to OnPreRender() becomes invalid. */
-		virtual void OnPostRender(void) {};
+		virtual void OnPostRender(void) {}
 
 		//! Called before a render pass begins
 		/** \param renderPass: the render pass that's about to begin */
-		virtual void OnRenderPassPreRender(E_SCENE_NODE_RENDER_PASS renderPass) {};
+		virtual void OnRenderPassPreRender(E_SCENE_NODE_RENDER_PASS renderPass) {}
 
 		//! Called after the render pass specified in OnRenderPassPreRender() ends
 		/** \param[in] renderPass: the render pass that has finished */
-		virtual void OnRenderPassPostRender(E_SCENE_NODE_RENDER_PASS renderPass) {};
+		virtual void OnRenderPassPostRender(E_SCENE_NODE_RENDER_PASS renderPass) {}
 
 		//! Called before the given scene node is rendered
 		/** \param[in] node: the scene node that's about to be rendered */
-		virtual void OnNodePreRender(ISceneNode* node) {};
+		virtual void OnNodePreRender(ISceneNode* node) {}
 
 		//! Called after the the node specified in OnNodePreRender() has been rendered
 		/** \param[in] node: the scene node that has just been rendered */
-		virtual void OnNodePostRender(ISceneNode* node) {};
+		virtual void OnNodePostRender(ISceneNode* node) {}
 	};
 } // end namespace scene
 } // end namespace irr

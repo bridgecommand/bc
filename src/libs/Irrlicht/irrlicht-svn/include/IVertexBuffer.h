@@ -52,7 +52,7 @@ namespace scene
 		/** The reference _must_ be cast to the correct type before use. It's only video::S3DVertex if getType is EVT_STANDARD.
 		    otherwise cast it first to a reference type derived from S3DVertex like S3DVertex2TCoords& or S3DVertexTangents&. */
 		virtual video::S3DVertex& operator [](u32 index) = 0;
-		virtual video::S3DVertex& operator [](const u32 index) const =0;
+		virtual const video::S3DVertex& operator [](const u32 index) const =0;
 		virtual video::S3DVertex& getLast() =0;
 
 		virtual void set_used(u32 usedNow) =0;

@@ -38,7 +38,7 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	Params=params;
 
 	// Create a window to test antialiasing support
-	const fschar_t* ClassName = __TEXT("CWGLManager");
+	const TCHAR* ClassName = __TEXT("CWGLManager");
 	HINSTANCE lhInstance = GetModuleHandle(0);
 
 	// Register Class
@@ -297,7 +297,8 @@ bool CWGLManager::initialize(const SIrrlichtCreationParameters& params, const SE
 	// now get new window
 	CurrentContext.OpenGLWin32.HWnd=videodata.OpenGLWin32.HWnd;
 	// get hdc
-	if (!(CurrentContext.OpenGLWin32.HDc=GetDC((HWND)videodata.OpenGLWin32.HWnd)))
+	CurrentContext.OpenGLWin32.HDc=GetDC((HWND)videodata.OpenGLWin32.HWnd);
+	if (!CurrentContext.OpenGLWin32.HDc)
 	{
 		os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
 		return false;

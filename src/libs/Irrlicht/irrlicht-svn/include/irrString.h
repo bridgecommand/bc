@@ -372,7 +372,7 @@ public:
 			return *this;
 		}
 
-		if ((void*)c == (void*)array)
+		if ((const void*)c == (const void*)array)
 			return *this;
 
 		u32 len = 0;
@@ -732,7 +732,7 @@ public:
 	//\param pos Insert the characters before this index
 	//\param s String to insert. Must be at least of size n
 	//\param n Number of characters from string s to use.
-	string<T,TAlloc>& insert(u32 pos, const char* s, u32 n)
+	string<T,TAlloc>& insert(u32 pos, const T* s, u32 n)
 	{
 		if ( pos < used )
 		{

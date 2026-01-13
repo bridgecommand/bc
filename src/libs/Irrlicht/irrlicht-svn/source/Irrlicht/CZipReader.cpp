@@ -203,7 +203,7 @@ bool CZipReader::scanGZipHeader()
 		// now get the file info
 		if (header.flags & EGZF_EXTRA_FIELDS)
 		{
-			// read lenth of extra data
+			// read length of extra data
 			u16 dataLen;
 
 			File->read(&dataLen, 2);

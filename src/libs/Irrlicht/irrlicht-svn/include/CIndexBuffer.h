@@ -14,11 +14,13 @@ namespace scene
 
 	class CIndexBuffer : public IIndexBuffer
 	{
+	public:
+
 		// Virtual function wrapper around irr::core::array
 		class IIndexList
 		{
 		public:
-			virtual ~IIndexList(){};
+			virtual ~IIndexList() {}
 
 			virtual u32 stride() const =0;
 			virtual u32 size() const =0;
@@ -88,18 +90,17 @@ namespace scene
 			}
 		};
 
-	public:
 		IIndexList *Indices;
 
 		CIndexBuffer(video::E_INDEX_TYPE IndexType) :Indices(0), MappingHint(EHM_NEVER), ChangedID(1)
 		{
-			setType(IndexType);
+			CIndexBuffer::setType(IndexType);
 		}
 
 		CIndexBuffer(const IIndexBuffer &IndexBufferCopy) :Indices(0), MappingHint(EHM_NEVER), ChangedID(1)
 		{
-			setType(IndexBufferCopy.getType());
-			reallocate(IndexBufferCopy.size());
+			CIndexBuffer::setType(IndexBufferCopy.getType());
+			CIndexBuffer::reallocate(IndexBufferCopy.size());
 
 			for (u32 n=0;n<IndexBufferCopy.size();++n)
 				push_back(IndexBufferCopy[n]);

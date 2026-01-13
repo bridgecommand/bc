@@ -18,7 +18,7 @@ class IGUIImageList : public virtual IReferenceCounted
 public:
 
 	//! Destructor
-	virtual ~IGUIImageList() {};
+	virtual ~IGUIImageList() {}
 
 	//! Draws an image and clips it to the specified rectangle if wanted
 	//! \param index: Index of the image

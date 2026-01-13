@@ -36,7 +36,7 @@ size_t CMemoryReadFile::read(void* buffer, size_t sizeToRead)
 	if (amount <= 0)
 		return 0;
 
-	c8* p = (c8*)Buffer;
+	const c8* p = (const c8*)Buffer;
 	memcpy(buffer, p + Pos, amount);
 
 	Pos += amount;

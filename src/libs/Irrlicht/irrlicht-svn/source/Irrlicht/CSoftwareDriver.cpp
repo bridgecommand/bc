@@ -314,14 +314,17 @@ void CSoftwareDriver::setRenderTargetImage(video::CImage* image)
 
 
 //! sets a viewport
-void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
+void CSoftwareDriver::setViewPort(const core::rect<s32>& area, bool clipToRenderTarget)
 {
 	ViewPort = area;
 
-	//TODO: the clipping is not correct, because the projection is affected.
-	// to correct this, ViewPortSize and Render2DTranslation will have to be corrected.
-	core::rect<s32> rendert(0,0,RenderTargetSize.Width,RenderTargetSize.Height);
-	ViewPort.clipAgainst(rendert);
+	if ( clipToRenderTarget )
+	{
+		//TODO: the clipping is not correct, because the projection is affected.
+		// to correct this, ViewPortSize and Render2DTranslation will have to be corrected.
+		core::rect<s32> rendert(0,0,RenderTargetSize.Width,RenderTargetSize.Height);
+		ViewPort.clipAgainst(rendert);
+	}
 
 	ViewPortSize = core::dimension2du(ViewPort.getSize());
 	Render2DTranslation.X = (ViewPortSize.Width / 2) + ViewPort.UpperLeftCorner.X;
@@ -367,25 +370,25 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 					case EVT_STANDARD:
 						{
 							for (u32 i=0; i < primitiveCount-1; ++i)
-								draw3DLine(((S3DVertex*)vertices)[indexList[i]].Pos,
-									((S3DVertex*)vertices)[indexList[i+1]].Pos,
-									((S3DVertex*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertex*)vertices)[indexList[i]].Pos,
+									((const S3DVertex*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertex*)vertices)[indexList[i]].Color);
 						}
 						break;
 					case EVT_2TCOORDS:
 						{
 							for (u32 i=0; i < primitiveCount-1; ++i)
-								draw3DLine(((S3DVertex2TCoords*)vertices)[indexList[i]].Pos,
-									((S3DVertex2TCoords*)vertices)[indexList[i+1]].Pos,
-									((S3DVertex2TCoords*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertex2TCoords*)vertices)[indexList[i]].Pos,
+									((const S3DVertex2TCoords*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertex2TCoords*)vertices)[indexList[i]].Color);
 						}
 						break;
 					case EVT_TANGENTS:
 						{
 							for (u32 i=0; i < primitiveCount-1; ++i)
-								draw3DLine(((S3DVertexTangents*)vertices)[indexList[i]].Pos,
-									((S3DVertexTangents*)vertices)[indexList[i+1]].Pos,
-									((S3DVertexTangents*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertexTangents*)vertices)[indexList[i]].Pos,
+									((const S3DVertexTangents*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertexTangents*)vertices)[indexList[i]].Color);
 						}
 						break;
 				}
@@ -396,19 +399,19 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 			switch (vType)
 			{
 				case EVT_STANDARD:
-					draw3DLine(((S3DVertex*)vertices)[indexList[primitiveCount-1]].Pos,
-						((S3DVertex*)vertices)[indexList[0]].Pos,
-						((S3DVertex*)vertices)[indexList[primitiveCount-1]].Color);
+					draw3DLine(((const S3DVertex*)vertices)[indexList[primitiveCount-1]].Pos,
+						((const S3DVertex*)vertices)[indexList[0]].Pos,
+						((const S3DVertex*)vertices)[indexList[primitiveCount-1]].Color);
 					break;
 				case EVT_2TCOORDS:
-					draw3DLine(((S3DVertex2TCoords*)vertices)[indexList[primitiveCount-1]].Pos,
-						((S3DVertex2TCoords*)vertices)[indexList[0]].Pos,
-						((S3DVertex2TCoords*)vertices)[indexList[primitiveCount-1]].Color);
+					draw3DLine(((const S3DVertex2TCoords*)vertices)[indexList[primitiveCount-1]].Pos,
+						((const S3DVertex2TCoords*)vertices)[indexList[0]].Pos,
+						((const S3DVertex2TCoords*)vertices)[indexList[primitiveCount-1]].Color);
 					break;
 				case EVT_TANGENTS:
-					draw3DLine(((S3DVertexTangents*)vertices)[indexList[primitiveCount-1]].Pos,
-						((S3DVertexTangents*)vertices)[indexList[0]].Pos,
-						((S3DVertexTangents*)vertices)[indexList[primitiveCount-1]].Color);
+					draw3DLine(((const S3DVertexTangents*)vertices)[indexList[primitiveCount-1]].Pos,
+						((const S3DVertexTangents*)vertices)[indexList[0]].Pos,
+						((const S3DVertexTangents*)vertices)[indexList[primitiveCount-1]].Color);
 					break;
 			}
 			return;
@@ -419,25 +422,25 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 					case EVT_STANDARD:
 						{
 							for (u32 i=0; i < 2*primitiveCount; i+=2)
-								draw3DLine(((S3DVertex*)vertices)[indexList[i]].Pos,
-									((S3DVertex*)vertices)[indexList[i+1]].Pos,
-									((S3DVertex*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertex*)vertices)[indexList[i]].Pos,
+									((const S3DVertex*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertex*)vertices)[indexList[i]].Color);
 						}
 						break;
 					case EVT_2TCOORDS:
 						{
 							for (u32 i=0; i < 2*primitiveCount; i+=2)
-								draw3DLine(((S3DVertex2TCoords*)vertices)[indexList[i]].Pos,
-									((S3DVertex2TCoords*)vertices)[indexList[i+1]].Pos,
-									((S3DVertex2TCoords*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertex2TCoords*)vertices)[indexList[i]].Pos,
+									((const S3DVertex2TCoords*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertex2TCoords*)vertices)[indexList[i]].Color);
 						}
 						break;
 					case EVT_TANGENTS:
 						{
 							for (u32 i=0; i < 2*primitiveCount; i+=2)
-								draw3DLine(((S3DVertexTangents*)vertices)[indexList[i]].Pos,
-									((S3DVertexTangents*)vertices)[indexList[i+1]].Pos,
-									((S3DVertexTangents*)vertices)[indexList[i]].Color);
+								draw3DLine(((const S3DVertexTangents*)vertices)[indexList[i]].Pos,
+									((const S3DVertexTangents*)vertices)[indexList[i+1]].Pos,
+									((const S3DVertexTangents*)vertices)[indexList[i]].Color);
 						}
 						break;
 				}
@@ -466,13 +469,13 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 	switch (vType)
 	{
 		case EVT_STANDARD:
-			drawClippedIndexedTriangleListT((S3DVertex*)vertices, vertexCount, indexPointer, primitiveCount);
+			drawClippedIndexedTriangleListT((const S3DVertex*)vertices, vertexCount, indexPointer, primitiveCount);
 			break;
 		case EVT_2TCOORDS:
-			drawClippedIndexedTriangleListT((S3DVertex2TCoords*)vertices, vertexCount, indexPointer, primitiveCount);
+			drawClippedIndexedTriangleListT((const S3DVertex2TCoords*)vertices, vertexCount, indexPointer, primitiveCount);
 			break;
 		case EVT_TANGENTS:
-			drawClippedIndexedTriangleListT((S3DVertexTangents*)vertices, vertexCount, indexPointer, primitiveCount);
+			drawClippedIndexedTriangleListT((const S3DVertexTangents*)vertices, vertexCount, indexPointer, primitiveCount);
 			break;
 	}
 }
@@ -803,10 +806,10 @@ void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::po
 		}
 
 		if (useAlphaChannelOfTexture)
-			((CSoftwareTexture*)texture)->getImage()->copyToWithAlpha(
+			((const CSoftwareTexture*)texture)->getImage()->copyToWithAlpha(
 				RenderTargetSurface, destPos, sourceRect, color, clipRect);
 		else
-			((CSoftwareTexture*)texture)->getImage()->copyTo(
+			((const CSoftwareTexture*)texture)->getImage()->copyTo(
 				RenderTargetSurface, destPos, sourceRect, clipRect);
 	}
 }

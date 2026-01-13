@@ -36,7 +36,7 @@ public:
 	virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const IRR_OVERRIDE;
 
 	//! Clones a static IMesh into a modifiable SMesh.
-	virtual SMesh* createMeshCopy(scene::IMesh* mesh) const IRR_OVERRIDE;
+	virtual SMesh* createMeshCopy(const scene::IMesh* mesh) const IRR_OVERRIDE;
 
 	//! Creates a planar texture mapping on the mesh
 	/** \param mesh: Mesh on which the operation is performed.
@@ -61,28 +61,28 @@ public:
 	virtual void recalculateTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const IRR_OVERRIDE;
 
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false, bool recalculateTangents=true) const IRR_OVERRIDE;
+	virtual IMesh* createMeshWithTangents(const IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false, bool recalculateTangents=true) const IRR_OVERRIDE;
 
 	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
-	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const IRR_OVERRIDE;
+	virtual IMesh* createMeshWith2TCoords(const IMesh* mesh) const IRR_OVERRIDE;
 
 	//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
-	virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const IRR_OVERRIDE;
+	virtual IMesh* createMeshWith1TCoords(const IMesh* mesh) const IRR_OVERRIDE;
 
 	//! Creates a copy of the mesh, which will only consist of unique triangles, i.e. no vertices are shared.
-	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const IRR_OVERRIDE;
+	virtual IMesh* createMeshUniquePrimitives(const IMesh* mesh) const IRR_OVERRIDE;
 
 	//! Creates a copy of the mesh, which will have all duplicated vertices removed, i.e. maximal amount of vertices are shared via indexing.
-	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const IRR_OVERRIDE;
+	virtual IMesh* createMeshWelded(const IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const IRR_OVERRIDE;
 
 	//! Returns amount of polygons in mesh.
-	virtual s32 getPolyCount(scene::IMesh* mesh) const IRR_OVERRIDE;
+	virtual s32 getPolyCount(const scene::IMesh* mesh) const IRR_OVERRIDE;
 
 	//! Returns amount of polygons in mesh.
 	virtual s32 getPolyCount(scene::IAnimatedMesh* mesh) const IRR_OVERRIDE;
 
 	//! create a new AnimatedMesh and adds the mesh to it
-	virtual IAnimatedMesh * createAnimatedMesh(scene::IMesh* mesh,scene::E_ANIMATED_MESH_TYPE type) const IRR_OVERRIDE;
+	virtual IAnimatedMesh* createAnimatedMesh(scene::IMesh* mesh,scene::E_ANIMATED_MESH_TYPE type) const IRR_OVERRIDE;
 
 	//! create a mesh optimized for the vertex cache
 	virtual IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh) const IRR_OVERRIDE;

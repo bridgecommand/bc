@@ -1,6 +1,61 @@
 --------------------------
 Changes in 1.9 (not yet released)
 
+- ComboBox now marks all mouse-wheel events as handled and not just when selection changes as before
+- string::insert now expects template type instead of always char. Breaks compiling code when it was previously used with stringw's. Use wchar_t's now to insert into those.
+- Add flag irr::gui::EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS. Keeping old behavior, but it can be disabled now.
+- Switch input key interpretation on Windows from ToAsciiEx to ToUnicode.
+  *** This means the official end of Windows 98 support for Irrlicht as ToUnicode doesn't exits before Windows 2000
+  Last svn version which (probably, not tested) still has with Windows 98 support is [r6708].
+  Reason is that the way it was done started to become incompatible with Windows 11, so support for one OS had to go.
+- Add AutoRepeat and Extended flags to SKeyInput to pass on that info on Windows
+- Can now compile with /utf-8 option in VS. Fixes bug #463. Thanks @Tony Chen for the report.
+- Can now compile with unicode option in VS without having to set _IRR_WCHAR_FILESYSTEM
+- Fix crash in CIrrDeviceLinux::createInputContext when Irrlicht doesn't like any available input styles. Thanks @Ryan C. Gordon for report: https://sourceforge.net/p/irrlicht/bugs/476
+- OpenGL no longer updates enabled clipping planes every time ETS_WORLD is set (only on ETS_VIEW now)
+- Bugfix: IMeshManipulater functions recalculateNormals and recalculateTangents no longer create nan's (was caused by getAngleWeight function)
+- Add freeze options for IShadowVolumeSceneNode
+- OpenGL driver no longer drops normals and texture coordinates for EPT_POINTS
+- Fix drawVertexPrimitiveList in OpenGL driver ignoring index buffer for EPT_POINTS and EPT_POINT_SPRITES. 
+  It did always draw the vertex array, but still using the primitive count (so often going outside array)
+  Now using the index buffer as with other drivers.
+- Add IGUIContextMenu::setCloseOnCheck to control behaviour when a checkable item is clicked
+- IGUIListBox::setItemHeight now resets to automatic height with value 0. Also value is now serialized.
+- Several IMeshManipulator functions allow now using const IMesh* instead of insisting on non-const pointer
+- SpinBoxes can now also be created without buttons
+- Opening/closing sub-menus has now a delay. It can be controlled via IGUIEnvironment::setMenuShowDelay.
+- Add new flag to IMeshSceneNode::setMesh to allow to keeping the original node materials.
+- New ETCF_ALLOW_MEMORY_COPY texture creation flag makes having an extra texture copy for OpenGL textures optional.
+  This is now disabled by default. It saves a lot memory, but the cost is that lock() calls get slower.
+  So enable it for textures which you need to read a lot on CPU (like for example font textures).
+- Add parameter to setViewPort which allows disabling clipping of the area. Will only work in OpenGL.
+  Thanks @Andrey01 for mentioning a use-case for this: https://irrlicht.sourceforge.io/forum/viewtopic.php?t=53020
+- Empty meshes and meshbuffers now have invalid bounding-boxes. 
+  Meshes no longer add invalid meshbuffer bounding boxes when recalculating their bounding box.
+  Fixes bugs that empty meshbuffers could increase the bounding box sometimes and that SMesh could ignore meshbuffers with a single point.
+- Avoid unnecessary string copies in GUI code when drawing fonts (accidentally introduced in Irrlicht 1.6).
+- IGUIScrollBar has now getters for the scrollbar buttons and the options to disable background drawing
+- Improved scrollbar handling in CGUITreeView (stepsizes, reacting to keys)
+- Add IGUITreeView::getNextNode (traverse full tree), getPrevNode, getLastSelectTriggerEvent (to get mouse-keys) and scrollTo.
+- Bugfix: CGUITreeView no longer dropping EGET_TREEVIEW_NODE_SELECT events when moving mouse while clicking
+- CGUITreeView now shows expand icon (+/-) for sub-nodes with correct text-color
+- Bugfix: CGUITreeView now aligns scrollbars correct so they work on resize
+- obj/mtl loader no longer messes up bump textures when the name starts with a number
+- CImageLoaderBMP now supports loading 1-bit images with palette data
+- Hardware meshbuffers are now deleted when they hold the last reference to a meshbuffer
+- Variable order inside SMaterial and SMaterialLayer changed for better packing
+- line3d::getClosestPoint can now chose between using line or line segment
+- MY3D loader deprecated and disabled by default as MY3D tools can't be found on the web anymore. Also could always be used as external loader.
+- createCylinderMesh, createArrowMesh and createConeMesh in GeometryCreator tessellation numbers now for full instead of semi-circle.
+  Double your tessellation numbers to get same results as in 1.8
+  Sorry had to break as old solution didn't allow for odd numbers. Also was documented otherwise, so was a bug.
+- Change in UV's for top/bottom center vertex in CGeometryCreator::createCylinderMesh
+- Add some default UV's in CGeometryCreator::createConeMesh
+- Bugfix: CTriangleSelector::getTriangles with bounding-box parameter no longer ignores an additionally passed matrix transformation in the box check
+- Fix: CGUITabControl now catching EMIE_LMOUSE_PRESSED_DOWN
+- Add options for transparency node sorting algorithm.
+- CImageWriterPNG now also supports the writeImageToFile param to allow setting compressing level. 0 stays default, 1-10 for range increasing compression level.
+- Add io::IUserData which can be set in SMaterial to make it easier passing additional material values to shaders
 - Add lens shift support for the camera and the perspective projection functions
 - TGA loader no longer reduces 24&32 bit TGA's with palettes to 16 bit. Thanks @erlehmann for report: https://irrlicht.sourceforge.io/forum/viewtopic.php?t=52925
 - Fix compile error with OS X 10.10 SDK, bug #463. Thanks @Ryan Schmidt for report and patch.
@@ -9,9 +64,9 @@ Changes in 1.9 (not yet released)
   In 1.8 we could still use gl_FrontMaterial, but that is no longer supported in shaders
 - Get IMeshBuffer::append functions working for a few more cases and adapt interface so one can prevent the BoundingBox update.
 - Bugfix: SMaterialLayer::operator!= no longer returns true when comparing a layer without texture matrix with one with a set identity texture matrix. Those are the same.
-- SMaterialLayer no longer releases allocated texture memory before destructor unless explicitly requested.
+- SMaterialLayer no longer releases allocated TextureMatrix memory before destructor unless explicitly requested.
   This can avoid constantly allocation/releasing memory in the active driver material when setting materials.
-  Note that it does not copy texture memory when it's unused. This is still optimized.
+  Note that it does not copy the TextureMatrix memory when it's unused. This is still optimized.
 - Add IMeshSceneNode::setNodeRegistration to allow registering MeshSceneNodes to the SceneManager per buffer instead of per node
 - Add SMaterialLayer::hasSetTextureMatrix and SMaterialLayer::resetTextureMatrix
 - Add IShaderConstantSetCallBack::OnCreate to allow earlier access to IMaterialRendererServices
@@ -132,7 +187,7 @@ Changes in 1.9 (not yet released)
 - Material.ZWriteEnable is now of type E_ZWRITE instead of bool. This allows now setting materials to always "on" independent of material type and transparency.
   This breaks compiling. To have old values replace false with EZW_OFF and true with EWZ_AUTO.
 - Materials EMT_REFLECTION_2_LAYER and EMT_TRANSPARENT_REFLECTION_2_LAYER on OpenGL are now same as in D3D9. Before GL used a sphere-map for those instead of reflection.
-- Bugfix: CGUIToolBar automatic placement no longer outside of screen when there are modals screens when creating it.
+- Bugfix: CGUIToolBar automatic placement no longer outside of screen when there are modal screens when creating it.
   Or when there are other window elements going over full window-size.
   Thanks to Stephen Lynx for the bugreport and to Sérgio Augusto Vianna for writing a test case with a bug example.
   Changes: a) Never move the toolbar below it's parents lower border. b) No longer check all element-types, but only try to be below other toolbars or menus.
@@ -401,6 +456,7 @@ Changes in 1.9 (not yet released)
 
 --------------------------
 Changes in 1.8.6
+- Fix CGUIPanel (in Gui Editor) so horizontal scrollbar can get focus (Feature request #163). Thanks @yybbwc for reporting.
 - CXMeshFileLoader: fix buffer overreads with text format. Thanks @sfan5 for report and patch.
   Patch (commit 6f4f7c4 to Minetest): https://github.com/minetest/irrlicht/commit/6f4f7c4d75c9d563e98d3936ed8bc6e248dc14a8
 - Fix CB3DMeshFileLoader::readString. Prevent adding a character beyond file-end. Thanks @sfan5 for report and patch.
@@ -434,7 +490,7 @@ Changes in 1.8.6
 - Backport bugfix from trunk to make CUserPointerAttribute::setString work on 64-bit systems.
 - Remove unnecessary implemented assignment operator in quaternion, irrMap, SViewFrustum, line2d and IQ3Shader which cause warnings with -Wdeprecated in newer gcc
 - Avoid warning about stringop-overflow in string<T>::subString when compiling in release with newer gcc
-- Update library zlib to 1.2.11 (from 1.2.8)
+- Update library zlib to 1.3.1 (from 1.2.8)
 - Update library bzip2 to 1.0.8 (from 1.0.6)
 - Security: Fix buffer overflow caused by malformed md2 files. Thanks @procfs for reporting (https://irrlicht.sourceforge.io/forum/viewtopic.php?f=7&t=52785)
 - Makefile now only adds CFLAGS instead of overwriting them.

@@ -26,8 +26,8 @@ CShadowVolumeSceneNode::CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNo
 		ISceneManager* mgr, s32 id, bool zfailmethod, f32 infinity)
 : IShadowVolumeSceneNode(parent, mgr, id),
 	AdjacencyDirtyFlag(true),
-	ShadowMesh(0), IndexCount(0), VertexCount(0), ShadowVolumesUsed(0),
-	Infinity(infinity), UseZFailMethod(zfailmethod), Optimization(ESV_SILHOUETTE_BY_POS)
+	ShadowMesh(0), IndexCount(0), VertexCount(0), ShadowVolumesUsed(0), ShadowVolumesRendered(0),
+	Infinity(infinity), UseZFailMethod(zfailmethod), Optimization(ESV_SILHOUETTE_BY_POS), Freeze(ESF_RUN)
 {
 	#ifdef _DEBUG
 	setDebugName("CShadowVolumeSceneNode");
@@ -274,6 +274,11 @@ void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 
 void CShadowVolumeSceneNode::updateShadowVolumes()
 {
+	if ( Freeze == ESF_FREEZE )
+		return;
+	else if ( Freeze == ESF_FREEZE_AFTER_UPDATE )
+		Freeze = ESF_FREEZE;
+
 	const u32 oldIndexCount = IndexCount;
 	const u32 oldVertexCount = VertexCount;
 
@@ -387,6 +392,7 @@ void CShadowVolumeSceneNode::setOptimization(ESHADOWVOLUME_OPTIMIZATION optimiza
 //! pre render method
 void CShadowVolumeSceneNode::OnRegisterSceneNode()
 {
+	ShadowVolumesRendered = 0;
 	if (IsVisible)
 	{
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_SHADOW);
@@ -397,6 +403,7 @@ void CShadowVolumeSceneNode::OnRegisterSceneNode()
 //! renders the node.
 void CShadowVolumeSceneNode::render()
 {
+	ShadowVolumesRendered = 0;
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if (!ShadowVolumesUsed || !driver)
@@ -447,16 +454,14 @@ void CShadowVolumeSceneNode::render()
 		}
 
 		if(drawShadow)
-			driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
-		else
 		{
-			// TODO: For some reason (not yet further investigated), Direct3D needs a call to drawStencilShadowVolume
-			//       even if we have nothing to draw here to set the renderstate into a StencilShadowMode.
-			//       If that's not done it has effect on further render calls.
-			core::array<core::vector3df> triangles;
-			driver->drawStencilShadowVolume(triangles, UseZFailMethod, DebugDataVisible);
+			driver->drawStencilShadowVolume(ShadowVolumes[i], UseZFailMethod, DebugDataVisible);
+			++ShadowVolumesRendered;
 		}
 	}
+
+	if ( ShadowVolumesRendered > 0 )
+		SceneManager->requestDrawShadowPassStencilShadow();
 }
 
 

@@ -413,6 +413,8 @@ bool CIrrDeviceSDL::run()
 				irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
 				irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
 				irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL ) != 0;
+				irrevent.KeyInput.AutoRepeat = false; // Note: Newer SDL might have this info
+				irrevent.KeyInput.Extended = false;
 				postEventFromUser(irrevent);
 			}
 			break;

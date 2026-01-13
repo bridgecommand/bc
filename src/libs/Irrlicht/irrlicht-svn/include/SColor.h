@@ -495,17 +495,17 @@ namespace video
 			switch (format)
 			{
 				case ECF_A1R5G5B5:
-					color = A1R5G5B5toA8R8G8B8(*(u16*)data);
+					color = A1R5G5B5toA8R8G8B8(*(const u16*)data);
 					break;
 				case ECF_R5G6B5:
-					color = R5G6B5toA8R8G8B8(*(u16*)data);
+					color = R5G6B5toA8R8G8B8(*(const u16*)data);
 					break;
 				case ECF_A8R8G8B8:
-					color = *(u32*)data;
+					color = *(const u32*)data;
 					break;
 				case ECF_R8G8B8:
 					{
-						const u8* p = (u8*)data;
+						const u8* p = (const u8*)data;
 						set(255, p[0],p[1],p[2]);
 					}
 					break;
@@ -670,6 +670,7 @@ namespace video
 			case 1: g = value; break;
 			case 2: b = value; break;
 			case 3: a = value; break;
+			default: break;
 			}
 		}
 

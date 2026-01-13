@@ -116,7 +116,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	setTextureCreationFlag(ETCF_ALWAYS_32_BIT, true);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, true);
 	setTextureCreationFlag(ETCF_AUTO_GENERATE_MIP_MAPS, true);
-	setTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY, true);
+	setTextureCreationFlag(ETCF_ALLOW_MEMORY_COPY, false);
 
 	ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(screenSize));
 
@@ -770,7 +770,7 @@ bool CNullDriver::setRenderTarget(ITexture* texture, u16 clearFlag, SColor clear
 }
 
 //! sets a viewport
-void CNullDriver::setViewPort(const core::rect<s32>& area)
+void CNullDriver::setViewPort(const core::rect<s32>& area, bool clipToRenderTarget)
 {
 }
 
@@ -1698,7 +1698,7 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 		void * data = texture->lock(ETLM_READ_ONLY);
 		if ( !data)
 			return 0;
-		IImage* image = new CImage(texture->getColorFormat(), size, data, false, false);
+		IImage* image = new CImage(texture->getColorFormat(), size, data, false);
 		texture->unlock();
 		return image;
 	}
@@ -1815,7 +1815,7 @@ void CNullDriver::updateAllHardwareBuffers()
 		SHWBufferLink *Link=Iterator.getNode()->getValue();
 
 		Link->LastUsed++;
-		if (Link->LastUsed>20000)
+		if (Link->LastUsed>20000 || Link->MeshBuffer->getReferenceCount() == 1)
 		{
 			deleteHardwareBuffer(Link);
 

@@ -11,15 +11,14 @@
 #include "irrArray.h"
 
 namespace irr
-{
-namespace scene
+{namespace scene
 {
 
 	//! Simple implementation of the IAnimatedMesh interface.
 	struct SAnimatedMesh : public IAnimatedMesh
 	{
 		//! constructor
-		SAnimatedMesh(scene::IMesh* mesh=0, scene::E_ANIMATED_MESH_TYPE type=scene::EAMT_UNKNOWN) : IAnimatedMesh(), FramesPerSecond(25.f), Type(type)
+		SAnimatedMesh(scene::IMesh* mesh=0, scene::E_ANIMATED_MESH_TYPE type=scene::EAMT_UNKNOWN) : IAnimatedMesh(), Box(1,-1), FramesPerSecond(25.f), Type(type)
 		{
 			#ifdef _DEBUG
 			setDebugName("SAnimatedMesh");
@@ -100,15 +99,26 @@ namespace scene
 		//! Recalculates the bounding box.
 		void recalculateBoundingBox()
 		{
-			Box.reset(0,0,0);
+			bool hasValidBox = false;
+			for (u32 i=0; i<Meshes.size(); ++i)
+			{
+				if ( Meshes[i]->getBoundingBox().isValid() )
+				{
+					if ( hasValidBox )
+						Box.addInternalBox(Meshes[i]->getBoundingBox());
+					else
+					{
+						Box = Meshes[i]->getBoundingBox();
+						hasValidBox = true;
+					}
+				}
+			}
 
-			if (Meshes.empty())
+			if (!hasValidBox)
+			{
+				Box = core::aabbox3df(1,-1);
 				return;
-
-			Box = Meshes[0]->getBoundingBox();
-
-			for (u32 i=1; i<Meshes.size(); ++i)
-				Box.addInternalBox(Meshes[i]->getBoundingBox());
+			}
 		}
 
 		//! Returns the type of the animated mesh.

@@ -80,14 +80,17 @@ namespace gui
 		//! sets the user data2 (IReferenceCounted) of this node
 		virtual void setData2( IReferenceCounted* data ) IRR_OVERRIDE
 		{
-			if( Data2 )
+			if ( data != Data2 )
 			{
-				Data2->drop();
-			}
-			Data2 = data;
-			if( Data2 )
-			{
-				Data2->grab();
+				if( Data2 )
+				{
+					Data2->drop();
+				}
+				Data2 = data;
+				if( Data2 )
+				{
+					Data2->grab();
+				}
 			}
 		}
 
@@ -180,14 +183,20 @@ namespace gui
 		//! Return the last child note from this node.
 		virtual IGUITreeViewNode* getLastChild() const IRR_OVERRIDE;
 
-		//! Returns the preverse sibling node from this node.
+		// Note: only internal for now - can put in interface if someone needs it
+		IGUITreeViewNode* getDeepestChild(bool onlyVisible);
+
+		//! Returns the previous sibling node from this node.
 		virtual IGUITreeViewNode* getPrevSibling() const IRR_OVERRIDE;
 
 		//! Returns the next sibling node from this node.
 		virtual IGUITreeViewNode* getNextSibling() const IRR_OVERRIDE;
 
-		//! Returns the next visible (expanded, may be out of scrolling) node from this node.
-		virtual IGUITreeViewNode* getNextVisible() const IRR_OVERRIDE;
+		//! Returns the next node in tree after this node
+		virtual IGUITreeViewNode* getNextNode(bool onlyVisible) const IRR_OVERRIDE;
+
+		//! Returns the previous node in tree before this node (if everything would be expanded)
+		virtual IGUITreeViewNode* getPrevNode(bool onlyVisible, bool includeRoot) const IRR_OVERRIDE;
 
 		//! Deletes a child node.
 		virtual bool deleteChild( IGUITreeViewNode* child ) IRR_OVERRIDE;
@@ -220,18 +229,25 @@ namespace gui
 		//! Returns true if this node is visible (all parents are expanded).
 		virtual bool isVisible() const IRR_OVERRIDE;
 
+		//! Calculate number of visible child nodes below this node
+		u32 countVisibleChildrenRecursive() const;
+
+		// Faster iterating. Last element on stack is current iterator. When stack is empty the end is reached
+		static bool getNextIterator(irr::core::array< irr::core::list<CGUITreeViewNode*>::Iterator >& iteratorStack, bool onlyVisible);
+
+
 	private:
 
-		CGUITreeView*			Owner;
-		CGUITreeViewNode*		Parent;
-		core::stringw			Text;
-		core::stringw			Icon;
-		s32				ImageIndex;
-		s32				SelectedImageIndex;
+		CGUITreeView*		Owner;
+		CGUITreeViewNode*	Parent;
+		core::stringw Text;
+		core::stringw Icon;
+		s32	ImageIndex;
+		s32	SelectedImageIndex;
 		void*				Data;
-		IReferenceCounted*		Data2;
-		bool				Expanded;
-		core::list<CGUITreeViewNode*>	Children;
+		IReferenceCounted*	Data2;
+		bool Expanded;
+		core::list<CGUITreeViewNode*> Children;
 	};
 
 
@@ -255,7 +271,16 @@ namespace gui
 
 		//! returns the selected node of the tree or 0 if none is selected
 		virtual IGUITreeViewNode* getSelected() const IRR_OVERRIDE
-		{ return Selected; }
+		{ 
+			if ( HoverSelected )
+				return HoverSelected;
+			return Selected; 
+		}
+
+		//! Scroll to the given node
+		/** Note: targetNode must be in the tree and visible for this to work.
+		* Also only doing vertical scrolling for now */
+		virtual void scrollTo(IGUITreeViewNode* targetNode, irr::gui::EGUI_ALIGNMENT placement) const IRR_OVERRIDE;
 
 		//! returns true if the tree lines are visible
 		virtual bool getLinesVisible() const IRR_OVERRIDE
@@ -310,6 +335,11 @@ namespace gui
 		virtual IGUITreeViewNode* getLastEventNode() const IRR_OVERRIDE
 		{ return LastEventNode; }
 
+		virtual const irr::SEvent& getLastSelectTriggerEvent() const IRR_OVERRIDE
+		{
+			return LastSelectTriggerEvent;
+		}
+
 		//! Access the vertical scrollbar
 		virtual IGUIScrollBar* getVerticalScrollBar() const IRR_OVERRIDE;
 
@@ -317,8 +347,11 @@ namespace gui
 		virtual IGUIScrollBar* getHorizontalScrollBar() const IRR_OVERRIDE;
 
 	private:
-		//! calculates the heigth of an node and of all visible nodes.
+		//! calculates the height of an node and of all visible nodes.
 		void recalculateItemHeight();
+
+		// how many items can be fully displayed
+		s32 getNumItemsDisplayed() const;
 
 		//! Resize scrollbars when their size in the skin has changed
 		void updateScrollBarSize(s32 size);
@@ -328,18 +361,21 @@ namespace gui
 
 		CGUITreeViewNode*	Root;
 		IGUITreeViewNode*	Selected;
+		IGUITreeViewNode*	HoverSelected;	// When we're in the middle of changing selection while mouse is pressed
 		s32			ItemHeight;
 		s32			IndentWidth;
 		s32			TotalItemHeight;
 		s32			TotalItemWidth;
 		s32			ScrollBarSize;
-		IGUIFont*		Font;
-		gui::IGUIFont*	OverrideFont;
-		IGUIFont*		IconFont;
+		IGUIFont*	Font;
+		IGUIFont*	OverrideFont;
+		IGUIFont*	IconFont;
 		IGUIScrollBar*		ScrollBarH;
 		IGUIScrollBar*		ScrollBarV;
 		IGUIImageList*		ImageList;
 		IGUITreeViewNode*	LastEventNode;
+		irr::SEvent         LastSelectTriggerEvent;
+		irr::core::array< irr::core::list<CGUITreeViewNode*>::Iterator > NodeIteratorStack;	// member instead of local to avoid memory allocations each frame
 		bool			LinesVisible;
 		bool			Selecting;
 		bool			Clip;

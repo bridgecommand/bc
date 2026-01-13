@@ -28,7 +28,12 @@ enum EFOCUS_FLAG
 	EFF_SET_ON_TAB = 0x8,
 
 	//! When set it's possible to set the focus to disabled elements.
-	EFF_CAN_FOCUS_DISABLED = 0x16
+	EFF_CAN_FOCUS_DISABLED = 0x16,
+
+	//! When no ui element has the focus mouse events are passed on to the hovered element
+	EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS = 0x32,
+
+	EFF_DEFAULT = EFF_SET_ON_LMOUSE_DOWN|EFF_SET_ON_TAB|EFF_HOVERED_HANDLES_UNFOCUSED_MOUSE_EVENTS
 };
 
 } // namespace gui

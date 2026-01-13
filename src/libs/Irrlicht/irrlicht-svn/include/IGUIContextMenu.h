@@ -46,6 +46,13 @@ namespace gui
 		//! get current behavior when the menu will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
 
+		//! When true menu is closed when the item check changes
+		//! Default is true
+		virtual void setCloseOnCheck(bool doCloseOnCheck) = 0;
+
+		//! Get current setting for behaviour when checking items
+		virtual bool getCloseOnCheck() const = 0;
+
 		//! Get amount of menu items
 		virtual u32 getItemCount() const = 0;
 

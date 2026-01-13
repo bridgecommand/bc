@@ -674,6 +674,12 @@ namespace core
 		return x - floorf ( x );
 	}
 
+	inline bool isPowerOfTwo(irr::u32 n)
+	{
+		// From https://stackoverflow.com/a/600306/8529558, see explanation there
+		return (n != 0) && ((n & (n - 1)) == 0);
+	}
+
 } // end namespace core
 } // end namespace irr
 

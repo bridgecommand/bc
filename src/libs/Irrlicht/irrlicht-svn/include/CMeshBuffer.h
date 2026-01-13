@@ -21,6 +21,7 @@ namespace scene
 		CMeshBuffer()
 			: ChangedID_Vertex(1), ChangedID_Index(1)
 			, MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER)
+			, BoundingBox(1,-1)
 			, PrimitiveType(EPT_TRIANGLES)
 		{
 			#ifdef _DEBUG
@@ -128,8 +129,7 @@ namespace scene
 					BoundingBox.addInternalPoint(Vertices[i].Pos);
 			}
 			else
-				BoundingBox.reset(0,0,0);
-
+				BoundingBox = core::aabbox3df(1,-1);
 		}
 
 

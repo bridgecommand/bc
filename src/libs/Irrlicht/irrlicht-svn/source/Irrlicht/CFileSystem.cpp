@@ -55,12 +55,12 @@ namespace io
 
 //! constructor
 CFileSystem::CFileSystem()
+	: FileSystemType(FILESYSTEM_NATIVE)
 {
 	#ifdef _DEBUG
 	setDebugName("CFileSystem");
 	#endif
 
-	setFileListSystem(FILESYSTEM_NATIVE);
 	//! reset current working directory
 	getWorkingDirectory();
 
@@ -844,13 +844,7 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, false, false); //JAMES: Changed ignoreCase parameter from true to false - Don't make the returned file names lower case
 
-		// TODO: Should be unified once mingw adapts the proper types
-#if defined(__GNUC__)
-		long hFile; //mingw return type declaration
-#else
 		intptr_t hFile;
-#endif
-
 		struct _tfinddata_t c_file;
 		if( (hFile = _tfindfirst( _T("*"), &c_file )) != -1L )
 		{

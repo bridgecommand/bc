@@ -18,7 +18,7 @@ namespace video
 	public:
 
 		//! destructor
-		virtual ~IDepthBuffer() {};
+		virtual ~IDepthBuffer() {}
 
 		//! clears the zbuffer
 		virtual void clear(f32 value, const interlaced_control interlaced) = 0;
@@ -49,7 +49,7 @@ namespace video
 	public:
 
 		//! destructor
-		virtual ~IStencilBuffer() {};
+		virtual ~IStencilBuffer() {}
 
 		//! clears the stencil buffer
 		virtual void clear(u32 value, const interlaced_control interlaced) = 0;

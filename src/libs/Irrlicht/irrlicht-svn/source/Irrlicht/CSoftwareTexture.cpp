@@ -98,14 +98,14 @@ void CSoftwareTexture::unlock()
 
 
 //! returns unoptimized surface
-CImage* CSoftwareTexture::getImage()
+CImage* CSoftwareTexture::getImage() const
 {
 	return Image;
 }
 
 
 //! returns texture surface
-CImage* CSoftwareTexture::getTexture()
+CImage* CSoftwareTexture::getTexture() const
 {
 	return Texture;
 }

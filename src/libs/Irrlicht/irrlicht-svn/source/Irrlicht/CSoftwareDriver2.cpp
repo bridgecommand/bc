@@ -1142,13 +1142,15 @@ void buildNDCToDCMatrix(f32* burning_restrict dc_matrix, const core::rect<s32>& 
 
 
 //! sets a viewport
-void CBurningVideoDriver::setViewPort(const core::rect<s32>& area)
+void CBurningVideoDriver::setViewPort(const core::rect<s32>& area, bool clipToRenderTarget)
 {
-	//const core::rect<s32> rendert(0, 0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
-	const core::rect<s32> rendert(0, 0, RenderTargetSize.Width, RenderTargetSize.Height);
-
 	ViewPort = area;
-	ViewPort.clipAgainst(rendert);
+	if ( clipToRenderTarget )
+	{
+		//const core::rect<s32> rendert(0, 0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
+		const core::rect<s32> rendert(0, 0, RenderTargetSize.Width, RenderTargetSize.Height);
+		ViewPort.clipAgainst(rendert);
+	}
 	const s32 viewarea = ViewPort.getArea();
 
 	//is this even possible to be pixel-perfect if i have not the same depth range as openGL?
@@ -1336,7 +1338,7 @@ u32 clipToHyperPlane(
 	*/
 
 	// polygon scan conversion edge sharing opposite side?
-	//Sutherland–Hodgman
+	//Sutherland-Hodgman
 	for (u32 i = 0; i < inCount; ++i)
 	{
 		a = source + (i == inCount - 1 ? 0 : s4DVertex_ofs(i + 1));
@@ -1816,7 +1818,7 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex, const u32 dest
 	const u8* burning_restrict source;
 	s4DVertex* burning_restrict dest;
 
-	source = (u8*)VertexShader.vertices + (sourceIndex * VertexShader.vSize[VertexShader.vType].Pitch);
+	source = (const u8*)VertexShader.vertices + (sourceIndex * VertexShader.vSize[VertexShader.vType].Pitch);
 
 	// it's a look ahead so we never hit it..
 	// but give priority...
@@ -1831,7 +1833,7 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex, const u32 dest
 	dest->reset_interpolate();
 
 	//Irrlicht S3DVertex,S3DVertex2TCoords,S3DVertexTangents
-	const S3DVertex* base = ((S3DVertex*)source);
+	const S3DVertex* base = ((const S3DVertex*)source);
 	const core::matrix4* matrix = Transformation[TransformationStack];
 
 	if (Material.VertexShader == BVT_Fix) goto fftransform;
@@ -2381,7 +2383,7 @@ fftransform:
 		((VertexShader.vSize[VertexShader.vType].Format & VERTEX4D_FORMAT_MASK_TANGENT) >= VERTEX4D_FORMAT_BUMP_DOT3)
 		)
 	{
-		const S3DVertexTangents* tangent = ((S3DVertexTangents*)source);
+		const S3DVertexTangents* tangent = ((const S3DVertexTangents*)source);
 
 		sVec4 vp;
 
@@ -2391,8 +2393,8 @@ fftransform:
 		/*
 		* Color[0] lightcolor[0] a: vertexalpha
 		* Color[1] lightcolor[1] a: fogdistance
-		* Color[2] lightvector[0] 
-		* Color[3] lightvector[1] 
+		* Color[2] lightvector[0]
+		* Color[3] lightvector[1]
 		* LightVector[0] eyevector
 		*/
 
@@ -2998,7 +3000,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 						}
 
 						//clipped triangle should take single area based mipmap from unclipped face
-						//skybox,billboard test case 
+						//skybox,billboard test case
 						//if (vertex_from_clipper) lodFactor -= 1;
 						if (has_vertex_run == 0) lod_max[m] = lodFactor;
 						else if (lodFactor < lod_max[m]) lod_max[m] = lodFactor;
@@ -3034,7 +3036,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 #else
 						dst.x = src.x * b.mat[0] + b.mat[1];
 						dst.y = src.y * b.mat[2] + b.mat[3];
-#endif 
+#endif
 					}
 				}
 
@@ -3723,7 +3725,7 @@ void CBurningVideoDriver::lightVertex_eye(s4DVertex* dest, const u32 vertexargb)
 	sVec3Color dColor;
 	dColor.set(0.f);
 
-	//Ia = gl_light_model_ambient* ambient_material + ambient_light * ambient_material 
+	//Ia = gl_light_model_ambient* ambient_material + ambient_light * ambient_material
 	const sVec4& amb_mat = (EyeSpace.TL_Flag & TL_COLORMAT_AMBIENT) ? vertexColor : Material.AmbientColor;
 	dColor.mad_rgbv(EyeSpace.Global_AmbientLight, amb_mat);
 	dColor.mad_rgbv(ambient, amb_mat);

@@ -178,7 +178,7 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 
 		if (!d3dCreate)
 		{
-			os::Printer::log("Error, could not get proc adress of Direct3DCreate9.", ELL_ERROR);
+			os::Printer::log("Error, could not get proc address of Direct3DCreate9.", ELL_ERROR);
 			return false;
 		}
 
@@ -395,7 +395,8 @@ bool CD3D9Driver::initDriver(HWND hwnd, bool pureSoftware)
 	// get caps
 	pID3DDevice->GetDeviceCaps(&Caps);
 
-	os::Printer::log("Currently available Video Memory (kB)", core::stringc(pID3DDevice->GetAvailableTextureMem()/1024).c_str());
+	// Uses 32-bit value, so maxes out around 4gb
+	os::Printer::log("At least available dedicated+shared system texture memory (kB)", core::stringc(pID3DDevice->GetAvailableTextureMem()/1024).c_str());
 
 	// disable stencilbuffer if necessary
 	if (Params.Stencilbuffer &&
@@ -886,11 +887,14 @@ bool CD3D9Driver::setRenderTargetEx(IRenderTarget* target, u16 clearFlag, SColor
 
 
 //! sets a viewport
-void CD3D9Driver::setViewPort(const core::rect<s32>& area)
+void CD3D9Driver::setViewPort(const core::rect<s32>& area, bool clipToRenderTarget)
 {
 	core::rect<s32> vp = area;
-	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
-	vp.clipAgainst(rendert);
+	if ( clipToRenderTarget )
+	{
+		core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
+		vp.clipAgainst(rendert);
+	}
 	if (vp.getHeight()>0 && vp.getWidth()>0)
 	{
 		D3DVIEWPORT9 viewPort;
@@ -1464,8 +1468,6 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	tcoords.UpperLeftCorner.Y = (f32)sourceRect.UpperLeftCorner.Y / (f32)ss.Height;
 	tcoords.LowerRightCorner.X = (f32)sourceRect.LowerRightCorner.X / (f32)ss.Width;
 	tcoords.LowerRightCorner.Y = (f32)sourceRect.LowerRightCorner.Y / (f32)ss.Height;
-
-	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
 	const video::SColor temp[4] =
 	{
