@@ -71,6 +71,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                 irr::scene::IMeshBuffer* mb = objectMesh->getMeshBuffer(bufferId);
                 if (boundingBoxExtent.Y > nearlyFlatHeight) {
                     updatedMesh->addMeshBuffer(mb);
+                    updatedMesh->recalculateBoundingBox();
                 }
             }
             // TODO for future: Use OctreeSceneNode, but probably need to modify mesh before creating Octree (currently modify after scene node is created)
