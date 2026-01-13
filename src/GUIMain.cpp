@@ -1319,7 +1319,20 @@ guiTideHeight = guiData->tideHeight;
         displayText.append(language->translate("kts"));
         displayText.append(L" ");
 
-        if (showInterface) { //Only show speed in minimal 2d interface
+        if (!showInterface) {
+            if (hasDepthSounder) {
+                displayText.append(language->translate("depth"));
+                if (guiDepth <= maxSounderDepth) {
+                    displayText.append(f32To1dp(guiDepth).c_str());
+                }
+                else {
+                    displayText.append(L"-");
+                }
+                displayText.append(L" m");
+            }
+        }
+
+        if (showInterface) { // Add additional data on multiple lines in main interface (only speed and depth, on one line in minimal interface)
             displayText.append(L"\n");
             if (hasDepthSounder) {
                 displayText.append(language->translate("depth"));
