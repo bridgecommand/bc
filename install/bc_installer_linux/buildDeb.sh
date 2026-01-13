@@ -39,7 +39,7 @@ echo "Version: $versionNo" >> $file
 echo "Maintainer: Florent Richard <florent.richard@supmaritime.fr>" >> $file
 echo "Priority: optional" >> $file
 echo "Architecture: $arch" >> $file
-echo "Depends: libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgl1, libportaudio2 (>= 19+svn20101113), libsndfile1 (>= 1.0.20), libstdc++6 (>= 11), libx11-6, libxxf86vm1, libopenxr-loader1" >> $file
+echo "Depends: libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgl1, libportaudio2 (>= 19+svn20101113), libsndfile1 (>= 1.0.20), libstdc++6 (>= 11), libx11-6, libxxf86vm1, libopenxr-loader1, libenet, libnetcdf, libeigen3, libjsoncpp" >> $file
 echo "Description: A ship simulation program. For use in navigation and bridge training. Use for SOMOS Project to simulate ship with sail systems" >> $file
 
 cat control

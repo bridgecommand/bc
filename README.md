@@ -67,7 +67,7 @@ This assumes that the CMake binary exists at /Applications/CMake.app/Contents/bi
 
 
 ## Licence
-Bridge Command is Copyright (C) 2025 by James Packer. The model files
+Bridge Command is Copyright (C) 2026 by James Packer. The model files
 distributed in this release are copyright by their authors. In this
 release, models have been provided by Ragnar, Juergen Klemp, Simon D 
 Richardson, Jason Simpson, Thierry Videlaine, NETC (Naval Education 
