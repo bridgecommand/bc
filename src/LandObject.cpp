@@ -113,7 +113,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     if (morph) {
         irr::scene::IMesh* mesh = landObject->getMesh();
         for (int bufferId = 0; bufferId < mesh->getMeshBufferCount(); bufferId++) {
-            const irr::scene::IMeshBuffer* const mb = mesh->getMeshBuffer(bufferId);
+            irr::scene::IMeshBuffer* mb = mesh->getMeshBuffer(bufferId);
             irr::core::vector3df boundingBoxExtent = mb->getBoundingBox().getExtent();
 
             if (mb->getVertexType() == irr::video::EVT_STANDARD) {
@@ -173,6 +173,7 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
                     v[vertexId].Pos.Y = newLocalCoord.Y;
                 }
             }
+            mb->recalculateBoundingBox();
         }
         mesh->setDirty();
     }
@@ -222,6 +223,8 @@ LandObject::LandObject(const std::string& name, const std::string& internalName,
     }
     //End contact points for radar detection
     //======================================
+
+    //landObject->setDebugDataVisible(irr::scene::EDS_BBOX_ALL);
 
 }
 
