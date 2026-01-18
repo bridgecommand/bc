@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>rp</string>
+	<string>ed</string>
 	<key>CFBundleIdentifier</key>
-	<string>uk.co.bridgecommand.rp</string>
+	<string>uk.co.bridgecommand.ed</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.7.0</string>
+	<string>10.13.0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.simulation-games</string>
 	<key>CFBundleName</key>

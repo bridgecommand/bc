@@ -9,7 +9,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>uk.co.bridgecommand.mh</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.7.0</string>
+	<string>10.13.0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.simulation-games</string>
 	<key>CFBundleName</key>

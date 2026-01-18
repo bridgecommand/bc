@@ -87,7 +87,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/bc.app/Contents/MacOS/bc", "bc", NULL);
+                        execl("../Helpers/bc.app/Contents/MacOS/bc", "bc", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
@@ -101,7 +101,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/mc.app/Contents/MacOS/mc", "mc", NULL);
+                        execl("../Helpers/mc.app/Contents/MacOS/mc", "mc", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
@@ -115,7 +115,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/rp.app/Contents/MacOS/rp", "rp", NULL);
+                        execl("../Helpers/rp.app/Contents/MacOS/rp", "rp", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
@@ -129,7 +129,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ed.app/Contents/MacOS/ed", "ed", NULL);
+                        execl("../Helpers/ed.app/Contents/MacOS/ed", "ed", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
@@ -143,7 +143,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/mh.app/Contents/MacOS/mh", "mh", NULL);
+                        execl("../Helpers/mh.app/Contents/MacOS/mh", "mh", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
@@ -157,7 +157,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", NULL);
+                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
@@ -171,7 +171,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
+                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
@@ -185,7 +185,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
+                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
@@ -199,7 +199,7 @@ public:
                     #else
                     #ifdef __APPLE__
                         //APPLE
-                        execl("../MacOS/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
+                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);

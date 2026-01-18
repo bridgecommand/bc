@@ -531,9 +531,10 @@ static bool firstLaunch = true;
 
 - (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)proposedFrameSize
 {
-    if (Device->isResizable())
-        return proposedFrameSize;
-    else
+    // JAMES: Force not to be resizeable. This seemed to be causing a crash at startup (race condition?)
+    //if (Device->isResizable())
+    //    return proposedFrameSize;
+    //else
         return [window frame].size;
 }
 

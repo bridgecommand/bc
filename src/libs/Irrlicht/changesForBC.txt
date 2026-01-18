@@ -38,6 +38,16 @@ CIrrDeviceOSX.mm:
 -:ievent.MouseInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
 +:ievent.MouseInput.Control = ([(NSEvent *)event modifierFlags] & NSCommandKeyMask) != 0; //JAMES
 
+At windowWillResize, comment out lines:
+-    if (Device->isResizable())
+-        return proposedFrameSize;
+-    else
++    // JAMES: Force not to be resizeable. This seemed to be causing a crash at startup (race condition?)
++    //if (Device->isResizable())
++    //    return proposedFrameSize;
++    //else
+
+
 CIrrDeviceWin32.cpp:
 Below activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
 +:activeJoystick.axisValid[6] = (info.rglSlider[0] != 0) ? 1 : 0; //JAMES

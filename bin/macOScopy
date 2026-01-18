@@ -1,19 +1,19 @@
 #!/bin/sh
 
 cp bridgecommand BridgeCommand.app/Contents/MacOS/BridgeCommand
-cp bridgecommand-bc BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
-cp bridgecommand-mc BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/mc
-cp bridgecommand-ed BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/ed
-cp bridgecommand-ini BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/ini
-cp bridgecommand-mh BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/mh
-cp bridgecommand-rp BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/rp
+cp bridgecommand-bc BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/bc
+cp bridgecommand-mc BridgeCommand.app/Contents/Helpers/mc.app/Contents/MacOS/mc
+cp bridgecommand-ed BridgeCommand.app/Contents/Helpers/ed.app/Contents/MacOS/ed
+cp bridgecommand-ini BridgeCommand.app/Contents/Helpers/ini.app/Contents/MacOS/ini
+cp bridgecommand-mh BridgeCommand.app/Contents/Helpers/mh.app/Contents/MacOS/mh
+cp bridgecommand-rp BridgeCommand.app/Contents/Helpers/rp.app/Contents/MacOS/rp
 
-rm -f BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/.gitignore
-rm -f BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/bc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/mc.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/ed.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/ini.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/mh.app/Contents/MacOS/.gitignore
+rm -f BridgeCommand.app/Helpers/MacOS/rp.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Contents/MacOS/.gitignore
 rm -rf BridgeCommand.app/Contents/Resources/doc
 rm -rf BridgeCommand.app/Contents/Resources/media
