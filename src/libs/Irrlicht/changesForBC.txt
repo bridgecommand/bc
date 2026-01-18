@@ -1,7 +1,7 @@
 Notes on Irrlicht as used in Bridge Command
 ===========================================
 
-Irrlicht updated to r6565 from SVN trunk
+Irrlicht updated to r6731 from SVN trunk
 
 The following changes are applied for Bridge Command from 
 Irrlicht trunk, and all changes marked in source with //JAMES:
@@ -61,4 +61,4 @@ Below activeJoystick.axisValid[5]= (info.lRz!=0) ? 1 : 0;
 
 Irrlicht-gcc.cbp: Added options to include directx compilation
 
-Irrlicht.xcodeproj: Set all MACOSX_DEPLOYMENT_TARGET to 10.7
+Irrlicht.xcodeproj: Set all MACOSX_DEPLOYMENT_TARGET to 10.13
