@@ -45,6 +45,7 @@ public:
     std::vector<irr::f32> outputPoints;
     irr::s32 rudderDirection;
     bool updateAllAxes;
+    bool enableMacOSJoystick;
     
     
 // DEE 10JAN23 Azimuth Drive Specific vvvv

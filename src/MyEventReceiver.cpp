@@ -47,7 +47,13 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, SimulationModel *mode
     lastTimeAzimuth2MasterChanged = device->getTimer()->getRealTime() - 500; // Allow azimuth master to change every 500ms (debounce)
 
     // set up joystick if present, and inform user what's available
+    #ifdef __APPLE__
+    if (joystickSetup.enableMacOSJoystick) {
+        dev->activateJoysticks(joystickInfo);
+    }
+    #else
     dev->activateJoysticks(joystickInfo);
+    #endif
 
     // Tell user about joysticks via the log
     dev->getLogger()->log(""); // add a blank line

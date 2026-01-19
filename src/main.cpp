@@ -361,6 +361,12 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
         joystickSetup.updateAllAxes = true;
     }
 
+    // Only enable joysticks for macOS if requested
+    if (IniFile::iniFileTou32(iniFilename, "macOS_enable_joystick") == 1) {
+        joystickSetup.enableMacOSJoystick = true;
+    } else {
+        joystickSetup.enableMacOSJoystick = false;
+    }
 
     return joystickSetup;
 }
