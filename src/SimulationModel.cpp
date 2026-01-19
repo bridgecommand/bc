@@ -517,7 +517,7 @@ void SimulationModel::update()
   //Collate data to show in gui
   mGuiData->lat = mTerrain->zToLat(mOwnShip->getPosition().Z);
   mGuiData->longitude = mTerrain->xToLong(mOwnShip->getPosition().X);
-  mGuiData->hdg = mOwnShip->getHeading();
+  mGuiData->hdg = mOwnShip->getHeading() * irr::core::RADTODEG;
   mGuiData->viewAngle = atan2(mCamera->getForwardVector().X, mCamera->getForwardVector().Z) * irr::core::RADTODEG;
   mGuiData->viewElevationAngle = asin(mCamera->getForwardVector().Y) * irr::core::RADTODEG;
   mGuiData->spd = mOwnShip->getSpeedThroughWater();

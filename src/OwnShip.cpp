@@ -41,11 +41,6 @@ OwnShip::OwnShip()
   mMaxSounderDepth = 0;
   mHasRoTIndicator = false;
 
-  mHasDepthSounder = false;
-  mMaxSounderDepth = 0;
-  mHasGps = false;
-  mHasRoTIndicator = false;
-
   mRadarPos.X = 0;
   mRadarPos.Y = 0;
   mRadarPos.Z = 0;
