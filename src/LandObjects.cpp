@@ -61,8 +61,10 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         } else {
             // Don't allow both 'absolute' and 'morph'.
             //Check if land object is given in absolute height, or relative to terrain.
-            if (IniFile::iniFileTou32(scenarioLandObjectFilename, IniFile::enumerate1("Absolute", currentObject)) != 1) {
+            if (IniFile::iniFileTou32(scenarioLandObjectFilename, IniFile::enumerate1("Absolute", currentObject)) == 0) {
                 objectY += terrain->getHeight(objectX, objectZ);
+            } else if (IniFile::iniFileTou32(scenarioLandObjectFilename, IniFile::enumerate1("Absolute", currentObject)) == 2) {
+                objectY += std::max(0.0f, terrain->getHeight(objectX, objectZ));
             }
         }
 

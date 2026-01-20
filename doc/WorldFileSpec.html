@@ -203,7 +203,7 @@ value moving the 'buoy' higher. Again this is useful for adjusting the height of
 <li><i>Lat(#)</i> is defined in the same way as for buoys.</li>
 <li><i>Rotation(#)</i> allows for the model to be rotated about its vertical axis. Specified in degrees. An anticlockwise rotation, as viewed from the top, is positive.</li>
 <li><i>HeightCorrection(#)</i> allows for the model to be moved up or down. so it sits properly on the land. A positive value moves the object upwards, and is in metres.</li>
-<li>Optional setting <i>Absolute(#)</i>. If this set to 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level.</li>
+<li>Optional setting <i>Absolute(#)</i>. If this set to 1, then the object will be loaded at a height relative to chart datum, not relative to the local ground level. If set to 2, the height will be relative to the land height or 0, whichever is higher.</li>
 <li>Optional setting <i>Morph(#)</i>. If this is set to 1, then the object will be 'morphed' to fit the local terrain height, so the different objects in the model are moved relative to the local gound level, and flat objects are made to follow the local terrain shape. This can be used for large, mostly flat 3d models representing multiple buildings over a large area.
 <ul>
 <li>Note: The options <i>Absolute</i> and <i>Morph</i> should not be used together. If <i>Morph</i> is enabled, <i>Absolute</i> will be ignored</li>
@@ -298,7 +298,7 @@ names for each light are:</p>
 <i>Long(#)</i> and <i>Lat(#)</i> set the light's position in the usual way. <i>Height(#)</i>
 sets the height in metres above the water for a 'floating' light or
 above the ground for a fixed one. If Absolute(#)=1 is set, then the
-height will be above chart datum. 
+height will be above chart datum. If Absolute(#)=2 is set, then the height will be above chart datum, or above 0, whichever is higher.
 </p>
 <p>
 <i>Red(#)</i>, <i>Green(#)</i> and <i>Blue(#)</i>
