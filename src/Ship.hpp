@@ -135,7 +135,7 @@ protected:
   //Control
   eControlMode mControlMode;
   
-  bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
+  //bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
 
 };
 
