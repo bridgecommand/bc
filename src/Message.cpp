@@ -858,17 +858,17 @@ std::string& Message::KeepAlive(void)
 
   //4 Each Buoy
   for(int number = 0; number < (int)pModel->getBuoys()->getNumber(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).X));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).X + pModel->getOffsetPos().X)));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).Z));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getBuoys()->getPosition(number).Z  + pModel->getOffsetPos().Z)));
     if (number < (int)pModel->getBuoys()->getNumber()-1) {msg.append("|");}
   }
   msg.append("#");
 
   //5 MOB
-  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosX()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosX() + pModel->getOffsetPos().X));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosZ()));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getMoB()->getPosZ() + pModel->getOffsetPos().Z));
   msg.append("#");
 
   //6 Loop
