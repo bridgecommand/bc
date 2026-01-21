@@ -1,11 +1,11 @@
 ;setup names
-!define PROGRAMNAME "Bridge Command 5.10.3 SOMOS"
+!define PROGRAMNAME "Bridge Command SOMOS"
 !ifndef OUTPUTFILE
-!define OUTPUTFILE "BridgeCommand5.10.3-SOMOS.exe"
+!define OUTPUTFILE "BridgeCommand-SOMOS-2.0.exe"
 !endif
-!define INSTALLLOCATION "Bridge Command 5.10.3 SOMOS"
-!define SMFOLDER "Bridge Command 5.10.3 SOMOS"
-!define REGKEY "BridgeCommand5.10.3SOMOS"
+!define INSTALLLOCATION "Bridge Command SOMOS 2.0"
+!define SMFOLDER "Bridge Command SOMOS 2.0"
+!define REGKEY "BridgeCommandSOMOS2.0"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -26,7 +26,7 @@ VIAddVersionKey "ProductName" "${PROGRAMNAME}"
 VIAddVersionKey "ProductVersion" "1.0"
 VIAddVersionKey "CompanyName" "ENSM-Nantes"
 VIAddVersionKey "FileDescription" "Install BC"
-VIAddVersionKey "LegalCopyright" "2025 ENSM Nantes"
+VIAddVersionKey "LegalCopyright" "2026 ENSM Nantes"
 VIAddVersionKey "FileVersion" "1.0"
 
 ; Request application privileges for Windows Vista
@@ -55,7 +55,7 @@ File /r /x *.cpp /x *.hpp /x *.h /x *.rc /x *.bat /x *.aps /x *.depend /x *.layo
 SetOutPath $INSTDIR\bin\win\
 
   CreateDirectory "$SMPROGRAMS\${SMFOLDER}"
-  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bin\win\bridgecommand.exe"
+  CreateShortCut "$SMPROGRAMS\${SMFOLDER}\${PROGRAMNAME}.lnk" "$INSTDIR\bin\win\bridgecommand-la.exe"
   CreateShortCut "$SMPROGRAMS\${SMFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 
 SetOutPath $INSTDIR
