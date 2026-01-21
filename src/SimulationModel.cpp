@@ -738,7 +738,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 		mOtherShips->setHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
 		mOtherShips->setSpeed(i, (dataMasterCmds->otherShips.ships[i].speed)/MPS_TO_KTS);
 		mOtherShips->setRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
-		mOtherShips->setPos(i, dataMasterCmds->otherShips.ships[i].posX, dataMasterCmds->otherShips.ships[i].posZ);
+		mOtherShips->setPos(i, dataMasterCmds->otherShips.ships[i].posX - mOffsetPosition.X, dataMasterCmds->otherShips.ships[i].posZ - mOffsetPosition.X);
 	      }
 	    delete[] dataMasterCmds->otherShips.ships;
 	  }

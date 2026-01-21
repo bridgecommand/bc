@@ -823,7 +823,7 @@ std::string& Message::KeepAlive(void)
   for(int number = 0; number < (int)pModel->getOtherShips()->getNumber(); number++ ) {
     msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).X + pModel->getOffsetPos().X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).Y + pModel->getOffsetPos().Y));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).Z + pModel->getOffsetPos().Z));
     msg.append(",");
     msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getHeading(number)));
     msg.append(",");
