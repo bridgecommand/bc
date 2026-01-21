@@ -42,7 +42,7 @@ public:
   OwnShip();
   ~OwnShip();
   int Load(OwnShipData aOwnShipData, Water *aWater, Tide *aTide, Terrain *aTerrain, irr::IrrlichtDevice *aDev);
-  void Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver);
+  void Update(sTime& aTime, irr::f32 aTideHeight, irr::f32 aWeather, Wind *aWind, Solver *aSolver, irr::core::vector3d<int64_t> aOffsetMap);
   void InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot);
 
   std::vector<irr::core::vector3df> getCameraViews() const;

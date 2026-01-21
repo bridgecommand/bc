@@ -59,7 +59,8 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* aDev, GUIMain* aGui, Sound
   mGuiMain = aGui;
   mSound = aSound;
   mMoveViewWithPrimary = true;
-
+  mOffsetPosition = {0, 0, 0};
+  
   //Store a serialised form of the scenario loaded, as we may want to send this over the network
   mSerialisedScenarioData = aScenarioData.serialise(false);
   mScenarioName = aScenarioData.scenarioName;
@@ -459,7 +460,7 @@ void SimulationModel::update()
   mSolver->SolveRk4(mTime, mOwnShip->getEta(), mOwnShip->getMu());
 
   //update own ship
-  mOwnShip->Update(mTime, mTideHeight, mWeather, mWind, mSolver);
+  mOwnShip->Update(mTime, mTideHeight, mWeather, mWind, mSolver, mOffsetPosition);
 
   if (mOwnShip->getNumberProp() > 1)
     mSound->setVolumeEngine(fabs(mOwnShip->getPortEngine())*0.5);
@@ -475,6 +476,37 @@ void SimulationModel::update()
   //update water position
   mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
+  //Keep Ownship near origin to more precision 
+  if(mOwnShip->getPosition().getLength() > 1000)
+    {
+      irr::core::vector3df ownShipPos = mOwnShip->getPosition();
+      irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
+      irr::s32 deltaZ = -1*(irr::s32)ownShipPos.Z;
+      //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
+      deltaX = 500.0*Utilities::round(deltaX/500.0);
+      deltaZ = 500.0*Utilities::round(deltaZ/500.0);
+  
+      //Move all objects
+      mOwnShip->moveNode(deltaX,0,deltaZ);
+      mTerrain->moveNode(deltaX,0,deltaZ); //SLOW!
+      mOtherShips->moveNode(deltaX,0,deltaZ);
+      mBuoys->moveNode(deltaX,0,deltaZ);
+      mLandObjects->moveNode(deltaX,0,deltaZ);
+      mLandLights->moveNode(deltaX,0,deltaZ);
+      mManOverboard->moveNode(deltaX,0,deltaZ);
+
+      // Also move camera if in 'frozen' mode
+      mCamera->applyOffset(deltaX,0,deltaZ);
+
+      //Save offset
+      mOffsetPosition.X -= deltaX;
+      mOffsetPosition.Z -= deltaZ;
+
+      std::cout << "::::::Offset Pos::::::" << std::endl;
+      std::cout << "mOffsetPosition.X : " << mOffsetPosition.X << std::endl;
+      std::cout << "mOffsetPosition.Z : " << mOffsetPosition.Z << std::endl;
+    }
+  
   //update the camera position
   mCamera->update(mTime);
 
@@ -515,8 +547,8 @@ void SimulationModel::update()
   mGuiData->arpaListSelection = mRadarCalculation->getArpaListSelection();
  
   //Collate data to show in gui
-  mGuiData->lat = mTerrain->zToLat(mOwnShip->getPosition().Z);
-  mGuiData->longitude = mTerrain->xToLong(mOwnShip->getPosition().X);
+  mGuiData->lat = mTerrain->zToLat(mOwnShip->getPosition().Z + mOffsetPosition.Z);
+  mGuiData->longitude = mTerrain->xToLong(mOwnShip->getPosition().X + mOffsetPosition.X);
   mGuiData->hdg = mOwnShip->getHeading() * irr::core::RADTODEG;
   mGuiData->viewAngle = atan2(mCamera->getForwardVector().X, mCamera->getForwardVector().Z) * irr::core::RADTODEG;
   mGuiData->viewElevationAngle = asin(mCamera->getForwardVector().Y) * irr::core::RADTODEG;

@@ -109,7 +109,7 @@ void Terrain::load(const std::string& worldPath, irr::scene::ISceneManager* smgr
         irr::f32 terrainLatExtent;
         irr::f32 terrainMaxHeight;
         irr::f32 seaMaxDepth;
-        bool usesRGBEncoding;
+        bool usesRGBEncoding = false;
         //Full paths
         std::string heightMapPath;
         std::string textureMapPath;

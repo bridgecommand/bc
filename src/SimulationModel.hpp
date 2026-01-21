@@ -150,7 +150,8 @@ private:
   std::string mWorldName;
   std::string mSerialisedScenarioData;
   std::string mWorldModelReadmeText;
-
+  irr::core::vector3d<int64_t> mOffsetPosition;
+  
   /*Class pointer*/
   Solver *mSolver;
   OwnShip *mOwnShip;
