@@ -378,7 +378,8 @@ ModelParameters& SimulationModel::getModelParameters(void){return mModelParamete
 std::string SimulationModel::getSerialisedScenario() const {return mSerialisedScenarioData;}
 std::string SimulationModel::getScenarioName() const {return mScenarioName;}
 std::string SimulationModel::getWorldName() const {return mWorldName;}
-std::string SimulationModel::getWorldReadme() const{return mWorldModelReadmeText;}
+std::string SimulationModel::getWorldReadme() const {return mWorldModelReadmeText;}
+irr::core::vector3d<int64_t> SimulationModel::getOffsetPos() const {return mOffsetPosition;}
 
 /*Views*/
 bool SimulationModel::getMoveViewWithPrimary() const {return mMoveViewWithPrimary;}

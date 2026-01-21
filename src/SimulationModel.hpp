@@ -97,7 +97,8 @@ public:
   std::string getScenarioName() const;
   std::string getWorldName() const;
   std::string getWorldReadme() const;
-
+  irr::core::vector3d<int64_t> getOffsetPos() const;
+  
   /*Model Params*/
   ModelParameters& getModelParameters();
 

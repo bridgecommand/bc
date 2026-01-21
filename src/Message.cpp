@@ -784,9 +784,9 @@ std::string& Message::KeepAlive(void)
   msg.append("#");
 
   //1 Position, speed etc
-  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().X));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().X + pModel->getOffsetPos().X));
   msg.append(",");
-  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().Z));
+  msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getPosition().Z + pModel->getOffsetPos().Z));
   msg.append(",");
   msg.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   msg.append(",");
@@ -940,8 +940,8 @@ std::string& Message::KeepAliveShort(void)
   static std::string msg;
   SimulationModel *pModel = (SimulationModel*)mModel;
 
-  float posZ = pModel->getOwnShip()->getPosition().Z;
-  float posX = pModel->getOwnShip()->getPosition().X;
+  float posZ = pModel->getOwnShip()->getPosition().Z + pModel->getOffsetPos().Z;
+  float posX = pModel->getOwnShip()->getPosition().X + pModel->getOffsetPos().X;
  
   msg.clear();
   msg = "OS"; //Own ship only
