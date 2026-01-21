@@ -26,7 +26,7 @@ void Wind::update(void)
 
   windSpeedMps = mWindSpeed * KTS_TO_MPS;
   windFlowDirection = mWindDirection + 180; //Wind direction is where the wind is from. We want where it is flowing towards
-  relativeWindFlowDirection = windFlowDirection - mOwnShip->getHeading();
+  relativeWindFlowDirection = windFlowDirection - (mOwnShip->getHeading() * 180/PI);
   axialWind = mWindSpeed * cos(relativeWindFlowDirection * PI/180);
   lateralWind = mWindSpeed * sin(relativeWindFlowDirection * PI/180);
 
@@ -39,7 +39,7 @@ void Wind::update(void)
   mAxialWindDrag = -1 * pow(relWindAxialMps, 2) * (relWindAxialMps/abs(relWindAxialMps)) * 0.5 * RHO_AIR * frontalArea;
   mLateralWindDrag = -1 * pow(relWindLateralMps, 2) * relWindAxialMps/abs(relWindAxialMps) * 0.5 * RHO_AIR * sideArea;
 
-  alpha = (mWindDirection - mOwnShip->getHeading()) * PI/180;
+  alpha = (mWindDirection - (mOwnShip->getHeading() * 180/PI)) * PI/180;
   mApparentWindSpd = sqrt(pow(mOwnShip->getSpeedThroughWater(), 2) + pow((mWindSpeed), 2) + (2 * mOwnShip->getSpeedThroughWater() * (mWindSpeed) * cos(alpha)));
   mApparentWindDir = atan2(mWindSpeed * sin(alpha), mOwnShip->getSpeedThroughWater() + mWindSpeed * cos(alpha));
   

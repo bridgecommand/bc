@@ -700,7 +700,7 @@ std::string& Message::MpFeedBack(void)
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getHeading()));
   mpFeedBack.append("#");
-  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRateOfTurn()*irr::core::RADTODEG));
+  mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getRateOfTurn()));
   mpFeedBack.append("#");
   mpFeedBack.append(Utilities::lexical_cast<std::string>(pModel->getOwnShip()->getSpeed()));
   mpFeedBack.append("#");
