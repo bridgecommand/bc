@@ -134,9 +134,6 @@ protected:
 
   //Control
   eControlMode mControlMode;
-  
-  //bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
-
 };
 
 #endif // __SHIP_HPP_INCLUDED__

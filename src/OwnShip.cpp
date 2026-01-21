@@ -362,16 +362,7 @@ void OwnShip::Update(sTime& aTime, float aTideHeight, float aWeather, Wind *aWin
       mRudder.SetDelta((mWheel*PI)/180, deltaTime);
       
     }
-  /*  else // End of engine mode
-    {
-      // MODE_AUTO
-      if (!positionManuallyUpdated)
-        {
-	  // Apply rate of turn
-	  mEta[2] += mMu[1] * deltaTime * irr::core::RADTODEG; // Deg
-        }
-	}*/
-
+ 
   float timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   float factor = deltaTime / (timeConstant + deltaTime);
   mWaveHeightFiltered = (1 - factor) * mWaveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
@@ -400,11 +391,9 @@ void OwnShip::Update(sTime& aTime, float aTideHeight, float aWeather, Wind *aWin
   std::cout << "mEta[2] : Heading (rad) : " << mEta[2] << std::endl;*/
   
   /*Update OwnShip position/rotation*/
-  //  if(!positionManuallyUpdated)
-  //{
-      mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
-      mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, mPitch, mRoll));
-      //}
+  mShipScene->setPosition(irr::core::vector3df(mEta[1], yPos, mEta[0]));
+  mShipScene->setRotation(Angles::irrAnglesFromYawPitchRoll(mEta[2]*180/PI, mPitch, mRoll));
+  
 }
 
 void OwnShip::setRateOfTurn(float rateOfTurn)

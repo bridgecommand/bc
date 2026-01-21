@@ -821,9 +821,9 @@ std::string& Message::KeepAlive(void)
 
   //3 Each 'Other' (Pos X (abs), Pos Z, angle, rate of turn, SART, MMSI |) #
   for(int number = 0; number < (int)pModel->getOtherShips()->getNumber(); number++ ) {
-    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).X));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).X + pModel->getOffsetPos().X));
     msg.append(",");
-    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).Y));
+    msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getPosition(number).Y + pModel->getOffsetPos().Y));
     msg.append(",");
     msg.append(Utilities::lexical_cast<std::string>(pModel->getOtherShips()->getHeading(number)));
     msg.append(",");

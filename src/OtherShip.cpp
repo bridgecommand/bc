@@ -191,12 +191,9 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
         mEta[2] = legs[currentLeg].bearing;
     }
 
-    //if (!positionManuallyUpdated) { //If the position has already been updated, skip (for this loop only)
-        mEta[1] = mEta[1] + sin(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
-        mEta[0] = mEta[0] + cos(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
-	//} else {
-        //positionManuallyUpdated = false;
-	//}
+    
+    mEta[1] = mEta[1] + sin(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
+    mEta[0] = mEta[0] + cos(mEta[2]*irr::core::DEGTORAD)*mMu[0]*deltaTime;
     double yPos = tideHeight+mHeightCorrection;
 
     //Set position & speed by calling ship methods

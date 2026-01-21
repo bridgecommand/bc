@@ -611,7 +611,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	if(dataRepoShip->shipNo < 0)
 	  mOwnShip->setPosition(dataRepoShip->posX - mOffsetPosition.X, dataRepoShip->posZ - mOffsetPosition.Z);
 	else
-	  mOtherShips->setPos(dataRepoShip->shipNo, dataRepoShip->posX, dataRepoShip->posZ);
+	  mOtherShips->setPos(dataRepoShip->shipNo, dataRepoShip->posX - mOffsetPosition.X, dataRepoShip->posZ - mOffsetPosition.Z);
 
 	break;
       }
@@ -621,7 +621,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 
 	if(dataResetLegs->shipNo >= 0)
 	  {
-	    mOtherShips->setPos(dataResetLegs->shipNo, dataResetLegs->posX, dataResetLegs->posZ);
+	    mOtherShips->setPos(dataResetLegs->shipNo, dataResetLegs->posX - mOffsetPosition.X, dataResetLegs->posZ - mOffsetPosition.X);
 	    mOtherShips->resetLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1, mTime.scenarioTime);
 	    //1Nm Hard-coded
 	  }
