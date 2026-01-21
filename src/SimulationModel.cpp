@@ -621,7 +621,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 
 	if(dataResetLegs->shipNo >= 0)
 	  {
-	    mOtherShips->setPos(dataResetLegs->shipNo, dataResetLegs->posX - mOffsetPosition.X, dataResetLegs->posZ - mOffsetPosition.X);
+	    mOtherShips->setPos(dataResetLegs->shipNo, dataResetLegs->posX - mOffsetPosition.X, dataResetLegs->posZ - mOffsetPosition.Z);
 	    mOtherShips->resetLegs(dataResetLegs->shipNo, dataResetLegs->cog, dataResetLegs->sog, 1, mTime.scenarioTime);
 	    //1Nm Hard-coded
 	  }
@@ -738,7 +738,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 		mOtherShips->setHeading(i, dataMasterCmds->otherShips.ships[i].hdg);
 		mOtherShips->setSpeed(i, (dataMasterCmds->otherShips.ships[i].speed)/MPS_TO_KTS);
 		mOtherShips->setRateOfTurn(i, dataMasterCmds->otherShips.ships[i].rot);
-		mOtherShips->setPos(i, dataMasterCmds->otherShips.ships[i].posX - mOffsetPosition.X, dataMasterCmds->otherShips.ships[i].posZ - mOffsetPosition.X);
+		mOtherShips->setPos(i, dataMasterCmds->otherShips.ships[i].posX - mOffsetPosition.X, dataMasterCmds->otherShips.ships[i].posZ - mOffsetPosition.Z);
 	      }
 	    delete[] dataMasterCmds->otherShips.ships;
 	  }
