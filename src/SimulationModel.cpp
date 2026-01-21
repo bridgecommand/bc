@@ -608,7 +608,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sRepoShip *dataRepoShip = (sRepoShip*)aDataCmd;	
 	if(dataRepoShip->shipNo < 0)
-	  mOwnShip->setPosition(dataRepoShip->posX, dataRepoShip->posZ);
+	  mOwnShip->setPosition(dataRepoShip->posX - mOffsetPosition.X, dataRepoShip->posZ - mOffsetPosition.Z);
 	else
 	  mOtherShips->setPos(dataRepoShip->shipNo, dataRepoShip->posX, dataRepoShip->posZ);
 
@@ -724,7 +724,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
 	setAccelerator(dataMasterCmds->time.accel);
 
 	/************************************************************************/
-	mOwnShip->setPosition(dataMasterCmds->ownShip.posX, dataMasterCmds->ownShip.posZ);
+	mOwnShip->setPosition(dataMasterCmds->ownShip.posX - mOffsetPosition.X, dataMasterCmds->ownShip.posZ  - mOffsetPosition.Z);
         mOwnShip->setHeading(dataMasterCmds->ownShip.hdg);
 	mOwnShip->setRateOfTurn(dataMasterCmds->ownShip.rot);
 	mOwnShip->setSpeed(dataMasterCmds->ownShip.speed);
@@ -920,7 +920,7 @@ void SimulationModel::updateFromNetwork(eCmdMsg aMsgType, void* aDataCmd)
       {
 	sShipInf *dataOwnShip = (sShipInf*)aDataCmd;
 	
-	mOwnShip->setPosition(dataOwnShip->posX, dataOwnShip->posZ);
+	mOwnShip->setPosition(dataOwnShip->posX - mOffsetPosition.X, dataOwnShip->posZ - mOffsetPosition.Z);
 	mOwnShip->setHeading(dataOwnShip->hdg);
 	mOwnShip->setRateOfTurn(dataOwnShip->rot);
 	mOwnShip->setSpeed(dataOwnShip->speed);
