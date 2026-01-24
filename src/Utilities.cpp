@@ -42,7 +42,7 @@
 //Includes for copying scenario files
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h> // Also for GetSystemMetrics
+#include <windows.h>
 #include <Shellapi.h>
 #else // _WIN32
 #ifdef __APPLE__

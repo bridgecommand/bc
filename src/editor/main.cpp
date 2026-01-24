@@ -33,10 +33,21 @@
     #include <unistd.h>
 #endif
 
+//Includes for copying scenario files
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h> // For GetSystemMetrics
-#endif // _WIN32
+#include <windows.h> // Also for GetSystemMetrics
+#include <Shellapi.h>
+#else // _WIN32
+#ifdef __APPLE__
+#include <copyfile.h>
+#include <sys/stat.h>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fstream>
+#endif
+#endif // __APPLE__
 
 // Irrlicht Namespaces
 //using namespace irr;
@@ -271,7 +282,7 @@ void checkUserScenarioDir(void)
             mkdir(pathToMake.c_str(),0755);
         }
         std::cout << "Copying scenario files into " << userFolder << std::endl;
-        copyDir("Scenarios", userFolder);
+        Utilities::copyDir("Scenarios", userFolder);
         #endif // __APPLE__
 
 
