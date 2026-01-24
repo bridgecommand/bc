@@ -39,6 +39,22 @@
     #endif // __APPLE__
 #endif // _WIN32
 
+//Includes for copying scenario files
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // Also for GetSystemMetrics
+#include <Shellapi.h>
+#else // _WIN32
+#ifdef __APPLE__
+#include <copyfile.h>
+#include <sys/stat.h>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#include <fstream>
+#endif
+#endif // __APPLE__
+
 namespace Utilities
 {
     void to_lower(std::string& toConvert) {
@@ -229,6 +245,105 @@ namespace Utilities
         }
     }
     //Note for dir check - strip trailing slash
+
+    int copyDir(std::string source, std::string dest)
+    {
+
+        //Copy contents of source dir into dest dir
+
+#ifdef _WIN32
+    //Windows version: Creates dest dir automatically
+        source.append(1, '\0'); //Add an extra null to end of string
+        dest.append(1, '\0');
+        replace(dest.begin(), dest.end(), '/', '\\'); //Replace / with \ in dest (think about network paths??)
+
+        SHFILEOPSTRUCT fileOp;
+        fileOp.wFunc = FO_COPY;
+        fileOp.pFrom = source.c_str();
+        fileOp.pTo = dest.c_str();
+        fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
+
+        return SHFileOperation(&fileOp);
+#else
+#ifdef __APPLE__
+    //Apple version: Requires that dest dir exists
+        copyfile_state_t s;
+        s = copyfile_state_alloc();
+        //use copyfile here to do recursive copy
+        int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
+        copyfile_state_free(s);
+        return returnValue;
+#else // __APPLE__
+    //Other posix
+    //Note: Not implemented yet for other posix: need to implement recursive directory copy.
+    //Requires that dest dir exists
+    //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
+        if (!Utilities::pathExists(dest)) {
+            return -1;
+        }
+
+        //For each folder at root level, create new folder in dest, and call copyDir on this
+        DIR* dir = opendir(source.c_str());
+        if (!dir) { return -1; }
+        struct dirent* entry = readdir(dir);
+        while (entry != NULL) {
+            if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
+                std::string newDir = dest;
+
+                newDir.append(source);
+                newDir.append("/");
+                newDir.append(entry->d_name);
+                //newDir.append("/");
+
+                //std::cout << "Dest: " << dest << std::endl;
+                //std::cout << "Trying to create '" << newDir << "'" << std::endl;
+                if (mkdir(newDir.c_str(), 0755) == 0) {
+                    //Recursive here
+                    std::string fromDir = source;
+                    fromDir.append("/");
+                    fromDir.append(entry->d_name);
+
+                    std::string toDir = dest;
+
+                    copyDir(fromDir, toDir);
+                }
+                else {
+                    return -1;
+                }
+            }
+            else if (entry->d_type == DT_REG) {
+                //Copy file
+                //entry->d_name;
+                std::string newFile = dest;
+                newFile.append(source);
+                newFile.append("/");
+                newFile.append(entry->d_name);
+
+                std::string fromFile = source;
+                fromFile.append("/");
+                fromFile.append(entry->d_name);
+
+                //std::cout << "About to try and create >>" << newFile << "<< from >>" << fromFile << "<<" << std::endl;
+
+                std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
+                std::ofstream destStream(newFile.c_str(), std::ios::binary);
+                if (fromStream && destStream) {
+                    destStream << fromStream.rdbuf();
+                }
+
+            }
+
+            entry = readdir(dir);
+        }
+
+        //For each file at root level, create the file and copy contents
+
+
+#endif // __APPLE__
+#endif // _WIN32
+
+        return -1;
+    }
 
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName)  //Read a scenario from ini files
     {
