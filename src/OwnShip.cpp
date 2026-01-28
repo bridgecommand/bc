@@ -366,7 +366,7 @@ void OwnShip::Update(sTime& aTime, float aTideHeight, float aWeather, Wind *aWin
   float timeConstant = 0.5; // Time constant in s; TODO: Make dependent on vessel size
   float factor = deltaTime / (timeConstant + deltaTime);
   mWaveHeightFiltered = (1 - factor) * mWaveHeightFiltered + factor * mWater->getWaveHeight(mEta[1], mEta[0]); // TODO: Check implementation of simple filter!
-  double yPos = aTideHeight + mHeightCorrection + mWaveHeightFiltered;
+  double yPos = aTideHeight + mHeightCorrection ;//+ mWaveHeightFiltered;
 
   // calculate pitch and roll - not linked to water/wave motion
   if(mPitchPeriod > 0)
