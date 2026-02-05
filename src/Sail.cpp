@@ -272,7 +272,7 @@ void Sail::ComputeT(void)
   sailsForceX = GetForce('X', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
   sailsForceY = GetForce('Y', mSpeedThroughWater, mTrueWindSpeed * MPS_TO_KTS, (mApparentWindDir * 180/PI));
 
-  mT << sailsForceX, sailsForceX, 0;
+  mT << sailsForceX*1000, sailsForceX*1000, 0;
 }
 
 Eigen::Vector3d& Sail::getT(void)

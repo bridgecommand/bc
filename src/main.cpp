@@ -63,33 +63,33 @@
 // Structure that includes all screen hanldes and rectangles
 struct cMonitorsVec
 {
-      std::vector<int>       iMonitors;
-      std::vector<HMONITOR>  hMonitors;
-      std::vector<HDC>       hdcMonitors;
-      std::vector<RECT>      rcMonitors;
+  std::vector<int>       iMonitors;
+  std::vector<HMONITOR>  hMonitors;
+  std::vector<HDC>       hdcMonitors;
+  std::vector<RECT>      rcMonitors;
 
-      static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
-      {
-              cMonitorsVec* pThis = reinterpret_cast<cMonitorsVec*>(pData);
+  static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
+  {
+    cMonitorsVec* pThis = reinterpret_cast<cMonitorsVec*>(pData);
 
-              pThis->hMonitors.push_back(hMon);
-              pThis->hdcMonitors.push_back(hdc);
-              pThis->rcMonitors.push_back(*lprcMonitor);
-              pThis->iMonitors.push_back(pThis->hdcMonitors.size());
-              return TRUE;
-      }
+    pThis->hMonitors.push_back(hMon);
+    pThis->hdcMonitors.push_back(hdc);
+    pThis->rcMonitors.push_back(*lprcMonitor);
+    pThis->iMonitors.push_back(pThis->hdcMonitors.size());
+    return TRUE;
+  }
 
-      cMonitorsVec()
-      {
-              EnumDisplayMonitors(0, 0, MonitorEnum, (LPARAM)this);
-      }
+  cMonitorsVec()
+  {
+    EnumDisplayMonitors(0, 0, MonitorEnum, (LPARAM)this);
+  }
 };
 #endif // _WIN32
 
 
 //Global definition for ini logger
 namespace IniFile {
-    irr::ILogger* irrlichtLogger = 0;
+  irr::ILogger* irrlichtLogger = 0;
 }
 
 // Irrlicht Namespaces
@@ -97,998 +97,1007 @@ namespace IniFile {
 
 irr::core::stringw getCredits(){
 
-    irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
-    creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
-    creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
-    creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
-    creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
-    creditsString.append(L"> Juergen Klemp\n");
-    creditsString.append(L"> Simon D Richardson\n");
-    creditsString.append(L"> Jason Simpson\n");
-    creditsString.append(L"> Ragnar\n");
-    creditsString.append(L"> Thierry Videlaine\n");
-    creditsString.append(L"> NETC (Naval Education and Training Command)\n");
-    creditsString.append(L"> Sky image from 0ptikz\n\n");
-    creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
+  irr::core::stringw creditsString(L"NO DATA SUPPLIED WITH THIS PROGRAM, OR DERIVED FROM IT IS TO BE USED FOR NAVIGATION.\n\n");
+  creditsString.append(L"Bridge Command is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.\n\n");
+  creditsString.append(L"Bridge Command  is distributed  in the  hope that  it will  be useful, but WITHOUT ANY WARRANTY; without even the implied  warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n");
+  creditsString.append(L"In memory of Sergio Fuentes, who provided many useful suggestions for the program's development.\n\n");
+  creditsString.append(L"Many thanks to those who have made their models available for use in Bridge Command:\n");
+  creditsString.append(L"> Juergen Klemp\n");
+  creditsString.append(L"> Simon D Richardson\n");
+  creditsString.append(L"> Jason Simpson\n");
+  creditsString.append(L"> Ragnar\n");
+  creditsString.append(L"> Thierry Videlaine\n");
+  creditsString.append(L"> NETC (Naval Education and Training Command)\n");
+  creditsString.append(L"> Sky image from 0ptikz\n\n");
+  creditsString.append(L"Many thanks to Ken Trethewey for making his images of the Eddystone lighthouse available.\n\n");
 
-    creditsString.append(L"Many thanks to contributors including David Elir Evans, Antoine Saillard, Konrad Wolsing, Jan Bauer, AndreySSH, Manfred, ceeac.\n\n");
+  creditsString.append(L"Many thanks to contributors including David Elir Evans, Antoine Saillard, Konrad Wolsing, Jan Bauer, AndreySSH, Manfred, ceeac.\n\n");
 
-	creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
+  creditsString.append(L"Bridge Command uses the Irrlicht Engine, the ENet networking library, ASIO, PortAudio, water based on Keith Lantz FFT water implementation, RealisticWaterSceneNode by elvman, AIS Parser by Brian C. Lane, and the Serial library by William Woodall. Bridge Command depends on libsndfile, which is released under the GNU Lesser General Public License version 2.1 or 3.\n\n");
 
-    creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
+  creditsString.append(L"The Irrlicht Engine is based in part on the work of the Independent JPEG Group, the zlib, and libpng.");
 
-    return creditsString;
+  return creditsString;
 }
 
 JoystickSetup getJoystickSetup(std::string iniFilename) {
-    //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
-    JoystickSetup joystickSetup;
+  //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
+  JoystickSetup joystickSetup;
 
-    joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
+  joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
 
-    joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
-    joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
+  joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
+  joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
 
     
-    joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
-    joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
+  joystickSetup.portJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_port"); //TODO: Note that these have changed after 5.0b4 to be consistent with BC4.7
+  joystickSetup.stbdJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stbd");
 
-    joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
+  joystickSetup.rudderJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_rudder");
 
 
-    joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
-    joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
-    //Joystick button mapping
-    joystickSetup.joystickNoHorn=IniFile::iniFileTou32(iniFilename, "joystick_no_horn");
-    joystickSetup.joystickButtonHorn=IniFile::iniFileTou32(iniFilename, "joystick_button_horn")-1;
+  joystickSetup.bowThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_bow_thruster");
+  joystickSetup.sternThrusterJoystickNo = IniFile::iniFileTou32(iniFilename, "joystick_no_stern_thruster");
+  //Joystick button mapping
+  joystickSetup.joystickNoHorn=IniFile::iniFileTou32(iniFilename, "joystick_no_horn");
+  joystickSetup.joystickButtonHorn=IniFile::iniFileTou32(iniFilename, "joystick_button_horn")-1;
 
-    joystickSetup.joystickNoChangeView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_view");
-    joystickSetup.joystickButtonChangeView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_view")-1;
+  joystickSetup.joystickNoChangeView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_view");
+  joystickSetup.joystickButtonChangeView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_view")-1;
 
-    joystickSetup.joystickNoChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_and_lock_view");
-    joystickSetup.joystickButtonChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_and_lock_view")-1;
+  joystickSetup.joystickNoChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_no_change_and_lock_view");
+  joystickSetup.joystickButtonChangeAndLockView=IniFile::iniFileTou32(iniFilename, "joystick_button_change_and_lock_view")-1;
 
-    joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
-    joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
+  joystickSetup.joystickNoLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_left");
+  joystickSetup.joystickButtonLookStepLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_left")-1;
 
-    joystickSetup.joystickNoLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_right");
-    joystickSetup.joystickButtonLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_right")-1;
+  joystickSetup.joystickNoLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_step_right");
+  joystickSetup.joystickButtonLookStepRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_step_right")-1;
 
-    joystickSetup.joystickNoIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_bow_thrust");
-    joystickSetup.joystickButtonIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_bow_thrust")-1;
+  joystickSetup.joystickNoIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_bow_thrust");
+  joystickSetup.joystickButtonIncreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_bow_thrust")-1;
 
-    joystickSetup.joystickNoDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_bow_thrust");
-    joystickSetup.joystickButtonDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_bow_thrust")-1;
+  joystickSetup.joystickNoDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_bow_thrust");
+  joystickSetup.joystickButtonDecreaseBowThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_bow_thrust")-1;
 
-    joystickSetup.joystickNoIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_stern_thrust");
-    joystickSetup.joystickButtonIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_stern_thrust")-1;
+  joystickSetup.joystickNoIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_increase_stern_thrust");
+  joystickSetup.joystickButtonIncreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_increase_stern_thrust")-1;
 
-    joystickSetup.joystickNoDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_stern_thrust");
-    joystickSetup.joystickButtonDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_stern_thrust")-1;
+  joystickSetup.joystickNoDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_no_decrease_stern_thrust");
+  joystickSetup.joystickButtonDecreaseSternThrust=IniFile::iniFileTou32(iniFilename, "joystick_button_decrease_stern_thrust")-1;
 
-    joystickSetup.joystickNoBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_on");
-    joystickSetup.joystickButtonBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_on")-1;
+  joystickSetup.joystickNoBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_on");
+  joystickSetup.joystickButtonBearingOn=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_on")-1;
 
-    joystickSetup.joystickNoBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_off");
-    joystickSetup.joystickButtonBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_off")-1;
+  joystickSetup.joystickNoBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_no_bearing_off");
+  joystickSetup.joystickButtonBearingOff=IniFile::iniFileTou32(iniFilename, "joystick_button_bearing_off")-1;
 
-    joystickSetup.joystickNoZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_on");
-    joystickSetup.joystickButtonZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_on")-1;
+  joystickSetup.joystickNoZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_on");
+  joystickSetup.joystickButtonZoomOn=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_on")-1;
 
-    joystickSetup.joystickNoZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_off");
-    joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
+  joystickSetup.joystickNoZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_no_zoom_off");
+  joystickSetup.joystickButtonZoomOff=IniFile::iniFileTou32(iniFilename, "joystick_button_zoom_off")-1;
 
-    joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
-    joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
+  joystickSetup.joystickNoLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_no_look_left");
+  joystickSetup.joystickButtonLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_button_look_left")-1;
 
-    joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
-    joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
+  joystickSetup.joystickNoLookRight=IniFile::iniFileTou32(iniFilename, "joystick_no_look_right");
+  joystickSetup.joystickButtonLookRight=IniFile::iniFileTou32(iniFilename, "joystick_button_look_right")-1;
 
-    joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
-    joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
+  joystickSetup.joystickNoLookUp=IniFile::iniFileTou32(iniFilename, "joystick_no_look_up");
+  joystickSetup.joystickButtonLookUp=IniFile::iniFileTou32(iniFilename, "joystick_button_look_up")-1;
 
-    joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
-    joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
+  joystickSetup.joystickNoLookDown=IniFile::iniFileTou32(iniFilename, "joystick_no_look_down");
+  joystickSetup.joystickButtonLookDown=IniFile::iniFileTou32(iniFilename, "joystick_button_look_down")-1;
 
-    joystickSetup.joystickNoPump1On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_on");
-    joystickSetup.joystickButtonPump1On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_on")-1;
+  joystickSetup.joystickNoPump1On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_on");
+  joystickSetup.joystickButtonPump1On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_on")-1;
 
-    joystickSetup.joystickNoPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_off");
-    joystickSetup.joystickButtonPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_off")-1;
+  joystickSetup.joystickNoPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump1_off");
+  joystickSetup.joystickButtonPump1Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump1_off")-1;
 
-    joystickSetup.joystickNoPump2On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_on");
-    joystickSetup.joystickButtonPump2On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_on")-1;
+  joystickSetup.joystickNoPump2On=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_on");
+  joystickSetup.joystickButtonPump2On=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_on")-1;
 
-    joystickSetup.joystickNoPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_off");
-    joystickSetup.joystickButtonPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_off")-1;
+  joystickSetup.joystickNoPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_no_pump2_off");
+  joystickSetup.joystickButtonPump2Off=IniFile::iniFileTou32(iniFilename, "joystick_button_pump2_off")-1;
 
-    joystickSetup.joystickNoFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_on");
-    joystickSetup.joystickButtonFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_on")-1;
+  joystickSetup.joystickNoFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_on");
+  joystickSetup.joystickButtonFollowUpOn=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_on")-1;
 
-    joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
-    joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
+  joystickSetup.joystickNoFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_no_follow_up_off");
+  joystickSetup.joystickButtonFollowUpOff=IniFile::iniFileTou32(iniFilename, "joystick_button_follow_up_off")-1;
 
-    joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
-    joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
+  joystickSetup.joystickNoNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_port");
+  joystickSetup.joystickButtonNFUPort=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_port")-1;
 
-    joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
-    joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
+  joystickSetup.joystickNoNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_no_NFU_stbd");
+  joystickSetup.joystickButtonNFUStbd=IniFile::iniFileTou32(iniFilename, "joystick_button_NFU_stbd")-1;
 
-    joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
-    joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
+  joystickSetup.joystickNoAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_no_ack_alarm");
+  joystickSetup.joystickButtonAckAlarm=IniFile::iniFileTou32(iniFilename, "joystick_button_ack_alarm")-1;
 
-    joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
-    joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
-    joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
-    joystickSetup.joystickPOVLookUp=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_up");
-    joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
+  joystickSetup.joystickNoPOV=IniFile::iniFileTou32(iniFilename, "joystick_no_POV");
+  joystickSetup.joystickPOVLookLeft=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_left");
+  joystickSetup.joystickPOVLookRight=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_right");
+  joystickSetup.joystickPOVLookUp=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_up");
+  joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
 
-    //Joystick mapping
-    irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
-    if (numberOfJoystickPoints > 0) {
-        for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
-            joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
-            joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
-        }
+  //Joystick mapping
+  irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+  if (numberOfJoystickPoints > 0) {
+    for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
+      joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
+      joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
     }
-    //Default linear mapping if not set
-    if (joystickSetup.inputPoints.size()<2) {
-        joystickSetup.inputPoints.clear();
-        joystickSetup.outputPoints.clear();
-        joystickSetup.inputPoints.push_back(-1.0);
-        joystickSetup.inputPoints.push_back(1.0);
-        joystickSetup.outputPoints.push_back(-1.0);
-        joystickSetup.outputPoints.push_back(1.0);
-    }
-    joystickSetup.rudderDirection = 1;
-    if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
-        joystickSetup.rudderDirection = -1;
-    }
+  }
+  //Default linear mapping if not set
+  if (joystickSetup.inputPoints.size()<2) {
+    joystickSetup.inputPoints.clear();
+    joystickSetup.outputPoints.clear();
+    joystickSetup.inputPoints.push_back(-1.0);
+    joystickSetup.inputPoints.push_back(1.0);
+    joystickSetup.outputPoints.push_back(-1.0);
+    joystickSetup.outputPoints.push_back(1.0);
+  }
+  joystickSetup.rudderDirection = 1;
+  if (IniFile::iniFileTou32(iniFilename, "invert_rudder")==1) {
+    joystickSetup.rudderDirection = -1;
+  }
 
-// DEE 10JAN23 vvvv
-    // joystickSetup.azimuth1Direction = 1;
-    // joystickSetup.azimuth1Direction = -1;
-
-
-//    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
-//    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
-//    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
-//    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
-
-// These are all wrapped up in an if isAzimuth earlier in this funciton
-
-// DEE 10JAN22 ^^^^
-
-    // Check if user wants to update all joystick axes when one changes
-    if (IniFile::iniFileTou32(iniFilename, "update_changed_axes_only")==1) {
-        joystickSetup.updateAllAxes = false;
-    } else {
-        joystickSetup.updateAllAxes = true;
-    }
+  // DEE 10JAN23 vvvv
+  // joystickSetup.azimuth1Direction = 1;
+  // joystickSetup.azimuth1Direction = -1;
 
 
-    return joystickSetup;
+  //    joystickSetup.azimuth1Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth1_angle",1.0);
+  //    joystickSetup.azimuth2Offset = IniFile::iniFileTof32(iniFilename, "offset_azimuth2_angle",1.0);
+  //    joystickSetup.azimuth1Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth1_angle",0.0);
+  //    joystickSetup.azimuth2Scaling = IniFile::iniFileTof32(iniFilename, "scaling_azimuth2_angle",0.0);
+
+  // These are all wrapped up in an if isAzimuth earlier in this funciton
+
+  // DEE 10JAN22 ^^^^
+
+  // Check if user wants to update all joystick axes when one changes
+  if (IniFile::iniFileTou32(iniFilename, "update_changed_axes_only")==1) {
+    joystickSetup.updateAllAxes = false;
+  } else {
+    joystickSetup.updateAllAxes = true;
+  }
+
+
+  return joystickSetup;
 }
 
 #ifdef _WIN32
 static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
-	WPARAM wParam, LPARAM lParam)
+				      WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-	case WM_COMMAND:
-	{
-		HWND hwndCtl = (HWND)lParam;
-		int code = HIWORD(wParam);
-	}
-	break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
+  switch (message)
+    {
+    case WM_COMMAND:
+      {
+	HWND hwndCtl = (HWND)lParam;
+	int code = HIWORD(wParam);
+      }
+      break;
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      return 0;
 
-	}
+    }
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+  return DefWindowProc(hWnd, message, wParam, lParam);
 }
 #endif
 
 int main(int argc, char ** argv)
 {
-    #ifdef WITH_PROFILING
-    IPROF_FUNC;
-    #endif
+#ifdef WITH_PROFILING
+  IPROF_FUNC;
+#endif
 
-    char cwd[1024]={0};
+  char cwd[1024]={0};
 
-    if(0 != CHDIR("../../resources/"))//Launch from builded sources
-      {
-	if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
-	  {
-	    std::cout << "Bidge Commands not able to get resources files" << std::endl;
-	    exit(-1);
-	  }
-      }
+  if(0 != CHDIR("../../resources/"))//Launch from builded sources
+    {
+      if(0 != CHDIR("/usr/share/bridgecommand"))//Launch from install
+	{
+	  std::cout << "Bidge Commands not able to get resources files" << std::endl;
+	  exit(-1);
+	}
+    }
 
-    if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
+  if(GETCWD(cwd, sizeof(cwd)) != NULL) printf("BC::Working Directory : %s\n", cwd);
   
 
-    //User read/write location - look in here first and the exe folder second for files
-    std::string userFolder = Utilities::getUserDir();
+  //User read/write location - look in here first and the exe folder second for files
+  std::string userFolder = Utilities::getUserDir();
 
-    //Read basic ini settings
-    std::string iniFilename = "bc5.ini";
+  //Read basic ini settings
+  std::string iniFilename = "bc5.ini";
 
-    if(Utilities::pathExists(userFolder + "bc5.ini"))
-      {
-        iniFilename = userFolder + "bc5.ini";
-      }
-    
-    std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
-
-    if (!scriptToExe.empty()) {
-        std::string scriptPath;
-        if (Utilities::pathExists(userFolder + scriptToExe)) {
-            scriptPath = userFolder + scriptToExe;
-        } else {
-            #ifdef _WIN32
-	        scriptPath = "scripts\\win\\" + scriptToExe;
-            #else
-            #ifdef __APPLE__
-	        scriptPath = "scripts/macOS/" + scriptToExe;
-            #else
-	        scriptPath = "scripts/linux/" + scriptToExe;
-            #endif
-            #endif    
-        }
-    
-        std::cout << "Going to run " << scriptPath << std::endl;
-
-        #ifdef _WIN32
-        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
-        #else
-	scriptPath = "\"" + scriptPath + "\"";
-	system(scriptPath.c_str());
-        #endif
+  if(Utilities::pathExists(userFolder + "bc5.ini"))
+    {
+      iniFilename = userFolder + "bc5.ini";
     }
+    
+  std::string scriptToExe = IniFile::iniFileToString(iniFilename, "script_start_BC");
+
+  if (!scriptToExe.empty()) {
+    std::string scriptPath;
+    if (Utilities::pathExists(userFolder + scriptToExe)) {
+      scriptPath = userFolder + scriptToExe;
+    } else {
+#ifdef _WIN32
+      scriptPath = "scripts\\win\\" + scriptToExe;
+#else
+      scriptPath = "scripts/linux/" + scriptToExe;
+#endif
+
+    }
+    
+    std::cout << "Going to run " << scriptPath << std::endl;
+
+#ifdef _WIN32
+    ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+#else
+    scriptPath = "\"" + scriptPath + "\"";
+    system(scriptPath.c_str());
+#endif
+  }
 	
-    #ifdef __arm__
-    if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
-        setenv("PA_ALSA_PLUGHW", "1", true);
-    }
-    #endif
+#ifdef __arm__
+  if (IniFile::iniFileTou32(iniFilename, "PA_ALSA_PLUGHW") == 1) {
+    setenv("PA_ALSA_PLUGHW", "1", true);
+  }
+#endif
 
 
-    int fontSize = 12;
-    float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
-    if (fontScale > 1) {
-        fontSize = (int)(fontSize * fontScale + 0.5);
-    } else {
-	    fontScale = 1.0;
-    }
+  int fontSize = 12;
+  float fontScale = IniFile::iniFileTof32(iniFilename, "font_scale");
+  if (fontScale > 1) {
+    fontSize = (int)(fontSize * fontScale + 0.5);
+  } else {
+    fontScale = 1.0;
+  }
 
-    std::string fontName = IniFile::iniFileToString(iniFilename, "font");
-    std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
-    bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
-	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
-    irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
-	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
-	if (directX == 1) {
-		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
-	}
-	irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
-	if (waterSegments == 0) {
-		waterSegments = 32;
-	}
-    irr::u32 numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
-	if (numberOfContactPointsX == 0) {
-		numberOfContactPointsX = 10;
-	}
-    irr::u32 numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
-	if (numberOfContactPointsY == 0) {
-		numberOfContactPointsY = 30;
-	}
-    irr::u32 numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
-	if (numberOfContactPointsZ == 0) {
-		numberOfContactPointsZ = 30;
-	}
-    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
+  std::string fontName = IniFile::iniFileToString(iniFilename, "font");
+  std::string fontPath = "media/fonts/" + fontName + "/" + fontName + "-" + std::to_string(fontSize) + ".xml";
+  irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+  irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+  irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+  bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
+  irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+  irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
+  irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
+  if (directX == 1) {
+    disableShaders = 1; //FIXME: Hardcoded for no directX shaders
+  }
+  irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
+  if (waterSegments == 0) {
+    waterSegments = 32;
+  }
+  irr::u32 numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
+  if (numberOfContactPointsX == 0) {
+    numberOfContactPointsX = 10;
+  }
+  irr::u32 numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
+  if (numberOfContactPointsY == 0) {
+    numberOfContactPointsY = 30;
+  }
+  irr::u32 numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
+  if (numberOfContactPointsZ == 0) {
+    numberOfContactPointsZ = 30;
+  }
+  irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
 
-    irr::f32 minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
+  irr::f32 minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
 
-    bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
+  bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
 
-    bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
+  bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
 
-    irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
-
-
-    irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
-    irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
-    irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
-    irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
-    irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
-    irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
-    if (frictionCoefficient < 0) {frictionCoefficient = 0;}
-    if (frictionCoefficient > 1) {frictionCoefficient = 1;}
-    if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
+  irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
 
 
-    //Initial view configuration
-    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
-    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
-    if (viewAngle <= 0) {
-        viewAngle = 90;
-    }
+  irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
+  irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+  irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
+  irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
+  irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
+  irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
+  if (frictionCoefficient < 0) {frictionCoefficient = 0;}
+  if (frictionCoefficient > 1) {frictionCoefficient = 1;}
+  if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
 
-    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
-    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
-    if (cameraMinDistance<=0) {
-        cameraMinDistance = 1;
-    }
-    if (cameraMaxDistance<=0) {
-        cameraMaxDistance = 6*M_IN_NM;
-    }
 
-    //Load NMEA settings
+  //Initial view configuration
+  irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+  irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+  if (viewAngle <= 0) {
+    viewAngle = 90;
+  }
 
-    //Conning
-    std::string nmeaComPortConning = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_Conning");
-    irr::u32 nmeaBaudrateConning = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_Conning", 4800);
-    std::string nmeaUDPAddrConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_Conning");
-    std::string nmeaUDPPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_Conning");
-    std::string nmeaUDPListenPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_Conning");
+  irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+  irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+  if (cameraMinDistance<=0) {
+    cameraMinDistance = 1;
+  }
+  if (cameraMaxDistance<=0) {
+    cameraMaxDistance = 6*M_IN_NM;
+  }
 
-    //OpenCpn
-    std::string nmeaComPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_OpenCpn");
-    irr::u32 nmeaBaudrateOpCpn = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_OpenCpn", 4800);
-    std::string nmeaUDPAddrOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_OpenCpn");
-    std::string nmeaUDPPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_OpenCpn");
-    std::string nmeaUDPListenPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_OpenCpn");
+  //Load NMEA settings
 
-    //Load UDP network settings
-    irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
-    if (enetSrvPort == 0) {
-        enetSrvPort = DEFAULT_PORT;
-    }
+  //Conning
+  std::string nmeaComPortConning = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_Conning");
+  irr::u32 nmeaBaudrateConning = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_Conning", 4800);
+  std::string nmeaUDPAddrConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_Conning");
+  std::string nmeaUDPPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_Conning");
+  std::string nmeaUDPListenPortConning = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_Conning");
 
-    std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
-    if (enetSrvAddr.empty()) {
-        enetSrvAddr = "localhost";
-    }
+  //OpenCpn
+  std::string nmeaComPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_OpenCpn");
+  irr::u32 nmeaBaudrateOpCpn = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_OpenCpn", 4800);
+  std::string nmeaUDPAddrOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_OpenCpn");
+  std::string nmeaUDPPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_OpenCpn");
+  std::string nmeaUDPListenPortOpCpn = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_OpenCpn");
 
-    OperatingMode::Mode mode = OperatingMode::Normal;
-    if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
-        mode = OperatingMode::Secondary;
-    }
+  //VDR
+  std::string nmeaComPortVDR = IniFile::iniFileToString(iniFilename, "NMEA_ComPort_VDR");
+  irr::u32 nmeaBaudrateVDR = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate_VDR", 4800);
+  std::string nmeaUDPAddrVDR = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress_VDR");
+  std::string nmeaUDPPortVDR = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort_VDR");
+  std::string nmeaUDPListenPortVDR = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort_VDR");
+
+  //Load UDP network settings
+  irr::u32 enetSrvPort = IniFile::iniFileTou32(iniFilename, "udp_server_port");
+  if (enetSrvPort == 0) {
+    enetSrvPort = DEFAULT_PORT;
+  }
+
+  std::string enetSrvAddr = IniFile::iniFileToString(iniFilename, "udp_server_address");
+  if (enetSrvAddr.empty()) {
+    enetSrvAddr = "localhost";
+  }
+
+  OperatingMode::Mode mode = OperatingMode::Normal;
+  if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
+    mode = OperatingMode::Secondary;
+  }
     
-    //Sensible defaults if not set
-	if (graphicsWidth == 0 || graphicsHeight == 0) {
-        irr::core::dimension2d<irr::u32> deskres;
-        #ifdef _WIN32
-        // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
-        deskres.Width=GetSystemMetrics(SM_CXSCREEN);
-        deskres.Height=GetSystemMetrics(SM_CYSCREEN);
-        #else
-        // For other OSs, use Irrlicht's resolution call
-        irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_OPENGL);
-        deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-        nulldevice->drop();
+  //Sensible defaults if not set
+  if (graphicsWidth == 0 || graphicsHeight == 0) {
+    irr::core::dimension2d<irr::u32> deskres;
+#ifdef _WIN32
+    // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
+    deskres.Width=GetSystemMetrics(SM_CXSCREEN);
+    deskres.Height=GetSystemMetrics(SM_CYSCREEN);
+#else
+    // For other OSs, use Irrlicht's resolution call
+    irr::IrrlichtDevice *nulldevice = irr::createDevice(irr::video::EDT_OPENGL);
+    deskres = nulldevice->getVideoModeList()->getDesktopResolution();
+    nulldevice->drop();
         
-        #endif
+#endif
 
-		if (graphicsWidth == 0) {
-			if (fullScreen) {
-				graphicsWidth = deskres.Width;
-			} else {
-				graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
-                if (graphicsWidth > deskres.Width*0.90) {
-                    graphicsWidth = deskres.Width*0.90;
-                }
-			}
-		}
-		if (graphicsHeight == 0) {
-			if (fullScreen) {
-				graphicsHeight = deskres.Height;
-			}
-			else {
-				graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
-                if (graphicsHeight > deskres.Height*0.90) {
-                    graphicsHeight = deskres.Height*0.90;
-                }
-			}
-		}
+    if (graphicsWidth == 0) {
+      if (fullScreen) {
+	graphicsWidth = deskres.Width;
+      } else {
+	graphicsWidth = 1200 * fontScale; // deskres.Width*0.8;
+	if (graphicsWidth > deskres.Width*0.90) {
+	  graphicsWidth = deskres.Width*0.90;
 	}
+      }
+    }
+    if (graphicsHeight == 0) {
+      if (fullScreen) {
+	graphicsHeight = deskres.Height;
+      }
+      else {
+	graphicsHeight = 900 * fontScale; // deskres.Height*0.8;
+	if (graphicsHeight > deskres.Height*0.90) {
+	  graphicsHeight = deskres.Height*0.90;
+	}
+      }
+    }
+  }
 
-	if (graphicsDepth == 0) { graphicsDepth = 32; }
+  if (graphicsDepth == 0) { graphicsDepth = 32; }
 
-    // Check if collision warning should be shown
-    bool showCollided;
-    if (IniFile::iniFileTou32(iniFilename, "hide_collision_warning") == 1) {
-        showCollided = false;
+  // Check if collision warning should be shown
+  bool showCollided;
+  if (IniFile::iniFileTou32(iniFilename, "hide_collision_warning") == 1) {
+    showCollided = false;
+  } else {
+    showCollided = true;
+  }
+
+  //load language
+  std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
+  if (modifier.length()==0) {
+    modifier = "en"; //Default
+  }
+  std::string languageFile = "lang/language-";
+  languageFile.append(modifier);
+  languageFile.append(".txt");
+  if (Utilities::pathExists(userFolder + languageFile)) {
+    languageFile = userFolder + languageFile;
+  }
+  Lang language(languageFile);
+
+  irr::SIrrlichtCreationParameters deviceParameters;
+
+  //create device
+  deviceParameters.DriverType = irr::video::EDT_OPENGL;
+  //Allow optional directX if available
+  if (directX==1) {
+    if (irr::IrrlichtDevice::isDriverSupported(irr::video::EDT_DIRECT3D9)) {
+      deviceParameters.DriverType = irr::video::EDT_DIRECT3D9;
     } else {
-        showCollided = true;
+      std::cerr << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
     }
+  }
 
-    //load language
-    std::string modifier = IniFile::iniFileToString(iniFilename, "lang");
-    if (modifier.length()==0) {
-        modifier = "en"; //Default
-    }
-    std::string languageFile = "lang/language-";
-    languageFile.append(modifier);
-    languageFile.append(".txt");
-    if (Utilities::pathExists(userFolder + languageFile)) {
-        languageFile = userFolder + languageFile;
-    }
-    Lang language(languageFile);
+  deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+  deviceParameters.Bits = graphicsDepth;
+  deviceParameters.Fullscreen = fullScreen;
+  deviceParameters.AntiAlias = antiAlias;
 
-	irr::SIrrlichtCreationParameters deviceParameters;
+  irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
+  //Start paused initially
+  device->getTimer()->setSpeed(0.0);
 
-    //create device
-    deviceParameters.DriverType = irr::video::EDT_OPENGL;
-	//Allow optional directX if available
-	if (directX==1) {
-        if (irr::IrrlichtDevice::isDriverSupported(irr::video::EDT_DIRECT3D9)) {
-            deviceParameters.DriverType = irr::video::EDT_DIRECT3D9;
-        } else {
-            std::cerr << "DirectX 9 requested but not available.\nThis may be because Bridge Command has been compiled without DirectX support,\nor your system does not support DirectX.\nTrying OpenGL" << std::endl << std::endl;
-        }
-	}
+  //On Windows, redirect console stderr to log file
+  std::string userLog = userFolder + "log.txt";
+  std::cout << "User log file is " << userLog << std::endl;
+  /*
+    FILE * stream = 0;
+    #ifdef _WIN32
+    errno_t success = freopen_s(&stream, userLog.c_str(), "w", stderr);
+    #endif // _WIN32
+  */
+  if (device == 0) {
+    std::cerr << "Could not start - please check your graphics options." << std::endl;
+    return(EXIT_FAILURE); //Could not get file system
+  }
 
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
-    deviceParameters.Bits = graphicsDepth;
-    deviceParameters.Fullscreen = fullScreen;
-    deviceParameters.AntiAlias = antiAlias;
+  device->setWindowCaption(irr::core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
 
-    irr::IrrlichtDevice* device = irr::createDeviceEx(deviceParameters);
-    //Start paused initially
-    device->getTimer()->setSpeed(0.0);
+  irr::video::IVideoDriver* driver = device->getVideoDriver();
+  irr::scene::ISceneManager* smgr = device->getSceneManager();
 
-	//On Windows, redirect console stderr to log file
-	std::string userLog = userFolder + "log.txt";
-	std::cout << "User log file is " << userLog << std::endl;
-	/*
-	FILE * stream = 0;
-	#ifdef _WIN32
-	errno_t success = freopen_s(&stream, userLog.c_str(), "w", stderr);
-	#endif // _WIN32
-    */
-	if (device == 0) {
-		std::cerr << "Could not start - please check your graphics options." << std::endl;
-		return(EXIT_FAILURE); //Could not get file system
-	}
+  std::vector<std::string> logMessages;
+  DefaultEventReceiver defReceiver(&logMessages, device);
+  device->setEventReceiver(&defReceiver);
 
-    device->setWindowCaption(irr::core::stringw(LONGNAME.c_str()).c_str()); //Note: Odd conversion from char* to wchar*!
+  //Tell the Ini routine the logger address
+  IniFile::irrlichtLogger = device->getLogger();
 
-    irr::video::IVideoDriver* driver = device->getVideoDriver();
-    irr::scene::ISceneManager* smgr = device->getSceneManager();
+  device->getLogger()->log("User folder is:");
+  device->getLogger()->log(userFolder.c_str());
 
-    std::vector<std::string> logMessages;
-    DefaultEventReceiver defReceiver(&logMessages, device);
-    device->setEventReceiver(&defReceiver);
+  smgr->getParameters()->setAttribute(irr::scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
-    //Tell the Ini routine the logger address
-    IniFile::irrlichtLogger = device->getLogger();
+  //set gui skin and 'flatten' this
+  irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
 
-    device->getLogger()->log("User folder is:");
-    device->getLogger()->log(userFolder.c_str());
+  device->getGUIEnvironment()->setSkin(newskin);
+  newskin->drop();
 
-    smgr->getParameters()->setAttribute(irr::scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
-
-    //set gui skin and 'flatten' this
-    irr::gui::IGUISkin* newskin = device->getGUIEnvironment()->createSkin(irr::gui::EGST_WINDOWS_METALLIC);
-
-    device->getGUIEnvironment()->setSkin(newskin);
-    newskin->drop();
-
-    irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(fontPath.c_str());
-    if (font == NULL) {
-      std::cout << "Could not load font " << fontPath << std::endl;
-    }
-    else {
-        //set skin default font
-        device->getGUIEnvironment()->getSkin()->setFont(font);
-    }
+  irr::gui::IGUIFont* font = device->getGUIEnvironment()->getFont(fontPath.c_str());
+  if (font == NULL) {
+    std::cout << "Could not load font " << fontPath << std::endl;
+  }
+  else {
+    //set skin default font
+    device->getGUIEnvironment()->getSkin()->setFont(font);
+  }
 
 
-	irr::u32 su = driver->getScreenSize().Width;
-	irr::u32 sh = driver->getScreenSize().Height;
+  irr::u32 su = driver->getScreenSize().Width;
+  irr::u32 sh = driver->getScreenSize().Height;
 
-	//set size of camera window, based on actual window
-	graphicsWidth = su;
-	graphicsHeight = sh;
-	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
-	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+  //set size of camera window, based on actual window
+  graphicsWidth = su;
+  graphicsHeight = sh;
+  irr::u32 graphicsWidth3d = su;
+  irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
+  irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
+  irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
 
-	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
+  std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
-    //Choose scenario
-    std::string scenarioName = "";
-    std::string hostname = "";
-    //Scenario path - default to user dir if it exists
-    std::string scenarioPath = "scenarios/";
-    if (Utilities::pathExists(userFolder + scenarioPath)) {
-        scenarioPath = userFolder + scenarioPath;
-    }
+  //Choose scenario
+  std::string scenarioName = "";
+  std::string hostname = "";
+  //Scenario path - default to user dir if it exists
+  std::string scenarioPath = "scenarios/";
+  if (Utilities::pathExists(userFolder + scenarioPath)) {
+    scenarioPath = userFolder + scenarioPath;
+  }
 
-    //Find default hostname if set in user directory (hostname.txt)
-    if (Utilities::pathExists(userFolder + "/hostname.txt")) {
-        hostname=IniFile::iniFileToString(userFolder + "/hostname.txt","hostname");
-    }
+  //Find default hostname if set in user directory (hostname.txt)
+  if (Utilities::pathExists(userFolder + "/hostname.txt")) {
+    hostname=IniFile::iniFileToString(userFolder + "/hostname.txt","hostname");
+  }
 
-	//Start sound
-	Sound sound;
+  //Start sound
+  Sound sound;
     
-    if (mode == OperatingMode::Normal) {
-        ScenarioChoice scenarioChoice(device,&language);
-        scenarioChoice.chooseScenario(scenarioName, mode, scenarioPath);
+  if (mode == OperatingMode::Normal) {
+    ScenarioChoice scenarioChoice(device,&language);
+    scenarioChoice.chooseScenario(scenarioName, mode, scenarioPath);
+  }
+
+  Utilities::trim(hostname);
+
+  //Save hostname in user directory (hostname.txt). Check first that the location exists
+  if (!Utilities::pathExists(Utilities::getUserDirBase())) {
+    std::string pathToMake = Utilities::getUserDirBase();
+    if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+#ifdef _WIN32
+    _mkdir(pathToMake.c_str());
+#else
+    mkdir(pathToMake.c_str(),0755);
+#endif // _WIN32
+  }
+  if (!Utilities::pathExists(Utilities::getUserDir())) {
+    std::string pathToMake = Utilities::getUserDir();
+    if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
+#ifdef _WIN32
+    _mkdir(pathToMake.c_str());
+#else
+    mkdir(pathToMake.c_str(),0755);
+#endif // _WIN32
+  }
+
+  if (Utilities::pathExists(userFolder)) { //TODO: Should we make this if it doesn't exist?
+    std::string hostnameFile = userFolder + "/hostname.txt";
+    std::ofstream file (hostnameFile.c_str());
+    if (file.is_open()) {
+      file << "hostname=" << hostname << std::endl;
+      file.close();
+    }
+  }
+  //Show loading message
+  irr::u32 creditsStartTime = device->getTimer()->getRealTime();
+  irr::core::stringw creditsText = language.translate("loadingmsg");
+  creditsText.append(L"\n\n");
+  creditsText.append(getCredits());
+  irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<irr::s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
+  device->run();
+  driver->beginScene(true, true, irr::video::SColor(0,255,255,255));
+  device->getGUIEnvironment()->drawAll();
+  driver->endScene();
+
+  //seed random number generator
+  std::srand(device->getTimer()->getTime());
+    
+  //create GUI
+  GUIMain guiMain;
+
+  Network network;
+  network.Connect(enetSrvAddr, enetSrvPort, mode);
+
+  bool secondaryControlWheel = false;
+  bool secondaryControlPortEngine = false;
+  bool secondaryControlStbdEngine = false;
+  bool secondaryControlBowThruster = false;
+  bool secondaryControlSternThruster = false;
+
+  if (mode==OperatingMode::Secondary) {
+    if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
+      secondaryControlWheel = true;
+    }
+    if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_engine") == 1) {
+      secondaryControlPortEngine = true;
+    } 
+    if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
+      secondaryControlStbdEngine = true;
+    }
+    if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
+      secondaryControlBowThruster = true;
+    }
+    if (IniFile::iniFileTou32(iniFilename, "secondary_control_stern_thruster") == 1) {
+      secondaryControlSternThruster = true;
     }
 
-    Utilities::trim(hostname);
+  }
 
-    //Save hostname in user directory (hostname.txt). Check first that the location exists
-    if (!Utilities::pathExists(Utilities::getUserDirBase())) {
-        std::string pathToMake = Utilities::getUserDirBase();
-        if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
-        #ifdef _WIN32
-        _mkdir(pathToMake.c_str());
-        #else
-        mkdir(pathToMake.c_str(),0755);
-        #endif // _WIN32
+  // Check VR mode
+  bool vr3dMode = false;
+  if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
+    vr3dMode=true;
+  }
+    
+  ModelParameters modelParameters;
+  // TODO: most of these intermediate variables can probably be removed.
+  modelParameters.mode = mode; 
+  modelParameters.vrMode = vr3dMode;
+  modelParameters.viewAngle = viewAngle; 
+  modelParameters.lookAngle = lookAngle;
+  modelParameters.cameraMinDistance = cameraMinDistance; 
+  modelParameters.cameraMaxDistance = cameraMaxDistance;
+  modelParameters.disableShaders = disableShaders; 
+  modelParameters.waterSegments = waterSegments; 
+  modelParameters.numberOfContactPoints = numberOfContactPoints; 
+  modelParameters.minContactPointSpacing = minContactPointSpacing; 
+  modelParameters.contactStiffnessFactor = contactStiffnessFactor; 
+  modelParameters.contactDampingFactor = contactDampingFactor; 
+  modelParameters.frictionCoefficient = frictionCoefficient; 
+  modelParameters.tanhFrictionFactor = tanhFrictionFactor;
+  modelParameters.lineStiffnessFactor = lineStiffnessFactor;
+  modelParameters.lineDampingFactor = lineDampingFactor; 
+  modelParameters.limitTerrainResolution = limitTerrainResolution;
+  modelParameters.secondaryControlWheel = secondaryControlWheel;
+  modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
+  modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
+  modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
+  modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
+  modelParameters.debugMode = debugMode;
+
+    
+  ScenarioData scenarioData;
+     
+  if(mode == OperatingMode::Normal)
+    {
+      scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
     }
-    if (!Utilities::pathExists(Utilities::getUserDir())) {
-        std::string pathToMake = Utilities::getUserDir();
-        if (pathToMake.size() > 1) {pathToMake.erase(pathToMake.size()-1);} //Remove trailing slash
-        #ifdef _WIN32
-        _mkdir(pathToMake.c_str());
-        #else
-        mkdir(pathToMake.c_str(),0755);
-        #endif // _WIN32
+  else
+    {
+      irr::core::stringw waitingMessage = language.translate("secondaryWait");
+      waitingMessage += network.GetIPServer().c_str();
+      loadingMessage->setText(waitingMessage.c_str());
+      device->run();
+      driver->beginScene(true, true, irr::video::SColor(0,200,200,200));
+      device->getGUIEnvironment()->drawAll();
+      driver->endScene();
+      device->getCursorControl()->setVisible(false);
+      //Get the data
+      Message inMsg;
+      eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
+      void* dataScn = NULL;
+
+      while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
+	{
+	  network.WaitMessage(inMsg, msgType, &dataScn, 1000);
+	}
+      if(dataScn != NULL)
+	{
+	  std::string scnStr((char*)dataScn);	    
+	  scenarioData.deserialise(scnStr);
+	}
+    }
+  //std::string serialisedScenarioData = scenarioData.serialise(false);
+
+  //loadingMessage->remove(); loadingMessage = 0;
+  bool bEnd = false;
+
+  std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
+
+  SimulationModel model(device, &guiMain, &sound, scenarioData, modelParameters);
+
+  bEnd = true;
+  taskWaitingNet.join();
+
+  if (mode == OperatingMode::Normal)
+    {
+      std::string msgScn = model.getSerialisedScenario();
+      network.SendMessage(msgScn);
     }
 
-    if (Utilities::pathExists(userFolder)) { //TODO: Should we make this if it doesn't exist?
-        std::string hostnameFile = userFolder + "/hostname.txt";
-        std::ofstream file (hostnameFile.c_str());
-        if (file.is_open()) {
-            file << "hostname=" << hostname << std::endl;
-            file.close();
-        }
-    }
-	//Show loading message
-	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
-    irr::core::stringw creditsText = language.translate("loadingmsg");
-    creditsText.append(L"\n\n");
-    creditsText.append(getCredits());
-    irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<irr::s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
+  // Set up the VR interface
+  VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
+
+
+  //check enough time has elapsed to show the credits screen (5s)
+  while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
     device->run();
-    driver->beginScene(true, true, irr::video::SColor(0,255,255,255));
+  }
+    
+  // Show world model credits if available
+  std::string worldReadme = model.getWorldReadme();
+  if (worldReadme.size() > 0) {
+    std::wstring wideWorldReadme = std::wstring(worldReadme.begin(), worldReadme.end());
+    loadingMessage->setText(wideWorldReadme.c_str());
+    device->run();
+    driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
     device->getGUIEnvironment()->drawAll();
     driver->endScene();
-
-    //seed random number generator
-    std::srand(device->getTimer()->getTime());
-    
-    //create GUI
-    GUIMain guiMain;
-
-    Network network;
-    network.Connect(enetSrvAddr, enetSrvPort, mode);
-
-    bool secondaryControlWheel = false;
-    bool secondaryControlPortEngine = false;
-    bool secondaryControlStbdEngine = false;
-    bool secondaryControlBowThruster = false;
-    bool secondaryControlSternThruster = false;
-
-    if (mode==OperatingMode::Secondary) {
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_wheel") == 1) {
-            secondaryControlWheel = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_port_engine") == 1) {
-            secondaryControlPortEngine = true;
-        } 
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stbd_engine") == 1) {
-            secondaryControlStbdEngine = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_bow_thruster") == 1) {
-            secondaryControlBowThruster = true;
-        }
-        if (IniFile::iniFileTou32(iniFilename, "secondary_control_stern_thruster") == 1) {
-            secondaryControlSternThruster = true;
-        }
-
-    }
-
-    // Check VR mode
-    bool vr3dMode = false;
-    if (IniFile::iniFileTou32(iniFilename, "vr_mode")==1) {
-        vr3dMode=true;
-    }
-    
-    ModelParameters modelParameters;
-    // TODO: most of these intermediate variables can probably be removed.
-    modelParameters.mode = mode; 
-    modelParameters.vrMode = vr3dMode;
-    modelParameters.viewAngle = viewAngle; 
-    modelParameters.lookAngle = lookAngle;
-    modelParameters.cameraMinDistance = cameraMinDistance; 
-    modelParameters.cameraMaxDistance = cameraMaxDistance;
-    modelParameters.disableShaders = disableShaders; 
-    modelParameters.waterSegments = waterSegments; 
-    modelParameters.numberOfContactPoints = numberOfContactPoints; 
-    modelParameters.minContactPointSpacing = minContactPointSpacing; 
-    modelParameters.contactStiffnessFactor = contactStiffnessFactor; 
-    modelParameters.contactDampingFactor = contactDampingFactor; 
-    modelParameters.frictionCoefficient = frictionCoefficient; 
-    modelParameters.tanhFrictionFactor = tanhFrictionFactor;
-    modelParameters.lineStiffnessFactor = lineStiffnessFactor;
-    modelParameters.lineDampingFactor = lineDampingFactor; 
-    modelParameters.limitTerrainResolution = limitTerrainResolution;
-    modelParameters.secondaryControlWheel = secondaryControlWheel;
-    modelParameters.secondaryControlPortEngine = secondaryControlPortEngine;
-    modelParameters.secondaryControlStbdEngine = secondaryControlStbdEngine;
-    modelParameters.secondaryControlBowThruster = secondaryControlBowThruster;
-    modelParameters.secondaryControlSternThruster = secondaryControlSternThruster;
-    modelParameters.debugMode = debugMode;
-
-    
-    ScenarioData scenarioData;
-     
-    if(mode == OperatingMode::Normal)
-      {
-        scenarioData = Utilities::getScenarioDataFromFile(scenarioPath + scenarioName, scenarioName);
-      }
-    else
-      {
-        irr::core::stringw waitingMessage = language.translate("secondaryWait");
-	waitingMessage += network.GetIPServer().c_str();
-        loadingMessage->setText(waitingMessage.c_str());
-        device->run();
-        driver->beginScene(true, true, irr::video::SColor(0,200,200,200));
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
-	device->getCursorControl()->setVisible(false);
-        //Get the data
-	Message inMsg;
-	eCmdMsg msgType = E_CMD_MESSAGE_UNKNOWN;
-	void* dataScn = NULL;
-
-	while(device->run() && msgType != E_CMD_MESSAGE_SCENARIO)
-	  {
-	    network.WaitMessage(inMsg, msgType, &dataScn, 1000);
-	  }
-	if(dataScn != NULL)
-	  {
-	    std::string scnStr((char*)dataScn);	    
-	    scenarioData.deserialise(scnStr);
-	  }
-    }
-    //std::string serialisedScenarioData = scenarioData.serialise(false);
-
-    //loadingMessage->remove(); loadingMessage = 0;
-    bool bEnd = false;
-
-    std::thread taskWaitingNet(Update::WaitingScenario, &network, &bEnd);
-
-    SimulationModel model(device, &guiMain, &sound, scenarioData, modelParameters);
-
-    bEnd = true;
-    taskWaitingNet.join();
-
-    if (mode == OperatingMode::Normal)
-    {
-        std::string msgScn = model.getSerialisedScenario();
-        network.SendMessage(msgScn);
-    }
-
-    // Set up the VR interface
-    VRInterface vrInterface(device, device->getSceneManager(), device->getVideoDriver(), su, sh);
-
-
-    //check enough time has elapsed to show the credits screen (5s)
-    while (device->getTimer()->getRealTime() - creditsStartTime < 5000) {
-        device->run();
-    }
-    
-    // Show world model credits if available
-    std::string worldReadme = model.getWorldReadme();
-    if (worldReadme.size() > 0) {
-        std::wstring wideWorldReadme = std::wstring(worldReadme.begin(), worldReadme.end());
-        loadingMessage->setText(wideWorldReadme.c_str());
-        device->run();
-        driver->beginScene(irr::video::ECBF_COLOR | irr::video::ECBF_DEPTH, irr::video::SColor(0, 200, 200, 200));
-        device->getGUIEnvironment()->drawAll();
-        driver->endScene();
         
-        //check enough time has elapsed to show the credits screen (10s) in total (5s main, 5s world)
-        while (device->getTimer()->getRealTime() - creditsStartTime < 10000) {
-            device->run();
-        }
-
+    //check enough time has elapsed to show the credits screen (10s) in total (5s main, 5s world)
+    while (device->getTimer()->getRealTime() - creditsStartTime < 10000) {
+      device->run();
     }
+
+  }
     
-    // Remove loading message, as not needed again
-    loadingMessage->remove(); loadingMessage = 0;
+  // Remove loading message, as not needed again
+  loadingMessage->remove(); loadingMessage = 0;
 
 
-    // Load the VR interface, allowing link to model
-    int vrSuccess = -1;
-    if (vr3dMode) {
-        vrSuccess = vrInterface.load(&model);
-        std::cout << "vrSuccess=" << vrSuccess << std::endl;
+  // Load the VR interface, allowing link to model
+  int vrSuccess = -1;
+  if (vr3dMode) {
+    vrSuccess = vrInterface.load(&model);
+    std::cout << "vrSuccess=" << vrSuccess << std::endl;
+  }
+
+  //Load the gui
+  bool hideEngineAndRudder=false;
+  // Hide engine/wheel inputs if not used (todo: control individually?)
+  if (mode==OperatingMode::Secondary) {
+    if (secondaryControlWheel || 
+	secondaryControlPortEngine || 
+	secondaryControlStbdEngine || 
+	secondaryControlBowThruster ||
+	secondaryControlSternThruster) {
+      hideEngineAndRudder=false;
+    } else {
+      hideEngineAndRudder=true;
     }
+  }
 
-    //Load the gui
-    bool hideEngineAndRudder=false;
-    // Hide engine/wheel inputs if not used (todo: control individually?)
-    if (mode==OperatingMode::Secondary) {
-        if (secondaryControlWheel || 
-            secondaryControlPortEngine || 
-            secondaryControlStbdEngine || 
-            secondaryControlBowThruster ||
-            secondaryControlSternThruster) {
-            hideEngineAndRudder=false;
-        } else {
-            hideEngineAndRudder=true;
-        }
-    }
+  guiMain.load(device, model.getOwnShip(), model.getLines(), &language, &logMessages, hideEngineAndRudder, showTideHeight, false, false, showCollided, vr3dMode);
 
-    guiMain.load(device, model.getOwnShip(), model.getLines(), &language, &logMessages, hideEngineAndRudder, showTideHeight, false, false, showCollided, vr3dMode);
+  //load realistic water
+  //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
-    //load realistic water
-    //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
+  //load joystick setup
+  JoystickSetup joystickSetup = getJoystickSetup(iniFilename);
 
-    //load joystick setup
-    JoystickSetup joystickSetup = getJoystickSetup(iniFilename);
+  //create event receiver, linked to model
+  MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
+  device->setEventReceiver(&receiver);
 
-    //create event receiver, linked to model
-    MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, joystickSetup, &logMessages);
-    device->setEventReceiver(&receiver);
-
-    //create NMEA serial port and UDP, linked to model
-    NMEA nmeaConning(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
-    NMEA nmeaOpCpn(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+  //create NMEA serial port and UDP, linked to model
+  NMEA nmeaConning(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+  NMEA nmeaOpCpn(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
+  NMEA nmeaVDR(model.getOwnShip(), model.getOtherShips(), model.getTerrain(), model.getWind(), model.getRadarCalculation());
 
 
-    nmeaConning.Init(nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning);
-    nmeaOpCpn.Init(nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn);
+  nmeaConning.Init(nmeaComPortConning, nmeaBaudrateConning, nmeaUDPAddrConning, nmeaUDPPortConning, nmeaUDPListenPortConning);
+  nmeaOpCpn.Init(nmeaComPortOpCpn, nmeaBaudrateOpCpn, nmeaUDPAddrOpCpn, nmeaUDPPortOpCpn, nmeaUDPListenPortOpCpn);
+  nmeaVDR.Init(nmeaComPortVDR, nmeaBaudrateVDR, nmeaUDPAddrVDR, nmeaUDPPortVDR, nmeaUDPListenPortVDR);
 
     
-	//Load sound files
-    sound.load(model.getOwnShip()->getBasePath());
+  //Load sound files
+  sound.load(model.getOwnShip()->getBasePath());
 
 
-    sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
+  sound.setVolumeWave(IniFile::iniFileTof32(iniFilename, "wave_volume"));
 
 
-    //Set up initial options
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
-        guiMain.hide2dInterface();
-    }
-    if (IniFile::iniFileTou32(iniFilename, "hide_instruments_max")==1) {
-        guiMain.hide2dInterfaceFull();
-    }
+  //Set up initial options
+  if (IniFile::iniFileTou32(iniFilename, "hide_instruments_min")==1) {
+    guiMain.hide2dInterface();
+  }
+  if (IniFile::iniFileTou32(iniFilename, "hide_instruments_max")==1) {
+    guiMain.hide2dInterfaceFull();
+  }
     
-        if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
-        guiMain.setLargeRadar(true);
-        model.getRadarCalculation()->setRadarDisplayRadius(guiMain.getRadarPixelRadius());
-        guiMain.hide2dInterface();
-    }
-    if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
-        guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
-        model.getRadarCalculation()->setArpaMode(2);
-    }
-    irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
-    if (radarStartupMode==1) {
-        model.getRadarCalculation()->setCourseUp();
-    }
-    if (radarStartupMode==2) {
-        model.getRadarCalculation()->setHeadUp();
-	}
+  if (IniFile::iniFileTou32(iniFilename, "full_radar")==1) {
+    guiMain.setLargeRadar(true);
+    model.getRadarCalculation()->setRadarDisplayRadius(guiMain.getRadarPixelRadius());
+    guiMain.hide2dInterface();
+  }
+  if (IniFile::iniFileTou32(iniFilename, "arpa_on")==1) {
+    guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
+    model.getRadarCalculation()->setArpaMode(2);
+  }
+  irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
+  if (radarStartupMode==1) {
+    model.getRadarCalculation()->setCourseUp();
+  }
+  if (radarStartupMode==2) {
+    model.getRadarCalculation()->setHeadUp();
+  }
 
-    //set up timing for NMEA
+  //set up timing for NMEA
 
-//    Profiling
-//    Profiler networkProfile("Network");
-//    Profiler nmeaProfile("NMEA");
-//    Profiler modelProfile("Model");
-//    Profiler renderSetupProfile("Render setup");
-//    Profiler renderRadarProfile("Render radar");
-//    Profiler renderProfile("3d render");
-//    Profiler guiProfile("GUI render");
-//    Profiler renderFinishProfile("Render finish");
+  //    Profiling
+  //    Profiler networkProfile("Network");
+  //    Profiler nmeaProfile("NMEA");
+  //    Profiler modelProfile("Model");
+  //    Profiler renderSetupProfile("Render setup");
+  //    Profiler renderRadarProfile("Render radar");
+  //    Profiler renderProfile("3d render");
+  //    Profiler guiProfile("GUI render");
+  //    Profiler renderFinishProfile("Render finish");
 
-	sound.StartSound();
+  sound.StartSound();
 	
-    //main loop
-    while(device->run())
-      {
-        { IPROF("Network");
+  //main loop
+  while(device->run())
+    {
+      { IPROF("Network");
 
-	  Update::UpdateNetwork(&model, &network, mode);
+	Update::UpdateNetwork(&model, &network, mode);
 	    
-        }
-	{ IPROF("NMEA");
+      }
+      { IPROF("NMEA");
 
-	  if (!nmeaUDPListenPortConning.empty()) nmeaConning.receive();
-	  if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA(model.getTime());
-      if (!nmeaComPortConning.empty())  nmeaConning.sendNMEASerial();
-      if (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty()) nmeaConning.sendNMEAUDP();
-      nmeaConning.clearQueue();   
+	if (!nmeaUDPListenPortConning.empty()) nmeaConning.receive();
+	if (!nmeaComPortConning.empty() || (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty())) nmeaConning.updateNMEA(model.getTime());
+	if (!nmeaComPortConning.empty())  nmeaConning.sendNMEASerial();
+	if (!nmeaUDPAddrConning.empty() && !nmeaUDPPortConning.empty()) nmeaConning.sendNMEAUDP();
+	nmeaConning.clearQueue();   
 
-      if (!nmeaUDPListenPortOpCpn.empty()) nmeaOpCpn.receive();
-      if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA(model.getTime());
-      if (!nmeaComPortOpCpn.empty())  nmeaOpCpn.sendNMEASerial();
-      if (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty()) nmeaOpCpn.sendNMEAUDP();
-      nmeaOpCpn.clearQueue();
+	if (!nmeaUDPListenPortOpCpn.empty()) nmeaOpCpn.receive();
+	if (!nmeaComPortOpCpn.empty() || (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty())) nmeaOpCpn.updateNMEA(model.getTime());
+	if (!nmeaComPortOpCpn.empty())  nmeaOpCpn.sendNMEASerial();
+	if (!nmeaUDPAddrOpCpn.empty() && !nmeaUDPPortOpCpn.empty()) nmeaOpCpn.sendNMEAUDP();
+	nmeaOpCpn.clearQueue();
 
-    }
-    { IPROF("Render setup");
+	
+	if (!nmeaUDPListenPortVDR.empty()) nmeaVDR.receive();
+	if (!nmeaComPortVDR.empty() || (!nmeaUDPAddrVDR.empty() && !nmeaUDPPortVDR.empty())) nmeaVDR.updateNMEA(model.getTime());
+	if (!nmeaComPortVDR.empty())  nmeaVDR.sendNMEASerial();
+	if (!nmeaUDPAddrVDR.empty() && !nmeaUDPPortVDR.empty()) nmeaVDR.sendNMEAUDP();
+	nmeaVDR.clearQueue();
+
+      }
+      { IPROF("Render setup");
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarCalculation()->getRadarSurroundColour());
-//        renderSetupProfile.toc();
+	//        renderSetupProfile.toc();
 
-//        renderRadarProfile.tic();
+	//        renderRadarProfile.tic();
 
-        }
-        bool fullScreenRadar = guiMain.getLargeRadar();
-        { IPROF("Render radar");
-	         if (model.getRadarCalculation()->isRadarOn()) {
-            //radar view portion
-            if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
-	      model.getWater()->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
-                if (fullScreenRadar) {
-                    driver->setViewPort(guiMain.getLargeRadarRect());
-                } else {
-                    driver->setViewPort(guiMain.getSmallRadarRect());
-                }
-                model.getRadarCamera()->setActive();
-                smgr->drawAll();
-                model.getWater()->setVisible(true); //Re-show the water
-            }
+      }
+      bool fullScreenRadar = guiMain.getLargeRadar();
+      { IPROF("Render radar");
+	if (model.getRadarCalculation()->isRadarOn()) {
+	  //radar view portion
+	  if (graphicsHeight>graphicsHeight3d && (guiMain.getShowInterface() || fullScreenRadar)) {
+	    model.getWater()->setVisible(false); //Hide the reflecting water, as this updates itself on drawAll()
+	    if (fullScreenRadar) {
+	      driver->setViewPort(guiMain.getLargeRadarRect());
+	    } else {
+	      driver->setViewPort(guiMain.getSmallRadarRect());
 	    }
+	    model.getRadarCamera()->setActive();
+	    smgr->drawAll();
+	    model.getWater()->setVisible(true); //Re-show the water
+	  }
+	}
 
- //       renderRadarProfile.toc();
+	//       renderRadarProfile.toc();
 
- //       renderProfile.tic();
-        }{ IPROF("Render");
+	//       renderProfile.tic();
+      }{ IPROF("Render");
 
         //3d view portion
-	  model.getCamera()->setActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
+	model.getCamera()->setActive(); //Note that the NavLights expect the main camera to be active, so they know where they're being viewed from
 
         // Normal rendering
         if (!fullScreenRadar) {
-            if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
-                model.getCamera()->updateViewport(aspect3d);
-            }
-            else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
-                model.getCamera()->updateViewport(aspect);
-            }
+	  if (guiMain.getShowInterface()) {
+	    driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
+	    model.getCamera()->updateViewport(aspect3d);
+	  }
+	  else {
+	    driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
+	    model.getCamera()->updateViewport(aspect);
+	  }
             
-            smgr->drawAll();
+	  smgr->drawAll();
             
             
         }
 
         if (vr3dMode && vrSuccess == 0) {
             
-            // Set aspect ratio
-            irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
-            model.getCamera()->updateViewport(aspectRatioVR);
+	  // Set aspect ratio
+	  irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
+	  model.getCamera()->updateViewport(aspectRatioVR);
 
-            // Process events
-            int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
+	  // Process events
+	  int runtimeEventSuccess = vrInterface.runtimeEvents(); // TODO: Use return value here, e.g. to trigger close?
             
-            // Render and get inputs from VR
-            if (runtimeEventSuccess == 0) {
-                vrInterface.update();
-             }
+	  // Render and get inputs from VR
+	  if (runtimeEventSuccess == 0) {
+	    vrInterface.update();
+	  }
         }
 
- //       renderProfile.toc();
+	//       renderProfile.toc();
 
- //       guiProfile.tic();
-        }{ IPROF("Model");
+	//       guiProfile.tic();
+      }{ IPROF("Model");
         model.update();
-//        modelProfile.toc();
+	//        modelProfile.toc();
 
 
         //Set up
 
-//        renderSetupProfile.tic();
-        }{ IPROF("GUI");
+	//        renderSetupProfile.tic();
+      }{ IPROF("GUI");
         //gui
         driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
         driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
 
- //       guiProfile.toc();
-        }{ IPROF("End scene");
- //       renderFinishProfile.tic();
+	//       guiProfile.toc();
+      }{ IPROF("End scene");
+	//       renderFinishProfile.tic();
         driver->endScene();
- //       renderFinishProfile.toc();
-        }
+	//       renderFinishProfile.toc();
+      }
 
     }
 
-    #ifdef WITH_PROFILING
-    InternalProfiler::aggregateEntries();
+#ifdef WITH_PROFILING
+  InternalProfiler::aggregateEntries();
 
-    std::cout << "\nThe profiler stats so far:\n"
-           "WHAT: AVG_TIME (TOTAL_TIME / TIMES_EXECUTED)"
-           "\nAll times in micro seconds\n"
-        << InternalProfiler::stats << std::endl;
-    #endif
+  std::cout << "\nThe profiler stats so far:\n"
+    "WHAT: AVG_TIME (TOTAL_TIME / TIMES_EXECUTED)"
+    "\nAll times in micro seconds\n"
+	    << InternalProfiler::stats << std::endl;
+#endif
 
     
-    // Close down OpenXR and clean up
-    if (vr3dMode && vrSuccess == 0) {
-        vrInterface.unload();
-        std::cout << "Unloaded OpenXR" << std::endl;
+  // Close down OpenXR and clean up
+  if (vr3dMode && vrSuccess == 0) {
+    vrInterface.unload();
+    std::cout << "Unloaded OpenXR" << std::endl;
+  }
+
+  device->drop();
+
+  scriptToExe = IniFile::iniFileToString(iniFilename, "script_stop_BC");
+  if (!scriptToExe.empty()) {
+    std::string scriptPath;
+    if (Utilities::pathExists(userFolder + scriptToExe)) {
+      scriptPath = userFolder + scriptToExe;
+    } else {
+#ifdef _WIN32
+      scriptPath = "scripts\\win\\" + scriptToExe;
+#else
+      scriptPath = "scripts/linux/" + scriptToExe;
+#endif    
     }
-
-    device->drop();
-
-    scriptToExe = IniFile::iniFileToString(iniFilename, "script_stop_BC");
-    if (!scriptToExe.empty()) {
-        std::string scriptPath;
-        if (Utilities::pathExists(userFolder + scriptToExe)) {
-            scriptPath = userFolder + scriptToExe;
-        } else {
-            #ifdef _WIN32
-	        scriptPath = "scripts\\win\\" + scriptToExe;
-            #else
-            #ifdef __APPLE__
-	        scriptPath = "scripts/macOS/" + scriptToExe;
-            #else
-	        scriptPath = "scripts/linux/" + scriptToExe;
-            #endif
-            #endif    
-        }
     
-        std::cout << "Going to run " << scriptPath << std::endl;
+    std::cout << "Going to run " << scriptPath << std::endl;
 
-        #ifdef _WIN32
-        ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
-        #else
-	    scriptPath = "\"" + scriptPath + "\"";
-        system(scriptPath.c_str());
-        #endif
+#ifdef _WIN32
+    ShellExecute(NULL, "open", scriptPath.c_str(), NULL, NULL, SW_MINIMIZE);
+#else
+    scriptPath = "\"" + scriptPath + "\"";
+    system(scriptPath.c_str());
+#endif
+  }
+
+  //Save log messages out
+  //Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
+  //Save log messages to user directory, into log.txt, overwrite old file with that name
+  std::ofstream logFile;
+  /*
+    if (stream) {
+    fclose(stream);
+    logFile.open(userLog, std::ofstream::app); //Append
     }
-
-    //Save log messages out
-	//Note that stderr has also been redirected to this file on windows, so it will contain anything from cerr, as well as these log messages
-	//Save log messages to user directory, into log.txt, overwrite old file with that name
-	std::ofstream logFile;
-	/*
-	if (stream) {
-		fclose(stream);
-		logFile.open(userLog, std::ofstream::app); //Append
-	}
-	else {
-	*/
-		logFile.open(userLog); //Overwrite
-	/*
-	}
-	*/
-
-
-	for (unsigned int i=0;i<logMessages.size();i++) {
-        if (logFile.good()) {
-            //Check we're not creating an excessively long file
-            if (i<=1000 && logMessages.at(i).length() <=1000) {
-                logFile << "Log: " << logMessages.at(i) << std::endl;
-            }
-        }
+    else {
+  */
+  logFile.open(userLog); //Overwrite
+  /*
     }
+  */
 
-    //End
-    return(0);
+
+  for (unsigned int i=0;i<logMessages.size();i++) {
+    if (logFile.good()) {
+      //Check we're not creating an excessively long file
+      if (i<=1000 && logMessages.at(i).length() <=1000) {
+	logFile << "Log: " << logMessages.at(i) << std::endl;
+      }
+    }
+  }
+
+  //End
+  return(0);
 }

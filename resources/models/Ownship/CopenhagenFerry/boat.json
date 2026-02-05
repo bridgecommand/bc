@@ -1,11 +1,11 @@
 {
     "initialSpeed": [ 0, 0, 0 ],
     "geoParams": {
-		"length": 320, 
-		"breadth": 58,
-		"draugth": 20.8,
-		"subwaterVolume": 312622,
-		"longGravityCenter": 11.1,
+		"length": 156.45, 
+		"breadth": 24.8,
+		"draugth": 8,
+		"subwaterVolume": 25000,
+		"longGravityCenter": 1.1,
 		"blockCoef": 0.81 
     },
     "hull": {
@@ -34,7 +34,7 @@
     },
     "propeller": {
 		"number": 1,
-		"diameter": 9.86,
+		"diameter": 4.2,
 		"thrustFactor": 0.22, 
 		"longPosition": -0.48,
 		"nominalWake": 0.35,
