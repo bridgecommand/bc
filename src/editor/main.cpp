@@ -19,12 +19,6 @@
 #include "../Utilities.hpp"
 #include "../ScenarioDataStructure.hpp"
 
-//Mac OS:
-#ifdef __APPLE__
-#include <mach-o/dyld.h>
-#include <unistd.h>
-#endif //__APPLE__
-
 #ifdef _MSC_VER
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
@@ -35,16 +29,13 @@
     #include <windows.h> // Also for GetSystemMetrics
     #include <Shellapi.h>
     #include <direct.h>
-#else // _WIN32
-    #ifdef __APPLE__
-        #include <copyfile.h>
-        #include <sys/stat.h>
-    #else
+#else 
+
         #include <dirent.h>
         #include <sys/stat.h>
         #include <fstream>
-    #endif
-#endif // __APPLE__
+#endif
+
 
 #ifdef __linux__
     #include <unistd.h>
