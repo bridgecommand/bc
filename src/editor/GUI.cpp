@@ -162,8 +162,8 @@ GUIMain::GUIMain(irr::IrrlichtDevice* device, Lang* language, std::vector<std::s
     visibility->addItem(L"2.0");visibility->addItem(L"1.5");visibility->addItem(L"1.0");
     visibility->addItem(L"0.9");visibility->addItem(L"0.8");visibility->addItem(L"0.7");
     visibility->addItem(L"0.6");visibility->addItem(L"0.5");visibility->addItem(L"0.4");
-    visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");
-
+    visibility->addItem(L"0.3");visibility->addItem(L"0.2");visibility->addItem(L"0.1");visibility->addItem(L"0");
+    
     // Wind
     guienv->addStaticText(language->translate("windDirection").c_str(),irr::core::rect<irr::s32>(0.010*su,0.01*sh,0.115*su,0.04*sh),false,false,weatherTab);
     windDirection = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.010*su,0.04*sh,0.070*su,0.07*sh),false,weatherTab,GUI_ID_WINDDIRECTION_EDITBOX );
@@ -237,7 +237,7 @@ void GUIMain::updateEditBoxes()
     editBoxesNeedUpdating = true;
 }
 
-void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
+void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth)
 {
     //Show map texture
     device->getVideoDriver()->draw2DImage(displayMapTexture, irr::core::position2d<irr::s32>(0,0));
@@ -339,7 +339,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
     if (oldScenarioInfo.visibilityRange != scenarioData.visibilityRange) {
         irr::s32 selectedVis;
         if (scenarioData.visibilityRange<=1) {
-            selectedVis = Utilities::round(-10.0*scenarioData.visibilityRange + 28.0); //Equation of relation between visibility and items in visibility list where in the 0.1 to 1.0 range, with a spacing of 0.1)
+            selectedVis = Utilities::round(-10.0*scenarioData.visibilityRange + 28.0); //Equation of relation between visibility and items in visibility list where in the 0 to 1.0 range, with a spacing of 0.1)
         } else {
             selectedVis = Utilities::round(-2.0*scenarioData.visibilityRange + 20); //Equation of relation between visibility and items in visibility list where in the 1.0 to 10.0 range, with a spacing of 0.5)
         }
@@ -400,7 +400,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
     oldScenarioInfo = scenarioData;
 
     //Draw cross hairs, buoys, other ships
-    drawInformationOnMap(scenarioData.startTime, mapOffsetX, mapOffsetZ, metresPerPx, scenarioData.ownShipData.initialX, scenarioData.ownShipData.initialZ, scenarioData.ownShipData.initialBearing, buoys, scenarioData.otherShipsData, selectedShip, selectedLeg);
+    drawInformationOnMap(scenarioData.startTime, mapOffsetX, mapOffsetZ, metresPerPx, scenarioData.ownShipData.initialX, scenarioData.ownShipData.initialZ, scenarioData.ownShipData.initialBearing, buoys, landObjects, scenarioData.otherShipsData, selectedShip, selectedLeg);
 
     //Update edit boxes if required, and then mark as updated
     //This must be done before we update the drop down boxes, as otherwise we'll miss the results of the manually triggered GUI change events
@@ -468,7 +468,7 @@ void GUIMain::updateGuiData(ScenarioData scenarioData, irr::s32 mapOffsetX, irr:
 
 }
 
-void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipData>& otherShips,  const irr::s32& selectedShip, const irr::s32& selectedLeg)
+void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, const std::vector<OtherShipData>& otherShips,  const irr::s32& selectedShip, const irr::s32& selectedLeg)
 {
 
     //draw cross hairs
@@ -508,6 +508,15 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 255, 255, 255),irr::core::rect<irr::s32>(screenCentreX-dotHalfWidth+relPosX,screenCentreY-dotHalfWidth-relPosY,screenCentreX+dotHalfWidth+relPosX,screenCentreY+dotHalfWidth-relPosY));
     }
 
+    //Draw location of land objects
+    for (std::vector<PositionData>::const_iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
+      irr::s32 relPosX = (it->X - ownShipPosX) / metresPerPx + mapOffsetX;
+      irr::s32 relPosY = (it->Z - ownShipPosZ) / metresPerPx - mapOffsetZ;
+
+      device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 128, 255, 128), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
+    }
+    
+
     //Draw location of ships
     for(std::vector<OtherShipData>::const_iterator it = otherShips.begin(); it != otherShips.end(); ++it) {
         irr::s32 relPosX = (it->initialX - ownShipPosX)/metresPerPx + mapOffsetX;
@@ -519,6 +528,7 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
             device->getVideoDriver()->draw2DPolygon(irr::core::position2d<irr::s32>(screenCentreX+relPosX,screenCentreY-relPosY),dotHalfWidth*4,irr::video::SColor(255, 0, 0, 255),10);
         }
 
+	
         //number
         int thisShipNumber = 1 + it - otherShips.begin();
         irr::core::stringw label(thisShipNumber);

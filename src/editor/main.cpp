@@ -254,103 +254,6 @@ void findWhatToLoad(irr::IrrlichtDevice* device, ScenarioData* scenarioData, std
 
 }
 
-int copyDir(std::string source, std::string dest)
-{
-
-    //Copy contents of source dir into dest dir
-
-    #ifdef _WIN32
-        //Windows version: Creates dest dir automatically
-        source.append(1,'\0'); //Add an extra null to end of string
-        dest.append(1,'\0');
-        replace(dest.begin(),dest.end(),'/','\\'); //Replace / with \ in dest (think about network paths??)
-
-        SHFILEOPSTRUCT fileOp;
-        fileOp.wFunc = FO_COPY;
-        fileOp.pFrom = source.c_str();
-        fileOp.pTo = dest.c_str();
-        fileOp.fFlags = /*FOF_SILENT | */FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
-
-        return SHFileOperation(&fileOp);
-    #else
-        #ifdef __APPLE__
-            //Apple version: Requires that dest dir exists
-            copyfile_state_t s;
-            s=copyfile_state_alloc();
-            //use copyfile here to do recursive copy
-            int returnValue = copyfile(source.c_str(), dest.c_str(), s, COPYFILE_DATA | COPYFILE_RECURSIVE);
-            copyfile_state_free(s);
-            return returnValue;
-        #else // __APPLE__
-            //Other posix
-            //Note: Not implemented yet for other posix: need to implement recursive directory copy.
-            //Requires that dest dir exists
-            //std::cout << "Copying from:" << source << " to:" << dest << std::endl;
-            if (!Utilities::pathExists(dest)) {
-                return -1;
-            }
-
-            //For each folder at root level, create new folder in dest, and call copyDir on this
-            DIR *dir = opendir(source.c_str());
-            if (!dir) {return -1;}
-            struct dirent *entry = readdir(dir);
-            while (entry != NULL) {
-                if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
-                    std::string newDir = dest;
-
-                    newDir.append(source);
-                    newDir.append("/");
-                    newDir.append(entry->d_name);
-                    //newDir.append("/");
-
-                    //std::cout << "Dest: " << dest << std::endl;
-                    //std::cout << "Trying to create '" << newDir << "'" << std::endl;
-                    if (mkdir(newDir.c_str(),0755)==0) {
-                        //Recursive here
-                        std::string fromDir = source;
-                        fromDir.append("/");
-                        fromDir.append(entry->d_name);
-
-                        std::string toDir = dest;
-
-                        copyDir(fromDir, toDir);
-                    } else {
-                        return -1;
-                    }
-                } else if (entry->d_type == DT_REG) {
-                    //Copy file
-                    //entry->d_name;
-                    std::string newFile = dest;
-                    newFile.append(source);
-                    newFile.append("/");
-                    newFile.append(entry->d_name);
-
-                    std::string fromFile = source;
-                    fromFile.append("/");
-                    fromFile.append(entry->d_name);
-
-                    //std::cout << "About to try and create >>" << newFile << "<< from >>" << fromFile << "<<" << std::endl;
-
-                    std::ifstream fromStream(fromFile.c_str(), std::ios::binary);
-                    std::ofstream destStream(newFile.c_str(), std::ios::binary);
-                    if (fromStream && destStream) {
-                        destStream << fromStream.rdbuf();
-                    }
-
-                }
-
-                entry = readdir(dir);
-            }
-
-            //For each file at root level, create the file and copy contents
-
-
-        #endif // __APPLE__
-    #endif // _WIN32
-
-    return -1;
-}
-
 void checkUserScenarioDir(void)
 {
     //Check if scenarios are in the user dir, and if not, try to copy in
@@ -362,7 +265,7 @@ void checkUserScenarioDir(void)
 
         #ifdef _WIN32
         std::cout << "Copying scenario files into " << userFolder + scenarioPath << std::endl;
-        copyDir("Scenarios", userFolder + scenarioPath);
+        Utilities::copyDir("Scenarios", userFolder + scenarioPath);
         #else
         //Make sure destination folder for scenarios exists. Not needed on windows as the copy method creates the output folder and directories above it.
         if (!Utilities::pathExists(Utilities::getUserDirBase())) {
@@ -380,8 +283,8 @@ void checkUserScenarioDir(void)
             mkdir(pathToMake.c_str(),0755);
         }
         std::cout << "Copying scenario files into " << userFolder << std::endl;
-        copyDir("Scenarios", userFolder);
-        #endif // __APPLE__
+        Utilities::copyDir("Scenarios", userFolder);
+        #endif 
 
 
     }
@@ -524,7 +427,8 @@ int main (int argc, char ** argv)
     //Create data structures to hold own ship, other ship and buoy data
     ScenarioData scenarioData;
     std::vector<PositionData> buoysData;
-
+    std::vector<PositionData> landObjectsData;
+    
     //Query which scenario or world to start with
     std::string worldName;
     std::string scenarioName;
@@ -621,7 +525,7 @@ int main (int argc, char ** argv)
     }
 
     //Main model
-    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, zoomLevels);
+    ControllerModel controller(device, &language, &guiMain, worldName, &scenarioData, &buoysData, &landObjectsData, zoomLevels);
 
     if (scenarioData.dataPopulated == false) {
         //If an existing scenario, load data into these structures
@@ -807,6 +711,20 @@ int main (int argc, char ** argv)
         buoysData.push_back(thisBuoy);
     }
 
+    std::string scenarioLandObjectFilename = worldPath;
+    scenarioLandObjectFilename.append("/landobject.ini");
+    //Find number of land objects
+    irr::u32 numberOfLandObjects;
+    numberOfLandObjects = IniFile::iniFileTou32(scenarioLandObjectFilename, "Number");
+    for (irr::u32 currentLandObject = 1; currentLandObject <= numberOfLandObjects; currentLandObject++) {
+
+      PositionData thisLandObject;
+      //Get land object position
+      thisLandObject.X = controller.longToX(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Long", currentLandObject)));
+      thisLandObject.Z = controller.latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Lat", currentLandObject)));
+      landObjectsData.push_back(thisLandObject);
+    }
+    
     //Check if pre-set scenario name will cause an overwrite when saved
     controller.checkName();
 

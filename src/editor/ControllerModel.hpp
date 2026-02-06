@@ -33,76 +33,77 @@ class ControllerModel //Start of the 'Model' part of MVC
 
 public:
 
-    //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, irr::u32 _zoomLevels);
-    ~ControllerModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    irr::f32 xToLong(irr::f32 x) const;
-    irr::f32 zToLat(irr::f32 z) const;
-    void update(); //Called once per loop from the main function.
-    void resetOffset(); //Re-centre the map on the own-ship
+  //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
+  ControllerModel(irr::IrrlichtDevice* device, Lang* lang, GUIMain* gui, std::string worldName, ScenarioData* scenarioData, std::vector<PositionData>* buoysData, std::vector<PositionData>* landObjectsData, irr::u32 _zoomLevels);
+  ~ControllerModel();
+  irr::f32 longToX(irr::f32 longitude) const;
+  irr::f32 latToZ(irr::f32 latitude) const;
+  irr::f32 xToLong(irr::f32 x) const;
+  irr::f32 zToLat(irr::f32 z) const;
+  void update(); //Called once per loop from the main function.
+  void resetOffset(); //Re-centre the map on the own-ship
 
-    //Methods used to update the state, called by the event receiver:
-    void setShipPosition(irr::s32 ship, irr::core::vector2df position); //To be called from eventReceiver
-    void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
-    void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
-    void setGeneralScenarioData(ScenarioData newData); //To be called from event receiver
-    void checkName(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
+  //Methods used to update the state, called by the event receiver:
+  void setShipPosition(irr::s32 ship, irr::core::vector2df position); //To be called from eventReceiver
+  void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+  void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+  void setGeneralScenarioData(ScenarioData newData); //To be called from event receiver
+  void checkName(); //Check if the scenario name chosen will mean that an existing scenario gets overwritten, and update flag in GeneralData
 
-    void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
-    void deleteLeg(irr::s32 ship, irr::s32 index);
-    void addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance);
-    void setMMSI(irr::s32 ship, int mmsi);
-    void addShip(std::string name, irr::core::vector2df position);
-	void deleteShip(irr::s32 ship);
-    void recalculateLegTimes();
+  void changeLeg(irr::s32 ship, irr::s32 index, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance); //Change othership (or ownship) course, speed etc.
+  void deleteLeg(irr::s32 ship, irr::s32 index);
+  void addLeg(irr::s32 ship, irr::s32 afterLegNumber, irr::f32 legCourse, irr::f32 legSpeed, irr::f32 legDistance);
+  void setMMSI(irr::s32 ship, int mmsi);
+  void addShip(std::string name, irr::core::vector2df position);
+  void deleteShip(irr::s32 ship);
+  void recalculateLegTimes();
 
-    void changeOwnShipName(std::string name);
-    void changeOtherShipName(irr::s32 ship, std::string name);
+  void changeOwnShipName(std::string name);
+  void changeOtherShipName(irr::s32 ship, std::string name);
 
-    void save();
+  void save();
 
-    void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
-    void increaseZoom();
-    void decreaseZoom();
+  void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
+  void increaseZoom();
+  void decreaseZoom();
 
 private:
 
-    GUIMain* gui;
-    Lang* lang;
-    irr::IrrlichtDevice* device;
-    irr::video::IVideoDriver* driver;
+  GUIMain* gui;
+  Lang* lang;
+  irr::IrrlichtDevice* device;
+  irr::video::IVideoDriver* driver;
 
-	irr::u32 zoomLevels;
+  irr::u32 zoomLevels;
 
-    //Data shared from main
-    std::vector<PositionData>* buoysData;
-    ScenarioData* scenarioData;
-    std::string worldName;
+  //Data shared from main
+  std::vector<PositionData>* buoysData;
+  std::vector<PositionData>* landObjectsData;
+  ScenarioData* scenarioData;
+  std::string worldName;
 
-    irr::video::IImage* unscaledMap;
-    std::vector<irr::video::IImage*> scaledMap;
-    irr::u32 currentZoom;
+  irr::video::IImage* unscaledMap;
+  std::vector<irr::video::IImage*> scaledMap;
+  irr::u32 currentZoom;
 
-    irr::f32 terrainLong;
-    irr::f32 terrainLat;
-    irr::f32 terrainLongExtent;
-    irr::f32 terrainLatExtent;
-    irr::f32 terrainXWidth;
-    irr::f32 terrainZWidth;
+  irr::f32 terrainLong;
+  irr::f32 terrainLat;
+  irr::f32 terrainLongExtent;
+  irr::f32 terrainLatExtent;
+  irr::f32 terrainXWidth;
+  irr::f32 terrainZWidth;
 
-    std::vector<irr::f32> metresPerPx;
+  std::vector<irr::f32> metresPerPx;
 
-    bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
-    bool mouseClickedLastUpdate;
-    irr::core::position2d<irr::s32> mouseLastPosition;
+  bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
+  bool mouseClickedLastUpdate;
+  irr::core::position2d<irr::s32> mouseLastPosition;
 
-    irr::s32 mapOffsetX; //Pixel offset of maps, to allow click and drag.
-    irr::s32 mapOffsetZ;
+  irr::s32 mapOffsetX; //Pixel offset of maps, to allow click and drag.
+  irr::s32 mapOffsetZ;
 
-    irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
-    irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
+  irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
+  irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
 
 };
 

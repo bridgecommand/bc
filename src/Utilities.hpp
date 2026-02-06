@@ -60,7 +60,8 @@ namespace Utilities
     bool pathExists(std::string filePath);
     ScenarioData getScenarioDataFromFile(std::string scenarioPath, std::string scenarioName); //Read a scenario from ini files
     bool hasEnding(std::string const &fullString, std::string const &ending);
-
+  int copyDir(std::string source, std::string dest);
+  
     template <typename T>
     T lexical_cast(std::string in) //Special case for string so we can check for inf
     {
