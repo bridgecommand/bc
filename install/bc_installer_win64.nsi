@@ -1,11 +1,11 @@
 ;setup names
 !define PROGRAMNAME "Bridge Command SOMOS"
 !ifndef OUTPUTFILE
-!define OUTPUTFILE "BridgeCommand-SOMOS-2.1.exe"
+!define OUTPUTFILE "BridgeCommand-SOMOS-2.2.exe"
 !endif
-!define INSTALLLOCATION "Bridge Command SOMOS 2.1"
-!define SMFOLDER "Bridge Command SOMOS 2.1"
-!define REGKEY "BridgeCommandSOMOS2.1"
+!define INSTALLLOCATION "Bridge Command SOMOS 2.2"
+!define SMFOLDER "Bridge Command SOMOS 2.2"
+!define REGKEY "BridgeCommandSOMOS2.2"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
