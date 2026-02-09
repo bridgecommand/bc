@@ -62,7 +62,7 @@ public:
         float cameraMaxDistance;
         uint32_t disableShaders;
         uint32_t waterSegments;
-        irr::core::vector3di numberOfContactPoints;
+        bc::graphics::Vec3i numberOfContactPoints;
         float minContactPointSpacing;
         float contactStiffnessFactor;
         float contactDampingFactor;

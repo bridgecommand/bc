@@ -81,6 +81,13 @@ public:
 
     bool isInitialised() const { return initialised; }
 
+    // HRTF (Head-Related Transfer Function) for VR audio
+    // Only activate when VR head tracking is active -- HRTF sounds wrong without it.
+    // Requires OpenAL Soft (not Apple's built-in OpenAL).
+    bool enableHRTF() override;
+    void disableHRTF() override;
+    bool isHRTFEnabled() const override { return hrtfEnabled; }
+
     // ISound interface — wrappers over the SoundID-based API
     void load(std::string engineSoundFile, std::string waveSoundFile,
               std::string hornSoundFile, std::string alarmSoundFile) override;
@@ -101,6 +108,7 @@ private:
     ALCdevice* device;
     ALCcontext* context;
     bool initialised;
+    bool hrtfEnabled = false;
 
     ALuint buffers[SOUND_COUNT];
     ALuint sources[SOUND_COUNT];
@@ -121,6 +129,9 @@ public:
     bool loadSounds(const std::string&, const std::string&,
                     const std::string&, const std::string&) { return false; }
     bool isInitialised() const { return false; }
+    bool enableHRTF() override { return false; }
+    void disableHRTF() override {}
+    bool isHRTFEnabled() const override { return false; }
 
     // ISound interface — dummy
     void load(std::string, std::string, std::string, std::string) override {}

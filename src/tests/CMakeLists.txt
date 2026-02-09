@@ -25,10 +25,18 @@ set(BC_TEST_SOURCES
     test_legacy_physics.cpp
 )
 
-# Conditionally add ChartReader if GDAL is available
+# Conditionally add chart/world generation if GDAL is available
 if(GDAL_FOUND)
-    list(APPEND BC_TESTABLE_SOURCES ${CMAKE_SOURCE_DIR}/ChartReader.cpp)
-    list(APPEND BC_TEST_SOURCES test_chart_reader.cpp)
+    list(APPEND BC_TESTABLE_SOURCES
+        ${CMAKE_SOURCE_DIR}/ChartReader.cpp
+        ${CMAKE_SOURCE_DIR}/HeightmapGenerator.cpp
+        ${CMAKE_SOURCE_DIR}/WorldGenerator.cpp
+    )
+    list(APPEND BC_TEST_SOURCES
+        test_chart_reader.cpp
+        test_heightmap_generator.cpp
+        test_world_generator.cpp
+    )
 endif()
 
 add_library(bc-testable STATIC ${BC_TESTABLE_SOURCES})

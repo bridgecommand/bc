@@ -30,6 +30,7 @@ endif (NOT APPLE)
 add_subdirectory(tests)
 
 # optional tools
+add_subdirectory(chartConverter)
 add_subdirectory(controller)
 add_subdirectory(editor)
 add_subdirectory(iniEditor)

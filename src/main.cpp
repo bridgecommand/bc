@@ -478,11 +478,8 @@ int main(int argc, char ** argv)
     uint32_t graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
-	#ifdef __APPLE__
-	if (fakeFullScreen) {
-		fullScreen = true; //Fall back for mac
-	}
-	#endif
+	// macOS borderless fullscreen is handled via MacOSborderless parameter in Irrlicht
+	// (no need to fall back to exclusive fullscreen)
 	uint32_t antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
     uint32_t directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
 	uint32_t disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
@@ -505,7 +502,7 @@ int main(int argc, char ** argv)
 	if (numberOfContactPointsZ == 0) {
 		numberOfContactPointsZ = 30;
 	}
-    irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
+    bc::graphics::Vec3i numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
 
     float minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
 
@@ -590,7 +587,7 @@ int main(int argc, char ** argv)
 			}
 		}
 		if (graphicsHeight == 0) {
-			if (fullScreen) {
+			if (fullScreen || fakeFullScreen) {
 				graphicsHeight = deskres.Height;
 			}
 			else {
@@ -603,6 +600,9 @@ int main(int argc, char ** argv)
 	}
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
+
+	std::cerr << "Resolution: " << graphicsWidth << "x" << graphicsHeight
+	          << " fullScreen=" << fullScreen << " fakeFullScreen=" << fakeFullScreen << std::endl;
 
     // Check if collision warning should be shown
     bool showCollided;
@@ -722,6 +722,11 @@ int main(int argc, char ** argv)
 	deviceParameters.X11borderless=true; //Has an effect on X11 only
     }
     #endif
+    #ifdef __APPLE__
+    if (fakeFullScreen) {
+	deviceParameters.MacOSborderless=true;
+    }
+    #endif
 
     //create device
     deviceParameters.DriverType = irr::video::EDT_OPENGL;
@@ -795,6 +800,7 @@ int main(int argc, char ** argv)
 
 	uint32_t su = driver->getScreenSize().Width;
 	uint32_t sh = driver->getScreenSize().Height;
+	std::cerr << "Driver screen size: " << su << "x" << sh << std::endl;
 
 	//set size of camera window, based on actual window
 	graphicsWidth = su;
@@ -1137,6 +1143,11 @@ int main(int argc, char ** argv)
 //    Profiler renderFinishProfile("Render finish");
 
 	sound.StartSound();
+
+    // Enable HRTF for VR mode (requires OpenAL Soft, not macOS built-in)
+    if (vr3dMode) {
+        sound.enableHRTF();
+    }
 
     //main loop
     while(device->run())

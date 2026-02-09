@@ -174,6 +174,53 @@ TEST_CASE("light sequence Occulting", "[chartreader]") {
     for (int i = 12; i < 16; i++) REQUIRE(seq[i] == 'D');
 }
 
+// ── DepthArea / Sounding / CoastlineSegment struct tests ────────────────────
+
+TEST_CASE("DepthArea struct default construction", "[chartreader]") {
+    DepthArea area;
+    area.minDepth = 3.5;
+    area.maxDepth = 10.0;
+    area.boundary.push_back({-122.55, 48.36});
+    area.boundary.push_back({-122.54, 48.36});
+    area.boundary.push_back({-122.54, 48.37});
+    area.boundary.push_back({-122.55, 48.37});
+    area.boundary.push_back({-122.55, 48.36}); // Closed ring
+
+    REQUIRE(area.minDepth == 3.5);
+    REQUIRE(area.maxDepth == 10.0);
+    REQUIRE(area.boundary.size() == 5);
+    REQUIRE(area.boundary.front().longitude == area.boundary.back().longitude);
+    REQUIRE(area.boundary.front().latitude == area.boundary.back().latitude);
+}
+
+TEST_CASE("Sounding struct stores depth correctly", "[chartreader]") {
+    Sounding s;
+    s.longitude = -122.5234;
+    s.latitude = 48.3678;
+    s.depth = 12.7;
+
+    REQUIRE(s.longitude == Approx(-122.5234));
+    REQUIRE(s.latitude == Approx(48.3678));
+    REQUIRE(s.depth == Approx(12.7));
+}
+
+TEST_CASE("CoastlineSegment stores polyline", "[chartreader]") {
+    CoastlineSegment seg;
+    seg.points.push_back({-122.60, 48.30});
+    seg.points.push_back({-122.58, 48.32});
+    seg.points.push_back({-122.55, 48.35});
+
+    REQUIRE(seg.points.size() == 3);
+    REQUIRE(seg.points[0].longitude == Approx(-122.60));
+    REQUIRE(seg.points[2].latitude == Approx(48.35));
+}
+
+TEST_CASE("ChartPoint stores coordinates", "[chartreader]") {
+    ChartPoint pt{-122.5, 48.4};
+    REQUIRE(pt.longitude == Approx(-122.5));
+    REQUIRE(pt.latitude == Approx(48.4));
+}
+
 // ── generateBuoyIni ─────────────────────────────────────────────────────────
 
 TEST_CASE("generateBuoyIni formats correctly", "[chartreader]") {
@@ -202,6 +249,88 @@ TEST_CASE("generateBuoyIni formats correctly", "[chartreader]") {
     REQUIRE(ini.find("Grounded(2)=1") != std::string::npos);
     // Buoy 1 (can) should NOT have Grounded
     REQUIRE(ini.find("Grounded(1)") == std::string::npos);
+}
+
+// ── mapLandmarkType ─────────────────────────────────────────────────────────
+
+TEST_CASE("mapLandmarkType LNDMRK chimney", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 3; // chimney
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "Chimneys");
+}
+
+TEST_CASE("mapLandmarkType LNDMRK tower", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 17; // tower
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "Tower");
+}
+
+TEST_CASE("mapLandmarkType LNDMRK mast", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 7; // mast
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "Masts");
+}
+
+TEST_CASE("mapLandmarkType LNDMRK flagstaff", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 5; // flagstaff
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "Flagstaff");
+}
+
+TEST_CASE("mapLandmarkType LNDMRK windmotor", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 19; // windmotor
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "Masts");
+}
+
+TEST_CASE("mapLandmarkType LNDMRK unknown defaults to House", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "LNDMRK";
+    lm.category = 99; // unknown
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "House");
+}
+
+TEST_CASE("mapLandmarkType BUISGL always House", "[chartreader]") {
+    ChartLandmark lm{};
+    lm.layerName = "BUISGL";
+    lm.category = 17; // tower (should still be House for BUISGL)
+    REQUIRE(ChartReader::mapLandmarkType(lm) == "House");
+}
+
+// ── generateLandObjectIni ───────────────────────────────────────────────────
+
+TEST_CASE("generateLandObjectIni formats correctly", "[chartreader]") {
+    std::vector<ChartLandmark> landmarks;
+
+    ChartLandmark lm1{};
+    lm1.longitude = -122.5550000;
+    lm1.latitude = 48.3650000;
+    lm1.layerName = "LNDMRK";
+    lm1.category = 17; // tower
+    lm1.height = 25.0;
+    landmarks.push_back(lm1);
+
+    ChartLandmark lm2{};
+    lm2.longitude = -122.5480000;
+    lm2.latitude = 48.3700000;
+    lm2.layerName = "BUISGL";
+    lm2.category = 0;
+    lm2.height = 0; // no height
+    landmarks.push_back(lm2);
+
+    std::string ini = ChartReader::generateLandObjectIni(landmarks);
+    REQUIRE(ini.find("Number=2") != std::string::npos);
+    REQUIRE(ini.find("Type(1)=Tower") != std::string::npos);
+    REQUIRE(ini.find("Type(2)=House") != std::string::npos);
+    REQUIRE(ini.find("HeightAbove(1)=25.0") != std::string::npos);
+    // Landmark 2 has no height, so HeightAbove(2) should not appear
+    REQUIRE(ini.find("HeightAbove(2)") == std::string::npos);
+    REQUIRE(ini.find("Rotation(1)=0") != std::string::npos);
 }
 
 #endif // WITH_GDAL

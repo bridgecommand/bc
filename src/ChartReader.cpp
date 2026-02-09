@@ -187,6 +187,314 @@ std::vector<ChartLight> ChartReader::extractLights() {
     return lights;
 }
 
+std::vector<DepthArea> ChartReader::extractDepthAreas() {
+    std::vector<DepthArea> areas;
+
+    if (!dataset) return areas;
+
+    OGRLayer* layer = dataset->GetLayerByName("DEPARE");
+    if (!layer) return areas;
+
+    layer->ResetReading();
+    OGRFeature* feature;
+    while ((feature = layer->GetNextFeature()) != nullptr) {
+        OGRGeometry* geom = feature->GetGeometryRef();
+        if (!geom) {
+            OGRFeature::DestroyFeature(feature);
+            continue;
+        }
+
+        // DEPARE can be Polygon or MultiPolygon
+        OGRwkbGeometryType gtype = wkbFlatten(geom->getGeometryType());
+        if (gtype != wkbPolygon && gtype != wkbMultiPolygon) {
+            OGRFeature::DestroyFeature(feature);
+            continue;
+        }
+
+        DepthArea area;
+        int idx;
+        idx = feature->GetFieldIndex("DRVAL1");
+        area.minDepth = (idx >= 0) ? feature->GetFieldAsDouble(idx) : 0.0;
+
+        idx = feature->GetFieldIndex("DRVAL2");
+        area.maxDepth = (idx >= 0) ? feature->GetFieldAsDouble(idx) : 0.0;
+
+        // Extract outer ring points from the polygon(s)
+        auto extractRing = [](const OGRPolygon* poly, std::vector<ChartPoint>& pts) {
+            const OGRLinearRing* ring = poly->getExteriorRing();
+            if (!ring) return;
+            for (int i = 0; i < ring->getNumPoints(); i++) {
+                pts.push_back({ring->getX(i), ring->getY(i)});
+            }
+        };
+
+        if (gtype == wkbPolygon) {
+            extractRing(static_cast<const OGRPolygon*>(geom), area.boundary);
+            areas.push_back(area);
+        } else {
+            // MultiPolygon: emit one DepthArea per sub-polygon
+            const OGRMultiPolygon* mp = static_cast<const OGRMultiPolygon*>(geom);
+            for (int i = 0; i < mp->getNumGeometries(); i++) {
+                DepthArea subArea;
+                subArea.minDepth = area.minDepth;
+                subArea.maxDepth = area.maxDepth;
+                extractRing(static_cast<const OGRPolygon*>(mp->getGeometryRef(i)),
+                            subArea.boundary);
+                areas.push_back(subArea);
+            }
+        }
+
+        OGRFeature::DestroyFeature(feature);
+    }
+
+    return areas;
+}
+
+std::vector<Sounding> ChartReader::extractSoundings() {
+    std::vector<Sounding> soundings;
+
+    if (!dataset) return soundings;
+
+    OGRLayer* layer = dataset->GetLayerByName("SOUNDG");
+    if (!layer) return soundings;
+
+    layer->ResetReading();
+    OGRFeature* feature;
+    while ((feature = layer->GetNextFeature()) != nullptr) {
+        OGRGeometry* geom = feature->GetGeometryRef();
+        if (!geom) {
+            OGRFeature::DestroyFeature(feature);
+            continue;
+        }
+
+        // With SPLIT_MULTIPOINT=ON, soundings are individual points
+        // With ADD_SOUNDG_DEPTH=ON, the Z value is also in a DEPTH field
+        OGRwkbGeometryType gtype = wkbFlatten(geom->getGeometryType());
+
+        if (gtype == wkbPoint) {
+            OGRPoint* pt = static_cast<OGRPoint*>(geom);
+            Sounding s;
+            s.longitude = pt->getX();
+            s.latitude = pt->getY();
+
+            // Prefer DEPTH attribute (added by ADD_SOUNDG_DEPTH=ON)
+            int idx = feature->GetFieldIndex("DEPTH");
+            if (idx >= 0) {
+                s.depth = feature->GetFieldAsDouble(idx);
+            } else {
+                // Fall back to Z coordinate
+                s.depth = pt->getZ();
+            }
+
+            soundings.push_back(s);
+        } else if (gtype == wkbMultiPoint) {
+            // Fallback if SPLIT_MULTIPOINT wasn't applied
+            const OGRMultiPoint* mp = static_cast<const OGRMultiPoint*>(geom);
+            for (int i = 0; i < mp->getNumGeometries(); i++) {
+                const OGRPoint* pt = static_cast<const OGRPoint*>(mp->getGeometryRef(i));
+                Sounding s;
+                s.longitude = pt->getX();
+                s.latitude = pt->getY();
+                s.depth = pt->getZ();
+                soundings.push_back(s);
+            }
+        }
+
+        OGRFeature::DestroyFeature(feature);
+    }
+
+    return soundings;
+}
+
+std::vector<CoastlineSegment> ChartReader::extractCoastlines() {
+    std::vector<CoastlineSegment> coastlines;
+
+    if (!dataset) return coastlines;
+
+    // Try both COALNE (coastline) and LNDARE (land area) layers
+    const char* coastLayers[] = {"COALNE", "LNDARE", nullptr};
+
+    for (int li = 0; coastLayers[li] != nullptr; li++) {
+        OGRLayer* layer = dataset->GetLayerByName(coastLayers[li]);
+        if (!layer) continue;
+
+        layer->ResetReading();
+        OGRFeature* feature;
+        while ((feature = layer->GetNextFeature()) != nullptr) {
+            OGRGeometry* geom = feature->GetGeometryRef();
+            if (!geom) {
+                OGRFeature::DestroyFeature(feature);
+                continue;
+            }
+
+            OGRwkbGeometryType gtype = wkbFlatten(geom->getGeometryType());
+
+            auto extractLineString = [](const OGRLineString* ls, CoastlineSegment& seg) {
+                for (int i = 0; i < ls->getNumPoints(); i++) {
+                    seg.points.push_back({ls->getX(i), ls->getY(i)});
+                }
+            };
+
+            if (gtype == wkbLineString) {
+                CoastlineSegment seg;
+                extractLineString(static_cast<const OGRLineString*>(geom), seg);
+                if (!seg.points.empty()) coastlines.push_back(seg);
+            } else if (gtype == wkbMultiLineString) {
+                const OGRMultiLineString* mls = static_cast<const OGRMultiLineString*>(geom);
+                for (int i = 0; i < mls->getNumGeometries(); i++) {
+                    CoastlineSegment seg;
+                    extractLineString(
+                        static_cast<const OGRLineString*>(mls->getGeometryRef(i)), seg);
+                    if (!seg.points.empty()) coastlines.push_back(seg);
+                }
+            } else if (gtype == wkbPolygon) {
+                // LNDARE uses polygons - extract outer ring as coastline
+                const OGRPolygon* poly = static_cast<const OGRPolygon*>(geom);
+                const OGRLinearRing* ring = poly->getExteriorRing();
+                if (ring) {
+                    CoastlineSegment seg;
+                    for (int i = 0; i < ring->getNumPoints(); i++) {
+                        seg.points.push_back({ring->getX(i), ring->getY(i)});
+                    }
+                    if (!seg.points.empty()) coastlines.push_back(seg);
+                }
+            } else if (gtype == wkbMultiPolygon) {
+                const OGRMultiPolygon* mp = static_cast<const OGRMultiPolygon*>(geom);
+                for (int i = 0; i < mp->getNumGeometries(); i++) {
+                    const OGRPolygon* poly =
+                        static_cast<const OGRPolygon*>(mp->getGeometryRef(i));
+                    const OGRLinearRing* ring = poly->getExteriorRing();
+                    if (ring) {
+                        CoastlineSegment seg;
+                        for (int j = 0; j < ring->getNumPoints(); j++) {
+                            seg.points.push_back({ring->getX(j), ring->getY(j)});
+                        }
+                        if (!seg.points.empty()) coastlines.push_back(seg);
+                    }
+                }
+            }
+
+            OGRFeature::DestroyFeature(feature);
+        }
+    }
+
+    return coastlines;
+}
+
+std::vector<ChartLandmark> ChartReader::extractLandmarks() {
+    std::vector<ChartLandmark> landmarks;
+
+    if (!dataset) return landmarks;
+
+    // LNDMRK = landmarks (towers, chimneys, monuments, etc.)
+    // BUISGL = single buildings
+    const char* landmarkLayers[] = {"LNDMRK", "BUISGL", nullptr};
+
+    for (int li = 0; landmarkLayers[li] != nullptr; li++) {
+        OGRLayer* layer = dataset->GetLayerByName(landmarkLayers[li]);
+        if (!layer) continue;
+
+        layer->ResetReading();
+        OGRFeature* feature;
+        while ((feature = layer->GetNextFeature()) != nullptr) {
+            OGRGeometry* geom = feature->GetGeometryRef();
+            if (!geom) {
+                OGRFeature::DestroyFeature(feature);
+                continue;
+            }
+
+            // Landmarks are typically points; buildings may be polygons (use centroid)
+            double lon = 0, lat = 0;
+            OGRwkbGeometryType gtype = wkbFlatten(geom->getGeometryType());
+            if (gtype == wkbPoint) {
+                OGRPoint* pt = static_cast<OGRPoint*>(geom);
+                lon = pt->getX();
+                lat = pt->getY();
+            } else {
+                // For polygon buildings, use centroid
+                OGRPoint centroid;
+                if (geom->Centroid(&centroid) == OGRERR_NONE) {
+                    lon = centroid.getX();
+                    lat = centroid.getY();
+                } else {
+                    OGRFeature::DestroyFeature(feature);
+                    continue;
+                }
+            }
+
+            ChartLandmark lm;
+            lm.longitude = lon;
+            lm.latitude = lat;
+            lm.layerName = landmarkLayers[li];
+
+            int idx;
+            idx = feature->GetFieldIndex("CATLMK");
+            lm.category = (idx >= 0) ? feature->GetFieldAsInteger(idx) : 0;
+
+            idx = feature->GetFieldIndex("HEIGHT");
+            lm.height = (idx >= 0) ? feature->GetFieldAsDouble(idx) : 0.0;
+
+            idx = feature->GetFieldIndex("OBJNAM");
+            lm.name = (idx >= 0) ? feature->GetFieldAsString(idx) : "";
+
+            landmarks.push_back(lm);
+            OGRFeature::DestroyFeature(feature);
+        }
+    }
+
+    return landmarks;
+}
+
+std::vector<UrbanArea> ChartReader::extractUrbanAreas() {
+    std::vector<UrbanArea> areas;
+    if (!dataset) return areas;
+
+    // BUAARE = Built-up Area in S-57
+    const char* layerName = "BUAARE";
+    OGRLayer* layer = dataset->GetLayerByName(layerName);
+    if (!layer) return areas;
+
+    layer->ResetReading();
+    OGRFeature* feature = nullptr;
+    while ((feature = layer->GetNextFeature()) != nullptr) {
+        OGRGeometry* geom = feature->GetGeometryRef();
+        if (!geom) {
+            OGRFeature::DestroyFeature(feature);
+            continue;
+        }
+
+        auto extractRing = [](const OGRLinearRing* ring, UrbanArea& ua) {
+            int nPoints = ring->getNumPoints();
+            for (int i = 0; i < nPoints; i++) {
+                ChartPoint pt;
+                pt.longitude = ring->getX(i);
+                pt.latitude = ring->getY(i);
+                ua.boundary.push_back(pt);
+            }
+        };
+
+        OGRwkbGeometryType type = wkbFlatten(geom->getGeometryType());
+        if (type == wkbPolygon) {
+            OGRPolygon* poly = static_cast<OGRPolygon*>(geom);
+            UrbanArea ua;
+            extractRing(poly->getExteriorRing(), ua);
+            if (!ua.boundary.empty()) areas.push_back(ua);
+        } else if (type == wkbMultiPolygon) {
+            OGRMultiPolygon* mp = static_cast<OGRMultiPolygon*>(geom);
+            for (int i = 0; i < mp->getNumGeometries(); i++) {
+                OGRPolygon* poly = static_cast<OGRPolygon*>(mp->getGeometryRef(i));
+                UrbanArea ua;
+                extractRing(poly->getExteriorRing(), ua);
+                if (!ua.boundary.empty()) areas.push_back(ua);
+            }
+        }
+
+        OGRFeature::DestroyFeature(feature);
+    }
+
+    return areas;
+}
+
 // ── Buoy type mapping ──────────────────────────────────────────────────────
 
 std::string ChartReader::mapBuoyType(const ChartBuoy& buoy) {
@@ -241,6 +549,60 @@ std::string ChartReader::mapBuoyType(const ChartBuoy& buoy) {
 
     // Default fallback
     return "port_small";
+}
+
+// ── Landmark type mapping ─────────────────────────────────────────────────
+
+std::string ChartReader::mapLandmarkType(const ChartLandmark& landmark) {
+    // BUISGL (buildings) default to House
+    if (landmark.layerName == "BUISGL") {
+        return "House";
+    }
+
+    // Map S-57 CATLMK codes to available BC LandObject model names
+    switch (landmark.category) {
+        case 1:  return "Beacon";     // cairn
+        case 3:  return "Chimneys";   // chimney
+        case 5:  return "Flagstaff";  // flagstaff/flagpole
+        case 7:  return "Masts";      // mast
+        case 9:  return "Cross";      // monument
+        case 14: return "Cross";      // cross
+        case 15: return "Church";     // dome
+        case 17: return "Tower";      // tower
+        case 18: return "Masts";      // windmill (no specific model)
+        case 19: return "Masts";      // windmotor (no specific model)
+        case 20: return "Church";     // spire/minaret
+        default: return "House";      // unknown landmark type
+    }
+}
+
+// ── Land object INI generation ────────────────────────────────────────────
+
+std::string ChartReader::generateLandObjectIni(const std::vector<ChartLandmark>& landmarks) {
+    std::ostringstream oss;
+    oss << "Number=" << landmarks.size() << "\n\n";
+
+    for (size_t i = 0; i < landmarks.size(); i++) {
+        int idx = static_cast<int>(i) + 1; // 1-indexed
+        std::string type = mapLandmarkType(landmarks[i]);
+
+        oss << "Type(" << idx << ")=" << type << "\n";
+        oss.precision(7);
+        oss << std::fixed;
+        oss << "Long(" << idx << ")=" << landmarks[i].longitude << "\n";
+        oss << "Lat(" << idx << ")=" << landmarks[i].latitude << "\n";
+
+        // Height above ground (0 means use model default)
+        if (landmarks[i].height > 0) {
+            oss.precision(1);
+            oss << "HeightAbove(" << idx << ")=" << landmarks[i].height << "\n";
+        }
+
+        oss << "Rotation(" << idx << ")=0\n";
+        oss << "\n";
+    }
+
+    return oss.str();
 }
 
 // ── Light sequence generation ──────────────────────────────────────────────

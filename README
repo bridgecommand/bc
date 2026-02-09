@@ -9,11 +9,50 @@ For more information, see https://www.bridgecommand.co.uk
 To compile
 ----------
 
-For Windows, Visual Studio 2022 (or greater) and Code::Blocks are used 
+For Windows, Visual Studio 2022 (or greater) and Code::Blocks are used
 and tested. Project files for both are in the src folder.
 
-For Linux and macOS, CMake is used. Please see the instructions in 
-src/CompilingLinuxAndMac.txt 
+For Linux and macOS, CMake is used. Please see the instructions in
+src/CompilingLinuxAndMac.txt
+
+Optional build dependencies
+---------------------------
+
+These are optional and enable additional features when present:
+
+* GDAL (Geospatial Data Abstraction Library) - enables the S-57 chart
+  converter tool (bc-chart-converter). Build with -DWITH_GDAL=ON.
+  Install via: apt install libgdal-dev (Linux), brew install gdal (macOS),
+  or download from https://gdal.org (Windows).
+
+* OpenAL Soft - enables spatial 3D audio with HRTF support.
+  Build with -DWITH_OPENAL=ON. Also requires libsndfile.
+  Install via: apt install libopenal-dev libsndfile1-dev (Linux),
+  brew install openal-soft libsndfile (macOS).
+
+MMG Physics Model
+-----------------
+
+Ships can use the MMG (Maneuvering Modeling Group) physics model for
+higher-fidelity handling. Enable per-ship by adding MMGMode=1 to the
+ship's boat.ini file. See docs/SHIP_COEFFICIENTS.md for details on
+available parameters and per-ship coefficient data.
+
+Chart Converter
+---------------
+
+When built with GDAL support, the bc-chart-converter tool converts
+S-57 electronic nautical chart files (.000) into Bridge Command world
+directories. Usage:
+
+  bc-chart-converter --input <chart.000> --output <world_dir/> [options]
+
+Options:
+  --resolution <N>     Heightmap resolution (default: 1025)
+  --dem-dir <path>     Directory with Copernicus DEM .tif tiles
+  --bathy-dir <path>   Directory with BlueTopo .tif bathymetry tiles
+
+See docs/UPGRADE_PLAN.md for more information.
 
 Licence
 -------

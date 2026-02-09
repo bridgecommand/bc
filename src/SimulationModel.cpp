@@ -193,10 +193,7 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         zoomLevel = 7.0; //Default zoom of 7x
 
         //make a camera, setting parent and offset
-        std::vector<irr::core::vector3df> irrViews = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
-        std::vector<bc::graphics::Vec3> views;
-        views.reserve(irrViews.size());
-        for (const auto& v : irrViews) { views.emplace_back(v.X, v.Y, v.Z); }
+        std::vector<bc::graphics::Vec3> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
         std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
         float angleCorrection = ownShip.getAngleCorrection();
         camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(modelParameters.viewAngle),modelParameters.lookAngle,angleCorrection);
@@ -227,18 +224,18 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //Set up 3d engine/wheel controls/visualisation
         if (isAzimuthDrive()) {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getPortEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getStbdEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 1, 2);
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2);
             portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), bc::graphics::Vec3(0,0,0), 1.0, 0, 3); // 3 = schottel lever
             stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), bc::graphics::Vec3(0,0,0), 1.0, 0, 3);
         } else {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getPortEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getStbdEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 0, 0);
-            wheelVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getWheelControlPosition()), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
+            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
         }
 
         //make a radar screen, setting parent and offset from own ship
-        radarScreen.load(smgr,ownShip.getSceneNode(), fromIrrVec(ownShip.getScreenDisplayPosition()), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
+        radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
@@ -258,9 +255,9 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         //make radar camera
 		std::vector<bool> radarViewsLookDown; //Not needed for the radar camera, but needed for compatability
         float screenTilt = ownShip.getScreenDisplayTilt();
-        irr::core::vector3df radarViewIrr = ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize());
+        bc::graphics::Vec3 radarView = ownShip.getScreenDisplayPosition() + bc::graphics::Vec3(0, 0.5f*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(), -0.5f*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize());
         std::vector<bc::graphics::Vec3> radarViews;
-        radarViews.emplace_back(radarViewIrr.X, radarViewIrr.Y, radarViewIrr.Z);
+        radarViews.push_back(radarView);
         radarViewsLookDown.push_back(false);
         radarCamera.load(smgr, device->getLogger(),ownShip.getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
 		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
@@ -1920,7 +1917,7 @@ SimulationModel::~SimulationModel()
         lines.update(deltaTime);
         }{ IPROF("Update own ship");
         //update own ship
-        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, toIrrVec(lines.getOverallForceLocal()), toIrrVec(lines.getOverallTorqueLocal()));
+        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
 
         }{ IPROF("Update MOB");
         //update man overboard

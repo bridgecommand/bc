@@ -17,11 +17,10 @@
 #ifndef __OWNSHIP_HPP_INCLUDED__
 #define __OWNSHIP_HPP_INCLUDED__
 
-#include "irrlicht.h"
-
 #include <memory>
 #include <vector>
 
+#include "graphics/Types.hpp"
 #include "Ship.hpp"
 #include "MMGPhysicsModel.hpp"
 
@@ -30,11 +29,20 @@ class SimulationModel;
 class OwnShipData;
 class Terrain;
 
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene {
+        class ISceneManager;
+        class ITriangleSelector;
+        class IMeshSceneNode;
+    }
+}
+
 struct ContactPoint
 {
-        irr::core::vector3df position; // position of the point on the ship's hull/outer surface
-        irr::core::vector3df normal;
-        irr::core::vector3df internalPosition; // Position within the ship, for use as a starting point for ray intersection checks
+        bc::graphics::Vec3 position; // position of the point on the ship's hull/outer surface
+        bc::graphics::Vec3 normal;
+        bc::graphics::Vec3 internalPosition; // Position within the ship, for use as a starting point for ray intersection checks
         float torqueEffect;                 // From cross product, how much a unit force along the contact vector gives a torque around the vertical axis
         float effectiveArea;                // Contact area represented (in m2)
 };
@@ -42,9 +50,9 @@ struct ContactPoint
 class OwnShip : public Ship
 {
 public:
-        void load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, float minContactPointSpacing, float contactStiffnessFactor, float contactDampingFactor, float frictionCoefficient, float tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev);
-        void update(float deltaTime, float scenarioTime, float tideHeight, float weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque);
-        std::vector<irr::core::vector3df> getCameraViews() const;
+        void load(OwnShipData ownShipData, bc::graphics::Vec3i numberOfContactPoints, float minContactPointSpacing, float contactStiffnessFactor, float contactDampingFactor, float frictionCoefficient, float tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev);
+        void update(float deltaTime, float scenarioTime, float tideHeight, float weather, bc::graphics::Vec3 linesForce, bc::graphics::Vec3 linesTorque);
+        std::vector<bc::graphics::Vec3> getCameraViews() const;
         std::vector<bool> getCameraIsHighView() const;
         void setViewVisibility(uint32_t view);
         std::string getRadarConfigFile() const;
@@ -97,12 +105,12 @@ public:
         float getSOG() const; // m/s
         float getSpeedThroughWater() const; // m/s
         std::string getBasePath() const;
-        irr::core::vector3df getScreenDisplayPosition() const;
+        bc::graphics::Vec3 getScreenDisplayPosition() const;
         float getScreenDisplaySize() const;
         float getScreenDisplayTilt() const;
-        irr::core::vector3df getPortEngineControlPosition() const;
-        irr::core::vector3df getStbdEngineControlPosition() const;
-        irr::core::vector3df getWheelControlPosition() const;
+        bc::graphics::Vec3 getPortEngineControlPosition() const;
+        bc::graphics::Vec3 getStbdEngineControlPosition() const;
+        bc::graphics::Vec3 getWheelControlPosition() const;
         float getWheelControlScale() const;
         bool isSingleEngine() const;
         bool isAzimuthDrive() const;
@@ -163,10 +171,10 @@ private:
         float requiredEngineProportion(float speed);
         float sign(float inValue) const;
         float sign(float inValue, float threshold) const;
-        void addContactPointFromRay(irr::core::line3d<float> ray, float contactArea);
+        void addContactPointFromRay(bc::graphics::Line3d ray, float contactArea);
 
         irr::IrrlichtDevice *device;
-        std::vector<irr::core::vector3df> views; // The offset of the camera origin from the own ship origin
+        std::vector<bc::graphics::Vec3> views; // The offset of the camera origin from the own ship origin
         std::vector<bool> isHighView;            // Should be the same size as views (todo: Make this into a struct with views)
         std::string radarConfigFile;
         std::string basePath; // The location the model is loaded from
@@ -319,13 +327,13 @@ private:
         bool depthSounder;
         float maxSounderDepth;
 
-        irr::core::vector3df screenDisplayPosition;
+        bc::graphics::Vec3 screenDisplayPosition;
         float screenDisplaySize;
         float screenDisplayTilt;
 
-        irr::core::vector3df portThrottlePosition;
-        irr::core::vector3df stbdThrottlePosition;
-        irr::core::vector3df wheelControlPosition;
+        bc::graphics::Vec3 portThrottlePosition;
+        bc::graphics::Vec3 stbdThrottlePosition;
+        bc::graphics::Vec3 wheelControlPosition;
         float wheelControlScale;
 
         // MMG physics model (optional, enabled by MMGMode=1 in boat.ini)
@@ -343,7 +351,7 @@ private:
         float frictionCoefficient;
         float tanhFrictionFactor;
 
-        irr::scene::ITriangleSelector *selector;
+        irr::scene::ITriangleSelector *selector; // Irrlicht collision detection
         bool triangleSelectorEnabled; // Keep track of this so we don't keep re-setting the selector
 
         // Debugging

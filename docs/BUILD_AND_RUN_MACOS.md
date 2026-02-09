@@ -32,6 +32,7 @@ The build produces these binaries in `build/`:
 
 | Binary | Description |
 |--------|-------------|
+| `bridgecommand` | Launcher (scenario picker) |
 | `bridgecommand-bc` | Main simulator |
 | `bridgecommand-ed` | Scenario editor |
 | `bridgecommand-mc` | Map controller |
@@ -46,16 +47,17 @@ The build produces these binaries in `build/`:
 ./build/bc-tests
 ```
 
-All tests should pass (currently 68 tests, 184 assertions).
+All tests should pass (currently 89 tests, 235 assertions).
 
 ## Run the Simulator
 
 On macOS, Bridge Command requires an app bundle to launch (Irrlicht needs NSApplication/NIB).
 
-### Copy built binary into app bundle
+### Copy built binaries into app bundle
 
 ```bash
-cp build/bridgecommand-bc bin/BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/bc
+cp build/bridgecommand    bin/BridgeCommand.app/Contents/MacOS/BridgeCommand
+cp build/bridgecommand-bc bin/BridgeCommand.app/Contents/MacOS/bc.app/Contents/MacOS/bc
 ```
 
 ### Launch
@@ -66,18 +68,38 @@ open bin/BridgeCommand.app
 
 Or double-click `bin/BridgeCommand.app` in Finder.
 
-### Data Files
+### App Bundle Structure
 
-Runtime data (scenarios, ship models, world maps, sounds) lives in:
+The app bundle must have this structure (nested apps under `Contents/MacOS/`, not `Helpers/`):
 
 ```
-bin/BridgeCommand.app/Contents/Resources/
-    Models/      - Ship and buoy 3D models
-    Scenarios/   - Scenario definitions
-    Sounds/      - Audio files (engine, wave, horn, alarm)
-    World/       - World terrain, heightmaps, textures
-    bc5.ini      - Configuration file
+bin/BridgeCommand.app/
+  Contents/
+    Info.plist
+    MacOS/
+      BridgeCommand        <-- Launcher binary
+      bc.app/              <-- Simulator (nested app)
+        Contents/MacOS/bc
+      ed.app/              <-- Editor
+        Contents/MacOS/ed
+      mc.app/              <-- Map controller
+        Contents/MacOS/mc
+      mh.app/              <-- Multiplayer hub
+        Contents/MacOS/mh
+      rp.app/              <-- Repeater
+        Contents/MacOS/rp
+      ini.app/             <-- INI editor
+        Contents/MacOS/ini
+    Resources/
+      Models/    - Ship and buoy 3D models
+      Scenarios/ - Scenario definitions
+      Sounds/    - Audio files (engine, wave, horn, alarm)
+      World/     - World terrain, heightmaps, textures
+      bc5.ini    - Configuration file
 ```
+
+The simulator binary navigates from its location up to `Contents/Resources/` to find data files
+(`../../../../Resources` from `MacOS/bc.app/Contents/MacOS/`).
 
 The `bc5.ini` in the app bundle is the template. User overrides go to `~/Library/Application Support/Bridge Command/bc5.ini` (created on first run).
 
@@ -96,22 +118,14 @@ debug_mode=1             # Show debug info overlay
 
 ## Companion Tools
 
-The other executables also need app bundles to run. They are nested in the same structure:
-
-```
-bin/BridgeCommand.app/Contents/Helpers/
-    bc.app/   - Main simulator
-    ed.app/   - Editor
-    mc.app/   - Map controller
-    mh.app/   - Multiplayer hub
-    rp.app/   - Repeater
-    ini.app/  - INI editor
-```
-
-To update a companion tool:
+To update a companion tool after rebuilding:
 
 ```bash
-cp build/bridgecommand-ed bin/BridgeCommand.app/Contents/Helpers/ed.app/Contents/MacOS/ed
+cp build/bridgecommand-ed bin/BridgeCommand.app/Contents/MacOS/ed.app/Contents/MacOS/ed
+cp build/bridgecommand-mc bin/BridgeCommand.app/Contents/MacOS/mc.app/Contents/MacOS/mc
+cp build/bridgecommand-mh bin/BridgeCommand.app/Contents/MacOS/mh.app/Contents/MacOS/mh
+cp build/bridgecommand-rp bin/BridgeCommand.app/Contents/MacOS/rp.app/Contents/MacOS/rp
+cp build/bridgecommand-ini bin/BridgeCommand.app/Contents/MacOS/ini.app/Contents/MacOS/ini
 ```
 
 ## Notes

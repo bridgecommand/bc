@@ -660,3 +660,280 @@ TEST_CASE("SIMMAN: Turning symmetry (port vs starboard)", "[mmg][simman]") {
     // Allow 20% asymmetry (gamma_R_positive != gamma_R_negative causes some)
     REQUIRE(fabs(hdgStbd + hdgPort) < 0.3 * fabs(hdgStbd));
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Phase 8: Advanced physics tests
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── 8-01: Shallow water effects ─────────────────────────────────────────────
+
+TEST_CASE("Shallow water factor is 1.0 in deep water", "[mmg][shallow]") {
+    REQUIRE(MMGPhysicsModel::shallowWaterFactor(10.0) == Approx(1.0));
+    REQUIRE(MMGPhysicsModel::shallowWaterFactor(5.0) == Approx(1.0));
+    REQUIRE(MMGPhysicsModel::shallowWaterFactor(4.0) == Approx(1.0));
+}
+
+TEST_CASE("Shallow water factor increases as depth decreases", "[mmg][shallow]") {
+    double f4 = MMGPhysicsModel::shallowWaterFactor(4.0);
+    double f3 = MMGPhysicsModel::shallowWaterFactor(3.0);
+    double f2 = MMGPhysicsModel::shallowWaterFactor(2.0);
+    double f15 = MMGPhysicsModel::shallowWaterFactor(1.5);
+    double f12 = MMGPhysicsModel::shallowWaterFactor(1.2);
+
+    REQUIRE(f3 > f4);
+    REQUIRE(f2 > f3);
+    REQUIRE(f15 > f2);
+    REQUIRE(f12 > f15);
+
+    // At h/T=1.2 (very shallow), factor should be significant (>1.5x)
+    REQUIRE(f12 > 1.5);
+    // But not unreasonably large
+    REQUIRE(f12 < 5.0);
+}
+
+TEST_CASE("Shallow water factor handles extreme values", "[mmg][shallow]") {
+    // Very deep water
+    REQUIRE(MMGPhysicsModel::shallowWaterFactor(100.0) == Approx(1.0));
+    // Near grounding (clamped to 1.05)
+    double fNearGround = MMGPhysicsModel::shallowWaterFactor(1.01);
+    REQUIRE(fNearGround > 1.0);
+    REQUIRE(std::isfinite(fNearGround));
+}
+
+TEST_CASE("Barras squat is zero in deep water", "[mmg][shallow]") {
+    auto model = createKVLCC2();
+    REQUIRE(model.computeSquat(10.0, 10.0) == Approx(0.0));
+    REQUIRE(model.computeSquat(10.0, 5.0) == Approx(0.0));
+}
+
+TEST_CASE("Barras squat increases with speed", "[mmg][shallow]") {
+    auto model = createKVLCC2();
+    double hT = 2.0;
+    double squat5 = model.computeSquat(5.0, hT);
+    double squat10 = model.computeSquat(10.0, hT);
+    double squat15 = model.computeSquat(15.0, hT);
+
+    REQUIRE(squat5 > 0.0);
+    REQUIRE(squat10 > squat5);
+    REQUIRE(squat15 > squat10);
+
+    // At 10 knots with h/T=2.0, squat should be modest (< 2m)
+    REQUIRE(squat10 < 2.0);
+}
+
+TEST_CASE("Barras squat increases in shallower water", "[mmg][shallow]") {
+    auto model = createKVLCC2();
+    double speed = 10.0; // knots
+    double squat3 = model.computeSquat(speed, 3.0);
+    double squat2 = model.computeSquat(speed, 2.0);
+    double squat15 = model.computeSquat(speed, 1.5);
+
+    REQUIRE(squat2 > squat3);
+    REQUIRE(squat15 > squat2);
+}
+
+TEST_CASE("Ship turns wider in shallow water", "[mmg][shallow]") {
+    auto model = createSmallVessel();
+
+    // Get to steady speed
+    PhysicsState stateDeep = simulate(model, PhysicsInput{}, PhysicsState{}, 60.0,
+                                       0.02);
+    // Re-init with engine at 0.8
+    PhysicsInput approach;
+    approach.portEngine = 0.8;
+    stateDeep = simulate(model, approach, PhysicsState{}, 120.0);
+
+    PhysicsState stateShallow = stateDeep;
+
+    // Deep water turn (default depth=100m)
+    PhysicsInput turnDeep;
+    turnDeep.portEngine = 0.8;
+    turnDeep.rudderAngle = 35.0;
+    turnDeep.waterDepth = 100.0; // Deep
+
+    PhysicsState finalDeep = simulate(model, turnDeep, stateDeep, 120.0);
+
+    // Shallow water turn (h/T ~1.5)
+    PhysicsInput turnShallow;
+    turnShallow.portEngine = 0.8;
+    turnShallow.rudderAngle = 35.0;
+    turnShallow.waterDepth = 1.5; // Very shallow (1.5m below keel, draught=3.0m, so h/T=1.5)
+
+    PhysicsState finalShallow = simulate(model, turnShallow, stateShallow, 120.0);
+
+    double deepHeadingChange = cumulativeHeadingChange(
+        simulateTrajectory(model, turnDeep, stateDeep, 120.0));
+    double shallowHeadingChange = cumulativeHeadingChange(
+        simulateTrajectory(model, turnShallow, stateShallow, 120.0));
+
+    INFO("Deep heading change: " << deepHeadingChange);
+    INFO("Shallow heading change: " << shallowHeadingChange);
+
+    // In shallow water, the increased hull forces should reduce rate of turn
+    // So less heading change in the same time = wider turning circle
+    REQUIRE(fabs(shallowHeadingChange) < fabs(deepHeadingChange));
+}
+
+// ── 8-02: Bank effects ──────────────────────────────────────────────────────
+
+TEST_CASE("Bank forces are zero with no banks", "[mmg][bank]") {
+    double Yb, Nb;
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 1000.0, 1000.0, Yb, Nb);
+    REQUIRE(Yb == Approx(0.0));
+    REQUIRE(Nb == Approx(0.0));
+}
+
+TEST_CASE("Bank forces are zero at rest", "[mmg][bank]") {
+    double Yb, Nb;
+    MMGPhysicsModel::computeBankForces(0.0, 100.0, 6.0, 20.0, 20.0, Yb, Nb);
+    REQUIRE(Yb == Approx(0.0));
+    REQUIRE(Nb == Approx(0.0));
+}
+
+TEST_CASE("Port bank attracts ship to port", "[mmg][bank]") {
+    double Yb, Nb;
+    // Close port bank (20m), far starboard bank (1000m)
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 20.0, 1000.0, Yb, Nb);
+
+    // Yb should be negative (attraction to port)
+    REQUIRE(Yb < 0.0);
+    // Nb should be positive (bow pushed to starboard, away from port bank)
+    REQUIRE(Nb > 0.0);
+}
+
+TEST_CASE("Starboard bank attracts ship to starboard", "[mmg][bank]") {
+    double Yb, Nb;
+    // Far port bank, close starboard bank (20m)
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 1000.0, 20.0, Yb, Nb);
+
+    // Yb should be positive (attraction to starboard)
+    REQUIRE(Yb > 0.0);
+    // Nb should be negative (bow pushed to port, away from starboard bank)
+    REQUIRE(Nb < 0.0);
+}
+
+TEST_CASE("Bank force increases closer to bank", "[mmg][bank]") {
+    double Yb1, Nb1, Yb2, Nb2;
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 50.0, 1000.0, Yb1, Nb1);
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 20.0, 1000.0, Yb2, Nb2);
+
+    // Closer bank should produce stronger forces
+    REQUIRE(fabs(Yb2) > fabs(Yb1));
+    REQUIRE(fabs(Nb2) > fabs(Nb1));
+}
+
+TEST_CASE("Symmetric banks produce no net lateral force", "[mmg][bank]") {
+    double Yb, Nb;
+    // Equal distance to both banks
+    MMGPhysicsModel::computeBankForces(5.0, 100.0, 6.0, 30.0, 30.0, Yb, Nb);
+
+    // Forces should cancel out
+    REQUIRE(fabs(Yb) < 0.1);
+    REQUIRE(fabs(Nb) < 0.1);
+}
+
+// ── 8-03: Isherwood wind force model ────────────────────────────────────────
+
+TEST_CASE("Wind forces are zero with no wind", "[mmg][wind]") {
+    double Xw, Yw, Nw;
+    MMGPhysicsModel::computeWindForces(0.0, 0.0, 0.0, 5.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw);
+    REQUIRE(Xw == Approx(0.0));
+    REQUIRE(Yw == Approx(0.0));
+    REQUIRE(Nw == Approx(0.0));
+}
+
+TEST_CASE("Head wind produces drag (negative X)", "[mmg][wind]") {
+    double Xw, Yw, Nw;
+    // Wind from ahead (heading=0, wind from 0 = head wind)
+    MMGPhysicsModel::computeWindForces(20.0, 0.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw);
+    // Head wind should create drag (negative X = slowing down)
+    REQUIRE(Xw < 0.0);
+    // No lateral force from pure head wind
+    REQUIRE(fabs(Yw) < fabs(Xw) * 0.1);
+}
+
+TEST_CASE("Beam wind produces large lateral force", "[mmg][wind]") {
+    double Xw, Yw, Nw;
+    // Wind from starboard beam (heading=0, wind from 90)
+    MMGPhysicsModel::computeWindForces(20.0, 90.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw);
+    // Beam wind should produce strong lateral force
+    REQUIRE(fabs(Yw) > 0.0);
+    // Lateral force should dominate over axial at beam wind
+    REQUIRE(fabs(Yw) > fabs(Xw));
+}
+
+TEST_CASE("Wind force increases with wind speed squared", "[mmg][wind]") {
+    double Xw1, Yw1, Nw1, Xw2, Yw2, Nw2;
+    // 10 m/s beam wind
+    MMGPhysicsModel::computeWindForces(10.0, 90.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw1, Yw1, Nw1);
+    // 20 m/s beam wind (2x speed = ~4x force)
+    MMGPhysicsModel::computeWindForces(20.0, 90.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw2, Yw2, Nw2);
+
+    // Force ratio should be approximately 4x (wind speed squared)
+    double ratio = fabs(Yw2) / fabs(Yw1);
+    REQUIRE(ratio > 3.0);
+    REQUIRE(ratio < 5.0);
+}
+
+TEST_CASE("Tail wind produces forward push", "[mmg][wind]") {
+    double Xw, Yw, Nw;
+    // Wind from stern (heading=0, wind from 180)
+    MMGPhysicsModel::computeWindForces(20.0, 180.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw);
+    // Tail wind should produce forward force (positive X)
+    REQUIRE(Xw > 0.0);
+}
+
+TEST_CASE("Wind yaw moment peaks at oblique angles", "[mmg][wind]") {
+    double Xw, Yw, Nw_head, Nw_beam, Nw_oblique;
+    // Head wind (0°) - minimal yaw
+    MMGPhysicsModel::computeWindForces(20.0, 0.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw_head);
+    // Beam wind (90°) - some yaw
+    MMGPhysicsModel::computeWindForces(20.0, 90.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw_beam);
+    // Oblique wind (45°) - should have significant yaw
+    MMGPhysicsModel::computeWindForces(20.0, 45.0, 0.0, 0.0, 0.0,
+                                         100.0, 16.0, 6.0, 0, 0, 0,
+                                         Xw, Yw, Nw_oblique);
+
+    // Oblique wind should produce more yaw moment than pure head wind
+    REQUIRE(fabs(Nw_oblique) > fabs(Nw_head));
+}
+
+TEST_CASE("Default PhysicsInput has deep water and no banks", "[mmg]") {
+    PhysicsInput input;
+    REQUIRE(input.waterDepth == 100.0);
+    REQUIRE(input.bankDistancePort == 1000.0);
+    REQUIRE(input.bankDistanceStbd == 1000.0);
+    REQUIRE(input.windSpeed == 0.0);
+}
+
+TEST_CASE("Existing deep-water tests unaffected by new inputs", "[mmg]") {
+    // Verify that the new PhysicsInput fields (waterDepth, bank, wind)
+    // with default values don't change deep-water behavior
+    auto model = createSmallVessel();
+    PhysicsState state;
+    PhysicsInput input;
+    input.portEngine = 0.5;
+
+    state = simulate(model, input, state, 60.0);
+
+    // Same as "MMG: engine produces forward motion" test
+    REQUIRE(state.surge > 0.5);
+    REQUIRE(fabs(state.sway) < 0.5);
+    REQUIRE(state.posZ > 10.0);
+}

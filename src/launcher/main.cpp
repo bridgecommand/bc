@@ -32,6 +32,41 @@
 //Mac OS:
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
+#include <spawn.h>
+extern char **environ;
+
+// Launch a .app bundle via /usr/bin/open (proper LaunchServices activation).
+// fork()/posix_spawn to the binary directly doesn't register with the window server,
+// causing beach-ball hangs. Using 'open' goes through LaunchServices instead.
+static void macOpenApp(const char* appPath, const char* extraArg = nullptr) {
+    pid_t pid;
+    int ret;
+    if (extraArg) {
+        char* argv[] = {(char*)"open", (char*)appPath, (char*)"--args", (char*)extraArg, nullptr};
+        ret = posix_spawn(&pid, "/usr/bin/open", nullptr, nullptr, argv, environ);
+    } else {
+        char* argv[] = {(char*)"open", (char*)appPath, nullptr};
+        ret = posix_spawn(&pid, "/usr/bin/open", nullptr, nullptr, argv, environ);
+    }
+    if (ret != 0) {
+        char cwd[1024];
+        getcwd(cwd, sizeof(cwd));
+        std::cerr << "macOpenApp FAILED: app=" << appPath
+                  << " error=" << strerror(ret)
+                  << " cwd=" << cwd << std::endl;
+    }
+}
+
+// Open a file/folder/URL via /usr/bin/open
+static void macOpen(const char* target) {
+    pid_t pid;
+    char* argv[] = {(char*)"open", (char*)target, nullptr};
+    int ret = posix_spawn(&pid, "/usr/bin/open", nullptr, nullptr, argv, environ);
+    if (ret != 0) {
+        std::cerr << "macOpen FAILED: " << target
+                  << " error=" << strerror(ret) << std::endl;
+    }
+}
 #endif
 
 // Irrlicht Namespaces
@@ -75,8 +110,8 @@ public:
                     exit(EXIT_SUCCESS);
                 }
 
-                #ifndef _WIN32
-                int pid = fork();  // posix only (GNU/Linux, MacOS)
+                #if !defined(_WIN32) && !defined(__APPLE__)
+                int pid = fork();  // posix only (GNU/Linux)
                 if (pid > 0) return false;
                 #endif
 
@@ -86,8 +121,7 @@ public:
                         //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/bc.app/Contents/MacOS/bc", "bc", NULL);
+                        macOpenApp("../MacOS/bc.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
@@ -100,8 +134,7 @@ public:
                         //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/mc.app/Contents/MacOS/mc", "mc", NULL);
+                        macOpenApp("../MacOS/mc.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
@@ -114,8 +147,7 @@ public:
                         //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/rp.app/Contents/MacOS/rp", "rp", NULL);
+                        macOpenApp("../MacOS/rp.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
@@ -128,8 +160,7 @@ public:
                         //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/ed.app/Contents/MacOS/ed", "ed", NULL);
+                        macOpenApp("../MacOS/ed.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
@@ -142,8 +173,7 @@ public:
                         //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/mh.app/Contents/MacOS/mh", "mh", NULL);
+                        macOpenApp("../MacOS/mh.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
@@ -156,8 +186,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", NULL);
+                        macOpenApp("../MacOS/ini.app");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
@@ -170,8 +199,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-M", NULL);
+                        macOpenApp("../MacOS/ini.app", "-M");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
@@ -184,8 +212,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-R", NULL);
+                        macOpenApp("../MacOS/ini.app", "-R");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
@@ -198,8 +225,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("../Helpers/ini.app/Contents/MacOS/ini", "ini", "-H", NULL);
+                        macOpenApp("../MacOS/ini.app", "-H");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
@@ -214,8 +240,7 @@ public:
                         //exit(EXIT_SUCCESS);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        execl("/usr/bin/open", "open", "../Resources/doc/index.html", NULL);
+                        macOpen("../Resources/doc/index.html");
                     #else
                         //Other (assumed posix)
                         #ifdef FOR_DEB
@@ -240,9 +265,7 @@ public:
                         //exit(EXIT_SUCCESS);
                     #else
                     #ifdef __APPLE__
-                        //APPLE
-                        std::cout << userFolder << std::endl;
-                        execl("/usr/bin/open", "open", userFolder.c_str(), NULL);
+                        macOpen(userFolder.c_str());
                     #else
                         //Other (assumed posix)
                         execl("/usr/bin/xdg-open", "xdg-open", userFolder.c_str(), NULL);
@@ -344,6 +367,7 @@ int main (int argc, char ** argv)
         std::cout << "Could not get filesystem" << std::endl;
     }
     fileSystem->changeWorkingDirectoryTo(exeFolderPath.c_str());
+    chdir(exeFolderPath.c_str()); // Also restore real OS CWD for posix_spawn
     #endif
 
     device->setWindowCaption(L"Bridge Command");

@@ -63,6 +63,11 @@ public:
     virtual void setSourceVelocity(int id, float vx, float vy, float vz) {
         (void)id; (void)vx; (void)vy; (void)vz;
     }
+
+    // HRTF for VR — no-op for non-spatial backends
+    virtual bool enableHRTF() { return false; }
+    virtual void disableHRTF() {}
+    virtual bool isHRTFEnabled() const { return false; }
 };
 
 #endif // __ISOUND_HPP_INCLUDED__

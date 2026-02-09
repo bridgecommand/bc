@@ -51,6 +51,40 @@ struct ChartLight {
     int buoyIndex;       // -1 if not on a buoy, otherwise index into buoy list
 };
 
+struct ChartPoint {
+    double longitude;
+    double latitude;
+};
+
+struct DepthArea {
+    double minDepth;  // DRVAL1 (metres, positive = below water)
+    double maxDepth;  // DRVAL2 (metres, positive = below water)
+    std::vector<ChartPoint> boundary;  // Outer ring of polygon
+};
+
+struct Sounding {
+    double longitude;
+    double latitude;
+    double depth;  // Metres, positive = below water
+};
+
+struct CoastlineSegment {
+    std::vector<ChartPoint> points;  // Polyline vertices
+};
+
+struct UrbanArea {
+    std::vector<ChartPoint> boundary;  // Outer ring of polygon
+};
+
+struct ChartLandmark {
+    double longitude;
+    double latitude;
+    int category;        // CATLMK (S-57): 1=cairn, 3=chimney, 5=flagstaff, 7=mast, 9=monument, 17=tower, 18=windmill, 19=windmotor, 20=spire
+    double height;       // HEIGHT in metres (0 if unknown)
+    std::string name;    // OBJNAM if present
+    std::string layerName; // LNDMRK or BUISGL
+};
+
 class ChartReader {
 public:
     ChartReader();
@@ -62,6 +96,11 @@ public:
     // Extract features from the opened chart
     std::vector<ChartBuoy> extractBuoys();
     std::vector<ChartLight> extractLights();
+    std::vector<DepthArea> extractDepthAreas();
+    std::vector<Sounding> extractSoundings();
+    std::vector<CoastlineSegment> extractCoastlines();
+    std::vector<ChartLandmark> extractLandmarks();
+    std::vector<UrbanArea> extractUrbanAreas();
 
     // Map S-57 buoy data to Bridge Command buoy model name
     static std::string mapBuoyType(const ChartBuoy& buoy);
@@ -70,6 +109,12 @@ public:
     static std::string generateBuoyIni(const std::vector<ChartBuoy>& buoys);
     static std::string generateLightIni(const std::vector<ChartBuoy>& buoys,
                                          const std::vector<ChartLight>& lights);
+
+    // Map S-57 CATLMK to Bridge Command LandObject model name
+    static std::string mapLandmarkType(const ChartLandmark& landmark);
+
+    // Generate Bridge Command landobject.ini content
+    static std::string generateLandObjectIni(const std::vector<ChartLandmark>& landmarks);
 
     // Convert S-57 light characteristic to BC Sequence string (L=light, D=dark)
     static std::string lightCharacteristicToSequence(int litchr, double period,

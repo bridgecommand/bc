@@ -33,13 +33,22 @@
 #define IPROF(a) //intentionally empty placeholder
 #endif
 
+using bc::graphics::Vec3;
+using bc::graphics::Vec3i;
+using bc::graphics::Line3d;
+
 namespace {
-    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
+    inline irr::core::vector3df toIrrVec(const Vec3& v) { return {v.x, v.y, v.z}; }
+    inline Vec3 fromIrrVec(const irr::core::vector3df& v) { return {v.X, v.Y, v.Z}; }
+    inline irr::core::vector3di toIrrVec3i(const Vec3i& v) { return {v.x, v.y, v.z}; }
+    inline irr::core::line3d<float> toIrrLine(const Line3d& l) {
+        return {l.start.x, l.start.y, l.start.z, l.end.x, l.end.y, l.end.z};
+    }
 }
 
 // using namespace irr;
 
-void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContactPoints, float minContactPointSpacing, float contactStiffnessFactor, float contactDampingFactor, float frictionCoefficient, float tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev)
+void OwnShip::load(OwnShipData ownShipData, Vec3i numberOfContactPoints, float minContactPointSpacing, float contactStiffnessFactor, float contactDampingFactor, float frictionCoefficient, float tanhFrictionFactor, irr::scene::ISceneManager *smgr, SimulationModel *model, Terrain *terrain, irr::IrrlichtDevice *dev)
 {
     // Store reference to terrain
     this->terrain = terrain;
@@ -203,42 +212,42 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
         float camOffsetY = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewY", i));
         float camOffsetZ = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("ViewZ", i));
         bool highView = IniFile::iniFileTou32(shipIniFilename, IniFile::enumerate1("ViewHigh", i)) == 1;
-        views.push_back(irr::core::vector3df(scaleFactor * camOffsetX, scaleFactor * camOffsetY, scaleFactor * camOffsetZ));
+        views.push_back(Vec3(scaleFactor * camOffsetX, scaleFactor * camOffsetY, scaleFactor * camOffsetZ));
         isHighView.push_back(highView);
     }
 
     // Radar Screen position, if not set in file, set value to -999 as 'no data' marker
-    screenDisplayPosition.X = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
-    screenDisplayPosition.Y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
-    screenDisplayPosition.Z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
+    screenDisplayPosition.x = IniFile::iniFileTof32(shipIniFilename, "RadarScreenX", -999);
+    screenDisplayPosition.y = IniFile::iniFileTof32(shipIniFilename, "RadarScreenY", -999);
+    screenDisplayPosition.z = IniFile::iniFileTof32(shipIniFilename, "RadarScreenZ", -999);
     screenDisplaySize = IniFile::iniFileTof32(shipIniFilename, "RadarScreenSize");
     screenDisplayTilt = IniFile::iniFileTof32(shipIniFilename, "RadarScreenTilt");
     // Default position out of view if not set
-    if (screenDisplayPosition.X == -999.0 && screenDisplayPosition.Y == -999.0 && screenDisplayPosition.Z == -999.0)
+    if (screenDisplayPosition.x == -999.0f && screenDisplayPosition.y == -999.0f && screenDisplayPosition.z == -999.0f)
     {
-        screenDisplayPosition.X = 0;
-        screenDisplayPosition.Y = 0;
-        screenDisplayPosition.Y = 500;
+        screenDisplayPosition.x = 0;
+        screenDisplayPosition.y = 0;
+        screenDisplayPosition.y = 500;
     }
 
     if (screenDisplaySize <= 0)
     {
         screenDisplaySize = 1;
     }
-    screenDisplayPosition = scaleFactor * screenDisplayPosition;
+    screenDisplayPosition = screenDisplayPosition * scaleFactor;
     screenDisplaySize = scaleFactor * screenDisplaySize;
 
     // Positions for engine controls (if present)
     // If not set in file, set value to -999 as 'no data' marker
-    portThrottlePosition.X = IniFile::iniFileTof32(shipIniFilename, "PortThrottleX", -999);
-    portThrottlePosition.Y = IniFile::iniFileTof32(shipIniFilename, "PortThrottleY", -999);
-    portThrottlePosition.Z = IniFile::iniFileTof32(shipIniFilename, "PortThrottleZ", -999);
-    stbdThrottlePosition.X = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleX", -999);
-    stbdThrottlePosition.Y = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleY", -999);
-    stbdThrottlePosition.Z = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleZ", -999);
-    wheelControlPosition.X = IniFile::iniFileTof32(shipIniFilename, "WheelX", -999);
-    wheelControlPosition.Y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
-    wheelControlPosition.Z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
+    portThrottlePosition.x = IniFile::iniFileTof32(shipIniFilename, "PortThrottleX", -999);
+    portThrottlePosition.y = IniFile::iniFileTof32(shipIniFilename, "PortThrottleY", -999);
+    portThrottlePosition.z = IniFile::iniFileTof32(shipIniFilename, "PortThrottleZ", -999);
+    stbdThrottlePosition.x = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleX", -999);
+    stbdThrottlePosition.y = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleY", -999);
+    stbdThrottlePosition.z = IniFile::iniFileTof32(shipIniFilename, "StbdThrottleZ", -999);
+    wheelControlPosition.x = IniFile::iniFileTof32(shipIniFilename, "WheelX", -999);
+    wheelControlPosition.y = IniFile::iniFileTof32(shipIniFilename, "WheelY", -999);
+    wheelControlPosition.z = IniFile::iniFileTof32(shipIniFilename, "WheelZ", -999);
     wheelControlScale = IniFile::iniFileTof32(shipIniFilename, "WheelScale", 1);
 
     // Do not scale portThrottlePosition, stbd... and wheelControlPosition, as these are implicitly scaled as position used relative to parent
@@ -275,7 +284,7 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
             float panoRotationPitch = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("PanoRotationPitch", i + 1));
             float panoRotationRoll = IniFile::iniFileTof32(shipIniFilename, IniFile::enumerate1("PanoRotationRoll", i + 1));
 
-            irr::scene::IAnimatedMeshSceneNode *viewNode = smgr->addAnimatedMeshSceneNode(viewMesh, ship, -1, views.at(i) / scaleFactor, irr::core::vector3df(panoRotationPitch, panoRotationYaw, panoRotationRoll));
+            irr::scene::IAnimatedMeshSceneNode *viewNode = smgr->addAnimatedMeshSceneNode(viewMesh, ship, -1, toIrrVec(views.at(i) / scaleFactor), irr::core::vector3df(panoRotationPitch, panoRotationYaw, panoRotationRoll));
 
             std::string panoPath = basePath + IniFile::iniFileToString(shipIniFilename, IniFile::enumerate1("Pano", i + 1));
             irr::video::ITexture *texture360 = device->getVideoDriver()->getTexture(panoPath.c_str());
@@ -751,29 +760,25 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     // Find if we need more contact points to maintain minContactPointSpacing
     if (minContactPointSpacing > 0)
     {
-        numberOfContactPoints.X = std::max(numberOfContactPoints.X, (int)ceil((maxX - minX) / minContactPointSpacing));
-        numberOfContactPoints.Y = std::max(numberOfContactPoints.Y, (int)ceil((maxY - minY) / minContactPointSpacing));
-        numberOfContactPoints.Z = std::max(numberOfContactPoints.Z, (int)ceil((maxZ - minZ) / minContactPointSpacing));
+        numberOfContactPoints.x = std::max(numberOfContactPoints.x, (int32_t)ceil((maxX - minX) / minContactPointSpacing));
+        numberOfContactPoints.y = std::max(numberOfContactPoints.y, (int32_t)ceil((maxY - minY) / minContactPointSpacing));
+        numberOfContactPoints.z = std::max(numberOfContactPoints.z, (int32_t)ceil((maxZ - minZ) / minContactPointSpacing));
     }
 
     // Grid from below looking up
-    for (int i = 0; i < numberOfContactPoints.X; i++)
+    for (int i = 0; i < numberOfContactPoints.x; i++)
     {
-        for (int j = 0; j < numberOfContactPoints.Z; j++)
+        for (int j = 0; j < numberOfContactPoints.z; j++)
         {
 
-            float xSpacing = (maxX - minX) / (float)(numberOfContactPoints.X - 1);
-            float zSpacing = (maxZ - minZ) / (float)(numberOfContactPoints.Z - 1);
+            float xSpacing = (maxX - minX) / (float)(numberOfContactPoints.x - 1);
+            float zSpacing = (maxZ - minZ) / (float)(numberOfContactPoints.z - 1);
 
             float xTestPos = minX + (float)i * xSpacing;
             float zTestPos = minZ + (float)j * zSpacing;
 
-            irr::core::line3df ray; // Make a ray. This will start outside the mesh, looking in
-            ray.start.X = xTestPos;
-            ray.start.Y = minY - 0.1;
-            ray.start.Z = zTestPos;
-            ray.end = ray.start;
-            ray.end.Y = maxY + 0.1;
+            Line3d ray(xTestPos, minY - 0.1f, zTestPos,
+                       xTestPos, maxY + 0.1f, zTestPos);
 
             // Check the ray and add the contact point if it exists
             addContactPointFromRay(ray, xSpacing * zSpacing);
@@ -781,57 +786,49 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     }
 
     // Grid from ahead/astern
-    for (int i = 0; i < numberOfContactPoints.X; i++)
+    for (int i = 0; i < numberOfContactPoints.x; i++)
     {
-        for (int j = 0; j < numberOfContactPoints.Y; j++)
+        for (int j = 0; j < numberOfContactPoints.y; j++)
         {
 
-            float xSpacing = (maxX - minX) / (float)(numberOfContactPoints.X - 1);
-            float ySpacing = (maxY - minY) / (float)(numberOfContactPoints.Y - 1);
+            float xSpacing = (maxX - minX) / (float)(numberOfContactPoints.x - 1);
+            float ySpacing = (maxY - minY) / (float)(numberOfContactPoints.y - 1);
 
             float xTestPos = minX + (float)i * xSpacing;
             float yTestPos = minY + (float)j * ySpacing;
 
-            irr::core::line3df ray; // Make a ray. This will start outside the mesh, looking in
-            ray.start.X = xTestPos;
-            ray.start.Y = yTestPos;
-            ray.start.Z = maxZ + 0.1;
-            ray.end = ray.start;
-            ray.end.Z = minZ - 0.1;
+            Line3d ray(xTestPos, yTestPos, maxZ + 0.1f,
+                       xTestPos, yTestPos, minZ - 0.1f);
 
             // Check the ray and add the contact point if it exists
             addContactPointFromRay(ray, xSpacing * ySpacing);
             // swap ray direction and check again
-            ray.start.Z = minZ - 0.1;
-            ray.end.Z = maxZ + 0.1;
+            ray.start.z = minZ - 0.1f;
+            ray.end.z = maxZ + 0.1f;
             addContactPointFromRay(ray, xSpacing * ySpacing);
         }
     }
 
     // Grid from side to side
-    for (int i = 0; i < numberOfContactPoints.Z; i++)
+    for (int i = 0; i < numberOfContactPoints.z; i++)
     {
-        for (int j = 0; j < numberOfContactPoints.Y; j++)
+        for (int j = 0; j < numberOfContactPoints.y; j++)
         {
 
-            float zSpacing = (maxZ - minZ) / (float)(numberOfContactPoints.Z - 1);
-            float ySpacing = (maxY - minY) / (float)(numberOfContactPoints.Y - 1);
+            float zSpacing = (maxZ - minZ) / (float)(numberOfContactPoints.z - 1);
+            float ySpacing = (maxY - minY) / (float)(numberOfContactPoints.y - 1);
 
             float zTestPos = minZ + (float)i * zSpacing;
             float yTestPos = minY + (float)j * ySpacing;
 
-            irr::core::line3df ray; // Make a ray. This will start outside the mesh, looking in
-            ray.start.X = maxX + 0.1;
-            ray.start.Y = yTestPos;
-            ray.start.Z = zTestPos;
-            ray.end = ray.start;
-            ray.end.X = minX - 0.1;
+            Line3d ray(maxX + 0.1f, yTestPos, zTestPos,
+                       minX - 0.1f, yTestPos, zTestPos);
 
             // Check the ray and add the contact point if it exists
             addContactPointFromRay(ray, ySpacing * zSpacing);
             // swap ray direction and check again
-            ray.start.X = minX - 0.1;
-            ray.end.X = maxX + 0.1;
+            ray.start.x = minX - 0.1f;
+            ray.end.x = maxX + 0.1f;
             addContactPointFromRay(ray, ySpacing * zSpacing);
         }
     }
@@ -844,14 +841,16 @@ void OwnShip::load(OwnShipData ownShipData, irr::core::vector3di numberOfContact
     device->getLogger()->log(irr::core::stringw((int)contactPoints.size()).c_str());
 }
 
-void OwnShip::addContactPointFromRay(irr::core::line3d<float> ray, float contactArea)
+void OwnShip::addContactPointFromRay(Line3d ray, float contactArea)
 {
+    // Convert to Irrlicht types for collision detection
+    irr::core::line3df irrRay = toIrrLine(ray);
     irr::core::vector3df intersection;
     irr::core::triangle3df hitTriangle;
 
     irr::scene::ISceneNode *selectedSceneNode =
         device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-            ray,
+            irrRay,
             intersection,      // This will be the position of the collision
             hitTriangle,       // This will be the triangle hit in the collision
             IDFlag_IsPickable, // (bitmask)
@@ -860,22 +859,23 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<float> ray, float contact
     if (selectedSceneNode)
     {
         ContactPoint contactPoint;
-        contactPoint.position = intersection;
-        contactPoint.normal = hitTriangle.getNormal().normalize();
-        contactPoint.position.Y -= heightCorrection; // Adjust for height correction
+        contactPoint.position = fromIrrVec(intersection);
+        irr::core::vector3df normalIrr = hitTriangle.getNormal().normalize();
+        contactPoint.normal = fromIrrVec(normalIrr);
+        contactPoint.position.y -= heightCorrection; // Adjust for height correction
 
         // Check if the normal is pointing 'towards' the incoming ray used to find the contact point, i.e. if it is pointing in roughly the right direction
         // 0.707 is approximately cos(45deg), so should be within +- 45 degrees of the incoming ray.
-        if (contactPoint.normal.dotProduct(ray.getVector().normalize()) < -0.707)
+        if (normalIrr.dotProduct(irrRay.getVector().normalize()) < -0.707)
         {
 
             // Find an internal node position, i.e. a point at which a ray check for internal intersection can start
-            ray.start = contactPoint.position;
-            // leave ray.end as the same as before
+            irrRay.start = intersection;
+            // leave irrRay.end as the same as before
             // Check for the internal node
             selectedSceneNode =
                 device->getSceneManager()->getSceneCollisionManager()->getSceneNodeAndCollisionPointFromRay(
-                    ray,
+                    irrRay,
                     intersection,      // This will be the position of the collision
                     hitTriangle,       // This will be the triangle hit in the collision
                     IDFlag_IsPickable, // (bitmask)
@@ -883,15 +883,15 @@ void OwnShip::addContactPointFromRay(irr::core::line3d<float> ray, float contact
 
             if (selectedSceneNode)
             {
-                contactPoint.internalPosition = intersection;
-                contactPoint.internalPosition.Y -= heightCorrection; // Adjust for height correction
+                contactPoint.internalPosition = fromIrrVec(intersection);
+                contactPoint.internalPosition.y -= heightCorrection; // Adjust for height correction
 
                 // Adjust internal position, so it's only 1/2 way to the opposite boundary of the model
-                contactPoint.internalPosition = 0.5 * contactPoint.internalPosition + 0.5 * contactPoint.position;
+                contactPoint.internalPosition = contactPoint.internalPosition * 0.5f + contactPoint.position * 0.5f;
 
                 // Find cross product, for torque component
-                irr::core::vector3df crossProduct = contactPoint.position.crossProduct(contactPoint.normal);
-                contactPoint.torqueEffect = crossProduct.Y;
+                Vec3 crossProduct = contactPoint.position.cross(contactPoint.normal);
+                contactPoint.torqueEffect = crossProduct.y;
 
                 // Store effective area represented by the contact
                 contactPoint.effectiveArea = contactArea;
@@ -1430,7 +1430,7 @@ std::string OwnShip::getBasePath() const
     return basePath;
 }
 
-irr::core::vector3df OwnShip::getScreenDisplayPosition() const
+Vec3 OwnShip::getScreenDisplayPosition() const
 {
     return screenDisplayPosition;
 }
@@ -1445,17 +1445,17 @@ float OwnShip::getScreenDisplayTilt() const
     return screenDisplayTilt;
 }
 
-irr::core::vector3df OwnShip:: getPortEngineControlPosition() const
+Vec3 OwnShip::getPortEngineControlPosition() const
 {
     return portThrottlePosition;
 }
 
-irr::core::vector3df OwnShip::getStbdEngineControlPosition() const
+Vec3 OwnShip::getStbdEngineControlPosition() const
 {
     return stbdThrottlePosition;
 }
 
-irr::core::vector3df OwnShip::getWheelControlPosition() const
+Vec3 OwnShip::getWheelControlPosition() const
 {
     return wheelControlPosition;
 }
@@ -1775,7 +1775,7 @@ void OwnShip::setLastDeltaTime(float myDeltaTime)
 
 // DEE_NOV22 ^^^^
 
-void OwnShip::update(float deltaTime, float scenarioTime, float tideHeight, float weather, irr::core::vector3df linesForce, irr::core::vector3df linesTorque)
+void OwnShip::update(float deltaTime, float scenarioTime, float tideHeight, float weather, Vec3 linesForce, Vec3 linesTorque)
 {
 
     #ifdef WITH_PROFILING
@@ -1797,9 +1797,9 @@ void OwnShip::update(float deltaTime, float scenarioTime, float tideHeight, floa
         collisionDetectAndRespond(groundingAxialDrag, groundingLateralDrag, groundingTurnDrag); // The drag values will get modified by this call
 
         // Add in response from mooring lines here
-        groundingAxialDrag -= linesForce.Z;
-        groundingLateralDrag -= linesForce.X;
-        groundingTurnDrag -= linesTorque.Y;
+        groundingAxialDrag -= linesForce.z;
+        groundingLateralDrag -= linesForce.x;
+        groundingTurnDrag -= linesTorque.y;
 
         // std::cout << "Collision forces (Time/axial/lateral/turn)," << scenarioTime << "," << groundingAxialDrag << "," << groundingLateralDrag << "," << groundingTurnDrag << std::endl;
 
@@ -2112,6 +2112,9 @@ void OwnShip::update(float deltaTime, float scenarioTime, float tideHeight, floa
             mmgInput.portEngine = portEngine;
             mmgInput.stbdEngine = stbdEngine;
             mmgInput.rudderAngle = rudder; // degrees, +ve starboard
+            mmgInput.waterDepth = std::max(0.1f, getDepth()); // Depth below keel (m)
+            mmgInput.windSpeed = windSpeed;  // m/s (already converted above)
+            mmgInput.windDirection = windDirection; // degrees, FROM direction
 
             physicsAccumulator += deltaTime;
             while (physicsAccumulator >= PHYSICS_DT) {
@@ -2133,9 +2136,10 @@ void OwnShip::update(float deltaTime, float scenarioTime, float tideHeight, floa
                 physicsAccumulator -= PHYSICS_DT;
             }
 
-            // Add external force corrections: wind, collision/grounding, thrusters
-            float extAxialForce = -groundingAxialDrag - axialWindDrag;
-            float extLateralForce = -groundingLateralDrag - lateralWindDrag
+            // Add external force corrections: collision/grounding, thrusters
+            // Wind is now handled by Isherwood model inside MMG step, so not added here
+            float extAxialForce = -groundingAxialDrag;
+            float extLateralForce = -groundingLateralDrag
                 + bowThruster * bowThrusterMaxForce + sternThruster * sternThrusterMaxForce;
             float extTorque = -groundingTurnDrag
                 + bowThruster * bowThrusterMaxForce * bowThrusterDistance
@@ -2573,9 +2577,10 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
 
         for (int i = 0; i < contactPoints.size(); i++)
         {
-            irr::core::vector3df pointPosition = contactPoints.at(i).position;
-            irr::core::vector3df pointPositionForNormal = pointPosition + contactPoints.at(i).normal;
-            irr::core::vector3df internalPointPosition = contactPoints.at(i).internalPosition;
+            // Convert Vec3 contact point data to Irrlicht types for collision detection
+            irr::core::vector3df pointPosition = toIrrVec(contactPoints.at(i).position);
+            irr::core::vector3df pointPositionForNormal = pointPosition + toIrrVec(contactPoints.at(i).normal);
+            irr::core::vector3df internalPointPosition = toIrrVec(contactPoints.at(i).internalPosition);
 
             // Rotate with own ship
             rot.transformVect(pointPosition);
@@ -2594,7 +2599,7 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
             // Contact model (proof of principle!)
             if (localDepth < 0)
             {
-                localIntersection = -1 * localDepth * std::abs(contactPoints.at(i).normal.Y); // Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
+                localIntersection = -1 * localDepth * std::abs(contactPoints.at(i).normal.y); // Projected based on normal, so we get an estimate of the intersection normal to the contact point. Ideally this vertical component of the normal would react to the ship's motion, but probably not too important
             }
 
             float remotePointAxialSpeed = 0;
@@ -2701,15 +2706,16 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
                 // Local speed at this point (TODO, include y component from pitch and roll?)
                 //  Relative to the speed of the point we're in contact with
                 irr::core::vector3df localSpeedVector;
-                localSpeedVector.X = lateralSpd + rateOfTurn * contactPoints.at(i).position.Z - remotePointLateralSpeed;
+                localSpeedVector.X = lateralSpd + rateOfTurn * contactPoints.at(i).position.z - remotePointLateralSpeed;
                 localSpeedVector.Y = 0;
-                localSpeedVector.Z = axialSpd - rateOfTurn * contactPoints.at(i).position.X - remotePointAxialSpeed;
+                localSpeedVector.Z = axialSpd - rateOfTurn * contactPoints.at(i).position.x - remotePointAxialSpeed;
 
                 // Find the speed component, tangential to the contact plane (for friction)
                 irr::core::vector3df tangentialSpeedComponent;
+                irr::core::vector3df normalIrr = toIrrVec(contactPoints.at(i).normal);
                 // Find this here, by subtracting the part normal to the contact plane
                 // part normal to the contact plane is speedVector.normal * normal (normal is already normalised length)
-                tangentialSpeedComponent = localSpeedVector - localSpeedVector.dotProduct(contactPoints.at(i).normal) * contactPoints.at(i).normal;
+                tangentialSpeedComponent = localSpeedVector - localSpeedVector.dotProduct(normalIrr) * normalIrr;
 
                 float tangentialSpeedAmplitude = tangentialSpeedComponent.getLength();
                 irr::core::vector3df normalisedTangentialSpeedComponent = tangentialSpeedComponent; // Normalised, so we just have the direction
@@ -2718,7 +2724,7 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
                 // Simple 'stiffness' based response
                 float reactionForce = localIntersection * contactStiffness;
                 // Damping: Project localSpeedVector onto contact normal. Damping reaction force is proportional to this, and can be applied like the main reaction force
-                float normalSpeed = localSpeedVector.dotProduct(contactPoints.at(i).normal);
+                float normalSpeed = localSpeedVector.dotProduct(normalIrr);
                 float dampingForce = normalSpeed * contactDamping;
 
                 // Find combined stiffness and damping effect. Only allow to be positive, so no 'sticking'
@@ -2730,11 +2736,11 @@ void OwnShip::collisionDetectAndRespond(float &reaction, float &lateralReaction,
 
                 // Apply this force
                 turnReaction += combinedStiffnessDamping * contactPoints.at(i).torqueEffect;
-                reaction += combinedStiffnessDamping * contactPoints.at(i).normal.Z;
-                lateralReaction += combinedStiffnessDamping * contactPoints.at(i).normal.X;
+                reaction += combinedStiffnessDamping * contactPoints.at(i).normal.z;
+                lateralReaction += combinedStiffnessDamping * contactPoints.at(i).normal.x;
 
                 // Friction response. Use tanh function for better stability at low speed
-                float frictionTorqueFactor = (contactPoints.at(i).position.crossProduct(normalisedTangentialSpeedComponent)).Y; // Effect of unit friction force on ship's turning. TODO: Check this, I think it's correct
+                float frictionTorqueFactor = (toIrrVec(contactPoints.at(i).position).crossProduct(normalisedTangentialSpeedComponent)).Y; // Effect of unit friction force on ship's turning. TODO: Check this, I think it's correct
                 float frictionCoeff = frictionCoefficient * tanh(tanhFrictionFactor * tangentialSpeedAmplitude);
                 turnReaction += combinedStiffnessDamping * frictionCoeff * frictionTorqueFactor;
                 reaction += combinedStiffnessDamping * frictionCoeff * normalisedTangentialSpeedComponent.Z;
@@ -2831,7 +2837,7 @@ float OwnShip::getMaxSounderDepth() const
     return maxSounderDepth;
 }
 
-std::vector<irr::core::vector3df> OwnShip::getCameraViews() const
+std::vector<Vec3> OwnShip::getCameraViews() const
 {
     return views;
 }

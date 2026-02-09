@@ -41,6 +41,14 @@ struct PhysicsInput {
     double currentSpeed = 0.0;   // Water current speed (m/s)
     double currentDirection = 0.0; // Water current direction (degrees, towards)
     double waveHeight = 0.0;     // Significant wave height (m)
+    double waterDepth = 100.0;   // Water depth below keel (m, 100 = deep water default)
+    double bankDistancePort = 1000.0;  // Distance to bank on port side (m, 1000 = no effect)
+    double bankDistanceStbd = 1000.0;  // Distance to bank on starboard side (m, 1000 = no effect)
+
+    // Wind area parameters for Isherwood model (0 = use defaults from dims)
+    double lateralWindArea = 0.0;  // Lateral projected area above waterline (m^2)
+    double frontalWindArea = 0.0;  // Frontal/transverse projected area (m^2)
+    double superstructureAft = 0.0; // Distance from bow to centroid of lateral area (m)
 };
 
 // Ship hull dimensions and characteristics

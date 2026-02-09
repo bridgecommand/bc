@@ -40,6 +40,7 @@ struct Vec3 {
     Vec3 operator+(const Vec3& o) const { return {x + o.x, y + o.y, z + o.z}; }
     Vec3 operator-(const Vec3& o) const { return {x - o.x, y - o.y, z - o.z}; }
     Vec3 operator*(float s) const { return {x * s, y * s, z * s}; }
+    Vec3 operator/(float s) const { return {x / s, y / s, z / s}; }
     Vec3& operator+=(const Vec3& o) { x += o.x; y += o.y; z += o.z; return *this; }
     float length() const { return std::sqrt(x*x + y*y + z*z); }
     float dot(const Vec3& o) const { return x*o.x + y*o.y + z*o.z; }
@@ -50,6 +51,20 @@ struct Vec3 {
         float len = length();
         return len > 0 ? Vec3{x/len, y/len, z/len} : Vec3{0,0,0};
     }
+};
+
+struct Vec3i {
+    int32_t x = 0, y = 0, z = 0;
+    Vec3i() = default;
+    Vec3i(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
+};
+
+struct Line3d {
+    Vec3 start, end;
+    Line3d() = default;
+    Line3d(const Vec3& start, const Vec3& end) : start(start), end(end) {}
+    Line3d(float sx, float sy, float sz, float ex, float ey, float ez)
+        : start(sx, sy, sz), end(ex, ey, ez) {}
 };
 
 struct Color {

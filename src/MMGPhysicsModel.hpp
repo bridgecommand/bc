@@ -87,11 +87,34 @@ public:
     const MMGCoefficients& getCoefficients() const { return coeffs; }
     void setCoefficients(const MMGCoefficients& c) { coeffs = c; }
 
+    // Shallow water: compute Barras squat (metres, positive = sinkage)
+    double computeSquat(double speedKnots, double hT_ratio) const;
+
+    // Shallow water correction factor for hull derivatives (multiplier >= 1.0)
+    // Returns 1.0 for deep water (h/T > 4), increases as water gets shallower
+    static double shallowWaterFactor(double hT_ratio);
+
+    // Bank effect forces (Norrbin model)
+    // Returns lateral force Y_bank (N) and yaw moment N_bank (Nm)
+    static void computeBankForces(double u, double L, double T,
+                                   double distPort, double distStbd,
+                                   double& Yb, double& Nb);
+
+    // Isherwood wind force model
+    // Computes wind forces X_wind, Y_wind (N) and yaw moment N_wind (Nm)
+    static void computeWindForces(double windSpeed, double windDirection,
+                                   double heading, double u, double v,
+                                   double L, double B, double draught,
+                                   double lateralArea, double frontalArea,
+                                   double superstructureAft,
+                                   double& Xw, double& Yw, double& Nw);
+
 private:
     ShipDimensions dims;
     MMGCoefficients coeffs;
 
     static constexpr double RHO = 1025.0;  // Seawater density (kg/m^3)
+    static constexpr double RHO_AIR = 1.225; // Air density (kg/m^3)
     static constexpr double DEG_TO_RAD = 3.14159265358979323846 / 180.0;
     static constexpr double RAD_TO_DEG = 180.0 / 3.14159265358979323846;
 
@@ -101,7 +124,7 @@ private:
     double getInertiaZ() const;
 
     // Force calculations (return forces/moments in Newtons/Newton-metres)
-    void computeHullForces(double u, double v, double r,
+    void computeHullForces(double u, double v, double r, double shallowFactor,
                            double& Xh, double& Yh, double& Nh) const;
     void computePropellerForce(double u, double engineSetting,
                                 double& Xp) const;

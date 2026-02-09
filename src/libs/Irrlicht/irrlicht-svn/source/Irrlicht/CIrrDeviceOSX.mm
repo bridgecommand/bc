@@ -695,27 +695,66 @@ bool CIrrDeviceMacOSX::createWindow()
     {
         if (!CreationParams.WindowId) //create another window when WindowId is null
         {
-            int x = (CreationParams.WindowPosition.X > 0) ? CreationParams.WindowPosition.X : 0;
-            int y = (CreationParams.WindowPosition.Y > 0) ? CreationParams.WindowPosition.Y : 0;
-            
-            if (CreationParams.WindowPosition.Y > -1)
+            if (CreationParams.MacOSborderless)
             {
-                int screenHeight = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
-                y = screenHeight - y - CreationParams.WindowSize.Height;
-            }
-            
-            Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, CreationParams.WindowSize.Width,CreationParams.WindowSize.Height)
-			styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask
-			backing:backing_type
-			defer:NO];
+                // Borderless fullscreen: fill the main screen without CGDisplay capture
+                NSRect screenFrame = [[NSScreen mainScreen] frame];
+                Window = [[NSWindow alloc] initWithContentRect:screenFrame
+                    styleMask:NSBorderlessWindowMask
+                    backing:backing_type
+                    defer:NO
+                    screen:[NSScreen mainScreen]];
+                [Window setLevel:NSMainMenuWindowLevel + 1];
+                [Window setOpaque:YES];
+                [Window setBackgroundColor:[NSColor blackColor]];
+                [Window setHidesOnDeactivate:YES];
 
-            if (CreationParams.WindowPosition.X == -1 && CreationParams.WindowPosition.Y == -1)
-                [Window center];
+                ScreenWidth = DeviceWidth = (int)screenFrame.size.width;
+                ScreenHeight = DeviceHeight = (int)screenFrame.size.height;
+                CreationParams.WindowSize.set(DeviceWidth, DeviceHeight);
+
+                os::Printer::log("MacOS borderless fullscreen", ELL_INFORMATION);
+                char buf[128];
+                snprintf(buf, sizeof(buf), "Screen: %dx%d, Window: %dx%d",
+                    ScreenWidth, ScreenHeight, DeviceWidth, DeviceHeight);
+                os::Printer::log(buf, ELL_INFORMATION);
+
+                // Hide menu bar and dock
+#ifdef __MAC_10_6
+                [NSApp setPresentationOptions:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)];
+#else
+                SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+#endif
+            }
+            else
+            {
+                int x = (CreationParams.WindowPosition.X > 0) ? CreationParams.WindowPosition.X : 0;
+                int y = (CreationParams.WindowPosition.Y > 0) ? CreationParams.WindowPosition.Y : 0;
+
+                if (CreationParams.WindowPosition.Y > -1)
+                {
+                    int screenHeight = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
+                    y = screenHeight - y - CreationParams.WindowSize.Height;
+                }
+
+                Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, CreationParams.WindowSize.Width,CreationParams.WindowSize.Height)
+                    styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask
+                    backing:backing_type
+                    defer:NO];
+
+                if (CreationParams.WindowPosition.X == -1 && CreationParams.WindowPosition.Y == -1)
+                    [Window center];
+
+                DeviceWidth = CreationParams.WindowSize.Width;
+                DeviceHeight = CreationParams.WindowSize.Height;
+            }
         }
-        
-        DeviceWidth = CreationParams.WindowSize.Width;
-        DeviceHeight = CreationParams.WindowSize.Height;
-        
+        else
+        {
+            DeviceWidth = CreationParams.WindowSize.Width;
+            DeviceHeight = CreationParams.WindowSize.Height;
+        }
+
         result = true;
     }
     else
@@ -1264,7 +1303,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	{
 		NSPoint	p;
 		p = [NSEvent mouseLocation];
-		p = [Window convertScreenToBase:p];
+		p = [Window convertPointFromScreen:p];
 		x = (int)p.x;
 		y = DeviceHeight - (int)p.y;
 	}
@@ -1304,7 +1343,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 		// Irrlicht window exists
 		p.x = (float) x;
 		p.y = (float) (DeviceHeight - y);
-		p = [Window convertBaseToScreen:p];
+		p = [Window convertPointToScreen:p];
 		p.y = ScreenHeight - p.y;
 	}
 	else

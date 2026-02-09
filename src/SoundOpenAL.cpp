@@ -22,6 +22,14 @@
 #include <cstring>
 #include <vector>
 
+// OpenAL Soft HRTF extension constants (not in macOS headers or older OpenAL headers)
+#ifndef ALC_HRTF_SOFT
+#define ALC_HRTF_SOFT 0x1992
+#endif
+#ifndef ALC_HRTF_STATUS_SOFT
+#define ALC_HRTF_STATUS_SOFT 0x1993
+#endif
+
 SoundOpenAL::SoundOpenAL()
     : device(nullptr), context(nullptr), initialised(false)
 {
@@ -85,7 +93,7 @@ bool SoundOpenAL::init() {
     }
 
     initialised = true;
-    std::cout << "SoundOpenAL: Initialised successfully" << std::endl;
+    std::cerr << "SoundOpenAL: Initialised successfully" << std::endl;
     return true;
 }
 
@@ -181,7 +189,7 @@ ALuint SoundOpenAL::loadWavFile(const std::string& filename) {
         return 0;
     }
 
-    std::cout << "SoundOpenAL: Loaded " << filename
+    std::cerr << "SoundOpenAL: Loaded " << filename
               << " (" << sfInfo.frames << " frames, "
               << sfInfo.channels << " ch, "
               << sfInfo.samplerate << " Hz)" << std::endl;
@@ -219,11 +227,14 @@ bool SoundOpenAL::loadSounds(const std::string& engineFile,
         alSourcei(sources[sf.id], AL_BUFFER, buf);
     }
 
-    // Set initial volumes
+    // Set initial volumes and apply to OpenAL sources
     volumes[SOUND_ENGINE] = 0.0f;
     volumes[SOUND_WAVE] = 1.0f;
     volumes[SOUND_HORN] = 0.0f;
     volumes[SOUND_ALARM] = 0.0f;
+    for (int i = 0; i < SOUND_COUNT; i++) {
+        alSourcef(sources[i], AL_GAIN, volumes[i]);
+    }
 
     return allLoaded;
 }
@@ -278,12 +289,106 @@ void SoundOpenAL::setSourceVelocity(SoundID id, float vx, float vy, float vz) {
     alSource3f(sources[id], AL_VELOCITY, vx, vy, vz);
 }
 
+// ── HRTF support (OpenAL Soft only) ────────────────────────────────────────
+
+bool SoundOpenAL::enableHRTF() {
+    if (!initialised || !device) return false;
+
+#ifndef __APPLE__
+    // Check if HRTF extension is available (OpenAL Soft specific)
+    if (!alcIsExtensionPresent(device, "ALC_SOFT_HRTF")) {
+        std::cerr << "SoundOpenAL: HRTF extension not available" << std::endl;
+        return false;
+    }
+
+    // Recreate context with HRTF enabled
+    alcMakeContextCurrent(nullptr);
+    if (context) {
+        alcDestroyContext(context);
+    }
+
+    ALCint attrs[] = {ALC_HRTF_SOFT, ALC_TRUE, 0};
+    context = alcCreateContext(device, attrs);
+    if (!context) {
+        std::cerr << "SoundOpenAL: Failed to create HRTF context" << std::endl;
+        // Fall back to non-HRTF context
+        context = alcCreateContext(device, nullptr);
+        alcMakeContextCurrent(context);
+        return false;
+    }
+
+    alcMakeContextCurrent(context);
+
+    // Verify HRTF is actually active
+    ALCint hrtfStatus = 0;
+    alcGetIntegerv(device, ALC_HRTF_STATUS_SOFT, 1, &hrtfStatus);
+
+    // Re-attach buffers to sources (context was recreated)
+    alGenSources(SOUND_COUNT, sources);
+    for (int i = 0; i < SOUND_COUNT; i++) {
+        if (buffers[i] != 0) {
+            alSourcei(sources[i], AL_BUFFER, buffers[i]);
+            alSourcef(sources[i], AL_GAIN, volumes[i]);
+            alSourcef(sources[i], AL_REFERENCE_DISTANCE, 10.0f);
+            alSourcef(sources[i], AL_MAX_DISTANCE, 1000.0f);
+            alSourcef(sources[i], AL_ROLLOFF_FACTOR, 1.0f);
+        }
+    }
+
+    hrtfEnabled = true;
+    std::cout << "SoundOpenAL: HRTF enabled (status: " << hrtfStatus << ")" << std::endl;
+    return true;
+#else
+    // macOS built-in OpenAL doesn't support HRTF
+    std::cerr << "SoundOpenAL: HRTF not available on macOS built-in OpenAL" << std::endl;
+    return false;
+#endif
+}
+
+void SoundOpenAL::disableHRTF() {
+    if (!initialised || !device || !hrtfEnabled) return;
+
+#ifndef __APPLE__
+    // Recreate context without HRTF
+    alcMakeContextCurrent(nullptr);
+    if (context) {
+        alcDestroyContext(context);
+    }
+
+    context = alcCreateContext(device, nullptr);
+    alcMakeContextCurrent(context);
+
+    // Re-attach buffers to sources
+    alGenSources(SOUND_COUNT, sources);
+    for (int i = 0; i < SOUND_COUNT; i++) {
+        if (buffers[i] != 0) {
+            alSourcei(sources[i], AL_BUFFER, buffers[i]);
+            alSourcef(sources[i], AL_GAIN, volumes[i]);
+            alSourcef(sources[i], AL_REFERENCE_DISTANCE, 10.0f);
+            alSourcef(sources[i], AL_MAX_DISTANCE, 1000.0f);
+            alSourcef(sources[i], AL_ROLLOFF_FACTOR, 1.0f);
+        }
+    }
+
+    hrtfEnabled = false;
+    std::cout << "SoundOpenAL: HRTF disabled" << std::endl;
+#endif
+}
+
 // ISound interface wrappers
 
 void SoundOpenAL::load(std::string engineSoundFile, std::string waveSoundFile,
                         std::string hornSoundFile, std::string alarmSoundFile) {
+    std::cerr << "SoundOpenAL::load called with:"
+              << " engine=" << engineSoundFile
+              << " wave=" << waveSoundFile
+              << " horn=" << hornSoundFile
+              << " alarm=" << alarmSoundFile << std::endl;
     if (!initialised) {
-        if (!init()) return;
+        if (!init()) {
+            std::cerr << "SoundOpenAL::load: init() failed" << std::endl;
+            return;
+        }
     }
     loadSounds(engineSoundFile, waveSoundFile, hornSoundFile, alarmSoundFile);
 }
@@ -296,11 +401,19 @@ void SoundOpenAL::setEnginePitch(float pitch) {
 }
 
 void SoundOpenAL::StartSound() {
-    if (!initialised) return;
+    if (!initialised) {
+        std::cerr << "SoundOpenAL::StartSound: not initialised!" << std::endl;
+        return;
+    }
     // Start all loaded sounds looping (matching PortAudio behaviour)
     for (int i = 0; i < SOUND_COUNT; i++) {
         if (buffers[i] != 0) {
+            std::cerr << "SoundOpenAL::StartSound: playing source " << i
+                      << " vol=" << volumes[i] << std::endl;
             play(static_cast<SoundID>(i), true);
+        } else {
+            std::cerr << "SoundOpenAL::StartSound: skipping source " << i
+                      << " (no buffer)" << std::endl;
         }
     }
 }

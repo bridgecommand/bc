@@ -49,6 +49,7 @@ namespace irr
 			DriverMultithreaded(false),
 			UsePerformanceTimer(true),
 			X11borderless(false), //JAMES: Add option for X11 borderless window
+			MacOSborderless(false), //JAMES: Add option for macOS borderless fullscreen window
 			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
 		{
 		}
@@ -83,6 +84,7 @@ namespace irr
 			DriverMultithreaded = other.DriverMultithreaded;
 			UsePerformanceTimer = other.UsePerformanceTimer;
 			X11borderless = other.X11borderless; //JAMES: Add option for X11 borderless window
+			MacOSborderless = other.MacOSborderless; //JAMES: Add option for macOS borderless fullscreen window
 			return *this;
 		}
 
@@ -302,6 +304,11 @@ namespace irr
 		/** Default is false
 		*/
 		bool X11borderless; //JAMES: Add option for X11 borderless window
+
+		//! For macOS only, create a borderless fullscreen window without CGDisplay capture.
+		/** Default is false
+		*/
+		bool MacOSborderless; //JAMES: Add option for macOS borderless fullscreen window
 
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
