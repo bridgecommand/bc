@@ -108,6 +108,8 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     airDraught = ship->getTransformedBoundingBox().MaxEdge.Y;
     
     rcs = 0.005*std::pow(length,3); //Default RCS, base radar cross section on length^3 (following RCS table Ship_RCS_table.pdf)
+    float iniRCS = IniFile::iniFileTof32(iniFilename,"RadarCrossSection");
+    if (iniRCS > 0) { rcs = iniRCS; } //Override with value from boat.ini if set
     std::string logMessage = "Loading '";
     logMessage.append(shipFullPath);
     logMessage.append("' Length (m): ");

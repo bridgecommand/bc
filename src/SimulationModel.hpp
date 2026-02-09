@@ -192,6 +192,8 @@ public:
     float getOtherShipHeading(int number) const;
     float getOtherShipSpeed(int number) const; //Speed in m/s
     uint32_t getOtherShipMMSI(int number) const;
+    float getOtherShipLength(int number) const;
+    float getOtherShipBreadth(int number) const;
     void setOtherShipHeading(int number, float hdg);
     void setOtherShipPos(int number, float positionX, float positionZ);
     void setOtherShipRateOfTurn(int number, float rateOfTurn);
@@ -200,6 +202,8 @@ public:
     std::vector<Leg> getOtherShipLegs(int number) const;
     float getBuoyPosX(int number) const;
     float getBuoyPosZ(int number) const;
+    float getBuoyLat(int number) const;
+    float getBuoyLong(int number) const;
     void changeOtherShipLeg(int shipNumber, int legNumber, float bearing, float speed, float distance);
     void addOtherShipLeg(int shipNumber, int afterLegNumber, float bearing, float speed, float distance);
     void deleteOtherShipLeg(int shipNumber, int legNumber);

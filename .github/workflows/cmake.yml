@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    paths: 
+    paths:
       - '**/Constants.hpp'
 
 env:
@@ -41,6 +41,11 @@ jobs:
         ./bridgecommand --version
         cd createDeb
         ./buildDeb
+
+    - name: Test
+      run: |
+        cd bin
+        ctest --output-on-failure
       
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4

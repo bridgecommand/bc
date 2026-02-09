@@ -421,6 +421,14 @@ SimulationModel::~SimulationModel()
         return otherShips.getMMSI(number);
     }
 
+    float SimulationModel::getOtherShipLength(int number) const{
+        return otherShips.getLength(number);
+    }
+
+    float SimulationModel::getOtherShipBreadth(int number) const{
+        return otherShips.getBreadth(number);
+    }
+
     void SimulationModel::setOtherShipMMSI(int number, uint32_t mmsi) {
         otherShips.setMMSI(number,mmsi);
     }
@@ -451,6 +459,14 @@ SimulationModel::~SimulationModel()
 
     float SimulationModel::getBuoyPosZ(int number) const{
         return buoys.getPosition(number).z + offsetPosition.Z;
+    }
+
+    float SimulationModel::getBuoyLat(int number) const{
+        return terrain.zToLat(getBuoyPosZ(number));
+    }
+
+    float SimulationModel::getBuoyLong(int number) const{
+        return terrain.xToLong(getBuoyPosX(number));
     }
 
     void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, float bearing, float speed, float distance) {

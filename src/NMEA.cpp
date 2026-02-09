@@ -368,6 +368,47 @@ void NMEA::updateNMEA()
         if (messageToSend != "") {
             messageQueue.push_back(messageToSend);
         }
+
+        // AIS Message 5: Static and Voyage Related Data (every 6 minutes)
+        if (AIS::isMessage5Due(model, now)) {
+            uint32_t numShips = model->getNumberOfOtherShips();
+            if (numShips > 0) {
+                for (uint32_t s = 0; s < numShips; s++) {
+                    std::string data;
+                    int fillBits;
+                    std::tie(data, fillBits) = AIS::generateMessage5(model, s);
+
+                    // Message 5 is 424 bits → 71 chars → needs 2 AIVDM sentences
+                    // Split at 56 chars (336 bits) for fragment 1
+                    std::string frag1 = data.substr(0, 56);
+                    std::string frag2 = data.substr(56);
+                    int seqMsgId = (s % 10); // 0-9
+
+                    snprintf(messageBuffer, maxSentenceChars, "!AIVDM,2,1,%d,B,%s,0",
+                             seqMsgId, frag1.c_str());
+                    messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+
+                    snprintf(messageBuffer, maxSentenceChars, "!AIVDM,2,2,%d,B,%s,%d",
+                             seqMsgId, frag2.c_str(), fillBits);
+                    messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+                }
+            }
+        }
+
+        // AIS Message 21: Aid-to-Navigation Report (every 3 minutes)
+        if (AIS::isMessage21Due(now)) {
+            uint32_t numBuoys = model->getNumberOfBuoys();
+            for (uint32_t b = 0; b < numBuoys; b++) {
+                std::string data;
+                int fillBits;
+                std::tie(data, fillBits) = AIS::generateMessage21(model, b);
+
+                // Message 21 is 272 bits → 46 chars → single sentence
+                snprintf(messageBuffer, maxSentenceChars, "!AIVDM,1,1,,B,%s,%d",
+                         data.c_str(), fillBits);
+                messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            }
+        }
     }
 
     // if sufficient time elapsed since the last sensor report was sent,
@@ -576,6 +617,27 @@ void NMEA::updateNMEA()
             messageToSend.append(addChecksum(std::string(messageBuffer)));
             break;
         */
+        case VHW: // 8.3.99 Water speed and heading
+        {
+            float sogKts = sog; // Already converted to knots above
+            float sogKmh = sogKts * 1.852f;
+            snprintf(messageBuffer,maxSentenceChars,"$VWVHW,%.1f,T,,M,%.1f,N,%.1f,K",hdg,sogKts,sogKmh);
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+        }
+        case MWV: // 8.3.56 Wind speed and angle
+        {
+            float windDir = model->getWindDirection(); // True wind direction (degrees)
+            float windSpd = model->getWindSpeed(); // Wind speed (knots)
+            // Relative wind angle = true wind direction - ship heading
+            float relWindAngle = windDir - hdg;
+            if (relWindAngle < 0) relWindAngle += 360.0f;
+            if (relWindAngle >= 360.0f) relWindAngle -= 360.0f;
+            // Relative wind (R)
+            snprintf(messageBuffer,maxSentenceChars,"$WIMWV,%.1f,R,%.1f,N,A",relWindAngle,windSpd);
+            messageQueue.push_back(addChecksum(std::string(messageBuffer)));
+            break;
+        }
         default:
             break;
     }

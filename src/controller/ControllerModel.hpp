@@ -19,10 +19,18 @@
 #define __CONTROLLERMODEL_HPP_INCLUDED__
 
 #include <vector>
-
-#include "irrlicht.h"
+#include <cstdint>
 
 #include "PositionDataStruct.hpp"
+
+// Forward declarations for Irrlicht pointer types
+namespace irr {
+    class IrrlichtDevice;
+    namespace video {
+        class IVideoDriver;
+        class IImage;
+    }
+}
 #include "ShipDataStruct.hpp"
 #include "OtherShipDataStruct.hpp"
 #include "AISData.hpp"
@@ -73,7 +81,8 @@ private:
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
-    irr::core::position2d<int32_t> mouseLastPosition;
+    int32_t mouseLastPositionX;
+    int32_t mouseLastPositionY;
 
     int32_t mapOffsetX; //Pixel offset of maps, to allow click and drag.
     int32_t mapOffsetZ;

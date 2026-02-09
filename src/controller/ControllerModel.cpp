@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ControllerModel.hpp"
+#include "irrlicht.h"
 #include "../IniFile.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
@@ -256,15 +257,17 @@ void ControllerModel::update(const float& time, const ShipData& ownShipData, con
     //Find mouse position change if clicked, and clicked last time
     if (mouseClickedLastUpdate && mouseDown) {
         irr::core::position2d<int32_t> mouseNow = device->getCursorControl()->getPosition();
-        int32_t mouseDeltaX = mouseNow.X - mouseLastPosition.X;
-        int32_t mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
+        int32_t mouseDeltaX = mouseNow.X - mouseLastPositionX;
+        int32_t mouseDeltaY = mouseNow.Y - mouseLastPositionY;
 
         //Change offset
         mapOffsetX += mouseDeltaX;
         mapOffsetZ += mouseDeltaY;
     }
     //Update mouse position and clicked state
-    mouseLastPosition = device->getCursorControl()->getPosition();
+    auto mousePos = device->getCursorControl()->getPosition();
+    mouseLastPositionX = mousePos.X;
+    mouseLastPositionY = mousePos.Y;
     mouseClickedLastUpdate = mouseDown;
 
 

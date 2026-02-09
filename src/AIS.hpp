@@ -23,17 +23,29 @@
 #include <vector>
 
 class AIS {
-    public: 
+    public:
         static std::tuple<std::string, int> generateClassAReport(SimulationModel*, uint32_t);
+        static std::tuple<std::string, int> generateMessage5(SimulationModel*, uint32_t);
+        static std::tuple<std::string, int> generateMessage21(SimulationModel*, uint32_t buoyNumber);
         static std::vector<uint32_t> getReadyShips(SimulationModel*, uint32_t);
+        static bool isMessage5Due(SimulationModel*, uint32_t now);
+        static bool isMessage21Due(uint32_t now);
 
     private:
         static const int mmsis[];
-        static std::vector<uint32_t> lastUpdates; 
+        static std::vector<uint32_t> lastUpdates;
         static int currentShip;
         static bool initialized;
         static std::vector<bool> classAReport;
+        static std::vector<bool> message5Report;
+        static std::vector<bool> message21Report;
+        static uint32_t lastMessage5Time;
+        static uint32_t lastMessage21Time;
+        static uint32_t message5ShipIndex;
         static std::string bitsToArmoredASCII(std::vector<bool>);
+        static void encodeUnsigned(std::vector<bool>& bits, int startBit, int numBits, uint32_t value);
+        static void encodeSigned(std::vector<bool>& bits, int startBit, int numBits, int32_t value);
+        static void encodeText(std::vector<bool>& bits, int startBit, int maxChars, const std::string& text);
 };
 
 #endif

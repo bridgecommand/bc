@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ControllerModel.hpp"
+#include "irrlicht.h"
 #include "../IniFile.hpp"
 #include "../Constants.hpp"
 #include "../Utilities.hpp"
@@ -275,15 +276,17 @@ void ControllerModel::update()
     //Find mouse position change if clicked, and clicked last time
     if (mouseClickedLastUpdate && mouseDown) {
         irr::core::position2d<int32_t> mouseNow = device->getCursorControl()->getPosition();
-        int32_t mouseDeltaX = mouseNow.X - mouseLastPosition.X;
-        int32_t mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
+        int32_t mouseDeltaX = mouseNow.X - mouseLastPositionX;
+        int32_t mouseDeltaY = mouseNow.Y - mouseLastPositionY;
 
         //Change offset
         mapOffsetX += mouseDeltaX;
         mapOffsetZ += mouseDeltaY;
     }
     //Update mouse position and clicked state
-    mouseLastPosition = device->getCursorControl()->getPosition();
+    auto mousePos = device->getCursorControl()->getPosition();
+    mouseLastPositionX = mousePos.X;
+    mouseLastPositionY = mousePos.Y;
     mouseClickedLastUpdate = mouseDown;
 
 
@@ -343,18 +346,18 @@ void ControllerModel::decreaseZoom()
     }
 }
 
-void ControllerModel::setShipPosition(int32_t ship, irr::core::vector2df position)
+void ControllerModel::setShipPosition(int32_t ship, bc::graphics::Vec2 position)
 {
     if (ship==0) {
         //Own ship
-        scenarioData->ownShipData.initialX = position.X;
-        scenarioData->ownShipData.initialZ = position.Y;
+        scenarioData->ownShipData.initialX = position.x;
+        scenarioData->ownShipData.initialZ = position.y;
     } else if (ship>0) {
         //Other ship
         int32_t otherShipNumber = ship-1; //Ship number is minimum of 1, so subtract 1 to start at 0
         if (otherShipNumber < scenarioData->otherShipsData.size()) {
-            scenarioData->otherShipsData.at(otherShipNumber).initialX = position.X;
-            scenarioData->otherShipsData.at(otherShipNumber).initialZ = position.Y;
+            scenarioData->otherShipsData.at(otherShipNumber).initialX = position.x;
+            scenarioData->otherShipsData.at(otherShipNumber).initialZ = position.y;
         }
     }
 }
@@ -521,11 +524,11 @@ void ControllerModel::addLeg(int32_t ship, int32_t afterLegNumber, float legCour
     recalculateLegTimes(); //Subsequent leg start times may have changed, so recalculate these
 }
 
-void ControllerModel::addShip(std::string name, irr::core::vector2df position)
+void ControllerModel::addShip(std::string name, bc::graphics::Vec2 position)
 {
     OtherShipData newShip;
-    newShip.initialX = position.X;
-    newShip.initialZ = position.Y;
+    newShip.initialX = position.x;
+    newShip.initialZ = position.y;
     newShip.shipName = name;
     newShip.mmsi = 0;
     //Add a 'stop' leg

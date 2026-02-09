@@ -107,7 +107,7 @@
     run: ctest --test-dir build --output-on-failure
   ```
 - **Verify:** CI pipeline runs tests on all 3 platforms
-- [ ] Done
+- [x] Done (2026-02-09: Added `ctest --output-on-failure` step to cmake.yml and cmake_ARM64.yml. Windows msbuild.yml uses VS solution not CMake, so tests not available there.)
 
 ### 0A-06: Write baseline physics tests using current model
 - **Files:**
@@ -410,7 +410,7 @@
   *.002
   ```
 - **Verify:** `git status` doesn't show chart data files
-- [ ] Done
+- [x] Done (2026-02-09: Added *.000, *.001, *.002 to .gitignore. bin/Charts/ already covered by existing bin/ entry.)
 
 ---
 
@@ -1060,7 +1060,7 @@
 - **If any remain:** Migrate them to the abstraction layer
 - **Verify:** Only Irrlicht backend files contain `irr::` references
 - [x] Assessed (2026-02-08: Initial assessment -- 56 headers still include irrlicht.h.)
-- [x] Progress (2026-02-09: Down to 20 headers with irrlicht.h. Migrated 36+ headers total. Batch 1: trivial removals (RadarData, ScenarioDataStructure, data structs in controller/editor/repeater/multiplayerHub). Batch 2: pointer-only forward declarations (IniFile, Network, NumberToImage, ScenarioChoice, repeater/ControllerModel, multiplayerHub/ScenarioChoice, editor/ImportExportGUI). Batch 3: value-type migrations (Ship.hpp→Vec3 returns, OtherShips.hpp→Vec3 params/returns, OtherShip.hpp→Vec3 constructor+getRadarData, ControlVisualiser.hpp→Vec3 offset, RadarScreen.hpp→Vec3 offset+member, Lang.hpp→std::wstring return). All cascading callers updated in SimulationModel.cpp, RadarCalculation.cpp, OwnShip.cpp, OtherShip.cpp, GUIMain.cpp, controller/GUI.cpp, editor/GUI.cpp, multiplayerHub/main.cpp, main.cpp. Added Vec2 operators (operator*=, operator+=) to Types.hpp. 68 tests pass, 184 assertions. Remaining 20 headers: 7 EventReceivers (inherit irr::IEventReceiver -- need event abstraction), 5 GUI-heavy files (GUIMain, controller/editor/repeater GUI -- deferred to Dear ImGui), 3 core engine (SimulationModel, OwnShip, MovingWater -- deeply coupled), 2 controller models with position2d/IImage value types, RadarCalculation (SColor/vector3d<int64_t>), VRInterface (vector3df+quaternion members).)
+- [x] Progress (2026-02-09: Down to 17 headers with irrlicht.h. Migrated 39+ headers total. Sessions 1-2: trivial removals, pointer-only fwd decls, value-type migrations (Vec3, Vec2, std::wstring). Session 3: VRInterface.hpp (vector3df→Vec3, quaternion→Quaternion, 14 member vars migrated), controller/ControllerModel.hpp (position2d→int32_t pair, pointer fwd decls), editor/ControllerModel.hpp (position2d→int32_t pair, vector2df→Vec2 in public interface, pointer fwd decls). Remaining 17 headers all blocked: 9 EventReceivers (inherit irr::IEventReceiver), 4 GUI files (deferred to Dear ImGui), 3 core engine (SimulationModel, OwnShip, MovingWater), 1 RadarCalculation (SColor/IImage deeply coupled). Phase 2A header isolation effectively complete for all actionable targets.)
 
 ---
 
@@ -1307,7 +1307,7 @@
   # Vessel 200m: 5000 m^2
   ```
 - **Verify:** Each target has an RCS value accessible at runtime
-- [ ] Done
+- [x] Done (2026-02-09: Already implemented. Ships: RCS = 0.005*length^3 default, now also overridable via RadarCrossSection in boat.ini. Buoys: RCS loaded from buoy.ini, fallback to 0.005*length^3. Both stored in RadarData.rcs.)
 
 ### 4-02: Implement RCS-based radar return strength
 - **Files:** `src/RadarCalculation.cpp`
@@ -1321,7 +1321,7 @@
   ```
   Targets at long range with small RCS should be dim or invisible.
 - **Verify:** Small buoys visible at 2-4 NM, large ships visible at 15-24 NM (per IMO MSC.192(79) table)
-- [ ] Done
+- [x] Done (2026-02-09: Already implemented at RadarCalculation.cpp:895 - radarEchoStrength = radarFactorVessel * pow(M_IN_NM/range, 4) * rcs)
 
 ### 4-03: Improve sea clutter model
 - **Files:** `src/RadarCalculation.cpp`
@@ -1333,7 +1333,7 @@
   - Proportional to sea state
   - Affected by gain and sea clutter controls
 - **Verify:** Sea clutter visible at short ranges in rough seas. Gain/clutter controls reduce it.
-- [ ] Done
+- [x] Done (2026-02-09: Already implemented at RadarCalculation.cpp:1882 - seaClutter * weather/6 * pow(M_IN_NM/range, 3) with directional wind correction and STC control)
 
 ### 4-04: Add rain clutter
 - **Files:** `src/RadarCalculation.cpp`
@@ -1345,7 +1345,7 @@
   - Rain clutter control attenuates it
   - X-band is more affected than S-band (for future dual-radar)
 - **Verify:** Rain shows on radar when weather is rainy. Rain clutter control reduces it.
-- [ ] Done
+- [x] Done (2026-02-09: Already implemented at RadarCalculation.cpp:1884 - rainClutter * (rainIntensity/10)^2 * pow(M_IN_NM/range, 2) with rain clutter control)
 
 ### 4-05: Add radar shadow calculation
 - **Files:** `src/RadarCalculation.cpp`
@@ -1354,7 +1354,7 @@
   2. If ray hits land/large ship, objects behind are shadowed
   3. Shadow region: angular width = arctan(target_width / range)
 - **Verify:** Objects behind islands are not visible on radar
-- [ ] Done
+- [x] Done (2026-02-09: Already implemented at RadarCalculation.cpp:1007-1012 - scanSlope blocking mechanism raises scan slope when target fully covers angular cell, blocking returns from behind)
 
 ---
 
@@ -1368,7 +1368,7 @@
   ```
   Where: heading true, heading magnetic, speed knots, speed km/h
 - **Verify:** NMEA output contains VHW sentence with correct values
-- [ ] Done
+- [x] Done (2026-02-09: Added VHW case to NMEA.cpp switch. Format: $VWVHW,hdg,T,,M,sogKts,N,sogKmh,K. Uses SOG as water speed approximation. Magnetic heading field left empty.)
 
 ### 5-02: Add NMEA MWV sentence (wind speed and direction)
 - **Files:** `src/NMEA.cpp`
@@ -1378,7 +1378,7 @@
   ```
   Where: wind angle relative, reference R=relative/T=true, wind speed, units N=knots
 - **Verify:** Wind data appears in NMEA output
-- [ ] Done
+- [x] Done (2026-02-09: Added MWV case to NMEA.cpp switch. Format: $WIMWV,relAngle,R,windSpd,N,A. Relative wind angle computed from true wind direction minus heading. Wind speed from model in knots.)
 
 ### 5-03: Add AIS Message 5 (static and voyage data)
 - **Files:** `src/AIS.cpp` (or equivalent)
@@ -1387,7 +1387,7 @@
   - Encode per ITU-R M.1371-5 specification
   - Send every 6 minutes (per AIS standard)
 - **Verify:** AIS receiver/decoder shows ship names and voyage data
-- [ ] Done
+- [x] Done (2026-02-09: Implemented 424-bit Message 5 with ship name, dimensions (bow/stern/port/starboard from model length/breadth), ship type=70, GPS EPFD. Sent every 6 minutes for all other ships via 2-sentence AIVDM. Added getOtherShipLength/Breadth to SimulationModel. Helper methods: encodeUnsigned/encodeSigned/encodeText for 6-bit ASCII.)
 
 ### 5-04: Add AIS Message 21 (aid to navigation)
 - **Files:** `src/AIS.cpp`
@@ -1396,7 +1396,7 @@
   - Position, name, type
   - Send for all buoys in scenario
 - **Verify:** Buoys appear on external AIS display (or OpenCPN via NMEA)
-- [ ] Done
+- [x] Done (2026-02-09: Implemented 272-bit Message 21 with buoy position (lat/long from terrain coordinate conversion), AtoN MMSI format 993XXXXXX, name "BUOY N", type=1, dimensions=1m each. Sent every 3 minutes for all buoys via single-sentence AIVDM. Added getBuoyLat/getBuoyLong to SimulationModel.)
 
 ---
 

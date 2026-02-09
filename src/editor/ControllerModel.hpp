@@ -19,10 +19,19 @@
 #define __CONTROLLERMODEL_HPP_INCLUDED__
 
 #include <vector>
+#include <cstdint>
 
-#include "irrlicht.h"
-
+#include "../graphics/Types.hpp"
 #include "PositionDataStruct.hpp"
+
+// Forward declarations for Irrlicht pointer types
+namespace irr {
+    class IrrlichtDevice;
+    namespace video {
+        class IVideoDriver;
+        class IImage;
+    }
+}
 #include "../ScenarioDataStructure.hpp"
 
 #include "GUI.hpp"
@@ -44,7 +53,7 @@ public:
     void resetOffset(); //Re-centre the map on the own-ship
 
     //Methods used to update the state, called by the event receiver:
-    void setShipPosition(int32_t ship, irr::core::vector2df position); //To be called from eventReceiver
+    void setShipPosition(int32_t ship, bc::graphics::Vec2 position); //To be called from eventReceiver
     void updateSelectedShip(int32_t index); //To be called from eventReceiver, where index is from the combo box
     void updateSelectedLeg(int32_t index); //To be called from eventReceiver, where index is from the combo box
     void setGeneralScenarioData(ScenarioData newData); //To be called from event receiver
@@ -55,7 +64,7 @@ public:
     void addLeg(int32_t ship, int32_t afterLegNumber, float legCourse, float legSpeed, float legDistance);
     void setMMSI(int32_t ship, int mmsi);
     void setDrifting(int32_t ship, bool drifting);
-    void addShip(std::string name, irr::core::vector2df position);
+    void addShip(std::string name, bc::graphics::Vec2 position);
 	void deleteShip(int32_t ship);
     void recalculateLegTimes();
 
@@ -98,7 +107,8 @@ private:
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
-    irr::core::position2d<int32_t> mouseLastPosition;
+    int32_t mouseLastPositionX;
+    int32_t mouseLastPositionY;
 
     int32_t mapOffsetX; //Pixel offset of maps, to allow click and drag.
     int32_t mapOffsetZ;

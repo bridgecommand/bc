@@ -111,7 +111,7 @@
                     irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition(); //Check screen centre
 
                     //Use model method to apply change in ownship position
-                    model->setShipPosition(ship, screenCentrePos);
+                    model->setShipPosition(ship, bc::graphics::Vec2(screenCentrePos.X, screenCentrePos.Y));
 
                     //If moving own ship, reset offset, so the map doesn't jump
                     if (ship==0) {
@@ -124,7 +124,7 @@
                     irr::core::vector2df screenCentrePos = gui->getScreenCentrePosition();
                     std::string newShipName = gui->getOtherShipTypeSelected();
 
-                    model->addShip(newShipName,screenCentrePos);
+                    model->addShip(newShipName, bc::graphics::Vec2(screenCentrePos.X, screenCentrePos.Y));
                 }
 				if (id == GUIMain::GUI_ID_DELETESHIP_BUTTON) {
 					int ship = gui->getSelectedShip();

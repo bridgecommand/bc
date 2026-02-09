@@ -19,9 +19,16 @@
 #define _CRT_SECURE_NO_WARNINGS //FIXME: Temporary fix
 
 #include "VRInterface.hpp"
+#include "irrlicht.h"
 #include "Constants.hpp"
 #include <iostream>
 #include <cstdarg>
+
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
+    inline irr::core::quaternion toIrrQuat(const bc::graphics::Quaternion& q) { return {q.x, q.y, q.z, q.w}; }
+    constexpr float RADTODEG = 180.0f / 3.14159265358979323846f;
+}
 
 // Constructor
 VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, uint32_t suGUI, uint32_t shGUI) {
@@ -1091,21 +1098,21 @@ int VRInterface::update() {
 		// Set hand grip location and orientation if successful.
 		if (xr_check(instance, result, "failed to locate space %d!", i)) {
 			if (i == HAND_LEFT_INDEX) {
-				vrLeftGripPosition.X = grip_locations[i].pose.position.x;
-				vrLeftGripPosition.Y = grip_locations[i].pose.position.y;
-				vrLeftGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
-				vrLeftGripOrientation.X = grip_locations[i].pose.orientation.x;
-				vrLeftGripOrientation.Y = grip_locations[i].pose.orientation.y;
-				vrLeftGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
-				vrLeftGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+				vrLeftGripPosition.x = grip_locations[i].pose.position.x;
+				vrLeftGripPosition.y = grip_locations[i].pose.position.y;
+				vrLeftGripPosition.z = -1.0 * grip_locations[i].pose.position.z;
+				vrLeftGripOrientation.x = grip_locations[i].pose.orientation.x;
+				vrLeftGripOrientation.y = grip_locations[i].pose.orientation.y;
+				vrLeftGripOrientation.z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrLeftGripOrientation.w = -1.0 * grip_locations[i].pose.orientation.w;
 			} else if (i == HAND_RIGHT_INDEX) {
-				vrRightGripPosition.X = grip_locations[i].pose.position.x;
-				vrRightGripPosition.Y = grip_locations[i].pose.position.y;
-				vrRightGripPosition.Z = -1.0 * grip_locations[i].pose.position.z;
-				vrRightGripOrientation.X = grip_locations[i].pose.orientation.x;
-				vrRightGripOrientation.Y = grip_locations[i].pose.orientation.y;
-				vrRightGripOrientation.Z = -1.0 * grip_locations[i].pose.orientation.z;
-				vrRightGripOrientation.W = -1.0 * grip_locations[i].pose.orientation.w;
+				vrRightGripPosition.x = grip_locations[i].pose.position.x;
+				vrRightGripPosition.y = grip_locations[i].pose.position.y;
+				vrRightGripPosition.z = -1.0 * grip_locations[i].pose.position.z;
+				vrRightGripOrientation.x = grip_locations[i].pose.orientation.x;
+				vrRightGripOrientation.y = grip_locations[i].pose.orientation.y;
+				vrRightGripOrientation.z = -1.0 * grip_locations[i].pose.orientation.z;
+				vrRightGripOrientation.w = -1.0 * grip_locations[i].pose.orientation.w;
 			}
 		}
 
@@ -1131,21 +1138,21 @@ int VRInterface::update() {
 		// Set hand aim location and orientation if successful.
 		if (xr_check(instance, result, "failed to locate space %d!", i)) {
 			if (i == HAND_LEFT_INDEX) {
-				vrLeftAimPosition.X = aim_locations[i].pose.position.x;
-				vrLeftAimPosition.Y = aim_locations[i].pose.position.y;
-				vrLeftAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
-				vrLeftAimOrientation.X = aim_locations[i].pose.orientation.x;
-				vrLeftAimOrientation.Y = aim_locations[i].pose.orientation.y;
-				vrLeftAimOrientation.Z = -aim_locations[i].pose.orientation.z;
-				vrLeftAimOrientation.W = -aim_locations[i].pose.orientation.w;
+				vrLeftAimPosition.x = aim_locations[i].pose.position.x;
+				vrLeftAimPosition.y = aim_locations[i].pose.position.y;
+				vrLeftAimPosition.z = -1.0 * aim_locations[i].pose.position.z;
+				vrLeftAimOrientation.x = aim_locations[i].pose.orientation.x;
+				vrLeftAimOrientation.y = aim_locations[i].pose.orientation.y;
+				vrLeftAimOrientation.z = -aim_locations[i].pose.orientation.z;
+				vrLeftAimOrientation.w = -aim_locations[i].pose.orientation.w;
 			} else if (i == HAND_RIGHT_INDEX) {
-				vrRightAimPosition.X = aim_locations[i].pose.position.x;
-				vrRightAimPosition.Y = aim_locations[i].pose.position.y;
-				vrRightAimPosition.Z = -1.0 * aim_locations[i].pose.position.z;
-				vrRightAimOrientation.X = aim_locations[i].pose.orientation.x;
-				vrRightAimOrientation.Y = aim_locations[i].pose.orientation.y;
-				vrRightAimOrientation.Z = -aim_locations[i].pose.orientation.z;
-				vrRightAimOrientation.W = -aim_locations[i].pose.orientation.w;
+				vrRightAimPosition.x = aim_locations[i].pose.position.x;
+				vrRightAimPosition.y = aim_locations[i].pose.position.y;
+				vrRightAimPosition.z = -1.0 * aim_locations[i].pose.position.z;
+				vrRightAimOrientation.x = aim_locations[i].pose.orientation.x;
+				vrRightAimOrientation.y = aim_locations[i].pose.orientation.y;
+				vrRightAimOrientation.z = -aim_locations[i].pose.orientation.z;
+				vrRightAimOrientation.w = -aim_locations[i].pose.orientation.w;
 			}
 		}
 
@@ -1248,10 +1255,10 @@ int VRInterface::update() {
 	irr::core::matrix4 baseViewRotation;
 	for (int i = 0; i < 16; i++) baseViewRotation[i] = bcBaseViewRot.m[i];
 	// Transform positions based on orientation of the camera's parent
-	irr::core::vector3df transformedVrLeftGripPosition = vrLeftGripPosition;
-	irr::core::vector3df transformedVrRightGripPosition = vrRightGripPosition;
-	irr::core::vector3df transformedVrLeftAimPosition = vrLeftAimPosition;
-	irr::core::vector3df transformedVrRightAimPosition = vrRightAimPosition;
+	irr::core::vector3df transformedVrLeftGripPosition = toIrrVec(vrLeftGripPosition);
+	irr::core::vector3df transformedVrRightGripPosition = toIrrVec(vrRightGripPosition);
+	irr::core::vector3df transformedVrLeftAimPosition = toIrrVec(vrLeftAimPosition);
+	irr::core::vector3df transformedVrRightAimPosition = toIrrVec(vrRightAimPosition);
 	irr::core::vector3df transformedHUDScreenPosition = irr::core::vector3df(0.0, 0.0, 1.0);
 	baseViewRotation.transformVect(transformedVrLeftGripPosition);
 	baseViewRotation.transformVect(transformedVrRightGripPosition);
@@ -1259,10 +1266,10 @@ int VRInterface::update() {
 	baseViewRotation.transformVect(transformedVrRightAimPosition);
 	baseViewRotation.transformVect(transformedHUDScreenPosition);
 	// Transform orientations based on parent
-	irr::core::matrix4 transformedVrLeftGripOrientation = baseViewRotation * vrLeftGripOrientation.getMatrix();
-	irr::core::matrix4 transformedVrRightGripOrientation = baseViewRotation * vrRightGripOrientation.getMatrix();
-	irr::core::matrix4 transformedVrLeftAimOrientation = baseViewRotation * vrLeftAimOrientation.getMatrix();
-	irr::core::matrix4 transformedVrRightAimOrientation = baseViewRotation * vrRightAimOrientation.getMatrix();
+	irr::core::matrix4 transformedVrLeftGripOrientation = baseViewRotation * toIrrQuat(vrLeftGripOrientation).getMatrix();
+	irr::core::matrix4 transformedVrRightGripOrientation = baseViewRotation * toIrrQuat(vrRightGripOrientation).getMatrix();
+	irr::core::matrix4 transformedVrLeftAimOrientation = baseViewRotation * toIrrQuat(vrLeftAimOrientation).getMatrix();
+	irr::core::matrix4 transformedVrRightAimOrientation = baseViewRotation * toIrrQuat(vrRightAimOrientation).getMatrix();
 	// Set these positions
 	leftController->setPosition(baseViewPosition + transformedVrLeftGripPosition);
 	rightController->setPosition(baseViewPosition + transformedVrRightGripPosition);
@@ -1535,8 +1542,8 @@ int VRInterface::update() {
     				portAzimuthThrottleReference = model->getPortAzimuthThrustLever();
 				}
 
-				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
-				float leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
+				float leftHandDeltaZ = vrLeftGripPosition.z - vrLeftGripPositionReference.z;
+				float leftHandDeltaX = vrLeftGripPosition.x - vrLeftGripPositionReference.x;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setPortSchottel(portSchottelReference + 360 * leftHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1550,8 +1557,8 @@ int VRInterface::update() {
     				stbdAzimuthThrottleReference = model->getStbdAzimuthThrustLever();
 				}
 
-				float rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
-				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaZ = vrRightGripPosition.z - vrRightGripPositionReference.z;
+				float rightHandDeltaX = vrRightGripPosition.x - vrRightGripPositionReference.x;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setStbdSchottel(stbdSchottelReference + 360 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1570,15 +1577,15 @@ int VRInterface::update() {
 					
 					// Check if tilted to 'left', 'central' or 'right', and set this mode here
 					irr::core::vector3df leftGripEulerAngles;
-					vrLeftGripOrientation.toEuler(leftGripEulerAngles);
+					toIrrQuat(vrLeftGripOrientation).toEuler(leftGripEulerAngles);
 					// TODO: Check sign of this, and if +- 10 degrees is enough overlap
-					if (leftGripEulerAngles.Z * irr::core::RADTODEG > -10) {
+					if (leftGripEulerAngles.Z * RADTODEG > -10) {
 						vrChangingPortEngine = true;
 						portEngineReference = model->getPortEngine();
 					} else {
 						vrChangingPortEngine = false;
 					}
-					if (leftGripEulerAngles.Z * irr::core::RADTODEG < 10) {
+					if (leftGripEulerAngles.Z * RADTODEG < 10) {
 						vrChangingStbdEngine = true;
 						stbdEngineReference = model->getStbdEngine();
 					} else {
@@ -1586,7 +1593,7 @@ int VRInterface::update() {
 					}
 				}
 				
-				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
+				float leftHandDeltaZ = vrLeftGripPosition.z - vrLeftGripPositionReference.z;
 
 				if (vrChangingPortEngine) {
 					//setPortEngine clips to valid range, so don't worry about this here
@@ -1608,7 +1615,7 @@ int VRInterface::update() {
 					vrRightGripPositionReference = vrRightGripPosition;
 					wheelReference = model->getWheel();
 				}
-				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaX = vrRightGripPosition.x - vrRightGripPositionReference.x;
 				//setWheel clips to valid range, so don't worry about this here
 				model->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?

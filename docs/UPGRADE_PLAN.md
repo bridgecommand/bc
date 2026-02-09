@@ -39,14 +39,14 @@ Bridge Command is a mature C++ maritime bridge simulator (~44K lines of code) us
 |-----------|-----------|-------|--------|
 | Graphics/Rendering | Irrlicht (OpenGL/DX9) | 295 files, 6,095 `irr::` refs | Aging, functional |
 | Water/Ocean | FFT (Tessendorf/Keith Lantz), CPU-based | FFTWave.cpp, MovingWater.cpp | Good math, slow execution |
-| Ship Physics | Custom empirical 3-DOF model | OwnShip.cpp (2,790 lines) | Functional, simplified |
+| Ship Physics | MMG standard + legacy empirical | OwnShip.cpp, MMGPhysicsModel.cpp | MMG done for conventional ships |
 | Networking | ENet UDP + custom protocol | NetworkPrimary/Secondary | Solid |
 | VR | OpenXR (Win/Linux) | VRInterface.cpp (1,841 lines) | Modern |
 | Audio | PortAudio + libsndfile | Sound.cpp (6,287 lines) | Basic, no spatial audio |
 | Radar | CPU software rendering + ARPA | RadarCalculation.cpp (1,947 lines) | Functional |
 | GUI | Irrlicht built-in GUI | GUIMain.cpp (1,869 lines) | Legacy |
 | Build | CMake 3.8+ | CMakeLists.txt | Adequate |
-| Standard | C++11 | All files | Outdated |
+| Standard | C++17 | All files | Modern |
 
 ### Key Strengths
 - Comprehensive maritime features (tidal streams, AIS, NMEA 0183, ARPA radar)
@@ -60,10 +60,10 @@ Bridge Command is a mature C++ maritime bridge simulator (~44K lines of code) us
 - Irrlicht engine is effectively unmaintained (last release 2021, OpenGL 2.x/3.x era)
 - No Vulkan, no PBR rendering, no compute shaders
 - CPU-based FFT ocean (bottleneck at N=64/128)
-- Simplified ship dynamics (not MMG standard model)
+- ~~Simplified ship dynamics~~ -- MMG model now available (enable with `MMGMode=1` in boat.ini)
 - No spatial/3D audio
 - macOS OpenGL deprecated by Apple (frozen at GL 4.1)
-- C++11 standard (missing modern C++ features)
+- ~~C++11 standard~~ -- upgraded to C++17
 - Monolithic SimulationModel class
 
 ---
@@ -333,25 +333,32 @@ RudderArea, RudderAspectRatio, FlowStraighteningCoeff
 
 ### Current State
 - ENet UDP networking (primary/secondary model)
-- NMEA 0183 output (serial + UDP): RMC, GLL, GGA, HDT, ROT, DPT, etc.
-- AIS Class A reports (ITU-R M.1371-5)
+- NMEA 0183 output (serial + UDP): RMC, GLL, GGA, HDT, ROT, DPT, VHW, MWV, etc. (16 sentence types)
+- AIS Class A position reports (Message 1, ITU-R M.1371-5)
+- AIS Message 5 static/voyage data (ship name, dimensions, every 6 min)
+- AIS Message 21 Aid-to-Navigation reports (buoy positions, every 3 min)
 - Multiplayer hub for multi-station exercises
 
 ### Upgrade Path
 
 #### NMEA Enhancements
-1. **Add missing sentences**: VHW (water speed/heading), MWV (wind), VDR (set & drift), MTW (water temperature)
-2. **NMEA 0183 input expansion** -- accept more sentence types for external control
+
+1. ~~**VHW (water speed/heading)**~~ -- Done
+2. ~~**MWV (wind speed/direction)**~~ -- Done
+3. **Add remaining sentences**: VDR (set & drift), MTW (water temperature)
+4. **NMEA 0183 input expansion** -- accept more sentence types for external control
 
 #### AIS Enhancements
-3. **AIS Message 5** -- static voyage data (ship name, destination, ETA, cargo type)
-4. **AIS Message 18** -- Class B position reports for pleasure craft
-5. **AIS Message 21** -- Aid to Navigation reports (buoys visible on external AIS displays)
+
+1. ~~**AIS Message 5**~~ -- Done (ship name, dimensions, ship type, GPS EPFD)
+2. **AIS Message 18** -- Class B position reports for pleasure craft
+3. ~~**AIS Message 21**~~ -- Done (buoy AtoN reports with position)
 
 #### Network Architecture
-6. **WebSocket protocol** -- for web-based instructor stations
-7. **Network encryption** -- TLS for deployment on shared networks
-8. **Cloud deployment support** -- containerized instructor station
+
+1. **WebSocket protocol** -- for web-based instructor stations
+2. **Network encryption** -- TLS for deployment on shared networks
+3. **Cloud deployment support** -- containerized instructor station
 
 ### Research Needed
 - [ ] Survey NMEA sentence requirements for common ECDIS software integration
@@ -453,42 +460,38 @@ RudderArea, RudderAspectRatio, FlowStraighteningCoeff
 ### Phase 0: Foundation (Months 1-2)
 **Goal:** Prepare codebase for modernization without breaking anything
 
-- [ ] Upgrade to C++17
-- [ ] Add CI/CD pipeline (GitHub Actions)
-- [ ] Add unit testing framework (Catch2) with tests for physics model
-- [ ] Profile rendering and physics performance (establish baselines)
-- [ ] Complete critical path research (R1-R6)
+- [x] Upgrade to C++17
+- [x] Add CI/CD pipeline (GitHub Actions) -- with test step on Linux amd64/arm64
+- [x] Add unit testing framework (Catch2) -- 68 tests, 184 assertions
+- [ ] Profile rendering and physics performance (establish baselines) -- needs running on bridge hardware
+- [x] Complete critical path research (R1-R6) -- see RESEARCH_FINDINGS.md
 
 ### Phase 1: Quick Physics Wins (Months 2-4)
 **Goal:** Significantly improve simulation realism with minimal code changes
 
-- [ ] Add added mass/inertia (Clarke's formulae) to OwnShip.cpp
+- [x] Implement MMG maneuvering model (hull, propeller, rudder forces)
+- [x] Add missing NMEA sentences (VHW, MWV)
+- [x] Add AIS Message 5 (static/voyage data), Message 21 (AtoN buoys)
 - [ ] Replace Phillips spectrum with JONSWAP in FFTWave.cpp
 - [ ] Couple wind speed to wave parameters
-- [ ] Implement fixed-timestep physics loop (50Hz)
-- [ ] Add missing NMEA sentences (VHW, MWV, VDR)
-- [ ] Add AIS Message 5, 18, 21
+- [ ] Add AIS Message 18 (Class B)
 
 ### Phase 2: Graphics Abstraction Layer (Months 4-8)
 **Goal:** Decouple codebase from Irrlicht, enabling engine swap
 
-- [ ] Design abstraction interfaces for rendering primitives
-  - ISceneNode -> BcSceneNode
-  - ISceneManager -> BcSceneManager
-  - IVideoDriver -> BcRenderer
-  - vector3df -> BcVec3
-  - etc.
-- [ ] Migrate code file-by-file from `irr::` to abstraction layer
-- [ ] Implement Irrlicht backend for abstraction (verify no regression)
-- [ ] Begin implementing new engine backend (Ogre3D Next or Wicked Engine)
+- [x] Design abstraction types: `bc::graphics::Vec2/Vec3/Color/Matrix4/Quaternion`
+- [x] Migrate 39+ headers from `#include "irrlicht.h"` to abstraction types + forward declarations
+- [ ] Migrate remaining 17 headers (blocked: 9 EventReceivers need event abstraction, 4 GUI files deferred to ImGui, 3 core engine deeply coupled, 1 RadarCalculation deferred)
+- [ ] Implement Irrlicht backend for full abstraction (verify no regression)
+- [ ] Begin implementing new engine backend (Wicked Engine)
 
 ### Phase 3: Core Physics Upgrade (Months 4-8, parallel with Phase 2)
 **Goal:** Implement MMG standard maneuvering model
 
-- [ ] Implement MMG hull force model with hydrodynamic derivatives
-- [ ] Implement proper propeller model (KT/KQ, wake fraction, thrust deduction)
-- [ ] Implement propeller-slipstream rudder model
-- [ ] Expand boat.ini format for new coefficients
+- [x] Implement MMG hull force model with hydrodynamic derivatives (Kijima estimation)
+- [x] Implement proper propeller model (KT/KQ, wake fraction, thrust deduction)
+- [x] Implement propeller-slipstream rudder model
+- [x] Expand boat.ini format for new coefficients (MMGMode=1)
 - [ ] Wave-ship interaction forces (sample wave field at hull points)
 - [ ] Validate against published turning circle / zigzag test data
 

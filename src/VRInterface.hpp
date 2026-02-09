@@ -17,9 +17,25 @@
 #ifndef __VRINTERFACE_HPP_INCLUDED__
 #define __VRINTERFACE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 #include "SimulationModel.hpp"
 #include <cstdint> // For int64_t
+
+// Forward declarations for Irrlicht types used as pointers/references
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+    }
+    namespace video {
+        class IVideoDriver;
+        class ITexture;
+    }
+    namespace core {
+        template<class T> class line3d;
+    }
+}
 
 #if defined _WIN64
 #include <Unknwn.h>
@@ -143,18 +159,18 @@ private:
     SimulationModel* model; // Store pointer to model
 
     // Vars to track position and orientation of controllers
-    irr::core::vector3df vrLeftGripPosition;
-    irr::core::vector3df vrRightGripPosition;
-    irr::core::vector3df vrLeftAimPosition;
-    irr::core::vector3df vrRightAimPosition;
-    irr::core::quaternion vrLeftGripOrientation;
-    irr::core::quaternion vrRightGripOrientation;
-    irr::core::quaternion vrLeftAimOrientation;
-    irr::core::quaternion vrRightAimOrientation;
-    
+    bc::graphics::Vec3 vrLeftGripPosition;
+    bc::graphics::Vec3 vrRightGripPosition;
+    bc::graphics::Vec3 vrLeftAimPosition;
+    bc::graphics::Vec3 vrRightAimPosition;
+    bc::graphics::Quaternion vrLeftGripOrientation;
+    bc::graphics::Quaternion vrRightGripOrientation;
+    bc::graphics::Quaternion vrLeftAimOrientation;
+    bc::graphics::Quaternion vrRightAimOrientation;
+
     // Reference values to track movement
-    irr::core::vector3df vrLeftGripPositionReference;
-    irr::core::vector3df vrRightGripPositionReference;
+    bc::graphics::Vec3 vrLeftGripPositionReference;
+    bc::graphics::Vec3 vrRightGripPositionReference;
     bool vrChangingPortEngine;
     bool vrChangingStbdEngine;
     // Engine settings for these reference positions
