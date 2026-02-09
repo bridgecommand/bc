@@ -38,26 +38,26 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     getScenarioList(scenarioList,scenarioPath); //Populate list
 
     //Get screen width
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
+    uint32_t su = driver->getScreenSize().Width;
+    uint32_t sh = driver->getScreenSize().Height;
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
     titleText.append(L"\nCopyright 2022 James Packer");
-    irr::core::dimension2d<irr::u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<irr::s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
+    irr::core::dimension2d<uint32_t> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
+    irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<int32_t>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
 
-    irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<irr::s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
-    irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<irr::s32>(0.02*su,0.20*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.32*su,0.40*sh,0.98*su,0.50*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
+    irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<int32_t>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
+    irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<int32_t>(0.02*su,0.20*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<int32_t>(0.32*su,0.40*sh,0.98*su,0.50*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
-    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.32*su,0.13*sh,0.98*su, 0.22*sh));
-    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.32*su,0.20*sh,0.98*su,0.23*sh));
+    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<int32_t>(0.32*su,0.13*sh,0.98*su, 0.22*sh));
+    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<int32_t>(0.32*su,0.20*sh,0.98*su,0.23*sh));
 
-    irr::gui::IGUIStaticText* instructionText = gui->addStaticText(language->translate("startupInstructions").c_str(),irr::core::rect<irr::s32>(0.32*su,0.26*sh,0.98*su, 0.32*sh));
+    irr::gui::IGUIStaticText* instructionText = gui->addStaticText(language->translate("startupInstructions").c_str(),irr::core::rect<int32_t>(0.32*su,0.26*sh,0.98*su, 0.32*sh));
 
     //add credits text
-    //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
+    //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<int32_t>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
@@ -89,7 +89,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     }
 
     //Get name of selected scenario
-    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (irr::s32)scenarioList.size()) {
+    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (int32_t)scenarioList.size()) {
         exit(EXIT_FAILURE); //No scenario loaded
     }
 
@@ -133,7 +133,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
     }
 
     //List here
-    for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+    for (uint32_t i=0;i<fileList->getFileCount();i++) {
         if (fileList->isDirectory(i)) {
             const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)

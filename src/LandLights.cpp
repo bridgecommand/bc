@@ -44,51 +44,51 @@ void LandLights::load(const std::string& worldName, irr::scene::ISceneManager* s
     std::string scenarioLightFilename = worldName;
     scenarioLightFilename.append("/light.ini");
 
-    irr::u32 numberOfLights;
+    uint32_t numberOfLights;
     numberOfLights = IniFile::iniFileTou32(scenarioLightFilename,"Number");
     //Run through lights, and check if any are not buoy lights
-    for (irr::u32 currentLight=1;currentLight<=numberOfLights;currentLight++) {
+    for (uint32_t currentLight=1;currentLight<=numberOfLights;currentLight++) {
         if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Buoy",currentLight)) == 0 ) {
             //If not a buoy light
-            irr::f32 lightX = model->longToX(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Long",currentLight)));
-            irr::f32 lightZ = model->latToZ(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Lat",currentLight)));
-            irr::f32 lightY = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
+            float lightX = model->longToX(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Long",currentLight)));
+            float lightZ = model->latToZ(IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Lat",currentLight)));
+            float lightY = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Height",currentLight));
             if (IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Absolute",currentLight)) == 0) {
                 lightY += terrain.getHeight(lightX,lightZ);
             } else if (IniFile::iniFileTou32(scenarioLightFilename, IniFile::enumerate1("Absolute", currentLight)) == 2) {
                 lightY += std::max(0.0f, terrain.getHeight(lightX, lightZ));
             }
 
-            irr::f32 lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
-            irr::f32 lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));
-            irr::f32 lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
-            irr::f32 lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
+            float lightR = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Red",currentLight));
+            float lightG = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Green",currentLight));
+            float lightB = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("Blue",currentLight));
+            float lightRange = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("Range",currentLight));
             std::string lightSequence = IniFile::iniFileToString(scenarioLightFilename,IniFile::enumerate1("Sequence",currentLight));
-            irr::u32 phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
-            irr::f32 lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
-            irr::f32 lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
+            uint32_t phaseStart = IniFile::iniFileTou32(scenarioLightFilename,IniFile::enumerate1("PhaseStart",currentLight));
+            float lightStart = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("StartAngle",currentLight));
+            float lightEnd = IniFile::iniFileTof32(scenarioLightFilename,IniFile::enumerate1("EndAngle",currentLight));
             lightRange = lightRange * M_IN_NM;
 
 
-            landLights.push_back(new NavLight (0,smgr, irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
+            landLights.push_back(new NavLight (0,smgr, bc::graphics::Vec3(lightX,lightY,lightZ),bc::graphics::Color(255,lightR,lightG,lightB),lightStart,lightEnd,lightRange, lightSequence, phaseStart));
         }
     }
 
 }
 
-void LandLights::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::u32 lightLevel)
+void LandLights::update(float deltaTime, float scenarioTime, uint32_t lightLevel)
 {
     for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
         (*it)->update(scenarioTime, lightLevel);
     }
 }
 
-irr::u32 LandLights::getNumber() const
+uint32_t LandLights::getNumber() const
 {
     return landLights.size();
 }
 
-void LandLights::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void LandLights::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     for(std::vector<NavLight*>::iterator it = landLights.begin(); it != landLights.end(); ++it) {
         (*it)->moveNode(deltaX,deltaY,deltaZ);

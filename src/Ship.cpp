@@ -17,11 +17,16 @@
 //Parent class for own and other ships - not used un-extended
 #include "Ship.hpp"
 
+#include "irrlicht.h"
 #include "Constants.hpp"
 #include "SimulationModel.hpp"
 #include "IniFile.hpp"
 
 //using namespace irr;
+
+namespace {
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) { return {v.X, v.Y, v.Z}; }
+}
 
 Ship::Ship()
 {
@@ -41,40 +46,40 @@ irr::scene::IMeshSceneNode* Ship::getSceneNode() const
     return (irr::scene::IMeshSceneNode*)ship;
 }
 
-irr::core::vector3df Ship::getRotation() const
+bc::graphics::Vec3 Ship::getRotation() const
 {
-    return ship->getRotation();
+    return fromIrrVec(ship->getRotation());
 }
 
-irr::core::vector3df Ship::getPosition() const
+bc::graphics::Vec3 Ship::getPosition() const
 {
     ship->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return ship->getAbsolutePosition();
+    return fromIrrVec(ship->getAbsolutePosition());
 }
 
-irr::f32 Ship::getLength() const
+float Ship::getLength() const
 {
     return length;
 }
 
-irr::f32 Ship::getBreadth() const
+float Ship::getBreadth() const
 {
     return breadth;
 }
 
-irr::f32 Ship::getHeightCorrection() const
+float Ship::getHeightCorrection() const
 {
     return heightCorrection;
 }
 
-irr::f32 Ship::getEstimatedDisplacement() const
+float Ship::getEstimatedDisplacement() const
 {
-    irr::f32 seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
-    irr::f32 typicalBlockCoefficient = 0.87; // 0.87 is typical block coefficient
+    float seawaterDensity = 1024; // define seawater density in kg / m^3 could parametarise this for dockwater and freshwater
+    float typicalBlockCoefficient = 0.87; // 0.87 is typical block coefficient
     return draught * breadth * length * seawaterDensity * typicalBlockCoefficient; 
 }
 
-void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
+void Ship::setPosition(float xPos, float zPos)
 {
      //Update the position used, ready for next update. Doesn't actually move the mesh at this point
      this->xPos = xPos;
@@ -82,39 +87,39 @@ void Ship::setPosition(irr::f32 xPos, irr::f32 zPos)
      positionManuallyUpdated = true;
 }
 
-void Ship::setHeading(irr::f32 hdg)
+void Ship::setHeading(float hdg)
 {
     this->hdg = hdg;
     controlMode = MODE_AUTO; //Switch to auto mode
 }
 
-void Ship::setSpeed(irr::f32 spd)
+void Ship::setSpeed(float spd)
 {
     this->axialSpd = spd;
     controlMode = MODE_AUTO; //Switch to auto mode
 }
 
-irr::f32 Ship::getHeading() const
+float Ship::getHeading() const
 {
     return hdg;
 }
 
-irr::f32 Ship::getSpeed() const
+float Ship::getSpeed() const
 {
     return axialSpd;
 }
 
-irr::u32 Ship::getMMSI() const
+uint32_t Ship::getMMSI() const
 {
     return mmsi;
 }
 
-void Ship::setMMSI(irr::u32 mmsi)
+void Ship::setMMSI(uint32_t mmsi)
 {
     this->mmsi = mmsi;
 }
 
-void Ship::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Ship::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     xPos += deltaX;
     yPos += deltaY;

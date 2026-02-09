@@ -17,7 +17,11 @@
 #ifndef __RADARSCREEN_HPP_INCLUDED__
 #define __RADARSCREEN_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include <cstdint>
+#include "graphics/Types.hpp"
+
+namespace irr { namespace scene { class ISceneManager; class ISceneNode; class IMeshSceneNode; } }
+namespace irr { namespace video { class IVideoDriver; class IImage; } }
 
 class RadarScreen
 {
@@ -25,8 +29,8 @@ class RadarScreen
         RadarScreen();
         virtual ~RadarScreen();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 size, irr::f32 tilt);
-        void setRadarDisplayRadius(irr::u32 radiusPx);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, bc::graphics::Vec3 offset, float size, float tilt);
+        void setRadarDisplayRadius(uint32_t radiusPx);
         void update(irr::video::IImage* radarImage);
         irr::scene::ISceneNode* getSceneNode() const;
 
@@ -35,9 +39,9 @@ class RadarScreen
         irr::video::IVideoDriver* driver;
         irr::scene::IMeshSceneNode* radarScreen;
         irr::scene::ISceneNode* parent;
-        irr::core::vector3df offset;
-        irr::u32 radarRadiusPx;
-		irr::f32 tilt;
+        bc::graphics::Vec3 offset;
+        uint32_t radarRadiusPx;
+        float tilt;
 };
 
 #endif

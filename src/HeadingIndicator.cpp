@@ -16,7 +16,7 @@ namespace gui
 {
 
 
-HeadingIndicator::HeadingIndicator(IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<irr::s32> rectangle) :
+HeadingIndicator::HeadingIndicator(IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<int32_t> rectangle) :
 IGUIElement(EGUIET_ELEMENT ,environment,parent,0,rectangle), heading(0)
 {
 }
@@ -38,7 +38,7 @@ if (!IsVisible)
     if (!skin)
         return;
 
-    irr::u32 skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
+    uint32_t skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
     irr::gui::IGUIFont* font = skin->getFont();
 
 	// draws the background
@@ -49,20 +49,20 @@ if (!IsVisible)
     Environment->getVideoDriver()->draw2DRectangleOutline(AbsoluteRect,video::SColor(skinAlpha,0,0,0)); //Todo: Think about clipping (find smaller of AbsoluteClippingRect and SliderRect?)
 
 	//Find the centre point
-	irr::core::vector2d<irr::s32> centrePoint = AbsoluteRect.getCenter();
+	irr::core::vector2d<int32_t> centrePoint = AbsoluteRect.getCenter();
 
     //Find integer angles within +- angleRange degrees of heading
 
-    irr::s32 angleRange = 20;
+    int32_t angleRange = 20;
 
-    irr::s32 minAngle = ceil(heading - angleRange);
-    irr::s32 maxAngle = floor(heading + angleRange);
+    int32_t minAngle = ceil(heading - angleRange);
+    int32_t maxAngle = floor(heading + angleRange);
 
-    irr::f32 pxPerDegree = (irr::f32)AbsoluteRect.getWidth()/(irr::f32)(angleRange*2);
+    float pxPerDegree = (float)AbsoluteRect.getWidth()/(float)(angleRange*2);
 
     //Draw tics
-    irr::core::vector2d<irr::s32> startPoint;
-	irr::core::vector2d<irr::s32> endPoint;
+    irr::core::vector2d<int32_t> startPoint;
+	irr::core::vector2d<int32_t> endPoint;
 
     for (int ticAng = minAngle; ticAng<= maxAngle; ticAng++) {
         startPoint.X = centrePoint.X + pxPerDegree*(ticAng-heading);
@@ -74,10 +74,10 @@ if (!IsVisible)
             startPoint.Y = 0.5*centrePoint.Y + 0.5*AbsoluteRect.UpperLeftCorner.Y;
 
             //Draw position
-            irr::s32 displayAng = ticAng;
+            int32_t displayAng = ticAng;
             while (displayAng < 0) {displayAng+=360;}
             while (displayAng >= 360) {displayAng-=360;}
-            font->draw(irr::core::stringw(displayAng),irr::core::rect<irr::s32>(startPoint.X - 100, AbsoluteRect.UpperLeftCorner.Y, startPoint.X + 100, AbsoluteRect.LowerRightCorner.Y),video::SColor(skinAlpha,0,0,0),true,false,&AbsoluteRect);
+            font->draw(irr::core::stringw(displayAng),irr::core::rect<int32_t>(startPoint.X - 100, AbsoluteRect.UpperLeftCorner.Y, startPoint.X + 100, AbsoluteRect.LowerRightCorner.Y),video::SColor(skinAlpha,0,0,0),true,false,&AbsoluteRect);
 
         } else if (ticAng % 5 == 0) {
             startPoint.Y = centrePoint.Y;
@@ -97,7 +97,7 @@ if (!IsVisible)
 
 }
 
-void HeadingIndicator::setHeading(irr::f32 heading)
+void HeadingIndicator::setHeading(float heading)
 {
     this->heading = heading;
 }

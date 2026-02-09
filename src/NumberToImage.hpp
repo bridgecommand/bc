@@ -17,12 +17,18 @@
 #ifndef __NUMBERTOIMAGE_HPP_INCLUDED__
 #define __NUMBERTOIMAGE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include <cstdint>
+
+// Forward declarations
+namespace irr {
+    class IrrlichtDevice;
+    namespace video { class IImage; }
+}
 
 namespace NumberToImage
 {
 
-    irr::video::IImage* getImage(irr::u32 number, irr::IrrlichtDevice* dev);
+    irr::video::IImage* getImage(uint32_t number, irr::IrrlichtDevice* dev);
 
 }
 

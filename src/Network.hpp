@@ -19,12 +19,12 @@
 
 #include <string>
 
-#include "irrlicht.h"
 #include <enet/enet.h>
 #include "OperatingModeEnum.hpp"
 
 //Forward declarations
 class SimulationModel;
+namespace irr { class IrrlichtDevice; }
 
 class Network
 {

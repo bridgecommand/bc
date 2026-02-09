@@ -17,9 +17,9 @@
 #include "EventReceiver.hpp"
 
     EventReceiver::EventReceiver(
-        irr::s32 pauseButtonID, 
-        irr::s32 runButtonID,
-        irr::f32 initialAccelerator) //Constructor
+        int32_t pauseButtonID, 
+        int32_t runButtonID,
+        float initialAccelerator) //Constructor
 	{
 		accelerator = initialAccelerator;
         this->pauseButtonID = pauseButtonID;
@@ -29,7 +29,7 @@
     bool EventReceiver::OnEvent(const irr::SEvent& event)
 	{
         if (event.EventType == irr::EET_GUI_EVENT) {
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			int32_t id = event.GUIEvent.Caller->getID();
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED)
             {
                 if (id == pauseButtonID) {
@@ -51,7 +51,7 @@
         return false;
     }
 
-    irr::f32 EventReceiver::getAccelerator() const
+    float EventReceiver::getAccelerator() const
     {
         return accelerator;
     }

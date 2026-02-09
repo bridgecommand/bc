@@ -38,7 +38,7 @@ public:
         GUI_ID_REPEATER_CHOICE
     };
 
-    void updateGuiData(irr::f32 time, irr::f32 ownShipHeading, irr::f32 rudderAngle, irr::f32 wheelAngle, irr::s32 portEngineRPM, irr::s32 stbdEngineRPM);
+    void updateGuiData(float time, float ownShipHeading, float rudderAngle, float wheelAngle, int32_t portEngineRPM, int32_t stbdEngineRPM);
     void setMode(bool headingMode);
 
 private:
@@ -57,8 +57,8 @@ private:
 
     irr::gui::HeadingIndicator* heading;
 
-    std::wstring f32To3dp(irr::f32 value);
-    std::wstring f32To1dp(irr::f32 value);
+    std::wstring f32To3dp(float value);
+    std::wstring f32To1dp(float value);
 
 };
 

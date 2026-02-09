@@ -124,9 +124,10 @@ class cOcean {
 
 	float g;				// gravity constant
 	int N, Nplus1;				// dimension -- N should be a power of 2
-	float A;				// phillips spectrum parameter -- affects heights of waves
+	float A;				// spectrum amplitude parameter -- affects heights of waves
 	vector2 w;				// wind parameter
 	float length;				// length parameter
+	bool useJONSWAP;			// true = JONSWAP spectrum, false = Phillips
 	vertex_ocean *vertices;			// vertices for vertex buffer object
 	bool reInitialiseWaves; // If waves should be re-created (as new A or w?)
 
@@ -145,6 +146,8 @@ class cOcean {
 	//Main internal methods
 	float dispersion(int n_prime, int m_prime);		// deep water
 	float phillips(int n_prime, int m_prime);		// phillips spectrum
+	float jonswap(int n_prime, int m_prime);		// JONSWAP spectrum
+	float spectrum(int n_prime, int m_prime);		// dispatch to active spectrum
 	complex hTilde_0(int n_prime, int m_prime);
 	complex hTilde(float t, int n_prime, int m_prime);
 	//complex_vector_normal h_D_and_n(vector2 x, float t);
@@ -158,6 +161,7 @@ class cOcean {
 	~cOcean();
 
 	void resetParameters(float A, vector2 w);
+	void setSpectrumType(bool jonswap);	// true = JONSWAP, false = Phillips
 	void evaluateWavesFFT(float t);
 	vertex_ocean* getVertices();
 };

@@ -17,27 +17,37 @@
 #ifndef __LIGHT_HPP_INCLUDED__
 #define __LIGHT_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
+
+#include <cstdint>
+
+// Forward declarations for Irrlicht pointer types
+namespace irr {
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+        class ILightSceneNode;
+    }
+}
 
 class Light
 {
     public:
         Light();
         virtual ~Light();
-        void load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent);
-        void update(irr::f32 scenarioTime);
-        irr::video::SColor getLightSColor() const;
-        irr::u32 getLightLevel() const;
+        void load(irr::scene::ISceneManager* smgr, float sunRise, float sunSet, irr::scene::ISceneNode* parent);
+        void update(float scenarioTime);
+        bc::graphics::Color getLightSColor() const;
+        uint32_t getLightLevel() const;
 
     private:
-        irr::u32 lightLevel;
-        irr::video::SColor ambientColor;
+        uint32_t lightLevel;
+        bc::graphics::Color ambientColor;
         irr::scene::ISceneManager* smgr;
-        irr::f32 sunRise;
-        irr::f32 sunSet;
+        float sunRise;
+        float sunSet;
         irr::scene::ISceneNode* parent;
         irr::scene::ILightSceneNode* directionalLight;
-        //irr::scene::IMeshSceneNode* directionalLight;
 };
 
 #endif // __LIGHT_HPP_INCLUDED__

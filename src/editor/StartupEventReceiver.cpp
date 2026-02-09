@@ -28,13 +28,13 @@
         irr::gui::IGUIListBox* scenarioListBox, 
         irr::gui::IGUIListBox* worldListBox, 
         irr::gui::IGUIWindow* selectWindow,
-        irr::s32 scenarioListBoxID, 
-        irr::s32 worldListBoxID, 
-        irr::s32 okScenarioButtonID, 
-        irr::s32 okWorldButtonID, 
-        irr::s32 importScenarioButtonID, 
-        irr::s32 exportScenarioButtonID, 
-        irr::s32 importExportOKButtonID,
+        int32_t scenarioListBoxID, 
+        int32_t worldListBoxID, 
+        int32_t okScenarioButtonID, 
+        int32_t okWorldButtonID, 
+        int32_t importScenarioButtonID, 
+        int32_t exportScenarioButtonID, 
+        int32_t importExportOKButtonID,
         GUIImportExport* guiImportExport,
         ScenarioData* scenarioData) //Constructor
 	{
@@ -58,7 +58,7 @@
 	{
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			int32_t id = event.GUIEvent.Caller->getID();
 			//If OK button, or double click on list, for scenario
             if ( (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED && id == okScenarioButtonID ) || (event.GUIEvent.EventType==irr::gui::EGET_LISTBOX_SELECTED_AGAIN  && id == scenarioListBoxID ) )
             {
@@ -120,12 +120,12 @@
         return false;
     }
 
-    irr::s32 StartupEventReceiver::getScenarioSelected() const
+    int32_t StartupEventReceiver::getScenarioSelected() const
     {
         return scenarioSelected;
     }
 
-    irr::s32 StartupEventReceiver::getWorldSelected() const
+    int32_t StartupEventReceiver::getWorldSelected() const
     {
         return worldSelected;
     }

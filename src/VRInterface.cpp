@@ -24,7 +24,7 @@
 #include <cstdarg>
 
 // Constructor
-VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, irr::u32 suGUI, irr::u32 shGUI) {
+VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* smgr, irr::video::IVideoDriver* driver, uint32_t suGUI, uint32_t shGUI) {
 	this->dev = dev;
 	this->smgr = smgr;
     this->driver = driver;
@@ -88,14 +88,14 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 
 	// Add 2d interface rendering option
 	// Create mesh and scene node for HUD
-	irr::f32 hudRatio = 0.75;
+	float hudRatio = 0.75;
 	if (suGUI > 0 && shGUI > 0) {
-		hudRatio = (irr::f32)shGUI / (irr::f32)suGUI;
+		hudRatio = (float)shGUI / (float)suGUI;
 	}
 
-	irr::f32 hudWidth = 1.5;
-	irr::f32 hudHeight = hudWidth * hudRatio;
-	irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<irr::f32>(hudWidth, hudHeight));
+	float hudWidth = 1.5;
+	float hudHeight = hudWidth * hudRatio;
+	irr::scene::IMesh* hudPlane = smgr->getGeometryCreator()->createPlaneMesh(irr::core::dimension2d<float>(hudWidth, hudHeight));
 	smgr->getMeshManipulator()->setVertexColorAlpha(hudPlane, 192); // Set to be 25% transparent
 	// Make HUD mesh vertical so we don't need to worry about rotation later
 	meshRotationMatrix.setRotationDegrees(irr::core::vector3df(-90, 0, 0));
@@ -127,7 +127,7 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 
 	hudTexture = 0;
 	if (driver->queryFeature(irr::video::EVDF_RENDER_TO_TARGET)) {
-		hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<irr::u32>(suGUI, shGUI), "HUD");
+		hudTexture = driver->addRenderTargetTexture(irr::core::dimension2d<uint32_t>(suGUI, shGUI), "HUD");
 		hudScreen->setMaterialTexture(0, hudTexture); // set material to render target
 	}
 
@@ -1242,8 +1242,11 @@ int VRInterface::update() {
 	}
 
 	// Set controller positions
-	irr::core::vector3df baseViewPosition = model->getCameraBasePosition();
-	irr::core::matrix4 baseViewRotation = model->getCameraBaseRotation();
+	bc::graphics::Vec3 bcBaseViewPos = model->getCameraBasePosition();
+	irr::core::vector3df baseViewPosition(bcBaseViewPos.x, bcBaseViewPos.y, bcBaseViewPos.z);
+	bc::graphics::Matrix4 bcBaseViewRot = model->getCameraBaseRotation();
+	irr::core::matrix4 baseViewRotation;
+	for (int i = 0; i < 16; i++) baseViewRotation[i] = bcBaseViewRot.m[i];
 	// Transform positions based on orientation of the camera's parent
 	irr::core::vector3df transformedVrLeftGripPosition = vrLeftGripPosition;
 	irr::core::vector3df transformedVrRightGripPosition = vrRightGripPosition;
@@ -1320,16 +1323,16 @@ int VRInterface::update() {
 		projection_views[i].fov = views[i].fov;
 
 		// Binding to Irrlicht views
-		irr::core::vector3df eyePos;
-		eyePos.X = projection_views[i].pose.position.x;
-		eyePos.Y = projection_views[i].pose.position.y;
-		eyePos.Z = -1.0 * projection_views[i].pose.position.z;
-		irr::core::quaternion quat;
-		quat.X = projection_views[i].pose.orientation.x;
-		quat.Y = projection_views[i].pose.orientation.y;
-		quat.Z = -1.0 * projection_views[i].pose.orientation.z;
-		quat.W = -1.0 * projection_views[i].pose.orientation.w;
-		
+		bc::graphics::Vec3 eyePos(
+			projection_views[i].pose.position.x,
+			projection_views[i].pose.position.y,
+			-1.0f * projection_views[i].pose.position.z);
+		bc::graphics::Quaternion vrQuat(
+			projection_views[i].pose.orientation.x,
+			projection_views[i].pose.orientation.y,
+			-1.0f * projection_views[i].pose.orientation.z,
+			-1.0f * projection_views[i].pose.orientation.w);
+
 		// Find lens shift, as left and right FOV may not be symmetrical
 		// TODO: Probably doesn't need calculating each frame
 		model->setViewAngle(irr::core::radToDeg(views[i].fov.angleRight - views[i].fov.angleLeft));
@@ -1339,10 +1342,10 @@ int VRInterface::update() {
 		float tanDown = tan(views[i].fov.angleDown);
 		float horizontalShift = -1.0*(tanRight + tanLeft) / (tanRight - tanLeft);
 		float verticalShift = -1.0 * (tanUp + tanDown) / (tanUp - tanDown);
-		irr::core::vector2df lensShift = irr::core::vector2df(horizontalShift, verticalShift);
-		
+		bc::graphics::Vec2 lensShift(horizontalShift, verticalShift);
+
 		// Send this to the camera
-		model->updateCameraVRPos(quat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
+		model->updateCameraVRPos(vrQuat, eyePos, lensShift); // TODO: Check if this is relative to the correct origin
 
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
@@ -1422,7 +1425,7 @@ int VRInterface::update() {
 			dev->postEventFromUser(userEventFromVR);
 
 			// Get ray from controller, prioritise right hand. Length 10m
-			irr::core::line3d<irr::f32> selectRay;
+			irr::core::line3d<float> selectRay;
 			getRayFromController(&selectRay, 10.0);
 
 			// Tracks the current intersection point with the level or a mesh
@@ -1447,8 +1450,8 @@ int VRInterface::update() {
 				irr::core::vector3df hudScreenTopLeftPos = hudScreenTopLeft->getAbsolutePosition();
 				irr::core::vector3df hudScreenBottomRightPos = hudScreenBottomRight->getAbsolutePosition();
 
-				irr::f32 interpY = 0;
-				irr::f32 interpX = 0;
+				float interpY = 0;
+				float interpX = 0;
 				// Get screen Y from Y
 				if ((hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y) != 0) {
 					interpY = (intersection.Y - hudScreenBottomRightPos.Y) / (hudScreenTopLeftPos.Y - hudScreenBottomRightPos.Y);
@@ -1511,8 +1514,8 @@ int VRInterface::update() {
 		if (hudTexture) {
 			driver->setRenderTarget(hudTexture, true, true, irr::video::SColor(0, 128, 128, 128));
 			// Draw GUI, this should have been updated in guiMain.drawGUI() above
-			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
-			driver->setViewPort(irr::core::rect<irr::s32>(0, 0, suGUI, shGUI));
+			driver->setViewPort(irr::core::rect<int32_t>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
+			driver->setViewPort(irr::core::rect<int32_t>(0, 0, suGUI, shGUI));
 			smgr->getGUIEnvironment()->drawAll();
 			//set back usual render target
 			driver->setRenderTarget(0, 0); // TODO: Maybe not needed here
@@ -1532,8 +1535,8 @@ int VRInterface::update() {
     				portAzimuthThrottleReference = model->getPortAzimuthThrustLever();
 				}
 
-				irr::f32 leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
-				irr::f32 leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
+				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
+				float leftHandDeltaX = vrLeftGripPosition.X - vrLeftGripPositionReference.X;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setPortSchottel(portSchottelReference + 360 * leftHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1547,8 +1550,8 @@ int VRInterface::update() {
     				stbdAzimuthThrottleReference = model->getStbdAzimuthThrustLever();
 				}
 
-				irr::f32 rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
-				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaZ = vrRightGripPosition.Z - vrRightGripPositionReference.Z;
+				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 
 				// The 'set' functions will check limits, so don't clamp here
 				model->setStbdSchottel(stbdSchottelReference + 360 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
@@ -1583,7 +1586,7 @@ int VRInterface::update() {
 					}
 				}
 				
-				irr::f32 leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
+				float leftHandDeltaZ = vrLeftGripPosition.Z - vrLeftGripPositionReference.Z;
 
 				if (vrChangingPortEngine) {
 					//setPortEngine clips to valid range, so don't worry about this here
@@ -1605,7 +1608,7 @@ int VRInterface::update() {
 					vrRightGripPositionReference = vrRightGripPosition;
 					wheelReference = model->getWheel();
 				}
-				irr::f32 rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
+				float rightHandDeltaX = vrRightGripPosition.X - vrRightGripPositionReference.X;
 				//setWheel clips to valid range, so don't worry about this here
 				model->setWheel(wheelReference + 60 * rightHandDeltaX); // TODO: Make sensitivity a parameter?
 				// TODO: Add haptic feedback if passing zero position?
@@ -1628,7 +1631,7 @@ int VRInterface::update() {
 #endif
 }
 
-bool VRInterface::getRayFromController(irr::core::line3d<irr::f32>* ray, irr::f32 rayLength)
+bool VRInterface::getRayFromController(irr::core::line3d<float>* ray, float rayLength)
 {
 #if defined _WIN64 || defined __linux__
 	if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {

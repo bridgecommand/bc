@@ -25,7 +25,7 @@ Lang::Lang(std::string language)
     languageFileName = language;
 }
 
-irr::core::stringw Lang::translate(std::string phraseName)
+std::wstring Lang::translate(std::string phraseName)
 {
     //Look up
     std::wstring translatedPhrase = IniFile::iniFileToWString(languageFileName, phraseName);
@@ -34,9 +34,7 @@ irr::core::stringw Lang::translate(std::string phraseName)
         if (phraseName == "deg") {
             //FIXME: Temp fix for the degree symbol, while utf-8 isn't properly sorted on all platforms
             wchar_t degSymbolChar = 176;
-            irr::core::stringw degSymbolString = L"";
-            degSymbolString.append(degSymbolChar);
-            return degSymbolString;
+            return std::wstring(1, degSymbolChar);
         } else {
             std::cout << "Translation for " << phraseName << " not found in " << languageFileName << std::endl;
             translatedPhrase = std::wstring(phraseName.begin(), phraseName.end());
@@ -52,8 +50,5 @@ irr::core::stringw Lang::translate(std::string phraseName)
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
     }
 
-    //convert to stringw
-    irr::core::stringw returnPhrase(translatedPhrase.c_str());
-
-    return returnPhrase;
+    return translatedPhrase;
 }

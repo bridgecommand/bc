@@ -15,6 +15,8 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Rain.hpp"
+
+#include "irrlicht.h"
 #include "Utilities.hpp"
 #include <iostream>
 
@@ -79,7 +81,7 @@ void Rain::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent,
 
 }
 
-void Rain::setIntensity(irr::f32 intensity) {
+void Rain::setIntensity(float intensity) {
 
     if (intensity != rainIntensity && intensity <= 10 && intensity >= 0) {
 
@@ -91,18 +93,18 @@ void Rain::setIntensity(irr::f32 intensity) {
 void Rain::applyTextures() {
     if (rainTextures.size()==11) { //Check all textures 0-10 are loaded
         //Round one up and one down so we can get half step rain intensity level.
-    	irr::u8 texture1 = Utilities::round(rainIntensity+0.25);
-    	irr::u8 texture2 = Utilities::round(rainIntensity-0.25);
+    	uint8_t texture1 = Utilities::round(rainIntensity+0.25);
+    	uint8_t texture2 = Utilities::round(rainIntensity-0.25);
         rainNode1->setMaterialTexture(0,rainTextures.at(texture1));
         rainNode2->setMaterialTexture(0,rainTextures.at(texture2));
     }
 }
 
-void Rain::update(irr::f32 scenarioTime) {
+void Rain::update(float scenarioTime) {
     //update rain animation
         //(Should move to its own class)
-        irr::f32 rainAnimation1 = scenarioTime/2.0;
-        irr::f32 rainAnimation2 = scenarioTime/2.2;
+        float rainAnimation1 = scenarioTime/2.0;
+        float rainAnimation2 = scenarioTime/2.2;
         rainAnimation1 = rainAnimation1 - (int)rainAnimation1;
         rainAnimation2 = rainAnimation2 - (int)rainAnimation2;
         rainNode1->getMaterial(0).getTextureMatrix(0).setTextureTranslate(0.5,rainAnimation1);

@@ -17,8 +17,19 @@
 #ifndef __RAIN_HPP_INCLUDED__
 #define __RAIN_HPP_INCLUDED__
 
-#include "irrlicht.h"
 #include <vector>
+
+// Forward declarations for Irrlicht types still needed internally
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+    }
+    namespace video {
+        class ITexture;
+    }
+}
 
 class Rain
 {
@@ -28,12 +39,12 @@ public:
     Rain();
     ~Rain();
     void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::IrrlichtDevice* dev);
-    void update(irr::f32 scenarioTime);
-    void setIntensity(irr::f32 intensity);
+    void update(float scenarioTime);
+    void setIntensity(float intensity);
 
 private:
 
-    irr::f32 rainIntensity;
+    float rainIntensity;
     irr::scene::ISceneNode* parent;
     irr::scene::ISceneNode* rainNode1;
     irr::scene::ISceneNode* rainNode2;

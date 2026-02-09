@@ -17,8 +17,14 @@
 #ifndef __SCENARIOCHOICE_HPP_INCLUDED__
 #define __SCENARIOCHOICE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include <cstdint>
 #include "Lang.hpp"
+
+// Forward declarations
+namespace irr {
+    class IrrlichtDevice;
+    namespace gui { class IGUIEnvironment; }
+}
 #include "OperatingModeEnum.hpp"
 #include <asio.hpp> //To find hostname
 #include <string>
@@ -28,7 +34,7 @@ class ScenarioChoice
 {
 public:
     ScenarioChoice(irr::IrrlichtDevice* device, Lang* language);
-    void chooseScenario(std::string& scenarioName, std::string& hostname, irr::u32& udpPort, OperatingMode::Mode& mode, std::string scenarioPath);
+    void chooseScenario(std::string& scenarioName, std::string& hostname, uint32_t& udpPort, OperatingMode::Mode& mode, std::string scenarioPath);
 
 private:
     void getScenarioList(std::vector<std::string>&scenarioList, std::vector<std::string>&scenarioDescription, std::string scenarioPath);

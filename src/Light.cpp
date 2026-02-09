@@ -16,11 +16,17 @@
 
 #include "Light.hpp"
 
+#include "irrlicht.h"
+
 #include <cmath> //For fmod
 #include <iostream>
 #include "Constants.hpp"
 
-//using namespace irr;
+namespace {
+    inline irr::video::SColor toIrrColor(const bc::graphics::Color& c) {
+        return irr::video::SColor(c.a, c.r, c.g, c.b);
+    }
+}
 
 Light::Light()
 {
@@ -32,7 +38,7 @@ Light::~Light()
     //dtor
 }
 
-void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sunSet, irr::scene::ISceneNode* parent)
+void Light::load(irr::scene::ISceneManager* smgr, float sunRise, float sunSet, irr::scene::ISceneNode* parent)
 {
 
     this->smgr = smgr;
@@ -42,8 +48,8 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
 
     lightLevel = 0;
 
-    ambientColor = irr::video::SColor(255,64,64,64);
-    smgr->setAmbientLight(ambientColor);
+    ambientColor = bc::graphics::Color(255,64,64,64);
+    smgr->setAmbientLight(toIrrColor(ambientColor));
 
     //add a directional light
     directionalLight = smgr->addLightSceneNode();
@@ -58,15 +64,15 @@ void Light::load(irr::scene::ISceneManager* smgr, irr::f32 sunRise, irr::f32 sun
 
 }
 
-void Light::update(irr::f32 scenarioTime)
+void Light::update(float scenarioTime)
 {
     //convert scenario time (in seconds) into hours
-    irr::f32 hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
+    float hourTime = std::fmod(scenarioTime,SECONDS_IN_DAY)/SECONDS_IN_HOUR;
 
     //Light parameters
-    irr::s32 lightLow=50;
-	irr::s32 lightHigh=205;
-	irr::s32 lightCos=45;
+    int32_t lightLow=50;
+	int32_t lightHigh=205;
+	int32_t lightCos=45;
 
     if (hourTime >= 0               && hourTime < (sunRise - 0.5)) {lightLevel = lightLow;}
 	if (hourTime >= (sunRise - 0.5) && hourTime < (sunRise + 0.5)) {lightLevel = (lightHigh-lightLow) * (hourTime - (sunRise - 0.5)) + lightLow;}
@@ -75,26 +81,26 @@ void Light::update(irr::f32 scenarioTime)
 	if (hourTime >= (sunSet  + 0.5) && hourTime <= 24            ) {lightLevel = lightLow;}
 
 	//sinusoidal component
-	lightLevel = (irr::s32)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
+	lightLevel = (int32_t)lightLevel + lightCos*cos((2*PI/24.0)*(hourTime-12.0));
 
     //do something with ambient colour
-    ambientColor=irr::video::SColor(255,lightLevel,lightLevel,lightLevel);
+    ambientColor = bc::graphics::Color(255,lightLevel,lightLevel,lightLevel);
     //update ambient light
-    smgr->setAmbientLight(ambientColor);
+    smgr->setAmbientLight(toIrrColor(ambientColor));
 
     //Update the directional light
     irr::video::SLight lightData = directionalLight->getLightData();
-    lightData.DiffuseColor = ambientColor;
+    lightData.DiffuseColor = toIrrColor(ambientColor);
     directionalLight->setLightData(lightData);
 
 }
 
-irr::video::SColor Light::getLightSColor() const
+bc::graphics::Color Light::getLightSColor() const
 {
     return ambientColor;
 }
 
-irr::u32 Light::getLightLevel() const
+uint32_t Light::getLightLevel() const
 {
     return lightLevel;
 }

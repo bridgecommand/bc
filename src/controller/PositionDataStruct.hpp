@@ -17,11 +17,9 @@
 #ifndef __POSITIONDATASTRUCT_HPP_INCLUDED__
 #define __POSITIONDATASTRUCT_HPP_INCLUDED__
 
-#include "irrlicht.h"
-
 struct PositionData //To hold information about a position
 {
-    irr::f32 X, Z;
+    float X, Z;
     PositionData():X(0), Z(0){}
 };
 

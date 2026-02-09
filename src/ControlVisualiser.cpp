@@ -15,6 +15,11 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ControlVisualiser.hpp"
+#include "irrlicht.h"
+
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
+}
 
 ControlVisualiser::ControlVisualiser()
 {
@@ -28,13 +33,13 @@ ControlVisualiser::~ControlVisualiser()
     //dtor
 }
 
-void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType)
+void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, bc::graphics::Vec3 offset, float scale, uint32_t rotationAxis, uint32_t controlType)
 {
     // Store rotation axis (0=x, 1=y, 2=z)
     this->rotationAxis = rotationAxis;
-    
+
     // Load unless 'no data' marker for position is set
-    if (offset.X != -999 || offset.Y != -999 || offset.Z != -999) 
+    if (offset.x != -999 || offset.y != -999 || offset.z != -999)
     {
         // Load from media/throttle.x
         // TODO: Check path is sensible here?
@@ -58,12 +63,12 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
 
         if (controlMesh != 0) 
         {
-            controlNode = smgr->addMeshSceneNode(controlMesh, parent, -1, offset, irr::core::vector3df(0.0, 0.0, 0.0), irr::core::vector3df(scale,scale,scale));
+            controlNode = smgr->addMeshSceneNode(controlMesh, parent, -1, toIrrVec(offset), irr::core::vector3df(0.0, 0.0, 0.0), irr::core::vector3df(scale,scale,scale));
         
             // Set material parameters
             if (controlNode && controlNode->getMaterialCount() > 0)
             {
-                for (irr::u32 mat = 0; mat < controlNode->getMaterialCount(); mat++)
+                for (uint32_t mat = 0; mat < controlNode->getMaterialCount(); mat++)
                 {
                     controlNode->getMaterial(mat).MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
                     controlNode->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
@@ -75,7 +80,7 @@ void ControlVisualiser::load(irr::scene::ISceneManager* smgr, irr::scene::IScene
     }
 }
 
-void ControlVisualiser::update(irr::f32 displayValue)
+void ControlVisualiser::update(float displayValue)
 {
 
     this->displayValue = displayValue;

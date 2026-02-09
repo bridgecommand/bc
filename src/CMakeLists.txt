@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(bridgecommand)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -9,9 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if (APPLE)
-    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=10.13")
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++17 -stdlib=libc++ -mmacosx-version-min=10.13")
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")
-    set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
 endif (APPLE)
 
 add_subdirectory(libs/asio)
@@ -26,6 +26,9 @@ if (NOT APPLE)
     #add_definitions(-DFOR_DEB)
 endif (NOT APPLE)
 
+# unit tests
+add_subdirectory(tests)
+
 # optional tools
 add_subdirectory(controller)
 add_subdirectory(editor)
@@ -39,6 +42,24 @@ find_package(Threads REQUIRED)
 if (NOT APPLE)
 find_package(OpenXR REQUIRED)
 endif(NOT APPLE)
+
+# Optional: OpenAL for 3D spatial audio
+find_package(OpenAL)
+if(OPENAL_FOUND)
+    message(STATUS "OpenAL found: ${OPENAL_INCLUDE_DIR}")
+    add_definitions(-DWITH_OPENAL)
+else()
+    message(STATUS "OpenAL not found - using PortAudio fallback")
+endif()
+
+# Optional: GDAL for S-57 chart integration
+find_package(GDAL)
+if(GDAL_FOUND)
+    message(STATUS "GDAL found: ${GDAL_VERSION}")
+    add_definitions(-DWITH_GDAL)
+else()
+    message(STATUS "GDAL not found - chart integration disabled")
+endif()
 
 set(BC_SOURCES
     iprof.cpp
@@ -61,10 +82,12 @@ set(BC_SOURCES
     LandObject.cpp
     LandObjects.cpp
     Lang.cpp
+    LegacyPhysicsModel.cpp
     Light.cpp
     Line.cpp
     Lines.cpp
     ManOverboard.cpp
+    MMGPhysicsModel.cpp
     MovingWater.cpp
     MyEventReceiver.cpp
     NMEA.cpp
@@ -87,6 +110,7 @@ set(BC_SOURCES
     SimulationModel.cpp
     Sky.cpp
     Sound.cpp
+    SoundOpenAL.cpp
     StartupEventReceiver.cpp
     Terrain.cpp
     Tide.cpp
@@ -115,6 +139,14 @@ if (APPLE)
       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/libs/portaudio/include"
     )
 
+    find_library(VORBISENC_LIB vorbisenc HINTS /opt/homebrew/lib)
+    find_library(VORBIS_LIB vorbis HINTS /opt/homebrew/lib)
+    find_library(OGG_LIB ogg HINTS /opt/homebrew/lib)
+    find_library(FLAC_LIB FLAC HINTS /opt/homebrew/lib)
+    find_library(OPUS_LIB opus HINTS /opt/homebrew/lib)
+    find_library(MPG123_LIB mpg123 HINTS /opt/homebrew/lib)
+    find_library(LAME_LIB mp3lame HINTS /opt/homebrew/lib)
+
     target_link_libraries(bridgecommand-bc PRIVATE
         bc-asio
         enet
@@ -123,10 +155,20 @@ if (APPLE)
         Threads::Threads
         sndfile
         portaudio
+        ${VORBISENC_LIB}
+        ${VORBIS_LIB}
+        ${OGG_LIB}
+        ${FLAC_LIB}
+        ${OPUS_LIB}
+        ${MPG123_LIB}
+        ${LAME_LIB}
         "-framework AudioUnit"
 	    "-framework AudioToolbox"
 	    "-framework CoreAudio"
     )
+    if(OPENAL_FOUND)
+        target_link_libraries(bridgecommand-bc PRIVATE "-framework OpenAL")
+    endif()
 else (APPLE)
     target_link_libraries(bridgecommand-bc PRIVATE
         bc-asio
@@ -140,4 +182,8 @@ else (APPLE)
         GL
         OpenXR::openxr_loader
     )
+    if(OPENAL_FOUND)
+        target_link_libraries(bridgecommand-bc PRIVATE ${OPENAL_LIBRARY})
+        target_include_directories(bridgecommand-bc PRIVATE ${OPENAL_INCLUDE_DIR})
+    endif()
 endif (APPLE)

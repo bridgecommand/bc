@@ -16,9 +16,34 @@
 
 #include "Camera.hpp"
 #include "Constants.hpp"
+#include "irrlicht.h"
 
 #include <cmath>
+#include <string>
 
+namespace {
+    constexpr float RADTODEG = 180.0f / 3.14159265358979323846f;
+    constexpr float DEGTORAD = 3.14159265358979323846f / 180.0f;
+
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) { return {v.X, v.Y, v.Z}; }
+    inline irr::core::vector2df toIrrVec2(const bc::graphics::Vec2& v) { return {v.x, v.y}; }
+
+    inline irr::core::matrix4 toIrrMat(const bc::graphics::Matrix4& m) {
+        irr::core::matrix4 result;
+        for (int i = 0; i < 16; i++) result[i] = m.m[i];
+        return result;
+    }
+    inline bc::graphics::Matrix4 fromIrrMat(const irr::core::matrix4& m) {
+        bc::graphics::Matrix4 result;
+        for (int i = 0; i < 16; i++) result.m[i] = m[i];
+        return result;
+    }
+
+    inline irr::core::quaternion toIrrQuat(const bc::graphics::Quaternion& q) {
+        return irr::core::quaternion(q.x, q.y, q.z, q.w);
+    }
+}
 
 //using namespace irr;
 
@@ -33,7 +58,7 @@ Camera::~Camera()
 }
 
 
-void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<irr::core::vector3df> views, std::vector<bool> isHighView, irr::f32 hFOV, irr::f32 lookAngle, irr::f32 angleCorrection)
+void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::scene::ISceneNode* parent, std::vector<bc::graphics::Vec3> views, std::vector<bool> isHighView, float hFOV, float lookAngle, float angleCorrection)
 {
     this->hFOV = hFOV;
     camera = smgr->addCameraSceneNode(0, irr::core::vector3df(0,0,0), irr::core::vector3df(0,0,1));
@@ -59,7 +84,7 @@ void Camera::load(irr::scene::ISceneManager* smgr, irr::ILogger* logger, irr::sc
 
     frozen = false;
 
-    sideViewVector = irr::core::vector3df(1,0,0);
+    sideViewVector = bc::graphics::Vec3(1,0,0);
 }
 
 irr::scene::ISceneNode* Camera::getSceneNode() const
@@ -68,23 +93,24 @@ irr::scene::ISceneNode* Camera::getSceneNode() const
 }
 
 //Return the position of the camera, including any active VR camera offset
-irr::core::vector3df Camera::getPosition() const
+bc::graphics::Vec3 Camera::getPosition() const
 {
     camera->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return camera->getAbsolutePosition();
+    return fromIrrVec(camera->getAbsolutePosition());
 }
 
 // Return the position of the base camera, without any VR camera offset
-irr::core::vector3df Camera::getBasePosition() const
+bc::graphics::Vec3 Camera::getBasePosition() const
 {
     // Uses current parentPosition and parentAngles
+    irr::core::matrix4 irrAngles = toIrrMat(parentAngles);
     irr::core::vector3df offsetTransformed;
-    parentAngles.transformVect(offsetTransformed,views[currentView]);
-    irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;
-    return cameraPosition;
+    irrAngles.transformVect(offsetTransformed, toIrrVec(views[currentView]));
+    irr::core::vector3df cameraPosition = toIrrVec(parentPosition) + offsetTransformed;
+    return fromIrrVec(cameraPosition);
 }
 
-irr::core::matrix4 Camera::getBaseRotation() const
+bc::graphics::Matrix4 Camera::getBaseRotation() const
 {
     return parentAngles;
 }
@@ -107,15 +133,15 @@ void Camera::lookDown()
     }
 }
 
-void Camera::setPanSpeed(irr::f32 horizontalPanSpeed){
+void Camera::setPanSpeed(float horizontalPanSpeed){
     this->horizontalPanSpeed = horizontalPanSpeed;
 }
 
-void Camera::setVerticalPanSpeed(irr::f32 verticalPanSpeed){
+void Camera::setVerticalPanSpeed(float verticalPanSpeed){
     this->verticalPanSpeed = verticalPanSpeed;
 }
 
-void Camera::setLookUp(irr::f32 angle)
+void Camera::setLookUp(float angle)
 {
 	lookUpAngle = angle;
 }
@@ -138,10 +164,10 @@ void Camera::lookRight()
     }
 }
 
-void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proportion of screen width
+void Camera::lookChange(float deltaX, float deltaY) //Change as a proportion of screen width
 {
-    lookAngle -= deltaX*hFOV*irr::core::RADTODEG;
-    lookUpAngle += deltaY*hFOV*irr::core::RADTODEG; //hFOV for this, as both are scaled by screen width
+    lookAngle -= deltaX*hFOV*RADTODEG;
+    lookUpAngle += deltaY*hFOV*RADTODEG; //hFOV for this, as both are scaled by screen width
     while (lookAngle<0)
     {
         lookAngle+=360;
@@ -162,7 +188,7 @@ void Camera::lookChange(irr::f32 deltaX, irr::f32 deltaY) //Change as a proporti
 
 void Camera::lookStepLeft()
 {
-    lookAngle -= hFOV*irr::core::RADTODEG;
+    lookAngle -= hFOV*RADTODEG;
     while (lookAngle<0)
     {
         lookAngle+=360;
@@ -171,7 +197,7 @@ void Camera::lookStepLeft()
 
 void Camera::lookStepRight()
 {
-    lookAngle += hFOV*irr::core::RADTODEG;
+    lookAngle += hFOV*RADTODEG;
     while (lookAngle>=360)
     {
         lookAngle-=360;
@@ -202,49 +228,53 @@ void Camera::lookStbd()
     lookUpAngle = 0;
 }
 
-irr::f32 Camera::getLook() const
+float Camera::getLook() const
 {
     return lookAngle;
 }
 
-irr::f32 Camera::getLookUp() const
+float Camera::getLookUp() const
 {
     return lookUpAngle;
 }
 
-irr::core::vector3df Camera::getForwardVector() const
+bc::graphics::Vec3 Camera::getForwardVector() const
 {
     return frv;
 }
 
 void Camera::moveForwards()
 {
-    irr::core::vector3df frvLocal(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-    views[currentView] += 0.05 * frvLocal;
+    irr::core::vector3df frvLocal(1.0f*std::sin(DEGTORAD*(lookAngle-angleCorrection))*std::cos(DEGTORAD*lookUpAngle), 1.0f*std::sin(DEGTORAD*lookUpAngle), 1.0f*std::cos(DEGTORAD*(lookAngle-angleCorrection))*std::cos(DEGTORAD*lookUpAngle));
+    irr::core::vector3df irrView = toIrrVec(views[currentView]);
+    irrView += 0.05 * frvLocal;
+    views[currentView] = fromIrrVec(irrView);
 
     //For displaying position
     std::string cameraPositionText = "Camera: (";
-    cameraPositionText.append(irr::core::stringc(views[currentView].X).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].x));
     cameraPositionText.append(",");
-    cameraPositionText.append(irr::core::stringc(views[currentView].Y).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].y));
     cameraPositionText.append(",");
-    cameraPositionText.append(irr::core::stringc(views[currentView].Z).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].z));
     cameraPositionText.append(")");
     logger->log(cameraPositionText.c_str());
 }
 
 void Camera::moveBackwards()
 {
-    irr::core::vector3df frvLocal(1.0f*std::sin(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::sin(irr::core::DEGTORAD*lookUpAngle), 1.0f*std::cos(irr::core::DEGTORAD*(lookAngle-angleCorrection))*std::cos(irr::core::DEGTORAD*lookUpAngle));
-    views[currentView] -= 0.05 * frvLocal;
+    irr::core::vector3df frvLocal(1.0f*std::sin(DEGTORAD*(lookAngle-angleCorrection))*std::cos(DEGTORAD*lookUpAngle), 1.0f*std::sin(DEGTORAD*lookUpAngle), 1.0f*std::cos(DEGTORAD*(lookAngle-angleCorrection))*std::cos(DEGTORAD*lookUpAngle));
+    irr::core::vector3df irrView = toIrrVec(views[currentView]);
+    irrView -= 0.05 * frvLocal;
+    views[currentView] = fromIrrVec(irrView);
 
     //For displaying position
     std::string cameraPositionText = "Camera: (";
-    cameraPositionText.append(irr::core::stringc(views[currentView].X).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].x));
     cameraPositionText.append(",");
-    cameraPositionText.append(irr::core::stringc(views[currentView].Y).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].y));
     cameraPositionText.append(",");
-    cameraPositionText.append(irr::core::stringc(views[currentView].Z).c_str());
+    cameraPositionText.append(std::to_string(views[currentView].z));
     cameraPositionText.append(")");
     logger->log(cameraPositionText.c_str());
 }
@@ -283,7 +313,7 @@ void Camera::changeView()
 
 }
 
-void Camera::setView(irr::u32 view) {
+void Camera::setView(uint32_t view) {
     if (view<views.size()) {
         currentView = view;
     }
@@ -298,24 +328,24 @@ void Camera::setView(irr::u32 view) {
 
 }
 
-irr::u32 Camera::getView() const
+uint32_t Camera::getView() const
 {
     return currentView;
 }
 
-void Camera::setHFOV(irr::f32 hFOV)
+void Camera::setHFOV(float hFOV)
 {
     this->hFOV=hFOV;
-    irr::f32 aspect=camera->getAspectRatio();
+    float aspect=camera->getAspectRatio();
 
-    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    float vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
     camera->setFOV(vFOV);
 }
 
-void Camera::updateViewport(irr::f32 aspect)
+void Camera::updateViewport(float aspect)
 {
     camera->setAspectRatio(aspect);
-    irr::f32 vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
+    float vFOV = 2*atan(tan(hFOV/2)/aspect); //Calculate vertical field of view angle from horizontal one
     camera->setFOV(vFOV);
 }
 
@@ -324,12 +354,12 @@ void Camera::setActive()
     camera->getSceneManager()->setActiveCamera(camera);
 }
 
-void Camera::setNearValue(irr::f32 zn)
+void Camera::setNearValue(float zn)
 {
     camera->setNearValue(zn);
 }
 
-void Camera::setFarValue(irr::f32 zf)
+void Camera::setFarValue(float zf)
 {
     camera->setFarValue(zf);
 }
@@ -344,18 +374,18 @@ void Camera::toggleFrozen()
     frozen = !frozen;
 }
 
-void Camera::applyOffset(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Camera::applyOffset(float deltaX, float deltaY, float deltaZ)
 {
     if (frozen) {
         // Only applicable in frozen mode, otherwise update will be
         // handled when own ship position offset is applied
-        parentPosition.X += deltaX;
-        parentPosition.Y += deltaY;
-        parentPosition.Z += deltaZ;
+        parentPosition.x += deltaX;
+        parentPosition.y += deltaY;
+        parentPosition.z += deltaZ;
     }
 }
 
-void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift, bool vrMode)
+void Camera::update(float deltaTime, bc::graphics::Quaternion quat, bc::graphics::Vec3 pos, bc::graphics::Vec2 lensShift, bool vrMode)
 {
      //link camera rotation to shipNode
         //Adjust camera angle if panning
@@ -377,50 +407,57 @@ void Camera::update(irr::f32 deltaTime, irr::core::quaternion quat, irr::core::v
 
         // get position and transformation matrix of parent node, unless camera is static
         if (!frozen) {
-            parentAngles.setRotationDegrees(parent->getRotation());
-            parentPosition = parent->getPosition();
+            irr::core::matrix4 irrAngles;
+            irrAngles.setRotationDegrees(parent->getRotation());
+            parentAngles = fromIrrMat(irrAngles);
+            parentPosition = fromIrrVec(parent->getPosition());
         }
+
+        // Convert to Irrlicht types for math operations
+        irr::core::quaternion irrQuat = toIrrQuat(quat);
+        irr::core::matrix4 irrParentAngles = toIrrMat(parentAngles);
 
         // Quaternion for the view angles, ignoring the lookUpAngle if in VR Mode
         irr::core::quaternion viewQuat;
         if (vrMode) {
             viewQuat = irr::core::quaternion(0,
-                                             irr::core::DEGTORAD*(lookAngle-angleCorrection),
+                                             DEGTORAD*(lookAngle-angleCorrection),
                                              0);
         } else {
-            viewQuat = irr::core::quaternion(irr::core::DEGTORAD*(-1*lookUpAngle),
-                                             irr::core::DEGTORAD*(lookAngle-angleCorrection),
+            viewQuat = irr::core::quaternion(DEGTORAD*(-1*lookUpAngle),
+                                             DEGTORAD*(lookAngle-angleCorrection),
                                              0);
         }
 
         // transform forward vector of camera
-        frv = irr::core::vector3df(0.0f,0.0f,1.0f);
-        frv=quat*frv;
-        frv=viewQuat*frv;
-        parentAngles.transformVect(frv);
+        irr::core::vector3df irrFrv(0.0f,0.0f,1.0f);
+        irrFrv=irrQuat*irrFrv;
+        irrFrv=viewQuat*irrFrv;
+        irrParentAngles.transformVect(irrFrv);
+        frv = fromIrrVec(irrFrv);
 
         // transform upvector of camera
         irr::core::vector3df upv(0.0f, 1.0f, 0.0f);
-        upv = quat*upv;
+        upv = irrQuat*upv;
         upv = viewQuat*upv;
-        parentAngles.transformVect(upv);
+        irrParentAngles.transformVect(upv);
 
-        // Update side view vector (must be perpendicular to upv and frv)
-        sideViewVector = upv.crossProduct(frv);
+        // Update side view vector (must be perpendicular to upv and irrFrv)
+        sideViewVector = fromIrrVec(upv.crossProduct(irrFrv));
 
         // transform camera offset ('offset' is relative to the local ship coordinates, and stays the same.)
         //'offsetTransformed' is transformed into the global coordinates
         irr::core::vector3df offsetTransformed;
-        parentAngles.transformVect(offsetTransformed,views[currentView] + pos);
+        irrParentAngles.transformVect(offsetTransformed, toIrrVec(views[currentView]) + toIrrVec(pos));
 
         // Set lens shift (TODO: avoid recalculation)
-        camera->setLensShift(lensShift);
+        camera->setLensShift(toIrrVec2(lensShift));
 
         //move camera and angle
-        irr::core::vector3df cameraPosition = parentPosition + offsetTransformed;
+        irr::core::vector3df cameraPosition = toIrrVec(parentPosition) + offsetTransformed;
         camera->setPosition(cameraPosition);
         camera->setUpVector(upv); //set up vector of camera
-        camera->setTarget(cameraPosition + frv); //set target of camera (look at point)
+        camera->setTarget(cameraPosition + irrFrv); //set target of camera (look at point)
         camera->updateAbsolutePosition();
 
         //also set rotation, so we can get camera's direction

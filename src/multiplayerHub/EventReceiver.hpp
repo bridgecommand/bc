@@ -24,18 +24,18 @@ class EventReceiver : public irr::IEventReceiver
 public:
 
     EventReceiver(
-        irr::s32 pauseButtonID, 
-        irr::s32 runButtonID,
-        irr::f32 initialAccelerator);
+        int32_t pauseButtonID, 
+        int32_t runButtonID,
+        float initialAccelerator);
     bool OnEvent(const irr::SEvent& event);
 
-    irr::f32 getAccelerator() const;
+    float getAccelerator() const;
 
 private:
 
-    irr::f32 accelerator;
-    irr::s32 pauseButtonID;
-    irr::s32 runButtonID;
+    float accelerator;
+    int32_t pauseButtonID;
+    int32_t runButtonID;
 
 };
 

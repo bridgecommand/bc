@@ -41,9 +41,9 @@ void LegData::deserialise(std::string data)
 {
     std::vector<std::string> splitData = Utilities::split(data,'?');
     if (splitData.size() == 3) {
-        bearing = Utilities::lexical_cast<irr::f32>(splitData.at(0));
-        speed = Utilities::lexical_cast<irr::f32>(splitData.at(1));
-        distance = Utilities::lexical_cast<irr::f32>(splitData.at(2));
+        bearing = Utilities::lexical_cast<float>(splitData.at(0));
+        speed = Utilities::lexical_cast<float>(splitData.at(1));
+        distance = Utilities::lexical_cast<float>(splitData.at(2));
     }
 }
 
@@ -82,9 +82,9 @@ void OtherShipData::deserialise(std::string data)
     std::vector<std::string> splitData = Utilities::split(data,'|');
     if (splitData.size() >= 5) {
         shipName = splitData.at(0);
-        mmsi = Utilities::lexical_cast<irr::f32>(splitData.at(1));
-        initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
-        initialLat = Utilities::lexical_cast<irr::f32>(splitData.at(3));
+        mmsi = Utilities::lexical_cast<float>(splitData.at(1));
+        initialLong = Utilities::lexical_cast<float>(splitData.at(2));
+        initialLat = Utilities::lexical_cast<float>(splitData.at(3));
         //clear any existing legs data
         legs.clear();
         std::vector<std::string> legsVector = Utilities::split(splitData.at(4),'/');
@@ -125,10 +125,10 @@ void OwnShipData::deserialise(std::string data)
     std::vector<std::string> splitData = Utilities::split(data,',');
     if (splitData.size() == 5) {
         ownShipName = splitData.at(0);
-        initialSpeed = Utilities::lexical_cast<irr::f32>(splitData.at(1));
-        initialLong = Utilities::lexical_cast<irr::f32>(splitData.at(2));
-        initialLat = Utilities::lexical_cast<irr::f32>(splitData.at(3));
-        initialBearing = Utilities::lexical_cast<irr::f32>(splitData.at(4));
+        initialSpeed = Utilities::lexical_cast<float>(splitData.at(1));
+        initialLong = Utilities::lexical_cast<float>(splitData.at(2));
+        initialLat = Utilities::lexical_cast<float>(splitData.at(3));
+        initialBearing = Utilities::lexical_cast<float>(splitData.at(4));
     }
 }
 
@@ -194,15 +194,15 @@ void ScenarioData::deserialise(std::string data)
         if ((splitData.at(0) == "SCN1") || (splitData.at(0) == "SCN2")) {
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
-            startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
-            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
-            sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
-            sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
-            weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
-            rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
-            visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
+            startTime = Utilities::lexical_cast<float>(splitData.at(3));
+            startDay = Utilities::lexical_cast<uint32_t>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<uint32_t>(splitData.at(5));
+            startYear = Utilities::lexical_cast<uint32_t>(splitData.at(6));
+            sunRise = Utilities::lexical_cast<float>(splitData.at(7));
+            sunSet = Utilities::lexical_cast<float>(splitData.at(8));
+            weather = Utilities::lexical_cast<float>(splitData.at(9));
+            rainIntensity = Utilities::lexical_cast<float>(splitData.at(10));
+            visibilityRange = Utilities::lexical_cast<float>(splitData.at(11));
             ownShipData.deserialise(splitData.at(12));
             //clear any existing legs data
             otherShipsData.clear();
@@ -220,17 +220,17 @@ void ScenarioData::deserialise(std::string data)
             // SCN4 adds drifting flag in other ship data
             scenarioName = splitData.at(1);
             worldName = splitData.at(2);
-            startTime = Utilities::lexical_cast<irr::f32>(splitData.at(3));
-            startDay = Utilities::lexical_cast<irr::u32>(splitData.at(4));
-            startMonth = Utilities::lexical_cast<irr::u32>(splitData.at(5));
-            startYear = Utilities::lexical_cast<irr::u32>(splitData.at(6));
-            sunRise = Utilities::lexical_cast<irr::f32>(splitData.at(7));
-            sunSet = Utilities::lexical_cast<irr::f32>(splitData.at(8));
-            weather = Utilities::lexical_cast<irr::f32>(splitData.at(9));
-            rainIntensity = Utilities::lexical_cast<irr::f32>(splitData.at(10));
-            visibilityRange = Utilities::lexical_cast<irr::f32>(splitData.at(11));
-            windDirection = Utilities::lexical_cast<irr::f32>(splitData.at(12));
-            windSpeed = Utilities::lexical_cast<irr::f32>(splitData.at(13));
+            startTime = Utilities::lexical_cast<float>(splitData.at(3));
+            startDay = Utilities::lexical_cast<uint32_t>(splitData.at(4));
+            startMonth = Utilities::lexical_cast<uint32_t>(splitData.at(5));
+            startYear = Utilities::lexical_cast<uint32_t>(splitData.at(6));
+            sunRise = Utilities::lexical_cast<float>(splitData.at(7));
+            sunSet = Utilities::lexical_cast<float>(splitData.at(8));
+            weather = Utilities::lexical_cast<float>(splitData.at(9));
+            rainIntensity = Utilities::lexical_cast<float>(splitData.at(10));
+            visibilityRange = Utilities::lexical_cast<float>(splitData.at(11));
+            windDirection = Utilities::lexical_cast<float>(splitData.at(12));
+            windSpeed = Utilities::lexical_cast<float>(splitData.at(13));
 
             ownShipData.deserialise(splitData.at(14));
             //clear any existing legs data

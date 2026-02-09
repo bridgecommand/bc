@@ -18,12 +18,11 @@
 #define __SHIPPOSITIONS_HPP_INCLUDED__
 
 #include <vector>
-#include "irrlicht.h"
 
 
 struct ShipPosition {
     public:
-    irr::f32 speed, positionX, positionZ, bearing, rateOfTurn, timeStored; //Speed in m/s, rate of turn in deg/s
+    float speed, positionX, positionZ, bearing, rateOfTurn, timeStored; //Speed in m/s, rate of turn in deg/s
     ShipPosition():speed(0),positionX(0),positionZ(0), bearing(0), rateOfTurn(0), timeStored(0){}
 };
 
@@ -34,8 +33,8 @@ class ShipPositions {
     public:
     ShipPositions(unsigned int numberOfShips);
 
-    void setShipPosition(unsigned int shipNumber, irr::f32 scenarioTime, irr::f32 positionX, irr::f32 positionZ, irr::f32 speed, irr::f32 bearing, irr::f32 rateOfTurn);
-    void getShipPosition(const unsigned int& shipNumber, const irr::f32& scenarioTime, irr::f32& positionX, irr::f32& positionZ, irr::f32& speed, irr::f32& bearing, irr::f32& rateOfTurn);
+    void setShipPosition(unsigned int shipNumber, float scenarioTime, float positionX, float positionZ, float speed, float bearing, float rateOfTurn);
+    void getShipPosition(const unsigned int& shipNumber, const float& scenarioTime, float& positionX, float& positionZ, float& speed, float& bearing, float& rateOfTurn);
 
     private:
     std::vector<ShipPosition> shipData;

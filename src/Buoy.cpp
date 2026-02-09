@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Buoy.hpp"
+#include "irrlicht.h"
 #include "RadarData.hpp"
 #include "Angles.hpp"
 #include "IniFile.hpp"
@@ -24,9 +25,16 @@
 #include <iostream>
 #include <algorithm>
 
-//using namespace irr;
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) {
+        return irr::core::vector3df(v.x, v.y, v.z);
+    }
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) {
+        return bc::graphics::Vec3(v.X, v.Y, v.Z);
+    }
+}
 
-Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 radarCrossSection, bool floating, irr::f32 heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+Buoy::Buoy(const std::string& name, const std::string& internalName, const std::string& worldName, const bc::graphics::Vec3& location, float radarCrossSection, bool floating, float heightCorrection, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     std::string basePath = "Models/Buoy/" + name + "/";
@@ -40,7 +48,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     }
 
     this->heightCorrection = heightCorrection;
-    irr::core::vector3df buoyLocation = location;
+    irr::core::vector3df buoyLocation = toIrrVec(location);
     buoyLocation.Y += heightCorrection;
 
     //Load from individual buoy.ini file if it exists
@@ -50,7 +58,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
     std::string buoyFileName = IniFile::iniFileToString(buoyIniFilename,"FileName", "buoy.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
+    float buoyScale = IniFile::iniFileTof32(buoyIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string buoyFullPath = basePath + buoyFileName;
@@ -66,7 +74,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
         buoy = smgr->addCubeSceneNode(0.1);
         selector = 0;
     } else {
-        buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, location );
+        buoy = smgr->addMeshSceneNode( buoyMesh, 0, -1, toIrrVec(location) );
         //Add triangle selector and make pickable
         buoy->setID(IDFlag_IsPickable);
         selector=smgr->createTriangleSelector(buoyMesh,buoy);
@@ -82,7 +90,7 @@ Buoy::Buoy(const std::string& name, const std::string& internalName, const std::
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(buoy->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<buoy->getMaterialCount();mat++) {
+        for(uint32_t mat=0;mat<buoy->getMaterialCount();mat++) {
             buoy->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -109,38 +117,38 @@ Buoy::~Buoy()
     //dtor
 }
 
-irr::core::vector3df Buoy::getPosition() const
+bc::graphics::Vec3 Buoy::getPosition() const
 {
     buoy->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return buoy->getAbsolutePosition();
+    return fromIrrVec(buoy->getAbsolutePosition());
 }
 
-void Buoy::setPosition(irr::core::vector3df position)
+void Buoy::setPosition(bc::graphics::Vec3 position)
 {
-    buoy->setPosition(position);
+    buoy->setPosition(toIrrVec(position));
 }
 
-void Buoy::setRotation(irr::core::vector3df rotation)
+void Buoy::setRotation(bc::graphics::Vec3 rotation)
 {
-    buoy->setRotation(rotation);
+    buoy->setRotation(toIrrVec(rotation));
 }
 
-irr::f32 Buoy::getLength() const
+float Buoy::getLength() const
 {
     return length;
 }
 
-irr::f32 Buoy::getHeight() const
+float Buoy::getHeight() const
 {
     return height;
 }
 
-irr::f32 Buoy::getRCS() const
+float Buoy::getRCS() const
 {
     return rcs;
 }
 
-irr::f32 Buoy::getHeightCorrection() const
+float Buoy::getHeightCorrection() const
 {
     return heightCorrection;
 }
@@ -155,15 +163,15 @@ irr::scene::ISceneNode* Buoy::getSceneNode() const
     return (irr::scene::ISceneNode*)buoy;
 }
 
-RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
+RadarData Buoy::getRadarData(bc::graphics::Vec3 scannerPosition) const
 //Get data relative to scannerPosition
 //Similar code in OtherShip.cpp
 {
     RadarData radarData;
 
     //Get information about this buoy, and return a RadarData struct containing info
-    irr::core::vector3df contactPosition = getPosition();
-    irr::core::vector3df relativePosition = contactPosition-scannerPosition;
+    irr::core::vector3df contactPosition = toIrrVec(getPosition());
+    irr::core::vector3df relativePosition = contactPosition-toIrrVec(scannerPosition);
 
     radarData.relX = relativePosition.X;
     radarData.relZ = relativePosition.Z;
@@ -181,10 +189,10 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact
-    irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
-    irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
     radarData.minRange=std::min(range1,range2);
     radarData.maxRange=std::max(range1,range2);
     radarData.minAngle=std::min(relAngle1,relAngle2);
@@ -201,12 +209,12 @@ RadarData Buoy::getRadarData(irr::core::vector3df scannerPosition) const
     return radarData;
 }
 
-void Buoy::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void Buoy::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     irr::core::vector3df currentPos = buoy->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
+    float newPosX = currentPos.X + deltaX;
+    float newPosY = currentPos.Y + deltaY;
+    float newPosZ = currentPos.Z + deltaZ;
 
     buoy->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }

@@ -56,9 +56,9 @@ bool Autopilot::receiveAPB(APB sentence)
     }
     char directionToTrack = sentence.direction;
 
-    irr::f32 bearingToSteer = Angles::normaliseAngle(sentence.heading_to_dest);
-    irr::f32 currentHeading = Angles::normaliseAngle(model->getHeading());
-    irr::f32 relativeBearing = bearingToSteer - currentHeading;
+    float bearingToSteer = Angles::normaliseAngle(sentence.heading_to_dest);
+    float currentHeading = Angles::normaliseAngle(model->getHeading());
+    float relativeBearing = bearingToSteer - currentHeading;
     if (relativeBearing >= 180.0) {
         relativeBearing -= 360.0;
     }
@@ -66,10 +66,10 @@ bool Autopilot::receiveAPB(APB sentence)
         relativeBearing += 360.0;
     }
 
-    irr::f32 rot = model->getRateOfTurn() * DEG_IN_RAD;
-    irr::f32 dampening = 1.0;
+    float rot = model->getRateOfTurn() * DEG_IN_RAD;
+    float dampening = 1.0;
     if (rot != 0.0) {
-        irr::f32 timeUntilOvershoot = relativeBearing / rot;
+        float timeUntilOvershoot = relativeBearing / rot;
         if (0 <= timeUntilOvershoot && timeUntilOvershoot < 15) {
             // linear scale from no dampening at 15s to steering into the
             // opposite direction at less than 2.0
@@ -78,7 +78,7 @@ bool Autopilot::receiveAPB(APB sentence)
     }
 
     // set wheel to val between -30.0 (>=60 deg L) and 30.0 (>=60 deg R) (setWheel clamps vals)
-    irr::f32 wheel = (relativeBearing / 60.0) * 30.0;
+    float wheel = (relativeBearing / 60.0) * 30.0;
 
     if (model->isAzimuthDrive()) {
         // Special case for azimuth drive, as the azimuth angle to steer is opposite, and 
@@ -106,10 +106,10 @@ bool Autopilot::receiveRMB(RMB sentence)
     // determine how much to accelerate/decelerate based on RMB
     if (!AUTOPILOT_ENABLED) return false;
    
-    irr::f32 destWaypointLat = parseNmeaLat(
+    float destWaypointLat = parseNmeaLat(
             sentence.dest_waypoint_latitude,
             sentence.dest_waypoint_latitude_dir);
-    irr::f32 destWaypointLong = parseNmeaLong(
+    float destWaypointLong = parseNmeaLong(
             sentence.dest_waypoint_longitude,
             sentence.dest_waypoint_longitude_dir);
 
@@ -124,7 +124,7 @@ bool Autopilot::receiveRMB(RMB sentence)
     }
 
     // adjust motor throttle based on leg length if desired
-    irr::f32 throttle = 1.0;
+    float throttle = 1.0;
     if (currentLegLen < 150) {
         // very short leg, navigate cautiously
         throttle = 0.15;
@@ -139,7 +139,7 @@ bool Autopilot::receiveRMB(RMB sentence)
     if (currentLegLen == 0) {
         return true;
     }
-    irr::f32 leg_progress = 1.0 - ((sentence.range_to_dest * M_IN_NM) / currentLegLen);
+    float leg_progress = 1.0 - ((sentence.range_to_dest * M_IN_NM) / currentLegLen);
     if (leg_progress > 0.75) {
         throttle = std::max(0.1, throttle * (-3.6 * leg_progress + 3.7));
     }

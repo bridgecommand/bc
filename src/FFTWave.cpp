@@ -255,7 +255,7 @@ complex cOcean::gaussianRandomVariable() {
 }
 
 cOcean::cOcean(const int N, const float A, const vector2 w, const float length) :
-	g(9.81), N(N), Nplus1(N+1), A(A), w(w), length(length),
+	g(9.81), N(N), Nplus1(N+1), A(A), w(w), length(length), useJONSWAP(true),
 	vertices(0), h_tilde(0), h_tilde_slopex(0), h_tilde_slopez(0), h_tilde_dx(0), h_tilde_dz(0), fft(0)
 {
 	h_tilde        = new complex[N*N];
@@ -344,13 +344,66 @@ float cOcean::phillips(int n_prime, int m_prime) {
 	return returnVal;
 }
 
+float cOcean::jonswap(int n_prime, int m_prime) {
+	vector2 k(M_PI * (2 * n_prime - N) / length,
+		  M_PI * (2 * m_prime - N) / length);
+
+	float k_length  = k.length();
+	if (k_length < 0.000001) return 0.0;
+
+	float k_length2 = k_length  * k_length;
+	float k_length4 = k_length2 * k_length2;
+
+	// Wind speed and largest-wave parameter L (same as Phillips)
+	float w_length  = w.length();
+	if (w_length < 0.01) return 0.0;
+	float L         = w_length * w_length / g;
+	float L2        = L * L;
+
+	// Pierson-Moskowitz base in k-space, with JONSWAP exponent β=5/4
+	// PM: exp(-β/(k²L²)) / k⁴  vs Phillips: exp(-1/(k²L²)) / k⁴
+	float pm = exp(-1.25f / (k_length2 * L2)) / k_length4;
+
+	// JONSWAP peak enhancement factor γ^r
+	float omega    = sqrt(g * k_length);         // wave frequency at this k
+	float omega_p  = g / w_length;               // peak frequency = sqrt(g/L)
+	float sigma    = (omega <= omega_p) ? 0.07f : 0.09f;
+	float gamma_J  = 3.3f;
+	float exponent = -(omega - omega_p) * (omega - omega_p)
+	                 / (2.0f * sigma * sigma * omega_p * omega_p);
+	float r        = exp(exponent);
+	float enhancement = pow(gamma_J, r);
+
+	// Directional spreading (cos⁶θ, same as Phillips)
+	float k_dot_w   = k.unit() * w.unit();
+	float k_dot_w2  = k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w;
+
+	// Small-scale damping (same as Phillips)
+	float damping   = 0.001;
+	float l2        = L2 * damping * damping;
+
+	return A * pm * enhancement * k_dot_w2 * exp(-k_length2 * l2);
+}
+
+float cOcean::spectrum(int n_prime, int m_prime) {
+	return useJONSWAP ? jonswap(n_prime, m_prime) : phillips(n_prime, m_prime);
+}
+
+void cOcean::setSpectrumType(bool jonswap) {
+	if (useJONSWAP != jonswap) {
+		useJONSWAP = jonswap;
+		reInitialiseWaves = true;
+		srand(10);
+	}
+}
+
 complex cOcean::hTilde_0(int n_prime, int m_prime) {
 	complex r = gaussianRandomVariable();
-	
-	float phillipsVal = phillips(n_prime, m_prime);
-	
-	r = r * sqrt(phillipsVal / 2.0f);
-	//std::cout << r.a << " " << r.b << " " << phillipsVal << " " << sqrt(phillipsVal) <<  std::endl;
+
+	float spectrumVal = spectrum(n_prime, m_prime);
+
+	r = r * sqrt(spectrumVal / 2.0f);
+	//std::cout << r.a << " " << r.b << " " << spectrumVal << " " << sqrt(spectrumVal) <<  std::endl;
 	return r;
 }
 

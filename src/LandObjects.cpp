@@ -43,16 +43,16 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
     scenarioLandObjectFilename.append("/landobject.ini");
 
     //Find number of objects
-    irr::u32 numberOfObjects;
+    uint32_t numberOfObjects;
     numberOfObjects = IniFile::iniFileTou32(scenarioLandObjectFilename,"Number");
-    for(irr::u32 currentObject=1;currentObject<=numberOfObjects;currentObject++) {
+    for(uint32_t currentObject=1;currentObject<=numberOfObjects;currentObject++) {
 
         //Get Object type and construct filename
         std::string objectName = IniFile::iniFileToString(scenarioLandObjectFilename,IniFile::enumerate1("Type",currentObject));
         //Get object position
-        irr::f32 objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
-        irr::f32 objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
-        irr::f32 objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
+        float objectX = model->longToX(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Long",currentObject)));
+        float objectZ = model->latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Lat",currentObject)));
+        float objectY = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("HeightCorrection",currentObject));;
         
         //Check if we should 'morph' the model to fit the land (mostly for OSM2World models)
         bool morph = false;
@@ -69,7 +69,7 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         }
 
         //Get rotation
-        irr::f32 rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
+        float rotation = IniFile::iniFileTof32(scenarioLandObjectFilename,IniFile::enumerate1("Rotation",currentObject));
 
         //Check if we should be able to interact with this by collision
         bool collisionObject = IniFile::iniFileTou32(scenarioLandObjectFilename,IniFile::enumerate1("Collision",currentObject))==1;
@@ -80,17 +80,17 @@ void LandObjects::load(const std::string& worldName, irr::scene::ISceneManager* 
         //Create land object and load into vector
         std::string internalName = "LandObject_";
         internalName.append(std::to_string(currentObject-1)); // -1 as we want index from 0
-        landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,irr::core::vector3df(objectX,objectY,objectZ),rotation,collisionObject,radarObject,morph,terrain,smgr,dev));
+        landObjects.push_back(LandObject (objectName.c_str(),internalName,worldName,bc::graphics::Vec3(objectX,objectY,objectZ),rotation,collisionObject,radarObject,morph,terrain,smgr,dev));
 
     }
 }
 
-irr::u32 LandObjects::getNumber() const
+uint32_t LandObjects::getNumber() const
 {
     return landObjects.size();
 }
 
-void LandObjects::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void LandObjects::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     for(std::vector<LandObject>::iterator it = landObjects.begin(); it != landObjects.end(); ++it) {
         it->moveNode(deltaX,deltaY,deltaZ);

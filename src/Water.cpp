@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "Water.hpp"
+#include "MovingWater.hpp"
 #include "Utilities.hpp"
 
 //using namespace irr;
@@ -35,7 +36,7 @@ Water::~Water()
     //dtor
 }
 
-void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, irr::f32 weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments)
+void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, uint32_t disableShaders, bool withReflection, uint32_t segments)
 {
 
     irr::video::IVideoDriver* driver = smgr->getVideoDriver();
@@ -53,37 +54,75 @@ void Water::load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShi
 
 }
 
-void Water::update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather)
+void Water::update(float tideHeight, bc::graphics::Vec3 viewPosition, uint32_t lightLevel, float weather, float windSpeedKts, float windDirectionDeg)
 {
     //Round these to nearest tileWidth
-    irr::f32 xPos = tileWidth * Utilities::round(viewPosition.X/tileWidth);
-    irr::f32 yPos = tideHeight;
-    irr::f32 zPos = tileWidth * Utilities::round(viewPosition.Z/tileWidth);
-
-    //std::cout << "xPos: " << xPos << " yPos: " << yPos << " zPos: " << zPos << std::endl;
+    float xPos = tileWidth * Utilities::round(viewPosition.x/tileWidth);
+    float yPos = tideHeight;
+    float zPos = tileWidth * Utilities::round(viewPosition.z/tileWidth);
 
     waterNode->setPosition(irr::core::vector3df(xPos,yPos,zPos));
 
-    //scale with weather
-    //waterNode->setVerticalScale(sqrt(weather));
-    waterNode->resetParameters((weather+0.25)*0.000025f, vector2((weather+0.25)/12.0*32.0f,(weather+0.25)/12.0*32.0f),weather+0.25); //TODO: Work out what this relationship should be!
+    // Couple wind speed to wave parameters using Beaufort relationship:
+    //   Hs = 0.0246 * U^2  (significant wave height from wind speed in m/s)
+    //
+    // Beaufort | Wind (kts) | U (m/s) | Hs (m) | Description
+    //    0     |   0        |   0     |   0    | Calm
+    //    2     |   5        |   2.6   |   0.2  | Smooth
+    //    4     |   13       |   6.7   |   1.1  | Moderate
+    //    6     |   25       |  12.9   |   4.1  | Very rough
+    //    8     |   37       |  19.0   |   8.9  | Very high
+    //   10     |   50       |  25.7   |  16.2  | Phenomenal
+    //
+    // The 'A' parameter in the FFT spectrum scales wave amplitude.
+    // We derive A from significant wave height:
+    //   Wave variance σ² ∝ A, and Hs = 4*σ, so A ∝ Hs²
+    // Empirically tuned: A_base = 0.000025 gives ~0.5m Hs at Bf 4
+
+    float windSpeed_mps = windSpeedKts * 0.5144f; // knots to m/s
+
+    // Significant wave height from wind speed (Pierson-Moskowitz fully-developed sea)
+    float Hs = 0.0246f * windSpeed_mps * windSpeed_mps;
+
+    // Clamp Hs to reasonable range for the simulation tile size
+    if (Hs < 0.01f) Hs = 0.01f;
+    if (Hs > 15.0f) Hs = 15.0f;
+
+    // Phillips/JONSWAP A parameter: scales as Hs² (wave variance)
+    // Calibrated so A=0.000025 ≈ Hs=0.5m at the 100m tile with 64-point FFT
+    float A = 0.0001f * Hs * Hs;
+
+    // Wind vector for wave direction (wind blows FROM windDirection, waves travel WITH it)
+    // Convert meteorological direction to wave propagation direction
+    float windRad = (windDirectionDeg + 180.0f) * 3.14159265f / 180.0f;
+    float windX = windSpeed_mps * sin(windRad);
+    float windZ = windSpeed_mps * cos(windRad);
+    // Minimum wind to avoid zero-vector
+    if (windSpeed_mps < 0.5f) {
+        windX = 0.5f;
+        windZ = 0.5f;
+    }
+
+    waterNode->resetParameters(A, vector2(windX, windZ), weather + 0.25f);
 
 }
 
-irr::f32 Water::getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const
+float Water::getWaveHeight(float relPosX, float relPosZ) const
 {
     return waterNode->getWaveHeight(relPosX,relPosZ);
 }
 
-irr::core::vector2df Water::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const
+bc::graphics::Vec2 Water::getLocalNormals(float relPosX, float relPosZ) const
 {
-    return waterNode->getLocalNormals(relPosX,relPosZ);
+    irr::core::vector2df n = waterNode->getLocalNormals(relPosX,relPosZ);
+    return bc::graphics::Vec2(n.X, n.Y);
 }
 
 
-irr::core::vector3df Water::getPosition() const
+bc::graphics::Vec3 Water::getPosition() const
 {
-    return waterNode->getPosition();
+    irr::core::vector3df p = waterNode->getPosition();
+    return bc::graphics::Vec3(p.X, p.Y, p.Z);
 }
 
 void Water::setVisible(bool visible)

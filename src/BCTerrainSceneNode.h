@@ -63,9 +63,9 @@ namespace scene
 			bool signedData=true, bool floatVals=false, s32 width=0,
 			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) IRR_OVERRIDE;
 
-		//! Initializes the terrain data.  Loads the vertices from a vector<vector<irr::f32>>, and
+		//! Initializes the terrain data.  Loads the vertices from a vector<vector<float>>, and
 		//! returns a 2^n+1 square terrain, padded if required.
-		virtual bool loadHeightMapVector(const std::vector<std::vector<irr::f32>>& heightMapData,
+		virtual bool loadHeightMapVector(const std::vector<std::vector<float>>& heightMapData,
 			f32& terrainXLoadScaling, f32& terrainZLoadScaling,
 			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ),
 			s32 smoothFactor = 0);
@@ -214,7 +214,7 @@ namespace scene
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) IRR_OVERRIDE;
 
 		//! Force node to use a fixed LOD level at the borders of the terrain.
-		virtual void setFixedBorderLOD(irr::s32 borderLOD)  IRR_OVERRIDE
+		virtual void setFixedBorderLOD(int32_t borderLOD)  IRR_OVERRIDE
 		{
 			FixedBorderLOD = borderLOD;
 		}

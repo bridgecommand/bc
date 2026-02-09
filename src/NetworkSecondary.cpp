@@ -184,17 +184,17 @@ void NetworkSecondary::receiveMessage()
             //Check number of elements
             if (receivedData.size() == 13) { //13 basic records in data sent
 
-                irr::f32 timeError;
+                float timeError;
 
                 //Get time info from record 0
                 std::vector<std::string> timeData = Utilities::split(receivedData.at(0),',');
                 //Time since start of scenario day 1 is record 2
                 if (timeData.size() > 2) {
-                    timeError = Utilities::lexical_cast<irr::f32>(timeData.at(2)) - model->getTimeDelta(); //How far we are behind the master
-                    irr::f32 baseAccelerator = Utilities::lexical_cast<irr::f32>(timeData.at(3)); //The master accelerator setting
+                    timeError = Utilities::lexical_cast<float>(timeData.at(2)) - model->getTimeDelta(); //How far we are behind the master
+                    float baseAccelerator = Utilities::lexical_cast<float>(timeData.at(3)); //The master accelerator setting
                     if (fabs(timeError) > 1) {
                         //Big time difference, so reset
-                        model->setTimeDelta(Utilities::lexical_cast<irr::f32>(timeData.at(2)));
+                        model->setTimeDelta(Utilities::lexical_cast<float>(timeData.at(2)));
                         accelAdjustment = 0;
                         device->getLogger()->log("Resetting time alignment");
                     } else { //Adjust accelerator to maintain time alignment
@@ -213,11 +213,11 @@ void NetworkSecondary::receiveMessage()
                 if (mode==OperatingMode::Secondary) {
                     std::vector<std::string> positionData = Utilities::split(receivedData.at(1),',');
                     if (positionData.size() == 9) { //9 elements in position data sent
-                        model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
-                                    Utilities::lexical_cast<irr::f32>(positionData.at(1)));
-                        model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
-                        model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
-                        model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(6))/MPS_TO_KTS);
+                        model->setPos(Utilities::lexical_cast<float>(positionData.at(0)),
+                                    Utilities::lexical_cast<float>(positionData.at(1)));
+                        model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
+                        model->setRateOfTurn(Utilities::lexical_cast<float>(positionData.at(3)));
+                        model->setSpeed(Utilities::lexical_cast<float>(positionData.at(6))/MPS_TO_KTS);
                     }
                 }
 
@@ -226,23 +226,23 @@ void NetworkSecondary::receiveMessage()
                 //Numbers of objects in record 2 (Others, buoys, MOBs, lines)
                 std::vector<std::string> numberData = Utilities::split(receivedData.at(2),',');
                 if (numberData.size() == 4) {
-                    irr::u32 numberOthers = Utilities::lexical_cast<irr::u32>(numberData.at(0));
+                    uint32_t numberOthers = Utilities::lexical_cast<uint32_t>(numberData.at(0));
 
                     //Update other ship data
                     std::vector<std::string> otherShipsDataString = Utilities::split(receivedData.at(3),'|');
                     if (numberOthers == otherShipsDataString.size()) {
-                        for (irr::u32 i=0; i<otherShipsDataString.size(); i++) {
+                        for (uint32_t i=0; i<otherShipsDataString.size(); i++) {
                             std::vector<std::string> thisShipData = Utilities::split(otherShipsDataString.at(i),',');
                             if (thisShipData.size() == 9) { //9 elements for each ship
                                 //Update data
-                                model->setOtherShipHeading(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(2)));
-                                model->setOtherShipSpeed(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(3))/MPS_TO_KTS);
+                                model->setOtherShipHeading(i,Utilities::lexical_cast<float>(thisShipData.at(2)));
+                                model->setOtherShipSpeed(i,Utilities::lexical_cast<float>(thisShipData.at(3))/MPS_TO_KTS);
 
                                 // Set other ship rate of turn from thisShipData.at(4) in deg/s (only used in multiplayer)
-                                model->setOtherShipRateOfTurn(i,Utilities::lexical_cast<irr::f32>(thisShipData.at(4)));
+                                model->setOtherShipRateOfTurn(i,Utilities::lexical_cast<float>(thisShipData.at(4)));
 
-                                irr::f32 receivedPosX = Utilities::lexical_cast<irr::f32>(thisShipData.at(0));
-                                irr::f32 receivedPosZ = Utilities::lexical_cast<irr::f32>(thisShipData.at(1));
+                                float receivedPosX = Utilities::lexical_cast<float>(thisShipData.at(0));
+                                float receivedPosZ = Utilities::lexical_cast<float>(thisShipData.at(1));
                                 model->setOtherShipPos(i,receivedPosX,receivedPosZ);
                                 //Todo: Think about using timeError to extrapolate position to get more accurately.
                                 //Todo: use SART etc
@@ -251,21 +251,21 @@ void NetworkSecondary::receiveMessage()
                     }
 
                     //Update MOB data
-                    irr::u32 numberMOB = Utilities::lexical_cast<irr::u32>(numberData.at(2));
+                    uint32_t numberMOB = Utilities::lexical_cast<uint32_t>(numberData.at(2));
                     if (numberMOB==1) {
                         //MOB should be visible, find if we have an MOB position record with two items (record 5)
                         //TODO: TEST!
                         std::vector<std::string> mobData = Utilities::split(receivedData.at(5),',');
                         if (mobData.size()==2) {
                             model->setManOverboardVisible(true);
-                            model->setManOverboardPos(  Utilities::lexical_cast<irr::f32>(mobData.at(0)),
-                                                        Utilities::lexical_cast<irr::f32>(mobData.at(1)));
+                            model->setManOverboardPos(  Utilities::lexical_cast<float>(mobData.at(0)),
+                                                        Utilities::lexical_cast<float>(mobData.at(1)));
                         }
                     } else if (numberMOB==0) {
                         model->setManOverboardVisible(false);
                     }
 
-                    irr::u32 numberLines = Utilities::lexical_cast<irr::u32>(numberData.at(3));
+                    uint32_t numberLines = Utilities::lexical_cast<uint32_t>(numberData.at(3));
                     // Update lines information
                     if (numberLines > 0) {
 
@@ -288,26 +288,26 @@ void NetworkSecondary::receiveMessage()
                         // Additional check, that the number of lines matches the number of data entries
                         if (numberLines == linesDataString.size()) {
 
-                            for (irr::u32 i=0; i<linesDataString.size(); i++) {
+                            for (uint32_t i=0; i<linesDataString.size(); i++) {
                                 std::vector<std::string> thisLineData = Utilities::split(linesDataString.at(i),',');
                                 if (thisLineData.size() == 16) { //16 elements for each line
 
-                                    irr::f32 lineStartX = Utilities::lexical_cast<irr::f32>(thisLineData.at(0));
-                                    irr::f32 lineStartY = Utilities::lexical_cast<irr::f32>(thisLineData.at(1));
-                                    irr::f32 lineStartZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(2));
-                                    irr::f32 lineEndX = Utilities::lexical_cast<irr::f32>(thisLineData.at(3));
-                                    irr::f32 lineEndY = Utilities::lexical_cast<irr::f32>(thisLineData.at(4));
-                                    irr::f32 lineEndZ = Utilities::lexical_cast<irr::f32>(thisLineData.at(5));
+                                    float lineStartX = Utilities::lexical_cast<float>(thisLineData.at(0));
+                                    float lineStartY = Utilities::lexical_cast<float>(thisLineData.at(1));
+                                    float lineStartZ = Utilities::lexical_cast<float>(thisLineData.at(2));
+                                    float lineEndX = Utilities::lexical_cast<float>(thisLineData.at(3));
+                                    float lineEndY = Utilities::lexical_cast<float>(thisLineData.at(4));
+                                    float lineEndZ = Utilities::lexical_cast<float>(thisLineData.at(5));
 
                                     int lineStartType = Utilities::lexical_cast<int>(thisLineData.at(6));
                                     int lineEndType = Utilities::lexical_cast<int>(thisLineData.at(7));
                                     int lineStartID = Utilities::lexical_cast<int>(thisLineData.at(8));
                                     int lineEndID = Utilities::lexical_cast<int>(thisLineData.at(9));
 
-                                    irr::f32 lineNominalLength = Utilities::lexical_cast<irr::f32>(thisLineData.at(10));
-                                    irr::f32 lineBreakingTension = Utilities::lexical_cast<irr::f32>(thisLineData.at(11));
-                                    irr::f32 lineBreakingStrain = Utilities::lexical_cast<irr::f32>(thisLineData.at(12));
-                                    irr::f32 lineNominalShipMass = Utilities::lexical_cast<irr::f32>(thisLineData.at(13));
+                                    float lineNominalLength = Utilities::lexical_cast<float>(thisLineData.at(10));
+                                    float lineBreakingTension = Utilities::lexical_cast<float>(thisLineData.at(11));
+                                    float lineBreakingStrain = Utilities::lexical_cast<float>(thisLineData.at(12));
+                                    float lineNominalShipMass = Utilities::lexical_cast<float>(thisLineData.at(13));
 
                                     int lineKeepSlackInt = Utilities::lexical_cast<int>(thisLineData.at(14));
                                     int lineHeaveInInt = Utilities::lexical_cast<int>(thisLineData.at(15));
@@ -406,7 +406,7 @@ void NetworkSecondary::receiveMessage()
                                             }
 
                                             // Length factor can be hard coded as 1.0, as line nominal length will be updated later
-                                            irr::f32 lengthFactor = 1.0;
+                                            float lengthFactor = 1.0;
 
                                             // Create the lines
                                             model->getLines()->setLineStart(startNode, lineStartType, lineStartID, true, i);
@@ -443,14 +443,14 @@ void NetworkSecondary::receiveMessage()
                 // Weather, Fog range, wind dirn, rain, wind speed, stream direction, stream speed, stream override #
                 std::vector<std::string> weatherData = Utilities::split(receivedData.at(7),',');
                 if (weatherData.size() == 8) {
-                    model->setWeather(Utilities::lexical_cast<irr::f32>(weatherData.at(0)));
-                    model->setVisibility(Utilities::lexical_cast<irr::f32>(weatherData.at(1)));
-                    model->setWindDirection(Utilities::lexical_cast<irr::f32>(weatherData.at(2)));
-                    model->setRain(Utilities::lexical_cast<irr::f32>(weatherData.at(3)));
-                    model->setWindSpeed(Utilities::lexical_cast<irr::f32>(weatherData.at(4)));
+                    model->setWeather(Utilities::lexical_cast<float>(weatherData.at(0)));
+                    model->setVisibility(Utilities::lexical_cast<float>(weatherData.at(1)));
+                    model->setWindDirection(Utilities::lexical_cast<float>(weatherData.at(2)));
+                    model->setRain(Utilities::lexical_cast<float>(weatherData.at(3)));
+                    model->setWindSpeed(Utilities::lexical_cast<float>(weatherData.at(4)));
 
-                    model->setStreamOverrideDirection(Utilities::lexical_cast<irr::f32>(weatherData.at(5)));
-                    model->setStreamOverrideSpeed(Utilities::lexical_cast<irr::f32>(weatherData.at(6)));
+                    model->setStreamOverrideDirection(Utilities::lexical_cast<float>(weatherData.at(5)));
+                    model->setStreamOverrideSpeed(Utilities::lexical_cast<float>(weatherData.at(6)));
                     model->setStreamOverride(weatherData.at(7)=="1"); 
                 }
 
@@ -458,7 +458,7 @@ void NetworkSecondary::receiveMessage()
                 std::vector<std::string> viewData = Utilities::split(receivedData.at(9),',');
                 if (viewData.size() == 1) {
                     if (model->getMoveViewWithPrimary()) {
-                        model->setView(Utilities::lexical_cast<irr::f32>(viewData.at(0)));
+                        model->setView(Utilities::lexical_cast<float>(viewData.at(0)));
                     }
                 }
 
@@ -467,33 +467,33 @@ void NetworkSecondary::receiveMessage()
                 if (controlsData.size() == 10) {
                     // Only set display values if we are not already controlling it
                     if (!model->getIsSecondaryControlWheel()) {
-                        model->setWheel(Utilities::lexical_cast<irr::f32>(controlsData.at(0)));
+                        model->setWheel(Utilities::lexical_cast<float>(controlsData.at(0)));
                     }
                     // Rudder can always be set, as rudder motion is always set by primary
-                    model->setRudder(Utilities::lexical_cast<irr::f32>(controlsData.at(1)));
+                    model->setRudder(Utilities::lexical_cast<float>(controlsData.at(1)));
                     if (!model->getIsSecondaryControlPortEngine()) {
-                        model->setPortEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(2)));
+                        model->setPortEngine(Utilities::lexical_cast<float>(controlsData.at(2)));
                     }
                     if (!model->getIsSecondaryControlStbdEngine()) {
-                        model->setStbdEngine(Utilities::lexical_cast<irr::f32>(controlsData.at(3)));
+                        model->setStbdEngine(Utilities::lexical_cast<float>(controlsData.at(3)));
                     }
                     if (!model->getIsSecondaryControlPortSchottel()) {
-                        model->setPortSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(4)));
+                        model->setPortSchottel(Utilities::lexical_cast<float>(controlsData.at(4)));
                     }
                     if (!model->getIsSecondaryControlStbdSchottel()) {
-                        model->setStbdSchottel(Utilities::lexical_cast<irr::f32>(controlsData.at(5)));
+                        model->setStbdSchottel(Utilities::lexical_cast<float>(controlsData.at(5)));
                     }
                     if (!model->getIsSecondaryControlPortThrustLever()) {
-                        model->setPortAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(6)));
+                        model->setPortAzimuthThrustLever(Utilities::lexical_cast<float>(controlsData.at(6)));
                     }
                     if (!model->getIsSecondaryControlStbdThrustLever()) {
-                        model->setStbdAzimuthThrustLever(Utilities::lexical_cast<irr::f32>(controlsData.at(7)));
+                        model->setStbdAzimuthThrustLever(Utilities::lexical_cast<float>(controlsData.at(7)));
                     }
                     if (!model->getIsSecondaryControlBowThruster()) {
-                        model->setBowThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(8)));
+                        model->setBowThruster(Utilities::lexical_cast<float>(controlsData.at(8)));
                     }
                     if (!model->getIsSecondaryControlSternThruster()) {
-                        model->setSternThruster(Utilities::lexical_cast<irr::f32>(controlsData.at(9)));
+                        model->setSternThruster(Utilities::lexical_cast<float>(controlsData.at(9)));
                     }
                 }
 
@@ -594,11 +594,11 @@ void NetworkSecondary::receiveMessage()
                 std::vector<std::string> positionData = Utilities::split(receivedString,',');
                 if (positionData.size() == 5) { //5 elements in position data sent
                     //std::cout << "positionData.size() == 5" << std::endl;
-                    model->setPos(Utilities::lexical_cast<irr::f32>(positionData.at(0)),
-                                Utilities::lexical_cast<irr::f32>(positionData.at(1)));
-                    model->setHeading(Utilities::lexical_cast<irr::f32>(positionData.at(2)));
-                    model->setRateOfTurn(Utilities::lexical_cast<irr::f32>(positionData.at(3)));
-                    model->setSpeed(Utilities::lexical_cast<irr::f32>(positionData.at(4))/MPS_TO_KTS);
+                    model->setPos(Utilities::lexical_cast<float>(positionData.at(0)),
+                                Utilities::lexical_cast<float>(positionData.at(1)));
+                    model->setHeading(Utilities::lexical_cast<float>(positionData.at(2)));
+                    model->setRateOfTurn(Utilities::lexical_cast<float>(positionData.at(3)));
+                    model->setSpeed(Utilities::lexical_cast<float>(positionData.at(4))/MPS_TO_KTS);
                 }
             }
 

@@ -17,10 +17,18 @@
 #ifndef __LINE_HPP_INCLUDED__
 #define __LINE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 #include <string>
+#include <cstdint>
 
-//Forward declarations
+// Forward declarations
+namespace irr {
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+        class IMeshSceneNode;
+    }
+}
 class SimulationModel;
 
 class Line
@@ -30,8 +38,8 @@ class Line
         virtual ~Line();
         void clearLine(); // Call before we remove the line from the parent vector
         void setStart(irr::scene::ISceneNode* lineStart, int nodeType, int id); // Must always be on own ship
-        void setEnd(irr::scene::ISceneNode* lineEnd, irr::f32 shipMass, int nodeType, int id, irr::f32 lengthFactor); // Remote connection point
-        void setNominalLength(irr::f32 lineNominalLength);
+        void setEnd(irr::scene::ISceneNode* lineEnd, float shipMass, int nodeType, int id, float lengthFactor); // Remote connection point
+        void setNominalLength(float lineNominalLength);
 
         std::string getLineName() const;
         void setLineName(std::string lineName);
@@ -42,41 +50,41 @@ class Line
 
         void setSelected(bool selected);
 
-        irr::f32 getLineStartX() const;
-        irr::f32 getLineStartY() const;
-        irr::f32 getLineStartZ() const;
-        irr::f32 getLineEndX() const;
-        irr::f32 getLineEndY() const;
-        irr::f32 getLineEndZ() const;
+        float getLineStartX() const;
+        float getLineStartY() const;
+        float getLineStartZ() const;
+        float getLineEndX() const;
+        float getLineEndY() const;
+        float getLineEndZ() const;
         int getLineStartType() const; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
         int getLineEndType() const; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
         int getLineStartID() const;
         int getLineEndID() const;
-        irr::f32 getLineNominalLength() const;
-        void setLineNominalLength(irr::f32 lineNominalLength);
-        irr::f32 getLineBreakingTension() const;
-        void setLineBreakingTension(irr::f32 lineBreakingTensio);
-        irr::f32 getLineBreakingStrain() const;
-        void setLineBreakingStrain(irr::f32 lineBreakingStrain);
-        irr::f32 getLineNominalShipMass() const;
-        void setLineNominalShipMass(irr::f32 shipNominalMass);
+        float getLineNominalLength() const;
+        void setLineNominalLength(float lineNominalLength);
+        float getLineBreakingTension() const;
+        void setLineBreakingTension(float lineBreakingTensio);
+        float getLineBreakingStrain() const;
+        void setLineBreakingStrain(float lineBreakingStrain);
+        float getLineNominalShipMass() const;
+        void setLineNominalShipMass(float shipNominalMass);
 
 
-        void update(irr::f32 deltaTime); // Calculate the force and torque acting on the ownship in the local coordinate system
-        irr::core::vector3df getLocalForceVector(); // Call after update() to retrieve result
-        irr::core::vector3df getLocalTorqueVector(); // Call after update() to retrieve result
-        
+        void update(float deltaTime); // Calculate the force and torque acting on the ownship in the local coordinate system
+        bc::graphics::Vec3 getLocalForceVector(); // Call after update() to retrieve result
+        bc::graphics::Vec3 getLocalTorqueVector(); // Call after update() to retrieve result
+
     private:
         SimulationModel* model;
         irr::scene::ISceneNode* lineStart;
         irr::scene::ISceneNode* lineEnd;
         irr::scene::IMeshSceneNode* lineVisualisation1;
         irr::scene::IMeshSceneNode* lineVisualisation2;
-        irr::f32 shipNominalMass;
-        irr::f32 lineNominalLength;
-        irr::f32 lineExtension;
-        irr::f32 lineBreakingStrain;
-        irr::f32 lineBreakingTension;
+        float shipNominalMass;
+        float lineNominalLength;
+        float lineExtension;
+        float lineBreakingStrain;
+        float lineBreakingTension;
         std::string lineName;
         bool keepSlack;
         bool heaveIn;
@@ -85,9 +93,9 @@ class Line
         int endNodeType; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
         int startNodeID;
         int endNodeID;
-        irr::core::vector3df localForceVector;
-        irr::core::vector3df localTorqueVector;
-        
+        bc::graphics::Vec3 localForceVector;
+        bc::graphics::Vec3 localTorqueVector;
+
 };
 
 #endif

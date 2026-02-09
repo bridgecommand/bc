@@ -16,6 +16,7 @@
 
 #include "IniFile.hpp"
 
+#include "irrlicht.h"
 #include <cassert>
 #include <fstream> //for ini loading
 #include <string> //for ini loading
@@ -38,9 +39,9 @@ public:
     std::string getStringValue(const std::string &fileName, const std::string &key, const std::string &defValue = "");
     std::wstring getWStringValue(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
 
-    irr::u32 getUIntValue(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
-    irr::s32 getSIntValue(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
-    irr::f32 getFloatValue(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
+    uint32_t getUIntValue(const std::string &fileName, const std::string &key, uint32_t defValue = 0);
+    int32_t getSIntValue(const std::string &fileName, const std::string &key, int32_t defValue = 0);
+    float getFloatValue(const std::string &fileName, const std::string &key, float defValue = 0.f);
 
 private:
     bool readFile(const std::string &fileName);
@@ -215,7 +216,7 @@ std::wstring IniCache::getWStringValue(const std::string& fileName, const std::s
 
 }
 
-irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& key, irr::u32 defValue)
+uint32_t IniCache::getUIntValue(const std::string& fileName, const std::string& key, uint32_t defValue)
 {
     const std::string value = getStringValue(fileName, key, "");
     if (value == "") {
@@ -224,7 +225,7 @@ irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& 
 
     const char *val = value.c_str();
     const char *end = nullptr;
-    irr::u32 result = irr::core::strtoul10(val, &end);
+    uint32_t result = irr::core::strtoul10(val, &end);
     if (end - val == value.length()) {
         return result;
     }
@@ -233,7 +234,7 @@ irr::u32 IniCache::getUIntValue(const std::string& fileName, const std::string& 
     }
 }
 
-irr::s32 IniCache::getSIntValue(const std::string& fileName, const std::string& key, irr::s32 defValue)
+int32_t IniCache::getSIntValue(const std::string& fileName, const std::string& key, int32_t defValue)
 {
     const std::string value = getStringValue(fileName, key, "");
     if (value == "") {
@@ -242,7 +243,7 @@ irr::s32 IniCache::getSIntValue(const std::string& fileName, const std::string& 
 
     const char *val = value.c_str();
     const char *end = nullptr;
-    irr::s32 result = irr::core::strtol10(val, &end);
+    int32_t result = irr::core::strtol10(val, &end);
     if (end - val == value.length()) {
         return result;
     }
@@ -251,7 +252,7 @@ irr::s32 IniCache::getSIntValue(const std::string& fileName, const std::string& 
     }
 }
 
-irr::f32 IniCache::getFloatValue(const std::string& fileName, const std::string& key, irr::f32 defValue)
+float IniCache::getFloatValue(const std::string& fileName, const std::string& key, float defValue)
 {
     const std::string value = getStringValue(fileName, key, "");
     if (value == "") {
@@ -260,7 +261,7 @@ irr::f32 IniCache::getFloatValue(const std::string& fileName, const std::string&
 
     const char *val = value.c_str();
     const char *end = nullptr;
-    irr::f32 result = irr::core::fast_atof(val, &end);
+    float result = irr::core::fast_atof(val, &end);
     if (end - val == value.length()) {
         return result;
     }
@@ -274,13 +275,13 @@ irr::f32 IniCache::getFloatValue(const std::string& fileName, const std::string&
 namespace IniFile
 {
     //Build up a command in the format 'key(#)'
-    std::string enumerate1(std::string key, irr::s32 number)
+    std::string enumerate1(std::string key, int32_t number)
     {
         return key + "(" + std::to_string(number) + ")";
     }
 
     //Build up a command in the format 'key(#,#)'
-    std::string enumerate2(std::string key, irr::s32 number1, irr::s32 number2)
+    std::string enumerate2(std::string key, int32_t number1, int32_t number2)
     {
         return key + "(" + std::to_string(number1) + "," + std::to_string(number2) + ")";
     }
@@ -296,19 +297,19 @@ namespace IniFile
     }
 
     //Load unsigned integer from an ini file
-    irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue)
+    uint32_t iniFileTou32(const std::string &fileName, const std::string &key, uint32_t defValue)
     {
         return g_iniCache.getUIntValue(fileName, key, defValue);
     }
 
     //Load signed integer from an ini file
-    irr::s32 iniFileTos32(const std::string &fileName, const std::string &key, irr::s32 defValue)
+    int32_t iniFileTos32(const std::string &fileName, const std::string &key, int32_t defValue)
     {
         return g_iniCache.getSIntValue(fileName, key, defValue);
     }
 
     //Load float from an ini file
-    irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue)
+    float iniFileTof32(const std::string &fileName, const std::string &key, float defValue)
     {
         return g_iniCache.getFloatValue(fileName, key, defValue);
     }

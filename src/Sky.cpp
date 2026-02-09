@@ -15,6 +15,8 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Sky.hpp"
+
+#include "irrlicht.h"
 #include "Constants.hpp"
 
 //using namespace irr;

@@ -17,26 +17,34 @@
 #ifndef __LANDOBJECT_HPP_INCLUDED__
 #define __LANDOBJECT_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 
 #include <string>
 
-//Forward declarations
+// Forward declarations
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+        class IMeshSceneNode;
+    }
+}
 class Terrain;
 
 class LandObject
 {
     public:
-        LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const irr::core::vector3df& location, irr::f32 rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
+        LandObject(const std::string& name, const std::string& internalName, const std::string& worldName, const bc::graphics::Vec3& location, float rotation, bool collisionObject, bool radarObject, bool morph, Terrain* terrain, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev);
         virtual ~LandObject();
-        irr::core::vector3df getPosition() const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        bc::graphics::Vec3 getPosition() const;
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         irr::scene::ISceneNode* getSceneNode() const;
     protected:
     private:
         irr::scene::IMeshSceneNode* landObject; //The scene node for the object.
         irr::IrrlichtDevice* device;
-        irr::f32 findContactYFromRay(irr::core::line3d<irr::f32> ray);
+        float findContactYFromRay(const bc::graphics::Vec3& start, const bc::graphics::Vec3& end);
 };
 
 #endif

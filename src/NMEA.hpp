@@ -18,20 +18,23 @@
 #define __NMEA_HPP_INCLUDED__
 
 #include "Autopilot.hpp"
-#include "irrlicht.h" //For logger only
 #include "libs/serial/serial.h"
 #include <mutex>
 #include <string>
+#include <cstdint>
 #include <asio.hpp> //For UDP
 
-//Forward declarations
+// Forward declarations
+namespace irr {
+    class IrrlichtDevice;
+}
 class SimulationModel;
 
 class NMEA {
 
 public:
 
-    NMEA(SimulationModel* model, std::string serialPortName, irr::u32 serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
+    NMEA(SimulationModel* model, std::string serialPortName, uint32_t serialBaudrate, std::string udpHostname, std::string udpPortName, std::string udpListenPortName, irr::IrrlichtDevice* dev);
     ~NMEA();
     void updateNMEA();
     void sendNMEASerial();
@@ -47,8 +50,8 @@ private:
     irr::IrrlichtDevice* device;
     SimulationModel* model;
     serial::Serial mySerialPort;
-    irr::u32 lastSendEvent; // when was the last time an NMEA message was sent
-    static const irr::u32 sensorReportInterval = 100; // milliseconds between sensor reports
+    uint32_t lastSendEvent; // when was the last time an NMEA message was sent
+    static const uint32_t sensorReportInterval = 100; // milliseconds between sensor reports
     std::vector<std::string> messageQueue;
     std::string messageToSend;
     std::string addChecksum(std::string messageIn);
@@ -61,7 +64,7 @@ private:
     asio::ip::udp::endpoint receiver_endpoint;
     asio::ip::udp::socket* socket;
 
-    irr::u32 terminateNmeaReceive;
+    uint32_t terminateNmeaReceive;
     std::mutex terminateNmeaReceiveMutex;
     std::vector<std::string> receivedNmeaMessages;
     std::mutex receivedNmeaMessagesMutex;

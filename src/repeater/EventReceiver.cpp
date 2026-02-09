@@ -38,7 +38,7 @@
 
         if (event.EventType == irr::EET_GUI_EVENT && event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED )
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			int32_t id = event.GUIEvent.Caller->getID();
 			if (id==GUIMain::GUI_ID_HEADING_CHOICE) {
                 gui->setMode(true);
 			}

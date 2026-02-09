@@ -20,6 +20,7 @@
 #include "RadarData.hpp"
 #include "Constants.hpp"
 #include "OtherShip.hpp"
+#include "irrlicht.h"
 #include "Utilities.hpp"
 #include "SimulationModel.hpp"
 #include "Terrain.hpp"
@@ -29,7 +30,7 @@
 
 //using namespace irr;
 
-OtherShip::OtherShip (const std::string& name, const std::string& internalName, const irr::u32& mmsi, const irr::core::vector3df& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
+OtherShip::OtherShip (const std::string& name, const std::string& internalName, const uint32_t& mmsi, const bc::graphics::Vec3& location, std::vector<Leg> legsLoaded, bool drifting, SimulationModel* model, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev)
 {
 
     //Initialise speed and heading, normally updated from leg information
@@ -66,9 +67,9 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     std::string shipFileName = IniFile::iniFileToString(iniFilename,"FileName");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
+    float scaleFactor = IniFile::iniFileTof32(iniFilename,"Scalefactor", 1.f);
 
-    irr::f32 yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
+    float yCorrection = IniFile::iniFileTof32(iniFilename,"YCorrection");
     angleCorrection = IniFile::iniFileTof32(iniFilename,"AngleCorrection");
     // DEE_DEC22 vvvv
     angleCorrectionPitch = IniFile::iniFileTof32(iniFilename,"AngleCorrectionPitch");
@@ -126,14 +127,14 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     solidHeight = scaleFactor * IniFile::iniFileTof32(iniFilename,"SolidHeight", .5f * height);
 
     //store initial x,y,z positions
-    xPos = location.X;
-    yPos = location.Y;
-    zPos = location.Z;
+    xPos = location.x;
+    yPos = location.y;
+    zPos = location.z;
     //speed and heading will come from leg data
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(ship->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<ship->getMaterialCount();mat++) {
+        for(uint32_t mat=0;mat<ship->getMaterialCount();mat++) {
             if (ship->getMaterial(mat).AmbientColor.getAlpha() != 255 || 
                 ship->getMaterial(mat).DiffuseColor.getAlpha() != 255) {
                 // Only allow rendering with transparency if required to avoid Z order problems
@@ -144,24 +145,24 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
     }
 
     //get light locations:
-    irr::u32 numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
+    uint32_t numberOfLights = IniFile::iniFileTou32(iniFilename,"NumberOfLights");
     if (numberOfLights>0) {
-        for (irr::u32 currentLight=1; currentLight<=numberOfLights; currentLight++) {
-            irr::f32 lightX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightX",currentLight));
-            irr::f32 lightY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightY",currentLight));
-            irr::f32 lightZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightZ",currentLight));
+        for (uint32_t currentLight=1; currentLight<=numberOfLights; currentLight++) {
+            float lightX = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightX",currentLight));
+            float lightY = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightY",currentLight));
+            float lightZ = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightZ",currentLight));
 
-            irr::u32 lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
-            irr::u32 lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
-            irr::u32 lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
+            uint32_t lightR = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRed",currentLight));
+            uint32_t lightG = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightGreen",currentLight));
+            uint32_t lightB = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightBlue",currentLight));
 
-            irr::f32 lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
-            irr::f32 lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
-            irr::f32 lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
+            float lightStartAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightStartAngle",currentLight)); //Degrees 0-360
+            float lightEndAngle = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightEndAngle",currentLight)); //Degrees 0-720, should be greater than LightStartAngle
+            float lightRange = IniFile::iniFileTof32(iniFilename,IniFile::enumerate1("LightRange",currentLight)); //Range (Nm)
             lightRange = lightRange * M_IN_NM; //Convert to metres
 
             std::string lightSequence = IniFile::iniFileToString(iniFilename, IniFile::enumerate1("Sequence", currentLight));
-            irr::u32 phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
+            uint32_t phaseStart = IniFile::iniFileTou32(iniFilename, IniFile::enumerate1("PhaseStart", currentLight));
 
             //correct to local scaled coordinates
             /*
@@ -171,7 +172,7 @@ OtherShip::OtherShip (const std::string& name, const std::string& internalName, 
             */ //Whole entity scaled, so not needed
 
             //add this Nav light into array
-            navLights.push_back(new NavLight (ship,smgr,irr::core::vector3df(lightX,lightY,lightZ),irr::video::SColor(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
+            navLights.push_back(new NavLight (ship,smgr,bc::graphics::Vec3(lightX,lightY,lightZ),bc::graphics::Color(255,lightR,lightG,lightB),lightStartAngle,lightEndAngle,lightRange,lightSequence,phaseStart));
         }
     }
 
@@ -188,7 +189,7 @@ OtherShip::~OtherShip()
     navLights.clear();
 }
 
-void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel)
+void OtherShip::update(float deltaTime, float scenarioTime, float tideHeight, uint32_t lightLevel)
 {
 
     //move according to leg information
@@ -214,25 +215,25 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
 
     if (drifting) {
         //Move with tidal stream (if not aground)
-        irr::f32 depth = -1 * model->getTerrain()->getHeight(xPos, zPos) + yPos;
-        irr::core::vector2df streamVector = model->getTidalStream(model->getTerrain()->xToLong(xPos), model->getTerrain()->zToLat(zPos), model->getTimestamp());
+        float depth = -1 * model->getTerrain()->getHeight(xPos, zPos) + yPos;
+        bc::graphics::Vec2 streamVector = model->getTidalStream(model->getTerrain()->xToLong(xPos), model->getTerrain()->zToLat(zPos), model->getTimestamp());
 
         // Add component from wind
-        irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
-        irr::f32 windDirection = model->getWindDirection();
+        float windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+        float windDirection = model->getWindDirection();
         // Convert this into wind axial speed and wind lateral speed
-        irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
-        irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
-        irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+        float windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+        float windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
+        float windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
         // Assume that the drifting vessel moves at 1/10 of the wind speed
-        streamVector.X += windX * 0.1;
-        streamVector.Y += windZ * 0.1;
+        streamVector.x += windX * 0.1;
+        streamVector.y += windZ * 0.1;
 
         // Apply movement vector
         if (depth > 0) {
-            irr::f32 streamScaling = fmin(1, depth); //Reduce effect as water gets shallower
-            xPos += streamVector.X * deltaTime * streamScaling;
-            zPos += streamVector.Y * deltaTime * streamScaling;
+            float streamScaling = fmin(1, depth); //Reduce effect as water gets shallower
+            xPos += streamVector.x * deltaTime * streamScaling;
+            zPos += streamVector.y * deltaTime * streamScaling;
         }
     }
 
@@ -251,12 +252,12 @@ void OtherShip::update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideH
 
 }
 
-irr::f32 OtherShip::getHeight() const
+float OtherShip::getHeight() const
 {
     return height;
 }
 
-irr::f32 OtherShip::getRCS() const
+float OtherShip::getRCS() const
 {
     return rcs;
 }
@@ -271,28 +272,28 @@ std::vector<Leg> OtherShip::getLegs() const
     return legs;
 }
 
-void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+void OtherShip::changeLeg(int legNumber, float bearing, float speed, float distance, float scenarioTime)
 {
 
     //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
     if (legNumber >=0 && legNumber < ((int)legs.size() - 1) && legNumber >= (int)findCurrentLeg(scenarioTime)) {
 
         //Store old information temporarily
-        irr::f32 oldSpeed = legs.at(legNumber).speed;
+        float oldSpeed = legs.at(legNumber).speed;
 
         //Recalculate subsequent start times, only changing from the current point.
         //We can guarantee that there is a next leg, as we checked (legNumber < legs.size() - 1)
 
-        irr::f32 newTimeRemaining;
+        float newTimeRemaining;
         if ( legNumber == (int)findCurrentLeg(scenarioTime) ) {
             //On current leg - calculate from current point only
-            irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - scenarioTime;
+            float oldTimeRemaining = legs.at(legNumber+1).startTime - scenarioTime;
             if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
             newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed); //The adjusted leg distance starts from now
             legs.at(legNumber).startTime = scenarioTime; // New leg effectively starts now
         } else {
             //On subsequent leg - calculate for whole leg
-            irr::f32 oldTimeRemaining = legs.at(legNumber+1).startTime - legs.at(legNumber).startTime;
+            float oldTimeRemaining = legs.at(legNumber+1).startTime - legs.at(legNumber).startTime;
             if (distance < 0) {distance = fabs(oldSpeed)*oldTimeRemaining/SECONDS_IN_HOUR;} //If leg length is negative, ensure overall leg length doesn't change
             newTimeRemaining = SECONDS_IN_HOUR * distance / fabs(speed);
             //No need to change start time.
@@ -314,7 +315,7 @@ void OtherShip::changeLeg(int legNumber, irr::f32 bearing, irr::f32 speed, irr::
 
 }
 
-void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime)
+void OtherShip::addLeg(int afterLegNumber, float bearing, float speed, float distance, float scenarioTime)
 {
 
     //Check if leg is reasonable, and is before the 'stop leg'
@@ -357,7 +358,7 @@ void OtherShip::addLeg(int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr
 
 }
 
-void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
+void OtherShip::deleteLeg(int legNumber, float scenarioTime)
 {
 
     //Check if leg exists, then if we are allowed to change this leg (current or future leg), and not the final 'stop' leg (hence legs.size()-1)
@@ -390,7 +391,7 @@ void OtherShip::deleteLeg(int legNumber, irr::f32 scenarioTime)
 
 }
 
-void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime)
+void OtherShip::resetLegs(float course, float speedKts, float distanceNm, float scenarioTime)
 {
     legs.clear();
 
@@ -402,7 +403,7 @@ void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceN
 
     //Use distance to calculate startTime of next leg, and stored for later reference.
     currentLeg.distance = distanceNm;
-    irr::f32 mainLegEndTime = scenarioTime + SECONDS_IN_HOUR*(distanceNm/fabs(speedKts)); // nm/kts -> hours, so convert to seconds
+    float mainLegEndTime = scenarioTime + SECONDS_IN_HOUR*(distanceNm/fabs(speedKts)); // nm/kts -> hours, so convert to seconds
 
     legs.push_back(currentLeg);
 
@@ -415,19 +416,19 @@ void OtherShip::resetLegs(irr::f32 course, irr::f32 speedKts, irr::f32 distanceN
     legs.push_back(stopLeg);
 }
 
-void OtherShip::setRateOfTurn(irr::f32 rateOfTurn) //Sets the rate of turn (only used in multiplayer mode)
+void OtherShip::setRateOfTurn(float rateOfTurn) //Sets the rate of turn (only used in multiplayer mode)
 {
     this->rateOfTurn = rateOfTurn;
 }
 
-RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
+RadarData OtherShip::getRadarData(bc::graphics::Vec3 scannerPosition) const
 //Get data for OtherShip (number) relative to scannerPosition
 //Similar code in Buoy.cpp
 {
     RadarData radarData;
 
-    irr::core::vector3df contactPosition = getPosition();
-    irr::core::vector3df relativePosition = contactPosition-scannerPosition;
+    irr::core::vector3df contactPosition = irr::core::vector3df(getPosition().x, getPosition().y, getPosition().z);
+    irr::core::vector3df relativePosition = contactPosition - irr::core::vector3df(scannerPosition.x, scannerPosition.y, scannerPosition.z);
 
     radarData.relX = relativePosition.X;
     radarData.relZ = relativePosition.Z;
@@ -443,10 +444,10 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     radarData.rcs=getRCS();
 
     //Calculate angles and ranges to each end of the contact
-    irr::f32 relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
-    irr::f32 range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
-    irr::f32 range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float relAngle1 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float relAngle2 = Angles::normaliseAngle(irr::core::RADTODEG*std::atan2( radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading), radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading) ));
+    float range1 = std::sqrt(std::pow(radarData.relX + 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ + 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
+    float range2 = std::sqrt(std::pow(radarData.relX - 0.5*radarData.length*std::sin(irr::core::DEGTORAD*radarData.heading),2) + std::pow(radarData.relZ - 0.5*radarData.length*std::cos(irr::core::DEGTORAD*radarData.heading),2));
     radarData.minRange=std::min(range1,range2);
     radarData.maxRange=std::max(range1,range2);
     radarData.minAngle=std::min(relAngle1,relAngle2);
@@ -463,7 +464,7 @@ RadarData OtherShip::getRadarData(irr::core::vector3df scannerPosition) const
     return radarData;
 }
 
-std::vector<Leg>::size_type OtherShip::findCurrentLeg(irr::f32 scenarioTime)
+std::vector<Leg>::size_type OtherShip::findCurrentLeg(float scenarioTime)
 {
     std::vector<Leg>::size_type currentLeg;
 

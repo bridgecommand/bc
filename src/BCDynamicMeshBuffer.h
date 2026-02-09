@@ -131,9 +131,9 @@ namespace scene
 			VertexBuffer->reallocate(vertexCount+numVertices, false);
 			if ( vertexType == getVertexType() )
 			{
-				const irr::u32 typeSize = getVertexPitchFromType(vertexType);
+				const uint32_t typeSize = getVertexPitchFromType(vertexType);
 				VertexBuffer->set_used(vertexCount+numVertices);
-				irr::u8* target = &static_cast<irr::u8*>(VertexBuffer->pointer())[vertexCount*typeSize];
+				uint8_t* target = &static_cast<uint8_t*>(VertexBuffer->pointer())[vertexCount*typeSize];
 				memcpy(target, vertices, numVertices*typeSize);
 			}
 			else
@@ -167,7 +167,7 @@ namespace scene
 					BoundingBox.reset( static_cast<const video::S3DVertex*>(vertices)[0].Pos );
 
 				const u32 typePitch = getVertexPitchFromType(vertexType);
-				const irr::u8* v8 = static_cast<const irr::u8*>(vertices);
+				const uint8_t* v8 = static_cast<const uint8_t*>(vertices);
 				for (u32 i=0; i<numVertices; ++i, v8 += typePitch)
 				{
 					BoundingBox.addInternalPoint(reinterpret_cast<const video::S3DVertex*>(v8)->Pos);
@@ -179,7 +179,7 @@ namespace scene
 			{
 				case video::EIT_16BIT:
 				{
-					const irr::u16* indices16 = reinterpret_cast<const irr::u16*>(indices);
+					const uint16_t* indices16 = reinterpret_cast<const uint16_t*>(indices);
 					for (u32 i=0; i<numIndices; ++i)
 					{
 						// Note: This can overflow, not checked. Will result in broken models, but no crashes.
@@ -189,7 +189,7 @@ namespace scene
 				}
 				case video::EIT_32BIT:
 				{
-					const irr::u32* indices32 = reinterpret_cast<const irr::u32*>(indices);
+					const uint32_t* indices32 = reinterpret_cast<const uint32_t*>(indices);
 					for (u32 i=0; i<numIndices; ++i)
 					{
 						IndexBuffer->push_back(indices32[i]+vertexCount);

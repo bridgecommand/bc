@@ -17,25 +17,28 @@
 #ifndef __WATER_HPP_INCLUDED__
 #define __WATER_HPP_INCLUDED__
 
-#include "irrlicht.h"
-#include "MovingWater.hpp"
+#include "graphics/Types.hpp"
+
+#include <cstdint>
+
+//Forward declarations
+namespace irr { namespace scene { class ISceneManager; class ISceneNode; class MovingWaterSceneNode; } }
 
 class Water
 {
     public:
         Water();
         virtual ~Water();
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, irr::f32 weather, irr::u32 disableShaders, bool withReflection, irr::u32 segments);
-        void update(irr::f32 tideHeight, irr::core::vector3df viewPosition, irr::u32 lightLevel, irr::f32 weather);
-        irr::f32 getWaveHeight(irr::f32 relPosX, irr::f32 relPosZ) const;
-        irr::core::vector2df getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const;
-        irr::core::vector3df getPosition() const;
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* ownShip, float weather, uint32_t disableShaders, bool withReflection, uint32_t segments);
+        void update(float tideHeight, bc::graphics::Vec3 viewPosition, uint32_t lightLevel, float weather, float windSpeedKts, float windDirectionDeg);
+        float getWaveHeight(float relPosX, float relPosZ) const;
+        bc::graphics::Vec2 getLocalNormals(float relPosX, float relPosZ) const;
+        bc::graphics::Vec3 getPosition() const;
         void setVisible(bool visible);
 
     private:
-        irr::f32 tileWidth;
+        float tileWidth;
         irr::scene::MovingWaterSceneNode* waterNode;
 };
 
 #endif
-

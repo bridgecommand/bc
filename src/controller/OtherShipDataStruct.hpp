@@ -19,14 +19,13 @@
 
 #include <vector>
 
-#include "irrlicht.h"
 #include "ShipDataStruct.hpp"
 #include "../Leg.hpp"
 
 struct OtherShipDisplayData : public ShipData //To hold information about a ship's position and heading
 {
     std::vector<Leg> legs;
-    irr::u32 mmsi;
+    uint32_t mmsi;
 };
 
 #endif // __OWNSHIPDATASTRUCT_HPP_INCLUDED__

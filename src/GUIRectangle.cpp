@@ -14,7 +14,7 @@ namespace gui
 {
 
 
-IGUIRectangle::IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<irr::s32> rectangle, bool showBorder) :
+IGUIRectangle::IGUIRectangle(IGUIEnvironment* environment, IGUIElement* parent, irr::core::rect<int32_t> rectangle, bool showBorder) :
 IGUIElement(EGUIET_ELEMENT,environment,parent,0,rectangle)
 {
     this->showBorder=showBorder;
@@ -37,7 +37,7 @@ if (!IsVisible)
     if (!skin)
         return;
 
-    irr::u32 skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
+    uint32_t skinAlpha = skin->getColor(irr::gui::EGDC_3D_FACE).getAlpha();
 
 	// draws the background
 	//skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);

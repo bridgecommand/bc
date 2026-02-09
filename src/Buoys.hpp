@@ -17,7 +17,7 @@
 #ifndef __BUOYS_HPP_INCLUDED__
 #define __BUOYS_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 
 #include <vector>
 #include <string>
@@ -27,6 +27,7 @@ class SimulationModel;
 class Buoy;
 class NavLight;
 struct RadarData;
+namespace irr { class IrrlichtDevice; namespace scene { class ISceneManager; class ISceneNode; } }
 
 class Buoys
 {
@@ -34,11 +35,11 @@ class Buoys
         Buoys();
         virtual ~Buoys();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
-        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
-        irr::u32 getNumber() const;
-        irr::core::vector3df getPosition(int number) const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void update(float deltaTime, float scenarioTime, float tideHeight, uint32_t lightLevel, bc::graphics::Vec3 ownShipPosition, float ownShipLength);
+        RadarData getRadarData(uint32_t number, bc::graphics::Vec3 scannerPosition) const;
+        uint32_t getNumber() const;
+        bc::graphics::Vec3 getPosition(int number) const;
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         void enableAllTriangleSelectors();
         irr::scene::ISceneNode* getSceneNode(int number);
 

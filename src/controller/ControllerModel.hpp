@@ -36,14 +36,14 @@ class ControllerModel //Start of the 'Model' part of MVC
 public:
 
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
-    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels);
+    ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, uint32_t _zoomLevels);
     ~ControllerModel();
-    irr::f32 longToX(irr::f32 longitude) const;
-    irr::f32 latToZ(irr::f32 latitude) const;
-    void update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride);
+    float longToX(float longitude) const;
+    float latToZ(float latitude) const;
+    void update(const float& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const float& weather, const float& visibility, const float& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const float& windDirection, const float& windSpeed, const float& streamDirection, const float& streamSpeed, const bool& streamOverride);
     void resetOffset(); //Re-centre the map on the own-ship
-    void updateSelectedShip(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
-    void updateSelectedLeg(irr::s32 index); //To be called from eventReceiver, where index is from the combo box
+    void updateSelectedShip(int32_t index); //To be called from eventReceiver, where index is from the combo box
+    void updateSelectedLeg(int32_t index); //To be called from eventReceiver, where index is from the combo box
     void setMouseDown(bool isMouseDown); //To be called from event receiver, each time mouse left click state changes.
     void increaseZoom();
     void decreaseZoom();
@@ -55,33 +55,33 @@ private:
     irr::IrrlichtDevice* device;
     irr::video::IVideoDriver* driver;
 
-	irr::u32 zoomLevels;
+	uint32_t zoomLevels;
 
     irr::video::IImage* unscaledMap;
     std::vector<irr::video::IImage*> scaledMap;
 
-    irr::u32 currentZoom;
+    uint32_t currentZoom;
 
-    irr::f32 terrainLong;
-    irr::f32 terrainLat;
-    irr::f32 terrainLongExtent;
-    irr::f32 terrainLatExtent;
-    irr::f32 terrainXWidth;
-    irr::f32 terrainZWidth;
+    float terrainLong;
+    float terrainLat;
+    float terrainLongExtent;
+    float terrainLatExtent;
+    float terrainXWidth;
+    float terrainZWidth;
 
-    std::vector<irr::f32> metresPerPx;
+    std::vector<float> metresPerPx;
 
     bool mouseDown; //This is controlled via setMouseDown(bool) from the event receiver
     bool mouseClickedLastUpdate;
-    irr::core::position2d<irr::s32> mouseLastPosition;
+    irr::core::position2d<int32_t> mouseLastPosition;
 
-    irr::s32 mapOffsetX; //Pixel offset of maps, to allow click and drag.
-    irr::s32 mapOffsetZ;
+    int32_t mapOffsetX; //Pixel offset of maps, to allow click and drag.
+    int32_t mapOffsetZ;
 
     std::vector<AISData> aisShips;
 
-    irr::s32 selectedShip; //Own ship as -1, other ships as 0 upwards
-    irr::s32 selectedLeg; //No leg as -1, legs as 0 upwards
+    int32_t selectedShip; //Own ship as -1, other ships as 0 upwards
+    int32_t selectedLeg; //No leg as -1, legs as 0 upwards
 
 };
 

@@ -37,6 +37,7 @@
 #include "Lang.hpp"
 #include "NMEA.hpp"
 #include "Sound.hpp"
+#include "SoundOpenAL.hpp"
 #include "Utilities.hpp"
 #include "OperatingModeEnum.hpp"
 
@@ -319,9 +320,9 @@ JoystickSetup getJoystickSetup(std::string iniFilename, bool isAzimuthDrive) {
     joystickSetup.joystickPOVLookDown=IniFile::iniFileTou32(iniFilename, "joystick_POV_look_down");
 
     //Joystick mapping
-    irr::u32 numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
+    uint32_t numberOfJoystickPoints = IniFile::iniFileTou32(iniFilename, "joystick_map_points");
     if (numberOfJoystickPoints > 0) {
-        for (irr::u32 i = 1; i < numberOfJoystickPoints+1; i++) {
+        for (uint32_t i = 1; i < numberOfJoystickPoints+1; i++) {
             joystickSetup.inputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,1)));
             joystickSetup.outputPoints.push_back(IniFile::iniFileTof32(iniFilename, IniFile::enumerate2("joystick_map",i,2)));
         }
@@ -472,9 +473,9 @@ int main(int argc, char ** argv)
     }
     #endif
 
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    uint32_t graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    uint32_t graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    uint32_t graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
 	#ifdef __APPLE__
@@ -482,59 +483,59 @@ int main(int argc, char ** argv)
 		fullScreen = true; //Fall back for mac
 	}
 	#endif
-	irr::u32 antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
-    irr::u32 directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
-	irr::u32 disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
+	uint32_t antiAlias = IniFile::iniFileTou32(iniFilename, "anti_alias"); // 0 or 1 for disabled, 2,4,6,8 etc for FSAA
+    uint32_t directX = IniFile::iniFileTou32(iniFilename, "use_directX"); // 0 for openGl, 1 for directX (if available)
+	uint32_t disableShaders = IniFile::iniFileTou32(iniFilename, "disable_shaders"); // 0 for normal, 1 for no shaders
 	if (directX == 1) {
 		disableShaders = 1; //FIXME: Hardcoded for no directX shaders
 	}
-	irr::u32 waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
+	uint32_t waterSegments = IniFile::iniFileTou32(iniFilename, "water_segments"); // power of 2
 	if (waterSegments == 0) {
 		waterSegments = 32;
 	}
-    irr::u32 numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
+    uint32_t numberOfContactPointsX = IniFile::iniFileTou32(iniFilename, "contact_points_X");
 	if (numberOfContactPointsX == 0) {
 		numberOfContactPointsX = 10;
 	}
-    irr::u32 numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
+    uint32_t numberOfContactPointsY = IniFile::iniFileTou32(iniFilename, "contact_points_Y");
 	if (numberOfContactPointsY == 0) {
 		numberOfContactPointsY = 30;
 	}
-    irr::u32 numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
+    uint32_t numberOfContactPointsZ = IniFile::iniFileTou32(iniFilename, "contact_points_Z");
 	if (numberOfContactPointsZ == 0) {
 		numberOfContactPointsZ = 30;
 	}
     irr::core::vector3di numberOfContactPoints(numberOfContactPointsX,numberOfContactPointsY,numberOfContactPointsZ);
 
-    irr::f32 minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
+    float minContactPointSpacing = IniFile::iniFileTof32(iniFilename, "contact_points_minSpacing", 100); // Large default
 
     bool debugMode = (IniFile::iniFileTou32(iniFilename, "debug_mode")==1);
 
     bool showTideHeight = (IniFile::iniFileTou32(iniFilename, "show_tide_height")==1);
 
-    irr::u32 limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
+    uint32_t limitTerrainResolution = IniFile::iniFileTou32(iniFilename, "max_terrain_resolution"); //Default of zero means unlimited
 
 
-    irr::f32 contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
-    irr::f32 contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
-    irr::f32 lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
-    irr::f32 lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
-    irr::f32 frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
-    irr::f32 tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
+    float contactStiffnessFactor = IniFile::iniFileTof32(iniFilename, "contactStiffness_perArea"); //Contact stiffness to use
+    float contactDampingFactor = IniFile::iniFileTof32(iniFilename, "contactDamping_factor"); //Contact damping factor (roughly proportion of critical)
+    float lineStiffnessFactor = IniFile::iniFileTof32(iniFilename, "lineStiffness_factor", 1.0); //Line stiffness scaling factor
+    float lineDampingFactor = IniFile::iniFileTof32(iniFilename, "lineDamping_factor", 1.0); //Line damping factor (roughly proportion of critical)
+    float frictionCoefficient = IniFile::iniFileTof32(iniFilename, "contactFriction_coefficient", 0.5); //Contact friction coefficient (0-1)
+    float tanhFrictionFactor = IniFile::iniFileTof32(iniFilename, "contactFriction_tanhFactor", 1); //Contact friction factor (Generally 1-100)
     if (frictionCoefficient < 0) {frictionCoefficient = 0;}
     if (frictionCoefficient > 1) {frictionCoefficient = 1;}
     if (tanhFrictionFactor < 0) {tanhFrictionFactor = 0;}
 
 
     //Initial view configuration
-    irr::f32 viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
-    irr::f32 lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
+    float viewAngle = IniFile::iniFileTof32(iniFilename, "view_angle"); //Horizontal field of view
+    float lookAngle = IniFile::iniFileTof32(iniFilename, "look_angle"); //Initial look angle
     if (viewAngle <= 0) {
         viewAngle = 90;
     }
 
-    irr::f32 cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
-    irr::f32 cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
+    float cameraMinDistance = IniFile::iniFileTof32(iniFilename, "minimum_distance");
+    float cameraMaxDistance = IniFile::iniFileTof32(iniFilename, "maximum_distance");
     if (cameraMinDistance<=0) {
         cameraMinDistance = 1;
     }
@@ -545,13 +546,13 @@ int main(int argc, char ** argv)
 
     //Load NMEA settings
     std::string nmeaSerialPortName = IniFile::iniFileToString(iniFilename, "NMEA_ComPort");
-    irr::u32 nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
+    uint32_t nmeaSerialPortBaudrate = IniFile::iniFileTou32(iniFilename, "NMEA_Baudrate", 4800);
     std::string nmeaUDPAddressName = IniFile::iniFileToString(iniFilename, "NMEA_UDPAddress");
     std::string nmeaUDPPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPPort");
     std::string nmeaUDPListenPortName = IniFile::iniFileToString(iniFilename, "NMEA_UDPListenPort");
 
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    uint32_t udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
@@ -566,7 +567,7 @@ int main(int argc, char ** argv)
 
     //Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-        irr::core::dimension2d<irr::u32> deskres;
+        irr::core::dimension2d<uint32_t> deskres;
         #ifdef _WIN32
         // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
         deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -733,7 +734,7 @@ int main(int argc, char ** argv)
         }
 	}
 
-    deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight);
+    deviceParameters.WindowSize = irr::core::dimension2d<uint32_t>(graphicsWidth,graphicsHeight);
     deviceParameters.Bits = graphicsDepth;
     deviceParameters.Fullscreen = fullScreen;
     deviceParameters.AntiAlias = antiAlias;
@@ -792,16 +793,16 @@ int main(int argc, char ** argv)
     device->getGUIEnvironment()->setSkin(newskin);
     newskin->drop();
 
-	irr::u32 su = driver->getScreenSize().Width;
-	irr::u32 sh = driver->getScreenSize().Height;
+	uint32_t su = driver->getScreenSize().Width;
+	uint32_t sh = driver->getScreenSize().Height;
 
 	//set size of camera window, based on actual window
 	graphicsWidth = su;
 	graphicsHeight = sh;
-	irr::u32 graphicsWidth3d = su;
-	irr::u32 graphicsHeight3d = sh * VIEW_PROPORTION_3D;
-	irr::f32 aspect = (irr::f32)su / (irr::f32)sh;
-	irr::f32 aspect3d = (irr::f32)graphicsWidth3d / (irr::f32)graphicsHeight3d;
+	uint32_t graphicsWidth3d = su;
+	uint32_t graphicsHeight3d = sh * VIEW_PROPORTION_3D;
+	float aspect = (float)su / (float)sh;
+	float aspect3d = (float)graphicsWidth3d / (float)graphicsHeight3d;
 
 	std::cout << "graphicsWidth: "<< graphicsWidth << " graphicsHeight: " << graphicsHeight << std::endl;
 
@@ -829,8 +830,12 @@ int main(int argc, char ** argv)
         hostname=IniFile::iniFileToString(userFolder + "/hostname.txt","hostname");
     }
 
-	//Start sound
+	//Start sound - use OpenAL if available, fall back to PortAudio
+#ifdef WITH_OPENAL
+	SoundOpenAL sound;
+#else
 	Sound sound;
+#endif
 
     OperatingMode::Mode mode = OperatingMode::Normal;
     if (IniFile::iniFileTou32(iniFilename, "secondary_mode")==1) {
@@ -874,11 +879,11 @@ int main(int argc, char ** argv)
     }
 
 	//Show loading message
-	irr::u32 creditsStartTime = device->getTimer()->getRealTime();
-    irr::core::stringw creditsText = language.translate("loadingmsg");
+	uint32_t creditsStartTime = device->getTimer()->getRealTime();
+    irr::core::stringw creditsText = language.translate("loadingmsg").c_str();
     creditsText.append(L"\n\n");
     creditsText.append(getCredits());
-    irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<irr::s32>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
+    irr::gui::IGUIStaticText* loadingMessage = device->getGUIEnvironment()->addStaticText(creditsText.c_str(), irr::core::rect<int32_t>(0.05*su,0.05*sh,0.95*su,0.95*sh),true);
     device->run();
     driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
     device->getGUIEnvironment()->drawAll();
@@ -911,7 +916,7 @@ int main(int argc, char ** argv)
     } else {
         //If in secondary mode, get scenario information from the server
         //Tell user what we're doing
-        irr::core::stringw portMessage = language.translate("secondaryWait");
+        irr::core::stringw portMessage = language.translate("secondaryWait").c_str();
         portMessage.append(L" ");
         std::string ourHostName = asio::ip::host_name();
         portMessage.append(irr::core::stringw(ourHostName.c_str()));
@@ -1111,7 +1116,7 @@ int main(int argc, char ** argv)
         guiMain.setARPAComboboxes(2); // 0: Off/Manual, 1: MARPA, 2: ARPA
         model.setArpaMode(2);
     }
-    irr::u32 radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
+    uint32_t radarStartupMode = IniFile::iniFileTou32(iniFilename, "radar_mode");
     if (radarStartupMode==1) {
         model.setRadarCourseUp();
     }
@@ -1170,7 +1175,7 @@ int main(int argc, char ** argv)
 
 //        modelProfile.tic();
         }{ IPROF("Render setup");
-        driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
+        driver->setViewPort(irr::core::rect<int32_t>(0,0,graphicsWidth,graphicsHeight)); //Full screen before beginScene
         driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, model.getRadarSurroundColour());
 //        renderSetupProfile.toc();
 
@@ -1205,11 +1210,11 @@ int main(int argc, char ** argv)
         // Normal rendering
         if (!fullScreenRadar) {
             if (guiMain.getShowInterface()) {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth3d, graphicsHeight3d));
+                driver->setViewPort(irr::core::rect<int32_t>(0, 0, graphicsWidth3d, graphicsHeight3d));
                 model.updateViewport(aspect3d);
             }
             else {
-                driver->setViewPort(irr::core::rect<irr::s32>(0, 0, graphicsWidth, graphicsHeight));
+                driver->setViewPort(irr::core::rect<int32_t>(0, 0, graphicsWidth, graphicsHeight));
                 model.updateViewport(aspect);
             }
             
@@ -1221,7 +1226,7 @@ int main(int argc, char ** argv)
         if (vr3dMode && vrSuccess == 0) {
             
             // Set aspect ratio
-            irr::f32 aspectRatioVR = vrInterface.getAspectRatio();
+            float aspectRatioVR = vrInterface.getAspectRatio();
             model.updateViewport(aspectRatioVR);
 
             // Process events
@@ -1246,8 +1251,8 @@ int main(int argc, char ** argv)
 //        renderSetupProfile.tic();
         }{ IPROF("GUI");
         //gui
-        driver->setViewPort(irr::core::rect<irr::s32>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
-        driver->setViewPort(irr::core::rect<irr::s32>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
+        driver->setViewPort(irr::core::rect<int32_t>(0, 0, 10, 10));//Set to a dummy value first to force the next call to make the change
+        driver->setViewPort(irr::core::rect<int32_t>(0,0,graphicsWidth,graphicsHeight)); //Full screen for gui
         guiMain.drawGUI();
 
  //       guiProfile.toc();

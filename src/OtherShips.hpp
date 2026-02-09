@@ -17,7 +17,7 @@
 #ifndef __OTHERSHIPS_HPP_INCLUDED__
 #define __OTHERSHIPS_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 
 #include <vector>
 #include <string>
@@ -30,35 +30,39 @@ class SimulationModel;
 class OtherShip;
 struct RadarData;
 class OtherShipData;
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene { class ISceneManager; class ISceneNode; }
+}
 
 class OtherShips
 {
     public:
         OtherShips();
         ~OtherShips();
-        void load(std::vector<OtherShipData> otherShipsData, irr::f32 scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::f32 tideHeight, irr::u32 lightLevel, irr::core::vector3df ownShipPosition, irr::f32 ownShipLength);
-        RadarData getRadarData(irr::u32 number, irr::core::vector3df scannerPosition) const;
-        irr::u32 getNumber() const;
-        irr::core::vector3df getPosition(int number) const;
-        irr::f32 getLength(int number) const;
-        irr::f32 getBreadth(int number) const;
-        irr::f32 getHeading(int number) const;
-        irr::f32 getSpeed(int number) const; //Speed in m/s
-        irr::u32 getMMSI(int number) const;
-        irr::f32 getEstimatedDisplacement(int number) const;
-        void setSpeed(int number, irr::f32 speed); //Speed in m/s
-        void setMMSI(int number, irr::u32 mmsi);
-        void setPos(int number, irr::f32 positionX, irr::f32 positionZ);
-        void setHeading(int number, irr::f32 hdg);
-        void setRateOfTurn(int number, irr::f32 rateOfTurn);
+        void load(std::vector<OtherShipData> otherShipsData, float scenarioStartTime, OperatingMode::Mode mode, irr::scene::ISceneManager* smgr, SimulationModel* model, irr::IrrlichtDevice* dev);
+        void update(float deltaTime, float scenarioTime, float tideHeight, uint32_t lightLevel, bc::graphics::Vec3 ownShipPosition, float ownShipLength);
+        RadarData getRadarData(uint32_t number, bc::graphics::Vec3 scannerPosition) const;
+        uint32_t getNumber() const;
+        bc::graphics::Vec3 getPosition(int number) const;
+        float getLength(int number) const;
+        float getBreadth(int number) const;
+        float getHeading(int number) const;
+        float getSpeed(int number) const; //Speed in m/s
+        uint32_t getMMSI(int number) const;
+        float getEstimatedDisplacement(int number) const;
+        void setSpeed(int number, float speed); //Speed in m/s
+        void setMMSI(int number, uint32_t mmsi);
+        void setPos(int number, float positionX, float positionZ);
+        void setHeading(int number, float hdg);
+        void setRateOfTurn(int number, float rateOfTurn);
         std::vector<Leg> getLegs(int number) const;
-        void changeLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void addLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance, irr::f32 scenarioTime);
-        void deleteLeg(int shipNumber, int legNumber, irr::f32 scenarioTime);
-        void resetLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm, irr::f32 scenarioTime);
+        void changeLeg(int shipNumber, int legNumber, float bearing, float speed, float distance, float scenarioTime);
+        void addLeg(int shipNumber, int afterLegNumber, float bearing, float speed, float distance, float scenarioTime);
+        void deleteLeg(int shipNumber, int legNumber, float scenarioTime);
+        void resetLegs(int shipNumber, float course, float speedKts, float distanceNm, float scenarioTime);
         std::string getName(int number) const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
         void enableAllTriangleSelectors();
         irr::scene::ISceneNode* getSceneNode(int number);
 

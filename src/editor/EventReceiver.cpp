@@ -39,7 +39,7 @@
 
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			int32_t id = event.GUIEvent.Caller->getID();
 
             
             if (event.GUIEvent.EventType==irr::gui::EGET_EDITBOX_CHANGED) {
@@ -64,7 +64,7 @@
                 }
 
                 if (id == GUIMain::GUI_ID_SETMMSI_BUTTON) {
-                    irr::u32 mmsi = gui->getEditBoxMMSI();
+                    uint32_t mmsi = gui->getEditBoxMMSI();
                     int ship = gui->getSelectedShip();
                     model->setMMSI(ship,mmsi);
                 }
@@ -72,9 +72,9 @@
                 if (id == GUIMain::GUI_ID_CHANGE_BUTTON) {
                     //Get data from gui
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
@@ -94,9 +94,9 @@
 
                 if (id == GUIMain::GUI_ID_ADDLEG_BUTTON) {
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();

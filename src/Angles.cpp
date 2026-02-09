@@ -15,9 +15,19 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "Angles.hpp"
+#include "irrlicht.h"
 #include <algorithm>
 #include <iostream>
 #include <cstdint>
+
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) {
+        return irr::core::vector3df(v.x, v.y, v.z);
+    }
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) {
+        return bc::graphics::Vec3(v.X, v.Y, v.Z);
+    }
+}
 
 //From OpenCV via http://stackoverflow.com/a/20723890
 int Angles::localisinf(double x)
@@ -37,16 +47,16 @@ int Angles::localisnan(double x)
 }
 //End From OpenCV via http://stackoverflow.com/a/20723890
 
-bool Angles::isAngleBetween(irr::core::vector2df angle, irr::core::vector2df startAng, irr::core::vector2df endAng)
+bool Angles::isAngleBetween(bc::graphics::Vec2 angle, bc::graphics::Vec2 startAng, bc::graphics::Vec2 endAng)
 {
     //Aim is to be a faster way of calculating if an angle is between two others, not using atan2
     //Ref: http://stackoverflow.com/a/13641047, inverted for different hand of rotation, and follow up answers
 
-    return ((startAng.Y*angle.X-startAng.X*angle.Y) * (startAng.Y*endAng.X-startAng.X*endAng.Y) >= 0) && //Is direction from start to checked, and start to end the same
-           ((angle.Y * endAng.X-angle.X * endAng.Y) * (startAng.Y*endAng.X-startAng.X*endAng.Y) >= 0); //Is direction from checked to end and start to end the same?
+    return ((startAng.y*angle.x-startAng.x*angle.y) * (startAng.y*endAng.x-startAng.x*endAng.y) >= 0) && //Is direction from start to checked, and start to end the same
+           ((angle.y * endAng.x-angle.x * endAng.y) * (startAng.y*endAng.x-startAng.x*endAng.y) >= 0); //Is direction from checked to end and start to end the same?
 }
 
-bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) {
+bool Angles::isAngleBetween(float angle, float startAng, float endAng) {
 
     //Return false if any is not a normal number (e.g. NaN)
     if (localisinf(angle) || localisnan(angle) || localisinf(startAng) || localisnan(startAng) || localisinf(endAng) || localisnan(endAng)) {
@@ -73,7 +83,7 @@ bool Angles::isAngleBetween(irr::f32 angle, irr::f32 startAng, irr::f32 endAng) 
     }
 }
 
-irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-360
+float Angles::normaliseAngle(float angle) { //ensure angle is in range 0-360
 
     //Return unchanged if NaN etc.
     if (localisinf(angle) || localisnan(angle)) {
@@ -91,7 +101,7 @@ irr::f32 Angles::normaliseAngle(irr::f32 angle) { //ensure angle is in range 0-3
     return angle;
 }
 
-irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pitch, irr::f32 roll)
+bc::graphics::Vec3 Angles::irrAnglesFromYawPitchRoll(float yaw, float pitch, float roll)
 //Convert yaw,pitch,roll (in degrees) into irrlicht 'euler angles' in degrees, as used by setRotation,
 //essentially changing the order the transformations are applied in.
 {
@@ -109,7 +119,7 @@ irr::core::vector3df Angles::irrAnglesFromYawPitchRoll(irr::f32 yaw, irr::f32 pi
     total*=p;
     total*=r;
 
-    return total.getRotationDegrees();
+    return fromIrrVec(total.getRotationDegrees());
 }
 
 int Angles::sign(float in)

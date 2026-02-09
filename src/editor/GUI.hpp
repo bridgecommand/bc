@@ -70,27 +70,27 @@ public:
         GUI_ID_DRIFTING_CHECKBOX
     };
 
-    void updateGuiData(ScenarioData scenarioInfo, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth);
+    void updateGuiData(ScenarioData scenarioInfo, int32_t mapOffsetX, int32_t mapOffsetZ, float metresPerPx, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, irr::video::ITexture* displayMapTexture, int32_t selectedShip, int32_t selectedLeg, float terrainLong, float terrainLongExtent, float terrainXWidth, float terrainLat, float terrainLatExtent, float terrainZWidth);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
-    irr::f32 getEditBoxCourse() const;
-    irr::f32 getEditBoxSpeed() const;
-    irr::f32 getEditBoxDistance() const;
+    float getEditBoxCourse() const;
+    float getEditBoxSpeed() const;
+    float getEditBoxDistance() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
     std::string getOwnShipTypeSelected() const;
     std::string getOtherShipTypeSelected() const;
-    irr::f32 getStartTime() const;
-    irr::u32 getStartDay() const;
-    irr::u32 getStartMonth() const;
-    irr::u32 getStartYear() const;
-    irr::f32 getSunRise() const;
-    irr::f32 getSunSet() const;
-    irr::f32 getWeather() const;
-    irr::f32 getRain() const;
-    irr::f32 getVisibility() const;
-    irr::f32 getWindDirection() const;
-    irr::f32 getWindSpeed() const;
-    irr::u32 getEditBoxMMSI() const;
+    float getStartTime() const;
+    uint32_t getStartDay() const;
+    uint32_t getStartMonth() const;
+    uint32_t getStartYear() const;
+    float getSunRise() const;
+    float getSunSet() const;
+    float getWeather() const;
+    float getRain() const;
+    float getVisibility() const;
+    float getWindDirection() const;
+    float getWindSpeed() const;
+    uint32_t getEditBoxMMSI() const;
     std::string getScenarioName() const;
     std::string getDescription() const;
     irr::core::vector2df getScreenCentrePosition() const;
@@ -153,19 +153,19 @@ private:
     irr::gui::IGUIButton* save;
 
 
-    irr::f32 mapCentreX;
-    irr::f32 mapCentreZ;
+    float mapCentreX;
+    float mapCentreZ;
 
     bool editBoxesNeedUpdating;
     bool multiplayer;
 
     ScenarioData oldScenarioInfo; //Keep a copy of the data we have already displayed, so the dialog boxes only get updated when needed
 
-    void drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, const std::vector<OtherShipData>& otherShips, const irr::s32& selectedShip, const irr::s32& selectedLeg);
-    void updateDropDowns(const std::vector<OtherShipData>& otherShips, irr::s32 selectedShip, irr::f32 time);
+    void drawInformationOnMap(const float& time, const int32_t& mapOffsetX, const int32_t& mapOffsetZ, const float& metresPerPx, const float& ownShipPosX, const float& ownShipPosZ, const float& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<PositionData>& landObjects, const std::vector<OtherShipData>& otherShips, const int32_t& selectedShip, const int32_t& selectedLeg);
+    void updateDropDowns(const std::vector<OtherShipData>& otherShips, int32_t selectedShip, float time);
     bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
-    std::wstring f32To3dp(irr::f32 value) const;
-    std::wstring f32To4dp(irr::f32 value) const;
+    std::wstring f32To3dp(float value) const;
+    std::wstring f32To4dp(float value) const;
 
 };
 

@@ -17,10 +17,11 @@
 #ifndef __SCENARIOCHOICE_HPP_INCLUDED__
 #define __SCENARIOCHOICE_HPP_INCLUDED__
 
-#include "irrlicht.h"
 #include "../Lang.hpp"
 #include <string>
 #include <vector>
+
+namespace irr { class IrrlichtDevice; namespace gui { class IGUIEnvironment; } }
 
 class ScenarioChoice
 {

@@ -17,12 +17,16 @@
 #ifndef __LANDLIGHTS_HPP_INCLUDED__
 #define __LANDLIGHTS_HPP_INCLUDED__
 
-#include "irrlicht.h"
-
 #include <vector>
 #include <string>
+#include <cstdint>
 
-//Forward declarations
+// Forward declarations
+namespace irr {
+    namespace scene {
+        class ISceneManager;
+    }
+}
 class SimulationModel;
 class NavLight;
 class Terrain;
@@ -33,12 +37,11 @@ class LandLights
         LandLights();
         virtual ~LandLights();
         void load(const std::string& worldName, irr::scene::ISceneManager* smgr, SimulationModel* model, const Terrain& terrain);
-        void update(irr::f32 deltaTime, irr::f32 scenarioTime, irr::u32 lightLevel);
-        irr::u32 getNumber() const;
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void update(float deltaTime, float scenarioTime, uint32_t lightLevel);
+        uint32_t getNumber() const;
+        void moveNode(float deltaX, float deltaY, float deltaZ);
     private:
         std::vector<NavLight*> landLights;
 };
 
 #endif
-

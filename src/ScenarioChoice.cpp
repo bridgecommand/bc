@@ -32,7 +32,7 @@ ScenarioChoice::ScenarioChoice(irr::IrrlichtDevice* device, Lang* language)
     gui = device->getGUIEnvironment();
 }
 
-void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, irr::u32& udpPort, OperatingMode::Mode& mode, std::string scenarioPath)
+void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& hostname, uint32_t& udpPort, OperatingMode::Mode& mode, std::string scenarioPath)
 {
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
@@ -42,8 +42,8 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     getScenarioList(scenarioList, scenarioDescription, scenarioPath); //Populate list
 
     //Get screen width
-    irr::u32 su = driver->getScreenSize().Width;
-    irr::u32 sh = driver->getScreenSize().Height;
+    uint32_t su = driver->getScreenSize().Width;
+    uint32_t sh = driver->getScreenSize().Height;
 
     //Make gui elements
     irr::core::stringw titleText(LONGNAME.c_str());
@@ -52,34 +52,34 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     titleText.append(irr::core::stringw(__DATE__));
     titleText.append(L" ");
     titleText.append(irr::core::stringw(__TIME__));
-    irr::core::dimension2d<irr::u32> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
-    irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<irr::s32>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
+    irr::core::dimension2d<uint32_t> titleDimensions = gui->getSkin()->getFont()->getDimension(titleText.c_str());
+    irr::gui::IGUIStaticText* title = gui->addStaticText(titleText.c_str(),irr::core::rect<int32_t>((su-titleDimensions.Width)/2, 0.017*sh, (su+titleDimensions.Width)/2, 0.09*sh));
     title->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
 
-    irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<irr::s32>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
-    irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<irr::s32>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
-    irr::gui::IGUIStaticText* description = gui->addStaticText(L"",irr::core::rect<irr::s32>(0.02*su,0.59*sh,0.30*su,0.99*sh));
-    irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<irr::s32>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
+    irr::gui::IGUIStaticText* instruction = gui->addStaticText(language->translate("scnChoose").c_str(),irr::core::rect<int32_t>(0.02*su,0.13*sh,0.30*su, 0.17*sh));
+    irr::gui::IGUIListBox* scenarioListBox = gui->addListBox(irr::core::rect<int32_t>(0.02*su,0.17*sh,0.30*su,0.50*sh),0,GUI_ID_SCENARIO_LISTBOX);
+    irr::gui::IGUIStaticText* description = gui->addStaticText(L"",irr::core::rect<int32_t>(0.02*su,0.59*sh,0.30*su,0.99*sh));
+    irr::gui::IGUIButton* okButton = gui->addButton(irr::core::rect<int32_t>(0.02*su,0.51*sh,0.30*su,0.58*sh),0,GUI_ID_OK_BUTTON,language->translate("ok").c_str());
 
-    irr::gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),irr::core::rect<irr::s32>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
-    irr::gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
+    irr::gui::IGUIStaticText* secondaryText = gui->addStaticText(language->translate("secondary").c_str(),irr::core::rect<int32_t>(0.52*su,0.13*sh,1.00*su, 0.17*sh));
+    irr::gui::IGUICheckBox* secondaryCheckbox = gui->addCheckBox(false,irr::core::rect<int32_t>(0.52*su,0.18*sh,0.54*su,0.20*sh),0,GUI_ID_SECONDARY_CHECKBOX);
 
-    irr::gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),irr::core::rect<irr::s32>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
-    irr::gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,irr::core::rect<irr::s32>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
+    irr::gui::IGUIStaticText* multiplayerText = gui->addStaticText(language->translate("multiplayer").c_str(),irr::core::rect<int32_t>(0.52*su,0.23*sh,1.00*su, 0.27*sh));
+    irr::gui::IGUICheckBox* multiplayerCheckbox = gui->addCheckBox(false,irr::core::rect<int32_t>(0.52*su,0.28*sh,0.54*su,0.30*sh),0,GUI_ID_MULTIPLAYER_CHECKBOX);
 
-    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<irr::s32>(0.52*su,0.33*sh,0.99*su, 0.38*sh));
-    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<irr::s32>(0.52*su,0.39*sh,0.80*su,0.42*sh));
+    irr::gui::IGUIStaticText* hostnameText = gui->addStaticText(language->translate("hostname").c_str(),irr::core::rect<int32_t>(0.52*su,0.33*sh,0.99*su, 0.38*sh));
+    irr::gui::IGUIEditBox* hostnameBox = gui->addEditBox(irr::core::stringw(hostname.c_str()).c_str(),irr::core::rect<int32_t>(0.52*su,0.39*sh,0.80*su,0.42*sh));
     hostnameBox->setToolTipText(language->translate("hostnameHelp").c_str());
 
     //For secondary only, allow the user to change the UDP port to listen on
-    irr::gui::IGUIStaticText* portText = gui->addStaticText(language->translate("udpListenPort").c_str(),irr::core::rect<irr::s32>(0.52*su,0.43*sh,0.99*su, 0.48*sh));
-    irr::gui::IGUIEditBox* portBox = gui->addEditBox(irr::core::stringw(udpPort).c_str(),irr::core::rect<irr::s32>(0.52*su,0.49*sh,0.80*su,0.52*sh));
+    irr::gui::IGUIStaticText* portText = gui->addStaticText(language->translate("udpListenPort").c_str(),irr::core::rect<int32_t>(0.52*su,0.43*sh,0.99*su, 0.48*sh));
+    irr::gui::IGUIEditBox* portBox = gui->addEditBox(irr::core::stringw(udpPort).c_str(),irr::core::rect<int32_t>(0.52*su,0.49*sh,0.80*su,0.52*sh));
     portBox->setToolTipText(language->translate("udpListenPortHelp").c_str());
     portText->setVisible(false);
     portBox->setVisible(false);
 
     //add credits text
-    //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<irr::s32>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
+    //irr::gui::IGUIStaticText* creditsText = gui->addStaticText((getCredits()).c_str(),irr::core::rect<int32_t>(0.35*su,0.35*sh,0.95*su, 0.95*sh),true);
 
     //Add scenarios to list box
     for (std::vector<std::string>::iterator it = scenarioList.begin(); it != scenarioList.end(); ++it) {
@@ -101,14 +101,14 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
     irr::IEventReceiver* oldReceiver = device->getEventReceiver();
     device->setEventReceiver(&startupReceiver);
 
-    irr::s32 descriptionScenario = -1; //Which scenario we are showing the description text for
+    int32_t descriptionScenario = -1; //Which scenario we are showing the description text for
 
     while(device->run() && startupReceiver.getScenarioSelected()==-1) {
             //Event receiver will set Scenario Selected, so we just loop here until that happens
             driver->beginScene(irr::video::ECBF_COLOR|irr::video::ECBF_DEPTH, irr::video::SColor(0,200,200,200));
             
             //Set the 'description' text here
-            irr::s32 currentSelection = scenarioListBox->getSelected();
+            int32_t currentSelection = scenarioListBox->getSelected();
             if (currentSelection!=descriptionScenario) {
                 //Update the description text
                 description->setText(L"");
@@ -125,7 +125,7 @@ void ScenarioChoice::chooseScenario(std::string& scenarioName, std::string& host
 
 
     //Get name of selected scenario
-    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (irr::s32)scenarioList.size()) {
+    if (startupReceiver.getScenarioSelected()<0 || startupReceiver.getScenarioSelected() >= (int32_t)scenarioList.size()) {
 		ExitMessage::exitWithMessage("No scenario selected.");
     }
 
@@ -193,7 +193,7 @@ void ScenarioChoice::getScenarioList(std::vector<std::string>&scenarioList, std:
     }
 
     //List here
-    for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+    for (uint32_t i=0;i<fileList->getFileCount();i++) {
         if (fileList->isDirectory(i)) {
             const irr::io::path& fileName = fileList->getFileName(i);
             if (fileName.findFirst('.')!=0) { //Check it doesn't start with '.' (., .., or hidden)

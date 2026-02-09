@@ -19,11 +19,12 @@
 #ifndef __SHIP_HPP_INCLUDED__
 #define __SHIP_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 #include <string>
 
 //Forward declarations
 class SimulationModel;
+namespace irr { namespace scene { class IAnimatedMeshSceneNode; class IMeshSceneNode; } }
 
 class Ship
 {
@@ -32,42 +33,42 @@ class Ship
         virtual ~Ship();
 
         irr::scene::IMeshSceneNode* getSceneNode() const;
-        irr::core::vector3df getRotation() const;
-        irr::core::vector3df getPosition() const;
-        irr::f32 getLength() const;
-        irr::f32 getBreadth() const;
-        irr::f32 getHeightCorrection() const;
-        irr::f32 getEstimatedDisplacement() const;
-        void setHeading(irr::f32 hdg);
-        void setSpeed(irr::f32 spd);
-        irr::f32 getHeading() const;
-        irr::f32 getSpeed() const; //m/s
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void setPosition(irr::f32 xPos, irr::f32 yPos);
-        irr::u32 getMMSI() const;
-        void setMMSI(irr::u32 mmsi);
+        bc::graphics::Vec3 getRotation() const;
+        bc::graphics::Vec3 getPosition() const;
+        float getLength() const;
+        float getBreadth() const;
+        float getHeightCorrection() const;
+        float getEstimatedDisplacement() const;
+        void setHeading(float hdg);
+        void setSpeed(float spd);
+        float getHeading() const;
+        float getSpeed() const; //m/s
+        void moveNode(float deltaX, float deltaY, float deltaZ);
+        void setPosition(float xPos, float yPos);
+        uint32_t getMMSI() const;
+        void setMMSI(uint32_t mmsi);
 
     protected:
 
         irr::scene::IAnimatedMeshSceneNode* ship; //The scene node for the own ship.
-        irr::f32 hdg;
-        irr::f32 xPos;
-        irr::f32 yPos;
-        irr::f32 zPos;
-        irr::f32 axialSpd;
-        irr::f32 length;
-        irr::f32 breadth;
-        irr::f32 draught;
-        irr::f32 airDraught;
-        irr::f32 heightCorrection;
-        irr::f32 angleCorrection;
+        float hdg;
+        float xPos;
+        float yPos;
+        float zPos;
+        float axialSpd;
+        float length;
+        float breadth;
+        float draught;
+        float airDraught;
+        float heightCorrection;
+        float angleCorrection;
 // DEE_DEC22 vvvv angle corrections about other axis to allow easier import of other cood systems models and to model trim and list
-        irr::f32 angleCorrectionRoll;
-        irr::f32 angleCorrectionPitch;
+        float angleCorrectionRoll;
+        float angleCorrectionPitch;
 // DEE_DEC22
 	int controlMode;
         bool positionManuallyUpdated; //If position has been updated, and shouldn't be updated again this loop
-        irr::u32 mmsi;
+        uint32_t mmsi;
         enum CONTROL_MODE
         {
             MODE_AUTO = 0,

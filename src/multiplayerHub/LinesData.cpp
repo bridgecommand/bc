@@ -69,7 +69,7 @@ void LinesData::setLineDataSize(unsigned int shipNumber, unsigned int numberOfLi
     }
 }
 
-void LinesData::setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, int heaveIn, irr::f32 startX, irr::f32 startY, irr::f32 startZ, irr::f32 endX, irr::f32 endY, irr::f32 endZ, irr::f32 nominalLength, irr::f32 breakingTension, irr::f32 breakingStrain, irr::f32 nominalShipMass)
+void LinesData::setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, int heaveIn, float startX, float startY, float startZ, float endX, float endY, float endZ, float nominalLength, float breakingTension, float breakingStrain, float nominalShipMass)
 {
     if (linesData.size() > shipNumber) {
         // Call setLineDataSize before so this is true.   

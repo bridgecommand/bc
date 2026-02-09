@@ -23,7 +23,7 @@
 #define MAX_PX_IN_MAP 160000000
 
 //Constructor
-ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, irr::u32 _zoomLevels)
+ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Network* network, std::string worldName, uint32_t _zoomLevels)
 {
 
     this->gui = gui;
@@ -75,7 +75,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
             irr::io::IFileList* fileList = fileSystem->createFileList();
             if (fileList!=0) {
                 //List here
-                for (irr::u32 i=0;i<fileList->getFileCount();i++) {
+                for (uint32_t i=0;i<fileList->getFileCount();i++) {
                     if (fileList->isDirectory(i)==false) {
                         const irr::io::path& fileName = fileList->getFileName(i);
                         if (irr::core::hasFileExtension(fileName,"hdr")) {
@@ -163,25 +163,25 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
     std::cout << "Width m " << terrainXWidth << " Height m " << terrainZWidth << std::endl;
 
     //Calculate ratio required
-    irr::f32 widthToHeight;
+    float widthToHeight;
     if (terrainXWidth>0 &&  terrainZWidth>0) {
         widthToHeight = terrainXWidth/terrainZWidth;
     } else {
         std::cout << "Zero map width or height. Please check world model." << std::endl;
         exit(EXIT_FAILURE);
     }
-    irr::core::dimension2d<irr::u32> loadedSize = unscaledMap->getDimension();
+    irr::core::dimension2d<uint32_t> loadedSize = unscaledMap->getDimension();
 
     //Calculate scaling needed
-    //irr::u32 widthFromHeight = loadedSize.Height * widthToHeight;
-    //irr::u32 heightFromWidth = loadedSize.Width / widthToHeight;
+    //uint32_t widthFromHeight = loadedSize.Height * widthToHeight;
+    //uint32_t heightFromWidth = loadedSize.Width / widthToHeight;
     //Always scale bigger if needed
     //std::cout << terrainXWidth <<  " " << terrainZWidth << std::endl;
     for (unsigned int i = 0; i<zoomLevels; i++) {
-		irr::f32 scaling = 0.00625 * pow(2, i);
+		float scaling = 0.00625 * pow(2, i);
 
-        irr::u32 requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
-        irr::u32 requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
+        uint32_t requiredWidth = terrainXWidth*scaling;//std::max(widthFromHeight, loadedSize.Width);
+        uint32_t requiredHeight = terrainZWidth*scaling;//std::max(heightFromWidth, loadedSize.Height);
 
         //Avoid zero sized map
         if (requiredWidth < 1) {
@@ -195,7 +195,7 @@ ControllerModel::ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui, Netw
 
 			//Create scaled map with the same image format of the size required
 			std::cout << "About to create empty scaled map " << i << std::endl;
-			scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<irr::u32>(requiredWidth, requiredHeight));
+			scaledMap.at(i) = driver->createImage(unscaledMap->getColorFormat(), irr::core::dimension2d<uint32_t>(requiredWidth, requiredHeight));
 			//Copy and scale image
 			std::cout << "About to copy in for " << i << std::endl;
 			//TODO: Check if empty scaled map has been created
@@ -236,17 +236,17 @@ ControllerModel::~ControllerModel()
 
 }
 
-irr::f32 ControllerModel::longToX(irr::f32 longitude) const
+float ControllerModel::longToX(float longitude) const
 {
     return ((longitude - terrainLong ) * (terrainXWidth)) / terrainLongExtent;
 }
 
-irr::f32 ControllerModel::latToZ(irr::f32 latitude) const
+float ControllerModel::latToZ(float latitude) const
 {
     return ((latitude - terrainLat ) * (terrainZWidth)) / terrainLatExtent;
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const irr::f32& weather, const irr::f32& visibility, const irr::f32& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const irr::f32& windDirection, const irr::f32& windSpeed, const irr::f32& streamDirection, const irr::f32& streamSpeed, const bool& streamOverride)
+void ControllerModel::update(const float& time, const ShipData& ownShipData, const std::vector<OtherShipDisplayData>& otherShipsData, const std::vector<PositionData>& buoysData, const float& weather, const float& visibility, const float& rain, bool& mobVisible, PositionData& mobData, const std::vector<AISData>& aisData, const float& windDirection, const float& windSpeed, const float& streamDirection, const float& streamSpeed, const bool& streamOverride)
 {
     //Check if current zoom is valid, if not return.
     if(!(currentZoom<zoomLevels)) {
@@ -255,9 +255,9 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
 
     //Find mouse position change if clicked, and clicked last time
     if (mouseClickedLastUpdate && mouseDown) {
-        irr::core::position2d<irr::s32> mouseNow = device->getCursorControl()->getPosition();
-        irr::s32 mouseDeltaX = mouseNow.X - mouseLastPosition.X;
-        irr::s32 mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
+        irr::core::position2d<int32_t> mouseNow = device->getCursorControl()->getPosition();
+        int32_t mouseDeltaX = mouseNow.X - mouseLastPosition.X;
+        int32_t mouseDeltaY = mouseNow.Y - mouseLastPosition.Y;
 
         //Change offset
         mapOffsetX += mouseDeltaX;
@@ -269,19 +269,19 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
 
 
     //TODO: Work out the required area of the map image, and create this as a texture to go to the gui
-    irr::core::dimension2d<irr::u32> screenSize = device->getVideoDriver()->getScreenSize();
+    irr::core::dimension2d<uint32_t> screenSize = device->getVideoDriver()->getScreenSize();
     //grab an area this size from the scaled map
     irr::video::IImage* tempImage = driver->createImage(scaledMap.at(currentZoom)->getColorFormat(),screenSize); //Empty image
     tempImage->fill(irr::video::SColor(255,0,0,32)); //Initialise background
 
     //Copy in data
-    irr::s32 topLeftX = -1*ownShipData.X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
-    irr::s32 topLeftZ = ownShipData.Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
+    int32_t topLeftX = -1*ownShipData.X/metresPerPx.at(currentZoom) + driver->getScreenSize().Width/2 + mapOffsetX;
+    int32_t topLeftZ = ownShipData.Z/metresPerPx.at(currentZoom)    + driver->getScreenSize().Height/2 - scaledMap.at(currentZoom)->getDimension().Height + mapOffsetZ;
 
-    scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<irr::s32>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
+    scaledMap.at(currentZoom)->copyTo(tempImage,irr::core::position2d<int32_t>(topLeftX,topLeftZ)); //Fixme: Check bounds are reasonable
 
     // Scale tempImage brightness if needed
-    irr::f32 brightnessScaling = gui->getBrightnessScaling();
+    float brightnessScaling = gui->getBrightnessScaling();
     if (brightnessScaling < 1) {
         for (int i = 0; i < tempImage->getDimension().Width; i++) {
             for (int j = 0; j < tempImage->getDimension().Height; j++) {
@@ -293,7 +293,7 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
     }
 
     //Drop any previous textures
-    for(irr::u32 i = 0; i < driver->getTextureCount(); i++) {
+    for(uint32_t i = 0; i < driver->getTextureCount(); i++) {
         if (driver->getTextureByIndex(i)->getName().getPath()=="DisplayTexture") {
             driver->removeTexture(driver->getTextureByIndex(i));
         }
@@ -354,13 +354,13 @@ void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData, 
             if (sendNetworkUpdate) {
                 
                 //Get COG in degrees and SOG in Nm, from AIS coding
-                irr::f32 cogFromAIS = 0;
+                float cogFromAIS = 0;
                 if (aisShips.at(aisShipsId).cog != 3600) {
-                    cogFromAIS = (irr::f32)aisShips.at(aisShipsId).cog/10.0;
+                    cogFromAIS = (float)aisShips.at(aisShipsId).cog/10.0;
                 }
-                irr::f32 sogFromAIS = 0;
+                float sogFromAIS = 0;
                 if (aisShips.at(aisShipsId).sog != 1023) {
-                    sogFromAIS = (irr::f32)aisShips.at(aisShipsId).sog/10.0;
+                    sogFromAIS = (float)aisShips.at(aisShipsId).sog/10.0;
                 }
                 
                 std::string messageToSend = "MCRL,"; //Reset legs, to give a single leg, and set position
@@ -392,7 +392,7 @@ void ControllerModel::resetOffset()
     mapOffsetZ = 0;
 }
 
-void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eventReceiver, where index is from the combo box
+void ControllerModel::updateSelectedShip(int32_t index) //To be called from eventReceiver, where index is from the combo box
 {
     if(index < 1) { //If 0 or -1
         selectedShip = -1; //Own ship
@@ -403,7 +403,7 @@ void ControllerModel::updateSelectedShip(irr::s32 index) //To be called from eve
     //No guarantee from this that the selected ship is valid
 }
 
-void ControllerModel::updateSelectedLeg(irr::s32 index) //To be called from eventReceiver, where index is from the combo box. -1 if nothing selected, 0 upwards for leg
+void ControllerModel::updateSelectedLeg(int32_t index) //To be called from eventReceiver, where index is from the combo box. -1 if nothing selected, 0 upwards for leg
 {
     selectedLeg = index;
     //No guarantee from this that the selected leg is valid
@@ -419,7 +419,7 @@ void ControllerModel::increaseZoom()
     if(currentZoom+1<zoomLevels) {
         currentZoom++;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom-1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom-1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }
@@ -430,7 +430,7 @@ void ControllerModel::decreaseZoom()
     if(currentZoom>0) {
         currentZoom--;
 
-        irr::f32 scaleChange = (irr::f32)scaledMap.at(currentZoom)->getDimension().Width/(irr::f32)scaledMap.at(currentZoom+1)->getDimension().Width;
+        float scaleChange = (float)scaledMap.at(currentZoom)->getDimension().Width/(float)scaledMap.at(currentZoom+1)->getDimension().Width;
         mapOffsetX*=scaleChange;
         mapOffsetZ*=scaleChange;
     }

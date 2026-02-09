@@ -20,12 +20,12 @@
 
 #include <vector>
 
-#include "irrlicht.h"
-
 #include "PositionDataStruct.hpp"
 #include "ShipDataStruct.hpp"
 
 #include "GUI.hpp"
+
+namespace irr { class IrrlichtDevice; namespace video { class IVideoDriver; } }
 
 class ControllerModel //Start of the 'Model' part of MVC
 {
@@ -35,7 +35,7 @@ public:
     //ControllerModel(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* scene, GUIMain* gui, std::string scenarioName);
     ControllerModel(irr::IrrlichtDevice* device, GUIMain* gui);
     ~ControllerModel();
-    void update(const irr::f32& time, const ShipData& ownShipData);
+    void update(const float& time, const ShipData& ownShipData);
 
 private:
 

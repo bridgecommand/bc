@@ -23,14 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
     Sound::Sound() {}
 	Sound::~Sound()  {}
-	void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile) {}
+	void Sound::load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile, std::string alarmSoundFile) {}
 	void Sound::StartSound() {}
 	void Sound::setVolumeWave(float vol) {}
 	void Sound::setVolumeEngine(float vol) {}
 	void Sound::setVolumeHorn(float vol) {}
+	void Sound::setVolumeAlarm(float vol) {}
 	float Sound::getVolumeWave() const {return 0;}
 	float Sound::getVolumeEngine() const {return 0;}
 	float Sound::getVolumeHorn() const {return 0;}
+	float Sound::getVolumeAlarm() const {return 0;}
 
 #else // WITH_SOUND
 

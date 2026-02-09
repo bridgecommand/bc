@@ -17,33 +17,44 @@
 #ifndef __NAVLIGHT_HPP_INCLUDED__
 #define __NAVLIGHT_HPP_INCLUDED__
 
-#include <string>
+#include "graphics/Types.hpp"
 
-#include "irrlicht.h"
+#include <string>
+#include <cstdint>
+
+// Forward declarations for Irrlicht pointer types
+namespace irr {
+    namespace scene {
+        class ISceneNode;
+        class ISceneManager;
+        class IMeshSceneNode;
+    }
+    namespace video {
+        class ITexture;
+    }
+}
 
 class NavLight {
 
     public:
-        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, irr::core::vector3df position, irr::video::SColor colour, irr::f32 lightStartAngle, irr::f32 lightEndAngle, irr::f32 lightRange, std::string lightSequence="", irr::u32 phaseStart=0);
+        NavLight(irr::scene::ISceneNode* parent, irr::scene::ISceneManager* smgr, bc::graphics::Vec3 position, bc::graphics::Color colour, float lightStartAngle, float lightEndAngle, float lightRange, std::string lightSequence="", uint32_t phaseStart=0);
         ~NavLight();
-        void update(irr::f32 scenarioTime, irr::u32 lightLevel);
-        irr::core::vector3df getPosition() const;
-        void setPosition(irr::core::vector3df position);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
+        void update(float scenarioTime, uint32_t lightLevel);
+        bc::graphics::Vec3 getPosition() const;
+        void setPosition(bc::graphics::Vec3 position);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
 
     private:
         irr::scene::ISceneManager* smgr;
         irr::scene::IMeshSceneNode* lightNode;
-		irr::video::ITexture* lightTexture;
-        irr::f32 startAngle;
-        irr::f32 endAngle;
-        irr::f32 range;
+        irr::video::ITexture* lightTexture;
+        float startAngle;
+        float endAngle;
+        float range;
         std::string sequence;
-        irr::f32 charTime; //Time in seconds per character in sequence
-        irr::f32 timeOffset;
-        irr::u16 currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
-        //bool setAlpha(irr::u8 alpha, irr::video::ITexture* tex);
-        //irr::f32 lightLevel;
+        float charTime; //Time in seconds per character in sequence
+        float timeOffset;
+        uint16_t currentAlpha; //Note that this is u16 not u8 so we can indicate an initial implausible value.
 };
 
 #endif

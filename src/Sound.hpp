@@ -29,22 +29,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <vector>
 
-class Sound
+#include "ISound.hpp"
+
+class Sound : public ISound
 {
 public:
 
 	Sound();
-	~Sound();
-	void load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile, std::string alarmSoundFile);
-	void StartSound();
-	void setVolumeWave(float vol);
-	void setVolumeEngine(float vol);
-	void setVolumeHorn(float vol);
-	void setVolumeAlarm(float vol);
-	float getVolumeWave() const;
-	float getVolumeEngine() const;
-	float getVolumeHorn() const;
-	float getVolumeAlarm() const;
+	~Sound() override;
+	void load(std::string engineSoundFile, std::string waveSoundFile, std::string hornSoundFile, std::string alarmSoundFile) override;
+	void StartSound() override;
+	void setVolumeWave(float vol) override;
+	void setVolumeEngine(float vol) override;
+	void setVolumeHorn(float vol) override;
+	void setVolumeAlarm(float vol) override;
+	float getVolumeWave() const override;
+	float getVolumeEngine() const override;
+	float getVolumeHorn() const override;
+	float getVolumeAlarm() const override;
 
 #ifdef WITH_SOUND
 private:

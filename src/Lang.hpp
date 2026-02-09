@@ -18,14 +18,13 @@
 #define __LANG_HPP_INCLUDED__
 
 #include <string>
-#include "irrlicht.h"
 
 class Lang //Start of the 'Model' part of MVC
 {
 
 public:
     Lang(std::string language);
-    irr::core::stringw translate(std::string phraseName);
+    std::wstring translate(std::string phraseName);
 private:
     std::string languageFileName;
 

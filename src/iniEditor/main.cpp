@@ -39,7 +39,7 @@
 // Irrlicht Namespaces
 //using namespace irr;
 
-const irr::s32 SAVE_BUTTON = 1;
+const int32_t SAVE_BUTTON = 1;
 
 //Set up global for ini reader to have access to irrlicht logger if needed.
 namespace IniFile {
@@ -79,7 +79,7 @@ void saveFile(irr::IrrlichtDevice* device, std::string iniFilename, irr::gui::IG
 
                 if ((*it)->getType() == irr::gui::EGUIET_TABLE ) {
                     irr::gui::IGUITable* thisTable = (irr::gui::IGUITable*)(*it);
-                    irr::u32 numberOfRows = thisTable->getRowCount();
+                    uint32_t numberOfRows = thisTable->getRowCount();
                     for (int j = 0; j<numberOfRows; j++) {
                         std::string varName(irr::core::stringc(thisTable->getCellText(j,0)).c_str());
                         std::string varValue(irr::core::stringc(thisTable->getCellText(j,1)).c_str());
@@ -122,7 +122,7 @@ private:
     irr::core::position2di mousePos;
     irr::gui::IGUIEditBox* valueEntryBox = 0;
     irr::gui::IGUITable* selectedTable = 0; //Keep track of which table was last selected
-    irr::s32 selectedRow = 0; //In the selected table, which row was last selected?
+    int32_t selectedRow = 0; //In the selected table, which row was last selected?
     irr::gui::IGUITabControl* tabbedPane;
     std::string iniFilename;
 
@@ -151,7 +151,7 @@ private:
             }
 
             if (event.GUIEvent.EventType == irr::gui::EGET_BUTTON_CLICKED ) {
-                irr::s32 id = event.GUIEvent.Caller->getID();
+                int32_t id = event.GUIEvent.Caller->getID();
                 if (id == SAVE_BUTTON) {
 
                     //Save to the ini file
@@ -163,12 +163,12 @@ private:
 
             if (event.GUIEvent.EventType == irr::gui::EGET_TABLE_SELECTED_AGAIN  ) {
                 selectedTable = ((irr::gui::IGUITable*)event.GUIEvent.Caller);
-                irr::s32 id = event.GUIEvent.Caller->getID();
+                int32_t id = event.GUIEvent.Caller->getID();
                 selectedRow = selectedTable->getSelected();
                 irr::core::stringw selectedValue = irr::core::stringw(selectedTable->getCellText(selectedRow,1));
 
                 if (valueEntryBox==0) {
-                    valueEntryBox = environment->addEditBox(selectedValue.c_str(),irr::core::rect<irr::s32>(mousePos.X, mousePos.Y, mousePos.X + 100, mousePos.Y + 30 )); //FIXME: Hardcoding of size
+                    valueEntryBox = environment->addEditBox(selectedValue.c_str(),irr::core::rect<int32_t>(mousePos.X, mousePos.Y, mousePos.X + 100, mousePos.Y + 30 )); //FIXME: Hardcoding of size
                     environment->setFocus(valueEntryBox);
                 }
 
@@ -427,9 +427,9 @@ int main (int argc, char ** argv)
 	    fontScale = 1.0;
     }
     
-    irr::u32 graphicsWidth;
-    irr::u32 graphicsHeight;
-    irr::core::dimension2d<irr::u32> deskres;
+    uint32_t graphicsWidth;
+    uint32_t graphicsHeight;
+    irr::core::dimension2d<uint32_t> deskres;
     #ifdef _WIN32
     // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
     deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -450,10 +450,10 @@ int main (int argc, char ** argv)
         graphicsHeight = deskres.Height*0.90;
     }
     
-    irr::u32 graphicsDepth = 32;
+    uint32_t graphicsDepth = 32;
     bool fullScreen = false;
 
-    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    irr::IrrlichtDevice* device = irr::createDevice(irr::video::EDT_OPENGL, irr::core::dimension2d<uint32_t>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
     irr::video::IVideoDriver* driver = device->getVideoDriver();
 
     irr::gui::IGUIEnvironment* environment = device->getGUIEnvironment();
@@ -486,17 +486,17 @@ int main (int argc, char ** argv)
     skin->setColor(irr::gui::EGDC_3D_FACE ,irr::video::SColor(255,235,235,235));
     skin->setColor(irr::gui::EGDC_3D_LIGHT ,irr::video::SColor(255,255,255,255));
 
-    irr::core::dimension2d<irr::u32> screenSize = driver->getScreenSize();
-    irr::u32 width = screenSize.Width;
-    irr::u32 height = screenSize.Height;
+    irr::core::dimension2d<uint32_t> screenSize = driver->getScreenSize();
+    uint32_t width = screenSize.Width;
+    uint32_t height = screenSize.Height;
 
     //Do set-up here
 
     int pad = 10;
 
-    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<irr::s32>(pad, height-(50*fontScale), 150*fontScale, height-pad),0,SAVE_BUTTON,language.translate("save").c_str());
+    irr::gui::IGUIButton* saveButton = environment->addButton(irr::core::rect<int32_t>(pad, height-(50*fontScale), 150*fontScale, height-pad),0,SAVE_BUTTON,language.translate("save").c_str());
 
-    irr::gui::IGUITabControl* tabbedPane = environment->addTabControl( irr::core::rect<irr::s32>(pad,pad,width-pad,height-(50*fontScale)-pad),0,true);
+    irr::gui::IGUITabControl* tabbedPane = environment->addTabControl( irr::core::rect<int32_t>(pad,pad,width-pad,height-(50*fontScale)-pad),0,true);
 
     //Add tab entry here
     for(int i = 0; i<iniFileStructure.size(); i++) {
@@ -504,7 +504,7 @@ int main (int argc, char ** argv)
         irr::gui::IGUITab* thisTab = tabbedPane->addTab((irr::core::stringw(tabName.substr(1,tabName.length()-2).c_str())).c_str());
 
         //Add tab contents in a table
-        irr::gui::IGUITable* thisTable = environment->addTable(irr::core::rect<irr::s32>(pad,pad,width-(3*pad),height-(50*fontScale)-2*(3*pad)),thisTab);
+        irr::gui::IGUITable* thisTable = environment->addTable(irr::core::rect<int32_t>(pad,pad,width-(3*pad),height-(50*fontScale)-2*(3*pad)),thisTab);
 
         thisTable->addColumn(language.translate("name").c_str());
         thisTable->addColumn(language.translate("value").c_str());

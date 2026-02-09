@@ -15,35 +15,36 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ImportExportGUI.hpp"
+#include "irrlicht.h"
 
 
 GUIImportExport::GUIImportExport(
     irr::IrrlichtDevice* device, 
     Lang* language, 
-    irr::u32 su, 
-    irr::u32 sh,
-    irr::s32 importExportOKButtonID){
+    uint32_t su, 
+    uint32_t sh,
+    int32_t importExportOKButtonID){
     this->device = device;
     this->language = language;
     guienv = device->getGUIEnvironment();
 
     importExportMode = 0;
 
-    importExportWindow = guienv->addWindow(irr::core::rect<irr::s32>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), true);
+    importExportWindow = guienv->addWindow(irr::core::rect<int32_t>(0.01*su, 0.01*sh, 0.99*su, 0.99*sh), true);
     if (importExportWindow) {
         importExportWindow->getCloseButton()->setVisible(false);
 
-        importDescriptionText = guienv->addStaticText(language->translate("importDescription").c_str(), irr::core::rect<irr::s32>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
-        exportDescriptionText = guienv->addStaticText(language->translate("exportDescription").c_str(), irr::core::rect<irr::s32>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
+        importDescriptionText = guienv->addStaticText(language->translate("importDescription").c_str(), irr::core::rect<int32_t>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
+        exportDescriptionText = guienv->addStaticText(language->translate("exportDescription").c_str(), irr::core::rect<int32_t>(0.06*su,0.100*sh,0.920*su,0.200*sh), false, true, importExportWindow);
         
-        importExportText = guienv->addEditBox(L"",irr::core::rect<irr::s32>(0.06*su,0.200*sh,0.920*su,0.80*sh), true, importExportWindow);
+        importExportText = guienv->addEditBox(L"",irr::core::rect<int32_t>(0.06*su,0.200*sh,0.920*su,0.80*sh), true, importExportWindow);
         if (importExportText) {
             importExportText->setMultiLine(true);
             importExportText->setWordWrap(true);
             importExportText->setTextAlignment(irr::gui::EGUIA_UPPERLEFT, irr::gui::EGUIA_UPPERLEFT);
         }
 
-        guienv->addButton(irr::core::rect<irr::s32>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, language->translate("ok").c_str());
+        guienv->addButton(irr::core::rect<int32_t>(0.06*su,0.810*sh,0.920*su,0.860*sh), importExportWindow, importExportOKButtonID, language->translate("ok").c_str());
     } else {
         importExportText = 0;
         importDescriptionText = 0;
@@ -52,7 +53,7 @@ GUIImportExport::GUIImportExport(
     }
 }
 
-void GUIImportExport::setVisible(bool isVisible, irr::u32 importExportMode)
+void GUIImportExport::setVisible(bool isVisible, uint32_t importExportMode)
 {
     if (importExportWindow) {
         importExportWindow->setVisible(isVisible);
@@ -87,7 +88,7 @@ std::string GUIImportExport::getText() const
     }
 }
 
-irr::u32 GUIImportExport::getMode() const
+uint32_t GUIImportExport::getMode() const
 {
     return importExportMode;
 }

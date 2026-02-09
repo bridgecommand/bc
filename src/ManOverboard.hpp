@@ -17,22 +17,30 @@
 #ifndef __MANOVERBOARD_HPP_INCLUDED__
 #define __MANOVERBOARD_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include "graphics/Types.hpp"
 
-//Forward declarations
+// Forward declarations
+namespace irr {
+    class IrrlichtDevice;
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+        class IMeshSceneNode;
+    }
+}
 class SimulationModel;
 
 class ManOverboard
 {
     public:
-        ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model);
-        irr::core::vector3df getPosition() const;
+        ManOverboard(const bc::graphics::Vec3& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model);
+        bc::graphics::Vec3 getPosition() const;
         void setVisible(bool isVisible);
         bool getVisible() const;
-        void setPosition(irr::core::vector3df position);
-        void setRotation(irr::core::vector3df rotation);
-        void moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ);
-        void update(irr::f32 deltaTime, irr::f32 tideHeight);
+        void setPosition(bc::graphics::Vec3 position);
+        void setRotation(bc::graphics::Vec3 rotation);
+        void moveNode(float deltaX, float deltaY, float deltaZ);
+        void update(float deltaTime, float tideHeight);
         irr::scene::ISceneNode* getSceneNode() const;
     protected:
     private:

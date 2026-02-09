@@ -31,19 +31,19 @@ class VRInterface;
 //Data about joystick setup
 class JoystickSetup {
 public:
-    irr::u32 portJoystickAxis;
-    irr::u32 stbdJoystickAxis;
-    irr::u32 rudderJoystickAxis;
-    irr::u32 bowThrusterJoystickAxis;
-    irr::u32 sternThrusterJoystickAxis;
-    irr::u32 portJoystickNo;
-    irr::u32 stbdJoystickNo;
-    irr::u32 rudderJoystickNo;
-    irr::u32 bowThrusterJoystickNo;
-    irr::u32 sternThrusterJoystickNo;
-    std::vector<irr::f32> inputPoints;
-    std::vector<irr::f32> outputPoints;
-    irr::s32 rudderDirection;
+    uint32_t portJoystickAxis;
+    uint32_t stbdJoystickAxis;
+    uint32_t rudderJoystickAxis;
+    uint32_t bowThrusterJoystickAxis;
+    uint32_t sternThrusterJoystickAxis;
+    uint32_t portJoystickNo;
+    uint32_t stbdJoystickNo;
+    uint32_t rudderJoystickNo;
+    uint32_t bowThrusterJoystickNo;
+    uint32_t sternThrusterJoystickNo;
+    std::vector<float> inputPoints;
+    std::vector<float> outputPoints;
+    int32_t rudderDirection;
     bool updateAllAxes;
     bool enableMacOSJoystick;
     
@@ -52,44 +52,44 @@ public:
 // for class JoystickSetup
 
 // which joysticks control each lever and control, in the case of azimuth drives the specific controls are     
-//    irr::u32 azimuth1JoystickNo;
-//    irr::u32 azimuth2JoystickNo;
-    irr::u32 portThrustLever_joystickNo;
-    irr::u32 stbdThrustLever_joystickNo;
-    irr::u32 portSchottel_joystickNo;
-    irr::u32 stbdSchottel_joystickNo;
+//    uint32_t azimuth1JoystickNo;
+//    uint32_t azimuth2JoystickNo;
+    uint32_t portThrustLever_joystickNo;
+    uint32_t stbdThrustLever_joystickNo;
+    uint32_t portSchottel_joystickNo;
+    uint32_t stbdSchottel_joystickNo;
 
 // defines the channel aka axis of the already defined joystick no    
-//    irr::u32 azimuth1JoystickAxis;
-//    irr::u32 azimuth2JoystickAxis;
-    irr::u32 portSchottel_channel;    
-    irr::u32 stbdSchottel_channel;
-    irr::u32 portThrustLever_channel;
-    irr::u32 stbdThrustLever_channel;
+//    uint32_t azimuth1JoystickAxis;
+//    uint32_t azimuth2JoystickAxis;
+    uint32_t portSchottel_channel;    
+    uint32_t stbdSchottel_channel;
+    uint32_t portThrustLever_channel;
+    uint32_t stbdThrustLever_channel;
 
 // determines if the schottel is inverted
-//    irr::s32 azimuth1Direction;
-//    irr::s32 azimuth2Direction;
-    irr::s32 schottelPortDirection;
-    irr::s32 schottelStbdDirection;    
-    irr::s32 thrustLeverPortDirection;
-    irr::s32 thrustLeverStbdDirection;
+//    int32_t azimuth1Direction;
+//    int32_t azimuth2Direction;
+    int32_t schottelPortDirection;
+    int32_t schottelStbdDirection;    
+    int32_t thrustLeverPortDirection;
+    int32_t thrustLeverStbdDirection;
 
 // scaling and offset values for the schottel    
-//    irr::f32 azimuth1Scaling;
-//    irr::f32 azimuth2Scaling;
-//    irr::f32 azimuth1Offset;
-//    irr::f32 azimuth2Offset;
-    irr::f32 schottelPortScaling;
-    irr::f32 schottelStbdScaling;
-    irr::f32 schottelPortOffset;
-    irr::f32 schottelStbdOffset;
+//    float azimuth1Scaling;
+//    float azimuth2Scaling;
+//    float azimuth1Offset;
+//    float azimuth2Offset;
+    float schottelPortScaling;
+    float schottelStbdScaling;
+    float schottelPortOffset;
+    float schottelStbdOffset;
     
 // scaling and offset for the thrust levers
-    irr::f32 thrustLeverPortScaling;
-    irr::f32 thrustLeverStbdScaling;
-    irr::f32 thrustLeverPortOffset;
-    irr::f32 thrustLeverStbdOffset;
+    float thrustLeverPortScaling;
+    float thrustLeverStbdScaling;
+    float thrustLeverPortOffset;
+    float thrustLeverStbdOffset;
     
     
 // DEE 10JAN2023 ^^^^
@@ -99,87 +99,87 @@ public:
 
 
 //Buttons:
-    irr::u32 joystickNoHorn;
-    irr::u32 joystickButtonHorn;
-    irr::u32 joystickNoChangeView;
-    irr::u32 joystickButtonChangeView;
-    irr::u32 joystickNoChangeAndLockView;
-    irr::u32 joystickButtonChangeAndLockView;
-    irr::u32 joystickNoLookStepLeft;
-    irr::u32 joystickButtonLookStepLeft;
-    irr::u32 joystickNoLookStepRight;
-    irr::u32 joystickButtonLookStepRight;
-    irr::u32 joystickNoIncreaseBowThrust;
-    irr::u32 joystickButtonIncreaseBowThrust;
-    irr::u32 joystickNoDecreaseBowThrust;
-    irr::u32 joystickButtonDecreaseBowThrust;
-    irr::u32 joystickNoIncreaseSternThrust;
-    irr::u32 joystickButtonIncreaseSternThrust;
-    irr::u32 joystickNoDecreaseSternThrust;
-    irr::u32 joystickButtonDecreaseSternThrust;
-    irr::u32 joystickNoBearingOn;
-    irr::u32 joystickButtonBearingOn;
-    irr::u32 joystickNoBearingOff;
-    irr::u32 joystickButtonBearingOff;
-    irr::u32 joystickNoZoomOn;
-    irr::u32 joystickButtonZoomOn;
-    irr::u32 joystickNoZoomOff;
-    irr::u32 joystickButtonZoomOff;
-    irr::u32 joystickNoLookLeft;
-    irr::u32 joystickButtonLookLeft;
-    irr::u32 joystickNoLookRight;
-    irr::u32 joystickButtonLookRight;
-    irr::u32 joystickNoLookUp;
-    irr::u32 joystickButtonLookUp;
-    irr::u32 joystickNoLookDown;
-    irr::u32 joystickButtonLookDown;
-    irr::u32 joystickNoPump1On;
-    irr::u32 joystickButtonPump1On;
-    irr::u32 joystickNoPump1Off;
-    irr::u32 joystickButtonPump1Off;
-    irr::u32 joystickNoPump2On;
-    irr::u32 joystickButtonPump2On;
-    irr::u32 joystickNoPump2Off;
-    irr::u32 joystickButtonPump2Off;
-    irr::u32 joystickNoFollowUpOn;
-    irr::u32 joystickButtonFollowUpOn;
-    irr::u32 joystickNoFollowUpOff;
-    irr::u32 joystickButtonFollowUpOff;
-    irr::u32 joystickNoNFUPort;
-    irr::u32 joystickButtonNFUPort;
-    irr::u32 joystickNoNFUStbd;
-    irr::u32 joystickButtonNFUStbd;
-    irr::u32 joystickNoAckAlarm;
-    irr::u32 joystickButtonAckAlarm;
+    uint32_t joystickNoHorn;
+    uint32_t joystickButtonHorn;
+    uint32_t joystickNoChangeView;
+    uint32_t joystickButtonChangeView;
+    uint32_t joystickNoChangeAndLockView;
+    uint32_t joystickButtonChangeAndLockView;
+    uint32_t joystickNoLookStepLeft;
+    uint32_t joystickButtonLookStepLeft;
+    uint32_t joystickNoLookStepRight;
+    uint32_t joystickButtonLookStepRight;
+    uint32_t joystickNoIncreaseBowThrust;
+    uint32_t joystickButtonIncreaseBowThrust;
+    uint32_t joystickNoDecreaseBowThrust;
+    uint32_t joystickButtonDecreaseBowThrust;
+    uint32_t joystickNoIncreaseSternThrust;
+    uint32_t joystickButtonIncreaseSternThrust;
+    uint32_t joystickNoDecreaseSternThrust;
+    uint32_t joystickButtonDecreaseSternThrust;
+    uint32_t joystickNoBearingOn;
+    uint32_t joystickButtonBearingOn;
+    uint32_t joystickNoBearingOff;
+    uint32_t joystickButtonBearingOff;
+    uint32_t joystickNoZoomOn;
+    uint32_t joystickButtonZoomOn;
+    uint32_t joystickNoZoomOff;
+    uint32_t joystickButtonZoomOff;
+    uint32_t joystickNoLookLeft;
+    uint32_t joystickButtonLookLeft;
+    uint32_t joystickNoLookRight;
+    uint32_t joystickButtonLookRight;
+    uint32_t joystickNoLookUp;
+    uint32_t joystickButtonLookUp;
+    uint32_t joystickNoLookDown;
+    uint32_t joystickButtonLookDown;
+    uint32_t joystickNoPump1On;
+    uint32_t joystickButtonPump1On;
+    uint32_t joystickNoPump1Off;
+    uint32_t joystickButtonPump1Off;
+    uint32_t joystickNoPump2On;
+    uint32_t joystickButtonPump2On;
+    uint32_t joystickNoPump2Off;
+    uint32_t joystickButtonPump2Off;
+    uint32_t joystickNoFollowUpOn;
+    uint32_t joystickButtonFollowUpOn;
+    uint32_t joystickNoFollowUpOff;
+    uint32_t joystickButtonFollowUpOff;
+    uint32_t joystickNoNFUPort;
+    uint32_t joystickButtonNFUPort;
+    uint32_t joystickNoNFUStbd;
+    uint32_t joystickButtonNFUStbd;
+    uint32_t joystickNoAckAlarm;
+    uint32_t joystickButtonAckAlarm;
     // DEE 10JAN23 vvvv
-    irr::u32 joystickButtonAzimuth1Master;
-    irr::u32 joystickButtonAzimuth2Master;
+    uint32_t joystickButtonAzimuth1Master;
+    uint32_t joystickButtonAzimuth2Master;
     // DEE 10JAN23 ^^^^
-    irr::u32 joystickNoAzimuth1Master;
-    irr::u32 joystickNoAzimuth2Master;
-    irr::u32 joystickNoPOV;
-    irr::u16 joystickPOVLookLeft;
-    irr::u16 joystickPOVLookRight;
-    irr::u16 joystickPOVLookUp;
-    irr::u16 joystickPOVLookDown;
+    uint32_t joystickNoAzimuth1Master;
+    uint32_t joystickNoAzimuth2Master;
+    uint32_t joystickNoPOV;
+    uint16_t joystickPOVLookLeft;
+    uint16_t joystickPOVLookRight;
+    uint16_t joystickPOVLookUp;
+    uint16_t joystickPOVLookDown;
 
-    irr::u16 joystickButtonIncreaseClutterSetting;
-    irr::u16 joystickButtonDecreaseClutterSetting;
-    irr::u16 joystickButtonIncreaseGainSetting;
-    irr::u16 joystickButtonDecreaseGainSetting;
-    irr::u16 joystickButtonIncreaseRainSetting;
-    irr::u16 joystickButtonDecreaseRainSetting;
-    irr::u16 joystickButtonDecreaseRange;
-    irr::u16 joystickButtonIncreaseRange;
+    uint16_t joystickButtonIncreaseClutterSetting;
+    uint16_t joystickButtonDecreaseClutterSetting;
+    uint16_t joystickButtonIncreaseGainSetting;
+    uint16_t joystickButtonDecreaseGainSetting;
+    uint16_t joystickButtonIncreaseRainSetting;
+    uint16_t joystickButtonDecreaseRainSetting;
+    uint16_t joystickButtonDecreaseRange;
+    uint16_t joystickButtonIncreaseRange;
 
-    irr::u16 joystickNoIncreaseClutterSetting;
-    irr::u16 joystickNoDecreaseClutterSetting;
-    irr::u16 joystickNoIncreaseGainSetting;
-    irr::u16 joystickNoDecreaseGainSetting;
-    irr::u16 joystickNoIncreaseRainSetting;
-    irr::u16 joystickNoDecreaseRainSetting;
-    irr::u16 joystickNoDecreaseRange;
-    irr::u16 joystickNoIncreaseRange;
+    uint16_t joystickNoIncreaseClutterSetting;
+    uint16_t joystickNoDecreaseClutterSetting;
+    uint16_t joystickNoIncreaseGainSetting;
+    uint16_t joystickNoDecreaseGainSetting;
+    uint16_t joystickNoIncreaseRainSetting;
+    uint16_t joystickNoDecreaseRainSetting;
+    uint16_t joystickNoDecreaseRange;
+    uint16_t joystickNoIncreaseRange;
 };
 
 class MyEventReceiver : public irr::IEventReceiver
@@ -189,15 +189,15 @@ public:
   MyEventReceiver(irr::IrrlichtDevice* dev, SimulationModel* model, GUIMain* gui, Network* network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
-    //irr::s32 GetScrollBarPosSpeed() const;
-    //irr::s32 GetScrollBarPosHeading() const;
+    //int32_t GetScrollBarPosSpeed() const;
+    //int32_t GetScrollBarPosHeading() const;
 
 private:
 
     void startShutdown();
-    irr::f32 lookup1D(irr::f32 lookupValue, std::vector<irr::f32> inputPoints, std::vector<irr::f32> outputPoints);
-    std::wstring f32To3dp(irr::f32 value, bool stripZeros = false);
-    bool IsButtonPressed(irr::u32 button, irr::u32 buttonBitmap) const;
+    float lookup1D(float lookupValue, std::vector<float> inputPoints, std::vector<float> outputPoints);
+    std::wstring f32To3dp(float value, bool stripZeros = false);
+    bool IsButtonPressed(uint32_t button, uint32_t buttonBitmap) const;
     void handleMooringLines(irr::core::line3df rayForLines);
 
     SimulationModel* model;
@@ -207,46 +207,46 @@ private:
     bool leftMouseDown;
     bool rightMouseDown;
     irr::IrrlichtDevice* device;
-    irr::s32 scrollBarPosSpeed;
-    irr::s32 scrollBarPosHeading;
+    int32_t scrollBarPosSpeed;
+    int32_t scrollBarPosHeading;
     irr::core::array<irr::SJoystickInfo> joystickInfo;
 
-    irr::f32 previousJoystickPort;
-    irr::f32 previousJoystickStbd;
-    irr::f32 previousJoystickRudder;
+    float previousJoystickPort;
+    float previousJoystickStbd;
+    float previousJoystickRudder;
 // DEE 10JAN23 vvvv
-//    irr::f32 previousJoystickAzimuthAngPort;
-//    irr::f32 previousJoystickAzimuthAngStbd;
+//    float previousJoystickAzimuthAngPort;
+//    float previousJoystickAzimuthAngStbd;
 
-    irr::f32 previousJoystickThrustLeverPort;
-    irr::f32 previousJoystickThrustLeverStbd;
-    irr::f32 newJoystickThrustLeverPort;
-    irr::f32 newJoystickThrustLeverStbd;
+    float previousJoystickThrustLeverPort;
+    float previousJoystickThrustLeverStbd;
+    float newJoystickThrustLeverPort;
+    float newJoystickThrustLeverStbd;
 
-    irr::f32 previousJoystickSchottelPort;
-    irr::f32 previousJoystickSchottelStbd;
-    irr::f32 newJoystickSchottelPort;
-    irr::f32 newJoystickSchottelStbd;
+    float previousJoystickSchottelPort;
+    float previousJoystickSchottelStbd;
+    float newJoystickSchottelPort;
+    float newJoystickSchottelStbd;
 
 // DEE 10JAN23 ^^^^
-    irr::f32 previousJoystickBowThruster;
-    irr::f32 previousJoystickSternThruster;
+    float previousJoystickBowThruster;
+    float previousJoystickSternThruster;
 
-    irr::s32 mouseClickX;
-    irr::s32 mouseClickY;
+    int32_t mouseClickX;
+    int32_t mouseClickY;
 
     JoystickSetup joystickSetup;
-    std::vector<irr::u32> joystickPreviousButtonStates;
+    std::vector<uint32_t> joystickPreviousButtonStates;
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;
-    irr::u32 lastShownJoystickStatus;
-    irr::u32 lastTimeAzimuth1MasterChanged;
-    irr::u32 lastTimeAzimuth2MasterChanged;
+    uint32_t lastShownJoystickStatus;
+    uint32_t lastTimeAzimuth1MasterChanged;
+    uint32_t lastTimeAzimuth2MasterChanged;
 
-    irr::u16 previousJoystickPOV;
+    uint16_t previousJoystickPOV;
     bool previousJoystickPOVInitialised;
 
-    irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
+    uint32_t linesMode; // 0 = none, 1 = own ship end, 2 = other end
 };
 
 #endif

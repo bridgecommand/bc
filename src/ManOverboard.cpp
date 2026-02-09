@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "ManOverboard.hpp"
+#include "irrlicht.h"
 #include "IniFile.hpp"
 #include "Utilities.hpp"
 #include "SimulationModel.hpp"
@@ -23,9 +24,16 @@
 
 #include <iostream>
 
-//using namespace irr;
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) {
+        return irr::core::vector3df(v.x, v.y, v.z);
+    }
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) {
+        return bc::graphics::Vec3(v.X, v.Y, v.Z);
+    }
+}
 
-ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model)
+ManOverboard::ManOverboard(const bc::graphics::Vec3& location, irr::scene::ISceneManager* smgr, irr::IrrlichtDevice* dev, SimulationModel* model)
 {
 
     this->model=model;
@@ -44,7 +52,7 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
     std::string mobFileName = IniFile::iniFileToString(mobIniFilename,"FileName", "ManOverboard.x");
 
     //get scale factor from ini file (or zero if not set - assume 1)
-    irr::f32 mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
+    float mobScale = IniFile::iniFileTof32(mobIniFilename,"Scalefactor", 1.f);
 
     //The path to the actual model file
     std::string mobFullPath = basePath + mobFileName;
@@ -59,12 +67,12 @@ ManOverboard::ManOverboard(const irr::core::vector3df& location, irr::scene::ISc
         dev->getLogger()->log(mobFullPath.c_str());
         man = smgr->addCubeSceneNode(0.1);
     } else {
-        man = smgr->addMeshSceneNode( mobMesh, 0, -1, location );
+        man = smgr->addMeshSceneNode( mobMesh, 0, -1, toIrrVec(location) );
     }
 
     //Set lighting to use diffuse and ambient, so lighting of untextured models works
 	if(man->getMaterialCount()>0) {
-        for(irr::u32 mat=0;mat<man->getMaterialCount();mat++) {
+        for(uint32_t mat=0;mat<man->getMaterialCount();mat++) {
             man->getMaterial(mat).ColorMaterial = irr::video::ECM_DIFFUSE_AND_AMBIENT;
         }
     }
@@ -85,20 +93,20 @@ bool ManOverboard::getVisible() const
     return man->isVisible();
 }
 
-irr::core::vector3df ManOverboard::getPosition() const
+bc::graphics::Vec3 ManOverboard::getPosition() const
 {
     man->updateAbsolutePosition();//ToDo: This may be needed, but seems odd that it's required
-    return man->getAbsolutePosition();
+    return fromIrrVec(man->getAbsolutePosition());
 }
 
-void ManOverboard::setPosition(irr::core::vector3df position)
+void ManOverboard::setPosition(bc::graphics::Vec3 position)
 {
-    man->setPosition(position);
+    man->setPosition(toIrrVec(position));
 }
 
-void ManOverboard::setRotation(irr::core::vector3df rotation)
+void ManOverboard::setRotation(bc::graphics::Vec3 rotation)
 {
-    man->setRotation(rotation);
+    man->setRotation(toIrrVec(rotation));
 }
 
 irr::scene::ISceneNode* ManOverboard::getSceneNode() const
@@ -106,42 +114,42 @@ irr::scene::ISceneNode* ManOverboard::getSceneNode() const
     return (irr::scene::ISceneNode*)man;
 }
 
-void ManOverboard::moveNode(irr::f32 deltaX, irr::f32 deltaY, irr::f32 deltaZ)
+void ManOverboard::moveNode(float deltaX, float deltaY, float deltaZ)
 {
     irr::core::vector3df currentPos = man->getPosition();
-    irr::f32 newPosX = currentPos.X + deltaX;
-    irr::f32 newPosY = currentPos.Y + deltaY;
-    irr::f32 newPosZ = currentPos.Z + deltaZ;
+    float newPosX = currentPos.X + deltaX;
+    float newPosY = currentPos.Y + deltaY;
+    float newPosZ = currentPos.Z + deltaZ;
 
     man->setPosition(irr::core::vector3df(newPosX,newPosY,newPosZ));
 }
 
-void ManOverboard::update(irr::f32 deltaTime, irr::f32 tideHeight)
+void ManOverboard::update(float deltaTime, float tideHeight)
 {
     //Move with tide and waves
-    irr::core::vector3df pos=getPosition();
-    pos.Y = tideHeight + model->getWaveHeight(pos.X,pos.Z);
+    bc::graphics::Vec3 pos=getPosition();
+    pos.y = tideHeight + model->getWaveHeight(pos.x,pos.z);
 
     //Move with tidal stream (if not aground)
-    irr::f32 depth = -1*model->getTerrain()->getHeight(pos.X,pos.Z)+pos.Y;
-    irr::core::vector2df mobVector = model->getTidalStream(model->getTerrain()->xToLong(pos.X), model->getTerrain()->zToLat(pos.Z),model->getTimestamp());
-    
+    float depth = -1*model->getTerrain()->getHeight(pos.x,pos.z)+pos.y;
+    bc::graphics::Vec2 mobVector = model->getTidalStream(model->getTerrain()->xToLong(pos.x), model->getTerrain()->zToLat(pos.z),model->getTimestamp());
+
     // Add component from wind
-    irr::f32 windSpeed = model->getWindSpeed() * KTS_TO_MPS;
-    irr::f32 windDirection = model->getWindDirection();
+    float windSpeed = model->getWindSpeed() * KTS_TO_MPS;
+    float windDirection = model->getWindDirection();
     // Convert this into wind axial speed and wind lateral speed
-    irr::f32 windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
-    irr::f32 windX = windSpeed * sin(windFlowDirection * irr::core::DEGTORAD);
-    irr::f32 windZ = windSpeed * cos(windFlowDirection * irr::core::DEGTORAD);
+    float windFlowDirection = windDirection + 180; // Wind direction is where the wind is from. We want where it is flowing towards
+    float windX = windSpeed * sin(windFlowDirection * RAD_IN_DEG);
+    float windZ = windSpeed * cos(windFlowDirection * RAD_IN_DEG);
     // Assume that the MoB moves at 1/10 of the wind speed
-    mobVector.X += windX * 0.1;
-    mobVector.Y += windZ * 0.1;
+    mobVector.x += windX * 0.1;
+    mobVector.y += windZ * 0.1;
 
     // Apply movement vector
     if (depth > 0) {
-        irr::f32 streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
-        pos.X += mobVector.X*deltaTime*streamScaling;
-        pos.Z += mobVector.Y*deltaTime*streamScaling;
+        float streamScaling = fmin(1,depth); //Reduce effect as water gets shallower
+        pos.x += mobVector.x*deltaTime*streamScaling;
+        pos.z += mobVector.y*deltaTime*streamScaling;
     }
 
     setPosition(pos);

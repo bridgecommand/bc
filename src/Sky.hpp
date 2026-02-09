@@ -17,7 +17,13 @@
 #ifndef __SKY_HPP_INCLUDED__
 #define __SKY_HPP_INCLUDED__
 
-#include "irrlicht.h"
+// Forward declarations for Irrlicht types still needed internally
+namespace irr {
+    namespace scene {
+        class ISceneManager;
+        class ISceneNode;
+    }
+}
 
 class Sky
 {

@@ -19,12 +19,11 @@
 
 #include <vector>
 #include <string>
-#include "irrlicht.h"
 
 
 struct LineData {
     public:
-    irr::f32 startX, startY, startZ, endX, endY, endZ, nominalLength, breakingTension, breakingStrain, nominalShipMass;
+    float startX, startY, startZ, endX, endY, endZ, nominalLength, breakingTension, breakingStrain, nominalShipMass;
     int startType, endType, startID, endID, keepSlack, heaveIn; //0: Unknown, 1: Own ship, 2: Other ship, 3: Buoy, 4: Land object
     LineData():startX(0),startY(0),startZ(0),endX(0),endY(0),endZ(0),keepSlack(0),heaveIn(0),nominalLength(0),breakingTension(0),breakingStrain(0),nominalShipMass(0),startType(0),endType(0),startID(0),endID(0){}
 };
@@ -40,7 +39,7 @@ class LinesData {
     int getNumberOfOtherLines(int thisPeer); // Overall number of lines from all peers, excluding this one
     // setLineData will add an entry if lineNumber >= getNumberOfLines
     void setLineDataSize(unsigned int shipNumber, unsigned int numberOfLines);
-    void setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, int heaveIn, irr::f32 startX, irr::f32 startY, irr::f32 startZ, irr::f32 endX, irr::f32 endY, irr::f32 endZ, irr::f32 nominalLength, irr::f32 breakingTension, irr::f32 breakingStrain, irr::f32 nominalShipMass);
+    void setLineData(unsigned int shipNumber, unsigned int lineNumber, int startType, int endType, int startID, int endID, int keepSlack, int heaveIn, float startX, float startY, float startZ, float endX, float endY, float endZ, float nominalLength, float breakingTension, float breakingStrain, float nominalShipMass);
     std::string getLineDataString(const unsigned int& shipNumber); // Peer number is the one to send data to
 
     private:

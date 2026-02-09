@@ -17,7 +17,10 @@
 #ifndef __CONTROLVISUALISER_HPP_INCLUDED__
 #define __CONTROLVISUALISER_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include <cstdint>
+#include "graphics/Types.hpp"
+
+namespace irr { namespace scene { class ISceneManager; class ISceneNode; class IMeshSceneNode; } }
 
 class ControlVisualiser
 {
@@ -25,14 +28,14 @@ class ControlVisualiser
         ControlVisualiser();
         virtual ~ControlVisualiser();
 
-        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, irr::core::vector3df offset, irr::f32 scale, irr::u32 rotationAxis, irr::u32 controlType);
-        void update(irr::f32 displayValue);
+        void load(irr::scene::ISceneManager* smgr, irr::scene::ISceneNode* parent, bc::graphics::Vec3 offset, float scale, uint32_t rotationAxis, uint32_t controlType);
+        void update(float displayValue);
         irr::scene::ISceneNode* getSceneNode();
 
     private:
         irr::scene::IMeshSceneNode* controlNode;
-        irr::f32 displayValue;
-        irr::u32 rotationAxis;
+        float displayValue;
+        uint32_t rotationAxis;
 };
 
 #endif

@@ -70,24 +70,24 @@ public:
         GUI_ID_BRIGHTNESS_SCROLLBAR
     };
 
-    void updateGuiData(irr::f32 time, irr::s32 mapOffsetX, irr::s32 mapOffsetZ, irr::f32 metresPerPx, irr::f32 ownShipPosX, irr::f32 ownShipPosZ, irr::f32 ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, irr::f32 mobPosX, irr::f32 mobPosZ, irr::video::ITexture* displayMapTexture, irr::s32 selectedShip, irr::s32 selectedLeg, irr::f32 terrainLong, irr::f32 terrainLongExtent, irr::f32 terrainXWidth, irr::f32 terrainLat, irr::f32 terrainLatExtent, irr::f32 terrainZWidth, irr::f32 weather, irr::f32 visibility, irr::f32 rain, irr::f32 windDirection, irr::f32 windSpeed, irr::f32 streamDirection, irr::f32 streamSpeed, bool streamOverride);
+    void updateGuiData(float time, int32_t mapOffsetX, int32_t mapOffsetZ, float metresPerPx, float ownShipPosX, float ownShipPosZ, float ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, bool mobVisible, float mobPosX, float mobPosZ, irr::video::ITexture* displayMapTexture, int32_t selectedShip, int32_t selectedLeg, float terrainLong, float terrainLongExtent, float terrainXWidth, float terrainLat, float terrainLatExtent, float terrainZWidth, float weather, float visibility, float rain, float windDirection, float windSpeed, float streamDirection, float streamSpeed, bool streamOverride);
     void updateEditBoxes(); //Trigger an update of the edit boxes (carried out in next updateGuiData)
-    irr::f32 getEditBoxCourse() const;
-    irr::f32 getEditBoxSpeed() const;
-    irr::f32 getEditBoxDistance() const;
-    irr::u32 getEditBoxMMSI() const;
+    float getEditBoxCourse() const;
+    float getEditBoxSpeed() const;
+    float getEditBoxDistance() const;
+    uint32_t getEditBoxMMSI() const;
     int getSelectedShip() const;
     int getSelectedLeg() const;
     irr::core::vector2df getScreenCentrePosition() const;
-    irr::f32 getWeather() const;
-    irr::f32 getRain() const;
-    irr::f32 getVisibility() const;
-    irr::f32 getWindDirection() const;
-    irr::f32 getWindSpeed() const;
-    irr::f32 getStreamDirection() const;
-    irr::f32 getStreamSpeed() const;
+    float getWeather() const;
+    float getRain() const;
+    float getVisibility() const;
+    float getWindDirection() const;
+    float getWindSpeed() const;
+    float getStreamDirection() const;
+    float getStreamSpeed() const;
     bool getStreamOverride() const;
-    irr::f32 getBrightnessScaling() const;
+    float getBrightnessScaling() const;
 
 private:
 
@@ -129,16 +129,16 @@ private:
     irr::gui::IGUIScrollBar* streamSpeedBar;
     irr::gui::IGUICheckBox* streamOverrideBox;
     irr::gui::IGUIScrollBar* brightnessBar;
-    irr::f32 mapCentreX;
-    irr::f32 mapCentreZ;
+    float mapCentreX;
+    float mapCentreZ;
 
     bool editBoxesNeedUpdating;
 
-    void drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffsetX, const irr::s32& mapOffsetZ, const irr::f32& metresPerPx, const irr::f32& ownShipPosX, const irr::f32& ownShipPosZ, const irr::f32& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const irr::s32& selectedShip, const irr::s32& selectedLeg, const bool& mobVisible, const irr::f32& mobPosX, const irr::f32& mobPosZ);
-    void updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, irr::s32 selectedShip, irr::f32 time);
+    void drawInformationOnMap(const float& time, const int32_t& mapOffsetX, const int32_t& mapOffsetZ, const float& metresPerPx, const float& ownShipPosX, const float& ownShipPosZ, const float& ownShipHeading, const std::vector<PositionData>& buoys, const std::vector<OtherShipDisplayData>& otherShips, const std::vector<AISData>& aisData, const int32_t& selectedShip, const int32_t& selectedLeg, const bool& mobVisible, const float& mobPosX, const float& mobPosZ);
+    void updateDropDowns(const std::vector<OtherShipDisplayData>& otherShips, int32_t selectedShip, float time);
     bool manuallyTriggerGUIEvent(irr::gui::IGUIElement* caller, irr::gui::EGUI_EVENT_TYPE eType);
-    std::wstring f32To3dp(irr::f32 value);
-    std::wstring f32To1dp(irr::f32 value);
+    std::wstring f32To3dp(float value);
+    std::wstring f32To1dp(float value);
 
 };
 

@@ -24,12 +24,12 @@
 
 class AIS {
     public: 
-        static std::tuple<std::string, int> generateClassAReport(SimulationModel*, irr::u32);
-        static std::vector<irr::u32> getReadyShips(SimulationModel*, irr::u32);
+        static std::tuple<std::string, int> generateClassAReport(SimulationModel*, uint32_t);
+        static std::vector<uint32_t> getReadyShips(SimulationModel*, uint32_t);
 
     private:
         static const int mmsis[];
-        static std::vector<irr::u32> lastUpdates; 
+        static std::vector<uint32_t> lastUpdates; 
         static int currentShip;
         static bool initialized;
         static std::vector<bool> classAReport;

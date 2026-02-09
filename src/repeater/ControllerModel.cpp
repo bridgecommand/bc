@@ -35,7 +35,7 @@ ControllerModel::~ControllerModel()
 
 }
 
-void ControllerModel::update(const irr::f32& time, const ShipData& ownShipData)
+void ControllerModel::update(const float& time, const ShipData& ownShipData)
 {
     gui->updateGuiData(time,ownShipData.heading, ownShipData.rudder, ownShipData.wheel, ownShipData.portEngine, ownShipData.stbdEngine);
 }

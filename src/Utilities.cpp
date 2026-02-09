@@ -378,10 +378,10 @@ namespace Utilities
         std::string scenarioOtherShipsFilename = scenarioPath;
         scenarioOtherShipsFilename.append("/othership.ini");
         //Find number of other ships
-        irr::u32 numberOfOtherShips;
+        uint32_t numberOfOtherShips;
         numberOfOtherShips = IniFile::iniFileTou32(scenarioOtherShipsFilename,"Number");
 
-        for(irr::u32 i=1;i<=numberOfOtherShips;i++)
+        for(uint32_t i=1;i<=numberOfOtherShips;i++)
         {
             OtherShipData thisOtherShip;
             thisOtherShip.shipName    = IniFile::iniFileToString(scenarioOtherShipsFilename,IniFile::enumerate1("Type",i));
@@ -395,8 +395,8 @@ namespace Utilities
                 thisOtherShip.drifting = false;
             }
 
-            irr::u32 numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
-            for(irr::u32 currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
+            uint32_t numberOfLegs = IniFile::iniFileTou32(scenarioOtherShipsFilename,IniFile::enumerate1("Legs",i));
+            for(uint32_t currentLegNo=1; currentLegNo<=numberOfLegs; currentLegNo++){
                 //go through each leg (if any), and load
                 LegData currentLeg;
                 currentLeg.bearing = IniFile::iniFileTof32(scenarioOtherShipsFilename,IniFile::enumerate2("Bearing",i,currentLegNo));

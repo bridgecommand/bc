@@ -38,7 +38,7 @@
 
         if (event.EventType == irr::EET_GUI_EVENT)
 		{
-			irr::s32 id = event.GUIEvent.Caller->getID();
+			int32_t id = event.GUIEvent.Caller->getID();
 
 
             if (event.GUIEvent.EventType==irr::gui::EGET_BUTTON_CLICKED) {
@@ -54,9 +54,9 @@
                 if (id == GUIMain::GUI_ID_CHANGE_BUTTON || id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
                     //Get data from gui
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     if (id == GUIMain::GUI_ID_CHANGE_COURSESPEED_BUTTON) {
                         legDistance = -1; //Flag to change course and speed, but not distance
@@ -96,9 +96,9 @@
 
                 if (id == GUIMain::GUI_ID_ADDLEG_BUTTON) {
 
-                    irr::f32 legCourse = gui->getEditBoxCourse();
-                    irr::f32 legSpeed = gui->getEditBoxSpeed();
-                    irr::f32 legDistance = gui->getEditBoxDistance();
+                    float legCourse = gui->getEditBoxCourse();
+                    float legSpeed = gui->getEditBoxSpeed();
+                    float legDistance = gui->getEditBoxDistance();
 
                     int ship = gui->getSelectedShip();
                     int leg = gui->getSelectedLeg();
@@ -221,13 +221,13 @@
                     id == GUIMain::GUI_ID_STREAMOVERRIDE_BOX) {
                     //Weather
                     //9 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride
-                    irr::f32 weather=gui->getWeather();
-                    irr::f32 rain=gui->getRain();
-                    irr::f32 visibility=gui->getVisibility();
-                    irr::f32 windDirection=gui->getWindDirection();
-                    irr::f32 windSpeed=gui->getWindSpeed();
-                    irr::f32 streamDirection=gui->getStreamDirection();
-                    irr::f32 streamSpeed=gui->getStreamSpeed();
+                    float weather=gui->getWeather();
+                    float rain=gui->getRain();
+                    float visibility=gui->getVisibility();
+                    float windDirection=gui->getWindDirection();
+                    float windSpeed=gui->getWindSpeed();
+                    float streamDirection=gui->getStreamDirection();
+                    float streamSpeed=gui->getStreamSpeed();
                     bool streamOverride=gui->getStreamOverride();
 
                     std::string messageToSend = "MCSW,";

@@ -213,9 +213,9 @@ void NetworkPrimary::receiveNetwork()
                                             //6 elements in 'Change leg' command: CL,shipNo,legNo,bearing,speed,distance
                                             int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                             int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                            irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                            irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            float bearing =  Utilities::lexical_cast<float>(parts.at(3));
+                                            float speed =    Utilities::lexical_cast<float>(parts.at(4));
+                                            float distance = Utilities::lexical_cast<float>(parts.at(5));
                                             model->changeOtherShipLeg(shipNo,legNo,bearing,speed,distance);
                                         } //If six data parts received
                                     } else if (thisCommand.substr(0,2).compare("AL") == 0) {
@@ -225,9 +225,9 @@ void NetworkPrimary::receiveNetwork()
                                             //6 elements in 'Add leg' command: CL,shipNo,afterLegNo,bearing,speed,distance
                                             int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
                                             int legNo =         Utilities::lexical_cast<int>(parts.at(2)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::f32 bearing =  Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                            irr::f32 speed =    Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                            irr::f32 distance = Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            float bearing =  Utilities::lexical_cast<float>(parts.at(3));
+                                            float speed =    Utilities::lexical_cast<float>(parts.at(4));
+                                            float distance = Utilities::lexical_cast<float>(parts.at(5));
                                             model->addOtherShipLeg(shipNo,legNo,bearing,speed,distance);
                                         } //If six data parts received
                                     } else if (thisCommand.substr(0,2).compare("DL") == 0) {
@@ -245,8 +245,8 @@ void NetworkPrimary::receiveNetwork()
                                         if (parts.size() == 4) {
                                             //4 elements in 'Reposition ship' command: RS,shipNo,posX,posZ
                                             int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                            irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
+                                            float positionX = Utilities::lexical_cast<float>(parts.at(2));
+                                            float positionZ = Utilities::lexical_cast<float>(parts.at(3));
                                             if (shipNo<0){
                                                 model->setPos(positionX,positionZ);
                                             } else {
@@ -259,10 +259,10 @@ void NetworkPrimary::receiveNetwork()
                                         if (parts.size() == 6) {
                                             //6 elements in 'Reset legs' command: RS,shipNo,posX,posZ
                                             int shipNo =         Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::f32 positionX = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                            irr::f32 positionZ = Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                            irr::f32 cog =       Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                            irr::f32 sog =       Utilities::lexical_cast<irr::f32>(parts.at(5));
+                                            float positionX = Utilities::lexical_cast<float>(parts.at(2));
+                                            float positionZ = Utilities::lexical_cast<float>(parts.at(3));
+                                            float cog =       Utilities::lexical_cast<float>(parts.at(4));
+                                            float sog =       Utilities::lexical_cast<float>(parts.at(5));
                                             if (shipNo>=0){
                                                 model->setOtherShipPos(shipNo,positionX,positionZ);
                                                 model->resetOtherShipLegs(shipNo,cog,sog,1); //Hard coded 1Nm distance
@@ -274,14 +274,14 @@ void NetworkPrimary::receiveNetwork()
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size() == 9) {
                                             //9 elements in 'Set weather' command: SW,weather,rain,vis,windDirection,windSpeed,streamDirection,streamSpeed,streamOverride
-                                            irr::f32 weather    = Utilities::lexical_cast<irr::f32>(parts.at(1));
-                                            irr::f32 rain       = Utilities::lexical_cast<irr::f32>(parts.at(2));
-                                            irr::f32 visibility = Utilities::lexical_cast<irr::f32>(parts.at(3));
-                                            irr::f32 windDirection = Utilities::lexical_cast<irr::f32>(parts.at(4));
-                                            irr::f32 windSpeed = Utilities::lexical_cast<irr::f32>(parts.at(5));
-                                            irr::f32 streamDirection = Utilities::lexical_cast<irr::f32>(parts.at(6));
-                                            irr::f32 streamSpeed = Utilities::lexical_cast<irr::f32>(parts.at(7));
-                                            int streamOverrideInt = Utilities::lexical_cast<irr::f32>(parts.at(8));
+                                            float weather    = Utilities::lexical_cast<float>(parts.at(1));
+                                            float rain       = Utilities::lexical_cast<float>(parts.at(2));
+                                            float visibility = Utilities::lexical_cast<float>(parts.at(3));
+                                            float windDirection = Utilities::lexical_cast<float>(parts.at(4));
+                                            float windSpeed = Utilities::lexical_cast<float>(parts.at(5));
+                                            float streamDirection = Utilities::lexical_cast<float>(parts.at(6));
+                                            float streamSpeed = Utilities::lexical_cast<float>(parts.at(7));
+                                            int streamOverrideInt = Utilities::lexical_cast<float>(parts.at(8));
                                             if (weather >= 0) {model->setWeather(weather);}
                                             if (rain >=0) {model->setRain(rain);}
                                             if (visibility>=0) {model->setVisibility(visibility);}
@@ -297,7 +297,7 @@ void NetworkPrimary::receiveNetwork()
                                         //'MO', Man overboard
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==2) {
-                                            irr::s32 mobMode = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            int32_t mobMode = Utilities::lexical_cast<int32_t>(parts.at(1));
                                             if (mobMode==1) {
                                                 model->releaseManOverboard();
                                             } else if (mobMode==-1) {
@@ -309,15 +309,15 @@ void NetworkPrimary::receiveNetwork()
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
                                             int shipNo =        Utilities::lexical_cast<int>(parts.at(1)) - 1; //Numbering on network starts at 1, internal numbering at 0
-                                            irr::u32 mmsi = Utilities::lexical_cast<irr::u32>(parts.at(2));
+                                            uint32_t mmsi = Utilities::lexical_cast<uint32_t>(parts.at(2));
                                             model->setOtherShipMMSI(shipNo,mmsi);
                                         }
                                     } else if (thisCommand.substr(0,2).compare("RW") == 0) {
                                         //'RW', How rudder actuation is working (which pump, is it working?)
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
-                                            irr::s32 whichPump = Utilities::lexical_cast<irr::s32>(parts.at(1));
-                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(2));
+                                            int32_t whichPump = Utilities::lexical_cast<int32_t>(parts.at(1));
+                                            int32_t rudderFunction = Utilities::lexical_cast<int32_t>(parts.at(2));
                                             if (whichPump==1) {
                                                 if (rudderFunction==0) {
                                                     model->setRudderPumpState(1,false);
@@ -344,7 +344,7 @@ void NetworkPrimary::receiveNetwork()
                                         //'RF', How rudder follow up is working (0, or 1)
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==2) {
-                                            irr::s32 rudderFunction = Utilities::lexical_cast<irr::s32>(parts.at(1));
+                                            int32_t rudderFunction = Utilities::lexical_cast<int32_t>(parts.at(1));
                                             if (rudderFunction==1) {
                                                 //Follow up rudder working
                                                 model->setFollowUpRudderWorking(true);
@@ -357,8 +357,8 @@ void NetworkPrimary::receiveNetwork()
                                         //'CO', controls override
                                         std::vector<std::string> parts = Utilities::split(thisCommand,','); //Split into parts, 1st is command itself, 2nd and greater is the data
                                         if (parts.size()==3) {
-                                            irr::u32 overrideMode = Utilities::lexical_cast<irr::u32>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
-                                            irr::f32 overrideData = Utilities::lexical_cast<irr::f32>(parts.at(2)); // angle for wheel, -1->+1 for engines
+                                            uint32_t overrideMode = Utilities::lexical_cast<uint32_t>(parts.at(1)); // 0 for wheel, 1 for port engine, 2 for starboard engine
+                                            float overrideData = Utilities::lexical_cast<float>(parts.at(2)); // angle for wheel, -1->+1 for engines
                                             if (overrideMode == 0) {
                                                 // Wheel
                                                 model->setWheel(overrideData); 

@@ -21,7 +21,7 @@
 #include "Terrain.hpp"
 #include "Sky.hpp"
 #include "Buoys.hpp"
-#include "Sound.hpp"
+#include "ISound.hpp"
 
 #include "IniFile.hpp"
 #include "Constants.hpp"
@@ -40,13 +40,18 @@
 
 //using namespace irr;
 
+namespace {
+    inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
+    inline bc::graphics::Vec3 fromIrrVec(const irr::core::vector3df& v) { return {v.X, v.Y, v.Z}; }
+}
+
 SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
                                  irr::scene::ISceneManager* scene,
                                  GUIMain* gui,
-                                 Sound* sound,
+                                 ISound* sound,
                                  ScenarioData scenarioData,
                                  ModelParameters modelParameters):
-    manOverboard(irr::core::vector3df(0,0,0),scene,dev,this) //Initialise MOB
+    manOverboard(bc::graphics::Vec3(0,0,0),scene,dev,this) //Initialise MOB
     {
         //get reference to scene manager
         device = dev;
@@ -69,14 +74,14 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         loopNumber = 0;
 
         worldName = scenarioData.worldName;
-        irr::f32 startTime = scenarioData.startTime;
-        irr::u32 startDay=scenarioData.startDay;
-        irr::u32 startMonth=scenarioData.startMonth;
-        irr::u32 startYear=scenarioData.startYear;
+        float startTime = scenarioData.startTime;
+        uint32_t startDay=scenarioData.startDay;
+        uint32_t startMonth=scenarioData.startMonth;
+        uint32_t startYear=scenarioData.startYear;
 
         //load the sun times
-        irr::f32 sunRise = scenarioData.sunRise;
-        irr::f32 sunSet  = scenarioData.sunSet;
+        float sunRise = scenarioData.sunRise;
+        float sunSet  = scenarioData.sunSet;
         if(sunRise==0.0) {sunRise=6;}
         if(sunSet==0.0) {sunSet=18;}
 
@@ -188,9 +193,12 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
         zoomLevel = 7.0; //Default zoom of 7x
 
         //make a camera, setting parent and offset
-        std::vector<irr::core::vector3df> views = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
+        std::vector<irr::core::vector3df> irrViews = ownShip.getCameraViews(); //Get the initial camera offset from the own ship model
+        std::vector<bc::graphics::Vec3> views;
+        views.reserve(irrViews.size());
+        for (const auto& v : irrViews) { views.emplace_back(v.X, v.Y, v.Z); }
         std::vector<bool> isHighView = ownShip.getCameraIsHighView(); //Are these special 'looking down' views
-        irr::f32 angleCorrection = ownShip.getAngleCorrection();
+        float angleCorrection = ownShip.getAngleCorrection();
         camera.load(smgr,device->getLogger(),ownShip.getSceneNode(),views, isHighView,irr::core::degToRad(modelParameters.viewAngle),modelParameters.lookAngle,angleCorrection);
         camera.setNearValue(modelParameters.cameraMinDistance);
         camera.setFarValue(modelParameters.cameraMaxDistance);
@@ -219,39 +227,40 @@ SimulationModel::SimulationModel(irr::IrrlichtDevice* dev,
 
         //Set up 3d engine/wheel controls/visualisation
         if (isAzimuthDrive()) {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 1, 2);
-            portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3); // 3 = schottel lever
-            stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), irr::core::vector3df(0,0,0), 1.0, 0, 3);
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getPortEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 1, 2); // 2=schottel base
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getStbdEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 1, 2);
+            portAzimuthThrottleVisual.load(smgr, portEngineVisual.getSceneNode(), bc::graphics::Vec3(0,0,0), 1.0, 0, 3); // 3 = schottel lever
+            stbdAzimuthThrottleVisual.load(smgr, stbdEngineVisual.getSceneNode(), bc::graphics::Vec3(0,0,0), 1.0, 0, 3);
         } else {
-            portEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getPortEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
-            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), ownShip.getStbdEngineControlPosition(), 1.0 / ownShip.getScaleFactor(), 0, 0);
-            wheelVisual.load(smgr, ownShip.getSceneNode(), ownShip.getWheelControlPosition(), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
+            portEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getPortEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 0, 0); // 0 = regular throttle
+            stbdEngineVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getStbdEngineControlPosition()), 1.0 / ownShip.getScaleFactor(), 0, 0);
+            wheelVisual.load(smgr, ownShip.getSceneNode(), fromIrrVec(ownShip.getWheelControlPosition()), ownShip.getWheelControlScale() / ownShip.getScaleFactor(), 2, 1); // 1 = wheel
         }
 
         //make a radar screen, setting parent and offset from own ship
-        radarScreen.load(smgr,ownShip.getSceneNode(), ownShip.getScreenDisplayPosition(), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
+        radarScreen.load(smgr,ownShip.getSceneNode(), fromIrrVec(ownShip.getScreenDisplayPosition()), ownShip.getScreenDisplaySize(), ownShip.getScreenDisplayTilt());
 
         //make radar image - one for the background render, and one with any 2d drawing on top
         //Make as big as the maximum screen display size (next power of 2), and then only use as much as is needed to get 1:1 image to screen pixel mapping
-        irr::u32 radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
-        irr::u32 largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
+        uint32_t radarTextureSize = driver->getScreenSize().Height*0.4; // Optimised for the small radar screen (Where 0.6*screen height is used for the 3d view). We should have a higher resolution for full radar view
+        uint32_t largeRadarTextureSize = driver->getScreenSize().Height; // Optimised for the large radar screen
         //Find next power of 2 size
         radarTextureSize = std::pow(2,std::ceil(std::log2(radarTextureSize)));
         largeRadarTextureSize = std::pow(2,std::ceil(std::log2(largeRadarTextureSize)));
 
         //In simulationModel, keep track of the used size, and pass this to gui etc.
-        radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
-        radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
-        radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        radarImage = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<uint32_t>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaid = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<uint32_t>(radarTextureSize, radarTextureSize)); //Create image for radar calculation to work on
+        radarImageLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<uint32_t>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
+        radarImageOverlaidLarge = driver->createImage (irr::video::ECF_A8R8G8B8, irr::core::dimension2d<uint32_t>(largeRadarTextureSize, largeRadarTextureSize)); //Create image for radar calculation to work on
         //Images will be filled with background colour in RadarCalculation
 
         //make radar camera
-        std::vector<irr::core::vector3df> radarViews; //Get the initial camera offset from the radar screen
 		std::vector<bool> radarViewsLookDown; //Not needed for the radar camera, but needed for compatability
-        irr::f32 screenTilt = ownShip.getScreenDisplayTilt();
-        radarViews.push_back(ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize()));
+        float screenTilt = ownShip.getScreenDisplayTilt();
+        irr::core::vector3df radarViewIrr = ownShip.getScreenDisplayPosition() + irr::core::vector3df(0,0.5*sin(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize(),-0.5*cos(irr::core::DEGTORAD*screenTilt)*ownShip.getScreenDisplaySize());
+        std::vector<bc::graphics::Vec3> radarViews;
+        radarViews.emplace_back(radarViewIrr.X, radarViewIrr.Y, radarViewIrr.Z);
         radarViewsLookDown.push_back(false);
         radarCamera.load(smgr, device->getLogger(),ownShip.getSceneNode(),radarViews,radarViewsLookDown,irr::core::PI/2.0,0,0);
 		radarCamera.setLookUp(-1.0 * screenTilt); //FIXME: Why doesn't simply -1.0*screenTilt work?
@@ -285,74 +294,74 @@ SimulationModel::~SimulationModel()
     delete guiData;
 }
 
-    irr::f32 SimulationModel::longToX(irr::f32 longitude) const
+    float SimulationModel::longToX(float longitude) const
     {
         return terrain.longToX(longitude); //Cascade to terrain
     }
 
-    irr::f32 SimulationModel::latToZ(irr::f32 latitude) const
+    float SimulationModel::latToZ(float latitude) const
     {
         return terrain.latToZ(latitude); //Cascade to terrain
     }
 
-    void SimulationModel::setSpeed(irr::f32 spd)
+    void SimulationModel::setSpeed(float spd)
     {
          ownShip.setSpeed(spd);
     }
 
-    irr::f32 SimulationModel::getLat()  const{
-        return terrain.zToLat(ownShip.getPosition().Z + offsetPosition.Z);
+    float SimulationModel::getLat()  const{
+        return terrain.zToLat(ownShip.getPosition().z + offsetPosition.Z);
     }
 
-    irr::f32 SimulationModel::getLong() const{
-        return terrain.xToLong(ownShip.getPosition().X + offsetPosition.X);
+    float SimulationModel::getLong() const{
+        return terrain.xToLong(ownShip.getPosition().x + offsetPosition.X);
     }
 
-    irr::f32 SimulationModel::getPosX() const{
-        return ownShip.getPosition().X + offsetPosition.X;
+    float SimulationModel::getPosX() const{
+        return ownShip.getPosition().x + offsetPosition.X;
     }
 
-    irr::f32 SimulationModel::getPosZ() const{
-        return ownShip.getPosition().Z + offsetPosition.Z;
+    float SimulationModel::getPosZ() const{
+        return ownShip.getPosition().z + offsetPosition.Z;
     }
 
-    irr::f32 SimulationModel::getCOG() const{
+    float SimulationModel::getCOG() const{
         return ownShip.getCOG();
     }
 
-    irr::f32 SimulationModel::getSOG() const{
+    float SimulationModel::getSOG() const{
         return ownShip.getSOG();
     }
 
-    irr::f32 SimulationModel::getDepth() const{
+    float SimulationModel::getDepth() const{
         return ownShip.getDepth();
     }
 
-    irr::f32 SimulationModel::getWaveHeight(irr::f32 posX, irr::f32 posZ) const {
+    float SimulationModel::getWaveHeight(float posX, float posZ) const {
         return water.getWaveHeight(posX,posZ);
     }
 
-    irr::core::vector2df SimulationModel::getLocalNormals(irr::f32 relPosX, irr::f32 relPosZ) const {
+    bc::graphics::Vec2 SimulationModel::getLocalNormals(float relPosX, float relPosZ) const {
         return water.getLocalNormals(relPosX,relPosZ);
     }
 
-    irr::core::vector2df SimulationModel::getTidalStream(irr::f32 longitude, irr::f32 latitude, uint64_t requestTime) const {
-        
+    bc::graphics::Vec2 SimulationModel::getTidalStream(float longitude, float latitude, uint64_t requestTime) const {
+
         if (streamOverride) {
-            irr::core::vector2df overrideStream;
-            overrideStream.X = sin(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
-            overrideStream.Y = cos(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            bc::graphics::Vec2 overrideStream;
+            overrideStream.x = sin(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
+            overrideStream.y = cos(streamOverrideDirection*irr::core::DEGTORAD)*streamOverrideSpeed*KTS_TO_MPS;
             return overrideStream;
         } else {
             return tide.getTidalStream(longitude,latitude,requestTime);
         }
     }
 
-   // void SimulationModel::getTime(irr::u8& hour, irr::u8& min, irr::u8& sec) const{
+   // void SimulationModel::getTime(uint8_t& hour, uint8_t& min, uint8_t& sec) const{
    //    //FIXME: Complete
    // }
 
-    //void SimulationModel::getDate(irr::u8& day, irr::u8& month, irr::u16& year) const{
+    //void SimulationModel::getDate(uint8_t& day, uint8_t& month, uint16_t& year) const{
     //    //FIXME: Complete
     //}
 
@@ -364,19 +373,19 @@ SimulationModel::~SimulationModel()
         return scenarioOffsetTime;
     }
 
-    void SimulationModel::setTimeDelta(irr::f32 scenarioTime) {
+    void SimulationModel::setTimeDelta(float scenarioTime) {
         this->scenarioTime = scenarioTime;
     }
 
-    irr::f32 SimulationModel::getTimeDelta() const { //The change in time (s) since the start of the start day of the scenario
+    float SimulationModel::getTimeDelta() const { //The change in time (s) since the start of the start day of the scenario
         return scenarioTime;
     }
 
-    irr::u32 SimulationModel::getNumberOfOtherShips() const {
+    uint32_t SimulationModel::getNumberOfOtherShips() const {
         return otherShips.getNumber();
     }
 
-    irr::u32 SimulationModel::getNumberOfBuoys() const {
+    uint32_t SimulationModel::getNumberOfBuoys() const {
         return buoys.getNumber();
     }
 
@@ -384,51 +393,51 @@ SimulationModel::~SimulationModel()
         return otherShips.getName(number);
     }
 
-    irr::f32 SimulationModel::getOtherShipPosX(int number) const{
-        return otherShips.getPosition(number).X + offsetPosition.X;
+    float SimulationModel::getOtherShipPosX(int number) const{
+        return otherShips.getPosition(number).x + offsetPosition.X;
     }
 
-    irr::f32 SimulationModel::getOtherShipPosZ(int number) const{
-        return otherShips.getPosition(number).Z + offsetPosition.Z;
+    float SimulationModel::getOtherShipPosZ(int number) const{
+        return otherShips.getPosition(number).z + offsetPosition.Z;
     }
 
-    irr::f32 SimulationModel::getOtherShipLong(int number) const{
+    float SimulationModel::getOtherShipLong(int number) const{
         return terrain.xToLong(getOtherShipPosX(number));
     }
 
-    irr::f32 SimulationModel::getOtherShipLat(int number) const{
+    float SimulationModel::getOtherShipLat(int number) const{
         return terrain.zToLat(getOtherShipPosZ(number));
     }
 
-    irr::f32 SimulationModel::getOtherShipHeading(int number) const{
+    float SimulationModel::getOtherShipHeading(int number) const{
         return otherShips.getHeading(number);
     }
 
-    irr::f32 SimulationModel::getOtherShipSpeed(int number) const{
+    float SimulationModel::getOtherShipSpeed(int number) const{
         return otherShips.getSpeed(number);
     }
 
-    irr::u32 SimulationModel::getOtherShipMMSI(int number) const{
+    uint32_t SimulationModel::getOtherShipMMSI(int number) const{
         return otherShips.getMMSI(number);
     }
 
-    void SimulationModel::setOtherShipMMSI(int number, irr::u32 mmsi) {
+    void SimulationModel::setOtherShipMMSI(int number, uint32_t mmsi) {
         otherShips.setMMSI(number,mmsi);
     }
 
-    void SimulationModel::setOtherShipHeading(int number, irr::f32 hdg){
+    void SimulationModel::setOtherShipHeading(int number, float hdg){
         otherShips.setHeading(number, hdg);
     }
 
-    void SimulationModel::setOtherShipSpeed(int number, irr::f32 speed){
+    void SimulationModel::setOtherShipSpeed(int number, float speed){
         otherShips.setSpeed(number, speed);
     }
 
-    void SimulationModel::setOtherShipPos(int number, irr::f32 positionX, irr::f32 positionZ){
+    void SimulationModel::setOtherShipPos(int number, float positionX, float positionZ){
         otherShips.setPos(number, positionX - offsetPosition.X, positionZ - offsetPosition.Z);
     }
 
-    void SimulationModel::setOtherShipRateOfTurn(int number, irr::f32 rateOfTurn) {
+    void SimulationModel::setOtherShipRateOfTurn(int number, float rateOfTurn) {
         otherShips.setRateOfTurn(number, rateOfTurn);
     }
 
@@ -436,19 +445,19 @@ SimulationModel::~SimulationModel()
         return otherShips.getLegs(number);
     }
 
-    irr::f32 SimulationModel::getBuoyPosX(int number) const{
-        return buoys.getPosition(number).X + offsetPosition.X;
+    float SimulationModel::getBuoyPosX(int number) const{
+        return buoys.getPosition(number).x + offsetPosition.X;
     }
 
-    irr::f32 SimulationModel::getBuoyPosZ(int number) const{
-        return buoys.getPosition(number).Z + offsetPosition.Z;
+    float SimulationModel::getBuoyPosZ(int number) const{
+        return buoys.getPosition(number).z + offsetPosition.Z;
     }
 
-    void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
+    void SimulationModel::changeOtherShipLeg(int shipNumber, int legNumber, float bearing, float speed, float distance) {
         otherShips.changeLeg(shipNumber, legNumber, bearing, speed, distance, scenarioTime);
     }
 
-    void SimulationModel::addOtherShipLeg(int shipNumber, int afterLegNumber, irr::f32 bearing, irr::f32 speed, irr::f32 distance) {
+    void SimulationModel::addOtherShipLeg(int shipNumber, int afterLegNumber, float bearing, float speed, float distance) {
         otherShips.addLeg(shipNumber, afterLegNumber, bearing, speed, distance, scenarioTime);
     }
 
@@ -456,7 +465,7 @@ SimulationModel::~SimulationModel()
         otherShips.deleteLeg(shipNumber, legNumber, scenarioTime);
     }
 
-    void SimulationModel::resetOtherShipLegs(int shipNumber, irr::f32 course, irr::f32 speedKts, irr::f32 distanceNm) {
+    void SimulationModel::resetOtherShipLegs(int shipNumber, float course, float speedKts, float distanceNm) {
         otherShips.resetLegs(shipNumber, course, speedKts, distanceNm, scenarioTime);
     }
 
@@ -644,52 +653,52 @@ SimulationModel::~SimulationModel()
 
 	}
 
-    void SimulationModel::setHeading(irr::f32 hdg)
+    void SimulationModel::setHeading(float hdg)
     {
          ownShip.setHeading(hdg);
     }
 
-    irr::f32 SimulationModel::getRateOfTurn() const
+    float SimulationModel::getRateOfTurn() const
     {
         return ownShip.getRateOfTurn();
     }
 
-    void SimulationModel::setRateOfTurn(irr::f32 rateOfTurn)
+    void SimulationModel::setRateOfTurn(float rateOfTurn)
     {
         ownShip.setRateOfTurn(rateOfTurn);
     }
 
-    void SimulationModel::setPos(irr::f32 positionX, irr::f32 positionZ)
+    void SimulationModel::setPos(float positionX, float positionZ)
     {
         ownShip.setPosition(positionX - offsetPosition.X, positionZ - offsetPosition.Z );
     }
 
 
-    irr::f32 SimulationModel::getHeading() const
+    float SimulationModel::getHeading() const
     {
         return(ownShip.getHeading());
     }
 
-    void SimulationModel::setRudder(irr::f32 rudder)
+    void SimulationModel::setRudder(float rudder)
     {
         //Set the rudder (-ve is port, +ve is stbd)
         ownShip.setRudder(rudder);
     }
 
-    irr::f32 SimulationModel::getRudder() const
+    float SimulationModel::getRudder() const
     {
         return ownShip.getRudder();
     }
 
 
 // DEE vvvvvvvvvvv
-    void SimulationModel::setWheel(irr::f32 wheel, bool force)
+    void SimulationModel::setWheel(float wheel, bool force)
     {
         //Set the wheel (-ve is port, +ve is stbd)
         ownShip.setWheel(wheel, force);
     }
 
-    irr::f32 SimulationModel::getWheel() const
+    float SimulationModel::getWheel() const
     {
         return ownShip.getWheel();
     }
@@ -719,22 +728,22 @@ SimulationModel::~SimulationModel()
 
     // Schottels
 
-    void SimulationModel::setPortSchottel(irr::f32 portAngle)
+    void SimulationModel::setPortSchottel(float portAngle)
     { // Set the Port Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
         ownShip.setPortSchottel(portAngle);
     }
 
-    void SimulationModel::setStbdSchottel(irr::f32 stbdAngle)
+    void SimulationModel::setStbdSchottel(float stbdAngle)
     { // Set the Stbd Schottel control angle in degrees (-ve is anticlockwise, +ve is clockwise)
         ownShip.setStbdSchottel(stbdAngle);
     }
 
-    irr::f32 SimulationModel::getPortSchottel()
+    float SimulationModel::getPortSchottel()
     { // Gets the Port Schottel angle, (-ve is anticlockwise, +ve is clockwise)
         return ownShip.getPortSchottel();
     }
 
-    irr::f32 SimulationModel::getStbdSchottel()
+    float SimulationModel::getStbdSchottel()
     { // Gets the Stbd Schottel angle, (-ve is anticlockwise, +ve is clockwise)
         return ownShip.getStbdSchottel();
     }
@@ -768,24 +777,24 @@ SimulationModel::~SimulationModel()
 
     // Thrust levers
 
-    void SimulationModel::setPortAzimuthThrustLever(irr::f32 portThrustLever)
+    void SimulationModel::setPortAzimuthThrustLever(float portThrustLever)
     {
         ownShip.setPortAzimuthThrustLever(portThrustLever);
-//        ownShip.setPortThrustLever(irr::f32 portThrustLever);
+//        ownShip.setPortThrustLever(float portThrustLever);
     }
 
-    void SimulationModel::setStbdAzimuthThrustLever(irr::f32 stbdThrustLever)
+    void SimulationModel::setStbdAzimuthThrustLever(float stbdThrustLever)
     {
-//        ownShip.setStbdThrustLever(irr::f32 stbdThrustLever);
+//        ownShip.setStbdThrustLever(float stbdThrustLever);
         ownShip.setStbdAzimuthThrustLever(stbdThrustLever);
     }
 
-    irr::f32 SimulationModel::getPortAzimuthThrustLever()
+    float SimulationModel::getPortAzimuthThrustLever()
     {
         return ownShip.getPortAzimuthThrustLever();
     }
 
-    irr::f32 SimulationModel::getStbdAzimuthThrustLever()
+    float SimulationModel::getStbdAzimuthThrustLever()
     {
         return ownShip.getStbdAzimuthThrustLever();
     }
@@ -873,17 +882,17 @@ SimulationModel::~SimulationModel()
 
 // DEE_NOV22 ^^^^ Azimuth Drive follow up code
 
-    void SimulationModel::setPortAzimuthAngle(irr::f32 angle)
+    void SimulationModel::setPortAzimuthAngle(float angle)
     {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         ownShip.setPortAzimuthAngle(angle);
     }
 
-    void SimulationModel::setStbdAzimuthAngle(irr::f32 angle)
+    void SimulationModel::setStbdAzimuthAngle(float angle)
     {// Set the azimuth angle, in degrees (-ve is port, +ve is stbd)
         ownShip.setStbdAzimuthAngle(angle);
     }
 
-    void SimulationModel::setPortEngine(irr::f32 port)
+    void SimulationModel::setPortEngine(float port)
     {
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setPortEngine(port); //This method limits the range applied
@@ -899,14 +908,16 @@ SimulationModel::~SimulationModel()
 
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+			sound->setEnginePitch(0.5f + 0.5f * fabs(getPortEngine()));
 		}
 		else {
 			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+			sound->setEnginePitch(0.5f + 0.5f * (fabs(getPortEngine()) + fabs(getStbdEngine())) * 0.5f);
 		}
 
     }
 
-    void SimulationModel::setStbdEngine(irr::f32 stbd)
+    void SimulationModel::setStbdEngine(float stbd)
     {
         //Set the engine, (-ve astern, +ve ahead)
         ownShip.setStbdEngine(stbd); //This method limits the range applied
@@ -915,59 +926,61 @@ SimulationModel::~SimulationModel()
 		// DEE_NOV22 same comment as for port engine
 		if (ownShip.isSingleEngine()) {
 			sound->setVolumeEngine(fabs(getPortEngine())*0.5);
+			sound->setEnginePitch(0.5f + 0.5f * fabs(getPortEngine()));
 		}
 		else {
 			sound->setVolumeEngine((fabs(getPortEngine()) + fabs(getStbdEngine()))*0.5);
+			sound->setEnginePitch(0.5f + 0.5f * (fabs(getPortEngine()) + fabs(getStbdEngine())) * 0.5f);
 		}
     }
 
-    irr::f32 SimulationModel::getPortEngine() const
+    float SimulationModel::getPortEngine() const
     {
         return ownShip.getPortEngine();
 
     }
 
-    irr::f32 SimulationModel::getStbdEngine() const
+    float SimulationModel::getStbdEngine() const
     {
         return ownShip.getStbdEngine();
     }
 
-    irr::f32 SimulationModel::getPortEngineRPM() const
+    float SimulationModel::getPortEngineRPM() const
     {
         return ownShip.getPortEngineRPM();
     }
 
-    irr::f32 SimulationModel::getStbdEngineRPM() const
+    float SimulationModel::getStbdEngineRPM() const
     {
         return ownShip.getStbdEngineRPM();
     }
 
-    void SimulationModel::setBowThruster(irr::f32 proportion)
+    void SimulationModel::setBowThruster(float proportion)
     {
         ownShip.setBowThruster(proportion);
     }
 
-    void SimulationModel::setSternThruster(irr::f32 proportion)
+    void SimulationModel::setSternThruster(float proportion)
     {
         ownShip.setSternThruster(proportion);
     }
 
-    void SimulationModel::setBowThrusterRate(irr::f32 bowThrusterRate){
+    void SimulationModel::setBowThrusterRate(float bowThrusterRate){
         //Sets the rate of increase of bow thruster, used for joystick button control
         ownShip.setBowThrusterRate(bowThrusterRate);
     }
 
-    void SimulationModel::setSternThrusterRate(irr::f32 sternThrusterRate){
+    void SimulationModel::setSternThrusterRate(float sternThrusterRate){
         //Sets the rate of increase of bow thruster, used for joystick button control
         ownShip.setSternThrusterRate(sternThrusterRate);
     }
 
-    irr::f32 SimulationModel::getBowThruster() const
+    float SimulationModel::getBowThruster() const
     {
         return ownShip.getBowThruster();
     }
 
-    irr::f32 SimulationModel::getSternThruster() const
+    float SimulationModel::getSternThruster() const
     {
         return ownShip.getSternThruster();
     }
@@ -985,82 +998,82 @@ SimulationModel::~SimulationModel()
         ownShip.setFollowUpRudderWorking(followUpRudderWorking);
     }
 
-    void SimulationModel::setAccelerator(irr::f32 accelerator)
+    void SimulationModel::setAccelerator(float accelerator)
     {
         device->getTimer()->setSpeed(accelerator);
     }
 
-    irr::f32 SimulationModel::getAccelerator() const
+    float SimulationModel::getAccelerator() const
     {
         return device->getTimer()->getSpeed();
     }
 
-    void SimulationModel::setWeather(irr::f32 weather)
+    void SimulationModel::setWeather(float weather)
     {
         this->weather = weather;
     }
 
-    irr::f32 SimulationModel::getWeather() const
+    float SimulationModel::getWeather() const
     {
         return weather;
     }
 
-    void SimulationModel::setRain(irr::f32 rainIntensity)
+    void SimulationModel::setRain(float rainIntensity)
     {
         this->rainIntensity = rainIntensity;
     }
 
-    irr::f32 SimulationModel::getRain() const
+    float SimulationModel::getRain() const
     {
         return rainIntensity;
     }
 
-    void SimulationModel::setVisibility(irr::f32 visibilityNm)
+    void SimulationModel::setVisibility(float visibilityNm)
     {
         this->visibilityRange = visibilityNm;
     }
 
-    irr::f32 SimulationModel::getVisibility() const
+    float SimulationModel::getVisibility() const
     {
         return visibilityRange;
     }
 
-    void SimulationModel::setWindDirection(irr::f32 windDirection) //Range 0-360.
+    void SimulationModel::setWindDirection(float windDirection) //Range 0-360.
     {
         this->windDirection = windDirection;
     }
 
-    irr::f32 SimulationModel::getWindDirection() const
+    float SimulationModel::getWindDirection() const
     {
         return windDirection;
     }
 
-    void SimulationModel::setWindSpeed(irr::f32 windSpeed) //Nm/h
+    void SimulationModel::setWindSpeed(float windSpeed) //Nm/h
     {
         this->windSpeed = windSpeed;
     }
 
-    irr::f32 SimulationModel::getWindSpeed() const
+    float SimulationModel::getWindSpeed() const
     {
         return windSpeed;
     }
 
-    void SimulationModel::setStreamOverrideDirection(irr::f32 streamDirection) //Range 0-360.
+    void SimulationModel::setStreamOverrideDirection(float streamDirection) //Range 0-360.
     {
         this->streamOverrideDirection = streamDirection;
     }
 
-    irr::f32 SimulationModel::getStreamOverrideDirection() const
+    float SimulationModel::getStreamOverrideDirection() const
     {
         return streamOverrideDirection;
     }
 
-    void SimulationModel::setStreamOverrideSpeed(irr::f32 streamSpeed) //Nm/h
+    void SimulationModel::setStreamOverrideSpeed(float streamSpeed) //Nm/h
     {
         this->streamOverrideSpeed = streamSpeed;
     } 
 
-    irr::f32 SimulationModel::getStreamOverrideSpeed() const
+    float SimulationModel::getStreamOverrideSpeed() const
     {
         return streamOverrideSpeed;
     }
@@ -1100,20 +1113,20 @@ SimulationModel::~SimulationModel()
         camera.lookRight();
     }
 
-    void SimulationModel::setPanSpeed(irr::f32 horizontalPanSpeed)
+    void SimulationModel::setPanSpeed(float horizontalPanSpeed)
     {
         camera.setPanSpeed(horizontalPanSpeed);
     }
 
-    void SimulationModel::setVerticalPanSpeed(irr::f32 verticalPanSpeed)
+    void SimulationModel::setVerticalPanSpeed(float verticalPanSpeed)
     {
         camera.setVerticalPanSpeed(verticalPanSpeed);
     }
 
-    void SimulationModel::changeLookPx(irr::s32 deltaX, irr::s32 deltaY)
+    void SimulationModel::changeLookPx(int32_t deltaX, int32_t deltaY)
     {
-        irr::f32 proportionalX = deltaX/(irr::f32)driver->getScreenSize().Width;
-        irr::f32 proportionalY = deltaY/(irr::f32)driver->getScreenSize().Width;
+        float proportionalX = deltaX/(float)driver->getScreenSize().Width;
+        float proportionalY = deltaY/(float)driver->getScreenSize().Width;
         camera.lookChange(proportionalX,proportionalY);
     }
 
@@ -1163,23 +1176,23 @@ SimulationModel::~SimulationModel()
         ownShip.setViewVisibility(camera.getView());
     }
 
-    void SimulationModel::setView(irr::u32 view)
+    void SimulationModel::setView(uint32_t view)
     {
         camera.setView(view);
         ownShip.setViewVisibility(camera.getView());
     }
 
-    irr::u32 SimulationModel::getCameraView() const
+    uint32_t SimulationModel::getCameraView() const
     {
         return camera.getView();
     }
 
-    irr::core::vector3df SimulationModel::getCameraBasePosition() const
+    bc::graphics::Vec3 SimulationModel::getCameraBasePosition() const
     {
         return camera.getBasePosition();
     }
 
-    irr::core::matrix4 SimulationModel::getCameraBaseRotation() const
+    bc::graphics::Matrix4 SimulationModel::getCameraBaseRotation() const
     {
         return camera.getBaseRotation();
     }
@@ -1228,62 +1241,62 @@ SimulationModel::~SimulationModel()
         radarCalculation.decreaseRange();
     }
 
-    void SimulationModel::setRadarGain(irr::f32 value)
+    void SimulationModel::setRadarGain(float value)
     {
         radarCalculation.setGain(value);
     }
 
-    void SimulationModel::setRadarClutter(irr::f32 value)
+    void SimulationModel::setRadarClutter(float value)
     {
         radarCalculation.setClutter(value);
     }
 
-    void SimulationModel::setRadarRain(irr::f32 value)
+    void SimulationModel::setRadarRain(float value)
     {
         radarCalculation.setRainClutter(value);
     }
 
-    void SimulationModel::increaseRadarGain(irr::f32 value)
+    void SimulationModel::increaseRadarGain(float value)
     {
         radarCalculation.increaseGain(value);
     }
 
-    void SimulationModel::decreaseRadarGain(irr::f32 value)
+    void SimulationModel::decreaseRadarGain(float value)
     {
         radarCalculation.decreaseGain(value);
     }
 
-    void SimulationModel::increaseRadarClutter(irr::f32 value)
+    void SimulationModel::increaseRadarClutter(float value)
     {
         radarCalculation.increaseClutter(value);
     }
 
-    void SimulationModel::decreaseRadarClutter(irr::f32 value)
+    void SimulationModel::decreaseRadarClutter(float value)
     {
         radarCalculation.decreaseClutter(value);
     }
 
-    void SimulationModel::increaseRadarRain(irr::f32 value)
+    void SimulationModel::increaseRadarRain(float value)
     {
         radarCalculation.increaseRainClutter(value);
     }
 
-    void SimulationModel::decreaseRadarRain(irr::f32 value)
+    void SimulationModel::decreaseRadarRain(float value)
     {
         radarCalculation.decreaseRainClutter(value);
     }
     
-    void SimulationModel::setPIData(irr::s32 PIid, irr::f32 PIbearing, irr::f32 PIrange)
+    void SimulationModel::setPIData(int32_t PIid, float PIbearing, float PIrange)
     {
         radarCalculation.setPIData(PIid, PIbearing, PIrange);
     }
 
-    irr::f32 SimulationModel::getPIbearing(irr::s32 PIid) const
+    float SimulationModel::getPIbearing(int32_t PIid) const
     {
         return radarCalculation.getPIbearing(PIid);
     }
 
-    irr::f32 SimulationModel::getPIrange(irr::s32 PIid) const
+    float SimulationModel::getPIrange(int32_t PIid) const
     {
         return radarCalculation.getPIrange(PIid);
     }
@@ -1328,7 +1341,7 @@ SimulationModel::~SimulationModel()
         radarCalculation.setArpaMode(mode);
     }
 
-    void SimulationModel::setArpaListSelection(irr::s32 selection)
+    void SimulationModel::setArpaListSelection(int32_t selection)
     {
         radarCalculation.setArpaListSelection(selection);
     }
@@ -1343,12 +1356,12 @@ SimulationModel::~SimulationModel()
         radarCalculation.setRadarARPATrue();
     }
 
-    void SimulationModel::setRadarARPAVectors(irr::f32 vectorMinutes)
+    void SimulationModel::setRadarARPAVectors(float vectorMinutes)
     {
         radarCalculation.setRadarARPAVectors(vectorMinutes);
     }
 
-    void SimulationModel::setRadarDisplayRadius(irr::u32 radiusPx)
+    void SimulationModel::setRadarDisplayRadius(uint32_t radiusPx)
     {
         radarCalculation.setRadarDisplayRadius(radiusPx);
         radarScreen.setRadarDisplayRadius(radiusPx);
@@ -1374,12 +1387,12 @@ SimulationModel::~SimulationModel()
         radarCalculation.clearTargetFromCursor();
     }
 
-    irr::u32 SimulationModel::getARPATracksSize() const
+    uint32_t SimulationModel::getARPATracksSize() const
     {
         return radarCalculation.getARPATracksSize();
     }
 
-    ARPAContact SimulationModel::getARPAContactFromTrackIndex(irr::u32 index) const
+    ARPAContact SimulationModel::getARPAContactFromTrackIndex(uint32_t index) const
     {
         return radarCalculation.getARPAContactFromTrackIndex(index);
     }
@@ -1404,13 +1417,13 @@ SimulationModel::~SimulationModel()
         camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
     }
     
-    void SimulationModel::setZoom(bool zoomOn, irr::f32 zoomLevel)
+    void SimulationModel::setZoom(bool zoomOn, float zoomLevel)
     {
        this->zoomLevel = zoomLevel;
        setZoom(zoomOn);
     }
 
-    void SimulationModel::setViewAngle(irr::f32 viewAngle)
+    void SimulationModel::setViewAngle(float viewAngle)
     {
         modelParameters.viewAngle = viewAngle;
         camera.setHFOV(irr::core::degToRad(modelParameters.viewAngle) / currentZoom);
@@ -1421,12 +1434,12 @@ SimulationModel::~SimulationModel()
         this->isMouseDown = isMouseDown;
     }
 
-    void SimulationModel::updateViewport(irr::f32 aspect)
+    void SimulationModel::updateViewport(float aspect)
     {
         camera.updateViewport(aspect);
     }
 
-    irr::u32 SimulationModel::getLoopNumber() const
+    uint32_t SimulationModel::getLoopNumber() const
     {
         return loopNumber;
     }
@@ -1456,7 +1469,7 @@ SimulationModel::~SimulationModel()
         //Only release/update if not already released
         if (!manOverboard.getVisible()) {
             manOverboard.setVisible(true);
-            irr::core::vector3df ownShipPos = ownShip.getPosition();
+            irr::core::vector3df ownShipPos = toIrrVec(ownShip.getPosition());
             irr::core::vector3df relativePosition;
             relativePosition.Y = 0;
             //Put randomly on port or starboard side of the ship
@@ -1469,7 +1482,7 @@ SimulationModel::~SimulationModel()
                 relativePosition.Z = ownShip.getBreadth() *  0.6 * sin(ownShip.getHeading()*irr::core::DEGTORAD);
                 //PositionEntity(mob,EntityX( ship_parent )-(OwnShipWidth#*0.6)*Cos(angle#),THeight#,EntityZ( ship_parent )+(OwnShipWidth#*0.6)*Sin(angle#), True)
             }
-            manOverboard.setPosition(ownShipPos + relativePosition);
+            manOverboard.setPosition(bc::graphics::Vec3(ownShipPos.X + relativePosition.X, ownShipPos.Y + relativePosition.Y, ownShipPos.Z + relativePosition.Z));
         }
 
     }
@@ -1484,14 +1497,14 @@ SimulationModel::~SimulationModel()
         return manOverboard.getVisible();
     }
 
-    irr::f32 SimulationModel::getManOverboardPosX() const
+    float SimulationModel::getManOverboardPosX() const
     {
-        return manOverboard.getPosition().X + offsetPosition.X;
+        return manOverboard.getPosition().x + offsetPosition.X;
     }
 
-    irr::f32 SimulationModel::getManOverboardPosZ() const
+    float SimulationModel::getManOverboardPosZ() const
     {
-        return manOverboard.getPosition().Z + offsetPosition.Z;
+        return manOverboard.getPosition().z + offsetPosition.Z;
     }
 
 
@@ -1501,10 +1514,10 @@ SimulationModel::~SimulationModel()
         manOverboard.setVisible(visible);
     }
 
-    void SimulationModel::setManOverboardPos(irr::f32 positionX, irr::f32 positionZ)
+    void SimulationModel::setManOverboardPos(float positionX, float positionZ)
     {
         //To be used directly, eg when in secondary display mode only
-        manOverboard.setPosition(irr::core::vector3df(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
+        manOverboard.setPosition(bc::graphics::Vec3(positionX - offsetPosition.X,0,positionZ - offsetPosition.Z));
     }
 
     bool SimulationModel::hasGPS() const
@@ -1527,9 +1540,9 @@ SimulationModel::~SimulationModel()
         return ownShip.isAzimuthAsternAllowed();
     }
 
-    irr::f32 SimulationModel::inputToAzimuthEngineMapping(irr::f32 inputAngle) const
+    float SimulationModel::inputToAzimuthEngineMapping(float inputAngle) const
     {
-        irr::f32 tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
+        float tempEngLevel; // temporary variable 0..1 to represent attempted engine setting
 
         if (isAzimuthAsternAllowed()) {
             if ((inputAngle >= 0) && (inputAngle < 135)) {
@@ -1570,7 +1583,7 @@ SimulationModel::~SimulationModel()
         return tempEngLevel;
     }
 
-    irr::f32 SimulationModel::azimuthToInputEngineMapping(irr::f32 inputEngine) const
+    float SimulationModel::azimuthToInputEngineMapping(float inputEngine) const
     {
         if (isAzimuthAsternAllowed()) {
             return (inputEngine*135);
@@ -1604,22 +1617,22 @@ SimulationModel::~SimulationModel()
         return modelParameters.debugMode;
     }
 
-    irr::f32 SimulationModel::getOwnShipMass() const
+    float SimulationModel::getOwnShipMass() const
     {
         return ownShip.getShipMass();
     }
 
-    irr::f32 SimulationModel::getOwnShipMassEstimate() const
+    float SimulationModel::getOwnShipMassEstimate() const
     {
         return ownShip.getEstimatedDisplacement();
     }
 
-    irr::f32 SimulationModel::getOtherShipMassEstimate(int number) const
+    float SimulationModel::getOtherShipMassEstimate(int number) const
     {
         return otherShips.getEstimatedDisplacement(number);
     }
 
-    irr::f32 SimulationModel::getMaxSounderDepth() const
+    float SimulationModel::getMaxSounderDepth() const
     {
         return ownShip.getMaxSounderDepth();
     }
@@ -1680,15 +1693,15 @@ SimulationModel::~SimulationModel()
         return modelParameters.secondaryControlSternThruster;
     }
 
-    irr::f32 SimulationModel::getLineStiffnessFactor() const {
+    float SimulationModel::getLineStiffnessFactor() const {
         return modelParameters.lineStiffnessFactor;
     }
 
-    irr::f32 SimulationModel::getLineDampingFactor() const {
+    float SimulationModel::getLineDampingFactor() const {
         return modelParameters.lineDampingFactor;
     }
 
-    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<irr::f32> ray, irr::s32 linesMode) {
+    irr::scene::ISceneNode* SimulationModel::getContactFromRay(irr::core::line3d<float> ray, int32_t linesMode) {
 
         // Temporarily enable all required triangle selectors
         if (linesMode == 1) {
@@ -1786,7 +1799,7 @@ SimulationModel::~SimulationModel()
         return &terrain;
     }
 
-    irr::f32 SimulationModel::getTerrainHeight(irr::f32 posX, irr::f32 posZ) const
+    float SimulationModel::getTerrainHeight(float posX, float posZ) const
     {
         return terrain.getHeight(posX, posZ);
     }
@@ -1801,7 +1814,7 @@ SimulationModel::~SimulationModel()
         return &lines;
     }
 
-    void SimulationModel::updateCameraVRPos(irr::core::quaternion quat, irr::core::vector3df pos, irr::core::vector2df lensShift)
+    void SimulationModel::updateCameraVRPos(bc::graphics::Quaternion quat, bc::graphics::Vec3 pos, bc::graphics::Vec2 lensShift)
     {
         camera.update(0, quat, pos, lensShift, true);
     }
@@ -1815,13 +1828,13 @@ SimulationModel::~SimulationModel()
 // DEE vvvv debug I think that this is effectively the cycle
 
         //Declare here, so scope added as part of profiling isn't a problem
-        irr::u32 lightLevel;
-        irr::f32 elevAngle;
+        uint32_t lightLevel;
+        float elevAngle;
         irr::core::vector2di cursorPositionRadar;
-        std::vector<irr::f32> CPAs;
-        std::vector<irr::f32> TCPAs;
-		std::vector<irr::f32> headings;
-		std::vector<irr::f32> speeds;
+        std::vector<float> CPAs;
+        std::vector<float> TCPAs;
+		std::vector<float> headings;
+		std::vector<float> speeds;
         bool paused;
         bool collided;
 
@@ -1860,12 +1873,13 @@ SimulationModel::~SimulationModel()
         //update ambient lighting
         light.update(scenarioTime);
         //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-        irr::f32 appliedVisibilityRange = visibilityRange;
+        float appliedVisibilityRange = visibilityRange;
         // Lower bound of visibility of 0.01 Nm
         if (appliedVisibilityRange < 0.01) {
             appliedVisibilityRange = 0.01;
         }
-        driver->setFog(light.getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01* appliedVisibilityRange*M_IN_NM, appliedVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+        bc::graphics::Color fogColor = light.getLightSColor();
+        driver->setFog(irr::video::SColor(fogColor.a, fogColor.r, fogColor.g, fogColor.b), irr::video::EFT_FOG_LINEAR , 0.01* appliedVisibilityRange*M_IN_NM, appliedVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
         lightLevel = light.getLightLevel();
 
         }{ IPROF("Update rain");
@@ -1890,7 +1904,7 @@ SimulationModel::~SimulationModel()
         lines.update(deltaTime);
         }{ IPROF("Update own ship");
         //update own ship
-        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, lines.getOverallForceLocal(), lines.getOverallTorqueLocal());
+        ownShip.update(deltaTime, scenarioTime, tideHeight, weather, toIrrVec(lines.getOverallForceLocal()), toIrrVec(lines.getOverallTorqueLocal()));
 
         }{ IPROF("Update MOB");
         //update man overboard
@@ -1902,15 +1916,15 @@ SimulationModel::~SimulationModel()
 
         }{ IPROF("Update water pos");
         //update water position
-        water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather);
+        water.update(tideHeight,camera.getPosition(),light.getLightLevel(), weather, windSpeed, windDirection);
 
         }{ IPROF("Normalise ");
         //Normalise positions if required (More than 1000 metres from origin)
         //FIXME: TEMPORARY MODS WITH REALISTICWATERSCENENODE
-        if(ownShip.getPosition().getLength() > 1000) {
-            irr::core::vector3df ownShipPos = ownShip.getPosition();
-            irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
-            irr::s32 deltaZ = -1*(irr::s32)ownShipPos.Z;
+        if(ownShip.getPosition().length() > 1000) {
+            bc::graphics::Vec3 ownShipPos = ownShip.getPosition();
+            int32_t deltaX = -1*(int32_t)ownShipPos.x;
+            int32_t deltaZ = -1*(int32_t)ownShipPos.z;
             //Round to nearest 1000 metres - (multiple of water tile width, to avoid jumps here)
             deltaX = 500.0*Utilities::round(deltaX/500.0);
             deltaZ = 500.0*Utilities::round(deltaZ/500.0);
@@ -1945,6 +1959,31 @@ SimulationModel::~SimulationModel()
 
         //update the camera position
         camera.update(deltaTime);
+        }{ IPROF("Update 3D audio");
+        // Position listener at camera, engine source aft of ship
+        bc::graphics::Vec3 camPos = camera.getPosition();
+        bc::graphics::Vec3 camFwd = camera.getForwardVector();
+        sound->setListenerPosition(camPos.x, camPos.y, camPos.z);
+        sound->setListenerOrientation(camFwd.x, camFwd.y, camFwd.z, 0.0f, 1.0f, 0.0f);
+
+        // Engine at aft of ship (half-length behind centre, below deck)
+        bc::graphics::Vec3 shipPos = ownShip.getPosition();
+        float hdgRad = ownShip.getHeading() * irr::core::DEGTORAD;
+        float halfLen = ownShip.getLength() * 0.4f;
+        sound->setSourcePosition(SOUND_SRC_ENGINE,
+            shipPos.x - halfLen * std::sin(hdgRad),
+            shipPos.y - 2.0f,
+            shipPos.z - halfLen * std::cos(hdgRad));
+
+        // Wave sound at listener position (ambient)
+        sound->setSourcePosition(SOUND_SRC_WAVE, camPos.x, camPos.y, camPos.z);
+
+        // Horn at bow of ship, high up
+        sound->setSourcePosition(SOUND_SRC_HORN,
+            shipPos.x + halfLen * std::sin(hdgRad),
+            shipPos.y + 10.0f,
+            shipPos.z + halfLen * std::cos(hdgRad));
+
         }{ IPROF("Update controls visualisation");
             if (isAzimuthDrive()) {
                 portEngineVisual.update(ownShip.getPortSchottel());
@@ -1986,7 +2025,7 @@ SimulationModel::~SimulationModel()
         }{ IPROF("Get radar ARPA data for GUI");
 
         //get radar ARPA data to show
-        irr::u32 numberOfARPATracks = radarCalculation.getARPATracksSize();
+        uint32_t numberOfARPATracks = radarCalculation.getARPATracksSize();
         guiData->arpaContactStates.clear();
         for(unsigned int i = 0; i<numberOfARPATracks; i++) {
 			guiData->arpaContactStates.push_back(radarCalculation.getARPAContactFromTrackIndex(i).estimate);
@@ -2000,9 +2039,9 @@ SimulationModel::~SimulationModel()
         guiData->longitude = getLong();
         guiData->hdg = ownShip.getHeading();
         
-        irr::core::vector3df cameraForwardVector = camera.getForwardVector(); 
-        guiData->viewAngle = atan2(cameraForwardVector.X, cameraForwardVector.Z) * irr::core::RADTODEG;
-        guiData->viewElevationAngle = asin(cameraForwardVector.Y) * irr::core::RADTODEG;
+        bc::graphics::Vec3 cameraForwardVector = camera.getForwardVector();
+        guiData->viewAngle = atan2(cameraForwardVector.x, cameraForwardVector.z) * irr::core::RADTODEG;
+        guiData->viewElevationAngle = asin(cameraForwardVector.y) * irr::core::RADTODEG;
 
         guiData->spd = ownShip.getSpeedThroughWater();
         guiData->portEng = ownShip.getPortEngine();
@@ -2075,50 +2114,50 @@ SimulationModel::~SimulationModel()
 
         /*
 
-        irr::u32 numberOfOtherShips = otherShips.getNumber();
-        irr::u32 numberOfBuoys = buoys.getNumber();
+        uint32_t numberOfOtherShips = otherShips.getNumber();
+        uint32_t numberOfBuoys = buoys.getNumber();
 
-        irr::core::vector3df thisShipPosition = ownShip.getPosition();
-        irr::f32 thisShipLength = ownShip.getLength();
-        irr::f32 thisShipWidth = ownShip.getWidth();
-        irr::f32 thisShipHeading = ownShip.getHeading();
+        bc::graphics::Vec3 thisShipPosition = ownShip.getPosition();
+        float thisShipLength = ownShip.getLength();
+        float thisShipWidth = ownShip.getWidth();
+        float thisShipHeading = ownShip.getHeading();
 
-        for (irr::u32 i = 0; i<numberOfOtherShips; i++) {
-            irr::core::vector3df otherPosition = otherShips.getPosition(i);
-            irr::f32 otherShipLength = otherShips.getLength(i);
-            irr::f32 otherShipWidth = otherShips.getWidth(i);
-            irr::f32 otherShipHeading = otherShips.getHeading(i);
+        for (uint32_t i = 0; i<numberOfOtherShips; i++) {
+            bc::graphics::Vec3 otherPosition = otherShips.getPosition(i);
+            float otherShipLength = otherShips.getLength(i);
+            float otherShipWidth = otherShips.getWidth(i);
+            float otherShipHeading = otherShips.getHeading(i);
 
-            irr::core::vector3df relPosition = otherPosition - thisShipPosition;
-            irr::f32 distanceToShip = relPosition.getLength();
-            irr::f32 bearingToOtherShipDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
+            bc::graphics::Vec3 relPosition = otherPosition - thisShipPosition;
+            float distanceToShip = relPosition.length();
+            float bearingToOtherShipDeg = irr::core::radToDeg(atan2(relPosition.x, relPosition.z));
 
             //Bearings relative to ship's head (from this ship and from other)
-            irr::f32 relativeBearingOwnShip = bearingToOtherShipDeg - thisShipHeading;
-            irr::f32 relativeBearingOtherShip = 180 + bearingToOtherShipDeg - otherShipHeading;
+            float relativeBearingOwnShip = bearingToOtherShipDeg - thisShipHeading;
+            float relativeBearingOtherShip = 180 + bearingToOtherShipDeg - otherShipHeading;
 
             //Find the minimum distance before a collision occurs
-            irr::f32 minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
-            irr::f32 minDistanceOther = 0.5*fabs(otherShipWidth*sin(irr::core::degToRad(relativeBearingOtherShip))) + 0.5*fabs(otherShipLength*cos(irr::core::degToRad(relativeBearingOtherShip)));
-            irr::f32 minDistance = minDistanceOther + minDistanceOwn;
+            float minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
+            float minDistanceOther = 0.5*fabs(otherShipWidth*sin(irr::core::degToRad(relativeBearingOtherShip))) + 0.5*fabs(otherShipLength*cos(irr::core::degToRad(relativeBearingOtherShip)));
+            float minDistance = minDistanceOther + minDistanceOwn;
 
             if (distanceToShip < minDistance) {
                 return true;
             }
         }
 
-        for (irr::u32 i = 0; i<numberOfBuoys; i++) { //Collision with buoy
-            irr::core::vector3df otherPosition = buoys.getPosition(i);
+        for (uint32_t i = 0; i<numberOfBuoys; i++) { //Collision with buoy
+            bc::graphics::Vec3 otherPosition2 = buoys.getPosition(i);
 
-            irr::core::vector3df relPosition = otherPosition - thisShipPosition;
-            irr::f32 distanceToBuoy = relPosition.getLength();
-            irr::f32 bearingToBuoyDeg = irr::core::radToDeg(atan2(relPosition.X, relPosition.Z));
+            bc::graphics::Vec3 relPosition2 = otherPosition2 - thisShipPosition;
+            float distanceToBuoy = relPosition2.length();
+            float bearingToBuoyDeg = irr::core::radToDeg(atan2(relPosition2.x, relPosition2.z));
 
             //Bearings relative to ship's head (from this ship and from other)
-            irr::f32 relativeBearingOwnShip = bearingToBuoyDeg - thisShipHeading;
+            float relativeBearingOwnShip = bearingToBuoyDeg - thisShipHeading;
 
             //Find the minimum distance before a collision occurs
-            irr::f32 minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
+            float minDistanceOwn = 0.5*fabs(thisShipWidth*sin(irr::core::degToRad(relativeBearingOwnShip))) + 0.5*fabs(thisShipLength*cos(irr::core::degToRad(relativeBearingOwnShip)));
 
             if (distanceToBuoy < minDistanceOwn) {
                 return true;

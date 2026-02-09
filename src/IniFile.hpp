@@ -17,22 +17,25 @@
 #ifndef __INIFILE_HPP_INCLUDED__
 #define __INIFILE_HPP_INCLUDED__
 
-#include "irrlicht.h"
+#include <cstdint>
 #include <string>
+
+// Forward declarations
+namespace irr { class ILogger; }
 
 namespace IniFile
 {
     extern irr::ILogger* irrlichtLogger;
 
-    std::string enumerate1(std::string commandName, irr::s32 number);
-    std::string enumerate2(std::string commandName, irr::s32 number1, irr::s32 number2);
+    std::string enumerate1(std::string commandName, int32_t number);
+    std::string enumerate2(std::string commandName, int32_t number1, int32_t number2);
 
     std::string iniFileToString(const std::string &fileName, const std::string &key, const std::string &defValue = "");
     std::wstring iniFileToWString(const std::string &fileName, const std::string &key, const std::wstring &defValue = L"");
 
-    irr::u32 iniFileTou32(const std::string &fileName, const std::string &key, irr::u32 defValue = 0);
-    irr::s32 iniFileTos32(const std::string &fileName, const std::string &key, irr::s32 defValue = 0);
-    irr::f32 iniFileTof32(const std::string &fileName, const std::string &key, irr::f32 defValue = 0.f);
+    uint32_t iniFileTou32(const std::string &fileName, const std::string &key, uint32_t defValue = 0);
+    int32_t iniFileTos32(const std::string &fileName, const std::string &key, int32_t defValue = 0);
+    float iniFileTof32(const std::string &fileName, const std::string &key, float defValue = 0.f);
 }
 
 #endif

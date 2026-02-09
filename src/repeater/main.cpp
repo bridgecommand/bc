@@ -127,9 +127,9 @@ int main (int argc, char ** argv)
         std::cout << "Using Ini file >" << iniFilename << "<" << std::endl;
     }
 
-    irr::u32 graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
-    irr::u32 graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
-    irr::u32 graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
+    uint32_t graphicsWidth = IniFile::iniFileTou32(iniFilename, "graphics_width");
+    uint32_t graphicsHeight = IniFile::iniFileTou32(iniFilename, "graphics_height");
+    uint32_t graphicsDepth = IniFile::iniFileTou32(iniFilename, "graphics_depth");
     bool fullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode")==1); //1 for full screen
 	bool fakeFullScreen = (IniFile::iniFileTou32(iniFilename, "graphics_mode") == 3); //3 for no border
 	if (fakeFullScreen) {
@@ -142,7 +142,7 @@ int main (int argc, char ** argv)
 
 	//Sensible defaults if not set
 	if (graphicsWidth == 0 || graphicsHeight == 0) {
-		irr::core::dimension2d<irr::u32> deskres;
+		irr::core::dimension2d<uint32_t> deskres;
         #ifdef _WIN32
         // Get the resolution (of the primary screen). Will be scaled as DPI unaware on Windows.
         deskres.Width=GetSystemMetrics(SM_CXSCREEN);
@@ -179,7 +179,7 @@ int main (int argc, char ** argv)
 
 	if (graphicsDepth == 0) { graphicsDepth = 32; }
     //Load UDP network settings
-    irr::u32 udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
+    uint32_t udpPort = IniFile::iniFileTou32(iniFilename, "udp_send_port");
     if (udpPort == 0) {
         udpPort = 18304;
     }
@@ -288,10 +288,10 @@ int main (int argc, char ** argv)
 	}
 #endif
 
-    //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<irr::u32>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
+    //IrrlichtDevice* device = createDevice(video::EDT_OPENGL, irr::core::dimension2d<uint32_t>(graphicsWidth,graphicsHeight),graphicsDepth,fullScreen,false,false,0);
 
 	deviceParameters.DriverType = irr::video::EDT_OPENGL;
-	deviceParameters.WindowSize = irr::core::dimension2d<irr::u32>(graphicsWidth, graphicsHeight);
+	deviceParameters.WindowSize = irr::core::dimension2d<uint32_t>(graphicsWidth, graphicsHeight);
 	deviceParameters.Bits = graphicsDepth;
 	deviceParameters.Fullscreen = fullScreen;
 
@@ -343,17 +343,17 @@ int main (int argc, char ** argv)
     ControllerModel controller(device, &guiMain);
 
     //Create data structures to hold own ship, other ship and buoy data
-    irr::f32 time = 0; //Time since start of day 1 of the scenario
-    irr::f32 weather = 0; //(0-12)
-    irr::f32 rain = 0; //(0-10)
-    irr::f32 visibility = 10.1; //(0.1-10.1)
+    float time = 0; //Time since start of day 1 of the scenario
+    float weather = 0; //(0-12)
+    float rain = 0; //(0-10)
+    float visibility = 10.1; //(0.1-10.1)
     ShipData ownShipData;
 
     //create event receiver, linked to model
     EventReceiver receiver(device, &controller, &guiMain, &network);
     device->setEventReceiver(&receiver);
 
-    irr::u32 timer = device->getTimer()->getRealTime();
+    uint32_t timer = device->getTimer()->getRealTime();
 
     //See if user has specified a mode to start with
     if (IniFile::iniFileTou32(iniFilename, "rudder")==1) {
@@ -376,7 +376,7 @@ int main (int argc, char ** argv)
         driver->endScene();
 
         //Pause if faster than 30 fps (33ms)
-        irr::u32 newTimer = device->getTimer()->getRealTime();
+        uint32_t newTimer = device->getTimer()->getRealTime();
         if (newTimer-timer<33) {
             device->sleep(33-(newTimer-timer));
         }

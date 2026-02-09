@@ -23,10 +23,10 @@ class StartupEventReceiver : public irr::IEventReceiver
 {
 public:
 
-    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::gui::IGUIStaticText* description, irr::s32 listBoxID, irr::s32 okButtonID, irr::s32 secondaryBoxID, irr::s32 multiplayerBoxID, irr::IrrlichtDevice* dev);
+    StartupEventReceiver(irr::gui::IGUIListBox* scenarioListBox, irr::gui::IGUIStaticText* scenarioText, irr::gui::IGUIStaticText* hostnameText, irr::gui::IGUIEditBox* hostnameBox, irr::gui::IGUICheckBox* secondaryBox, irr::gui::IGUICheckBox* multiplayerBox, irr::gui::IGUIStaticText* portText, irr::gui::IGUIEditBox* portBox, irr::gui::IGUIStaticText* description, int32_t listBoxID, int32_t okButtonID, int32_t secondaryBoxID, int32_t multiplayerBoxID, irr::IrrlichtDevice* dev);
     bool OnEvent(const irr::SEvent& event);
 
-    irr::s32 getScenarioSelected() const;
+    int32_t getScenarioSelected() const;
 
 private:
 
@@ -40,11 +40,11 @@ private:
     irr::gui::IGUIEditBox* portBox;
     irr::gui::IGUICheckBox* secondaryBox;
     irr::gui::IGUICheckBox* multiplayerBox;
-    irr::s32 listBoxID;
-    irr::s32 okButtonID;
-    irr::s32 secondaryBoxID;
-    irr::s32 multiplayerBoxID;
-    irr::s32 scenarioSelected;
+    int32_t listBoxID;
+    int32_t okButtonID;
+    int32_t secondaryBoxID;
+    int32_t multiplayerBoxID;
+    int32_t scenarioSelected;
 
 };
 

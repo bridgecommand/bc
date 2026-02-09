@@ -15,6 +15,7 @@
      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA. */
 
 #include "NumberToImage.hpp"
+#include "irrlicht.h"
 #include <vector>
 
 //using namespace irr;
@@ -22,27 +23,27 @@
 namespace NumberToImage
 {
 
-    const irr::u32 PADDING_PX = 1;
+    const uint32_t PADDING_PX = 1;
     const irr::video::SColor BG_COLOUR = irr::video::SColor(0,0,0,0);
 
-    irr::video::IImage* getImage(irr::u32 number, irr::IrrlichtDevice* dev)
+    irr::video::IImage* getImage(uint32_t number, irr::IrrlichtDevice* dev)
     {
 
         irr::core::stringc numberString = irr::core::stringc(number);
-        const irr::u32 length = numberString.size();
-        //irr::u32 imageWidth = length * CHAR_WIDTH;
-        //irr::u32 imageHeight = CHAR_HEIGHT;
+        const uint32_t length = numberString.size();
+        //uint32_t imageWidth = length * CHAR_WIDTH;
+        //uint32_t imageHeight = CHAR_HEIGHT;
 
         if (length > 0) {
 
 			std::vector<irr::video::IImage*> numberImages;
 			numberImages.resize(length);
             //video::IImage* numberImages[length];
-            irr::u32 overallWidth = 0;
-            irr::u32 maxHeight = 0;
-            //video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, irr::core::dimension2d<irr::u32>(imageWidth, imageHeight));
+            uint32_t overallWidth = 0;
+            uint32_t maxHeight = 0;
+            //video::IImage* numberImage = dev->getVideoDriver()->createImage(video::ECF_R8G8B8, irr::core::dimension2d<uint32_t>(imageWidth, imageHeight));
 
-            for (irr::u32 character = 0; character<length; character++) {
+            for (uint32_t character = 0; character<length; character++) {
                 //Load character image from file (charName.png)
                 char thisChar = numberString.c_str()[character];
 
@@ -62,18 +63,18 @@ namespace NumberToImage
             }
 
             if (overallWidth>0) {
-            	irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<irr::u32>(overallWidth, maxHeight));
+            	irr::video::IImage* numberImage = dev->getVideoDriver()->createImage(irr::video::ECF_A8R8G8B8, irr::core::dimension2d<uint32_t>(overallWidth, maxHeight));
                 if (!numberImage) {
                     return 0;
                 }
 
                 numberImage->fill(BG_COLOUR); //Transparent
                 //paste in the characters
-                irr::u32 nextXStart = 0;
-                for (irr::u32 character = 0; character<length; character++) {
+                uint32_t nextXStart = 0;
+                for (uint32_t character = 0; character<length; character++) {
                     if (numberImages[character]) {
-                        irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
-                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<irr::s32>(nextXStart,0),sourceRect,irr::video::SColor(255,255,255,255));
+                        irr::core::rect<int32_t> sourceRect = irr::core::rect<int32_t>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
+                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<int32_t>(nextXStart,0),sourceRect,irr::video::SColor(255,255,255,255));
                         nextXStart += numberImages[character]->getDimension().Width + PADDING_PX;
                         numberImages[character]->drop();
                     }
