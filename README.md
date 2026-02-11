@@ -18,7 +18,7 @@ Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-pr
 1) (optionnal) Get Irrlicht from SVN repo here: svn://svn.code.sf.net/p/irrlicht/code/trunk
 2) (optionnal) Replace in lib/irrlicht
 3) Go to lib/irrlicht/source/Irrlicht/ 
-4) Run "make sharedlib; make install"
+4) Run "sudo make sharedlib; sudo make install"
 5) Duplicate generated so files: sudo cp /usr/local/lib64/libIrrlicht.so* /usr/local/lib/; sudo cp /usr/local/lib64/libIrrlicht.so* /usr/lib/
 
 ## Add last version of Enet library (not mandatory to run BC)
