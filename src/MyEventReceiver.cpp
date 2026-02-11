@@ -1206,12 +1206,14 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             if (newJoystickPort < INFINITY && (joystickSetup.updateAllAxes || portChanged))
             { // refers to the port engine control
                 irr::f32 mappedValue = lookup1D(newJoystickPort, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                model->getOwnShip()->setPortEngine(newJoystickPort);
                 previousJoystickPort = newJoystickPort;
             }
 
             if (newJoystickStbd < INFINITY && (joystickSetup.updateAllAxes || stbdChanged))
             { // refers to the starboard engine control
                 irr::f32 mappedValue = lookup1D(newJoystickStbd, joystickSetup.inputPoints, joystickSetup.outputPoints);
+                model->getOwnShip()->setStbdEngine(newJoystickStbd);
                 previousJoystickStbd = newJoystickStbd;
             }
 

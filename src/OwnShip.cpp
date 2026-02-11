@@ -124,6 +124,10 @@ void OwnShip::InitOwnShipParams(OwnShipData aOwnShipData, Json::Value aJsonRoot)
 
   mEta << mTerrain->latToZ(aOwnShipData.initialLat), mTerrain->longToX(aOwnShipData.initialLong), aOwnShipData.initialBearing*PI/180;
 
+  std::cout << "::::::Initial Pos informations::::::" << std::endl;
+  std::cout << "Initial Latitude : " << aOwnShipData.initialLat << std::endl;
+  std::cout << "Initial Longitude : " << aOwnShipData.initialLong << std::endl;
+
   //Mesh
   if(1 == aJsonRoot["mesh"]["makeTransparent"].asInt())
     mIsTransparent = true;

@@ -478,7 +478,7 @@ void SimulationModel::update()
   mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
   //Keep Ownship near origin to more precision 
-  if(mOwnShip->getPosition().getLength() > 1000)
+ if (mOwnShip->getPosition().getLength() > 1000)
     {
       irr::core::vector3df ownShipPos = mOwnShip->getPosition();
       irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
