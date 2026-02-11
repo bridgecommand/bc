@@ -124,11 +124,9 @@ JoystickSetup getJoystickSetup(std::string iniFilename) {
   //Load joystick settings, subtract 1 as first axis is 0 internally (not 1)
   JoystickSetup joystickSetup;
 
-  joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
-
   joystickSetup.portJoystickAxis = IniFile::iniFileTou32(iniFilename, "portThrustLever_channel") - 1;
   joystickSetup.stbdJoystickAxis = IniFile::iniFileTou32(iniFilename, "stbdThrustLever_channel") - 1;
-
+  joystickSetup.rudderJoystickAxis = IniFile::iniFileTou32(iniFilename, "rudder_channel")-1;
 
   joystickSetup.bowThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "bow_thruster_channel")-1;
   joystickSetup.sternThrusterJoystickAxis = IniFile::iniFileTou32(iniFilename, "stern_thruster_channel")-1;
