@@ -129,6 +129,9 @@
 					<Add directory="C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Include" />
 				</Compiler>
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
 					<Add library="kernel32" />
 					<Add library="user32" />
 					<Add library="gdi32" />
@@ -1340,6 +1343,7 @@
 		<Unit filename="libpng/pngset.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="libpng/pngstruct.h" />
 		<Unit filename="libpng/pngtrans.c">
 			<Option compilerVar="CC" />
 		</Unit>

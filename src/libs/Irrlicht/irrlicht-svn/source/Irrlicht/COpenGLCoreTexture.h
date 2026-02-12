@@ -262,6 +262,7 @@ public:
 #if 1
 				IImage* tmpImage = LockImage;	// not sure yet if the size required by glGetTexImage is always correct, if not we might have to allocate a different tmpImage and convert colors later on.
 
+				const COpenGLCoreTexture* prevTexture = Driver->getCacheHandler()->getTextureCache().get(0);
 				Driver->getCacheHandler()->getTextureCache().set(0, this);
 				Driver->testGLError(__LINE__);
 
@@ -297,6 +298,9 @@ public:
 
 					delete[] tmpBuffer;
 				}
+
+				Driver->getCacheHandler()->getTextureCache().set(0, prevTexture);
+
 #else	// Alternative method working with copies to memory, still here for quick testing when things break, hope we can remove that before 1.9 release.
 				COpenGLCoreTexture* tmpTexture = new COpenGLCoreTexture("OGL_CORE_LOCK_TEXTURE", Size, ETT_2D, ColorFormat, Driver);
 
