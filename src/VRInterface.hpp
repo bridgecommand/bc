@@ -131,9 +131,12 @@ private:
     XrAction select_action_float;
     XrAction menu_action;
     XrAction haptic_action;
+    XrAction thumbstick_y_action;  // Thumbstick Y axis for fine adjustment
+    XrAction trigger_action;       // Trigger for horn
     XrResult result;
 
     int menuPressedRepeats;
+    bool hornActive;
 
     int swapchainImageWidth;
     int swapchainImageHeight;

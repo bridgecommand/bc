@@ -23,6 +23,7 @@
 #include "Constants.hpp"
 #include <iostream>
 #include <cstdarg>
+#include <cmath>
 
 namespace {
     inline irr::core::vector3df toIrrVec(const bc::graphics::Vec3& v) { return {v.x, v.y, v.z}; }
@@ -48,6 +49,7 @@ VRInterface::VRInterface(irr::IrrlichtDevice* dev, irr::scene::ISceneManager* sm
 	vrActive = false;
 
 	menuPressedRepeats = 0;
+	hornActive = false;
 	showHUD = true;
 
 	raySelectScreenX = 0;
@@ -748,6 +750,36 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
+	// Thumbstick Y axis action (for fine adjustment of throttle/rudder)
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "thumbsticky");
+		strcpy(action_info.localizedActionName, "Thumbstick Y");
+		result = xrCreateAction(gameplay_actionset, &action_info, &thumbstick_y_action);
+		if (!xr_check(instance, result, "failed to create thumbstick Y action"))
+			return 1;
+	}
+
+	// Trigger action (for horn)
+	{
+		XrActionCreateInfo action_info;
+		action_info.type = XR_TYPE_ACTION_CREATE_INFO;
+		action_info.next = NULL;
+		action_info.actionType = XR_ACTION_TYPE_FLOAT_INPUT;
+		action_info.countSubactionPaths = HAND_COUNT;
+		action_info.subactionPaths = hand_paths;
+		strcpy(action_info.actionName, "trigger");
+		strcpy(action_info.localizedActionName, "Trigger");
+		result = xrCreateAction(gameplay_actionset, &action_info, &trigger_action);
+		if (!xr_check(instance, result, "failed to create trigger action"))
+			return 1;
+	}
+
 	// suggest actions for simple controller
 	// Valid actions are: input/select/click, input/menu/click, input/grip/pose, input/aim/pose, output/haptic
 	{
@@ -783,7 +815,55 @@ int VRInterface::load(SimulationModel* model) {
 			return 1;
 	}
 
-	// TODO: Could add additional controllers here (e.g. Valve Index)
+	// Oculus Touch controller bindings (Meta Quest, Rift)
+	// Adds: squeeze (grab), trigger (horn), thumbstick Y (fine adjustment)
+	{
+		XrPath interaction_profile_path;
+		result = xrStringToPath(instance, "/interaction_profiles/oculus/touch_controller",
+			&interaction_profile_path);
+		if (xr_check(instance, result, "got oculus touch interaction profile")) {
+			XrPath squeeze_path[HAND_COUNT];
+			xrStringToPath(instance, "/user/hand/left/input/squeeze/value", &squeeze_path[HAND_LEFT_INDEX]);
+			xrStringToPath(instance, "/user/hand/right/input/squeeze/value", &squeeze_path[HAND_RIGHT_INDEX]);
+
+			XrPath trigger_path[HAND_COUNT];
+			xrStringToPath(instance, "/user/hand/left/input/trigger/value", &trigger_path[HAND_LEFT_INDEX]);
+			xrStringToPath(instance, "/user/hand/right/input/trigger/value", &trigger_path[HAND_RIGHT_INDEX]);
+
+			XrPath thumbstick_y_path[HAND_COUNT];
+			xrStringToPath(instance, "/user/hand/left/input/thumbstick/y", &thumbstick_y_path[HAND_LEFT_INDEX]);
+			xrStringToPath(instance, "/user/hand/right/input/thumbstick/y", &thumbstick_y_path[HAND_RIGHT_INDEX]);
+
+			XrPath menu_path;
+			xrStringToPath(instance, "/user/hand/left/input/menu/click", &menu_path);
+
+			const XrActionSuggestedBinding bindings[] = {
+				{grip_pose_action, grip_pose_path[HAND_LEFT_INDEX]},
+				{grip_pose_action, grip_pose_path[HAND_RIGHT_INDEX]},
+				{aim_pose_action, aim_pose_path[HAND_LEFT_INDEX]},
+				{aim_pose_action, aim_pose_path[HAND_RIGHT_INDEX]},
+				{select_action_float, squeeze_path[HAND_LEFT_INDEX]},   // squeeze = grab
+				{select_action_float, squeeze_path[HAND_RIGHT_INDEX]},
+				{trigger_action, trigger_path[HAND_LEFT_INDEX]},        // trigger = horn
+				{trigger_action, trigger_path[HAND_RIGHT_INDEX]},
+				{thumbstick_y_action, thumbstick_y_path[HAND_LEFT_INDEX]},
+				{thumbstick_y_action, thumbstick_y_path[HAND_RIGHT_INDEX]},
+				{menu_action, menu_path},  // Only left hand has menu on Oculus Touch
+				{haptic_action, haptic_path[HAND_LEFT_INDEX]},
+				{haptic_action, haptic_path[HAND_RIGHT_INDEX]},
+			};
+
+			const XrInteractionProfileSuggestedBinding suggested_bindings = {
+				XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
+				NULL,
+				interaction_profile_path,
+				sizeof(bindings) / sizeof(bindings[0]),
+				bindings};
+
+			xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
+			// Not fatal if this fails - simple controller is always available
+		}
+	}
 
 	XrSessionActionSetsAttachInfo actionset_attach_info;
 	actionset_attach_info.type = XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO;
@@ -804,6 +884,16 @@ int VRInterface::load(SimulationModel* model) {
 
 	// If successfull, return 0
 	vrActive = true;
+
+	// Enable HRTF for spatial audio in VR (requires OpenAL Soft, not Apple OpenAL)
+	if (model && model->getSound()) {
+		if (model->getSound()->enableHRTF()) {
+			std::cout << "VR: HRTF spatial audio enabled" << std::endl;
+		} else {
+			std::cout << "VR: HRTF not available (OpenAL Soft required)" << std::endl;
+		}
+	}
+
 	return 0;
 #else
 	std::cout << "VR interface not implemented" << std::endl;
@@ -839,6 +929,11 @@ bool VRInterface::isVRActive() const {
 
 void VRInterface::unload() {
 #if defined _WIN64 || defined __linux__
+	// Disable HRTF when VR is unloaded
+	if (model && model->getSound()) {
+		model->getSound()->disableHRTF();
+	}
+
 	for (uint32_t i = 0; i < view_count; i++) {
 		delete[] images[i];
 
@@ -1221,6 +1316,68 @@ int VRInterface::update() {
 		}
 	};
 
+	// Process trigger action (horn control)
+	// Either hand's trigger activates the horn
+	{
+		bool triggerPressed = false;
+		for (int i = 0; i < HAND_COUNT; i++) {
+			XrActionStateFloat trigger_value;
+			trigger_value.type = XR_TYPE_ACTION_STATE_FLOAT;
+			trigger_value.next = NULL;
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = trigger_action;
+			get_info.subactionPath = hand_paths[i];
+			result = xrGetActionStateFloat(session, &get_info, &trigger_value);
+			if (XR_SUCCEEDED(result) && trigger_value.isActive && trigger_value.currentState > 0.5f) {
+				triggerPressed = true;
+			}
+		}
+		// Toggle horn state
+		if (triggerPressed && !hornActive) {
+			model->startHorn();
+			hornActive = true;
+		} else if (!triggerPressed && hornActive) {
+			model->endHorn();
+			hornActive = false;
+		}
+	}
+
+	// Process thumbstick Y for fine adjustment (when grip is held)
+	// Left thumbstick Y: fine engine adjustment
+	// Right thumbstick Y: fine wheel/rudder adjustment
+	for (int i = 0; i < HAND_COUNT; i++) {
+		if (selectState[i]) {
+			XrActionStateFloat thumbstick_value;
+			thumbstick_value.type = XR_TYPE_ACTION_STATE_FLOAT;
+			thumbstick_value.next = NULL;
+			XrActionStateGetInfo get_info;
+			get_info.type = XR_TYPE_ACTION_STATE_GET_INFO;
+			get_info.next = NULL;
+			get_info.action = thumbstick_y_action;
+			get_info.subactionPath = hand_paths[i];
+			result = xrGetActionStateFloat(session, &get_info, &thumbstick_value);
+			if (XR_SUCCEEDED(result) && thumbstick_value.isActive) {
+				float thumbY = thumbstick_value.currentState;
+				// Apply deadzone
+				if (fabs(thumbY) > 0.15f) {
+					float adjustment = thumbY * 0.5f; // Fine adjustment rate
+					if (i == HAND_LEFT_INDEX) {
+						// Left thumbstick Y: fine engine control
+						model->setPortEngine(model->getPortEngine() + adjustment);
+						if (!model->isSingleEngine()) {
+							model->setStbdEngine(model->getStbdEngine() + adjustment);
+						}
+					} else {
+						// Right thumbstick Y: fine rudder/wheel adjustment
+						model->setWheel(model->getWheel() + adjustment * 5.0f);
+					}
+				}
+			}
+		}
+	}
+
 	// Check if menu button pressed on either controller
 	bool menuPressed = false;
 	for (int i = 0; i < HAND_COUNT; i++) {
@@ -1289,6 +1446,41 @@ int VRInterface::update() {
 		leftRayNode->setVisible(true);
 		rightRayNode->setVisible(true);
 		hudScreen->setVisible(true);
+	}
+
+	// Update audio listener from VR head tracking (uses center of head, not per-eye)
+	// This gives HRTF-correct spatial audio that follows the VR headset orientation
+	if (model && model->getSound() && view_count > 0) {
+		// Use the first view pose as head center (close enough for audio)
+		// The position is already in world space after base transform
+		bc::graphics::Vec3 headPos(
+			views[0].pose.position.x,
+			views[0].pose.position.y,
+			-1.0f * views[0].pose.position.z);
+
+		// Transform head position by ship base position and rotation
+		irr::core::vector3df transformedHeadPos = toIrrVec(headPos);
+		baseViewRotation.transformVect(transformedHeadPos);
+		transformedHeadPos += baseViewPosition;
+
+		model->getSound()->setListenerPosition(
+			transformedHeadPos.X, transformedHeadPos.Y, transformedHeadPos.Z);
+
+		// Compute forward and up vectors from head orientation for HRTF
+		bc::graphics::Quaternion headQuat(
+			views[0].pose.orientation.x,
+			views[0].pose.orientation.y,
+			-1.0f * views[0].pose.orientation.z,
+			-1.0f * views[0].pose.orientation.w);
+		irr::core::matrix4 headRotMatrix = baseViewRotation * toIrrQuat(headQuat).getMatrix();
+		irr::core::vector3df headForward(0, 0, 1);
+		irr::core::vector3df headUp(0, 1, 0);
+		headRotMatrix.rotateVect(headForward);
+		headRotMatrix.rotateVect(headUp);
+
+		model->getSound()->setListenerOrientation(
+			headForward.X, headForward.Y, headForward.Z,
+			headUp.X, headUp.Y, headUp.Z);
 	}
 
 	// --- Begin frame

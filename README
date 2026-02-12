@@ -54,6 +54,34 @@ Options:
 
 See docs/UPGRADE_PLAN.md for more information.
 
+Wicked Engine Graphics Backend (optional)
+-----------------------------------------
+
+An optional modern graphics backend using Wicked Engine is available.
+Build with:
+
+  -DWICKED_ENGINE_DIR=<path> -DWICKED_ENGINE_LIB=<path/to/libWickedEngine.a>
+
+Wicked Engine provides PBR rendering, GPU-based FFT ocean with foam,
+multi-cascade wave simulation, and Dear ImGui instrument overlays.
+When not available, the existing Irrlicht backend is used.
+
+Keyboard Shortcuts (ImGui HUD)
+------------------------------
+
+When the Wicked Engine backend is active, the following keyboard
+shortcuts control the instrument HUD overlay:
+
+  F5          Bright Day palette (white backgrounds, high contrast)
+  F6          Day palette (dark backgrounds, standard brightness)
+  F7          Dusk palette (reduced brightness, warm tones)
+  F8          Night palette (black background, red indicators only)
+  F9          Toggle layout lock (unlock to drag/resize instruments)
+  F10         Toggle depth display units (metres / feet)
+
+Instrument windows: Compass, Speed, Rudder, Depth, Engine, Wind.
+Layout and preferences are saved to layout.ini.
+
 Licence
 -------
 

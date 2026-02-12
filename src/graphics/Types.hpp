@@ -53,10 +53,22 @@ struct Vec3 {
     }
 };
 
+struct Vec2i {
+    int32_t x = 0, y = 0;
+    Vec2i() = default;
+    Vec2i(int32_t x, int32_t y) : x(x), y(y) {}
+};
+
 struct Vec3i {
     int32_t x = 0, y = 0, z = 0;
     Vec3i() = default;
     Vec3i(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
+};
+
+struct Vec3i64 {
+    int64_t x = 0, y = 0, z = 0;
+    Vec3i64() = default;
+    Vec3i64(int64_t x, int64_t y, int64_t z) : x(x), y(y), z(z) {}
 };
 
 struct Line3d {

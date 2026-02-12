@@ -8,6 +8,12 @@ cp bridgecommand-ini BridgeCommand.app/Contents/Helpers/ini.app/Contents/MacOS/i
 cp bridgecommand-mh BridgeCommand.app/Contents/Helpers/mh.app/Contents/MacOS/mh
 cp bridgecommand-rp BridgeCommand.app/Contents/Helpers/rp.app/Contents/MacOS/rp
 
+# Copy Wicked Engine runtime dylibs (if WE build is enabled)
+if [ -f libdxcompiler.dylib ]; then
+    cp libdxcompiler.dylib BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/
+    cp libmetalirconverter.dylib BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/
+fi
+
 rm -f BridgeCommand.app/Helpers/MacOS/bc.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Helpers/MacOS/mc.app/Contents/MacOS/.gitignore
 rm -f BridgeCommand.app/Helpers/MacOS/ed.app/Contents/MacOS/.gitignore

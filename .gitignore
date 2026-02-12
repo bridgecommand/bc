@@ -1,25 +1,71 @@
+# Claude Code local config
+.claude/
+
+# Build artifacts
 *.o
 *.d
 *.a
+*.obj
 *.depend
 *.layout
-*.cscope_file_list
-*~
-.*
-*.obj
 *.tlog
 *.log
 *.pdb
 *.iobj
 *.ipdb
-Thumbs.db
+*~
 build/
-bin/
-src/libs/Irrlicht/irrlicht-svn/lib/Linux/
-src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/src/
-src/libs/Irrlicht/irrlicht-svn/source/Irrlicht/tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor
 *.kdev4
-# S-57 Electronic Navigational Chart files
+*.cscope_file_list
+.vscode/
+.idea/
+*.swp
+*.swo
+CMakeUserPresets.json
+
+# S-57 Electronic Navigational Chart files (large, user-specific)
 *.000
 *.001
 *.002
+
+# GDAL auxiliary files
+*.aux.xml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Natural Earth raw downloads (large; only the compact .bin files are committed)
+ne_*_land/
+ne_*_land.zip
+*.geojson
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+
+# GEBCO bathymetry data (7.5 GB+ uncompressed, download separately)
+bin/Data/GEBCO/
+
+# Tile cache (scenario editor map tiles)
+tilecache/
+
+# ImGui layout state
+imgui.ini
+
+# Compiled binaries in bin/ (assets are tracked, binaries are not)
+bin/*.exe
+bin/bridgecommand-*
+bin/bc
+bin/ed
+bin/BridgeCommand.app/Contents/MacOS/
+bin/BridgeCommand.app/Contents/Resources/
+bin/BridgeCommand.app/Contents/Helpers/*/Contents/MacOS/[!.]*

@@ -8,22 +8,71 @@ For Fedora/Red Hat:
     'sudo dnf install git cmake make automake gcc gcc-c++ openxr-devel mesa-libGL-devel libXxf86vm-devel libsndfile-devel portaudio-devel libXcursor-devel'
 2) Start a terminal session, and make sure you are in the 'bc/bin' directory
 3) Run 'cmake ../src' to prepare the build files
-4) Run 'make' to actually build the program 
+4) Run 'make' to actually build the program
 5) Run './bridgecommand' to start the simulator.
 
-To build on Mac OSX:
-====================
+To build on Mac (macOS Tahoe 26+ / Apple Silicon):
+===================================================
 
-1) Ensure you have XCode installed (required to compile programs on Mac). This can be obtained from the App Store. You will also need the Command line tools, which can be installed with 'sudo xcode-select --install'
-2) Build the required sound packages:
+Prerequisites:
+1) Xcode (full install, not just command line tools) - required for Irrlicht Xcode project
+   Command line tools: 'sudo xcode-select --install'
+2) Homebrew packages: 'brew install libsndfile portaudio'
+   (Homebrew handles all transitive dependencies: vorbis, ogg, flac, opus, mpg123, lame)
+
+Build steps:
+1) Create a build directory: mkdir -p bc/build && cd bc/build
+2) Configure with CMake (arm64 only):
+   cmake ../src -DCMAKE_OSX_ARCHITECTURES=arm64
+
+   Optional: To enable Wicked Engine graphics backend:
+   cmake ../src -DCMAKE_OSX_ARCHITECTURES=arm64 \
+     -DWICKED_ENGINE_DIR=/path/to/WickedEngine \
+     -DWICKED_ENGINE_LIB=/path/to/libWickedEngine.a
+
+3) Build: cmake --build .
+4) Deploy to app bundle: cd ../bin && ./macOScopy
+5) Launch: open -n ./BridgeCommand.app
+
+App bundle structure (BridgeCommand.app/Contents/):
+  MacOS/BridgeCommand           - Launcher binary
+  Helpers/bc.app/Contents/MacOS/bc   - Main simulator
+  Helpers/mc.app/Contents/MacOS/mc   - Map controller
+  Helpers/ed.app/Contents/MacOS/ed   - Scenario editor
+  Helpers/ini.app/Contents/MacOS/ini - Settings editor
+  Helpers/mh.app/Contents/MacOS/mh   - Multiplayer host
+  Helpers/rp.app/Contents/MacOS/rp   - Repeater display
+  Resources/                    - Models, Scenarios, Sounds, World, etc.
+
+If building with Wicked Engine, also copy runtime dylibs:
+  cp libdxcompiler.dylib libmetalirconverter.dylib \
+     BridgeCommand.app/Contents/Helpers/bc.app/Contents/MacOS/
+  (The macOScopy script does this automatically if the dylibs are present)
+
+Known macOS issues:
+- The launcher uses fork()+execl() to spawn helper apps. Do NOT use
+  /usr/bin/open or NSWorkspace to launch the helper .app bundles -
+  macOS Tahoe blocks programmatic launches of unsigned helper bundles
+  via LaunchServices (error code 162).
+- If helper processes become zombies (UE state in ps), a reboot is
+  required to clear them. This can happen during development if
+  processes crash during OpenGL/Metal initialization.
+- The bc5.ini 'graphics_mode=3' (borderless fullscreen) uses a custom
+  Irrlicht parameter (MacOSborderless). If the borderless window fails
+  to create, the window will have a title bar and the bottom UI may be
+  clipped. Set graphics_mode=2 (windowed) as a workaround, or set
+  explicit graphics_width/graphics_height values in bc5.ini.
+
+Legacy build method (if Homebrew is not available):
+===================================================
+
+Build libsndfile and portaudio from source:
 
 Libsndfile:
 -----------
 Download and uncompress libsndfile-1.0.28.tar.gz from http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.28.tar.gz
 Create a folder for the output, referred to as <Somewhere> (Absolute path)
-Change directory to where you've uncompressed libsndfile, then run the following in the terminal window:
-
-(If building to be compatible with older macOS versions, run export MACOSX_DEPLOYMENT_TARGET=10.7 before building libsndfile and portaudio, and then open a new terminal before running the main Bridge Command build)
+Change directory to where you've uncompressed libsndfile, then run:
 
 ./configure --disable-shared --prefix=<Somewhere>
 make
@@ -34,16 +83,11 @@ cp -a lib <BridgeCommandSourceLocation>/libs/libsndfile/
 Portaudio:
 ----------
 Download and uncompress pa_stable_v190600_20161030.tgz from http://www.portaudio.com/archives/pa_stable_v190600_20161030.tgz
-(For macOS Big Sur (11.0) and onwards, a more recent version is needed. 
+(For macOS Big Sur (11.0) and onwards, a more recent version is needed.
 I have successfully compiled with http://files.portaudio.com/archives/pa_snapshot.tgz created Sunday, 07-Mar-2021 01:23:04 UTC)
-Change directory to where you've uncompressed Portaudio, then run the following in the terminal window:
+Change directory to where you've uncompressed Portaudio, then run:
 
 ./configure --disable-mac-universal --disable-shared --enable-static
 make
 cd lib/.libs/
 cp * <BridgeCommandSourceLocation>/libs/portaudio/lib/
-
-3) Download and install CMake using the OSX package from https://cmake.org/download/
-4) Open a terminal, and change directory to the 'bc/bin' directory, and run './makeAndBuildApp'
-If successful, this will build into the BridgeCommand.app, then run it
-This assumes that the CMake binary exists at /Applications/CMake.app/Contents/bin/cmake

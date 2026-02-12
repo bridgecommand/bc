@@ -335,6 +335,7 @@ public:
     void setMoveViewWithPrimary(bool moveView);
 
     ModelParameters getModelParameters() const;
+    ISound* getSound() const { return sound; }
 
     // TODO: Most of these can be replaced with getModelParameters()
     bool getIsSecondaryControlWheel() const;

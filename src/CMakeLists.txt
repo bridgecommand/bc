@@ -62,6 +62,17 @@ else()
     message(STATUS "GDAL not found - chart integration disabled")
 endif()
 
+# Optional: Wicked Engine for modern graphics backend
+# Set WICKED_ENGINE_DIR to the WE source root and WICKED_ENGINE_LIB to the built library
+if(DEFINED WICKED_ENGINE_DIR AND EXISTS "${WICKED_ENGINE_DIR}/WickedEngine/WickedEngine.h")
+    message(STATUS "Wicked Engine found: ${WICKED_ENGINE_DIR}")
+    add_definitions(-DWITH_WICKED_ENGINE)
+    set(WITH_WICKED_ENGINE TRUE)
+else()
+    message(STATUS "Wicked Engine not found - using Irrlicht backend only")
+    set(WITH_WICKED_ENGINE FALSE)
+endif()
+
 set(BC_SOURCES
     iprof.cpp
     main.cpp
@@ -122,6 +133,27 @@ set(BC_SOURCES
     BCTerrainSceneNode.cpp
     BCTerrainTriangleSelector.cpp
 )
+
+# Wicked Engine backend sources (compiled only when WE is available)
+if(WITH_WICKED_ENGINE)
+    list(APPEND BC_SOURCES
+        graphics/wicked/WickedRenderer.cpp
+        graphics/wicked/WickedModelImporter.cpp
+        graphics/wicked/WickedImGui.cpp
+        graphics/wicked/WickedMultiView.cpp
+        graphics/wicked/WickedTerrainNode.cpp
+        graphics/wicked/WickedWater.cpp
+        graphics/wicked/WickedMultiCascadeOcean.cpp
+        graphics/wicked/WickedKelvinWake.cpp
+        graphics/wicked/WickedVRView.cpp
+        graphics/wicked/imgui/imgui.cpp
+        graphics/wicked/imgui/imgui_draw.cpp
+        graphics/wicked/imgui/imgui_tables.cpp
+        graphics/wicked/imgui/imgui_widgets.cpp
+        graphics/wicked/imgui/imgui_demo.cpp
+        gui/ImGuiOverlay.cpp
+    )
+endif()
 
 add_executable(bridgecommand-bc
     ${BC_SOURCES}
@@ -188,3 +220,38 @@ else (APPLE)
         target_include_directories(bridgecommand-bc PRIVATE ${OPENAL_INCLUDE_DIR})
     endif()
 endif (APPLE)
+
+# Wicked Engine link libraries and includes
+if(WITH_WICKED_ENGINE)
+    # WE include path
+    target_include_directories(bridgecommand-bc PRIVATE
+        "${WICKED_ENGINE_DIR}/WickedEngine"
+        "${WICKED_ENGINE_DIR}/WickedEngine/Utility"
+    )
+
+    # WE static library (user must build via Xcode on macOS, CMake on Linux/Windows)
+    if(DEFINED WICKED_ENGINE_LIB AND EXISTS "${WICKED_ENGINE_LIB}")
+        target_link_libraries(bridgecommand-bc PRIVATE "${WICKED_ENGINE_LIB}")
+    else()
+        message(WARNING "WICKED_ENGINE_LIB not set - WE backend will not link")
+    endif()
+
+    if(APPLE)
+        # WE on macOS needs Metal framework and shader compiler dylibs
+        target_link_libraries(bridgecommand-bc PRIVATE
+            "-framework Metal"
+            "-framework MetalKit"
+            "-framework AppKit"
+            "-framework GameController"
+        )
+        # Copy shader compiler dylibs next to executable
+        if(DEFINED WICKED_ENGINE_LIB)
+            get_filename_component(WE_LIB_DIR "${WICKED_ENGINE_LIB}" DIRECTORY)
+            file(GLOB WE_DYLIBS "${WE_LIB_DIR}/*.dylib")
+            foreach(dylib ${WE_DYLIBS})
+                get_filename_component(dylib_name "${dylib}" NAME)
+                configure_file("${dylib}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${dylib_name}" COPYONLY)
+            endforeach()
+        endif()
+    endif()
+endif()

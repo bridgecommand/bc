@@ -35,26 +35,25 @@
 #include <spawn.h>
 extern char **environ;
 
-// Launch a .app bundle via /usr/bin/open (proper LaunchServices activation).
-// fork()/posix_spawn to the binary directly doesn't register with the window server,
-// causing beach-ball hangs. Using 'open' goes through LaunchServices instead.
-static void macOpenApp(const char* appPath, const char* extraArg = nullptr) {
-    pid_t pid;
-    int ret;
-    if (extraArg) {
-        char* argv[] = {(char*)"open", (char*)appPath, (char*)"--args", (char*)extraArg, nullptr};
-        ret = posix_spawn(&pid, "/usr/bin/open", nullptr, nullptr, argv, environ);
-    } else {
-        char* argv[] = {(char*)"open", (char*)appPath, nullptr};
-        ret = posix_spawn(&pid, "/usr/bin/open", nullptr, nullptr, argv, environ);
+// Launch a helper .app by forking and exec-ing the binary directly.
+// We fork so the launcher stays alive, and exec the binary inside the .app
+// bundle so it inherits the working directory (Contents/Resources).
+// Note: Using /usr/bin/open fails on macOS Tahoe for unsigned helper bundles.
+static void macLaunchHelper(const char* binaryPath, const char* extraArg = nullptr) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Child process: exec the helper binary
+        if (extraArg) {
+            execl(binaryPath, binaryPath, extraArg, nullptr);
+        } else {
+            execl(binaryPath, binaryPath, nullptr);
+        }
+        // If exec fails, exit the child
+        _exit(1);
+    } else if (pid < 0) {
+        std::cerr << "macLaunchHelper: fork failed for " << binaryPath << std::endl;
     }
-    if (ret != 0) {
-        char cwd[1024];
-        getcwd(cwd, sizeof(cwd));
-        std::cerr << "macOpenApp FAILED: app=" << appPath
-                  << " error=" << strerror(ret)
-                  << " cwd=" << cwd << std::endl;
-    }
+    // Parent continues (launcher stays alive)
 }
 
 // Open a file/folder/URL via /usr/bin/open
@@ -121,7 +120,7 @@ public:
                         //_execl("./bridgecommand-bc.exe", "bridgecommand-bc.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/bc.app");
+                        macLaunchHelper("../Helpers/bc.app/Contents/MacOS/bc");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-bc", "bridgecommand-bc", NULL);
@@ -134,7 +133,7 @@ public:
                         //_execl("./bridgecommand-mc.exe", "bridgecommand-mc.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/mc.app");
+                        macLaunchHelper("../Helpers/mc.app/Contents/MacOS/mc");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mc", "bridgecommand-mc", NULL);
@@ -147,7 +146,7 @@ public:
                         //_execl("./bridgecommand-rp.exe", "bridgecommand-rp.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/rp.app");
+                        macLaunchHelper("../Helpers/rp.app/Contents/MacOS/rp");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-rp", "bridgecommand-rp", NULL);
@@ -160,7 +159,7 @@ public:
                         //_execl("./bridgecommand-ed.exe", "bridgecommand-ed.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/ed.app");
+                        macLaunchHelper("../Helpers/ed.app/Contents/MacOS/ed");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ed", "bridgecommand-ed", NULL);
@@ -173,7 +172,7 @@ public:
                         //_execl("./bridgecommand-mh.exe", "bridgecommand-mh.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/mh.app");
+                        macLaunchHelper("../Helpers/mh.app/Contents/MacOS/mh");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-mh", "bridgecommand-mh", NULL);
@@ -186,7 +185,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/ini.app");
+                        macLaunchHelper("../Helpers/ini.app/Contents/MacOS/ini");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", NULL);
@@ -199,7 +198,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-M", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/ini.app", "-M");
+                        macLaunchHelper("../Helpers/ini.app/Contents/MacOS/ini", "-M");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-M", NULL);
@@ -212,7 +211,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-R", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/ini.app", "-R");
+                        macLaunchHelper("../Helpers/ini.app/Contents/MacOS/ini", "-R");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-R", NULL);
@@ -225,7 +224,7 @@ public:
                         //_execl("./bridgecommand-ini.exe", "bridgecommand-ini.exe", "-H", NULL);
                     #else
                     #ifdef __APPLE__
-                        macOpenApp("../MacOS/ini.app", "-H");
+                        macLaunchHelper("../Helpers/ini.app/Contents/MacOS/ini", "-H");
                     #else
                         //Other (assumed posix)
                         execl("./bridgecommand-ini", "bridgecommand-ini", "-H", NULL);
