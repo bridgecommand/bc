@@ -210,7 +210,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	jpeg_read_header(&cinfo, TRUE);
 
 	bool useCMYK=false;
-	if (cinfo.jpeg_color_space==JCS_CMYK)
+	if (cinfo.jpeg_color_space==JCS_CMYK || cinfo.jpeg_color_space==JCS_YCCK)
 	{
 		cinfo.out_color_space=JCS_CMYK;
 		cinfo.out_color_components=4;

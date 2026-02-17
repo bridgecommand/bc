@@ -43,7 +43,7 @@ def createEnvironment() :
     vars.Add(PathVariable("installdir", "install directory for the library", os.path.join("bin"),  PathVariable.PathIsDirCreate))
     vars.Add(EnumVariable("buildtarget", "type of the library", "shared", allowed_values=("shared", "static")))
     vars.Add(EnumVariable("buildtype", "name of target build type", "release", allowed_values=("debug", "release")))
-    vars.Add(EnumVariable("platform", "build platform", "", allowed_values=("", "linux", "osx-library", "osx-framework", "win32-mingw", "win32-msvc", "win64-msvc")))
+    vars.Add(EnumVariable("platform", "build platform", "", allowed_values=("", "linux", "osx-library", "osx-framework", "win32-mingw", "win32-msvc", "win64-msvc", "win64-mingw")))
     vars.Add(BoolVariable("package", "creates of the compiled library a package (header & binary) as a zip file", False))
     
     vars.Add(BoolVariable("opengl", "build with Open GL support", True))
@@ -60,8 +60,11 @@ def createEnvironment() :
 
     if env["platform"] in ["linux", "osx-library", "osx-framework"] :
         env.Tool("default")
+        # add CMake compile_commands
+        env.Tool('compilation_db')
+        env.CompilationDatabase()
         
-    elif env["platform"] in ["win32-msvc", "win64-mvc"] :
+    elif env["platform"] in ["win32-msvc", "win64-msvc"] :
         env.Tool("msvc")
         env.Tool("mslink")
         env.Tool("msvs")
@@ -69,6 +72,9 @@ def createEnvironment() :
         
     elif env["platform"] in ["win32-mingw", "win64-mingw"] :
         env.Tool("mingw")
+        # add CMake compile_commands
+        env.Tool('compilation_db')
+        env.CompilationDatabase()
         
     else :
         raise SCons.Errors.StopError("platform is not set")
@@ -83,11 +89,12 @@ def createEnvironment() :
     # read first Irrlicht SDK version from the file include/IrrCompileConfig.h
     irrlichtversion = None
     try :
-        configfile = open( os.path.join("include", "IrrCompileConfig.h"), "r" )
+        configpath = os.path.join("include", "IrrCompileConfig.h")
+        configfile = open( configpath, "r" )
         irrlichtversion = re.search("#define(.*)IRRLICHT_SDK_VERSION(.*)", configfile.read())
         configfile.close()
     except :
-	    pass
+        pass
     if irrlichtversion == None :
         raise SCons.Errors.StopError("can not find Irrlicht SDK version in the configuration header")
     
@@ -99,10 +106,11 @@ def createEnvironment() :
     if env["buildtype"] == "debug" :
         env["irr_libinstallname"] = env["irr_libinstallname"] + "Debug"
     
-    if "CXX" in os.environ :
-        env.Replace(CXX  = os.environ["CXX"])
-    if "CC" in os.environ :
-        env.Replace(CC  = os.environ["CC"])    
+    if env["platform"] not in ["win32-msvc", "win64-msvc"]:
+        if "CXX" in os.environ :
+            env.Replace(CXX  = os.environ["CXX"])
+        if "CC" in os.environ :
+            env.Replace(CC  = os.environ["CC"])    
     if "CPPPATH" in os.environ :
         env.AppendUnique(CPPPATH  = os.environ["CPPPATH"].split(os.pathsep))
     if "CXXFLAGS" in os.environ :
@@ -175,8 +183,11 @@ def getLibraryBuildEnvironment(env) :
         
 
     elif envlib["platform"] in ["win32-msvc", "win64-msvc"] :
+        exeversion = "0.0"
+        if envlib["irr_libversion"] != None:
+            exeversion = ".".join(envlib["irr_libversion"].split('.')[:2]) # /VERSION is major.minor only...
         envlib.AppendUnique(CXXFLAGS        = ["/analyze", "/Gd", "/GF", "/GR-", "/GS", "/Gy", "/Zl"])
-        envlib.AppendUnique(LINKFLAGS       = ["/VERSION:\""+envlib["irr_libversion"]+"\"", "/nologo"])
+        envlib.AppendUnique(LINKFLAGS       = ["/VERSION:\""+exeversion+"\"", "/nologo"])
         envlib.AppendUnique(LIBS            = ["gdi32.lib", "user32.lib", "advapi32.lib"])
         
         if envlib["buildtype"] == "debug" :
@@ -220,7 +231,7 @@ def configDirectX(envlib) :
         if "win32" in envlib["platform"] :
             envlib.AppendUnique(LIBPATH     = [os.path.join(envlib["directxsdk"], "Lib", "x86")])
         elif "win64" in envlib["platform"] :
-            envlib.AppendUnique(LIBPATH     = [os.path.join(envlib["directxsdk"], "Lib", "x84")])
+            envlib.AppendUnique(LIBPATH     = [os.path.join(envlib["directxsdk"], "Lib", "x64")])
     else :
         envlib.AppendUnique(CPPDEFINES      = ["NO_IRR_COMPILE_WITH_DIRECT3D_9_"])
     
@@ -359,7 +370,6 @@ def installLibrary(env, lib, header) :
 env         = createEnvironment()
 envlib      = getLibraryBuildEnvironment(env)
 envexamples = getExampleBuildEnvironment(env)
-
 
 # === set the sources (we use similar structure of the Makefile) ====================================================
 # get all header files (for later installation)
