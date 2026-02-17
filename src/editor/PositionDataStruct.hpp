@@ -18,11 +18,13 @@
 #define __POSITIONDATASTRUCT_HPP_INCLUDED__
 
 #include "irrlicht.h"
+#include <string>
 
-struct PositionData //To hold information about a position
+struct PositionData //To hold information about a position (with optional name)
 {
     irr::f32 X, Z;
-    PositionData():X(0), Z(0){}
+    std::string name;
+    PositionData():X(0), Z(0), name(""){}
 };
 
 #endif // __POSITIONDATASTRUCT_HPP_INCLUDED__
