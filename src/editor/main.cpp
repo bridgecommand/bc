@@ -719,6 +719,7 @@ int main (int argc, char ** argv)
         //Get land object position
         thisLandObject.X = controller.longToX(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Long", currentLandObject)));
         thisLandObject.Z = controller.latToZ(IniFile::iniFileTof32(scenarioLandObjectFilename, IniFile::enumerate1("Lat", currentLandObject)));
+        thisLandObject.name = IniFile::iniFileToString(scenarioLandObjectFilename, IniFile::enumerate1("Type", currentLandObject));
         landObjectsData.push_back(thisLandObject);
     }
 

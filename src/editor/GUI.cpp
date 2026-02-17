@@ -521,7 +521,10 @@ void GUIMain::drawInformationOnMap(const irr::f32& time, const irr::s32& mapOffs
         irr::s32 relPosX = (it->X - ownShipPosX) / metresPerPx + mapOffsetX;
         irr::s32 relPosY = (it->Z - ownShipPosZ) / metresPerPx - mapOffsetZ;
 
+        irr::core::stringw label(it->name.c_str());
+
         device->getVideoDriver()->draw2DRectangle(irr::video::SColor(255, 128, 255, 128), irr::core::rect<irr::s32>(screenCentreX - dotHalfWidth + relPosX, screenCentreY - dotHalfWidth - relPosY, screenCentreX + dotHalfWidth + relPosX, screenCentreY + dotHalfWidth - relPosY));
+        guienv->getSkin()->getFont()->draw(label, irr::core::rect<irr::s32>(screenCentreX + relPosX, screenCentreY - relPosY - 0.025 * height, screenCentreX + relPosX, screenCentreY - relPosY), irr::video::SColor(128, 0, 0, 0), true, true);
     }
 
     //Draw location of ships
