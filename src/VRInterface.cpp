@@ -230,6 +230,7 @@ int VRInterface::load(SimulationModel* model) {
 	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbuffer");
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffers");
 	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffers");
+	# TODO: Ensure we have the new functions defined above here as well!
 	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
@@ -579,8 +580,8 @@ int VRInterface::load(SimulationModel* model) {
 	for (uint32_t i = 0; i < view_count; i++) {
 		framebuffers[i] = new GLuint[swapchain_lengths[i]];
 		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
-		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
-		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
+		//glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
+		//glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
 	
 	for (uint32_t i = 0; i < view_count; i++) {
@@ -1439,22 +1440,8 @@ int VRInterface::update() {
 		// ---------------------------------------------------------
 		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO[i]);
 		
-		glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[1][acquired_index]);
-
 		glViewport(0, 0, w, h);
-		glScissor(0, 0, w, h);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
-		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Check
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "glCheckFramebufferStatus: " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
-		}
-
-		// Render
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		smgr->drawAll();
 
@@ -1462,7 +1449,7 @@ int VRInterface::update() {
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// ---------------------------------------------------------
-		// 2) Resolve MSAA ? swapchain image
+		// 2) Resolve MSAA -> swapchain image
 		// ---------------------------------------------------------
 	
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO[i]);
