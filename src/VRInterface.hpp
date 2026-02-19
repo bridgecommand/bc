@@ -133,6 +133,9 @@ private:
     PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
     PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
     PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample;
+    PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
+    PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv; // TESTING ONLY!
     #endif
 
     bool quit_mainloop;
@@ -181,6 +184,14 @@ private:
     bool previousSelectState[HAND_COUNT];
     irr::s32 raySelectScreenX;
     irr::s32 raySelectScreenY;
+
+    // --- MSAA ---
+    static const int MSAA_SAMPLES = 4;
+
+    GLuint msaaFBO[2] = { 0, 0 };
+    GLuint msaaColor[2] = { 0, 0 };
+    GLuint msaaDepth[2] = { 0, 0 };
+
 };
 
 #endif
