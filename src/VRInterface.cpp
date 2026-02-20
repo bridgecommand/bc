@@ -246,7 +246,6 @@ int VRInterface::load(SimulationModel* model) {
 
 	// each graphics API requires the use of a specialized struct
 #ifdef _WIN32
-	//XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl = { 0 };
 	XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl;
 	graphics_binding_gl.type = XR_TYPE_UNKNOWN;
 	graphics_binding_gl.next = NULL;
@@ -331,7 +330,6 @@ int VRInterface::load(SimulationModel* model) {
 		return 1;
 	}
 
-	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
 	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
 
 	for (uint16_t i = 0; i < ext_count; i++) {
@@ -359,7 +357,6 @@ int VRInterface::load(SimulationModel* model) {
 			depth.supported = true;
 		}
 	}
-	//free(ext_props);
 	delete[] ext_props;
 
 	// A graphics extension like OpenGL is required to draw anything in VR
@@ -427,7 +424,6 @@ int VRInterface::load(SimulationModel* model) {
 	if (!xr_check(instance, result, "Failed to get view configuration view count!"))
 		return 1;
 
-	//viewconfig_views = malloc(sizeof(XrViewConfigurationView) * view_count);
 	viewconfig_views = new XrViewConfigurationView[view_count];
 
 	for (uint32_t i = 0; i < view_count; i++) {
@@ -521,11 +517,8 @@ int VRInterface::load(SimulationModel* model) {
 	// --- Create swapchain for main VR rendering
 
 	// In the frame loop we render into OpenGL textures we receive from the runtime here.
-	//swapchains = malloc(sizeof(XrSwapchain) * view_count);
 	swapchains = new XrSwapchain[view_count];
-	//swapchain_lengths = malloc(sizeof(uint32_t) * view_count);
 	swapchain_lengths = new uint32_t[view_count];
-	//images = malloc(sizeof(XrSwapchainImageOpenGLKHR*) * view_count);
 	images = new XrSwapchainImageOpenGLKHR*[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		XrSwapchainCreateInfo swapchain_create_info;
@@ -551,7 +544,6 @@ int VRInterface::load(SimulationModel* model) {
 		if (!xr_check(instance, result, "Failed to enumerate swapchains"))
 			return 1;
 
-		//images[i] = malloc(sizeof(XrSwapchainImageOpenGLKHR) * swapchain_lengths[i]);
 		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]];
 		for (uint32_t j = 0; j < swapchain_lengths[i]; j++) {
 			images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
@@ -574,8 +566,6 @@ int VRInterface::load(SimulationModel* model) {
 	for (uint32_t i = 0; i < view_count; i++) {
 		framebuffers[i] = new GLuint[swapchain_lengths[i]];
 		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
-		//glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
-		//glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
 	}
 	
 	for (uint32_t i = 0; i < view_count; i++) {
@@ -645,15 +635,12 @@ int VRInterface::load(SimulationModel* model) {
 	}
 
 	// Do not allocate these every frame to save some resources
-	//views = (XrView*)malloc(sizeof(XrView) * view_count);
 	views = new XrView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		views[i].type = XR_TYPE_VIEW;
 		views[i].next = NULL;
 	}
 
-	//projection_views = (XrCompositionLayerProjectionView*)malloc(
-	//	sizeof(XrCompositionLayerProjectionView) * view_count);
 	projection_views = new XrCompositionLayerProjectionView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		projection_views[i].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
@@ -1802,7 +1789,6 @@ void VRInterface::print_api_layers()
 	if (count == 0)
 		return;
 
-	//XrApiLayerProperties* props = malloc(count * sizeof(XrApiLayerProperties));
 	XrApiLayerProperties* props = new XrApiLayerProperties[count];
 	for (uint32_t i = 0; i < count; i++) {
 		props[i].type = XR_TYPE_API_LAYER_PROPERTIES;
@@ -1818,7 +1804,6 @@ void VRInterface::print_api_layers()
 		printf("\t%s v%d: %s\n", props[i].layerName, props[i].layerVersion, props[i].description);
 	}
 
-	//free(props)
 	delete[] props;
 #else
 	std::cout << "VR interface not implemented" << std::endl;
@@ -1899,7 +1884,6 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 		return -1;
 
 	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
-	//int64_t* swapchain_formats = malloc(sizeof(int64_t) * swapchain_format_count);
 	int64_t* swapchain_formats = new int64_t[swapchain_format_count];
 	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
 		swapchain_formats);
@@ -1920,7 +1904,6 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 		printf("Falling back to non preferred swapchain format %#lx\n", chosen_format);
 	}
 
-	//free(swapchain_formats);
 	delete[] swapchain_formats;
 
 	return chosen_format;
