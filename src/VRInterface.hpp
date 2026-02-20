@@ -135,7 +135,6 @@ private:
     PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample;
     PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
-    PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv; // TESTING ONLY!
     #endif
 
     bool quit_mainloop;

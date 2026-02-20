@@ -211,13 +211,6 @@ int VRInterface::load(SimulationModel* model) {
 		return 1;
 	}
 
-	// TESTING ONLY
-	glGetFramebufferAttachmentParameteriv = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)wglGetProcAddress("glGetFramebufferAttachmentParameteriv");
-	if (glGetFramebufferAttachmentParameteriv == 0) {
-		std::cout << "glGetFramebufferAttachmentParameteriv not available" << std::endl;
-		return 1;
-	}
-
 	#elif defined __linux__
 	// glXGetProcAddress never returns Null, so no point in checking
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffers");
@@ -230,7 +223,8 @@ int VRInterface::load(SimulationModel* model) {
 	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbuffer");
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffers");
 	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffers");
-	# TODO: Ensure we have the new functions defined above here as well!
+	glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)glXGetProcAddress((const GLubyte*)"glRenderbufferStorageMultisample");
+	glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)glXGetProcAddress((const GLubyte*)"glBlitFramebuffer");
 	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
@@ -1445,9 +1439,6 @@ int VRInterface::update() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		smgr->drawAll();
 
-		// Return to framebuffer
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 		// ---------------------------------------------------------
 		// 2) Resolve MSAA -> swapchain image
 		// ---------------------------------------------------------
@@ -1508,6 +1499,9 @@ int VRInterface::update() {
 	if (!xr_check(instance, result, "failed to end frame!"))
 		return 1;
 
+	// Return to normal framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 	// Do ray/mesh intersection here if 'select' is active and HUD is shown
 	if (showHUD) {
 		if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
