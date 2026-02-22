@@ -198,6 +198,19 @@ int VRInterface::load(SimulationModel* model) {
 		std::cout << "glDeleteRenderbuffers not available" << std::endl;
 		return 1;
 	}
+
+	glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)wglGetProcAddress("glRenderbufferStorageMultisample");
+	if (glRenderbufferStorageMultisample == 0) {
+		std::cout << "glRenderbufferStorageMultisample not available" << std::endl;
+		return 1;
+	}
+
+	glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress("glBlitFramebuffer");
+	if (glBlitFramebuffer == 0) {
+		std::cout << "glBlitFramebuffer not available" << std::endl;
+		return 1;
+	}
+
 	#elif defined __linux__
 	// glXGetProcAddress never returns Null, so no point in checking
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffers");
@@ -210,6 +223,8 @@ int VRInterface::load(SimulationModel* model) {
 	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbuffer");
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffers");
 	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffers");
+	glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)glXGetProcAddress((const GLubyte*)"glRenderbufferStorageMultisample");
+	glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)glXGetProcAddress((const GLubyte*)"glBlitFramebuffer");
 	#endif
 
 	// Changing to HANDHELD_DISPLAY or a future form factor may work, but has not been tested.
@@ -231,7 +246,6 @@ int VRInterface::load(SimulationModel* model) {
 
 	// each graphics API requires the use of a specialized struct
 #ifdef _WIN32
-	//XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl = { 0 };
 	XrGraphicsBindingOpenGLWin32KHR graphics_binding_gl;
 	graphics_binding_gl.type = XR_TYPE_UNKNOWN;
 	graphics_binding_gl.next = NULL;
@@ -316,7 +330,6 @@ int VRInterface::load(SimulationModel* model) {
 		return 1;
 	}
 
-	//XrExtensionProperties* ext_props = malloc(sizeof(XrExtensionProperties) * ext_count);
 	XrExtensionProperties* ext_props = new XrExtensionProperties[ext_count];
 
 	for (uint16_t i = 0; i < ext_count; i++) {
@@ -344,7 +357,6 @@ int VRInterface::load(SimulationModel* model) {
 			depth.supported = true;
 		}
 	}
-	//free(ext_props);
 	delete[] ext_props;
 
 	// A graphics extension like OpenGL is required to draw anything in VR
@@ -412,7 +424,6 @@ int VRInterface::load(SimulationModel* model) {
 	if (!xr_check(instance, result, "Failed to get view configuration view count!"))
 		return 1;
 
-	//viewconfig_views = malloc(sizeof(XrViewConfigurationView) * view_count);
 	viewconfig_views = new XrViewConfigurationView[view_count];
 
 	for (uint32_t i = 0; i < view_count; i++) {
@@ -506,11 +517,8 @@ int VRInterface::load(SimulationModel* model) {
 	// --- Create swapchain for main VR rendering
 
 	// In the frame loop we render into OpenGL textures we receive from the runtime here.
-	//swapchains = malloc(sizeof(XrSwapchain) * view_count);
 	swapchains = new XrSwapchain[view_count];
-	//swapchain_lengths = malloc(sizeof(uint32_t) * view_count);
 	swapchain_lengths = new uint32_t[view_count];
-	//images = malloc(sizeof(XrSwapchainImageOpenGLKHR*) * view_count);
 	images = new XrSwapchainImageOpenGLKHR*[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		XrSwapchainCreateInfo swapchain_create_info;
@@ -536,7 +544,6 @@ int VRInterface::load(SimulationModel* model) {
 		if (!xr_check(instance, result, "Failed to enumerate swapchains"))
 			return 1;
 
-		//images[i] = malloc(sizeof(XrSwapchainImageOpenGLKHR) * swapchain_lengths[i]);
 		images[i] = new XrSwapchainImageOpenGLKHR[swapchain_lengths[i]];
 		for (uint32_t j = 0; j < swapchain_lengths[i]; j++) {
 			images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
@@ -551,19 +558,89 @@ int VRInterface::load(SimulationModel* model) {
 		// Store image width and height, assumed to be same for both views
 		swapchainImageWidth = swapchain_create_info.width;
 		swapchainImageHeight = swapchain_create_info.height;
+	}
 
+	// Create framebuffers
+	framebuffers = new GLuint * [view_count];
+	depthbuffers = new GLuint * [view_count];
+	for (uint32_t i = 0; i < view_count; i++) {
+		framebuffers[i] = new GLuint[swapchain_lengths[i]];
+		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
+	}
+	
+	for (uint32_t i = 0; i < view_count; i++) {
+		// ---------------------------------------------------------
+		// Create per-swapchain-image FBO (attach once!)
+		// ---------------------------------------------------------
+			for (uint32_t j = 0; j < swapchain_lengths[i]; ++j)
+			{
+				glGenFramebuffers(1, &framebuffers[i][j]);
+				glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][j]);
+			
+				glFramebufferTexture2D(
+					GL_FRAMEBUFFER,
+					GL_COLOR_ATTACHMENT0,
+					GL_TEXTURE_2D,
+					images[i][j].image,
+					0
+				);
+			
+				if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+					std::cerr << "Swapchain FBO incomplete!" << std::endl;
+				}
+			}
+		
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+			// ---------------------------------------------------------
+			// Create MSAA framebuffer for this eye
+			// ---------------------------------------------------------
+			int width = viewconfig_views[i].recommendedImageRectWidth;
+			int height = viewconfig_views[i].recommendedImageRectHeight;
+		
+			glGenFramebuffers(1, &msaaFBO[i]);
+			glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO[i]);
+		
+			// --- Multisample color ---
+			glGenRenderbuffers(1, &msaaColor[i]);
+			glBindRenderbuffer(GL_RENDERBUFFER, msaaColor[i]);
+			glRenderbufferStorageMultisample(
+				GL_RENDERBUFFER,
+				MSAA_SAMPLES,
+				color_format,
+				width,
+				height
+			);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+			GL_RENDERBUFFER, msaaColor[i]);
+
+			// --- Multisample depth ---
+			glGenRenderbuffers(1, &msaaDepth[i]);
+			glBindRenderbuffer(GL_RENDERBUFFER, msaaDepth[i]);
+			glRenderbufferStorageMultisample(
+				GL_RENDERBUFFER,
+				MSAA_SAMPLES,
+				GL_DEPTH24_STENCIL8,
+				width,
+				height
+			);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+				GL_RENDERBUFFER, msaaDepth[i]);
+
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+				std::cerr << "MSAA FBO incomplete!" << std::endl;
+			}
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	// Do not allocate these every frame to save some resources
-	//views = (XrView*)malloc(sizeof(XrView) * view_count);
 	views = new XrView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		views[i].type = XR_TYPE_VIEW;
 		views[i].next = NULL;
 	}
 
-	//projection_views = (XrCompositionLayerProjectionView*)malloc(
-	//	sizeof(XrCompositionLayerProjectionView) * view_count);
 	projection_views = new XrCompositionLayerProjectionView[view_count];
 	for (uint32_t i = 0; i < view_count; i++) {
 		projection_views[i].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
@@ -581,15 +658,7 @@ int VRInterface::load(SimulationModel* model) {
 		// projection_views[i].{pose, fov} have to be filled every frame in frame loop
 	};
 
-	// Create framebuffers
-	framebuffers = new GLuint* [view_count];
-	depthbuffers = new GLuint * [view_count];
-	for (uint32_t i = 0; i < view_count; i++) {
-		framebuffers[i] = new GLuint[swapchain_lengths[i]];
-		depthbuffers[i] = new GLuint[swapchain_lengths[i]];
-		glGenFramebuffers(swapchain_lengths[i], framebuffers[i]);
-		glGenRenderbuffers(swapchain_lengths[i], depthbuffers[i]);
-	}
+	
 
 	// Set up controllers
 	// --- Set up input (actions)
@@ -1347,29 +1416,34 @@ int VRInterface::update() {
 		int w = viewconfig_views[i].recommendedImageRectWidth;
 		int h = viewconfig_views[i].recommendedImageRectHeight;
 
-		// Render into swapchain images here (for left or right eye), into images[i][acquired_index].image
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[i][acquired_index]);
+		// ---------------------------------------------------------
+		// 1) Render scene into MSAA buffer
+		// ---------------------------------------------------------
+		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO[i]);
 		
-		glBindRenderbuffer(GL_RENDERBUFFER, depthbuffers[i][acquired_index]);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffers[1][acquired_index]);
-
 		glViewport(0, 0, w, h);
-		glScissor(0, 0, w, h);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, images[i][acquired_index].image, 0);
-		glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Check
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "glCheckFramebufferStatus: " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
-		}
-
-		// Render
 		smgr->drawAll();
 
-		// Return to framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// ---------------------------------------------------------
+		// 2) Resolve MSAA -> swapchain image
+		// ---------------------------------------------------------
+	
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO[i]);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER,
+			framebuffers[i][acquired_index]);
+
+		glBlitFramebuffer(
+				0, 0,
+				viewconfig_views[i].recommendedImageRectWidth,
+				viewconfig_views[i].recommendedImageRectHeight,
+				0, 0,
+				viewconfig_views[i].recommendedImageRectWidth,
+				viewconfig_views[i].recommendedImageRectHeight,
+				GL_COLOR_BUFFER_BIT,
+				GL_NEAREST
+		);
 
 		XrSwapchainImageReleaseInfo release_info;
 		release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
@@ -1412,6 +1486,9 @@ int VRInterface::update() {
 	if (!xr_check(instance, result, "failed to end frame!"))
 		return 1;
 
+	// Return to normal framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 	// Do ray/mesh intersection here if 'select' is active and HUD is shown
 	if (showHUD) {
 		if (selectState[HAND_LEFT_INDEX] || selectState[HAND_RIGHT_INDEX]) {
@@ -1712,7 +1789,6 @@ void VRInterface::print_api_layers()
 	if (count == 0)
 		return;
 
-	//XrApiLayerProperties* props = malloc(count * sizeof(XrApiLayerProperties));
 	XrApiLayerProperties* props = new XrApiLayerProperties[count];
 	for (uint32_t i = 0; i < count; i++) {
 		props[i].type = XR_TYPE_API_LAYER_PROPERTIES;
@@ -1728,7 +1804,6 @@ void VRInterface::print_api_layers()
 		printf("\t%s v%d: %s\n", props[i].layerName, props[i].layerVersion, props[i].description);
 	}
 
-	//free(props)
 	delete[] props;
 #else
 	std::cout << "VR interface not implemented" << std::endl;
@@ -1809,7 +1884,6 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 		return -1;
 
 	printf("Runtime supports %d swapchain formats\n", swapchain_format_count);
-	//int64_t* swapchain_formats = malloc(sizeof(int64_t) * swapchain_format_count);
 	int64_t* swapchain_formats = new int64_t[swapchain_format_count];
 	result = xrEnumerateSwapchainFormats(session, swapchain_format_count, &swapchain_format_count,
 		swapchain_formats);
@@ -1830,7 +1904,6 @@ int64_t VRInterface::get_swapchain_format(XrInstance instance,
 		printf("Falling back to non preferred swapchain format %#lx\n", chosen_format);
 	}
 
-	//free(swapchain_formats);
 	delete[] swapchain_formats;
 
 	return chosen_format;
