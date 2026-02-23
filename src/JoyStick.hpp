@@ -3,8 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include <vector>
-#include <thread>
 
 #define MAX_JS (5)
 #define MAX_JS_ENTRY (18)

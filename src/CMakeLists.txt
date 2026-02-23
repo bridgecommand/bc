@@ -18,6 +18,7 @@ include_directories("../lib/asio/include")
 set(IRRLICHT_INCLUDE_DIR "/usr/local/include/irrlicht")
 include_directories(${IRRLICHT_INCLUDE_DIR})
 include_directories("/usr/include/eigen3/")
+include_directories("/usr/include/SDL2/")
 
 find_package(PkgConfig)
 pkg_check_modules(JSONCPP jsoncpp)
@@ -38,6 +39,7 @@ add_subdirectory(EnetServer)
 set(CMAKE_THREAD_PREFER_PTHREAD ON)
 find_package(Threads REQUIRED)
 find_package(OpenXR REQUIRED)
+find_package(SDL2 REQUIRED)
 
 file(GLOB SRC_FILES
     "*.cpp"
@@ -58,4 +60,5 @@ target_link_libraries(bridgecommand-bc PRIVATE
         OpenXR::openxr_loader
 	netcdf
 	${JSONCPP_LIBRARIES}
+	SDL2
     )

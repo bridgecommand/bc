@@ -1,8 +1,11 @@
+#include <vector>
+#include <thread>
+#include <SDL.h>
+#include <SDL_main.h>
+
 #include "JoyStick.hpp"
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
-#include <SDL.h>
-#include <SDL_main.h>
 
 JoyStick::JoyStick(void)
 {
@@ -61,7 +64,7 @@ bool JoyStick::Init(void *aModel, void *aGuiMain)
     }
     std::cout << "::::::::::::" << std::endl;
 
-    std::thread pollingTask(Process, mNumJoysticks, mJsMapping, aModel, aGuiMain);
+    std::thread pollingTask(Process, std::ref(mNumJoysticks), std::ref(mJsMapping), aModel, aGuiMain);
     pollingTask.detach();
 
     return true;
