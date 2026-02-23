@@ -436,7 +436,7 @@ void SimulationModel::update()
   mLight->update(mTime);
   
   //Note that linear fog is hardcoded into the water shader, so should be changed there if we use other fog types
-  mDriver->setFog(mLight->getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*mVisibilityRange*M_IN_NM, mVisibilityRange*M_IN_NM, 0.00003f /*exp fog parameter*/, true, true);
+  mDriver->setFog(mLight->getLightSColor(), irr::video::EFT_FOG_LINEAR , 0.01*mVisibilityRange*M_IN_NM, mVisibilityRange*M_IN_NM, 0.00003f, true, true);
 
   //update rain
   //rain.setIntensity(rainIntensity);
@@ -478,7 +478,7 @@ void SimulationModel::update()
   mWater->update(mTideHeight,mCamera->getPosition(),mLight->getLightLevel(), mWeather);
 
   //Keep Ownship near origin to more precision 
- if (mOwnShip->getPosition().getLength() > 1000)
+if (mOwnShip->getPosition().getLength() > 1000)
     {
       irr::core::vector3df ownShipPos = mOwnShip->getPosition();
       irr::s32 deltaX = -1*(irr::s32)ownShipPos.X;
@@ -525,7 +525,7 @@ void SimulationModel::update()
 
   
   //update radar
-  if(mRadarCalculation->isRadarOn())
+  if (mRadarCalculation->isRadarOn())
     {
       irr::video::IImage *imChosen = mRadarCalculation->update(mRadarScreen, mTerrain, mOwnShip, mBuoys, mOtherShips, mWeather, mRainIntensity, mTideHeight, mTime.deltaTime, mTime.absoluteTime, mGuiMain);
       mRadarScreen->update(imChosen);

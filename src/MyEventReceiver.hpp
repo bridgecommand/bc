@@ -27,90 +27,11 @@ class GUIMain;
 class Lines;
 class VRInterface;
 
-
-//Data about joystick setup
-class JoystickSetup {
-public:
-    irr::u32 portJoystickAxis;
-    irr::u32 stbdJoystickAxis;
-    irr::u32 rudderJoystickAxis;
-    irr::u32 bowThrusterJoystickAxis;
-    irr::u32 sternThrusterJoystickAxis;
-    irr::u32 portJoystickNo;
-    irr::u32 stbdJoystickNo;
-    irr::u32 rudderJoystickNo;
-    irr::u32 bowThrusterJoystickNo;
-    irr::u32 sternThrusterJoystickNo;
-    std::vector<irr::f32> inputPoints;
-    std::vector<irr::f32> outputPoints;
-    irr::s32 rudderDirection;
-    bool updateAllAxes;
-
-//Buttons:
-    irr::u32 joystickNoHorn;
-    irr::u32 joystickButtonHorn;
-    irr::u32 joystickNoChangeView;
-    irr::u32 joystickButtonChangeView;
-    irr::u32 joystickNoChangeAndLockView;
-    irr::u32 joystickButtonChangeAndLockView;
-    irr::u32 joystickNoLookStepLeft;
-    irr::u32 joystickButtonLookStepLeft;
-    irr::u32 joystickNoLookStepRight;
-    irr::u32 joystickButtonLookStepRight;
-    irr::u32 joystickNoIncreaseBowThrust;
-    irr::u32 joystickButtonIncreaseBowThrust;
-    irr::u32 joystickNoDecreaseBowThrust;
-    irr::u32 joystickButtonDecreaseBowThrust;
-    irr::u32 joystickNoIncreaseSternThrust;
-    irr::u32 joystickButtonIncreaseSternThrust;
-    irr::u32 joystickNoDecreaseSternThrust;
-    irr::u32 joystickButtonDecreaseSternThrust;
-    irr::u32 joystickNoBearingOn;
-    irr::u32 joystickButtonBearingOn;
-    irr::u32 joystickNoBearingOff;
-    irr::u32 joystickButtonBearingOff;
-    irr::u32 joystickNoZoomOn;
-    irr::u32 joystickButtonZoomOn;
-    irr::u32 joystickNoZoomOff;
-    irr::u32 joystickButtonZoomOff;
-    irr::u32 joystickNoLookLeft;
-    irr::u32 joystickButtonLookLeft;
-    irr::u32 joystickNoLookRight;
-    irr::u32 joystickButtonLookRight;
-    irr::u32 joystickNoLookUp;
-    irr::u32 joystickButtonLookUp;
-    irr::u32 joystickNoLookDown;
-    irr::u32 joystickButtonLookDown;
-    irr::u32 joystickNoPump1On;
-    irr::u32 joystickButtonPump1On;
-    irr::u32 joystickNoPump1Off;
-    irr::u32 joystickButtonPump1Off;
-    irr::u32 joystickNoPump2On;
-    irr::u32 joystickButtonPump2On;
-    irr::u32 joystickNoPump2Off;
-    irr::u32 joystickButtonPump2Off;
-    irr::u32 joystickNoFollowUpOn;
-    irr::u32 joystickButtonFollowUpOn;
-    irr::u32 joystickNoFollowUpOff;
-    irr::u32 joystickButtonFollowUpOff;
-    irr::u32 joystickNoNFUPort;
-    irr::u32 joystickButtonNFUPort;
-    irr::u32 joystickNoNFUStbd;
-    irr::u32 joystickButtonNFUStbd;
-    irr::u32 joystickNoAckAlarm;
-    irr::u32 joystickButtonAckAlarm;
-    irr::u32 joystickNoPOV;
-    irr::u16 joystickPOVLookLeft;
-    irr::u16 joystickPOVLookRight;
-    irr::u16 joystickPOVLookUp;
-    irr::u16 joystickPOVLookDown;
-};
-
 class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 
-  MyEventReceiver(irr::IrrlichtDevice* dev, void* aModel, GUIMain* gui, Network* network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string>* logMessages);
+  MyEventReceiver(irr::IrrlichtDevice* dev, void* aModel, GUIMain* gui, Network* network, VRInterface* vrInterface, std::vector<std::string>* logMessages);
 
     bool OnEvent(const irr::SEvent& event);
     //irr::s32 GetScrollBarPosSpeed() const;
@@ -134,27 +55,13 @@ private:
     irr::IrrlichtDevice* device;
     irr::s32 scrollBarPosSpeed;
     irr::s32 scrollBarPosHeading;
-    irr::core::array<irr::SJoystickInfo> joystickInfo;
-
-    irr::f32 previousJoystickPort;
-    irr::f32 previousJoystickStbd;
-    irr::f32 previousJoystickRudder;
-
-// DEE 10JAN23 ^^^^
-    irr::f32 previousJoystickBowThruster;
-    irr::f32 previousJoystickSternThruster;
 
     irr::s32 mouseClickX;
     irr::s32 mouseClickY;
 
-    JoystickSetup joystickSetup;
-    std::vector<irr::u32> joystickPreviousButtonStates;
     std::vector<std::string>* logMessages;
     bool shutdownDialogActive;
-    irr::u32 lastShownJoystickStatus;
-
-    irr::u16 previousJoystickPOV;
-    bool previousJoystickPOVInitialised;
+   
 
     irr::u32 linesMode; // 0 = none, 1 = own ship end, 2 = other end
 };

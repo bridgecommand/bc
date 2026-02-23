@@ -24,13 +24,12 @@
 #include "Constants.hpp"
 #include "Message.hpp"
 
-
 // using namespace irr;
 
-MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, void *aModel, GUIMain *gui, Network *network, VRInterface* vrInterface, JoystickSetup joystickSetup, std::vector<std::string> *logMessages) // Constructor
+MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, void *aModel, GUIMain *gui, Network *network, VRInterface* vrInterface,  std::vector<std::string> *logMessages) // Constructor
 {
 
-  mModel = aModel; // Link to the model
+    mModel = aModel; // Link to the model
     this->gui = gui;     // Link to GUI
     this->vrInterface = vrInterface; // Link to VR interface
     scrollBarPosSpeed = 0;
@@ -41,36 +40,6 @@ MyEventReceiver::MyEventReceiver(irr::IrrlichtDevice *dev, void *aModel, GUIMain
 
     //network
     net = network;
-    
-    lastShownJoystickStatus = device->getTimer()->getRealTime() - 5000;      // Show joystick raw data every 5s in log
-
-    // set up joystick if present, and inform user what's available
-    dev->activateJoysticks(joystickInfo);
-
-    // Tell user about joysticks via the log
-    dev->getLogger()->log(""); // add a blank line
-    std::string joystickInfoMessage = "Number of joysticks detected: ";
-    joystickInfoMessage.append(std::string(irr::core::stringc(joystickInfo.size()).c_str()));
-    dev->getLogger()->log(joystickInfoMessage.c_str());
-    for (unsigned int i = 0; i < joystickInfo.size(); i++)
-    {
-        // Print out name and number of each joystick
-        joystickInfoMessage = "Joystick number: ";
-        joystickInfoMessage.append(irr::core::stringc(i).c_str());
-        joystickInfoMessage.append(", Name: ");
-        joystickInfoMessage.append(std::string(joystickInfo[i].Name.c_str()));
-        dev->getLogger()->log(joystickInfoMessage.c_str());
-    }
-    dev->getLogger()->log(""); // add a blank line
-
-    this->joystickSetup = joystickSetup;
-
-    // Indicate that previous joystick information hasn't been initialised
-    previousJoystickRudder = INFINITY;
-    previousJoystickBowThruster = INFINITY;
-    previousJoystickSternThruster = INFINITY;
-  
-    previousJoystickPOVInitialised = false;
 
     this->logMessages = logMessages;
 
@@ -1072,7 +1041,7 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
     // DEE 10JAN23 comment  joystickCode starts here
 
     // From joystick (actually polled, once per run():
-    if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
+   /*if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT)
     {
 
         irr::u8 thisJoystick = event.JoystickEvent.Joystick;
@@ -1434,11 +1403,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
         {
             if (IsButtonPressed(joystickSetup.joystickButtonPump1On, thisButtonState) && !IsButtonPressed(joystickSetup.joystickButtonPump1On, previousButtonState))
             {
-	      /*model->setRudderPumpState(1, true);
-                if (model->getRudderPumpState(2))
-                {
-                    model->setAlarm(false); // Only turn off alarm if other pump is working
-		    }*/
+	      //model->setRudderPumpState(1, true);
+            //    if (model->getRudderPumpState(2))
+              //  {
+                //    model->setAlarm(false); // Only turn off alarm if other pump is working
+		    //}
             }
         }
 
@@ -1568,8 +1537,8 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
                 model->getCamera()->setVerticalPanSpeed(0);
             }
             previousJoystickPOV = event.JoystickEvent.POV; // Store for next time
-        }
-    }
+        }*/
+    
 
     return false;
 }

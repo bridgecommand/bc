@@ -80,17 +80,17 @@
     <IntDir>$(Configuration)\bc\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include;..\..\lib\SDL2-2.32.10\include\</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release;;..\..\lib\SDL2-2.32.10\lib\x64\</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\lib\asio\include;..\..\lib.\libsndfile\include;..\..\lib\portaudio\include;..\..\lib\irrlicht\include;..\..\lib\enet\include;C:\Program Files\netCDF 4.9.3\include;..\..\lib\eigen-5.0.0;..\..\lib\jsoncpp\include;..\..\lib\SDL2-2.32.10\include\</IncludePath>
     <OutDir>..\..\bin\win</OutDir>
     <IntDir>$(Configuration)\bc\</IntDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release</LibraryPath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);..\..\lib\OpenXR\OpenXR-SDK-main\build\win64\src\loader\Release;..\..\lib\libsndfile\lib;..\..\lib\portaudio\lib;..\..\lib\irrlicht\lib\Win64-visualStudio;..\..\lib\enet;C:\Program Files\netCDF 4.9.3\lib\;..\..\lib\jsoncpp\build\lib\Release;..\..\lib\SDL2-2.32.10\lib\x64\</LibraryPath>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -124,7 +124,7 @@
     <Link>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;netcdf.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;netcdf.lib;SDL2main.lib;SDL2.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -157,20 +157,21 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);ASIO_STANDALONE;ASIO_HAS_STD_THREAD;ASIO_HAS_STD_ADDRESSOF;ASIO_HAS_STD_ARRAY;ASIO_HAS_CSTDINT;ASIO_HAS_STD_SHARED_PTR;ASIO_HAS_STD_TYPE_TRAITS;_WIN32_WINNT=0x0501;WITH_SOUND;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;netcdf.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;ws2_32.lib;Irrlicht.lib;sndfile.lib;portaudio_x64.lib;enet64.lib;netcdf.lib;SDL2.lib;SDL2main.lib;openxr_loader.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -202,6 +203,7 @@
     <ClCompile Include="..\HeadingIndicator.cpp" />
     <ClCompile Include="..\Hull.cpp" />
     <ClCompile Include="..\IniFile.cpp" />
+    <ClCompile Include="..\JoyStick.cpp" />
     <ClCompile Include="..\LandLights.cpp" />
     <ClCompile Include="..\LandObject.cpp" />
     <ClCompile Include="..\LandObjects.cpp" />
@@ -270,6 +272,7 @@
     <ClInclude Include="..\HeadingIndicator.h" />
     <ClInclude Include="..\Hull.hpp" />
     <ClInclude Include="..\IniFile.hpp" />
+    <ClInclude Include="..\JoyStick.hpp" />
     <ClInclude Include="..\LandLights.hpp" />
     <ClInclude Include="..\LandObject.hpp" />
     <ClInclude Include="..\LandObjects.hpp" />
