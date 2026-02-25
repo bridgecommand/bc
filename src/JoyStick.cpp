@@ -256,11 +256,27 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
 	      {
 		if (ev.type == EV_ABS)
 		  {
-		    std::cout << "ABS " << ev.code << " = " << ev.value << std::endl;
-		  }
-		else if (ev.type == EV_KEY)
-		  {
-		    std::cout << "KEY " << ev.code << " state=" << ev.value << std::endl;
+		    axisValue = ev.value / 32767.0f;
+                    std::cout << "Axe " << (int)ev.code << " = " << axisValue << std::endl;
+		    for (unsigned char j = 0; j < MAX_JS_AXIS; j++)
+		      {
+                        if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
+			  {
+                            if (aJsMapping.entry[j].type == AXIS) //Right Type ?
+			      { 
+                                if ((int)ev.code == aJsMapping.entry[j].channel) //Right Channel ?
+				  {
+				    if(AXIS_PORT == j)//Port
+                                     pModel->getOwnShip()->setPortEngine(axisValue);
+                                    else if(AXIS_STBD == j) //Stbd
+                                     pModel->getOwnShip()->setPortEngine(axisValue);
+                                    else if (AXIS_RUDDER == j) //Rudder
+                                     pModel->getOwnShip()->setWheel(axisValue*(pModel->getOwnShip()->getRudder().getDeltaMax()*180/M_PI));
+				  }
+			      }
+			  }
+		      }
+		    
 		  }
 	      }
 #endif
