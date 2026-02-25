@@ -131,7 +131,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
 
             while (SDL_PollEvent(&event))
             {
-                std::cout << "Event type: " << event.type << std::endl;
+                //std::cout << "Event type: " << event.type << std::endl;
                 switch (event.type) 
                 {
                 case SDL_QUIT:
@@ -139,7 +139,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
 
                 case SDL_JOYAXISMOTION:
                     axisValue = event.jaxis.value / 32767.0f;
-                    std::cout << "Axe " << (int)event.jaxis.axis << " = " << axisValue << std::endl;
+                    //std::cout << "Axe " << (int)event.jaxis.axis << " = " << axisValue << std::endl;
                     for (unsigned char j = 0; j < MAX_JS_AXIS; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -161,7 +161,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
                     break;
 
                 case SDL_JOYBUTTONDOWN:
-                    std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
+                    //std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
                     for (unsigned char j = MAX_JS_AXIS + MAX_JS_POV; j < MAX_JS_ENTRY; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -215,7 +215,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
                     break;
 
                 case SDL_JOYBUTTONUP:
-                    std::cout << "Button " << (int)event.jbutton.button << " release" << std::endl;
+                    //std::cout << "Button " << (int)event.jbutton.button << " release" << std::endl;
                     for (unsigned char j = MAX_JS_AXIS + MAX_JS_POV; j < MAX_JS_ENTRY; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -241,7 +241,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
                     break;
 
                 case SDL_JOYHATMOTION:
-                    std::cout << "Pov " << (int)event.jhat.hat << " = " << (int)event.jhat.value << std::endl;
+                    //std::cout << "Pov " << (int)event.jhat.hat << " = " << (int)event.jhat.value << std::endl;
                     break;
                 }
             }
@@ -257,7 +257,7 @@ void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping,
 		if (ev.type == EV_ABS)
 		  {
 		    axisValue = ev.value / 32767.0f;
-                    std::cout << "Axe " << (int)ev.code << " = " << axisValue << std::endl;
+            //std::cout << "Axe " << (int)ev.code << " = " << axisValue << std::endl;
 		    for (unsigned char j = 0; j < MAX_JS_AXIS; j++)
 		      {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
