@@ -1,11 +1,17 @@
+#include <iostream>
 #include <vector>
 #include <thread>
 #include <SDL.h>
 #include <SDL_main.h>
-
 #include "JoyStick.hpp"
 #include "GUIMain.hpp"
 #include "SimulationModel.hpp"
+
+#ifndef _WIN32
+#include <fcntl.h>
+#include "libevdev/libevdev.h"
+#endif
+
 
 JoyStick::JoyStick(void)
 {
@@ -13,21 +19,25 @@ JoyStick::JoyStick(void)
 
 }
 
-JoyStick::JoyStick(sJsMapping aJsMapping)
+JoyStick::JoyStick(sJsMapping aJsMapping, sJsConf aJsConf)
 {
    mJsMapping = aJsMapping;
+   mJsConf = aJsConf;
 }
 
 
 JoyStick::~JoyStick(void)
 {
-
+#ifndef _WIN32
+  libevdev_free(mDevice);
+#endif
 }
 
 bool JoyStick::Init(void *aModel, void *aGuiMain)
 {
     SDL_Joystick* js;
-
+    void *device;
+    
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
     {
         SDL_JoystickEventState(SDL_ENABLE);
@@ -61,16 +71,44 @@ bool JoyStick::Init(void *aModel, void *aGuiMain)
         std::cout << "POV : " << SDL_JoystickNumHats(js) << std::endl << std::endl;
 
         SDL_JoystickClose(js);
+
+	//On RPI5 event from axis is not catched, so libevdev is used
+#ifndef _WIN32
+	std::string devPath = "/dev/input/event" + mJsConf.eventId; 
+        mDevice = nullptr;
+ 
+	mFd = open(devPath.c_str(), O_RDONLY|O_NONBLOCK);
+	if (mFd < 0)
+	  {
+	    std::cerr << "Unable to open evdev event" << std::endl;
+	    perror("open");
+	    return false;
+	  }
+
+	int rc = libevdev_new_from_fd(mFd, &mDevice);
+	if (rc < 0)
+	  {
+	    std::cerr << "Failed to init libevdev\n";
+	    return false;
+	  }
+	
+	std::cout << "Device name : " << libevdev_get_name(mDevice) << std::endl;
+	std::cout << "Device ID : " << libevdev_get_id_bustype(mDevice) << ":" << libevdev_get_id_vendor(mDevice) << ":" << libevdev_get_id_product(mDevice) << std::endl;
+
+	device = (void*)mDevice;
+#endif
+	
     }
     std::cout << "::::::::::::" << std::endl;
 
-    std::thread pollingTask(Process, std::ref(mNumJoysticks), std::ref(mJsMapping), aModel, aGuiMain);
+    
+    std::thread pollingTask(Process, device, std::ref(mNumJoysticks), std::ref(mJsMapping), aModel, aGuiMain);
     pollingTask.detach();
 
     return true;
 }
 
-void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, void* aGuiMain)
+void JoyStick::Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, void* aGuiMain)
 {
     SDL_Joystick* js;
     SDL_Event event;
@@ -93,7 +131,7 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
 
             while (SDL_PollEvent(&event))
             {
-                //std::cout << "Event type: " << event.type << std::endl;
+                std::cout << "Event type: " << event.type << std::endl;
                 switch (event.type) 
                 {
                 case SDL_QUIT:
@@ -101,7 +139,7 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
 
                 case SDL_JOYAXISMOTION:
                     axisValue = event.jaxis.value / 32767.0f;
-                    //std::cout << "Axe " << (int)event.jaxis.axis << " = " << axisValue << std::endl;
+                    std::cout << "Axe " << (int)event.jaxis.axis << " = " << axisValue << std::endl;
                     for (unsigned char j = 0; j < MAX_JS_AXIS; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -123,7 +161,7 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                     break;
 
                 case SDL_JOYBUTTONDOWN:
-                    //std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
+                    std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
                     for (unsigned char j = MAX_JS_AXIS + MAX_JS_POV; j < MAX_JS_ENTRY; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -177,7 +215,7 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                     break;
 
                 case SDL_JOYBUTTONUP:
-                    //std::cout << "Button " << (int)event.jbutton.button << " release" << std::endl;
+                    std::cout << "Button " << (int)event.jbutton.button << " release" << std::endl;
                     for (unsigned char j = MAX_JS_AXIS + MAX_JS_POV; j < MAX_JS_ENTRY; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -203,11 +241,29 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                     break;
 
                 case SDL_JOYHATMOTION:
-                    //std::cout << "Pov " << (int)event.jhat.hat << " = " << (int)event.jhat.value << std::endl;
+                    std::cout << "Pov " << (int)event.jhat.hat << " = " << (int)event.jhat.value << std::endl;
                     break;
                 }
             }
             SDL_JoystickClose(js);
+
+	    //On RPI5 event from axis is not catched, so libevdev is used
+#ifndef _WIN32
+	    struct input_event ev;
+	    int rc = libevdev_next_event((struct libevdev*)aDevice, LIBEVDEV_READ_FLAG_NORMAL, &ev);
+
+	    if (rc == 0)
+	      {
+		if (ev.type == EV_ABS)
+		  {
+		    std::cout << "ABS " << ev.code << " = " << ev.value << std::endl;
+		  }
+		else if (ev.type == EV_KEY)
+		  {
+		    std::cout << "KEY " << ev.code << " state=" << ev.value << std::endl;
+		  }
+	      }
+#endif
         }
     }
 }

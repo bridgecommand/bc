@@ -32,7 +32,7 @@ Fork to SOMOS-Project (ENSM-Nantes), for more information see : https://somos-pr
 4) Add BC project -> Generate
 
 ## To compile BC on Linux
-1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev libnetcdf-dev libeigen3-dev libjsoncpp-dev libsdl2-dev"
+1) Run "sudo apt-get install cmake mesa-common-dev libxxf86vm-dev freeglut3-dev libxext-dev libxcursor-dev portaudio19-dev libsndfile1-dev libopenxr-dev libenet-dev libnetcdf-dev libeigen3-dev libjsoncpp-dev libsdl2-dev libevdev-dev"
 2) Go to bin/linux 
 3) Run "cmake ../../src; make" 
 

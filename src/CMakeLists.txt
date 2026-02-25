@@ -20,9 +20,13 @@ include_directories(${IRRLICHT_INCLUDE_DIR})
 include_directories("/usr/include/eigen3/")
 include_directories("/usr/include/SDL2/")
 
+
 find_package(PkgConfig)
 pkg_check_modules(JSONCPP jsoncpp)
 include_directories(${JSONCPP_INCLUDE_DIRS})
+
+pkg_search_module(LIBEVDEV REQUIRED libevdev)
+include_directories(${LIBEVDEV_INCLUDE_DIRS})
 
 add_definitions(-DWITH_SOUND)
 # add_definitions(-DWITH_PROFILING)
@@ -61,4 +65,5 @@ target_link_libraries(bridgecommand-bc PRIVATE
 	netcdf
 	${JSONCPP_LIBRARIES}
 	SDL2
+	${LIBEVDEV_LIBRARIES}
     )

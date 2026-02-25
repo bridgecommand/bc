@@ -2,7 +2,8 @@
 #define JOYSTICK_HPP
 
 #include <string>
-#include <iostream>
+
+struct libevdev;
 
 #define MAX_JS (5)
 #define MAX_JS_ENTRY (18)
@@ -51,23 +52,35 @@ struct sJsMapping
     sJsEntry entry[MAX_JS_ENTRY];
 };
 
+struct sJsConf
+{
+  std::string eventId;
+  bool invertRudder;
+};
+
 class JoyStick
 {
 
 public:
 
   JoyStick();
-  JoyStick(sJsMapping aJsMapping);
+  JoyStick(sJsMapping aJsMapping, sJsConf aJsConf);
   ~JoyStick();
 
   bool Init(void *aModel, void *aGuiMain);
-  static void Process(int aNumJoysticks, sJsMapping& aJsMapping, void *aModel, void* aGuiMain);
+  static void Process(void *aDevice, int aNumJoysticks, sJsMapping& aJsMapping, void *aModel, void* aGuiMain);
 
 private:
 
-	int mNumJoysticks;
-    sJsMapping mJsMapping;
+  int mNumJoysticks;
+  sJsMapping mJsMapping;
+  sJsConf mJsConf;
 
+#ifndef _WIN32
+  struct libevdev *mDevice;
+  int mFd;
+#endif
+  
 };
 
 

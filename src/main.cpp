@@ -121,12 +121,15 @@ irr::core::stringw getCredits(){
   return creditsString;
 }
 
-sJsMapping getJoystickSetup(std::string iniFilename) 
+sJsMapping getJoystickSetup(std::string iniFilename, sJsConf& aJsConf) 
 {
   sJsMapping jsMapping;
 
+  aJsConf.invertRudder = (1 == IniFile::iniFileTou32(iniFilename, "invert_rudder")) ? true : false; 
+  aJsConf.eventId = IniFile::iniFileToString(iniFilename, "rpi_event_id");
+  
+
   //Axis
- 
   //Port
   jsMapping.entry[0].type = AXIS;
   jsMapping.entry[0].channel = IniFile::iniFileTou32(iniFilename, "portLever_channel")-1;
@@ -787,13 +790,14 @@ int main(int argc, char ** argv)
   //RealisticWaterSceneNode* realisticWater = new RealisticWaterSceneNode(smgr, 4000, 4000, "./",irr::core::dimension2du(512, 512),smgr->getRootSceneNode());
 
   //load joystick setup
-  sJsMapping jsMapping = getJoystickSetup(iniFilename);
+  sJsConf jsConf;
+  sJsMapping jsMapping = getJoystickSetup(iniFilename, jsConf);
 
   //create event receiver, linked to model
   MyEventReceiver receiver(device, &model, &guiMain, &network, &vrInterface, &logMessages);
   device->setEventReceiver(&receiver);
 
-  JoyStick hJoySticks(jsMapping);
+  JoyStick hJoySticks(jsMapping, jsConf);
 
   hJoySticks.Init(&model, &guiMain);
 
