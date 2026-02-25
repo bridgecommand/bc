@@ -10,13 +10,34 @@
 #define MAX_JS_POV (0)
 #define MAX_JS_BUTTON (MAX_JS_ENTRY - MAX_JS_AXIS - MAX_JS_POV)
 
-typedef enum eJsEntryType
+enum eJsEntryChannel
+{
+    AXIS_PORT = 0x00,
+    AXIS_STBD,
+    AXIS_RUDDER,
+    BUTTON_HORN,
+    BUTTON_CHANGE_VIEW,
+    BUTTON_CHANGE_LOCK_VIEW,
+    BUTTON_STEP_LEFT,
+    BUTTON_STEP_RIGHT,
+    BUTTON_BEARING_ON,
+    BUTTON_BEARING_OFF,
+    BUTTON_ZOOM_ON,
+    BUTTON_ZOOM_OFF,
+    BUTTON_LOOK_LEFT,
+    BUTTON_LOOK_RIGHT,
+    BUTTON_LOOK_UP,
+    BUTTON_LOOK_DOWN,
+    BUTTON_ALARM,
+    BUTTON_ACK_ALARM
+};
+
+enum eJsEntryType
 {
     AXIS = 0x01,
     BUTTON,
     POV
 };
-
 
 struct sJsEntry
 {
@@ -29,7 +50,6 @@ struct sJsMapping
 {
     sJsEntry entry[MAX_JS_ENTRY];
 };
-
 
 class JoyStick
 {
@@ -47,7 +67,6 @@ private:
 
 	int mNumJoysticks;
     sJsMapping mJsMapping;
-
 
 };
 

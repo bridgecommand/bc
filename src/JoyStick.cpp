@@ -94,7 +94,6 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
             while (SDL_PollEvent(&event))
             {
                 //std::cout << "Event type: " << event.type << std::endl;
-
                 switch (event.type) 
                 {
                 case SDL_QUIT:
@@ -111,11 +110,11 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                             { 
                                 if ((int)event.jaxis.axis == aJsMapping.entry[j].channel) //Right Channel ?
                                 {
-                                    if(0 == j)//Port
+                                    if(AXIS_PORT == j)//Port
                                      pModel->getOwnShip()->setPortEngine(axisValue);
-                                    else if(1 == j) //Stbd
+                                    else if(AXIS_STBD == j) //Stbd
                                      pModel->getOwnShip()->setPortEngine(axisValue);
-                                    else if (2 == j) //Rudder
+                                    else if (AXIS_RUDDER == j) //Rudder
                                      pModel->getOwnShip()->setWheel(axisValue*(pModel->getOwnShip()->getRudder().getDeltaMax()*180/M_PI));
                                 }
                             }
@@ -124,7 +123,7 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                     break;
 
                 case SDL_JOYBUTTONDOWN:
-                    std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
+                    //std::cout << "Button " << (int)event.jbutton.button << " push" << std::endl;
                     for (unsigned char j = MAX_JS_AXIS + MAX_JS_POV; j < MAX_JS_ENTRY; j++)
                     {
                         if (aJsMapping.entry[j].jsNumber == i) //Right JS ?
@@ -133,43 +132,43 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                             {
                                 if ((int)event.jbutton.button == aJsMapping.entry[j].channel) //Right Button ?
                                 {
-                                    if (3 == j)//Horn
+                                    if (BUTTON_HORN == j)//Horn
                                         pModel->getSound()->startHorn();
-                                    else if (4 == j)//change view
+                                    else if (BUTTON_CHANGE_VIEW == j)//change view
                                     {
                                         pModel->getCamera()->changeView();
                                         pModel->setMoveViewWithPrimary(true);
                                     }
-                                    else if (5 == j)//change and lock view
+                                    else if (BUTTON_CHANGE_LOCK_VIEW == j)//change and lock view
                                     {
                                         pModel->getCamera()->changeView();
                                         pModel->setMoveViewWithPrimary(false);
                                     }
-                                    else if (6 == j)//look step left
+                                    else if (BUTTON_STEP_LEFT == j)//look step left
                                         pModel->getCamera()->lookStepLeft();
-                                    else if (7 == j)//look step right
+                                    else if (BUTTON_STEP_RIGHT == j)//look step right
                                         pModel->getCamera()->lookStepRight();
-                                    else if (8 == j)//bearing on
+                                    else if (BUTTON_BEARING_ON == j)//bearing on
                                         pGuiMain->showBearings();
-                                    else if (9 == j)//bearing off
+                                    else if (BUTTON_BEARING_OFF == j)//bearing off
                                         pGuiMain->hideBearings();
-                                    else if (10 == j)//zoom on
+                                    else if (BUTTON_ZOOM_ON == j)//zoom on
                                     {
                                         pGuiMain->zoomOn();
                                         pModel->setZoom(true);
                                     }
-                                    else if (11 == j)//zoom off
+                                    else if (BUTTON_ZOOM_OFF == j)//zoom off
                                     {
                                         pGuiMain->zoomOff();
                                         pModel->setZoom(false);
                                     }
-                                    else if (12 == j)
+                                    else if (BUTTON_LOOK_LEFT == j)
                                         pModel->getCamera()->setPanSpeed(-5);
-                                    else if (13 == j)
+                                    else if (BUTTON_LOOK_RIGHT == j)
                                         pModel->getCamera()->setPanSpeed(5);
-                                    else if (14 == j)
+                                    else if (BUTTON_LOOK_UP == j)
                                         pModel->getCamera()->setVerticalPanSpeed(5);
-                                    else if (15 == j)
+                                    else if (BUTTON_LOOK_DOWN == j)
                                         pModel->getCamera()->setVerticalPanSpeed(-5);
                                 }
                             }
@@ -187,15 +186,15 @@ void JoyStick::Process(int aNumJoysticks, sJsMapping& aJsMapping, void* aModel, 
                             {
                                 if ((int)event.jbutton.button == aJsMapping.entry[j].channel) //Right Button ?
                                 {
-                                    if (3 == j)//Horn
+                                    if (BUTTON_HORN == j)//Horn
                                         pModel->getSound()->endHorn();
-                                    else if (12 == j)
+                                    else if (BUTTON_LOOK_LEFT == j)
                                         pModel->getCamera()->setPanSpeed(0);
-                                    else if (13 == j)
+                                    else if (BUTTON_LOOK_RIGHT == j)
                                         pModel->getCamera()->setPanSpeed(0);
-                                    else if (14 == j)
+                                    else if (BUTTON_LOOK_UP == j)
                                         pModel->getCamera()->setVerticalPanSpeed(0);
-                                    else if (15 == j)
+                                    else if (BUTTON_LOOK_DOWN == j)
                                         pModel->getCamera()->setVerticalPanSpeed(0);
                                 }
                             }

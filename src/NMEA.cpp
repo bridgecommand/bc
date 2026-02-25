@@ -470,10 +470,17 @@ void NMEA::updateNMEA(sTime& aTime)
   case RPM: // 8.3.72 Revolutions
     {
       std::string messageToSend = "";
-      for (int i=0; i<2; i++) {
-	snprintf(messageBuffer,maxSentenceChars,"$IIRPM,S,%d,%d,100,A",i+1,engineRPM[i]); // 'S' is for shaft, '100' is pitch (fixed)
-	messageToSend.append(addChecksum(std::string(messageBuffer)));
-      }
+      
+      snprintf(messageBuffer, maxSentenceChars, "$IIRPM,S,%d,%d,100,A", 1, engineRPM[0]); // 'S' is for shaft, '100' is pitch (fixed)
+      messageToSend.append(addChecksum(std::string(messageBuffer)));
+      
+      messageQueue.push_back(messageToSend);
+      
+      messageToSend.clear();
+
+      snprintf(messageBuffer, maxSentenceChars, "$IIRPM,S,%d,%d,100,A", 2, engineRPM[1]); // 'S' is for shaft, '100' is pitch (fixed)
+      messageToSend.append(addChecksum(std::string(messageBuffer)));
+
       messageQueue.push_back(messageToSend);
       break;
     }
