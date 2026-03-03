@@ -415,6 +415,11 @@ bool MyEventReceiver::OnEvent(const irr::SEvent &event)
             {
                 model->setRadarRain(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos());
             }
+            if (id == GUIMain::GUI_ID_RADAR_BRILL_SCROLL_BAR)
+            {
+                irr::f32 value = ((irr::gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos() / 100.0; // Convert to from 0-100 to 0-1
+                model->setBrilliance(value);
+            }
             if (id == GUIMain::GUI_ID_WEATHER_SCROLL_BAR)
             {
                 model->setWeather(((irr::gui::IGUIScrollBar *)event.GUIEvent.Caller)->getPos() / 10.0); // Scroll bar 0-120, weather 0-12

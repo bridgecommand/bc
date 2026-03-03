@@ -565,12 +565,15 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.2000*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarBrillScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.2000 * su, 0.115 * sh), 0.01 * su, guienv, mainRadarTab, GUI_ID_RADAR_BRILL_SCROLL_BAR);
         (guienv->addStaticText(language->translate("gain").c_str(),irr::core::rect<irr::s32>(0.0600*su,0.070*sh,0.1100*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("clutter").c_str(),irr::core::rect<irr::s32>(0.1165*su,0.070*sh,0.1675*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.1750*su,0.070*sh,0.2250*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("brill").c_str(), irr::core::rect<irr::s32>(0.1750 * su, 0.125 * sh, 0.2250 * su, 0.155 * sh), false, true, mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
+        radarBrillScrollbar->setSmallStep(2);
 
         eblLeftButton = guienv->addButton(irr::core::rect<irr::s32>(0.060*su,0.160*sh,0.115*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_LEFT_BUTTON,language->translate("eblLeft").c_str());
         eblRightButton = guienv->addButton(irr::core::rect<irr::s32>(0.170*su,0.160*sh,0.225*su,0.190*sh),mainRadarTab,GUI_ID_RADAR_EBL_RIGHT_BUTTON,language->translate("eblRight").c_str());
@@ -585,15 +588,18 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar2    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.040*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar2 = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.105*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar2    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.170*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
+        radarBrillScrollbar2 = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(radarTL.X + 0.050 * radarSu, radarTL.Y + 0.700 * radarSu), 0.03 * radarSu, guienv, guienv->getRootGUIElement(), GUI_ID_RADAR_BRILL_SCROLL_BAR);
+        radarBrillScrollbar2->setToolTipText(language->translate("brill").c_str());
 
         radarGainScrollbar2->setSmallStep(2);
         radarClutterScrollbar2->setSmallStep(2);
         radarRainScrollbar2->setSmallStep(2);
+        radarBrillScrollbar2->setSmallStep(2);
 
         (guienv->addStaticText(language->translate("gain").c_str(),irr::core::rect<irr::s32>(0.010*radarSu,0.070*radarSu,0.070*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("clutter").c_str(),irr::core::rect<irr::s32>(0.075*radarSu,0.070*radarSu,0.135*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.140*radarSu,0.070*radarSu,0.200*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-
+        
         guienv->addButton(irr::core::rect<irr::s32>(0.025*radarSu,0.110*radarSu,0.085*radarSu,0.160*radarSu),largeRadarControls,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.025*radarSu,0.165*radarSu,0.085*radarSu,0.210*radarSu),largeRadarControls,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
@@ -770,10 +776,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar->drop();
         radarClutterScrollbar->drop();
         radarRainScrollbar->drop();
+        radarBrillScrollbar->drop();
 
         radarGainScrollbar2->drop();
         radarClutterScrollbar2->drop();
         radarRainScrollbar2->drop();
+        radarBrillScrollbar2->drop();
 
         //largeRadarControls->drop();
 
@@ -952,6 +960,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarCursorRightButton2->setVisible(radarLarge);
         radarCursorUpButton2->setVisible(radarLarge);
         radarCursorDownButton2->setVisible(radarLarge);
+        radarBrillScrollbar2->setVisible(radarLarge);
 
         //weatherScrollbar->setVisible(showInterface);
         //rainScrollbar->setVisible(showInterface);
@@ -1185,10 +1194,12 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar->setPos(Utilities::round(guiData->radarClutter));
         radarRainScrollbar->setPos(Utilities::round(guiData->radarRain));
+        radarBrillScrollbar->setPos(Utilities::round(guiData->radarBrill * 100));
 
         radarGainScrollbar2->setPos(Utilities::round(guiData->radarGain));
         radarClutterScrollbar2->setPos(Utilities::round(guiData->radarClutter));
         radarRainScrollbar2->setPos(Utilities::round(guiData->radarRain));
+        radarBrillScrollbar2->setPos(Utilities::round(guiData->radarBrill * 100));
 
         weatherScrollbar->setPos(Utilities::round(guiData->weather*10.0)); //(Weather scroll bar is 0-120, weather is 0-12)
         rainScrollbar->setPos(Utilities::round(guiData->rain*10.0)); //(Rain scroll bar is 0-100, rain is 0-10)
@@ -1686,6 +1697,8 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 centreY;
         irr::s32 radius;
 
+        irr::f32 brilliance = model->getBrilliance();
+
         if (radarLarge) {
             centreX = largeRadarScreenCentreX;
             centreY = largeRadarScreenCentreY;
@@ -1700,7 +1713,7 @@ guiTideHeight = guiData->tideHeight;
 
         //If full screen radar, draw a 4:3 box around the radar display area
         if (radarLarge) {
-            device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,irr::video::SColor(255,0,0,0));
+            device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,brill(irr::video::SColor(255,0,0,0), brilliance));
         }
 
         irr::f32 radarHeadingIndicator;
@@ -1713,7 +1726,7 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 deltaY = -1*radius*cos(irr::core::DEGTORAD*radarHeadingIndicator);
         irr::core::position2d<irr::s32> radarCentre (centreX,centreY);
         irr::core::position2d<irr::s32> radarHeading (centreX+deltaX,centreY+deltaY);
-        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,irr::video::SColor(255, 255, 255, 255)); //Todo: Make these colours configurable
+        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,brill(irr::video::SColor(255, 255, 255, 255), brilliance)); //Todo: Make these colours configurable
 
         //draw a look direction line
         if (radarHeadUp) {
@@ -1725,19 +1738,19 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 deltaYView = -1*radius*cos(irr::core::DEGTORAD*radarHeadingIndicator);
         irr::core::position2d<irr::s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         irr::core::position2d<irr::s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
-        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,irr::video::SColor(255, 255, 0, 0)); //Todo: Make these colours configurable
+        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,brill(irr::video::SColor(255, 255, 0, 0), brilliance)); //Todo: Make these colours configurable
 
         //draw an EBL line
         irr::s32 deltaXEBL = radius*sin(irr::core::DEGTORAD*guiRadarEBLBrg);
         irr::s32 deltaYEBL = -1*radius*cos(irr::core::DEGTORAD*guiRadarEBLBrg);
         irr::core::position2d<irr::s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
-        device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,irr::video::SColor(255, 255, 0, 0));
+        device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,brill(irr::video::SColor(255, 255, 0, 0), brilliance));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
             irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
-            device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,irr::video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
+            device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,brill(irr::video::SColor(255, 255, 0, 0), brilliance),noSegments); //An n segment polygon, to approximate a circle
         }
 
         //draw radar cursor
@@ -1747,7 +1760,7 @@ guiTideHeight = guiData->tideHeight;
         //Plot if within the display and not at zero range
         if (cursorPixelRadius <= radius && guiRadarCursorRangeNm > 0) {
             irr::core::position2d<irr::s32> cursorCentre (centreX + deltaXCursor,centreY + deltaYCursor);
-            device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,irr::video::SColor(255, 255, 0, 0),4); //a 4 segment polygon, i.e. a square!
+            device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,brill(irr::video::SColor(255, 255, 0, 0), brilliance),4); //a 4 segment polygon, i.e. a square!
         }
 
         //Draw compass rose around radar (?Rotate with radar in head up and course up?)
@@ -1772,7 +1785,7 @@ guiTideHeight = guiData->tideHeight;
             irr::core::position2d<irr::s32> ticInner (centreX + scaling*deltaXTic,centreY + scaling*deltaYTic);
             irr::core::position2d<irr::s32> ticOuter (centreX + deltaXTic,centreY + deltaYTic);
 
-            device->getVideoDriver()->draw2DLine(ticInner,ticOuter,irr::video::SColor(255, 128, 128, 128));
+            device->getVideoDriver()->draw2DLine(ticInner,ticOuter,brill(irr::video::SColor(255, 128, 128, 128), brilliance));
 
             //Show the angle if needed
             if (showValue) {
@@ -1785,7 +1798,7 @@ guiTideHeight = guiData->tideHeight;
                 irr::s32 textEndX = textStartX+textWidth;
                 irr::s32 textStartY = centreY + 0.8*deltaYTic-0.5*textHeight;
                 irr::s32 textEndY = textStartY+textHeight;
-                guienv->getSkin()->getFont()->draw(angleText,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),irr::video::SColor(255,128,128,128));
+                guienv->getSkin()->getFont()->draw(angleText,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),brill(irr::video::SColor(255,128,128,128), brilliance));
             }
 
         }
@@ -1802,7 +1815,7 @@ guiTideHeight = guiData->tideHeight;
         for (unsigned int i = 1; i<rangeRings; i++) {
             irr::f32 ringRadius = radius*i/(float)rangeRings;
             irr::u8 noSegments = ringRadius/2;
-            device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,irr::video::SColor(128, 128, 128, 128),noSegments);
+            device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,brill(irr::video::SColor(128, 128, 128, 128), brilliance),noSegments);
         }
 
     }
@@ -1866,4 +1879,11 @@ guiTideHeight = guiData->tideHeight;
     void GUIMain::setLinesControlsText(std::string textToShow)
     {
         linesText->setText(irr::core::stringw(textToShow.c_str()).c_str());
+    }
+
+    irr::video::SColor GUIMain::brill(irr::video::SColor originalColour, irr::f32 brilliance) const
+    {
+        irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+        return originalColour.getInterpolated(black, brilliance);
+
     }

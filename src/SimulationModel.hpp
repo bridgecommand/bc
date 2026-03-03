@@ -292,6 +292,8 @@ public:
     void clearTargetFromCursor();
     irr::u32 getARPATracksSize() const;
     ARPAContact getARPAContactFromTrackIndex(irr::u32 index) const;
+    irr::f32 getBrilliance() const;
+    void setBrilliance(irr::f32 brilliance);
     void setMainCameraActive();
     void setRadarCameraActive();
     void updateViewport(irr::f32 aspect);

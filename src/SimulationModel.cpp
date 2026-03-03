@@ -1384,6 +1384,16 @@ SimulationModel::~SimulationModel()
         return radarCalculation.getARPAContactFromTrackIndex(index);
     }
 
+    irr::f32 SimulationModel::getBrilliance() const
+    {
+        return radarCalculation.getBrilliance();
+    }
+
+    void SimulationModel::setBrilliance(irr::f32 brilliance)
+    {
+        radarCalculation.setBrilliance(brilliance);
+    }
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();
@@ -2028,6 +2038,7 @@ SimulationModel::~SimulationModel()
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();
         guiData->radarRain = radarCalculation.getRainClutter();
+        guiData->radarBrill = radarCalculation.getBrilliance();
         guiData->guiRadarEBLBrg = radarCalculation.getEBLBrg();
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
         guiData->guiRadarCursorBrg = radarCalculation.getCursorBrg();
