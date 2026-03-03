@@ -565,11 +565,11 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.0850*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.1425*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.2000*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_RAIN_SCROLL_BAR);
-        radarBrillScrollbar   = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.2575*su,0.040*sh),0.02*su,guienv,mainRadarTab,GUI_ID_RADAR_BRILL_SCROLL_BAR);
+        radarBrillScrollbar = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.2000 * su, 0.115 * sh), 0.01 * su, guienv, mainRadarTab, GUI_ID_RADAR_BRILL_SCROLL_BAR);
         (guienv->addStaticText(language->translate("gain").c_str(),irr::core::rect<irr::s32>(0.0600*su,0.070*sh,0.1100*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("clutter").c_str(),irr::core::rect<irr::s32>(0.1165*su,0.070*sh,0.1675*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.1750*su,0.070*sh,0.2250*su,0.100*sh),false,true,mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        (guienv->addStaticText(language->translate("brill").c_str(), irr::core::rect<irr::s32>(0.2335 * su, 0.070 * sh, 0.2250 * su, 0.100 * sh), false, true, mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
+        (guienv->addStaticText(language->translate("brill").c_str(), irr::core::rect<irr::s32>(0.1750 * su, 0.125 * sh, 0.2250 * su, 0.155 * sh), false, true, mainRadarTab))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
         radarGainScrollbar->setSmallStep(2);
         radarClutterScrollbar->setSmallStep(2);
         radarRainScrollbar->setSmallStep(2);
@@ -588,7 +588,8 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarGainScrollbar2    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.040*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_GAIN_SCROLL_BAR);
         radarClutterScrollbar2 = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.105*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_CLUTTER_SCROLL_BAR);
         radarRainScrollbar2    = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.170*radarSu,0.040*radarSu),0.03*radarSu,guienv,largeRadarControls,GUI_ID_RADAR_RAIN_SCROLL_BAR);
-        radarBrillScrollbar2 = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(0.235 * radarSu, 0.040 * radarSu), 0.03 * radarSu, guienv, largeRadarControls, GUI_ID_RADAR_BRILL_SCROLL_BAR);
+        radarBrillScrollbar2 = new irr::gui::ScrollDial(irr::core::vector2d<irr::s32>(radarTL.X + 0.050 * radarSu, radarTL.Y + 0.700 * radarSu), 0.03 * radarSu, guienv, guienv->getRootGUIElement(), GUI_ID_RADAR_BRILL_SCROLL_BAR);
+        radarBrillScrollbar2->setToolTipText(language->translate("brill").c_str());
 
         radarGainScrollbar2->setSmallStep(2);
         radarClutterScrollbar2->setSmallStep(2);
@@ -598,8 +599,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         (guienv->addStaticText(language->translate("gain").c_str(),irr::core::rect<irr::s32>(0.010*radarSu,0.070*radarSu,0.070*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("clutter").c_str(),irr::core::rect<irr::s32>(0.075*radarSu,0.070*radarSu,0.135*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
         (guienv->addStaticText(language->translate("rain").c_str(),irr::core::rect<irr::s32>(0.140*radarSu,0.070*radarSu,0.200*radarSu,0.100*radarSu),false,true,largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER,irr::gui::EGUIA_CENTER);
-        (guienv->addStaticText(language->translate("brill").c_str(), irr::core::rect<irr::s32>(0.205 * radarSu, 0.070 * radarSu, 0.200 * radarSu, 0.100 * radarSu), false, true, largeRadarControls))->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
-
+        
         guienv->addButton(irr::core::rect<irr::s32>(0.025*radarSu,0.110*radarSu,0.085*radarSu,0.160*radarSu),largeRadarControls,GUI_ID_RADAR_INCREASE_BUTTON,language->translate("increaserange").c_str());
         guienv->addButton(irr::core::rect<irr::s32>(0.025*radarSu,0.165*radarSu,0.085*radarSu,0.210*radarSu),largeRadarControls,GUI_ID_RADAR_DECREASE_BUTTON,language->translate("decreaserange").c_str());
 
@@ -960,6 +960,7 @@ void GUIMain::load(irr::IrrlichtDevice* device, Lang* language, std::vector<std:
         radarCursorRightButton2->setVisible(radarLarge);
         radarCursorUpButton2->setVisible(radarLarge);
         radarCursorDownButton2->setVisible(radarLarge);
+        radarBrillScrollbar2->setVisible(radarLarge);
 
         //weatherScrollbar->setVisible(showInterface);
         //rainScrollbar->setVisible(showInterface);
