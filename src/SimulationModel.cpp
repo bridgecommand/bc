@@ -1384,6 +1384,16 @@ SimulationModel::~SimulationModel()
         return radarCalculation.getARPAContactFromTrackIndex(index);
     }
 
+    irr::f32 SimulationModel::getBrilliance() const
+    {
+        return radarCalculation.getBrilliance();
+    }
+
+    void SimulationModel::setBrilliance(irr::f32 brilliance)
+    {
+        radarCalculation.setBrilliance(brilliance);
+    }
+
     void SimulationModel::setMainCameraActive()
     {
         camera.setActive();

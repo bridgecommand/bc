@@ -62,6 +62,8 @@ RadarCalculation::RadarCalculation() : rangeResolution(128), angularResolution(3
 
     radarOn = true;
 
+    brilliance = 1.0;
+
     //Radar modes: North up (false, false). Course up (true, true). Head up (true, false)
     headUp = false;
     stabilised = false;
@@ -1537,10 +1539,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                             cellMaxRange[currentStep],
                             cellMinAngle,
                             cellMaxAngle,
-                            thisColour.getAlpha(),
-                            thisColour.getRed(),
-                            thisColour.getGreen(),
-                            thisColour.getBlue(),
+                            brill(thisColour, brilliance),
                             ownShipHeading);
 
                     scanArrayToPlotPrevious[scanLine][currentStep] = scanArrayToPlot[scanLine][currentStep]; //Record what we have plotted
@@ -1587,7 +1586,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                 irr::f32 x_2=x_a + halfChord * sinPIbrg;
 				irr::f32 z_2=z_a + halfChord * cosPIbrg;
 
-				drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,255,255,255,255);
+				drawLine(radarImageOverlaid,x_1,z_1,x_2,z_2,brill(irr::video::SColor(255,255,255,255), brilliance));
 
 				//Show line number
 				//Find point towards centre from the line
@@ -1602,7 +1601,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
                     irr::s32 xTextPos = x_a + 15*xDirection;
                     irr::s32 yTextPos = z_a + 15*yDirection;
 
-                    irr::video::IImage* idNumberImage = NumberToImage::getImage(i+1,device);
+                    irr::video::IImage* idNumberImage = NumberToImage::getImage(i+1, brilliance, device);
                     if (idNumberImage) {
                         irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
                         idNumberImage->copyToWithAlpha(radarImageOverlaid,irr::core::position2d<irr::s32>(xTextPos,yTextPos),sourceRect,irr::video::SColor(255,255,255,255));
@@ -1632,10 +1631,10 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
             irr::s32 deltaY = centrePixel - contactRangePx * cos((thisEstimate.bearing+radarOffsetAngle)*RAD_IN_DEG);
 
             //Show contact on screen
-            drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,255,255,255,255); //Draw circle around contact
+            drawCircle(radarImageOverlaid,deltaX,deltaY,radarRadiusPx/40,brill(irr::video::SColor(255,255,255,255), brilliance)); //Draw circle around contact
 
             //Draw contact's display ID :
-            irr::video::IImage* idNumberImage = NumberToImage::getImage(thisEstimate.displayID,device);
+            irr::video::IImage* idNumberImage = NumberToImage::getImage(thisEstimate.displayID, brilliance, device);
 
             if (idNumberImage) {
                 irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,idNumberImage->getDimension().Width,idNumberImage->getDimension().Height);
@@ -1672,7 +1671,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
             //std::cout << headingVectorX << " " << headingVectorY << std::endl;
 
-            drawLine(radarImageOverlaid,deltaX,deltaY,deltaX + headingVectorX,deltaY+headingVectorY,255,255,255,255);
+            drawLine(radarImageOverlaid,deltaX,deltaY,deltaX + headingVectorX,deltaY+headingVectorY,brill(irr::video::SColor(255,255,255,255), brilliance));
 
         }
     }
@@ -1680,7 +1679,7 @@ void RadarCalculation::render(irr::video::IImage * radarImage, irr::video::IImag
 
 }
 
-void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue, irr::f32 ownShipHeading)
+void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centreX, irr::f32 centreY, irr::f32 innerRadius, irr::f32 outerRadius, irr::f32 startAngle, irr::f32 endAngle, irr::video::SColor colour, irr::f32 ownShipHeading)
 //draw a bounded sector
 {
 
@@ -1733,7 +1732,7 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
                 //if (Angles::isAngleBetween(localAngle,startAngle,endAngle)) {
                 if (Angles::isAngleBetween(irr::core::vector2df(localX,-1*localY),irr::core::vector2df(sinStartAngle,cosStartAngle),irr::core::vector2df(sinEndAngle,cosEndAngle))) {
                     //Plot i,j
-                    if (i >= 0 && j >= 0) {radarImage->setPixel(i,j,irr::video::SColor(alpha,red,green,blue));}
+                    if (i >= 0 && j >= 0) {radarImage->setPixel(i,j,colour);}
                 }
             }
         }
@@ -1741,7 +1740,7 @@ void RadarCalculation::drawSector(irr::video::IImage * radarImage,irr::f32 centr
 
 }
 
-void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end
+void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX, irr::f32 startY, irr::f32 endX, irr::f32 endY, irr::video::SColor colour)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end
 {
 
     irr::f32 deltaX = endX - startX;
@@ -1760,7 +1759,7 @@ void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX
             irr::s32 centreToY = thisY - radarRadiusPx;
             if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
                 if (thisX >= 0 && thisY >= 0) {
-                    radarImage->setPixel(thisX,thisY,irr::video::SColor(alpha,red,green,blue));
+                    radarImage->setPixel(thisX,thisY,colour);
                 }
             }
         }
@@ -1771,12 +1770,12 @@ void RadarCalculation::drawLine(irr::video::IImage * radarImage, irr::f32 startX
         irr::s32 centreToX = thisX - radarRadiusPx;
         irr::s32 centreToY = thisY - radarRadiusPx;
         if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
-            if (thisX >= 0 && thisY >= 0) {radarImage->setPixel(thisX,thisY,irr::video::SColor(alpha,red,green,blue));}
+            if (thisX >= 0 && thisY >= 0) {radarImage->setPixel(thisX,thisY, colour);}
         }
     }
 }
 
-void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 centreX, irr::f32 centreY, irr::f32 radius, irr::u32 alpha, irr::u32 red, irr::u32 green, irr::u32 blue)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end
+void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 centreX, irr::f32 centreY, irr::f32 radius, irr::video::SColor colour)//Try with irr::f32 as inputs so we can do interpolation based on the theoretical start and end
 {
     irr::f32 circumference = 2.0 * PI * radius;
 
@@ -1791,7 +1790,7 @@ void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 cent
             irr::s32 centreToY = thisY - radarRadiusPx;
             if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
                 if (thisX >= 0 && thisY >= 0) {
-                    radarImage->setPixel(thisX,thisY,irr::video::SColor(alpha,red,green,blue));
+                    radarImage->setPixel(thisX,thisY, colour);
                 }
             }
         }
@@ -1803,7 +1802,7 @@ void RadarCalculation::drawCircle(irr::video::IImage * radarImage, irr::f32 cent
         irr::s32 centreToY = thisY - radarRadiusPx;
         if (pow(centreToX,2) + pow(centreToY,2) <= radiusSquared) {
             if (thisX >= 0 && thisY >= 0) {
-                radarImage->setPixel(thisX,thisY,irr::video::SColor(alpha,red,green,blue));
+                radarImage->setPixel(thisX,thisY, colour);
             }
         }
     }
@@ -1939,10 +1938,30 @@ irr::video::SColor RadarCalculation::getRadarBackgroundColour() const
 
 irr::video::SColor RadarCalculation::getRadarSurroundColour() const
 {
+    irr::video::SColor resultColour;
     if (currentRadarColourChoice < radarSurroundColours.size()) {
-        return radarSurroundColours.at(currentRadarColourChoice);
+        resultColour = radarSurroundColours.at(currentRadarColourChoice);
     }
     else {
-        return irr::video::SColor(255, 128, 128, 128);
+        resultColour = irr::video::SColor(255, 128, 128, 128);
     }
+
+    return brill(resultColour, brilliance);
+}
+
+irr::video::SColor RadarCalculation::brill(irr::video::SColor originalColour, irr::f32 brilliance) const
+{
+    irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+    return originalColour.getInterpolated(black, brilliance);
+
+}
+
+irr::f32 RadarCalculation::getBrilliance() const
+{
+    return brilliance;
+}
+
+void RadarCalculation::setBrilliance(irr::f32 brilliance)
+{
+    this->brilliance = brilliance;
 }

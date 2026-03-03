@@ -25,7 +25,7 @@ namespace NumberToImage
     const irr::u32 PADDING_PX = 1;
     const irr::video::SColor BG_COLOUR = irr::video::SColor(0,0,0,0);
 
-    irr::video::IImage* getImage(irr::u32 number, irr::IrrlichtDevice* dev)
+    irr::video::IImage* getImage(irr::u32 number, irr::f32 brilliance, irr::IrrlichtDevice* dev)
     {
 
         irr::core::stringc numberString = irr::core::stringc(number);
@@ -73,7 +73,7 @@ namespace NumberToImage
                 for (irr::u32 character = 0; character<length; character++) {
                     if (numberImages[character]) {
                         irr::core::rect<irr::s32> sourceRect = irr::core::rect<irr::s32>(0,0,numberImages[character]->getDimension().Width,numberImages[character]->getDimension().Height);
-                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<irr::s32>(nextXStart,0),sourceRect,irr::video::SColor(255,255,255,255));
+                        numberImages[character]->copyToWithAlpha(numberImage,irr::core::vector2d<irr::s32>(nextXStart,0),sourceRect,irr::video::SColor(255,255 * brilliance,255 * brilliance,255 * brilliance));
                         nextXStart += numberImages[character]->getDimension().Width + PADDING_PX;
                         numberImages[character]->drop();
                     }

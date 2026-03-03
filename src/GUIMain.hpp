@@ -432,6 +432,7 @@ private:
     std::wstring f32To3dp(irr::f32 value);
     bool manuallyTriggerClick(irr::gui::IGUIButton* button);
     bool manuallyTriggerScroll(irr::gui::IGUIScrollBar* bar);
+    irr::video::SColor brill(irr::video::SColor originalColour, irr::f32 brilliance) const;
 
 };
 

@@ -1686,6 +1686,8 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 centreY;
         irr::s32 radius;
 
+        irr::f32 brilliance = model->getBrilliance();
+
         if (radarLarge) {
             centreX = largeRadarScreenCentreX;
             centreY = largeRadarScreenCentreY;
@@ -1700,7 +1702,7 @@ guiTideHeight = guiData->tideHeight;
 
         //If full screen radar, draw a 4:3 box around the radar display area
         if (radarLarge) {
-            device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,irr::video::SColor(255,0,0,0));
+            device->getVideoDriver()->draw2DRectangleOutline(radarLargeRect,brill(irr::video::SColor(255,0,0,0), brilliance));
         }
 
         irr::f32 radarHeadingIndicator;
@@ -1713,7 +1715,7 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 deltaY = -1*radius*cos(irr::core::DEGTORAD*radarHeadingIndicator);
         irr::core::position2d<irr::s32> radarCentre (centreX,centreY);
         irr::core::position2d<irr::s32> radarHeading (centreX+deltaX,centreY+deltaY);
-        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,irr::video::SColor(255, 255, 255, 255)); //Todo: Make these colours configurable
+        device->getVideoDriver()->draw2DLine(radarCentre,radarHeading,brill(irr::video::SColor(255, 255, 255, 255), brilliance)); //Todo: Make these colours configurable
 
         //draw a look direction line
         if (radarHeadUp) {
@@ -1725,19 +1727,19 @@ guiTideHeight = guiData->tideHeight;
         irr::s32 deltaYView = -1*radius*cos(irr::core::DEGTORAD*radarHeadingIndicator);
         irr::core::position2d<irr::s32> lookInner (centreX + 0.9*deltaXView,centreY + 0.9*deltaYView);
         irr::core::position2d<irr::s32> lookOuter (centreX + deltaXView,centreY + deltaYView);
-        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,irr::video::SColor(255, 255, 0, 0)); //Todo: Make these colours configurable
+        device->getVideoDriver()->draw2DLine(lookInner,lookOuter,brill(irr::video::SColor(255, 255, 0, 0), brilliance)); //Todo: Make these colours configurable
 
         //draw an EBL line
         irr::s32 deltaXEBL = radius*sin(irr::core::DEGTORAD*guiRadarEBLBrg);
         irr::s32 deltaYEBL = -1*radius*cos(irr::core::DEGTORAD*guiRadarEBLBrg);
         irr::core::position2d<irr::s32> eblOuter (centreX + deltaXEBL,centreY + deltaYEBL);
-        device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,irr::video::SColor(255, 255, 0, 0));
+        device->getVideoDriver()->draw2DLine(radarCentre,eblOuter,brill(irr::video::SColor(255, 255, 0, 0), brilliance));
         //draw EBL range
         if (guiRadarEBLRangeNm > 0 && guiRadarRangeNm >= guiRadarEBLRangeNm) {
             irr::f32 eblRangePx = radius*guiRadarEBLRangeNm/guiRadarRangeNm;
             irr::u8 noSegments = eblRangePx/2;
             if (noSegments < 10) {noSegments=10;}
-            device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,irr::video::SColor(255, 255, 0, 0),noSegments); //An n segment polygon, to approximate a circle
+            device->getVideoDriver()->draw2DPolygon(radarCentre,eblRangePx,brill(irr::video::SColor(255, 255, 0, 0), brilliance),noSegments); //An n segment polygon, to approximate a circle
         }
 
         //draw radar cursor
@@ -1747,7 +1749,7 @@ guiTideHeight = guiData->tideHeight;
         //Plot if within the display and not at zero range
         if (cursorPixelRadius <= radius && guiRadarCursorRangeNm > 0) {
             irr::core::position2d<irr::s32> cursorCentre (centreX + deltaXCursor,centreY + deltaYCursor);
-            device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,irr::video::SColor(255, 255, 0, 0),4); //a 4 segment polygon, i.e. a square!
+            device->getVideoDriver()->draw2DPolygon(cursorCentre,radius/20,brill(irr::video::SColor(255, 255, 0, 0), brilliance),4); //a 4 segment polygon, i.e. a square!
         }
 
         //Draw compass rose around radar (?Rotate with radar in head up and course up?)
@@ -1772,7 +1774,7 @@ guiTideHeight = guiData->tideHeight;
             irr::core::position2d<irr::s32> ticInner (centreX + scaling*deltaXTic,centreY + scaling*deltaYTic);
             irr::core::position2d<irr::s32> ticOuter (centreX + deltaXTic,centreY + deltaYTic);
 
-            device->getVideoDriver()->draw2DLine(ticInner,ticOuter,irr::video::SColor(255, 128, 128, 128));
+            device->getVideoDriver()->draw2DLine(ticInner,ticOuter,brill(irr::video::SColor(255, 128, 128, 128), brilliance));
 
             //Show the angle if needed
             if (showValue) {
@@ -1785,7 +1787,7 @@ guiTideHeight = guiData->tideHeight;
                 irr::s32 textEndX = textStartX+textWidth;
                 irr::s32 textStartY = centreY + 0.8*deltaYTic-0.5*textHeight;
                 irr::s32 textEndY = textStartY+textHeight;
-                guienv->getSkin()->getFont()->draw(angleText,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),irr::video::SColor(255,128,128,128));
+                guienv->getSkin()->getFont()->draw(angleText,irr::core::rect<irr::s32>(textStartX,textStartY,textEndX,textEndY),brill(irr::video::SColor(255,128,128,128), brilliance));
             }
 
         }
@@ -1802,7 +1804,7 @@ guiTideHeight = guiData->tideHeight;
         for (unsigned int i = 1; i<rangeRings; i++) {
             irr::f32 ringRadius = radius*i/(float)rangeRings;
             irr::u8 noSegments = ringRadius/2;
-            device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,irr::video::SColor(128, 128, 128, 128),noSegments);
+            device->getVideoDriver()->draw2DPolygon(radarCentre,ringRadius,brill(irr::video::SColor(128, 128, 128, 128), brilliance),noSegments);
         }
 
     }
@@ -1866,4 +1868,11 @@ guiTideHeight = guiData->tideHeight;
     void GUIMain::setLinesControlsText(std::string textToShow)
     {
         linesText->setText(irr::core::stringw(textToShow.c_str()).c_str());
+    }
+
+    irr::video::SColor GUIMain::brill(irr::video::SColor originalColour, irr::f32 brilliance) const
+    {
+        irr::video::SColor black = irr::video::SColor(255, 0, 0, 0);
+        return originalColour.getInterpolated(black, brilliance);
+
     }
