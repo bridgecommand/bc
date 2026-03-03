@@ -1963,5 +1963,8 @@ irr::f32 RadarCalculation::getBrilliance() const
 
 void RadarCalculation::setBrilliance(irr::f32 brilliance)
 {
-    this->brilliance = brilliance;
+    if (this->brilliance != brilliance) {
+        radarScreenStale = true;
+        this->brilliance = brilliance;
+    }
 }

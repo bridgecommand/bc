@@ -2038,6 +2038,7 @@ SimulationModel::~SimulationModel()
         guiData->radarGain = radarCalculation.getGain();
         guiData->radarClutter = radarCalculation.getClutter();
         guiData->radarRain = radarCalculation.getRainClutter();
+        guiData->radarBrill = radarCalculation.getBrilliance();
         guiData->guiRadarEBLBrg = radarCalculation.getEBLBrg();
         guiData->guiRadarEBLRangeNm = radarCalculation.getEBLRangeNm();
         guiData->guiRadarCursorBrg = radarCalculation.getCursorBrg();

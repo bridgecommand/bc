@@ -64,6 +64,7 @@ struct GUIData {
     irr::f32 radarGain;
     irr::f32 radarClutter;
     irr::f32 radarRain;
+    irr::f32 radarBrill;
     irr::f32 guiRadarEBLBrg;
     irr::f32 guiRadarEBLRangeNm;
     irr::f32 guiRadarCursorBrg;
@@ -136,6 +137,7 @@ public:
         GUI_ID_RADAR_GAIN_SCROLL_BAR,
         GUI_ID_RADAR_CLUTTER_SCROLL_BAR,
         GUI_ID_RADAR_RAIN_SCROLL_BAR,
+        GUI_ID_RADAR_BRILL_SCROLL_BAR,
         GUI_ID_RADAR_EBL_LEFT_BUTTON,
         GUI_ID_RADAR_EBL_RIGHT_BUTTON,
         GUI_ID_RADAR_EBL_UP_BUTTON,
@@ -297,12 +299,15 @@ private:
     irr::gui::IGUIScrollBar* radarGainScrollbar;
     irr::gui::IGUIScrollBar* radarClutterScrollbar;
     irr::gui::IGUIScrollBar* radarRainScrollbar;
+    irr::gui::IGUIScrollBar* radarBrillScrollbar;
 
     irr::gui::IGUIRectangle* largeRadarControls; //Parent rectangle for large radar controls
     irr::gui::IGUIRectangle* largeRadarPIControls; //Parent for PI controls on large radar
     irr::gui::IGUIScrollBar* radarGainScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarClutterScrollbar2; //For large radar
     irr::gui::IGUIScrollBar* radarRainScrollbar2; //For large radar
+    irr::gui::IGUIScrollBar* radarBrillScrollbar2; //For large radar
+
     irr::gui::IGUIButton* eblLeftButton2;
     irr::gui::IGUIButton* eblRightButton2;
     irr::gui::IGUIButton* eblUpButton2;
